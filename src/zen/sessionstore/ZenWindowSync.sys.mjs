@@ -10,13 +10,15 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
-  TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
+  TabStateFlusher:
+    "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs",
   // eslint-disable-next-line mozilla/valid-lazy
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  TabStateCache:
+    "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
-  RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
+  RunState: "moz-src:///browser/components/sessionstore/RunState.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(

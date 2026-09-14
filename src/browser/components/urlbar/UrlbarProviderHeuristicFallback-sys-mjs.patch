@@ -1,15 +1,15 @@
 diff --git a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-index cfc232f038cd491db32e0c0ca35622360dd9dec5..4806a725ddefa9d0709020d537eae5464249a294 100644
+index e32b02941a6019703212cede4660a24b88845120..5cb363ed20d49c1ae8abedecc3b08540406b7a1b 100644
 --- a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-@@ -77,22 +77,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
+@@ -76,22 +76,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
          // Since we can't tell if this is a real URL and whether the user wants
          // to visit or search for it, we provide an alternative searchengine
          // match if the string looks like an alphanumeric origin or an e-mail.
 -        let str = queryContext.searchString;
 -        if (!URL.canParse(str)) {
 -          if (
--            lazy.UrlbarPrefs.get("keyword.enabled") &&
+-            queryContext.keywordEnabled &&
 -            (lazy.UrlUtils.looksLikeOrigin(str, {
 -              noIp: true,
 -              noPort: true,
@@ -24,7 +24,7 @@ index cfc232f038cd491db32e0c0ca35622360dd9dec5..4806a725ddefa9d0709020d537eae546
 +           }
 +        );
 +        if (
-+          lazy.UrlbarPrefs.get("keyword.enabled") &&
++          queryContext.keywordEnabled &&
 +          (lazy.UrlUtils.looksLikeUrl(searchCandidate) ||
 +            lazy.UrlUtils.looksLikeOrigin(searchCandidate, {
 +              allowPartialNumericalTLDs: true,

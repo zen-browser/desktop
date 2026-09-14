@@ -1601,7 +1601,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       tab.hasAttribute("pending")
     );
     if (pendingTabs.length) {
-      pendingTabs.forEach(tab => gBrowser._insertBrowser(tab));
+      pendingTabs.forEach(tab => gBrowser.insertBrowser(tab));
       // SessionStore listens for this on the tab container and restores each
       // tab's saved history, scroll position and form data. Kept non-bubbling
       // so it doesn't reach tabbrowser, which tracks Firefox's own split view.

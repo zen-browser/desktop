@@ -28,6 +28,8 @@
 :is(#appMenu-zoomReduce-button2, #appMenu-zoomEnlarge-button2) > .toolbarbutton-icon,
 .color-swatches .userContext-icon,
 .reusable-relay-masks > button,
-.radio-check {
+.radio-check,
+#zen-loading-progress-bar,
+#statuspanel-label {
   corner-shape: round;
 }

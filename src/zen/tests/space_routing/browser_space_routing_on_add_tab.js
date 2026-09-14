@@ -3,7 +3,11 @@
 
 "use strict";
 
-const TARGET_WS = { uuid: "ws-target", containerTabId: 7, name: "Target" };
+const TARGET_WS = {
+  uuid: "ws-target",
+  containerTabId: 7,
+  name: "Target Workspace",
+};
 
 add_setup(async function () {
   clearAllRoutes();

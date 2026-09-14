@@ -42,7 +42,7 @@ class TestSessionRestoreWithPinnedTabs(SessionStoreTestCase):
             """
             let resolve = arguments[0];
             gBrowser.pinTab(gBrowser.tabs[0]);
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flush(gBrowser.tabs[0]).then(resolve);
         """
         )

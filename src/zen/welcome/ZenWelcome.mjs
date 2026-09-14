@@ -424,7 +424,7 @@
         }))
       );
       const { TabStateCache } = ChromeUtils.importESModule(
-        "resource:///modules/sessionstore/TabStateCache.sys.mjs"
+        "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs"
       );
       for (const app of apps) {
         const tab = window.gBrowser.addTrustedTab(app.url, {

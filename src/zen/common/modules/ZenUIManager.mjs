@@ -1587,9 +1587,7 @@ window.gZenVerticalTabsManager = {
       return;
     }
     gURLBar._initCopyCutController();
-    gURLBar._initPasteAndGo();
-    gURLBar._initStripOnShare();
-    gURLBar._updatePlaceholderFromDefaultEngine();
+    gURLBar.updatePlaceholder();
   },
 
   rebuildAreas() {

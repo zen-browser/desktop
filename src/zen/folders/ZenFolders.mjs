@@ -327,7 +327,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (isActiveFolder) {
       for (const folder of group.activeGroups) {
         folder.activeTabs = [...new Set([...folder.activeTabs, tab])].sort(
-          (a, b) => a._tPos > b._tPos
+          (a, b) => a.index - b.index
         );
         this.setFolderIndentation([tab], folder, /* for collapse = */ true);
       }
@@ -378,7 +378,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (isActiveFolder && isSplitView) {
       parentFolder.activeTabs = [
         ...new Set([...parentFolder.activeTabs, ...folder.tabs]),
-      ].sort((a, b) => a._tPos > b._tPos);
+      ].sort((a, b) => a.index - b.index);
     }
     parentFolder.collapsed = isActiveFolder;
   }
@@ -1919,7 +1919,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
               // It is important to keep the sequence of elements as in the DOM
               currentGroup.activeTabs = [
                 ...new Set([...currentGroup.activeTabs, ...activeTabs]),
-              ].sort((a, b) => a._tPos > b._tPos);
+              ].sort((a, b) => a.index - b.index);
             } else {
               currentGroup.setAttribute("has-active", "true");
               currentGroup.activeTabs = activeTabs;

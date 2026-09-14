@@ -23,6 +23,8 @@ export class ZenSpacesSwipe {
     isGestureActive: false,
     lastDelta: 0,
     direction: null,
+    isSwipingLibrary: false,
+    beforeLibraryState: 0,
   };
 
   constructor() {
@@ -45,23 +47,35 @@ export class ZenSpacesSwipe {
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
-    return spaces.indexOf(current) === 0 && libraryEnabled;
+    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
+    return (
+      spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
+      libraryEnabled
+    );
   }
 
   attachWorkspaceSwipeGestures(element) {
+    const gestureControl = {
+      _handleSwipeMayStart: this._handleSwipeMayStart.bind(this),
+      _handleSwipeStart: this._handleSwipeStart.bind(this),
+      _handleSwipeUpdate: this._handleSwipeUpdate.bind(this),
+      _handleSwipeEnd: this._handleSwipeEnd.bind(this),
+      _handleSwipeAnimationEnd: this.onSwipeGestureAnimationEnd.bind(this),
+    };
+
     element.addEventListener(
       "MozSwipeGestureMayStart",
-      this._handleSwipeMayStart.bind(this),
+      gestureControl._handleSwipeMayStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureStart",
-      this._handleSwipeStart.bind(this),
+      gestureControl._handleSwipeStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureUpdate",
-      this._handleSwipeUpdate.bind(this),
+      gestureControl._handleSwipeUpdate,
       true
     );
 
@@ -69,15 +83,47 @@ export class ZenSpacesSwipe {
     // while MozSwipeGesture is fired immediately after swipe ends.
     element.addEventListener(
       "MozSwipeGesture",
-      this._handleSwipeEnd.bind(this),
+      gestureControl._handleSwipeEnd,
       true
     );
 
     element.addEventListener(
       "MozSwipeGestureEnd",
-      () => {
-        this.onSwipeGestureAnimationEnd();
-      },
+      gestureControl._handleSwipeAnimationEnd,
+      true
+    );
+
+    return gestureControl;
+  }
+
+  detachWorkspaceSwipeGestures(element, gestureControl) {
+    element.removeEventListener(
+      "MozSwipeGestureMayStart",
+      gestureControl._handleSwipeMayStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureStart",
+      gestureControl._handleSwipeStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureUpdate",
+      gestureControl._handleSwipeUpdate,
+      true
+    );
+
+    // Use MozSwipeGesture instead of MozSwipeGestureEnd because MozSwipeGestureEnd is fired after animation ends,
+    // while MozSwipeGesture is fired immediately after swipe ends.
+    element.removeEventListener(
+      "MozSwipeGesture",
+      gestureControl._handleSwipeEnd,
+      true
+    );
+
+    element.removeEventListener(
+      "MozSwipeGestureEnd",
+      gestureControl._handleSwipeAnimationEnd,
       true
     );
   }
@@ -169,10 +215,13 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
+    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
     const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
     const couldClose = libraryOpen;
     const wantsOpen =
-      !libraryOpen && translateX > 0 && this.#readySwipeOpenLibrary();
+      !libraryOpen &&
+      (libraryOnRight ? translateX < 0 : translateX > 0) &&
+      this.#readySwipeOpenLibrary();
 
     if (wantsOpen || couldClose || this._swipeState.isSwipingLibrary) {
       if (!this._swipeState.isSwipingLibrary) {
@@ -192,11 +241,12 @@ export class ZenSpacesSwipe {
         );
       };
 
-      const DAMPING_DIMENSION = 0.06;
-      const RUBBER_BAND_CONSTANT = 0.05;
+      const DAMPING_DIMENSION = 0.2;
+      const RUBBER_BAND_CONSTANT = 0.08;
 
-      const LIBRARY_SWIPE_FULL = 1.65;
-      const deltaProgress = (translateX / stripWidth) * LIBRARY_SWIPE_FULL;
+      const LIBRARY_SWIPE_FULL = 1.4;
+      const translation = libraryOnRight ? -translateX : translateX;
+      const deltaProgress = (translation / stripWidth) * LIBRARY_SWIPE_FULL;
       const progress = this._swipeState.beforeLibraryState + deltaProgress;
 
       let progressDamped;
@@ -245,11 +295,18 @@ export class ZenSpacesSwipe {
   onSwipeGestureAnimationEnd() {
     const ws = gZenWorkspaces;
 
+    if (this._swipeState.isSwipingLibrary) {
+      lazy.ZenLibrary.stopSwipe(null);
+      return;
+    }
+
     // Reset swipe state
     this._swipeState = {
       isGestureActive: false,
       lastDelta: 0,
       direction: null,
+      isSwipingLibrary: false,
+      beforeLibraryState: 0,
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);

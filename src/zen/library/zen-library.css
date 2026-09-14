@@ -17,6 +17,19 @@
   opacity: calc(1 - var(--toolbox-progress));
 }
 
+#zen-main-app-wrapper[zen-compact-mode="true"] #navigator-toolbox {
+  @media -moz-pref('zen.view.compact.hide-tabbar') {
+    transform: translateX(calc(var(--toolbox-progress) * -100%));
+    opacity: 1;
+  }
+}
+
+:root[zen-right-side="true"] #zen-main-app-wrapper[zen-compact-mode="true"] #navigator-toolbox {
+  @media -moz-pref('zen.view.compact.hide-tabbar') {
+    transform: translateX(calc(var(--toolbox-progress) * 100%));
+  }
+}
+
 zen-library {
   --zen-library-pill-bg: color-mix(in srgb, currentColor 7%, transparent);
   --zen-library-pill-hover-bg: color-mix(in srgb, currentColor 12%, transparent);
@@ -42,16 +55,6 @@ zen-library {
     flex-direction: row;
   }
 
-  :root[zen-right-side="true"] {
-    transform: translateX(calc(100% * (1 - var(--library-progress, 0))));
-    left: auto;
-    right: 0;
-
-    & #zen-library-panel {
-      flex-direction: row-reverse;
-    }
-  }
-
   & #zen-library-side {
     display: flex;
     flex-direction: column;
@@ -61,9 +64,28 @@ zen-library {
     background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08));
     box-shadow: 9px 0 17px rgba(0, 0, 0, 0.04);
   }
+}
 
-  &[zen-right-side="true"] #zen-library-side {
+:root[zen-right-side="true"] zen-library {
+  transform: translateX(calc(100% * (1 - var(--library-progress, 0))));
+  left: auto;
+  right: 0;
+
+  & #zen-library-panel {
+    flex-direction: row-reverse;
+  }
+
+  & #zen-library-side {
+    background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.08));
     box-shadow: -9px 0 17px rgba(0, 0, 0, 0.04);
+  }
+  
+  & #zen-library-footer {
+    flex-direction: row-reverse;
+    
+    & toolbarbutton:first-child {
+      rotate:180deg;
+    }
   }
 }
 
@@ -72,7 +94,7 @@ zen-library[open] {
   visibility: visible;
   pointer-events: auto;
   -moz-window-dragging: drag;
-  transition: width 0.18s ease-in-out;
+  transition: width 0.3s cubic-bezier(.36,.06,0,.94);
 }
 
 zen-library[transitioning] #zen-library-content {

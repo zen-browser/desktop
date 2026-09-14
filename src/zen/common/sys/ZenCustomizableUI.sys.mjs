@@ -166,6 +166,7 @@ export const ZenCustomizableUI = new (class {
       {
         id: "zen-library-button",
         l10nId: "zen-library-button",
+        _introducedByPref: "zen.library.enabled",
         onCreated(aNode) {
           aNode.setAttribute("command", "cmd_zenToggleLibrary");
         },

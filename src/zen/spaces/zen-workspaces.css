@@ -352,6 +352,8 @@ zen-workspace {
       scrollbar-width: auto;
       scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
       overflow-y: auto;
+      padding-block-end: 120px;
+      overscroll-behavior: auto;
     }
 
     :root[swipe-gesture] &::part(scrollbox) {

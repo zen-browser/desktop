@@ -47,7 +47,7 @@ class TestSessionRestoreWithTabGroups(SessionStoreTestCase):
             let closedGroup = gBrowser.addTabGroup([gBrowser.tabs[1]], { id:"group-closed", label: "closed" });
             gBrowser.removeTabGroup(closedGroup);
 
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
         """
         )
@@ -144,7 +144,7 @@ class TestSessionRestoreWithTabGroups(SessionStoreTestCase):
         self.marionette.execute_script(
             """
             let group = gBrowser.addTabGroup([...gBrowser.tabs], { id: "group-to-save", label: "to-save" });
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(() => {
                 group.saveAndClose();
             });
@@ -181,7 +181,7 @@ class TestSessionRestoreWithTabGroups(SessionStoreTestCase):
             gBrowser.addTabGroup([gBrowser.tabs[3], gBrowser.tabs[4]], { id: "save-through-restore-1", label: "open-1" });
             gBrowser.addTabGroup([gBrowser.tabs[1], gBrowser.tabs[2]], { id: "save-through-restore-2", label: "open-2" });
 
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
         """
         )
@@ -252,7 +252,7 @@ class TestSessionRestoreWithTabGroups(SessionStoreTestCase):
             gBrowser.addTabGroup([gBrowser.tabs[3], gBrowser.tabs[4]], { id: "not-saved-after-restore-1", label: "open-1" });
             gBrowser.addTabGroup([gBrowser.tabs[1], gBrowser.tabs[2]], { id: "not-saved-after-restore-2", label: "open-2" });
 
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
             """
         )

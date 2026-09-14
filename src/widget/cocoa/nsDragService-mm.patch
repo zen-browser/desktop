@@ -1,5 +1,5 @@
 diff --git a/widget/cocoa/nsDragService.mm b/widget/cocoa/nsDragService.mm
-index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..32fc707ccfa56fa8c307860868d092c4a9050419 100644
+index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339349ffc06 100644
 --- a/widget/cocoa/nsDragService.mm
 +++ b/widget/cocoa/nsDragService.mm
 @@ -10,6 +10,7 @@
@@ -45,3 +45,112 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..32fc707ccfa56fa8c307860868d092c4
  #endif
        src += 4;
        dest += 4;
+@@ -249,12 +254,44 @@
+       [[[NSDraggingItem alloc] initWithPasteboardWriter:pbItem] autorelease];
+   [dragItem setDraggingFrame:localDragRect contents:image];
+ 
++  NSMutableArray* dragItems = [NSMutableArray arrayWithObject:dragItem];
++  auto zenDragAndDrop = zen::nsZenDragAndDrop::GetZenDragAndDropInstance();
++  const nsTArray<nsCOMPtr<nsINode>> noExtraImages;
++  @try {
++    for (const auto& extraImageNode :
++         zenDragAndDrop ? zenDragAndDrop->DragImages() : noExtraImages) {
++      nsCOMPtr<nsINode> mainImage = std::move(mImage);
++      mImage = extraImageNode;
++      NSPoint extraPoint;
++      NSImage* extraImage = ConstructDragImage(mSourceNode, aRegion, &extraPoint);
++      mImage = std::move(mainImage);
++      if (!extraImage) {
++        continue;
++      }
++      NSRect extraRect = extraImage.alignmentRect;
++      extraRect.origin.x = extraPoint.x;
++      extraRect.origin.y = extraPoint.y - extraRect.size.height;
++      NSPasteboardItem* extraPbItem = [[NSPasteboardItem new] autorelease];
++      [extraPbItem setData:[NSData data]
++                   forType:[UTIHelper stringFromPboardType:kMozWildcardPboardType]];
++      NSDraggingItem* extraItem = [[[NSDraggingItem alloc]
++          initWithPasteboardWriter:extraPbItem] autorelease];
++      [extraItem setDraggingFrame:extraRect contents:extraImage];
++      [dragItems addObject:extraItem];
++    }
++  } @catch (NSException* e) {
++    dragItems = [NSMutableArray arrayWithObject:dragItem];
++  }
++
+   OpenDragPopup();
+ 
+   mNSDraggingSession = [mNativeDragView
+-      beginDraggingSessionWithItems:[NSArray arrayWithObject:dragItem]
++      beginDraggingSessionWithItems:dragItems
+                               event:mNativeDragEvent
+                              source:mNativeDragView];
++  if (dragItems.count > 1) {
++    mNSDraggingSession.draggingFormation = NSDraggingFormationStack;
++  }
+ 
+   mNSDraggingSession.animatesToStartingPositionsOnCancelOrFail =
+       !mDataTransfer || mDataTransfer->MozShowFailAnimation();
+@@ -455,29 +492,44 @@
+     }
+ 
+     if (pc) {
++      nsPoint pt = LayoutDevicePixel::ToAppUnits(
++          devPoint, pc->DeviceContext()->AppUnitsPerDevPixel());
++      CSSIntPoint screenPoint =
++          CSSIntPoint(nsPresContext::AppUnitsToIntCSSPixels(pt.x),
++                      nsPresContext::AppUnitsToIntCSSPixels(pt.y));
++
++      NSMutableArray* images = [NSMutableArray array];
++      NSMutableArray* rects = [NSMutableArray array];
++      auto render = [&]() {
++        LayoutDeviceIntRect newRect;
++        NSImage* image =
++            ConstructDragImage(mSourceNode, Nothing(), screenPoint, &newRect);
++        [images addObject:image ? (id)image : (id)[NSNull null]];
++        [rects addObject:[NSValue valueWithRect:
++                                      image ? nsCocoaUtils::GeckoRectToCocoaRectDevPix(
++                                                  newRect, scaleFactor)
++                                            : NSZeroRect]];
++      };
++      render();
++      if (auto zenDragAndDrop = zen::nsZenDragAndDrop::GetZenDragAndDropInstance()) {
++        for (const auto& extraImageNode : zenDragAndDrop->DragImages()) {
++          nsCOMPtr<nsINode> mainImage = std::move(mImage);
++          mImage = extraImageNode;
++          render();
++          mImage = std::move(mainImage);
++        }
++      }
++
+       void (^changeImageBlock)(NSDraggingItem*, NSInteger, BOOL*) = ^(
+           NSDraggingItem* draggingItem, NSInteger idx, BOOL* stop) {
+-        // We never add more than one item right now, but check just in case.
+-        if (idx > 0) {
++        if ((NSUInteger)idx >= images.count || images[idx] == [NSNull null]) {
+           return;
+         }
+-
+-        nsPoint pt = LayoutDevicePixel::ToAppUnits(
+-            devPoint, pc->DeviceContext()->AppUnitsPerDevPixel());
+-        CSSIntPoint screenPoint =
+-            CSSIntPoint(nsPresContext::AppUnitsToIntCSSPixels(pt.x),
+-                        nsPresContext::AppUnitsToIntCSSPixels(pt.y));
+-
+-        // Create a new image; if one isn't returned don't change the current
+-        // one.
+-        LayoutDeviceIntRect newRect;
+-        NSImage* image =
+-            ConstructDragImage(mSourceNode, Nothing(), screenPoint, &newRect);
+-        if (image) {
+-          NSRect draggingRect =
+-              nsCocoaUtils::GeckoRectToCocoaRectDevPix(newRect, scaleFactor);
+-          [draggingItem setDraggingFrame:draggingRect contents:image];
++        NSRect frame = [rects[idx] rectValue];
++        if (idx > 0) {
++          frame.origin = draggingItem.draggingFrame.origin;
+         }
++        [draggingItem setDraggingFrame:frame contents:images[idx]];
+       };
+ 
+       [mNSDraggingSession

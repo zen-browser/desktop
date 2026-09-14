@@ -21,7 +21,7 @@ add_task(async function test_media_bar_shows_metadata_from_page() {
     const titleEl = card.querySelector(".zen-media-title");
     const artistEl = card.querySelector(".zen-media-artist");
 
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => titleEl.textContent === "Sandstorm",
       "title label reflects the page's mediaSession metadata"
     );
@@ -36,7 +36,7 @@ add_task(async function test_media_bar_shows_metadata_from_page() {
       title: "Levels",
       artist: "Avicii",
     });
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => titleEl.textContent === "Levels",
       "title updates live when the page changes its mediaSession metadata"
     );

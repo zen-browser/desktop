@@ -1,11 +1,11 @@
 diff --git a/browser/components/sessionstore/SessionSaver.sys.mjs b/browser/components/sessionstore/SessionSaver.sys.mjs
-index 9141793550f7c7ff6aa63d4c85bf571b4499e2d0..6906fd9be7ae6ca4316133e0d6552b797c54a7ec 100644
+index 1f26bc5fdb83f55bdf0b9b7d01fafe1cd37f77f4..5916f741d0fa04c392dcdd10f843e595fe5e058c 100644
 --- a/browser/components/sessionstore/SessionSaver.sys.mjs
 +++ b/browser/components/sessionstore/SessionSaver.sys.mjs
-@@ -20,6 +20,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
-   SessionFile: "resource:///modules/sessionstore/SessionFile.sys.mjs",
-   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
-   sessionStoreLogger: "resource:///modules/sessionstore/SessionLogger.sys.mjs",
+@@ -20,6 +20,7 @@ const lazy = XPCOMUtils.declareLazy({
+     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
+   sessionStoreLogger:
+     "moz-src:///browser/components/sessionstore/SessionLogger.sys.mjs",
 +  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
  });
  

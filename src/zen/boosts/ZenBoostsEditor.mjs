@@ -1521,7 +1521,7 @@ ${cssSelector} {
   shuffleBoost() {
     const availFonts = this.fetchFontList();
     const commonFonts = this.commonFonts;
-    let font = commonFonts[Math.round(Math.random() * commonFonts.length)];
+    let font = commonFonts[Math.floor(Math.random() * commonFonts.length)];
     if (availFonts.includes(font)) {
       this.currentBoostData.fontFamily = font;
     }

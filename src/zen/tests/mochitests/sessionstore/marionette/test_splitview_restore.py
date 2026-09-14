@@ -53,7 +53,7 @@ class TestAutoRestoreWithSplitView(SessionStoreTestCase):
             gBrowser.addTabSplitView([gBrowser.tabs[0], gBrowser.tabs[1]], {
             insertBefore: gBrowser.tabs[0],
             });
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
             """
         )
@@ -98,7 +98,7 @@ class TestAutoRestoreWithSplitView(SessionStoreTestCase):
             insertBefore: gBrowser.tabs[2],
             });
             gBrowser.selectedTab = gBrowser.tabs[2];
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
             """
         )
@@ -150,7 +150,7 @@ class TestAutoRestoreWithSplitView(SessionStoreTestCase):
             gBrowser.addTabSplitView([gBrowser.tabs[0], gBrowser.tabs[1]], {
                 insertBefore: gBrowser.tabs[0],
             });
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
             """
         )

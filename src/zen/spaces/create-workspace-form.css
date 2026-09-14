@@ -96,7 +96,7 @@ zen-workspace-creation {
 
           &::before {
             border: 1px dashed light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
-            border-radius: 4px;
+            border-radius: 6px;
             width: calc(100% + 2px);
             height: calc(100% + 2px);
             content: "";

@@ -44,7 +44,7 @@ async function openHistoryMenu(useContextMenu) {
 async function testBackForwardMenu(useContextMenu) {
   let tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
-    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+    // eslint-disable-next-line sdl/no-insecure-url
     "http://example.com"
   );
 
@@ -90,7 +90,7 @@ async function testBackForwardMenu(useContextMenu) {
     );
 
     let node = popupEvent.target.lastElementChild;
-    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+    // eslint-disable-next-line sdl/no-insecure-url
     is(node.getAttribute("uri"), "http://example.com/", "'1' item uri");
     is(node.getAttribute("index"), "0", "'1' item index");
     is(
@@ -100,7 +100,7 @@ async function testBackForwardMenu(useContextMenu) {
     );
 
     node = node.previousElementSibling;
-    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+    // eslint-disable-next-line sdl/no-insecure-url
     is(node.getAttribute("uri"), "http://example.com/2.html", "'2' item uri");
     is(node.getAttribute("index"), "1", "'2' item index");
     is(
@@ -111,7 +111,7 @@ async function testBackForwardMenu(useContextMenu) {
 
     if (iter >= 3) {
       node = node.previousElementSibling;
-      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      // eslint-disable-next-line sdl/no-insecure-url
       is(node.getAttribute("uri"), "http://example.com/3.html", "'3' item uri");
       is(node.getAttribute("index"), "2", "'3' item index");
       is(
@@ -133,7 +133,7 @@ async function testBackForwardMenu(useContextMenu) {
     } else {
       let newTabPromise = BrowserTestUtils.waitForNewTab(
         gBrowser,
-        // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+        // eslint-disable-next-line sdl/no-insecure-url
         url => url == "http://example.com/"
       );
 

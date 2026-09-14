@@ -185,7 +185,7 @@ add_task(async function test_notifyPendingChanges() {
 
 // It's difficult to know what to test - there's already tests for the bridged
 // engine etc - so we just try and check that this engine conforms to the
-// mozIBridgedSyncEngine interface guarantees.
+// bridged engine interface guarantees.
 add_task(async function test_engine() {
   // Forcibly set the bridged engine in the engine manager. the reason we do
   // this, unlike the other tests where we just create the engine, is so that
@@ -199,13 +199,6 @@ add_task(async function test_engine() {
   Assert.deepEqual(await engine.getSyncID(), null);
   await engine.resetLocalSyncID();
   Assert.notEqual(await engine.getSyncID(), null);
-
-  Assert.equal(await engine.getLastSync(), 0);
-  // lastSync is seconds on this side of the world, but milli-seconds on the other.
-  await engine.setLastSync(1234.567);
-  // should have 2 digit precision.
-  Assert.equal(await engine.getLastSync(), 1234.57);
-  await engine.setLastSync(0);
 
   // Set some data.
   await extensionStorageSync.set({ id: "ext-2" }, { ext_2_key: "ext_2_value" });

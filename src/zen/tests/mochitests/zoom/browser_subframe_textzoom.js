@@ -11,7 +11,7 @@ function test() {
   waitForExplicitFinish();
 
   const TEST_PAGE_URL = 'data:text/html,<body><iframe src=""></iframe></body>';
-  // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+  // eslint-disable-next-line sdl/no-insecure-url
   const TEST_IFRAME_URL = "http://test2.example.org/";
 
   (async function () {

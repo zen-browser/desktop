@@ -1,4 +1,7 @@
 [DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=false",
+]
 subsuite = "media-bc"
 tags = "audiochannel"
 support-files = [
@@ -44,6 +47,8 @@ https_first_disabled = true
 ["browser_mute_webAudio.js"]
 
 ["browser_sound_indicator_silent_video.js"]
+
+["browser_sound_indicator_tab_move.js"]
 
 ["browser_webAudio_hideSoundPlayingIcon.js"]
 

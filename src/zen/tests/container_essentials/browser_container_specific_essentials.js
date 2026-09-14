@@ -46,3 +46,38 @@ add_task(async function test_Check_Creation() {
 
   await gZenWorkspaces.removeWorkspace(newWorkspaceUUID);
 });
+
+add_task(async function test_Essentials_Hidden_Workspace_Creation() {
+  const originalWorkspace = gZenWorkspaces.getActiveWorkspace();
+
+  const essentialTab = BrowserTestUtils.addTab(gBrowser, "about:blank", {
+    skipAnimation: true,
+    userContextId: 0,
+  });
+  gZenPinnedTabManager.addToEssentials(essentialTab);
+  const essentialsContainer = essentialTab.parentNode;
+
+  await gZenWorkspaces.createAndSaveWorkspace(
+    "Empty Container Workspace",
+    undefined,
+    false,
+    1
+  );
+  const emptyWorkspace = gZenWorkspaces.getActiveWorkspace();
+
+  // The temporary creation workspace uses container 0, which previously
+  // caused the container 0 Essentials to reappear over the form.
+  await gZenWorkspaces.openWorkspaceCreation();
+
+  const creationForm = document.querySelector("zen-workspace-creation");
+  ok(creationForm, "Workspace creation form is shown");
+  ok(
+    BrowserTestUtils.isHidden(essentialsContainer),
+    "Essentials remain hidden while creating a workspace"
+  );
+
+  await creationForm.onCancelButtonCommand();
+  await gZenWorkspaces.changeWorkspace(originalWorkspace);
+  await gZenWorkspaces.removeWorkspace(emptyWorkspace.uuid);
+  await BrowserTestUtils.removeTab(essentialTab);
+});

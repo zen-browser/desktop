@@ -91,7 +91,35 @@ nsZenDragAndDrop::OnDragStart(float opacity) {
 NS_IMETHODIMP
 nsZenDragAndDrop::OnDragEnd() {
   mDragImageOpacity = kZenDefaultDragImageOpacity;
+  mDropLandingArmed = false;
+  mDragImages.Clear();
+  mDropLandingRects.Clear();
   return NS_OK;
+}
+
+NS_IMETHODIMP
+nsZenDragAndDrop::ArmDropLanding(bool aArm) {
+  mDropLandingArmed = aArm;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsZenDragAndDrop::AddDragImage(nsINode* aImage) {
+  NS_ENSURE_ARG_POINTER(aImage);
+  mDragImages.AppendElement(aImage);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsZenDragAndDrop::AddDropLandingRect(int32_t aX, int32_t aY, int32_t aWidth,
+                                     int32_t aHeight) {
+  mDropLandingRects.AppendElement(
+      mozilla::DesktopIntRect(aX, aY, aWidth, aHeight));
+  return NS_OK;
+}
+
+nsTArray<mozilla::DesktopIntRect> nsZenDragAndDrop::TakeDropLandingRects() {
+  return std::move(mDropLandingRects);
 }
 
 NS_IMETHODIMP

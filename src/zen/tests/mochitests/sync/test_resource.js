@@ -47,10 +47,10 @@ function server_404(metadata, response) {
   response.bodyOutputStream.write(body, body.length);
 }
 
-var pacFetched = false;
+var pacFetched;
 function server_pac(metadata, response) {
   _("Invoked PAC handler.");
-  pacFetched = true;
+  pacFetched.resolve();
   let body = 'function FindProxyForURL(url, host) { return "DIRECT"; }';
   response.setStatusLine(metadata.httpVersion, 200, "OK");
   response.setHeader(
@@ -189,12 +189,13 @@ add_task(async function test_proxy_auth_redirect() {
 
   PACSystemSettings.PACURI = server.baseURI + "/pac2";
   installFakePAC();
+  pacFetched = Promise.withResolvers();
   let res = new Resource(server.baseURI + "/open");
   let result = await res.get();
-  Assert.ok(pacFetched);
+  await pacFetched.promise;
   Assert.ok(fetched);
   Assert.equal("This path exists", result.data);
-  pacFetched = fetched = false;
+  fetched = false;
   uninstallFakePAC();
   await promiseStopServer(server);
 });

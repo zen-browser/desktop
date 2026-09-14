@@ -392,7 +392,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return Promise.resolve(this.#currentTab);
     }
 
-    // Existing-tab glances perform no navigation and are exempt; for fresh
+    // Existing-tab glances perform no navigation and are exempt. For fresh
     // loads, refuse any URL the triggering principal isn't allowed to load
     // (e.g. a web page linking to file://).
     if (!existingTab && !this.#isGlanceLoadAllowed(data)) {

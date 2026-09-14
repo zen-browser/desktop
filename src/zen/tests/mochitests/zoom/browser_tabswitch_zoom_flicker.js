@@ -10,7 +10,7 @@ function test() {
   Services.prefs.setBoolPref("browser.zoom.siteSpecific", true);
 
   let uri =
-    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+    // eslint-disable-next-line sdl/no-insecure-url
     "http://example.org/browser/browser/base/content/test/zoom/zoom_test.html";
 
   (async function () {

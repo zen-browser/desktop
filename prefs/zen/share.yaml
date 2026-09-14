@@ -2,5 +2,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: zen.share.enabled
+- name: zen.share.base-url
+  value: "https://share.zen-browser.app"
+
+- name: zen.share.secret-key
+  value: ""
+
+- name: zen.share.display-name
+  value: ""
+
+# Allow zen.share.display-name to be synced across devices.
+- name: services.sync.prefs.sync.zen.share.display-name
   value: true
+
+- name: zen.share.dont-ask-before-sharing
+  value: false

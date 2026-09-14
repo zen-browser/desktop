@@ -5,11 +5,17 @@
  */
 :root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
   & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    --zen-transparent-browser-background: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
     overflow: clip;
 
     :root:not([zen-no-padding="true"]) &:not(.zen-glance-overlay) {
       border-radius: var(--zen-native-inner-radius);
       box-shadow: var(--zen-big-shadow);
+      @media not (-moz-pref("zen.theme.squircle-browser-view")) {
+        /* stylelint-disable-next-line property-no-unknown */
+        corner-shape: round;
+        border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
+      }
     }
 
     & browser[type="content"] {
@@ -18,7 +24,7 @@
       }
 
       &[transparent="true"] {
-        background: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+        background: var(--zen-transparent-browser-background);
       }
     }
 

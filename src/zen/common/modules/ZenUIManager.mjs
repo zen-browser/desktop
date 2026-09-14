@@ -257,7 +257,7 @@ window.gZenUIManager = {
     };
   },
 
-  updateTabsToolbar() {
+  updateTabsToolbar(fromResizeEvent = false) {
     const kUrlbarHeight = 333;
     gURLBar.style.setProperty(
       "--zen-urlbar-top",
@@ -270,8 +270,8 @@ window.gZenUIManager = {
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute(
       "zen-has-hover"
     );
-    gZenVerticalTabsManager.recalculateURLBarHeight(true);
-    if (!this._preventToolbarRebuild) {
+    gZenVerticalTabsManager.recalculateURLBarHeight(!fromResizeEvent);
+    if (!this._preventToolbarRebuild && !fromResizeEvent) {
       setTimeout(() => {
         gZenWorkspaces.updateTabsContainers();
       }, 0);
@@ -868,7 +868,6 @@ window.gZenUIManager = {
   },
 
   panelUIPosition(panel, anchor) {
-    void panel;
     // The alignment position of the panel is determined during the "popuppositioned" event
     // when the panel opens. The alignment positions help us determine in which orientation
     // the panel is anchored to the screen space.
@@ -1279,8 +1278,16 @@ window.gZenVerticalTabsManager = {
     if (gZenWorkspaces._processingResize) {
       return;
     }
+    this._pendingUrlbarFormatUpdate ||= updateFormat;
+    if (this._urlbarHeightRecalcScheduled) {
+      return;
+    }
+    this._urlbarHeightRecalcScheduled = true;
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
+        delete this._urlbarHeightRecalcScheduled;
+        const shouldUpdateFormat = this._pendingUrlbarFormatUpdate;
+        delete this._pendingUrlbarFormatUpdate;
         gURLBar.removeAttribute("--urlbar-height");
         let height;
         if (!this._hasSetSingleToolbar) {
@@ -1291,7 +1298,7 @@ window.gZenVerticalTabsManager = {
         if (typeof height !== "undefined") {
           gURLBar.style.setProperty("--urlbar-height", `${height}px`);
         }
-        if (updateFormat) {
+        if (shouldUpdateFormat) {
           gURLBar.zenFormatURLValue();
         }
       });
@@ -1582,7 +1589,7 @@ window.gZenVerticalTabsManager = {
     gURLBar._initCopyCutController();
     gURLBar._initPasteAndGo();
     gURLBar._initStripOnShare();
-    gURLBar._updatePlaceholderFromDefaultEngine();
+    gURLBar.updatePlaceholder();
   },
 
   rebuildAreas() {

@@ -103,7 +103,7 @@
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   & #urlbar-container[breakout="true"]:has(#urlbar[zen-floating-urlbar="true"]) {
     --urlbar-container-height: 36px !important;
-    --urlbar-height: 38px !important;
+    --urlbar-height: 36px !important;
   }
 
   & #nav-bar {
@@ -114,6 +114,11 @@
 
   & #zen-sidebar-top-buttons {
     margin: calc(var(--zen-toolbox-padding) / 2) 0;
+
+    &[overflowing] .toolbarbutton-1 {
+      --toolbarbutton-padding-outer: 0px;
+    }
+
     :root[zen-right-side="true"]:not([zen-window-buttons-reversed="true"]) & {
       margin-top: 0;
     }
@@ -322,6 +327,10 @@
 
     &[zen-empty-tab] {
       display: none;
+    }
+
+    &[drag-image] {
+      border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
     }
 
     /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
@@ -598,7 +607,7 @@
       }
 
       &:is([open], [checked]) {
-        background: var(--toolbarbutton-active-background) !important;
+        background: var(--toolbarbutton-background-color-hover) !important;
         & image,
         label {
           background: transparent !important;
@@ -606,7 +615,7 @@
       }
 
       &:hover {
-        background: var(--toolbarbutton-hover-background);
+        background: var(--toolbarbutton-background-color-hover);
         & image,
         label {
           background: transparent !important;
@@ -1054,7 +1063,6 @@
 
 #tabs-newtab-button {
   display: none;
-  font-weight: 500;
   -moz-user-focus: ignore !important;
 }
 
@@ -1264,10 +1272,6 @@
     left: calc(var(--indicator-left) + 2 * var(--zen-drag-indicator-height) + 4px);
     width: calc(var(--indicator-width) - 2 * var(--zen-drag-indicator-height) - 4px);
     height: var(--zen-drag-indicator-height);
-    transition:
-      top 0.05s ease-out,
-      left 0.05s ease-out,
-      width 0.05s ease-out;
 
     &::before {
       left: calc(-2 * var(--zen-drag-indicator-height));
@@ -1280,10 +1284,6 @@
     top: calc(var(--indicator-top) + 2 * var(--zen-drag-indicator-height) + 4px);
     height: calc(var(--indicator-height) - 2 * var(--zen-drag-indicator-height) - 4px);
     width: var(--zen-drag-indicator-height);
-    transition:
-      top 0.1s ease-out,
-      left 0.1s ease-out,
-      height 0.1s ease-out;
 
     &::before {
       top: calc(-2 * var(--zen-drag-indicator-height));
@@ -1337,7 +1337,7 @@
   }
 }
 
-#tabs-newtab-button:not([in-urlbar="true"]) label,
+#tabs-newtab-button:not([in-urlbar="true"]),
 .zen-current-workspace-indicator-name {
   color: color-mix(in srgb, currentColor 70%, transparent);
 }

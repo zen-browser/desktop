@@ -22,6 +22,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
   false
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "syncNormalTabs",
+  "zen.spaces-sync.normal-tabs",
+  false
+);
+
 /**
  * Debug logging for the whole Spaces sync pipeline.
  *
@@ -258,19 +265,31 @@ class nsZenSpacesSyncModel {
 
   /* Mark: projections */
 
-  #isSyncableTab(tabData) {
+  #isTabRecordMaterial(tabData) {
     return !!(
       tabData &&
       tabData.zenSyncId &&
-      (tabData.pinned || tabData.zenEssential) &&
       !tabData.zenIsEmpty &&
       !tabData.zenIsGlance &&
       !tabData.zenLiveFolderItemId
     );
   }
 
+  #isSyncableTab(tabData) {
+    return (
+      this.#isTabRecordMaterial(tabData) &&
+      (!!tabData.pinned || !!tabData.zenEssential || lazy.syncNormalTabs)
+    );
+  }
+
   #tabIdentity(tabData) {
-    const initial = tabData._zenPinnedInitialState;
+    // Pin identity freezes url/title at pin time. A normal tab's identity
+    // follows its live entry (a leftover initial state from a past pin must
+    // not shadow it).
+    const initial =
+      tabData.pinned || tabData.zenEssential
+        ? tabData._zenPinnedInitialState
+        : null;
     let url = initial?.entry?.url;
     let title = initial?.entry?.title;
     if (!url || url === "about:blank") {
@@ -300,64 +319,93 @@ class nsZenSpacesSyncModel {
 
   /**
    * Builds the ordered child id list for one parent (a space's pinned
-   * section or a folder). Tabs and splits are ordered by their position in
-   * the collected tab list; folders are spliced in next to their recorded
-   * previous sibling.
+   * section or a folder) from the collected tab list, which is in strip
+   * order.
    *
-   * @param {object} root0
-   * @param {Array<object>} root0.tabs
-   * @param {Array<object>} root0.folders
-   * @param {Set<string>} root0.splitIds
-   * @param {Map<string, ?string>} root0.splitParents
-   * @param {Map<string, ?string>} root0.splitWs
-   * @param {object} root0.scope
+   * @param {object} ctx - The projection context.
+   * @param {{space?: string, folder?: string}} scope
    */
-  #childSequence({ tabs, folders, splitIds, splitParents, splitWs, scope }) {
+  #childSequence(ctx, scope) {
     const seq = [];
-    const seenSplits = new Set();
-    for (const tab of tabs) {
+    const seen = new Set();
+    const push = id => {
+      if (!seen.has(id)) {
+        seen.add(id);
+        seq.push(id);
+      }
+    };
+    for (const tab of ctx.allTabs) {
       const groupId = tab.groupId || null;
-      if (groupId && splitIds.has(groupId)) {
+      if (!groupId) {
         if (
-          !seenSplits.has(groupId) &&
-          scope.matchSplit(
-            splitParents.get(groupId) ?? null,
-            splitWs.get(groupId) ?? null
-          )
+          scope.space &&
+          !tab.zenEssential &&
+          (tab.zenWorkspace || null) === scope.space &&
+          ctx.syncableTabIds.has(tab.zenSyncId)
         ) {
-          seenSplits.add(groupId);
-          seq.push(groupId);
+          push(tab.zenSyncId);
         }
         continue;
       }
-      if (scope.matchTab(tab, groupId)) {
-        seq.push(tab.zenSyncId);
-      }
-    }
-    for (const folder of folders) {
-      if (!scope.matchFolder(folder)) {
+      if (scope.folder && groupId === scope.folder) {
+        if (ctx.syncableTabIds.has(tab.zenSyncId)) {
+          push(tab.zenSyncId);
+        }
         continue;
       }
-      let index = seq.length;
-      const prev = folder.prevSiblingInfo;
-      if (!prev || prev.type === "start") {
-        // No stored sibling means the folder is the first child of its
-        // container (the section rebuild on startup places content before
-        // the fake start element, so the first item has no sibling at all).
-        index = 0;
-      } else if (prev.id) {
-        const at = seq.indexOf(prev.id);
-        if (at !== -1) {
-          index = at + 1;
-        } else if (prev.type === "tab") {
-          // An unsynced tab sibling (empty placeholders, live folder items)
-          // always sits at the start of its container.
-          index = 0;
+      if (ctx.splitIds.has(groupId) || ctx.splitParents.has(groupId)) {
+        const parent = ctx.splitParents.get(groupId) ?? null;
+        const isDirect = scope.folder ? parent === scope.folder : !parent;
+        if (isDirect) {
+          if (
+            ctx.splitIds.has(groupId) &&
+            (!scope.space || (ctx.splitWs.get(groupId) ?? null) === scope.space)
+          ) {
+            push(groupId);
+          }
+        } else if (parent) {
+          const child = this.#scopeChildFolder(ctx, scope, parent);
+          if (child) {
+            push(child);
+          }
+        }
+        continue;
+      }
+      if (ctx.folderById.has(groupId)) {
+        const child = this.#scopeChildFolder(ctx, scope, groupId);
+        if (child) {
+          push(child);
         }
       }
-      seq.splice(index, 0, folder.id);
     }
     return seq;
+  }
+
+  /**
+   * Walks a folder's parent chain up to the direct child of the given
+   * scope, or null when the chain leads somewhere else.
+   *
+   * @param {object} ctx - The projection context.
+   * @param {{space?: string, folder?: string}} scope
+   * @param {string} folderId
+   * @returns {?string}
+   */
+  #scopeChildFolder(ctx, scope, folderId) {
+    // The seen set only guards against a corrupt parentId cycle.
+    const seen = new Set();
+    let current = ctx.folderById.get(folderId);
+    while (current && !seen.has(current.id)) {
+      seen.add(current.id);
+      const parentId = current.parentId || null;
+      if (scope.folder ? parentId === scope.folder : !parentId) {
+        if (scope.space && (current.workspaceId || null) !== scope.space) {
+          return null;
+        }
+        return current.id;
+      }
+      current = parentId ? ctx.folderById.get(parentId) : null;
+    }
+    return null;
   }
 
   /**
@@ -368,11 +416,13 @@ class nsZenSpacesSyncModel {
    * @param {object} sidebar
    */
   #projectionContext(sidebar) {
-    const tabs = (sidebar.tabs || []).filter(t => this.#isSyncableTab(t));
+    const allTabs = sidebar.tabs || [];
+    const tabs = allTabs.filter(t => this.#isSyncableTab(t));
     const folders = (sidebar.folders || []).filter(
       f => f?.id && !f.splitViewGroup
     );
     const folderIds = new Set(folders.map(f => f.id));
+    const folderById = new Map(folders.map(f => [f.id, f]));
     const allSplits = (sidebar.splitViewData || []).filter(g => g?.groupId);
     const splitParents = new Map();
     for (const entry of sidebar.folders || []) {
@@ -406,7 +456,18 @@ class nsZenSpacesSyncModel {
       }
       return folderIds.has(groupId) ? groupId : null;
     };
-    return { tabs, folders, splits, splitIds, splitParents, splitWs, folderOf };
+    return {
+      allTabs,
+      tabs,
+      folders,
+      folderById,
+      syncableTabIds,
+      splits,
+      splitIds,
+      splitParents,
+      splitWs,
+      folderOf,
+    };
   }
 
   /**
@@ -431,6 +492,7 @@ class nsZenSpacesSyncModel {
             create: true,
           }),
           essential,
+          pinned: !!(tab.pinned || tab.zenEssential),
           workspaceUuid: essential ? null : tab.zenWorkspace || null,
           folderId: ctx.folderOf(tab.groupId || null),
           staticLabel:
@@ -452,8 +514,52 @@ class nsZenSpacesSyncModel {
     const map = new Map();
     const pending = new Set();
     const ctx = this.#projectionContext(sidebar);
-    const { tabs, folders, splits, splitIds, splitParents, splitWs } = ctx;
+    const spaces = sidebar.spaces || [];
 
+    this.#collectHeldIds(ctx, sidebar, pending);
+    this.#projectContainers(map);
+    this.#projectSpaces(map, ctx, spaces);
+    this.#projectFolders(map, ctx, pending);
+    this.#projectTabs(map, ctx);
+    this.#projectSplits(map, ctx);
+    this.#projectLayout(map, ctx, spaces);
+
+    this.#cache = { stamp, map, pending };
+    return map;
+  }
+
+  /**
+   * Items excluded only by the normal-tabs option are held back, not
+   * deleted. Flipping the option off must not tombstone them remotely.
+   *
+   * @param {object} ctx - The projection context.
+   * @param {object} sidebar - The collected sidebar data.
+   * @param {Set<string>} pending - Receives the held-back ids.
+   */
+  #collectHeldIds(ctx, sidebar, pending) {
+    if (lazy.syncNormalTabs) {
+      return;
+    }
+    const held = new Set();
+    for (const tab of ctx.allTabs) {
+      if (this.#isTabRecordMaterial(tab) && !this.#isSyncableTab(tab)) {
+        held.add(tab.zenSyncId);
+        pending.add(tab.zenSyncId);
+      }
+    }
+    for (const split of sidebar.splitViewData || []) {
+      if (
+        split?.groupId &&
+        !ctx.splitIds.has(split.groupId) &&
+        Array.isArray(split.tabs) &&
+        split.tabs.some(id => held.has(id))
+      ) {
+        pending.add(split.groupId);
+      }
+    }
+  }
+
+  #projectContainers(map) {
     for (const identity of lazy.ContextualIdentityService.getPublicIdentities()) {
       if (!identity.name) {
         continue;
@@ -474,8 +580,9 @@ class nsZenSpacesSyncModel {
         },
       });
     }
+  }
 
-    const spaces = sidebar.spaces || [];
+  #projectSpaces(map, ctx, spaces) {
     for (const space of spaces) {
       if (!space?.uuid) {
         continue;
@@ -491,26 +598,14 @@ class nsZenSpacesSyncModel {
           containerGuid: this.guidForContextId(space.containerTabId, {
             create: true,
           }),
-          children: this.#childSequence({
-            tabs,
-            folders,
-            splitIds,
-            splitParents,
-            splitWs,
-            scope: {
-              matchTab: (t, groupId) =>
-                !groupId &&
-                !t.zenEssential &&
-                (t.zenWorkspace || null) === uuid,
-              matchSplit: (parent, ws) => !parent && ws === uuid,
-              matchFolder: f => !f.parentId && (f.workspaceId || null) === uuid,
-            },
-          }),
+          children: this.#childSequence(ctx, { space: uuid }),
         },
       });
     }
+  }
 
-    for (const folder of folders) {
+  #projectFolders(map, ctx, pending) {
+    for (const folder of ctx.folders) {
       const fid = folder.id;
       let live = null;
       if (folder.isLiveFolder) {
@@ -533,59 +628,50 @@ class nsZenSpacesSyncModel {
           workspaceUuid: folder.workspaceId || null,
           parentFolderId: folder.parentId || null,
           live,
-          children: this.#childSequence({
-            tabs,
-            folders,
-            splitIds,
-            splitParents,
-            splitWs,
-            scope: {
-              matchTab: (t, groupId) => groupId === fid,
-              matchSplit: parent => parent === fid,
-              matchFolder: f => f.parentId === fid,
-            },
-          }),
+          children: this.#childSequence(ctx, { folder: fid }),
         },
       });
     }
+  }
 
-    this.#projectTabs(map, ctx);
-
-    for (const split of splits) {
+  #projectSplits(map, ctx) {
+    const tabById = new Map(ctx.tabs.map(t => [t.zenSyncId, t]));
+    for (const split of ctx.splits) {
+      const member = tabById.get(split.tabs[0]);
       map.set(split.groupId, {
         kind: RECORD_KINDS.SPLIT,
         data: {
           splitId: split.groupId,
           gridType: split.gridType || "grid",
+          pinned: !!(member?.pinned || member?.zenEssential),
           tabs: [...split.tabs],
-          workspaceUuid: splitWs.get(split.groupId) ?? null,
-          folderId: splitParents.get(split.groupId) || null,
+          workspaceUuid: ctx.splitWs.get(split.groupId) ?? null,
+          folderId: ctx.splitParents.get(split.groupId) || null,
         },
       });
     }
+  }
 
-    if (spaces.length) {
-      const essentials = {};
-      for (const tab of tabs) {
-        if (!tab.zenEssential) {
-          continue;
-        }
-        const key =
-          this.guidForContextId(tab.userContextId, { create: true }) ||
-          "default";
-        (essentials[key] ||= []).push(tab.zenSyncId);
+  #projectLayout(map, ctx, spaces) {
+    if (!spaces.length) {
+      return;
+    }
+    const essentials = {};
+    for (const tab of ctx.tabs) {
+      if (!tab.zenEssential) {
+        continue;
       }
-      map.set(LAYOUT_RECORD_ID, {
-        kind: RECORD_KINDS.LAYOUT,
-        data: {
-          spaces: spaces.map(s => s.uuid).filter(Boolean),
-          essentials,
-        },
-      });
+      const key =
+        this.guidForContextId(tab.userContextId, { create: true }) || "default";
+      (essentials[key] ||= []).push(tab.zenSyncId);
     }
-
-    this.#cache = { stamp, map, pending };
-    return map;
+    map.set(LAYOUT_RECORD_ID, {
+      kind: RECORD_KINDS.LAYOUT,
+      data: {
+        spaces: spaces.map(s => s.uuid).filter(Boolean),
+        essentials,
+      },
+    });
   }
 
   /**
@@ -637,11 +723,23 @@ class nsZenSpacesSyncModel {
   }
 
   /**
+   * Before the session file is read the sidebar reads as empty. Diffing that
+   * against the uploaded snapshot would tombstone every synced item. An
+   * initialized sidebar always holds at least one space.
+   */
+  #sidebarReady() {
+    return !!lazy.ZenSessionStore.getSidebarData()?.spaces?.length;
+  }
+
+  /**
    * Changes = diff between the current projections and the last state the
    * server acknowledged. Ids present locally with different content are
    * modified; ids only present in the uploaded snapshot are deletions.
    */
   computeChangedIDs() {
+    if (!this.#sidebarReady()) {
+      return {};
+    }
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();
@@ -670,6 +768,9 @@ class nsZenSpacesSyncModel {
   }
 
   hasPendingChanges() {
+    if (!this.#sidebarReady()) {
+      return false;
+    }
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();

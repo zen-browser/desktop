@@ -8,7 +8,8 @@ import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.m
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  TabStateCache:
+    "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenShareClient: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
   ZenShareError: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
 });
@@ -24,7 +25,15 @@ const FOLDER_ICON_RE = /^chrome:\/\//;
  */
 class nsZenShareManager extends nsZenDOMOperatedFeature {
   init() {
-    this.#insertSplitViewMenuItem();
+    if (!this.enabled) {
+      for (const id of [
+        "context_zenShareWorkspace",
+        "context_zenShareFolder",
+      ]) {
+        document.getElementById(id)?.setAttribute("hidden", "true");
+      }
+      return;
+    }
     delayedStartupPromise.then(() => {
       gBrowser.addTabsProgressListener({
         onLocationChange: (browser, webProgress, request, aLocation) => {
@@ -32,6 +41,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         },
       });
     });
+  }
+
+  get enabled() {
+    return !gZenWorkspaces.privateWindowOrDisabled;
   }
 
   // Mark: sharing
@@ -93,6 +106,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   async #createAndCopyLink(item) {
+    if (!this.enabled) {
+      return;
+    }
     if (!(await this.#confirmShare())) {
       return;
     }
@@ -414,7 +430,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       return tab;
     });
     gZenViewSplitter.splitTabs(tabs, "grid", 0);
-    gBrowser.removeTab(shareTab, { closeWindowWithLastTab: false });
+    gBrowser.removeTab(shareTab, {
+      closeWindowWithLastTab: false,
+      skipSessionStore: true,
+    });
     // Shake the new split group in the sidebar.
     const group = tabs[0]?.group;
     if (group?.hasAttribute("split-view-group")) {
@@ -422,8 +441,8 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         gZenUIManager.motion
           .animate(
             group,
-            { x: [-14, 0] },
-            { type: "spring", bounce: 0.8, duration: 1.2 }
+            { x: [-32, 0] },
+            { type: "spring", bounce: 0.5, duration: 1.5 }
           )
           .then(() => {
             group.style.removeProperty("transform");
@@ -543,7 +562,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         gZenUIManager.showToast("zen-share-imported-toast");
         const tab = gBrowser.getTabForBrowser(browser);
         if (tab) {
-          gBrowser.removeTab(tab, { closeWindowWithLastTab: false });
+          gBrowser.removeTab(tab, {
+            closeWindowWithLastTab: false,
+            skipSessionStore: true,
+          });
         }
       } catch (e) {
         console.error("ZenShare: could not import share:", e);
@@ -794,37 +816,6 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       }
     }
     return tab;
-  }
-
-  // Mark: split view context menu
-
-  #insertSplitViewMenuItem() {
-    const fragment = window.MozXULElement.parseXULToFragment(`
-      <menuitem id="context_zenShareSplitView"
-                data-lazy-l10n-id="zen-share-split-view"
-                hidden="true"/>
-    `);
-    document.getElementById("context_moveTabToSplitView").before(fragment);
-    const menuItem = document.getElementById("context_zenShareSplitView");
-    menuItem.addEventListener("command", () => {
-      const group = TabContextMenu.contextTab?.group;
-      if (group?.hasAttribute("split-view-group")) {
-        this.shareSplitView(group);
-      }
-    });
-    document
-      .getElementById("tabContextMenu")
-      .addEventListener("popupshowing", () => {
-        const contextTab = TabContextMenu.contextTab;
-        const selectedTabs = contextTab?.multiselected
-          ? gBrowser.selectedTabs
-          : [contextTab];
-        menuItem.hidden =
-          !contextTab ||
-          !selectedTabs.every(tab =>
-            tab?.group?.hasAttribute("split-view-group")
-          );
-      });
   }
 }
 

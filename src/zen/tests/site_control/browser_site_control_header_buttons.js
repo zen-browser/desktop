@@ -65,7 +65,7 @@ add_task(async function test_bookmark_button_reflects_starred_state() {
       url: HTTPS_PAGE,
       title: "test-bookmark",
     });
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => BookmarkingUI.star?.hasAttribute("starred"),
       "BookmarkingUI picks up the new bookmark"
     );

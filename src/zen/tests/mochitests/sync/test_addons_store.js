@@ -12,6 +12,12 @@ const { Service } = ChromeUtils.importESModule(
 const { SyncedRecordsTelemetry } = ChromeUtils.importESModule(
   "resource://services-sync/telemetry.sys.mjs"
 );
+const { EnterprisePolicyTesting } = ChromeUtils.importESModule(
+  "resource://testing-common/EnterprisePolicyTesting.sys.mjs"
+);
+const { AppConstants } = ChromeUtils.importESModule(
+  "resource://gre/modules/AppConstants.sys.mjs"
+);
 
 const HTTP_PORT = 8888;
 
@@ -797,6 +803,39 @@ add_task(async function test_wipe_and_install() {
 
   await promiseStopServer(server);
 });
+
+// The Extensions policy is implemented in the Firefox-specific Policies module.
+add_task(
+  { skip_if: () => AppConstants.MOZ_APP_NAME != "firefox" },
+  async function test_locked_by_policy() {
+    _("Ensure sync can't disable or uninstall an add-on locked by policy.");
+
+    let addon = await installAddon(XPIS.test_addon1, reconciler);
+    await EnterprisePolicyTesting.setupPolicyEngineWithJson({
+      policies: { Extensions: { Locked: [ID1] } },
+    });
+
+    let countTelemetry = new SyncedRecordsTelemetry();
+    let record = createRecordForThisApp(addon.syncGUID, ID1, false, false);
+    let failed = await store.applyIncomingBatch([record], countTelemetry);
+    Assert.equal(0, failed.length);
+    addon = await AddonManager.getAddonByID(ID1);
+    Assert.ok(!addon.userDisabled, "locked add-on was not disabled");
+
+    record = createRecordForThisApp(addon.syncGUID, ID1, true, true);
+    failed = await store.applyIncomingBatch([record], countTelemetry);
+    Assert.equal(0, failed.length);
+    addon = await AddonManager.getAddonByID(ID1);
+    Assert.ok(addon, "locked add-on was not uninstalled");
+
+    await store.wipe();
+    addon = await AddonManager.getAddonByID(ID1);
+    Assert.ok(addon, "locked add-on survived a wipe");
+
+    await EnterprisePolicyTesting.setupPolicyEngineWithJson("");
+    await uninstallAddon(addon, reconciler);
+  }
+);
 
 // STR for what this is testing:
 // * Either:

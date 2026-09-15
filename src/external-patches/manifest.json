@@ -8,6 +8,11 @@
     "name": "Native MacOS popovers fix"
   },
   {
+    "type": "phabricator",
+    "id": "D323933",
+    "name": "Issue 15123"
+  },
+  {
     "type": "local",
     // TODO: Convert into https://phabricator.services.mozilla.com/D298079
     //    once it gets accepted.
@@ -43,17 +48,8 @@
   },
   {
     "type": "phabricator",
-    "id": "D320897",
-    "name": "Bug 2011236"
-  },
-  {
-    "type": "phabricator",
     "id": "D321446",
     "name": "Issue 14710"
-  },
-  {
-    "type": "local",
-    "path": "firefox/css_corner_shape_rendering.patch"
   },
   {
     "type": "local",

@@ -165,9 +165,7 @@ window.gZenCompactModeManager = {
   },
 
   get shouldBeCompact() {
-    return !document.documentElement
-      .getAttribute("chromehidden")
-      ?.includes("toolbar");
+    return !document.documentElement.hasAttribute("popup-window");
   },
 
   set preference(value) {
@@ -477,9 +475,9 @@ window.gZenCompactModeManager = {
     document.documentElement.setAttribute("zen-compact-animating", "true");
     return new Promise(resolve => {
       // We need to set the splitter width before hiding it
-      let splitterWidth = document
-        .getElementById("zen-sidebar-splitter")
-        .getBoundingClientRect().width;
+      let splitterWidth = window.windowUtils.getBoundsWithoutFlushing(
+        document.getElementById("zen-sidebar-splitter")
+      ).width;
       const isCompactMode = this.preference;
       const canHideSidebar = this.canHideSidebar;
       let canAnimate =
@@ -543,7 +541,7 @@ window.gZenCompactModeManager = {
                 ease: "easeIn",
                 type: "spring",
                 bounce: 0,
-                duration: 0.12,
+                duration: 0.1,
               }
             )
             .then(() => {
@@ -599,7 +597,7 @@ window.gZenCompactModeManager = {
                 ease: "easeOut",
                 type: "spring",
                 bounce: 0,
-                duration: 0.12,
+                duration: 0.1,
               }
             )
             .then(() => {
@@ -864,7 +862,6 @@ window.gZenCompactModeManager = {
               "supress-primary-adjustment"
             ) === "true" &&
               gZenVerticalTabsManager._hasSetSingleToolbar) ||
-            this._hasHoveredUrlbar ||
             this._ignoreNextHover ||
             (event.type === "dragleave" &&
               event.explicitOriginalTarget !== target &&
@@ -877,7 +874,10 @@ window.gZenCompactModeManager = {
             return;
           }
 
-          if (this.hoverableElements[i].keepHoverDuration) {
+          if (
+            this.hoverableElements[i].keepHoverDuration &&
+            !this._hasHoveredUrlbar
+          ) {
             this.flashElement(
               target,
               this.hoverableElements[i].keepHoverDuration,

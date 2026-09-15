@@ -303,7 +303,7 @@
   }
 }
 
-#main-window[windowtype="navigator:browser"]:not([chromehidden~='toolbar']) {
+#main-window[windowtype="navigator:browser"]:not([popup-window]) {
   min-height: 495px !important;
 
   @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and

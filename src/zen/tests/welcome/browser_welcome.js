@@ -95,6 +95,12 @@ add_task(async function test_Welcome_Steps() {
   await goNextWelcomePage("zen-generic-next");
   ok(true, "Welcome Search Step Test Finished");
 
+  await TestUtils.waitForCondition(
+    () => currentPageContent()?.getAttribute("page") === "essentials",
+    "the ad blocking page to be skipped when uBlock is unavailable"
+  );
+  ok(true, "Welcome Block Ads Step Test Finished");
+
   const essentials = currentPageContent().querySelectorAll(
     "#zen-welcome-essentials .zen-welcome-essential"
   );

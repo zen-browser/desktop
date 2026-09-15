@@ -143,8 +143,10 @@ add_task(async function test_Hover_SublabelChangesWithAccelKey() {
       type: "mouseover",
     });
 
+    // Hovering without Accel leaves the default sublabel in place, so
+    // _setResetPinSublabel intentionally skips redundant setArgs calls.
     Assert.equal(
-      sublabelArgs.at(-1),
+      document.l10n.getAttributes(label).args.tabSubtitle,
       "zen-default-pinned",
       "Sublabel should show default text on hover without Accel"
     );

@@ -110,7 +110,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
     button.setAttribute("zen-workspace-id", workspace.uuid);
     button.setAttribute("context", "zenWorkspaceMoreActions");
     const icon = document.createXULElement("label");
-    icon.setAttribute("class", "zen-workspace-icon");
+    icon.setAttribute("class", "zen-workspace-icon no-squircles");
     const isSvgIcon = workspace.icon && workspace.icon.endsWith(".svg");
     if (gZenWorkspaces.workspaceHasIcon(workspace)) {
       if (isSvgIcon) {

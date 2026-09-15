@@ -153,7 +153,7 @@ skip-if = [
 
 ["browser_477657.js"]
 skip-if = [
-  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && opt && nova", # Bug 2057857
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64'", # Bug 2057857
   "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11'", # Bug 1610668
 ]
 
@@ -184,7 +184,7 @@ skip-if = [
 
 ["browser_524745.js"]
 skip-if = [
-  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && debug && nova", # Bug 2057858
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64'", # Bug 2057858
 ]
 
 ["browser_528776.js"]

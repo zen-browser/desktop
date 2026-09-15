@@ -1698,12 +1698,9 @@ window.gZenVerticalTabsManager = {
         l10nKey = "zen-workspaces-panel-change-name";
       }
 
-      let title = "Rename";
       const msgs = await document.l10n.formatMessages([{ id: l10nKey }]);
-      const labelAttr = msgs?.[0]?.attributes?.find(a => a.name === "label");
-      if (labelAttr?.value) {
-        title = labelAttr.value.replace(/…|\.\.\./g, "").trim();
-      }
+      const labelAttr = msgs[0].attributes.find(a => a.name === "label");
+      const title = labelAttr.value.replace(/…|\.\.\./g, "").trim();
 
       const confirmed = Services.prompt.prompt(
         window,

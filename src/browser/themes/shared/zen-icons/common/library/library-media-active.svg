@@ -1,0 +1,74 @@
+#filter dumbComments emptyLines substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<svg class="zen-media-icon" width="28" height="28" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @keyframes zenMediaBackBounce {
+      0% { transform: translate(54.799px, 57.743px) rotate(-7deg) translate(-46.27px, -36.445px); animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1); }
+      24.41% { transform: translate(57.299px, 65.243px) rotate(3deg) translate(-46.27px, -36.445px); animation-timing-function: cubic-bezier(0.3, 0, 0.8, 1); }
+      43.67% { transform: translate(56.16px, 47.803px) rotate(-18.58deg) translate(-46.27px, -36.445px); animation-timing-function: cubic-bezier(0.16, 0, 0.8, 1); }
+      78.21% { transform: translate(55.25px, 54.3px) rotate(-3.2deg) translate(-46.27px, -36.445px); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+      100% { transform: translate(54.799px, 57.743px) rotate(-7deg) translate(-46.27px, -36.445px); }
+    }
+    @keyframes zenMediaFrontBounce {
+      0% { transform: translate(78.827px, 77.737px) rotate(0deg) translate(-46.27px, -36.445px); animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1); }
+      24.41% { transform: translate(78.827px, 80.737px) rotate(0deg) translate(-46.27px, -36.445px); animation-timing-function: cubic-bezier(0.4, 0, 0.64, 1); }
+      55.88% { transform: translate(75.827px, 62.61px) rotate(9.32deg) translate(-46.27px, -36.445px); animation-timing-function: cubic-bezier(0.25, 0, 0.75, 1); }
+      88.24% { transform: translate(78.827px, 77.737px) rotate(0deg) translate(-46.27px, -36.445px); animation-timing-function: linear; }
+      100% { transform: translate(78.827px, 77.737px) rotate(0deg) translate(-46.27px, -36.445px); }
+    }
+    @keyframes zenMediaSunBounce {
+      0% { transform: translate(64.76px, 67.886px) translate(-9.914px, -9.984px); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 1); }
+      24.41% { transform: translate(64.76px, 73.606px) translate(-9.914px, -9.984px); animation-timing-function: linear; }
+      35.29% { transform: translate(64.76px, 73.606px) translate(-9.914px, -9.984px); animation-timing-function: cubic-bezier(0.35, 0, 0.76, 0.72); }
+      55.88% { transform: translate(61.737px, 51.974px) translate(-9.914px, -9.984px); animation-timing-function: cubic-bezier(0.21, -0.71, 0.45, 1); }
+      100% { transform: translate(64.76px, 67.886px) translate(-9.914px, -9.984px); }
+    }
+    .zen-media-back-card { animation: zenMediaBackBounce 0.583s forwards; }
+    .zen-media-front-card { animation: zenMediaFrontBounce 0.583s forwards; }
+    .zen-media-sun { animation: zenMediaSunBounce 0.583s forwards; }
+  </style>
+  <defs>
+    <mask id="zen-media-mask">
+      <rect x="-10" y="-10" width="148" height="148" fill="white"/>
+      <g class="zen-media-front-card-mask" transform="translate(78.827, 77.737) translate(-46.27, -36.445)">
+        <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
+      </g>
+    </mask>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back">
+      <stop offset="0" stop-color="context-fill"/>
+      <stop offset="1" stop-color="context-stroke"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front">
+      <stop offset="0" stop-color="context-fill"/>
+      <stop offset="1" stop-color="context-stroke"/>
+    </linearGradient>
+  </defs>
+  <g class="zen-media-back-wrapper" mask="url(#zen-media-mask)">
+    <g class="zen-media-back-card" transform="translate(54.799, 57.743) rotate(-7) translate(-46.27, -36.445)">
+      <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
+            fill="context-fill" fill-opacity="1"/>
+      <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
+            fill="url(#zen-media-grad-back)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+      <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
+            fill="none" stroke="context-stroke" stroke-width="7.1"/>
+    </g>
+  </g>
+  <g class="zen-media-front-card" transform="translate(78.827, 77.737) translate(-46.27, -36.445)">
+    <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
+          fill="context-fill" fill-opacity="1"/>
+    <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
+          fill="url(#zen-media-grad-front)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+    <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
+      <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
+            fill="context-stroke"/>
+    </g>
+    <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
+          fill="none" stroke="context-stroke" stroke-width="7.1"/>
+  </g>
+  <g class="zen-media-sun" transform="translate(64.76, 67.886) translate(-9.914, -9.984)">
+    <circle class="zen-media-sun-path" cx="9.914" cy="9.984" r="9.914"
+            fill="context-stroke"/>
+  </g>
+</svg>

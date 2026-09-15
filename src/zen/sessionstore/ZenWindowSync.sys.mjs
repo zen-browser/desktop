@@ -383,6 +383,9 @@ class nsZenWindowSync {
 
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
+    if (aEvent.target?.closest?.("zen-library")) {
+      return;
+    }
     if (
       !window.gZenStartup.isReady ||
       !window.gZenWorkspaces?.shouldHaveWorkspaces ||

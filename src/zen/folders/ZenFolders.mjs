@@ -1712,6 +1712,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     tabsContainer.style.overflowY = "hidden";
 
     const groupStart = group.groupStartElement;
+    if (!group.hasAttribute("has-active")) {
+      tabsContainer.offsetHeight;
+      const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
+      groupStart.style.marginTop = `${-(collapsedHeight + 4)}px`;
+    }
     const itemsToShow = this.#normalizeGroupItems(group.childGroupsAndTabs);
     const activeFolders = group.childActiveGroups;
 

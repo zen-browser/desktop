@@ -166,7 +166,7 @@
         tab.style.visibility = "hidden";
       }
       this._dropLandingArmed =
-        options.armLanding ?? !args[0]?.fromTabList && this.getDropEffectForTabDrag(event) == "move";
+        options.armLanding ?? (!args[0]?.fromTabList && this.getDropEffectForTabDrag(event) == "move");
       this.ZenDragAndDropService.armDropLanding(this._dropLandingArmed);
     }
 

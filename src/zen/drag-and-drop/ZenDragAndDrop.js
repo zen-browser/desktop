@@ -147,11 +147,12 @@
         tab = tab.group;
       }
       const shown = options.dragImageSource ?? tab;
-      const draggingTabs = options.dragImageSource
-        ? [shown]
-        : tab.multiselected
-          ? gBrowser.selectedTabs
-          : [tab];
+      let draggingTabs;
+      if (options.dragImageSource) {
+        draggingTabs = [shown];
+      } else {
+        draggingTabs = tab.multiselected ? gBrowser.selectedTabs : [tab];
+      }
       const { offsetX, offsetY } = this.#getDragImageOffset(
         event,
         shown,
@@ -166,7 +167,8 @@
       }
       this.ZenDragAndDropService.armDropLanding(
         options.armLanding ??
-          (!options.fromTabList && this.getDropEffectForTabDrag(event) == "move")
+          (!options.fromTabList &&
+            this.getDropEffectForTabDrag(event) == "move")
       );
     }
 

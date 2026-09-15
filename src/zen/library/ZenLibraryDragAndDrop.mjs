@@ -314,7 +314,8 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
       parent: strip,
       left: inset,
       width: stripRect.width - 2 * inset,
-      top: (dropBefore ? rect.top : rect.bottom) - stripRect.top + strip.scrollTop,
+      top:
+        (dropBefore ? rect.top : rect.bottom) - stripRect.top + strip.scrollTop,
     });
   }
 }

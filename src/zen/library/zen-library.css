@@ -39,7 +39,7 @@ zen-library {
   top: 0;
   bottom: 0;
   left: 0;
-  width: clamp(608px, var(--zen-library-content-width, 0px), 95vw);
+  width: clamp(418px, var(--zen-library-content-width, 0px), 95vw);
   display: flex;
   z-index: 9;
 
@@ -58,7 +58,7 @@ zen-library {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-width: 160px;
+    min-width: 110px;
     height: 100%;
     background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08));
     box-shadow: 9px 0 17px rgba(0, 0, 0, 0.04);
@@ -204,7 +204,7 @@ zen-library[transitioning] #zen-library-content {
   }
 }
 
-@media (max-height: 400px) {
+@media (max-height: 275px) {
   .zen-library-tab {
     & label {
       display: none;
@@ -261,7 +261,7 @@ zen-library[transitioning] #zen-library-content {
   font-size: 14px;
 
   &:not([data-section="spaces"]) {
-    max-width: calc(608px - 160px);
+    max-width: calc(418px - 110px);
   }
 }
 

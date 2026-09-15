@@ -800,3 +800,5 @@
     display: none;
   }
 }
+
+%include zen-ctrltab-panel.css

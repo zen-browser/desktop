@@ -32,7 +32,6 @@ export class ZenLibrary extends MozLitElement {
   static instance = null;
   #progress = 0;
 
-  #springTarget = 0;
   #springControls = null;
 
   #toolboxWidth = 0;
@@ -158,7 +157,7 @@ export class ZenLibrary extends MozLitElement {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
-        ZenLibrary.showHistory();
+        ZenLibrary.toggle("history");
       });
   }
 
@@ -227,14 +226,31 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
-  static toggle() {
+  /**
+   * Opens or closes the library. With a tab id, opens the library on that
+   * tab, switches to it if already open on another, or closes if it is
+   * already the open one. Without one, plainly toggles open and closed.
+   *
+   * @param {string?} [tab] - A section id to open on
+   */
+  static toggle(tab = undefined) {
     if (!Services.prefs.getBoolPref("zen.library.enabled")) {
       return;
     }
 
     const lib = this.getInstance();
-    lib.#springTarget = lib.#springTarget === 1 ? 0 : 1;
-    this.animateProgress(lib.#springTarget);
+    if (tab && tab in lib.zenLibrarySections) {
+      if (lib.#isOpen && lib.activeTab === tab) {
+        this.animateProgress(0);
+      } else if (lib.#isOpen) {
+        lib.activeTab = tab;
+      } else {
+        lib.activeTab = tab;
+        this.animateProgress(1);
+      }
+      return;
+    }
+    this.animateProgress(lib.#isOpen ? 0 : 1);
   }
 
   static async animateProgress(target) {
@@ -279,16 +295,6 @@ export class ZenLibrary extends MozLitElement {
         },
       }
     );
-  }
-
-  static showHistory() {
-    const lib = this.getInstance();
-    this.animateProgress(1);
-
-    const history = lib.zenLibrarySections.history;
-    if (lib.activeTab !== history.id) {
-      lib.activeTab = history.id;
-    }
   }
 
   static async startSwipe() {
@@ -383,7 +389,7 @@ export class ZenLibrary extends MozLitElement {
       this.instance = new ZenLibrary();
       this.instance.style.visibility = "collapse";
       const mountRoot = document.getElementById("zen-main-app-wrapper");
-      mountRoot.prepend(this.instance);
+      mountRoot.append(this.instance);
     }
     return this.instance;
   }

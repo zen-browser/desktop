@@ -1505,8 +1505,76 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   #createAnimation(items, targetState, opts, callback = () => {}) {
     items = Array.isArray(items) ? items : [items];
     return items.map(item =>
-      gZenUIManager.motion.animate(item, targetState, opts).then(callback)
+      this.#animateItem(item, targetState, opts).then(callback)
     );
+  }
+
+  /**
+   * Animates an element to the given target state. An array value is a
+   * [from, to] pair, "auto" endpoints are resolved by measuring and an
+   * empty string animates back to the element's natural value. The final
+   * values are left applied as inline styles.
+   *
+   * @param {Element} item - The element to animate.
+   * @param {object} targetState - Property to value (or [from, to]) map.
+   * @param {object} opts - The animation options.
+   * @param {number} opts.duration - The duration in seconds.
+   * @param {string} opts.ease - The easing name.
+   * @returns {Promise} Resolves when the animation has finished.
+   */
+  async #animateItem(item, targetState, { duration = 0.18, ease } = {}) {
+    const computed = window.getComputedStyle(item);
+    const toCssValue = (prop, value) =>
+      typeof value === "number" && prop !== "opacity"
+        ? `${value}px`
+        : String(value);
+    const measure = prop => {
+      const value = computed[prop];
+      if (value === "auto") {
+        return `${item.getBoundingClientRect()[prop] ?? 0}px`;
+      }
+      return value;
+    };
+    const from = {};
+    const to = {};
+    const finalStyles = new Map();
+    for (const [prop, value] of Object.entries(targetState)) {
+      let [start, end] = Array.isArray(value) ? value : [undefined, value];
+      const cssProp = prop.replace(/[A-Z]/g, c => `-${c.toLowerCase()}`);
+      if (start === undefined || start === "auto") {
+        start = measure(prop);
+      } else {
+        start = toCssValue(prop, start);
+      }
+      if (end === "" || end === "auto") {
+        // Resolve the natural value by clearing any inline override.
+        item.style.removeProperty(cssProp);
+        end = measure(prop);
+        finalStyles.set(cssProp, null);
+      } else {
+        end = toCssValue(prop, end);
+        finalStyles.set(cssProp, end);
+      }
+      from[prop] = start;
+      to[prop] = end;
+    }
+    const animation = item.animate([from, to], {
+      duration: duration * 1000,
+      easing: ease === "easeInOut" ? "ease-in-out" : "ease",
+    });
+    try {
+      await animation.finished;
+    } catch (e) {
+      // The animation was cancelled, leave the element as-is.
+      return;
+    }
+    for (const [cssProp, value] of finalStyles) {
+      if (value === null) {
+        item.style.removeProperty(cssProp);
+      } else {
+        item.style.setProperty(cssProp, value);
+      }
+    }
   }
 
   #calculateHeightShift(tabsContainer, selectedTabs) {
@@ -1526,7 +1594,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   get #folderAnimationDuration() {
-    return this._dontAnimateFolder ? 0 : 0.12;
+    return this._dontAnimateFolder ? 0 : 0.18;
+  }
+
+  get #folderRevealDuration() {
+    return this._dontAnimateFolder ? 0 : 0.22;
   }
 
   async animateCollapse(group) {
@@ -1546,6 +1618,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       splitViewIds,
       activeFoldersIds,
     });
+    if (selectedTabs.length) {
+      tabsContainer.removeAttribute("hidden");
+    }
     const collapsedHeight = this.#calculateHeightShift(
       tabsContainer,
       selectedTabs
@@ -1764,6 +1839,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
       // Set correct margin-top after animation
       const afterAnimate = () => {
+        if (folder.hasAttribute("has-active")) {
+          return;
+        }
         groupStart.style.removeProperty("margin-top");
         this.styleCleanup(groupItems);
         // Trigger the recalculation so that zen returns
@@ -1785,7 +1863,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           {
             marginTop: -(collapsedHeight + 4),
           },
-          { duration: 0.12, ease: "easeInOut" },
+          { duration: this.#folderAnimationDuration, ease: "easeInOut" },
           afterAnimate
         )
       );
@@ -1821,6 +1899,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
           // Set correct margin-top after animation
           const afterAnimate = () => {
+            if (folder.hasAttribute("has-active")) {
+              return;
+            }
             groupStart.style.removeProperty("margin-top");
             this.styleCleanup(groupItems);
             // Trigger the recalculation so that zen returns
@@ -1845,7 +1926,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
               {
                 marginTop: -(collapsedHeight + 4),
               },
-              { duration: 0.12, ease: "easeInOut" },
+              { duration: this.#folderAnimationDuration, ease: "easeInOut" },
               afterAnimate
             ),
           ];
@@ -1870,7 +1951,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           height: 0,
         },
         {
-          duration: 0.12,
+          duration: this.#folderAnimationDuration,
           ease: "easeInOut",
         }
       );
@@ -1899,11 +1980,30 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const selectedTabs = [];
     const splitViewIds = new Set();
     const itemsToHide = [];
+    const newlyActive = new Set();
 
     const groupItems = this.#collectGroupItems(group, {
       selectedTabs,
       splitViewIds,
     });
+
+    if (group.collapsed && selectedTabs.length) {
+      const active = new Set([...(group.activeTabs ?? []), ...selectedTabs]);
+      const tabs = group.tabs.filter(tab => !tab.hasAttribute("zen-empty-tab"));
+      if (
+        tabs.length &&
+        tabs.every(
+          tab =>
+            active.has(tab) ||
+            tab.selected ||
+            tab.multiselected ||
+            tab.hasAttribute("folder-active")
+        )
+      ) {
+        group.collapsed = false;
+        return;
+      }
+    }
 
     for (const tab of selectedTabs) {
       let currentGroup = tab?.group?.hasAttribute("split-view-group")
@@ -1916,6 +2016,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (activeTabs.length) {
           if (currentGroup.collapsed) {
             if (currentGroup.hasAttribute("has-active")) {
+              for (const activeTab of activeTabs) {
+                if (!currentGroup.activeTabs.includes(activeTab)) {
+                  newlyActive.add(activeTab);
+                }
+              }
               // It is important to keep the sequence of elements as in the DOM
               currentGroup.activeTabs = [
                 ...new Set([...currentGroup.activeTabs, ...activeTabs]),
@@ -1944,7 +2049,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
                 {
                   marginTop: 0,
                 },
-                { duration: 0.12, ease: "easeInOut" },
+                { duration: this.#folderAnimationDuration, ease: "easeInOut" },
                 afterMarginTop
               )
             );
@@ -1963,13 +2068,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     const itemsToShow = [];
+    const itemsToReveal = [];
     if (selectedTabs.length) {
       for (let i = 0; i < groupItems.length; i++) {
         const { item, splitViewId } = groupItems[i];
 
         let itemVisible = item.visible;
         if (itemVisible) {
-          itemsToShow.push(item);
+          (newlyActive.has(item) ? itemsToReveal : itemsToShow).push(item);
         }
 
         // Skip selected items
@@ -2003,18 +2109,48 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           height: "",
         },
         {
-          duration: 0.12,
+          duration: this.#folderAnimationDuration,
           ease: "easeInOut",
         }
       ),
+      ...itemsToReveal.flatMap(item => {
+        const state = {
+          opacity: [0, ""],
+          height: [0, ""],
+          minHeight: [0, ""],
+        };
+        const folder = item.group?.hasAttribute("split-view-group")
+          ? item.group.group
+          : item.group;
+        const slidesFromFolder = !(folder?.activeTabs ?? []).some(
+          active =>
+            !newlyActive.has(active) &&
+            active.compareDocumentPosition(item) &
+              Node.DOCUMENT_POSITION_FOLLOWING
+        );
+        if (slidesFromFolder) {
+          const height =
+            item.getBoundingClientRect().height ||
+            (folder?.activeTabs ?? []).reduce(
+              (found, active) => found || active.getBoundingClientRect().height,
+              0
+            );
+          state.transform = [`translateY(-${height}px)`, ""];
+        }
+        return this.#createAnimation(item, state, {
+          duration: this.#folderRevealDuration,
+          ease: "easeInOut",
+        });
+      }),
       ...this.#createAnimation(
         itemsToHide,
         {
           opacity: 0,
           height: 0,
+          minHeight: 0,
         },
         {
-          duration: 0.12,
+          duration: this.#folderAnimationDuration,
           ease: "easeInOut",
         }
       )
@@ -2047,7 +2183,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       {
         marginTop: expand ? 0 : -(heightContainer + 4),
       },
-      { duration: 0.12, ease: "easeInOut" }
+      { duration: this.#folderAnimationDuration, ease: "easeInOut" }
     );
   }
 
@@ -2055,6 +2191,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     items.forEach(item => {
       item.style.removeProperty("opacity");
       item.style.removeProperty("height");
+      item.style.removeProperty("min-height");
     });
   }
 }

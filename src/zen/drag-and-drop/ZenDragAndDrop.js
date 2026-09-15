@@ -158,9 +158,9 @@
       if (tab.hasAttribute("zen-essential")) {
         tab.style.visibility = "hidden";
       }
-      this.ZenDragAndDropService.armDropLanding(
-        !args[0]?.fromTabList && this.getDropEffectForTabDrag(event) == "move"
-      );
+      this._dropLandingArmed =
+        !args[0]?.fromTabList && this.getDropEffectForTabDrag(event) == "move";
+      this.ZenDragAndDropService.armDropLanding(this._dropLandingArmed);
     }
 
     #createDragImageForTabs(movingTabs) {
@@ -907,6 +907,8 @@
 
       this.#dragOverSplit.fakeTab = element;
       this.#dragOverSplit.canDrop = true;
+      // A drop into the split takes the drag image away at once.
+      this.ZenDragAndDropService.armDropLanding(false);
     }
 
     _clearDragOverSplit() {
@@ -914,6 +916,9 @@
         clearTimeout(this.#dragOverSplit.timer);
       }
       this.#dragOverSplit.fakeTab?.remove();
+      if (this.#dragOverSplit.canDrop && this._dropLandingArmed) {
+        this.ZenDragAndDropService.armDropLanding(true);
+      }
 
       this.#dragOverSplit.timer = null;
       this.#dragOverSplit.fakeTab = null;
@@ -1040,16 +1045,38 @@
       }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
-      // A drop into a split merges the tab away; nothing lands on it.
       const toSplit = !!this.#dragOverSplit.canDrop;
+      const placesBefore = new Map(
+        this.#draggedElements(event).map(element => [
+          element,
+          this.#placeOf(element),
+        ])
+      );
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       this.#handle_dropSwitchSpace(event);
       this.#handle_dropCreateSplit(event);
       this._clearDragOverSplit();
       if (!toSplit) {
-        this.#landDragImage(event);
+        this.#landDragImage(event, placesBefore);
       }
+    }
+
+    /**
+     * @param {DragEvent} event
+     * @returns {Element[]} The elements of the dragged tabs, in the order of
+     *   their drag images, when they are this window's
+     */
+    #draggedElements(event) {
+      const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (draggedTab?.documentGlobal !== window) {
+        return [];
+      }
+      return (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
+    }
+
+    #placeOf(element) {
+      return `${element.screenX},${element.screenY}`;
     }
 
     /**
@@ -1058,16 +1085,17 @@
      * which is when the tab shows again. Only macOS does so.
      *
      * @param {DragEvent} event - The drop
+     * @param {Map<Element, string>} placesBefore - Where each dragged element
+     *   was before the drop.
      */
-    #landDragImage(event) {
+    #landDragImage(event, placesBefore) {
       // The drop is done, so its indicator goes before the image lands.
       this.clearDragOverVisuals();
-      const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (draggedTab?.documentGlobal !== window || gReduceMotion) {
+      if (gReduceMotion) {
         return;
       }
-      const elements = (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
-      for (const element of elements) {
+      const landing = [];
+      for (const element of this.#draggedElements(event)) {
         const { width, height } = element.getBoundingClientRect();
         this.ZenDragAndDropService.addDropLandingRect(
           Math.round(element.screenX),
@@ -1075,9 +1103,12 @@
           Math.round(width),
           Math.round(height)
         );
-        element.style.visibility = "hidden";
+        if (placesBefore.get(element) !== this.#placeOf(element)) {
+          element.style.visibility = "hidden";
+          landing.push(element);
+        }
       }
-      this._landingElements = elements;
+      this._landingElements = landing;
     }
 
     #handle_dropSwitchSpace(event) {
@@ -1303,6 +1334,7 @@
       thisFromGlobal._clearDragOverSplit();
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
+      thisFromGlobal._dropLandingArmed = false;
       this.#firstHapticFeedbackPlayed = false;
       window.removeEventListener(
         "dragenter",

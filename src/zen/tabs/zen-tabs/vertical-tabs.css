@@ -449,6 +449,7 @@
 }
 
 #zen-sidebar-foot-buttons {
+  position: relative;
   background: transparent;
   gap: 5px;
   align-items: center;

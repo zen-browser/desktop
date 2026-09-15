@@ -8,6 +8,8 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   CustomizableWidgets:
     "moz-src:///browser/components/customizableui/CustomizableWidgets.sys.mjs",
+  ZenLibraryWidget:
+      "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
 });
 
 export const ZenCustomizableUI = new (class {
@@ -163,17 +165,14 @@ export const ZenCustomizableUI = new (class {
 
   #addWidgets(window) {
     const ZenWidgets = [
-      {
-        id: "zen-library-button",
-        l10nId: "zen-library-button",
-        _introducedByPref: "zen.library.enabled",
-        onCreated(aNode) {
-          aNode.setAttribute("command", "cmd_zenToggleLibrary");
-        },
-      },
+      lazy.ZenLibraryWidget,
     ];
 
     ZenWidgets.forEach(widget => {
+      // Assign window here as we do not have access
+      // to it inside the widget
+      widget.window = window;
+
       window.CustomizableUI.createWidget(
         widget,
         window.CustomizableUI.SOURCE_BUILTIN

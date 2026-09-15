@@ -10,5 +10,5 @@ MOZ_SRC_FILES += [
   "sections/ZenLibrarySpacesSection.mjs",
 
   "ZenLibrary.mjs",
-  "ZenLibraryButton.mjs",
+  "ZenLibraryWidget.sys.mjs",
 ]

@@ -165,11 +165,9 @@
       if (tab.hasAttribute("zen-essential")) {
         tab.style.visibility = "hidden";
       }
-      this.ZenDragAndDropService.armDropLanding(
-        options.armLanding ??
-          (!options.fromTabList &&
-            this.getDropEffectForTabDrag(event) == "move")
-      );
+      this._dropLandingArmed =
+        options.armLanding ?? !args[0]?.fromTabList && this.getDropEffectForTabDrag(event) == "move";
+      this.ZenDragAndDropService.armDropLanding(this._dropLandingArmed);
     }
 
     _createDragImageForTabs(movingTabs) {
@@ -995,6 +993,8 @@
 
       this.#dragOverSplit.fakeTab = element;
       this.#dragOverSplit.canDrop = true;
+      // A drop into the split takes the drag image away at once.
+      this.ZenDragAndDropService.armDropLanding(false);
     }
 
     _clearDragOverSplit() {
@@ -1002,6 +1002,9 @@
         clearTimeout(this.#dragOverSplit.timer);
       }
       this.#dragOverSplit.fakeTab?.remove();
+      if (this.#dragOverSplit.canDrop && this._dropLandingArmed) {
+        this.ZenDragAndDropService.armDropLanding(true);
+      }
 
       this.#dragOverSplit.timer = null;
       this.#dragOverSplit.fakeTab = null;
@@ -1128,12 +1131,38 @@
       }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
+      const toSplit = !!this.#dragOverSplit.canDrop;
+      const placesBefore = new Map(
+        this.#draggedElements(event).map(element => [
+          element,
+          this.#placeOf(element),
+        ])
+      );
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       this.#handle_dropSwitchSpace(event);
       this._handle_dropCreateSplit(event);
       this._clearDragOverSplit();
-      this.#landDragImage(event);
+      if (!toSplit) {
+        this.#landDragImage(event, placesBefore);
+      }
+    }
+
+    /**
+     * @param {DragEvent} event
+     * @returns {Element[]} The elements of the dragged tabs, in the order of
+     *   their drag images, when they are this window's
+     */
+    #draggedElements(event) {
+      const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (draggedTab?.documentGlobal !== window) {
+        return [];
+      }
+      return (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
+    }
+
+    #placeOf(element) {
+      return `${element.screenX},${element.screenY}`;
     }
 
     /**
@@ -1142,12 +1171,13 @@
      * which is when the tab shows again. Only macOS does so.
      *
      * @param {DragEvent} event - The drop
+     * @param {Map<Element, string>} placesBefore - Where each dragged element
+     *   was before the drop.
      */
-    #landDragImage(event) {
+    #landDragImage(event, placesBefore) {
       // The drop is done, so its indicator goes before the image lands.
       this.clearDragOverVisuals();
-      const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (draggedTab?.documentGlobal !== window || gReduceMotion) {
+      if (gReduceMotion) {
         return;
       }
       const elements = (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
@@ -1168,9 +1198,12 @@
           Math.round(width),
           Math.round(height)
         );
-        element.style.visibility = "hidden";
+        if (placesBefore.get(element) !== this.#placeOf(element)) {
+          element.style.visibility = "hidden";
+          landing.push(element);
+        }
       }
-      this._landingElements = elements;
+      this._landingElements = landing;
     }
 
     #handle_dropSwitchSpace(event) {
@@ -1236,6 +1269,7 @@
       return true;
     }
 
+    // eslint-disable-next-line complexity
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
       if (
         dropElement?.hasAttribute("zen-empty-tab") &&
@@ -1261,6 +1295,7 @@
       try {
         if (
           this.#isAnimatingTabMove ||
+          this.#dragOverSplit.canDrop ||
           !gZenStartup.isReady ||
           gReduceMotion ||
           !dropElement ||
@@ -1403,6 +1438,7 @@
       thisFromGlobal._clearDragOverSplit();
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
+      thisFromGlobal._dropLandingArmed = false;
       this.#firstHapticFeedbackPlayed = false;
       window.removeEventListener(
         "dragenter",

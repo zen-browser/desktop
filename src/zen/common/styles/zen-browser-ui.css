@@ -20,7 +20,7 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [chromehidden~="location"], [chromehidden~="toolbar"]) {
+:root:is([inDOMFullscreen="true"], [popup-window]) {
   #navigator-toolbox,
   #zen-sidebar-splitter {
     visibility: collapse;
@@ -61,7 +61,7 @@ body,
     background: var(--zen-main-browser-background);
     opacity: var(--zen-background-opacity);
     transition: 0s;
-    background-blend-mode: screen;
+    background-blend-mode: lighten;
   }
 
   &:is(.zen-toolbar-background) {
@@ -74,7 +74,7 @@ body,
     background: var(--zen-main-browser-background-old);
     opacity: calc(1 - var(--zen-background-opacity));
     transition: 0s;
-    background-blend-mode: screen;
+    background-blend-mode: lighten;
   }
 
   &:is(.zen-toolbar-background) {
@@ -170,7 +170,7 @@ body,
   min-width: 1px;
 }
 
-:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+:root:not([inDOMFullscreen="true"]):not([popup-window]) {
   & #zen-tabbox-wrapper {
     margin: var(--zen-element-separation);
     margin-top: 0;

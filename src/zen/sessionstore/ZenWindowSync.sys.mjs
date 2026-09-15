@@ -330,7 +330,7 @@ class nsZenWindowSync {
     // browser/components/extensions/parent/ext-browser.js.
     // See: Bug 1960104 - Improve tab group ID generation in addTabGroup
     // This is implemented from gBrowser.addTabGroup.
-    return `${Date.now()}-${Math.round(Math.random() * 100)}`;
+    return `${Date.now()}-${Services.uuid.generateUUID().toString().slice(1, -1)}`;
   }
 
   /**

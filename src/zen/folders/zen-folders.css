@@ -191,15 +191,8 @@ zen-folder {
     }
   }
 
-  :root[zen-sidebar-expanded] &[has-active] > .tab-group-label-container {
-    & .tab-reset-button {
-      display: flex;
-      opacity: 0;
-    }
-
-    &:hover .tab-reset-button {
-      opacity: 1;
-    }
+  :root[zen-sidebar-expanded] &[has-active] > .tab-group-label-container:hover .tab-reset-button {
+    display: flex;
   }
 }
 

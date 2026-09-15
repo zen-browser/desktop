@@ -1337,7 +1337,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.useAlgo = themedColors[0]?.algorithm ?? "";
     this.#currentLightness = themedColors[0]?.lightness ?? 50;
 
-    const rotation = -45; // TODO: Detect rotation based on the accent color
+    const rotation = -30; // TODO: Detect rotation based on the accent color
     if (themedColors.length === 0) {
       const getBrowserBg = () => {
         if (this.canBeTransparent) {
@@ -1367,8 +1367,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (themedColors.length === 2) {
       if (!forToolbar) {
         return [
-          `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
-          `linear-gradient(${rotation + 180}deg, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 20%, transparent 100%)`,
+          `linear-gradient(${rotation + 180}deg, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 20%, transparent 100%)`,
         ]
           .reverse()
           .join(", ");

@@ -632,6 +632,8 @@ zen-library {
     --tab-icon-end-margin: 8.5px;
 
     & .tabbrowser-tab {
+      overflow: visible;
+
       & .tab-label-container {
         opacity: 1;
         display: flex;

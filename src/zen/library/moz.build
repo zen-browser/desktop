@@ -10,6 +10,6 @@ MOZ_SRC_FILES += [
   "sections/ZenLibrarySpacesSection.mjs",
 
   "ZenLibrary.mjs",
-  "ZenLibraryWidget.sys.mjs",
   "ZenLibraryDragAndDrop.mjs",
+  "ZenLibraryWidget.sys.mjs",
 ]

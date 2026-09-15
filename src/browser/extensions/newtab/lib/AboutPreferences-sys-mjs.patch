@@ -1,0 +1,13 @@
+diff --git a/browser/extensions/newtab/lib/AboutPreferences.sys.mjs b/browser/extensions/newtab/lib/AboutPreferences.sys.mjs
+index 4562efc05b76d5dddd35bda79bd7d5d98a51ffc9..ad9b6f55f5e77065ce74535daf6457a5c4b44058 100644
+--- a/browser/extensions/newtab/lib/AboutPreferences.sys.mjs
++++ b/browser/extensions/newtab/lib/AboutPreferences.sys.mjs
+@@ -355,7 +355,7 @@ export class AboutPreferences {
+       // Firefox 155+ registers `homepage` and `customHomepage` in
+       // components/preferences. They can't be registered twice, so skip them
+       // on 155+. Drop this condition once 155 reaches Release.
+-      if (Services.vc.compare(AppConstants.MOZ_APP_VERSION, "155.0a1") < 0) {
++      if (false) {
+         groups.homepage = this._setupHomepageGroup(window);
+         groups.customHomepage = this._setupCustomHomepageGroup(window);
+       }

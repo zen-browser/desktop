@@ -48,7 +48,6 @@ zen-library {
 
   visibility: hidden;
   pointer-events: none;
-  opacity: var(--library-progress, 0);
   transform: translateX(calc(-100% * (1 - var(--library-progress, 0))));
 
   & #zen-library-panel {
@@ -205,21 +204,11 @@ zen-library[transitioning] #zen-library-content {
   }
 }
 
-@media (max-height: 45rem) {
+@media (max-height: 25rem) {
   .zen-library-tab {
     & label {
       display: none;
     }
-  }
-}
-
-@media (max-height: 38rem) {
-  #zen-library-sidebar-tabs {
-    gap: 0;
-  }
-  .zen-library-tab {
-    padding: 10px 0;
-    margin: 4px 8px;
   }
 }
 
@@ -264,7 +253,6 @@ zen-library[transitioning] #zen-library-content {
   }
 }
 
-
 .zen-library-section {
   display: flex;
   flex-direction: column;
@@ -277,13 +265,7 @@ zen-library[transitioning] #zen-library-content {
   }
 }
 
-zen-library:not([open])
-  :is(
-    .zen-library-search-header,
-    .zen-library-filter-header,
-    .zen-library-filter-panel-inner,
-    .zen-library-search-results
-  ) {
+zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-header, .zen-library-filter-panel-inner, .zen-library-search-results) {
   transition: none;
 }
 
@@ -559,16 +541,8 @@ zen-library:not([open])
   --toggle-height: 24px;
   --toggle-dot-margin: 2px;
   --toggle-border-width: 0px;
-  --toggle-background-color: color-mix(
-    in srgb,
-    var(--zen-primary-color) 15%,
-    transparent
-  );
-  --toggle-background-color-hover: color-mix(
-    in srgb,
-    var(--zen-primary-color) 25%,
-    transparent
-  );
+  --toggle-background-color: color-mix(in srgb, var(--zen-primary-color) 15%, transparent);
+  --toggle-background-color-hover: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
   --toggle-background-color-active: var(--toggle-background-color-hover);
   --toggle-dot-background-color: light-dark(white, rgb(235, 235, 235));
 
@@ -601,7 +575,7 @@ zen-library:not([open])
     border-radius: 10px;
     border: 3px solid white;
     background: #edededaa;
-    box-shadow: 0 0 6px 1px rgba(0, 0, 0, .1);
+    box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.1);
   }
 
   & img {
@@ -623,13 +597,7 @@ zen-library:not([open])
   & .zen-library-boost-icon {
     &::before,
     & img {
-      mask-image: linear-gradient(
-        45deg,
-        black calc(50% - 5px),
-        transparent calc(50% - 5px),
-        transparent calc(50% + 5px),
-        black calc(50% + 5px)
-      );
+      mask-image: linear-gradient(45deg, black calc(50% - 5px), transparent calc(50% - 5px), transparent calc(50% + 5px), black calc(50% + 5px));
       mask-size: 200% 200%;
       mask-position: center;
       mask-repeat: no-repeat;
@@ -644,7 +612,7 @@ zen-library:not([open])
       width: 135%;
       height: 4px;
       border-radius: 10px;
-      background: light-dark(rgba(255,255,255,.8), rgba(255,255,255,.5));
+      background: light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
       transform: translate(-50%, -50%) rotate(45deg);
       pointer-events: none;
     }
@@ -676,8 +644,7 @@ zen-library:not([open])
   margin-block: calc((1lh - 4px) / 2);
   border-radius: 2px;
   background:
-    linear-gradient(var(--color-accent-primary), var(--color-accent-primary)) 0 0 /
-      var(--zen-library-download-progress, 0%) 100% no-repeat,
+    linear-gradient(var(--color-accent-primary), var(--color-accent-primary)) 0 0 / var(--zen-library-download-progress, 0%) 100% no-repeat,
     color-mix(in srgb, currentColor 12%, transparent);
   transition: background-size 0.2s ease;
 }
@@ -728,11 +695,13 @@ zen-library:not([open])
   /* The shift transforms assume the card is exactly this wide. */
   box-sizing: border-box;
   min-height: 0;
-  padding: 14px;
   color: var(--toolbox-textcolor);
   transition:
     translate 0.2s ease,
     opacity 0.2s ease;
+  background: var(--zen-branding-bg);
+  border-radius: 14px;
+  --toolbar-color: var(--toolbox-textcolor);
 
   &::before {
     content: "";
@@ -776,9 +745,11 @@ zen-library:not([open])
 
 .zen-library-space-header {
   position: relative;
+  margin: 18px 14px 6px;
   font-size: 13px;
   font-weight: 500;
   opacity: 0.85;
+  height: 28px;
 
   &::before {
     content: "";
@@ -796,11 +767,69 @@ zen-library:not([open])
 }
 
 .zen-library-space-body {
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  --zen-library-scroll-border: color-mix(
+    in srgb,
+    var(--toolbox-textcolor) 15%,
+    transparent
+  );
+  border-block: 1px solid transparent;
+  transition:
+    border-top-color 0.15s ease,
+    border-bottom-color 0.15s ease;
+
+  &[scrolled-top] {
+    border-top-color: var(--zen-library-scroll-border);
+  }
+
+  &[scrolled-bottom] {
+    border-bottom-color: var(--zen-library-scroll-border);
+  }
+
+  #zen-library-panel &[zen-sidebar-expanded] {
+    min-width: 0;
+    padding: 0;
+  }
+}
+
+.zen-library-space-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto !important;
+
+  &::after,
+  & #tabbrowser-arrowscrollbox-periphery-copy {
+    display: none !important;
+  }
+
+  & * {
+    animation: none !important;
+  }
+
+  /* The strip's drop indicator is placed in here so it scrolls along. */
+  position: relative;
+
+  & > #zen-drag-indicator {
+    position: absolute;
+  }
+
+  & .tab-group-label-container[dragover] {
+    background: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
+  }
+
+  & .zen-current-workspace-indicator {
+    min-height: var(--tab-min-height);
+  }
 }
 
 .zen-library-space-footer {
   justify-content: space-between;
+  padding: 8px 14px 14px;
   opacity: 0.7;
 }
 
@@ -904,6 +933,10 @@ zen-library:not([open])
     fill: currentColor;
     pointer-events: none;
   }
+}
+
+.zen-library-space-button:not(:hover) {
+  opacity: 0.6;
 }
 
 .zen-library-space-footer :is(.zen-library-space-button, .zen-library-space-actions) {

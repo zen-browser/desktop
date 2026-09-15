@@ -1,0 +1,154 @@
+diff --git a/toolkit/modules/subprocess/subprocess_shared_unix.js b/toolkit/modules/subprocess/subprocess_shared_unix.js
+--- a/toolkit/modules/subprocess/subprocess_shared_unix.js
++++ b/toolkit/modules/subprocess/subprocess_shared_unix.js
+@@ -52,16 +52,17 @@
+ 
+   close: [ctypes.default_abi, ctypes.int, ctypes.int /* fildes */],
+ 
+   dup: [ctypes.default_abi, ctypes.int, ctypes.int],
+ 
++  // Variadic arguments use a different calling convention on Apple silicon.
+   fcntl: [
+     ctypes.default_abi,
+     ctypes.int,
+     ctypes.int /* fildes */,
+     ctypes.int /* cmd */,
+-    ctypes.int /* ... */,
++    "...",
+   ],
+ 
+   getcwd: [
+     ctypes.default_abi,
+     ctypes.char.ptr,
+diff --git a/toolkit/modules/subprocess/subprocess_unix.sys.mjs b/toolkit/modules/subprocess/subprocess_unix.sys.mjs
+--- a/toolkit/modules/subprocess/subprocess_unix.sys.mjs
++++ b/toolkit/modules/subprocess/subprocess_unix.sys.mjs
+@@ -34,13 +34,13 @@
+       throw new Error("Unable to create pipe");
+     }
+ 
+     this.signalFd = fds[1];
+ 
+-    libc.fcntl(fds[0], LIBC.F_SETFL, LIBC.O_NONBLOCK);
+-    libc.fcntl(fds[0], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-    libc.fcntl(fds[1], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
++    libc.fcntl(fds[0], LIBC.F_SETFL, ctypes.int(LIBC.O_NONBLOCK));
++    libc.fcntl(fds[0], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++    libc.fcntl(fds[1], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
+ 
+     this.call("init", [{ signalFd: fds[0] }]);
+   }
+ 
+   closePipe() {
+diff --git a/toolkit/modules/subprocess/subprocess_unix.worker.js b/toolkit/modules/subprocess/subprocess_unix.worker.js
+--- a/toolkit/modules/subprocess/subprocess_unix.worker.js
++++ b/toolkit/modules/subprocess/subprocess_unix.worker.js
+@@ -349,13 +349,13 @@
+         our_pipes.push(new InputPipe(this, fds[1]));
+       } else {
+         our_pipes.push(new OutputPipe(this, fds[1]));
+       }
+ 
+-      libc.fcntl(fds[0], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-      libc.fcntl(fds[1], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-      libc.fcntl(fds[1], LIBC.F_SETFL, LIBC.O_NONBLOCK);
++      libc.fcntl(fds[0], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++      libc.fcntl(fds[1], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++      libc.fcntl(fds[1], LIBC.F_SETFL, ctypes.int(LIBC.O_NONBLOCK));
+ 
+       return fds[0];
+     };
+ 
+     their_pipes.set(0, pipe(false));
+diff --git a/toolkit/modules/subprocess/test/xpcshell/test_subprocess_pipe_flags.js b/toolkit/modules/subprocess/test/xpcshell/test_subprocess_pipe_flags.js
+new file mode 100644
+--- /dev/null
++++ b/toolkit/modules/subprocess/test/xpcshell/test_subprocess_pipe_flags.js
+@@ -0,0 +1,73 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++"use strict";
++
++add_task(async function test_subprocess_pipe_flags() {
++  const { Subprocess, getSubprocessImplForTest } = ChromeUtils.importESModule(
++    "resource://gre/modules/Subprocess.sys.mjs"
++  );
++  const { ctypes } = ChromeUtils.importESModule(
++    "resource://gre/modules/ctypes.sys.mjs"
++  );
++  const constants = ChromeUtils.getLibcConstants();
++  const library = ctypes.open("a.out");
++  const fcntl = library.declare(
++    "fcntl",
++    ctypes.default_abi,
++    ctypes.int,
++    ctypes.int,
++    ctypes.int,
++    "..."
++  );
++  // Darwin's fcntl commands for reading descriptor and file status flags.
++  const F_GETFD = 1;
++  const F_GETFL = 3;
++  let process;
++
++  try {
++    const worker = getSubprocessImplForTest().Process.getWorker();
++    Assert.equal(
++      fcntl(worker.signalFd, F_GETFD),
++      constants.FD_CLOEXEC,
++      "The main-thread signal pipe has exactly FD_CLOEXEC set"
++    );
++
++    process = await Subprocess.call({
++      command: "/bin/cat",
++      stderr: "pipe",
++      disclaim: true,
++    });
++    const fds = await worker.call("getFds", [process.id]);
++    // Only inspect the descriptors while the worker owns them and cat is alive.
++    // Exact flags also rule out an unintended FD_CLOFORK on macOS.
++    for (const fd of fds) {
++      Assert.equal(
++        fcntl(fd, F_GETFD),
++        constants.FD_CLOEXEC,
++        "Worker pipes have exactly FD_CLOEXEC set"
++      );
++      Assert.equal(
++        fcntl(fd, F_GETFL) & constants.O_NONBLOCK,
++        constants.O_NONBLOCK,
++        "Worker pipes are nonblocking"
++      );
++    }
++
++    const output = process.stdout.readString(5);
++    await process.stdin.write("hello");
++    Assert.equal(await output, "hello", "The subprocess pipes transfer data");
++    await process.stdin.close();
++    Assert.equal(
++      (await process.wait()).exitCode,
++      0,
++      "The subprocess exits cleanly"
++    );
++  } finally {
++    if (process && process.exitCode === null) {
++      await process.kill();
++    }
++    library.close();
++  }
++});
+diff --git a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+--- a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
++++ b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+@@ -25,6 +25,9 @@
+ ["test_subprocess_pathSearch.js"]
+ 
+ ["test_subprocess_perf.js"]
+ requesttimeoutfactor = 2  # Slow on Windows
+ 
++["test_subprocess_pipe_flags.js"]
++run-if = ["os == 'mac'"]
++
+ ["test_subprocess_polling.js"]
+

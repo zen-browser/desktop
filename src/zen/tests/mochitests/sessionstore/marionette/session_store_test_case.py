@@ -156,7 +156,7 @@ class SessionStoreTestCase(WindowManagerMixin, MarionetteTestCase):
                         null,
                         AppConstants.BROWSER_CHROME_URL,
                         "_blank",
-                        "chrome,dialog=no,titlebar,close,toolbar,location,personalbar=no,status,menubar=no,resizable,minimizable,scrollbars",
+                        "chrome,dialog=no,titlebar,close,toolbar,location,personalbar=no,status,menubar=no,resizable,minimizable",
                         args
                     );
                     await new Promise(resolve => {

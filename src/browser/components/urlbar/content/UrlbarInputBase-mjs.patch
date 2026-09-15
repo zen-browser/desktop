@@ -1,22 +1,21 @@
-diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c51889c0378a 100644
---- a/browser/components/urlbar/content/UrlbarInput.mjs
-+++ b/browser/components/urlbar/content/UrlbarInput.mjs
-@@ -88,6 +88,13 @@ const lazy = XPCOMUtils.declareLazy({
-   logger: () => UrlbarShared.getLogger({ prefix: "Input" }),
- });
+diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
+index 8be35b58c5369e123ca69426e852e3849bf75513..9357aaadee0f8d2dab170e2d5e0b57282d909bf5 100644
+--- a/browser/components/urlbar/content/UrlbarInputBase.mjs
++++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
+@@ -83,6 +83,12 @@ if (lazy) {
+       Ci.nsIURLQueryStringStripper,
+     ],
+   });
++  XPCOMUtils.defineLazyPreferenceGetter(
++    lazy,
++    "ZEN_URLBAR_BEHAVIOR",
++    "zen.urlbar.behavior",
++    'default'
++  );
+ }
  
-+XPCOMUtils.defineLazyPreferenceGetter(
-+  lazy,
-+  "ZEN_URLBAR_BEHAVIOR",
-+  "zen.urlbar.behavior",
-+  'default'
-+);
-+
- const UNLIMITED_MAX_RESULTS = 99;
- 
- let getBoundsWithoutFlushing = element =>
-@@ -771,7 +778,16 @@ ${
+ const logger = () => UrlbarShared.getLogger({ prefix: "Input" });
+@@ -917,7 +923,16 @@ ${
      // See _on_select().  HTMLInputElement.select() dispatches a "select"
      // event but does not set the primary selection.
      this._suppressPrimaryAdjustment = true;
@@ -33,7 +32,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      this._suppressPrimaryAdjustment = false;
    }
  
-@@ -846,6 +862,10 @@ ${
+@@ -992,6 +1007,10 @@ ${
      hideSearchTerms = false,
      isSameDocument = false,
    } = {}) {
@@ -44,7 +43,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      if (!this.#isAddressbar) {
        throw new Error(
          "Cannot set URI for UrlbarInput that is not an address bar"
-@@ -1143,7 +1163,16 @@ ${
+@@ -1289,7 +1308,16 @@ ${
        this.searchModeSwitcher?.updateSearchIcon();
      }
  
@@ -61,7 +60,17 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
    }
  
    /**
-@@ -1726,7 +1755,11 @@ ${
+@@ -1401,6 +1429,9 @@ ${
+       where,
+       query: searchString,
+     });
++    if (where != "current" && this.sapName != "searchbar") {
++      this.handleRevert();
++    }
+     this.controller.openSERP(
+       engine.id,
+       searchString,
+@@ -1884,7 +1915,11 @@ ${
      openParams.avoidBrowserFocus = keepViewOpen;
  
      if (!this.#providesSearchMode(result) && !keepViewOpen) {
@@ -74,12 +83,12 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      }
  
      if (isCanonized) {
-@@ -3016,6 +3049,42 @@ ${
+@@ -3181,6 +3216,42 @@ ${
      await this.#updateLayoutBreakoutDimensions();
    }
  
 +  zenFormatURLValue() {
-+    return this.#lazy.valueFormatter._formatURL();
++    return this.#getValueFormatter().update();
 +  }
 +
 +  get zenUrlbarBehavior() {
@@ -117,7 +126,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
    startLayoutExtend() {
      if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
        // Do not expand if the Urlbar does not support being expanded or it is
-@@ -3028,8 +3097,16 @@ ${
+@@ -3193,8 +3264,16 @@ ${
      }
  
      this.toggleAttribute("breakout-extend", true);
@@ -134,7 +143,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -3053,7 +3130,33 @@ ${
+@@ -3218,7 +3297,33 @@ ${
        return;
      }
  
@@ -168,7 +177,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      this.#updateTextboxPosition();
    }
  
-@@ -3091,7 +3194,7 @@ ${
+@@ -3256,7 +3361,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -177,20 +186,20 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3355,10 +3458,12 @@ ${
+@@ -3533,7 +3638,11 @@ ${
+       return;
      }
  
-     this.style.top = px(
+-    this.style.top = px(getUntransformedTop(this.parentNode));
++    this.style.top = px(
 +      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ?
-       this.parentNode.getBoxQuads({
-         ignoreTransforms: true,
-         flush: false,
-       })[0].p1.y
-+      : (AppConstants.platform == "macosx" ? -2 : -5)
-     );
++      getUntransformedTop(this.parentNode)
++      : (UrlbarContentUtils.getPlatform() == "macosx" ? -2 : -5)
++    );
    }
  
-@@ -3379,12 +3484,29 @@ ${
+   #updateTextboxPositionNextFrame() {
+@@ -3553,12 +3662,29 @@ ${
      this.removeAttribute("breakout");
      this.parentNode.removeAttribute("breakout");
      this.style.top = "";
@@ -221,7 +230,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
    }
  
    incrementBreakoutBlockerCount() {
-@@ -3417,9 +3539,10 @@ ${
+@@ -3591,9 +3717,10 @@ ${
            return;
          }
  
@@ -233,7 +242,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
          );
  
          if (this.#breakoutBlockerCount) {
-@@ -3428,8 +3551,9 @@ ${
+@@ -3602,8 +3729,9 @@ ${
  
          this.setAttribute("breakout", "true");
          this.parentNode.setAttribute("breakout", "true");
@@ -245,7 +254,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
          this.#updateTextboxPosition();
  
          resolve();
-@@ -3929,6 +4053,7 @@ ${
+@@ -4108,6 +4236,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -253,7 +262,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -4027,9 +4152,10 @@ ${
+@@ -4206,9 +4335,10 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -266,36 +275,36 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
 +        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-     return this.controller.isTextDirectionRTL(trimmedValue) ||
-@@ -4235,6 +4361,11 @@ ${
+     return UrlbarContentUtils.isTextDirectionRTL(trimmedValue, window) ||
+@@ -4410,6 +4540,11 @@ ${
      keepViewOpen = false,
      browserId = null,
    }) {
 +    where = this.window.gZenUIManager.getOpenUILinkWhere(
-+      url,
++      loadRequest.urlLoad?.url ?? "",
 +      this.window.gBrowser.selectedBrowser,
 +      where
 +    );
-     let userTypedValue;
-     if (this.#isAddressbar && where == "current") {
-       // Make sure URL is formatted properly (don't show punycode).
-@@ -4576,6 +4707,7 @@ ${
-       this.setResultForCurrentValue(null);
-       this.handleCommand();
-       this.controller.clearLastQueryContextCache();
-+      this.view.close();
+     let keyDownEnterDeferred;
+     if (
+       this._keyDownEnterDeferred &&
+@@ -4731,6 +4866,7 @@ ${
+           this.setResultForCurrentValue(null);
+           this.handleCommand();
+           this.controller.clearLastQueryContextCache();
++          this.view.close();
  
-       this._suppressStartQuery = false;
-     });
-@@ -4583,7 +4715,6 @@ ${
-     contextMenu.addEventListener("popupshowing", () => {
-       // Close the results pane when the input field contextual menu is open,
-       // because paste and go doesn't want a result selection.
--      this.view.close();
+           this._suppressStartQuery = false;
+         });
+@@ -4742,7 +4878,6 @@ ${
+         // Close the results pane, because paste and go doesn't want a result
+         // selection. This has to happen before the menu opens: ending
+         // breakout-extend once it's open keeps it from showing (bug 2037468).
+-        this.view.close();
  
-       let controller =
-         this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -4850,7 +4981,11 @@ ${
+         let controller =
+           this.document.commandDispatcher.getControllerForCommand("cmd_paste");
+@@ -5025,7 +5160,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -308,7 +317,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5149,6 +5284,7 @@ ${
+@@ -5335,6 +5474,7 @@ ${
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -316,10 +325,10 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5199,6 +5335,12 @@ ${
+@@ -5385,6 +5525,12 @@ ${
      }
  
-     lazy.logger.debug("Blur Event");
+     logger().debug("Blur Event");
 +    if (
 +      this.document.commandDispatcher.focusedElement == this.inputField &&
 +      !UrlbarPrefs.get("closeOnWindowBlur")
@@ -329,7 +338,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      // We cannot count every blur events after a missed engagement as abandoment
      // because the user may have clicked on some view element that executes
      // a command causing a focus change. For example opening preferences from
-@@ -5276,6 +5418,11 @@ ${
+@@ -5464,6 +5610,11 @@ ${
    }
  
    _on_click(event) {
@@ -341,7 +350,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5371,10 +5518,11 @@ ${
+@@ -5558,10 +5709,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -354,7 +363,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5414,9 +5562,16 @@ ${
+@@ -5605,9 +5757,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -372,7 +381,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5426,6 +5581,10 @@ ${
+@@ -5617,6 +5776,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -383,7 +392,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5463,7 +5622,7 @@ ${
+@@ -5654,7 +5817,7 @@ ${
          // view open on tab switch, and the TabSelect event arrived earlier.
          // Also ignore mousedown on the urlbarView context menu: opening/closing the
          // view is already handled by the result opening flow.
@@ -392,7 +401,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..41bcd2683f0e04423a14397450e9c518
            break;
          }
  
-@@ -5754,7 +5913,7 @@ ${
+@@ -5948,7 +6111,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

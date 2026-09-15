@@ -95,7 +95,7 @@ class TestSessionRestoreManually(SessionStoreTestCase):
             """
             const lazy = {};
             ChromeUtils.defineESModuleGetters(lazy, {
-                SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+                SessionStore: "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
             });
             function observeClosedObjectsChange() {
                 return new Promise(resolve => {
@@ -129,7 +129,7 @@ class TestSessionRestoreManually(SessionStoreTestCase):
                 """
                 const lazy = {};
                 ChromeUtils.defineESModuleGetters(lazy, {
-                    SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+                    SessionStore: "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
                 });
                 let state = SessionStore.getCurrentState()
                 return state.windows[1]["height"]

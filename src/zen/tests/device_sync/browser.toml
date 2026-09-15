@@ -12,6 +12,8 @@ support-files = [
   "head.js",
 ]
 
+["browser_folder_delete.js"]
+
 ["browser_normal_tabs_apply.js"]
 
 ["browser_normal_tabs_projection.js"]

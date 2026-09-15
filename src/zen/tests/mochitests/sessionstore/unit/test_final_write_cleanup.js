@@ -8,7 +8,7 @@
  */
 
 const { SessionWriter } = ChromeUtils.importESModule(
-  "resource:///modules/sessionstore/SessionWriter.sys.mjs"
+  "moz-src:///browser/components/sessionstore/SessionWriter.sys.mjs"
 );
 
 // Make sure that we have a profile before initializing SessionFile.
@@ -16,7 +16,7 @@ do_get_profile();
 const {
   SessionFile: { Paths },
 } = ChromeUtils.importESModule(
-  "resource:///modules/sessionstore/SessionFile.sys.mjs"
+  "moz-src:///browser/components/sessionstore/SessionFile.sys.mjs"
 );
 
 const MAX_ENTRIES = 9;

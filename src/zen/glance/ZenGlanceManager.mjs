@@ -1736,7 +1736,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if key is pressed
    */
   #isActivationKeyPressed(event, activationMethod) {
-
     const keyMap = {
       ctrl: event.ctrlKey,
       alt: event.altKey,

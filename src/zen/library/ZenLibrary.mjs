@@ -5,6 +5,10 @@
 import { html } from "chrome://global/content/vendor/lit.all.mjs";
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
+const { ZenLibraryWidget } = ChromeUtils.importESModule(
+  "moz-src:///zen/library/ZenLibraryWidget.sys.mjs"
+);
+
 let lazy = {};
 
 ChromeUtils.defineESModuleGetters(
@@ -81,7 +85,7 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static get isLibrarySlightlyOpen() {
-    const lib = this.getInstance();
+    const lib = this.getInstance(/* createIfMissing = */ false);
     // Due to calculation inaccuracies assume
     // that openProgress never goes back to 0
     return lib.openProgress > 0.001;
@@ -136,14 +140,21 @@ export class ZenLibrary extends MozLitElement {
       this.removeAttribute("open");
     }
 
-    if (isPastWindowButtonSwitchPoint && !this.#libraryOnRight) {
+    if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {
       this.#adoptWindowButtons();
-    } else if (
-      !isPastWindowButtonSwitchPoint &&
-      (!this.#libraryOnRight || this.#hasAdoptedButtons)
-    ) {
+    } else if (!isPastWindowButtonSwitchPoint) {
       this.#restoreWindowButtons();
     }
+  }
+
+  /**
+   * Whether the window buttons sit in the sidebar column the library covers.
+   */
+  get #coversWindowButtons() {
+    if (!gZenVerticalTabsManager.isWindowsStyledButtons) {
+      return !this.#libraryOnRight;
+    }
+    return this.#libraryOnRight && !this.#isCompactMode;
   }
 
   get openProgress() {
@@ -394,8 +405,8 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
-  static getInstance() {
-    if (!this.instance) {
+  static getInstance(createIfMissing = true) {
+    if (!this.instance && createIfMissing) {
       this.instance = new ZenLibrary();
       this.instance.style.visibility = "collapse";
       const mountRoot = document.getElementById("zen-main-app-wrapper");
@@ -429,6 +440,8 @@ export class ZenLibrary extends MozLitElement {
 
     this._tabOpen = this.onTabOpen.bind(this);
     window.addEventListener("TabOpen", this._tabOpen);
+
+    ZenLibraryWidget.attachLibrary(this);
   }
 
   disconnectedCallback() {
@@ -439,6 +452,7 @@ export class ZenLibrary extends MozLitElement {
     }
 
     this.#restoreWindowButtons();
+    ZenLibraryWidget.detachLibrary(this);
 
     super.disconnectedCallback();
     document.removeEventListener("keydown", this.onKeyDown, true);

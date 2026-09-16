@@ -11,21 +11,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f0">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f0">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f0)">
         <g class="zen-media-back-card" transform="translate(54.799 57.743) rotate(-7) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f0)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -34,7 +26,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f0)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -55,21 +47,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f1">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f1">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f1)">
         <g class="zen-media-back-card" transform="translate(54.895 58.031) rotate(-6.616) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f1)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -78,7 +62,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f1)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -99,21 +83,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f2">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f2">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f2)">
         <g class="zen-media-back-card" transform="translate(55.148 58.791) rotate(-5.602) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f2)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -122,7 +98,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f2)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -143,21 +119,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f3">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f3">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f3)">
         <g class="zen-media-back-card" transform="translate(55.51 59.875) rotate(-4.158) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f3)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -166,7 +134,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f3)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -187,21 +155,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f4">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f4">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f4)">
         <g class="zen-media-back-card" transform="translate(55.93 61.137) rotate(-2.474) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f4)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -210,7 +170,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f4)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -231,21 +191,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f5">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f5">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f5)">
         <g class="zen-media-back-card" transform="translate(56.364 62.438) rotate(-0.74) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f5)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -254,7 +206,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f5)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -275,21 +227,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f6">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f6">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f6)">
         <g class="zen-media-back-card" transform="translate(56.764 63.637) rotate(0.858) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f6)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -298,7 +242,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f6)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -319,21 +263,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f7">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f7">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f7)">
         <g class="zen-media-back-card" transform="translate(57.082 64.591) rotate(2.13) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f7)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -342,7 +278,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f7)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -363,21 +299,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f8">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f8">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f8)">
         <g class="zen-media-back-card" transform="translate(57.269 65.154) rotate(2.882) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f8)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -386,7 +314,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f8)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -407,21 +335,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f9">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f9">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f9)">
         <g class="zen-media-back-card" transform="translate(57.282 64.985) rotate(2.681) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f9)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -430,7 +350,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f9)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -451,21 +371,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f10">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f10">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f10)">
         <g class="zen-media-back-card" transform="translate(57.164 63.174) rotate(0.44) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f10)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -474,7 +386,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f10)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -495,21 +407,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f11">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f11">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f11)">
         <g class="zen-media-back-card" transform="translate(56.982 60.385) rotate(-3.012) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f11)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -518,7 +422,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f11)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -539,21 +443,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f12">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f12">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f12)">
         <g class="zen-media-back-card" transform="translate(56.767 57.096) rotate(-7.08) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f12)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -562,7 +458,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f12)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -583,21 +479,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f13">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f13">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f13)">
         <g class="zen-media-back-card" transform="translate(56.541 53.638) rotate(-11.36) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f13)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -606,7 +494,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f13)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -627,21 +515,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f14">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f14">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f14)">
         <g class="zen-media-back-card" transform="translate(56.327 50.367) rotate(-15.407) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f14)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -650,7 +530,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f14)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -671,21 +551,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f15">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f15">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f15)">
         <g class="zen-media-back-card" transform="translate(56.174 48.01) rotate(-18.323) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f15)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -694,7 +566,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f15)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -715,21 +587,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f16">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f16">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f16)">
         <g class="zen-media-back-card" transform="translate(56.136 47.974) rotate(-18.175) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f16)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -738,7 +602,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f16)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -759,21 +623,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f17">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f17">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f17)">
         <g class="zen-media-back-card" transform="translate(56.069 48.45) rotate(-17.048) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f17)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -782,7 +638,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f17)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -803,21 +659,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f18">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f18">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f18)">
         <g class="zen-media-back-card" transform="translate(55.988 49.028) rotate(-15.681) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f18)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -826,7 +674,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f18)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -847,21 +695,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f19">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f19">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f19)">
         <g class="zen-media-back-card" transform="translate(55.901 49.652) rotate(-14.203) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f19)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -870,7 +710,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f19)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -891,21 +731,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f20">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f20">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f20)">
         <g class="zen-media-back-card" transform="translate(55.81 50.299) rotate(-12.671) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f20)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -914,7 +746,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f20)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -935,21 +767,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f21">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f21">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f21)">
         <g class="zen-media-back-card" transform="translate(55.719 50.955) rotate(-11.119) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f21)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -958,7 +782,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f21)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -979,21 +803,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f22">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f22">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f22)">
         <g class="zen-media-back-card" transform="translate(55.627 51.607) rotate(-9.574) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f22)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1002,7 +818,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f22)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1023,21 +839,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f23">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f23">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f23)">
         <g class="zen-media-back-card" transform="translate(55.538 52.247) rotate(-8.06) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f23)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1046,7 +854,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f23)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1067,21 +875,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f24">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f24">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f24)">
         <g class="zen-media-back-card" transform="translate(55.452 52.86) rotate(-6.609) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f24)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1090,7 +890,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f24)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1111,21 +911,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f25">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f25">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f25)">
         <g class="zen-media-back-card" transform="translate(55.372 53.429) rotate(-5.262) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f25)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1134,7 +926,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f25)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1155,21 +947,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f26">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f26">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f26)">
         <g class="zen-media-back-card" transform="translate(55.303 53.921) rotate(-4.097) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f26)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1178,7 +962,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f26)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1199,21 +983,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f27">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f27">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f27)">
         <g class="zen-media-back-card" transform="translate(55.256 54.259) rotate(-3.298) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f27)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1222,7 +998,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f27)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1243,21 +1019,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f28">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f28">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f28)">
         <g class="zen-media-back-card" transform="translate(55.247 54.32) rotate(-3.222) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f28)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1266,7 +1034,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f28)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1287,21 +1055,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f29">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f29">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f29)">
         <g class="zen-media-back-card" transform="translate(55.228 54.466) rotate(-3.383) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f29)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1310,7 +1070,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f29)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1331,21 +1091,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f30">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f30">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f30)">
         <g class="zen-media-back-card" transform="translate(55.176 54.862) rotate(-3.82) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f30)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1354,7 +1106,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f30)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1375,21 +1127,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f31">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f31">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f31)">
         <g class="zen-media-back-card" transform="translate(55.056 55.783) rotate(-4.837) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f31)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1398,7 +1142,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f31)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1419,21 +1163,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f32">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f32">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f32)">
         <g class="zen-media-back-card" transform="translate(54.907 56.918) rotate(-6.089) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f32)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1442,7 +1178,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f32)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1463,21 +1199,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f33">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f33">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f33)">
         <g class="zen-media-back-card" transform="translate(54.835 57.469) rotate(-6.697) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f33)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1486,7 +1214,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f33)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1507,21 +1235,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f34">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f34">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f34)">
         <g class="zen-media-back-card" transform="translate(54.806 57.688) rotate(-6.939) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f34)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1530,7 +1250,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f34)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>
@@ -1551,21 +1271,13 @@
             <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-back-f35">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128" id="zen-media-grad-front-f35">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-media-back-wrapper" mask="url(#zen-media-mask-f35)">
         <g class="zen-media-back-card" transform="translate(54.799 57.743) rotate(-7) translate(-46.27 -36.445)">
           <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-                fill="url(#zen-media-grad-back-f35)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-media-border" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1574,7 +1286,7 @@
         <rect class="zen-media-bg" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-media-gradient" x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262"
-              fill="url(#zen-media-grad-front-f35)" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" fill-opacity="1" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <g class="zen-media-mountain" transform="translate(0.289, 32.609)">
           <path class="zen-media-mountain-path" d="M7.432 21.147 L17.865 12.11 C19.665 10.596 21.373 9.862 23.173 9.862 C25.158 9.862 27.005 10.596 28.805 12.202 L36.191 18.853 L54.84 2.431 C56.779 0.734 58.81 0 61.072 0 C63.334 0 65.55 0.826 67.35 2.477 L84.568 18.67 L92 25.78 C92 35.23 87.153 40 77.551 40 L14.495 40 C4.801 40 0 35.275 0 25.78 Z"
                 fill="context-stroke"/>

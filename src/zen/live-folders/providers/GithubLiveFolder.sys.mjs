@@ -242,6 +242,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     const baseQuery = [
       this.state.type === "pull-requests" ? "is:pr" : "is:issue",
       "is:open",
+      "archived:false",
       "sort:updated-desc",
     ];
 

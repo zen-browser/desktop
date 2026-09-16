@@ -17,7 +17,7 @@
 }
 
 .urlbar {
-  --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
+  --urlbarview-separator-color: light-dark(hsl(0, 0%, 85%), hsl(0, 0%, 15%));
   --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   --urlbarView-results-padding: 10px !important;
@@ -284,7 +284,7 @@
     background-color: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
     box-shadow: 0 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
     backdrop-filter: none !important;
-    outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
+    outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) !important;
     outline-offset: var(--zen-urlbar-outline-offset) !important;
 
     /* stylelint-disable-next-line media-query-no-invalid */
@@ -295,7 +295,7 @@
 
   &,
   .urlbar-background {
-    border-radius: 12px !important;
+    border-radius: 14px !important;
   }
 
   &[breakout-extend][animate-searchmode="true"]::before {

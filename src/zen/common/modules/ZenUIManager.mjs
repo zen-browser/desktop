@@ -990,14 +990,7 @@ window.gZenVerticalTabsManager = {
     });
 
     ChromeUtils.defineLazyGetter(this, "hidesTabsToolbar", () => {
-      return (
-        document.documentElement
-          .getAttribute("chromehidden")
-          ?.includes("toolbar") ||
-        document.documentElement
-          .getAttribute("chromehidden")
-          ?.includes("menubar")
-      );
+      return document.documentElement.hasAttribute("popup-window");
     });
 
     XPCOMUtils.defineLazyPreferenceGetter(

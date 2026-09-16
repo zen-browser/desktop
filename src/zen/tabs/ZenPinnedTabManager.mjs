@@ -374,6 +374,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         case "reset-switch":
         case "switch":
           if (behavior.includes("unload")) {
+            if (pinnedTabs.some(tab => tab.selected)) {
+              const selectedTabs = pinnedTabs.filter(tab => tab.selected);
+              const tabToBlurTo = gBrowser._findTabToBlurTo(
+                selectedTabs[0],
+                pinnedTabs
+              );
+              gBrowser.selectedTab = tabToBlurTo;
+            }
             for (const tab of pinnedTabs) {
               if (tab.hasAttribute("glance-id")) {
                 // We have a glance tab inside the tab we are trying to unload,

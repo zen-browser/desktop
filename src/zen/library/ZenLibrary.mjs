@@ -140,14 +140,21 @@ export class ZenLibrary extends MozLitElement {
       this.removeAttribute("open");
     }
 
-    if (isPastWindowButtonSwitchPoint && !this.#libraryOnRight) {
+    if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {
       this.#adoptWindowButtons();
-    } else if (
-      !isPastWindowButtonSwitchPoint &&
-      (!this.#libraryOnRight || this.#hasAdoptedButtons)
-    ) {
+    } else if (!isPastWindowButtonSwitchPoint) {
       this.#restoreWindowButtons();
     }
+  }
+
+  /**
+   * Whether the window buttons sit in the sidebar column the library covers.
+   */
+  get #coversWindowButtons() {
+    if (!gZenVerticalTabsManager.isWindowsStyledButtons) {
+      return !this.#libraryOnRight;
+    }
+    return this.#libraryOnRight && !this.#isCompactMode;
   }
 
   get openProgress() {

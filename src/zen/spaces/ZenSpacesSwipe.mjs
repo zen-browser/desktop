@@ -297,7 +297,6 @@ export class ZenSpacesSwipe {
 
     if (this._swipeState.isSwipingLibrary) {
       lazy.ZenLibrary.stopSwipe(null);
-      return;
     }
 
     // Reset swipe state

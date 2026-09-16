@@ -139,8 +139,10 @@ export class ZenLibrary extends MozLitElement {
 
     if (isOpen && !wasOpen) {
       this.setAttribute("open", "true");
+      document.documentElement.setAttribute("zen-library-open", "true");
     } else if (!isOpen && wasOpen) {
       this.removeAttribute("open");
+      document.documentElement.removeAttribute("zen-library-open");
     }
 
     if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {

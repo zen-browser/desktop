@@ -876,7 +876,8 @@ zen-library {
   }
 }
 
-:root:not([zen-sidebar-expanded="true"]) #zen-sidebar-splitter {
+:root:not([zen-sidebar-expanded="true"]) #zen-sidebar-splitter,
+:root[zen-library-open="true"] #zen-sidebar-splitter {
   display: none !important;
 }
 

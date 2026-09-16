@@ -463,6 +463,10 @@ zen-library {
   & > toolbarbutton:not(#zen-workspaces-button) {
     padding: 0 !important;
   }
+
+  :root[zen-right-side="true"][zen-sidebar-expanded="true"] & {
+    flex-direction: row-reverse;
+  }
 }
 
 #tabbrowser-arrowscrollbox {
@@ -567,7 +571,6 @@ zen-library {
 
   & #zen-sidebar-foot-buttons {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     width: 100%;
     position: relative;

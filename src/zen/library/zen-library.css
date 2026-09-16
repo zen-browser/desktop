@@ -11,7 +11,7 @@
 }
 
 #navigator-toolbox {
-  --toolbox-progress: min(1, calc(var(--library-progress) * 2));
+  --toolbox-progress: min(1, calc(var(--library-progress) * 1.5));
 
   transform: scale(calc(1 - var(--toolbox-progress) * 0.04));
   opacity: calc(1 - var(--toolbox-progress));
@@ -38,6 +38,8 @@ zen-library {
   --zen-library-pill-bg: color-mix(in srgb, currentColor 7%, transparent);
   --zen-library-pill-hover-bg: color-mix(in srgb, currentColor 12%, transparent);
   --zen-library-radius: 12px;
+
+  contain: content;
 
   position: absolute;
   top: 0;

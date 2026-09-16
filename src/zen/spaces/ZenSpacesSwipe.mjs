@@ -244,7 +244,7 @@ export class ZenSpacesSwipe {
       const DAMPING_DIMENSION = 0.2;
       const RUBBER_BAND_CONSTANT = 0.08;
 
-      const LIBRARY_SWIPE_FULL = 1.4;
+      const LIBRARY_SWIPE_FULL = 0.8;
       const translation = libraryOnRight ? -translateX : translateX;
       const deltaProgress = (translation / stripWidth) * LIBRARY_SWIPE_FULL;
       const progress = this._swipeState.beforeLibraryState + deltaProgress;

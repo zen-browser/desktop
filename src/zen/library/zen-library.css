@@ -30,6 +30,10 @@
   }
 }
 
+:root:not([zen-sidebar-expanded="true"]) .zen-library-window-buttons-clone {
+  display: none;
+}
+
 zen-library {
   --zen-library-pill-bg: color-mix(in srgb, currentColor 7%, transparent);
   --zen-library-pill-hover-bg: color-mix(in srgb, currentColor 12%, transparent);
@@ -125,6 +129,9 @@ zen-library[transitioning] #zen-library-content {
 @media (-moz-platform: macos) {
   #zen-library-header {
     padding: 12px 0 0 9px;
+    & .titlebar-buttonbox-container {
+      margin-left: 0 !important;
+    }
   }
 }
 

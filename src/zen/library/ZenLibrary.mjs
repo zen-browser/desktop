@@ -171,7 +171,16 @@ export class ZenLibrary extends MozLitElement {
       this.#originalButtonsNextSibling = {
         isNext: realButtons.nextSibling,
         sibling: realButtons.nextSibling || realButtons.previousSibling,
+        clone: realButtons.cloneNode(true),
       };
+
+      this.#originalButtonsNextSibling.clone.classList.add("zen-library-window-buttons-clone");
+      if (this.#originalButtonsNextSibling.isNext) {
+        this.#originalButtonsNextSibling.sibling.before(this.#originalButtonsNextSibling.clone);
+      } else {
+        this.#originalButtonsNextSibling.sibling.after(this.#originalButtonsNextSibling.clone);
+      }
+
       this._header.appendChild(realButtons);
     }
   }
@@ -183,6 +192,7 @@ export class ZenLibrary extends MozLitElement {
 
     const realButtons = gZenVerticalTabsManager.actualWindowButtons;
     if (this.#originalButtonsNextSibling) {
+      this.#originalButtonsNextSibling.clone.remove();
       if (this.#originalButtonsNextSibling.isNext) {
         this.#originalButtonsNextSibling.sibling.before(realButtons);
       } else {

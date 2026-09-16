@@ -6,10 +6,7 @@ import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
-  CustomizableWidgets:
-    "moz-src:///browser/components/customizableui/CustomizableWidgets.sys.mjs",
-  ZenLibraryWidget:
-      "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
+  ZenLibraryWidget: "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
 });
 
 export const ZenCustomizableUI = new (class {
@@ -25,6 +22,9 @@ export const ZenCustomizableUI = new (class {
   ];
 
   startup(CustomizableUIInternal) {
+    // The built-in widgets are defined before this runs, so it goes in the
+    // same way on its own.
+    CustomizableUIInternal.createBuiltinWidget(lazy.ZenLibraryWidget);
     CustomizableUIInternal.registerArea(
       "zen-sidebar-top-buttons",
       {
@@ -50,7 +50,6 @@ export const ZenCustomizableUI = new (class {
   init(window) {
     this.#addSidebarButtons(window);
     this.#modifyToolbarButtons(window);
-    this.#addWidgets(window);
   }
 
   #addSidebarButtons(window) {
@@ -160,24 +159,6 @@ export const ZenCustomizableUI = new (class {
         false /* attributesOverride */,
         event
       );
-    });
-  }
-
-  #addWidgets(window) {
-    const ZenWidgets = [
-      lazy.ZenLibraryWidget,
-    ];
-
-    ZenWidgets.forEach(widget => {
-      // Assign window here as we do not have access
-      // to it inside the widget
-      widget.window = window;
-
-      window.CustomizableUI.createWidget(
-        widget,
-        window.CustomizableUI.SOURCE_BUILTIN
-      );
-      lazy.CustomizableWidgets.push(widget);
     });
   }
 

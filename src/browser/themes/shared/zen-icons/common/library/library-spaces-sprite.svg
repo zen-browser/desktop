@@ -11,21 +11,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f0">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f0">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f0)">
         <g class="zen-spaces-back-card" transform="translate(51.28 61.69) rotate(-17.5) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f0)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -34,7 +26,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f0)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -47,21 +39,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f1">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f1">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f1)">
         <g class="zen-spaces-back-card" transform="translate(51.487 62.124) rotate(-16.529) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f1)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -70,7 +54,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f1)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -83,21 +67,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f2">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f2">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f2)">
         <g class="zen-spaces-back-card" transform="translate(51.953 63.103) rotate(-14.337) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f2)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -106,7 +82,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f2)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -119,21 +95,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f3">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f3">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f3)">
         <g class="zen-spaces-back-card" transform="translate(52.541 64.338) rotate(-11.575) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f3)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -142,7 +110,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f3)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -155,21 +123,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f4">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f4">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f4)">
         <g class="zen-spaces-back-card" transform="translate(53.173 65.665) rotate(-8.603) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f4)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -178,7 +138,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f4)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -191,21 +151,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f5">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f5">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f5)">
         <g class="zen-spaces-back-card" transform="translate(53.802 66.986) rotate(-5.646) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f5)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -214,7 +166,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f5)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -227,21 +179,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f6">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f6">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f6)">
         <g class="zen-spaces-back-card" transform="translate(54.396 68.234) rotate(-2.853) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f6)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -250,7 +194,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f6)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -263,21 +207,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f7">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f7">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f7)">
         <g class="zen-spaces-back-card" transform="translate(54.933 69.362) rotate(-0.329) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f7)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -286,7 +222,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f7)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -299,21 +235,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f8">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f8">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f8)">
         <g class="zen-spaces-back-card" transform="translate(55.396 70.334) rotate(1.845) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f8)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -322,7 +250,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f8)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -335,21 +263,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f9">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f9">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f9)">
         <g class="zen-spaces-back-card" transform="translate(55.772 71.122) rotate(3.61) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f9)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -358,7 +278,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f9)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -371,21 +291,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f10">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f10">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f10)">
         <g class="zen-spaces-back-card" transform="translate(56.05 71.706) rotate(4.917) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f10)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -394,7 +306,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f10)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -407,21 +319,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f11">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f11">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f11)">
         <g class="zen-spaces-back-card" transform="translate(56.221 72.067) rotate(5.725) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f11)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -430,7 +334,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f11)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -443,21 +347,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f12">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f12">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f12)">
         <g class="zen-spaces-back-card" transform="translate(56.28 72.19) rotate(6) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f12)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -466,7 +362,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f12)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -479,21 +375,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f13">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f13">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f13)">
         <g class="zen-spaces-back-card" transform="translate(56.16 71.791) rotate(5.19) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f13)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -502,7 +390,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f13)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -515,21 +403,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f14">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f14">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f14)">
         <g class="zen-spaces-back-card" transform="translate(55.793 70.566) rotate(2.704) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f14)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -538,7 +418,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f14)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -551,21 +431,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f15">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f15">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f15)">
         <g class="zen-spaces-back-card" transform="translate(55.189 68.552) rotate(-1.383) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f15)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -574,7 +446,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f15)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -587,21 +459,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f16">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f16">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f16)">
         <g class="zen-spaces-back-card" transform="translate(54.408 65.947) rotate(-6.669) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f16)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -610,7 +474,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f16)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -623,21 +487,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f17">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f17">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f17)">
         <g class="zen-spaces-back-card" transform="translate(53.556 63.109) rotate(-12.428) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f17)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -646,7 +502,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f17)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -659,21 +515,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f18">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f18">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f18)">
         <g class="zen-spaces-back-card" transform="translate(52.757 60.445) rotate(-17.835) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f18)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -682,7 +530,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f18)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -695,21 +543,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f19">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f19">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f19)">
         <g class="zen-spaces-back-card" transform="translate(52.102 58.261) rotate(-22.267) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f19)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -718,7 +558,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f19)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -731,21 +571,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f20">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f20">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f20)">
         <g class="zen-spaces-back-card" transform="translate(51.636 56.707) rotate(-25.422) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f20)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -754,7 +586,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f20)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -767,21 +599,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f21">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f21">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f21)">
         <g class="zen-spaces-back-card" transform="translate(51.366 55.806) rotate(-27.249) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f21)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -790,7 +614,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f21)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -803,21 +627,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f22">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f22">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f22)">
         <g class="zen-spaces-back-card" transform="translate(51.28 55.52) rotate(-27.83) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f22)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -826,7 +642,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f22)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -839,21 +655,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f23">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f23">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f23)">
         <g class="zen-spaces-back-card" transform="translate(51.28 55.544) rotate(-27.79) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f23)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -862,7 +670,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f23)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -875,21 +683,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f24">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f24">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f24)">
         <g class="zen-spaces-back-card" transform="translate(51.28 55.623) rotate(-27.657) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f24)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -898,7 +698,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f24)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -911,21 +711,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f25">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f25">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f25)">
         <g class="zen-spaces-back-card" transform="translate(51.28 55.769) rotate(-27.413) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f25)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -934,7 +726,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f25)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -947,21 +739,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f26">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f26">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f26)">
         <g class="zen-spaces-back-card" transform="translate(51.28 55.998) rotate(-27.03) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f26)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -970,7 +754,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f26)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -983,21 +767,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f27">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f27">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f27)">
         <g class="zen-spaces-back-card" transform="translate(51.28 56.332) rotate(-26.47) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f27)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1006,7 +782,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f27)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1019,21 +795,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f28">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f28">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f28)">
         <g class="zen-spaces-back-card" transform="translate(51.28 56.805) rotate(-25.678) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f28)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1042,7 +810,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f28)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1055,21 +823,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f29">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f29">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f29)">
         <g class="zen-spaces-back-card" transform="translate(51.28 57.46) rotate(-24.582) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f29)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1078,7 +838,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f29)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1091,21 +851,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f30">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f30">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f30)">
         <g class="zen-spaces-back-card" transform="translate(51.28 58.342) rotate(-23.105) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f30)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1114,7 +866,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f30)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1127,21 +879,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f31">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f31">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f31)">
         <g class="zen-spaces-back-card" transform="translate(51.28 59.428) rotate(-21.286) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f31)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1150,7 +894,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f31)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1163,21 +907,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f32">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f32">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f32)">
         <g class="zen-spaces-back-card" transform="translate(51.28 60.486) rotate(-19.516) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f32)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1186,7 +922,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f32)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1199,21 +935,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f33">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f33">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f33)">
         <g class="zen-spaces-back-card" transform="translate(51.28 61.219) rotate(-18.288) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f33)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1222,7 +950,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f33)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1235,21 +963,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f34">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f34">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f34)">
         <g class="zen-spaces-back-card" transform="translate(51.28 61.588) rotate(-17.671) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f34)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1258,7 +978,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f34)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>
@@ -1271,21 +991,13 @@
             <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
           </g>
         </mask>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back-f35">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-        <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front-f35">
-          <stop offset="0" stop-color="context-fill"/>
-          <stop offset="1" stop-color="context-stroke"/>
-        </linearGradient>
-      </defs>
+        </defs>
       <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask-f35)">
         <g class="zen-spaces-back-card" transform="translate(51.28 61.69) rotate(-17.5) translate(-35.022 -44.68)">
           <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="context-fill" fill-opacity="1"/>
           <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-                fill="url(#zen-spaces-grad-back-f35)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+                fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
           <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
                 fill="none" stroke="context-stroke" stroke-width="7.1"/>
         </g>
@@ -1294,7 +1006,7 @@
         <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="context-fill" fill-opacity="1"/>
         <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-              fill="url(#zen-spaces-grad-front-f35)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+              fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
         <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
               fill="none" stroke="context-stroke" stroke-width="7.1"/>
       </g>

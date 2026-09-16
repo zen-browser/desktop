@@ -244,9 +244,31 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     return url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
   }
 
+  /**
+   * A visit drags as a link, so it can be dropped onto content, the tab
+   * strip or another app.
+   *
+   * @param {DragEvent} event
+   * @param {object} visit
+   */
+  #onDragStart(event, visit) {
+    const { dataTransfer } = event;
+    const title = visit.title || visit.url;
+    dataTransfer.setData("text/x-moz-url", `${visit.url}\n${title}`);
+    dataTransfer.setData("text/uri-list", visit.url);
+    dataTransfer.setData("text/plain", visit.url);
+    dataTransfer.effectAllowed = "copyLink";
+    dataTransfer.addElement(event.currentTarget);
+  }
+
   #renderVisit(visit) {
     return html`
-      <div class="zen-library-row" @click=${() => this.#openVisit(visit)}>
+      <div
+        class="zen-library-row"
+        draggable="true"
+        @click=${() => this.#openVisit(visit)}
+        @dragstart=${event => this.#onDragStart(event, visit)}
+      >
         <img class="zen-library-row-icon" src="page-icon:${visit.url}" alt="" />
         <div class="zen-library-row-text">
           <span class="zen-library-row-title">${visit.title || visit.url}</span>
@@ -255,16 +277,22 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
           >
         </div>
         <div class="zen-library-row-actions">
-          <button
+          <toolbarbutton
+            class="toolbarbutton-1"
             data-l10n-id="library-history-forget-button"
             @click=${event => {
               event.stopPropagation();
               this.#forgetVisit(visit);
             }}
           >
-            <img src="chrome://browser/skin/zen-icons/trash.svg" alt="" />
-          </button>
-          <button
+            <img
+              class="toolbarbutton-icon"
+              src="chrome://browser/skin/zen-icons/trash.svg"
+              alt=""
+            />
+          </toolbarbutton>
+          <toolbarbutton
+            class="toolbarbutton-1"
             data-l10n-id="library-history-reopen-button"
             @click=${event => {
               event.stopPropagation();
@@ -272,10 +300,11 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
             }}
           >
             <img
+              class="toolbarbutton-icon"
               src="chrome://browser/skin/zen-icons/arrow-rotate-anticlockwise.svg"
               alt=""
             />
-          </button>
+          </toolbarbutton>
         </div>
       </div>
     `;

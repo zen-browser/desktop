@@ -161,8 +161,7 @@ zen-library[transitioning] #zen-library-content {
   position: relative;
   justify-content: center;
   align-items: center;
-  padding: 12px 0;
-  background: transparent;
+  padding: 16px 0;
   font-weight: 600;
   flex-direction: column;
   gap: 4px;
@@ -171,10 +170,13 @@ zen-library[transitioning] #zen-library-content {
     text-align: center;
   }
 
+  isolation: isolate;
+
   &::before {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: -2;
     border-radius: 8px;
     transition: transform 0.1s ease-in-out;
   }
@@ -217,10 +219,15 @@ zen-library[transitioning] #zen-library-content {
   width: calc(36 * var(--zen-library-sprite-size));
   height: var(--zen-library-sprite-size);
   background-size: 100% 100%;
-  fill: rgba(255, 255, 255, 0.8);
-  stroke: var(--zen-colors-primary);
+  --stroke: light-dark(var(--zen-colors-primary), var(--zen-accent-button-color));
+  fill: color-mix(in srgb, var(--stroke), light-dark(white, black) 70%);
+  stroke: var(--stroke);
   -moz-context-properties: fill, stroke;
   transform: translateX(0);
+}
+
+.zen-library-tab:not([active]) .zen-library-tab-icon-image {
+  fill: transparent;
 }
 
 [data-section="history"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
@@ -229,6 +236,32 @@ zen-library[transitioning] #zen-library-content {
 
 [data-section="downloads"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
   background-image: url("chrome://browser/skin/zen-icons/library/library-downloads-sprite.svg");
+}
+
+zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]::after {
+  --border-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0,0,0,.8), white) 70%);
+
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 16px;
+  left: 50%;
+  translate: -50% 0;
+  width: var(--zen-library-sprite-size);
+  height: var(--zen-library-sprite-size);
+  box-sizing: border-box;
+  border: 3px solid transparent;
+  border-radius: 100%;
+  background:
+    conic-gradient(
+        var(--zen-accent-button-background) var(--zen-library-download-progress, 0%),
+        var(--border-color) 0
+      )
+      border-box,
+    color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%)
+      padding-box;
+  box-shadow: 0 0 6px 2px rgba(0,0,0,.1);
+  pointer-events: none;
 }
 
 [data-section="boosts"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
@@ -472,6 +505,12 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   margin-inline: 2px 1px;
   -moz-context-properties: fill;
   fill: currentColor;
+
+  zen-library-downloads-section & {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+  }
 }
 
 .zen-library-row-text {
@@ -502,35 +541,50 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   display: flex;
   gap: 4px;
 
-  & button {
+  /* Shown while the row is hovered; outranks the library's button rule. */
+  #zen-library-panel & toolbarbutton {
     display: none;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    border: none;
-    border-radius: var(--zen-library-radius);
-    background: transparent;
-    color: inherit;
 
     .zen-library-row:is(:hover, [menu-open]) & {
-      display: flex;
+      display: inline-flex;
     }
+  }
+}
 
-    &:hover {
-      background: color-mix(in srgb, currentColor 14%, transparent);
-    }
+#zen-library-panel .toolbarbutton-1 {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 var(--toolbarbutton-padding-outer);
+  border: none;
+  background: none;
 
-    & :is(img, svg) {
-      display: block;
-      width: 18px;
-      height: 18px;
-      -moz-context-properties: fill;
-      fill: currentColor;
-      opacity: 0.85;
-    }
+  & > .toolbarbutton-icon {
+    display: block;
+    box-sizing: content-box;
+    width: 16px;
+    height: 16px;
+    padding: var(--toolbarbutton-padding-inner);
+    border-radius: var(--toolbarbutton-border-radius);
+    -moz-context-properties: fill;
+    fill: var(--toolbarbutton-icon-fill);
+  }
+
+  &:not([disabled]):hover > .toolbarbutton-icon {
+    background-color: var(--toolbarbutton-background-color-hover);
+  }
+
+  &:not([disabled]):is(:hover:active, [open]) > .toolbarbutton-icon {
+    background-color: var(--toolbarbutton-background-color-active);
+  }
+
+  .zen-library-row-actions & > .toolbarbutton-icon {
+    width: 18px;
+    height: 18px;
+    padding: 8px;
+    border-radius: var(--zen-library-radius);
   }
 }
 
@@ -757,7 +811,6 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
     inset: -4px -6px;
     z-index: -1;
     border-radius: var(--border-radius-medium);
-    background: transparent;
     pointer-events: none;
   }
 
@@ -835,9 +888,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
 
 .zen-library-space-icon,
 .zen-library-space-name,
-.zen-library-space-name-input,
-.zen-library-space-button,
-.zen-library-space-actions {
+.zen-library-space-name-input {
   margin: 0;
   padding: 0;
   border: none;
@@ -910,39 +961,6 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   box-shadow: none;
   border-radius: 0;
   -moz-appearance: none;
-}
-
-.zen-library-space-button,
-.zen-library-space-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-
-  &:hover {
-    background: color-mix(in srgb, currentColor 14%, transparent);
-  }
-
-  & img {
-    width: 14px;
-    height: 14px;
-    -moz-context-properties: fill;
-    fill: currentColor;
-    pointer-events: none;
-  }
-}
-
-.zen-library-space-button:not(:hover) {
-  opacity: 0.6;
-}
-
-.zen-library-space-footer :is(.zen-library-space-button, .zen-library-space-actions) {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
 }
 
 .zen-library-space-handle {

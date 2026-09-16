@@ -148,15 +148,15 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
     const fromElsewhere = tabs.filter(
       tab => tab.getAttribute("zen-workspace-id") !== uuid
     );
+    const strip = gBrowser.tabContainer.tabDragAndDrop;
+    const copyBefore = this.#section.copyForTab(tabs[0]);
+    const placeBefore = copyBefore && strip._placeOf(copyBefore);
     if (fromElsewhere.length) {
       gZenWorkspaces.moveTabsToWorkspace(fromElsewhere, uuid);
     }
     const split = this._handle_dropCreateSplit(event, { activate: false });
     this.clearDragOverVisuals();
-    if (!split) {
-      if (!target) {
-        return;
-      }
+    if (!split && target) {
       const { element, dropBefore, intoFolder } = target;
       if (intoFolder) {
         element.addTabs(moving);
@@ -182,20 +182,28 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
         }
       }
     }
-    this.#land(tabs[0]);
+    this.#land(tabs[0], placeBefore);
   }
 
   get #landingSupported() {
     return AppConstants.platform === "macosx" && !gReduceMotion;
   }
 
-  #land(tab) {
+  /**
+   * @param {Element} tab - The dropped tab
+   * @param {string|null} placeBefore - Where its copy was before the drop;
+   *   a copy still there stays in sight under the image
+   */
+  #land(tab, placeBefore) {
     if (!this.#landingSupported) {
       return;
     }
     const copy = this.#section.beginTabLanding(tab);
     if (copy) {
-      gBrowser.tabContainer.tabDragAndDrop._landDragImageOnElements([copy]);
+      gBrowser.tabContainer.tabDragAndDrop._landDragImageOnElements(
+        [copy],
+        new Map([[copy, placeBefore]])
+      );
     }
   }
 
@@ -251,10 +259,19 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
       copy = copy.group;
     }
     const element = copy && this._targetForDrop(copy);
-    if (
-      !element ||
-      moving.some(moved => moved === element || moved.contains(element))
-    ) {
+    if (!element) {
+      // A card with nothing in it takes the drop at its start.
+      const strip = event.target.closest(".zen-library-space-tabs");
+      if (strip && !this.#lastRow(strip)) {
+        this.#target = null;
+        gZenFolders.highlightGroupOnDragOver(null);
+        this.#placeIndicatorIn(strip, 0);
+        return;
+      }
+      this.clearDragOverVisuals();
+      return;
+    }
+    if (moving.some(moved => moved === element || moved.contains(element))) {
       this.clearDragOverVisuals();
       return;
     }
@@ -308,14 +325,23 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
     }
     gZenFolders.highlightGroupOnDragOver(null);
     const strip = copy.closest(".zen-library-space-tabs");
-    const stripRect = strip.getBoundingClientRect();
+    this.#placeIndicatorIn(
+      strip,
+      (dropBefore ? rect.top : rect.bottom) - strip.getBoundingClientRect().top
+    );
+  }
+
+  /**
+   * @param {Element} strip - A card's tab strip
+   * @param {number} offset - Where in the strip's view the drop would go
+   */
+  #placeIndicatorIn(strip, offset) {
     const inset = 14;
     this._placeDropIndicator({
       parent: strip,
       left: inset,
-      width: stripRect.width - 2 * inset,
-      top:
-        (dropBefore ? rect.top : rect.bottom) - stripRect.top + strip.scrollTop,
+      width: strip.getBoundingClientRect().width - 2 * inset,
+      top: offset + strip.scrollTop,
     });
   }
 }

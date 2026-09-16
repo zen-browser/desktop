@@ -26,21 +26,13 @@
         <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
       </g>
     </mask>
-    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back">
-      <stop offset="0" stop-color="context-fill"/>
-      <stop offset="1" stop-color="context-stroke"/>
-    </linearGradient>
-    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front">
-      <stop offset="0" stop-color="context-fill"/>
-      <stop offset="1" stop-color="context-stroke"/>
-    </linearGradient>
-  </defs>
+    </defs>
   <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask)">
     <g class="zen-spaces-back-card" style="transform-origin: 0 0; transform: translate(51.28px, 61.69px) rotate(-17.5deg) translate(-35.022px, -44.68px);">
       <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
             fill="context-fill" fill-opacity="1"/>
       <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-            fill="url(#zen-spaces-grad-back)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+            fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
       <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
             fill="none" stroke="context-stroke" stroke-width="7.1"/>
     </g>
@@ -49,7 +41,7 @@
     <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
           fill="context-fill" fill-opacity="1"/>
     <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
-          fill="url(#zen-spaces-grad-front)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+          fill="context-fill" style="mix-blend-mode: overlay; opacity: 0.1;"/>
     <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
           fill="none" stroke="context-stroke" stroke-width="7.1"/>
   </g>

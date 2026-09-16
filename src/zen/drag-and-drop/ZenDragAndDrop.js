@@ -166,7 +166,9 @@
         tab.style.visibility = "hidden";
       }
       this._dropLandingArmed =
-        options.armLanding ?? (!args[0]?.fromTabList && this.getDropEffectForTabDrag(event) == "move");
+        options.armLanding ??
+        (!args[0]?.fromTabList &&
+          this.getDropEffectForTabDrag(event) == "move");
       this.ZenDragAndDropService.armDropLanding(this._dropLandingArmed);
     }
 
@@ -1135,7 +1137,7 @@
       const placesBefore = new Map(
         this.#draggedElements(event).map(element => [
           element,
-          this.#placeOf(element),
+          this._placeOf(element),
         ])
       );
       super.handle_drop(event);
@@ -1161,7 +1163,7 @@
       return (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
     }
 
-    #placeOf(element) {
+    _placeOf(element) {
       return `${element.screenX},${element.screenY}`;
     }
 
@@ -1180,16 +1182,19 @@
       if (gReduceMotion) {
         return;
       }
-      const elements = (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
-      this._landDragImageOnElements(elements);
+      this._landDragImageOnElements(this.#draggedElements(event), placesBefore);
     }
 
     /**
-     * Marks where the drag image should land.
+     * Marks where the drag image lands, one item per element in order, and
+     * keeps those elements out of sight until the drag ends.
      *
      * @param {Element[]} elements - Where the dropped items land
+     * @param {Map<Element, string>} [placesBefore] - Where each element was
+     *   before the drop; one still there stays in sight under the image
      */
-    _landDragImageOnElements(elements) {
+    _landDragImageOnElements(elements, placesBefore = null) {
+      const landing = [];
       for (const element of elements) {
         const { width, height } = element.getBoundingClientRect();
         this.ZenDragAndDropService.addDropLandingRect(
@@ -1198,7 +1203,7 @@
           Math.round(width),
           Math.round(height)
         );
-        if (placesBefore.get(element) !== this.#placeOf(element)) {
+        if (placesBefore?.get(element) !== this._placeOf(element)) {
           element.style.visibility = "hidden";
           landing.push(element);
         }

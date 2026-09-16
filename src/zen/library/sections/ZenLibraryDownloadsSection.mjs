@@ -537,29 +537,39 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
 
   #renderCancelButton(download) {
     return html`
-      <button
+      <toolbarbutton
+        class="toolbarbutton-1"
         data-l10n-id="library-downloads-cancel-button"
         @click=${event => {
           event.stopPropagation();
           this.#cancelDownload(download);
         }}
       >
-        <img src="chrome://browser/skin/zen-icons/close.svg" alt="" />
-      </button>
+        <img
+          class="toolbarbutton-icon"
+          src="chrome://browser/skin/zen-icons/close.svg"
+          alt=""
+        />
+      </toolbarbutton>
     `;
   }
 
   #renderRetryButton(download) {
     return html`
-      <button
+      <toolbarbutton
+        class="toolbarbutton-1"
         data-l10n-id="library-downloads-retry-button"
         @click=${event => {
           event.stopPropagation();
           this.#retryDownload(download);
         }}
       >
-        <img src="chrome://browser/skin/zen-icons/reload.svg" alt="" />
-      </button>
+        <img
+          class="toolbarbutton-icon"
+          src="chrome://browser/skin/zen-icons/reload.svg"
+          alt=""
+        />
+      </toolbarbutton>
     `;
   }
 
@@ -596,7 +606,8 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
           ${when(this.#canRetry(download), () =>
             this.#renderRetryButton(download)
           )}
-          <button
+          <toolbarbutton
+            class="toolbarbutton-1"
             data-l10n-id="library-downloads-more-button"
             @click=${event => {
               event.stopPropagation();
@@ -608,12 +619,12 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
               );
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-              <circle cx="3" cy="8" r="1.5" />
-              <circle cx="8" cy="8" r="1.5" />
-              <circle cx="13" cy="8" r="1.5" />
-            </svg>
-          </button>
+            <img
+              class="toolbarbutton-icon"
+              src="chrome://global/skin/icons/more.svg"
+              alt=""
+            />
+          </toolbarbutton>
         </div>
       </div>
     `;

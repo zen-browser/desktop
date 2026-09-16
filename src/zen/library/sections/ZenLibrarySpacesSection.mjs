@@ -16,6 +16,27 @@ const SCROLL_STEP_PX = 12;
 
 // Events the copies fire while being built that the rest of the browser must
 // not mistake for real tab strip changes.
+// Changes to the real strips that the copies must follow. Attribute changes
+// count only for what a copy shows.
+const STRIP_EVENTS = [
+  "TabOpen",
+  "TabClose",
+  "TabMove",
+  "TabPinned",
+  "TabUnpinned",
+  "TabHide",
+  "TabShow",
+  "TabAttrModified",
+  "TabGrouped",
+  "TabUngrouped",
+  "TabGroupCreate",
+  "TabGroupRemoved",
+  "TabGroupMoved",
+  "TabGroupCollapse",
+  "TabGroupExpand",
+];
+const SHOWN_ATTRIBUTES = ["label", "image", "pending", "muted", "soundplaying"];
+
 const CONTAINED_EVENTS = [
   "TabGrouped",
   "TabUngrouped",
@@ -49,6 +70,27 @@ export class ZenLibrarySpacesSection extends MozLitElement {
 
   #observer = { observe: () => this.requestUpdate() };
   #onDataChanged = () => this.requestUpdate();
+  #onStripEvent = event => {
+    // The copies raise the same events as they are built; those are not
+    // changes to the real strips.
+    if (this.contains(event.target)) {
+      return;
+    }
+    if (
+      event.type === "TabAttrModified" &&
+      !event.detail?.changed?.some(attr => SHOWN_ATTRIBUTES.includes(attr))
+    ) {
+      return;
+    }
+    this.#scheduleStripsRefresh(
+      event.type === "TabAttrModified"
+        ? event.target.getAttribute("zen-workspace-id")
+        : null
+    );
+  };
+  #refreshTimer = null;
+  /** @type {Set<string>|null} The spaces to rebuild, or null for every card */
+  #pendingSpaces = new Set();
   #resizeObserver = new ResizeObserver(() => this.#updateLibraryWidth());
   #onScroll = event => {
     if (event.target.classList.contains("zen-library-space-body")) {
@@ -59,6 +101,14 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     this.#landing = false;
     this.#dnd.clearDragOverVisuals();
     this.#refreshStrips();
+  };
+  // A drag from a copy ran on the strip's drag and drop, whose own drag end
+  // only hears drags from the strip; it gets to finish this one too. The
+  // event comes to the copy itself, which the drop's rebuild has taken out
+  // of the document by then, so it never reaches the window.
+  #onCopyDragEnd = event => {
+    gBrowser.tabContainer.tabDragAndDrop.handle_dragend(event);
+    this.#onDragEnd();
   };
   #landing = false;
   /** @type {WeakMap<Element, Element>} copied tab or group to the real one */
@@ -93,6 +143,9 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     for (const type of CONTAINED_EVENTS) {
       this.addEventListener(type, this.#containEvent, true);
     }
+    for (const type of STRIP_EVENTS) {
+      window.addEventListener(type, this.#onStripEvent);
+    }
   }
 
   disconnectedCallback() {
@@ -106,6 +159,11 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     for (const type of CONTAINED_EVENTS) {
       this.removeEventListener(type, this.#containEvent, true);
     }
+    for (const type of STRIP_EVENTS) {
+      window.removeEventListener(type, this.#onStripEvent);
+    }
+    clearTimeout(this.#refreshTimer);
+    this.#refreshTimer = null;
     this.library?.style.removeProperty("--zen-library-content-width");
   }
 
@@ -159,6 +217,30 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   }
 
   /**
+   * Rebuilds copies shortly, once a burst of changes has settled.
+   *
+   * @param {string|null} uuid - The space that changed, or null for all
+   */
+  #scheduleStripsRefresh(uuid) {
+    if (this.#pendingSpaces) {
+      if (uuid) {
+        this.#pendingSpaces.add(uuid);
+      } else {
+        this.#pendingSpaces = null;
+      }
+    }
+    if (this.#refreshTimer) {
+      return;
+    }
+    this.#refreshTimer = setTimeout(() => {
+      this.#refreshTimer = null;
+      const uuids = this.#pendingSpaces;
+      this.#pendingSpaces = new Set();
+      this.#refreshStrips(uuids);
+    }, 100);
+  }
+
+  /**
    * Rebuilds copies right away, unless a dropped tab is mid-landing.
    *
    * @param {Set<string>|null} uuids - The spaces to rebuild, or null for every
@@ -194,7 +276,9 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       for (const section of [space.pinnedTabsContainer, space.tabsContainer]) {
         this.#appendCopy(strip, section);
       }
-      if (before) {
+      // Rows slide to their new places, unless the drag image is landing on
+      // the moved one, which is motion enough.
+      if (before && !this.#landing) {
         this.#animateRows(strip, before);
       }
     }
@@ -267,7 +351,12 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   }
 
   #appendCopy(container, node) {
-    if (node.nodeType !== Node.ELEMENT_NODE || node.hasAttribute("hidden")) {
+    // A closing tab stays in the strip through its animation, but is gone.
+    if (
+      node.nodeType !== Node.ELEMENT_NODE ||
+      node.hasAttribute("hidden") ||
+      node.closing
+    ) {
       return;
     }
     if (gBrowser.isTab(node)) {
@@ -380,7 +469,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   beginTabLanding(tab) {
     this.#landing = true;
     this.refreshStripsNow();
-    const copy = this.#copyForTab(tab);
+    const copy = this.copyForTab(tab);
     if (!copy?.isConnected) {
       return null;
     }
@@ -388,7 +477,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     return rect.width && rect.height ? copy : null;
   }
 
-  #copyForTab(tab) {
+  copyForTab(tab) {
     for (const card of this.#cards) {
       for (const copy of card.querySelectorAll(".zen-library-space-tabs tab")) {
         if (this.#realElements.get(copy) === tab) {
@@ -407,6 +496,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     const copy = target.closest("tab");
     if (copy) {
       this.#dnd.startTabDrag(event, copy);
+      copy.addEventListener("dragend", this.#onCopyDragEnd, { once: true });
     }
   };
 
@@ -668,21 +758,22 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       >
         <div class="zen-library-space-header">
           ${this.#renderIcon(workspace)} ${this.#renderName(workspace)}
-          <button
-            class="zen-library-space-button"
+          <toolbarbutton
+            class="toolbarbutton-1"
             data-l10n-id="library-spaces-theme-button"
             @click=${event => this.#openThemePicker(workspace, event)}
           >
             <img
+              class="toolbarbutton-icon"
               src="chrome://browser/skin/zen-icons/paintbrush-fill.svg"
               alt=""
             />
-          </button>
+          </toolbarbutton>
         </div>
         ${this.#renderStrip()}
         <div class="zen-library-space-footer">
-          <button
-            class="zen-library-space-button zen-library-space-handle"
+          <toolbarbutton
+            class="toolbarbutton-1 zen-library-space-handle"
             data-l10n-id="library-spaces-move-button"
             @pointerdown=${this.#onPointerDown}
             @pointermove=${this.#onPointerMove}
@@ -690,18 +781,23 @@ export class ZenLibrarySpacesSection extends MozLitElement {
             @pointercancel=${event => this.#onPointerUp(event, workspace)}
           >
             <img
+              class="toolbarbutton-icon"
               src="chrome://browser/skin/zen-icons/drag-indicator.svg"
               draggable="false"
               alt=""
             />
-          </button>
+          </toolbarbutton>
           <toolbarbutton
-            class="zen-library-space-actions"
+            class="toolbarbutton-1 zen-library-space-actions"
             zen-workspace-id=${workspace.uuid}
             data-l10n-id="library-spaces-actions-button"
             @click=${this.#openActions}
           >
-            <img src="chrome://global/skin/icons/more.svg" alt="" />
+            <img
+              class="toolbarbutton-icon"
+              src="chrome://global/skin/icons/more.svg"
+              alt=""
+            />
           </toolbarbutton>
         </div>
       </div>

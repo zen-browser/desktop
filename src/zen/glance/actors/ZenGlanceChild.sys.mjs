@@ -149,9 +149,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   on_mousedown(event) {
     this.#cancelLongPress();
-    if (!lazy.glanceEnabled) {
-      return;
-    }
 
     const { node, href, principal } = this.#getTargetFromEvent(event);
     // We record the link data anyway, even if the glance may be invoked

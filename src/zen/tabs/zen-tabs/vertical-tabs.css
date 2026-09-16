@@ -883,6 +883,10 @@ zen-library {
   display: none !important;
 }
 
+:root[zen-library-open="true"] #zen-sidebar-splitter {
+  pointer-events: none !important;
+}
+
 #zen-sidebar-splitter {
   opacity: 0;
   max-width: var(--zen-toolbox-padding) !important;

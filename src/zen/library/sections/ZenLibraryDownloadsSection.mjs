@@ -291,7 +291,8 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       if (!download.target.exists) {
         return strings.fileMovedOrMissing;
       }
-      const uri = URL.parse(download.source.url)?.URI;
+      const parsed = URL.parse(download.source.url);
+      const uri = parsed && Services.io.newURI(parsed.href);
       const host = uri
         ? lazy.BrowserUtils.formatURIForDisplay(uri, { onlyBaseDomain: true })
         : "";

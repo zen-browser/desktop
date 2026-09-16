@@ -185,11 +185,17 @@ export class ZenLibrary extends MozLitElement {
         clone: realButtons.cloneNode(true),
       };
 
-      this.#originalButtonsNextSibling.clone.classList.add("zen-library-window-buttons-clone");
+      this.#originalButtonsNextSibling.clone.classList.add(
+        "zen-library-window-buttons-clone"
+      );
       if (this.#originalButtonsNextSibling.isNext) {
-        this.#originalButtonsNextSibling.sibling.before(this.#originalButtonsNextSibling.clone);
+        this.#originalButtonsNextSibling.sibling.before(
+          this.#originalButtonsNextSibling.clone
+        );
       } else {
-        this.#originalButtonsNextSibling.sibling.after(this.#originalButtonsNextSibling.clone);
+        this.#originalButtonsNextSibling.sibling.after(
+          this.#originalButtonsNextSibling.clone
+        );
       }
 
       this._header.appendChild(realButtons);

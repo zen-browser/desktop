@@ -21,12 +21,6 @@ const BADGE_MARKUP = `
   </span>
 `;
 
-/**
- * A window's download stack: the badge on the library button, and the list
- * of the latest downloads that rises above the sidebar's foot buttons while
- * the button is hovered. Its state goes on the foot buttons and the tab
- * strip as attributes; the stylesheet animates from there.
- */
 class ZenLibraryDownloadStack {
   #button;
   #badge;
@@ -243,9 +237,6 @@ class ZenLibraryDownloadStack {
     }
   }
 
-  // The list shows the newest downloads, newest at the bottom, closest to
-  // the button.
-
   #updateList() {
     const shown = this.#downloads.slice(-ENTRIES);
     const unused = ENTRIES - shown.length;
@@ -292,10 +283,6 @@ class ZenLibraryDownloadStack {
       );
   }
 
-  /**
-   * The button carries the badge while the newest download is under way or
-   * has just arrived; otherwise the list's entry does.
-   */
   #updateBadgeShowing() {
     this.#footButtons.toggleAttribute(
       "zen-library-badge",

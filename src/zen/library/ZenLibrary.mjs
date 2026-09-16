@@ -113,10 +113,10 @@ export class ZenLibrary extends MozLitElement {
   set openProgress(value) {
     const p = value;
     const stealWindowButtonsPastPoint = 0.6;
-    const wasOpen = this.#progress > 0;
+    const wasOpen = this.#progress > 0.001;
     this.#progress = p;
     const isPastWindowButtonSwitchPoint = p > stealWindowButtonsPastPoint;
-    const isOpen = p > 0;
+    const isOpen = p > 0.001;
 
     let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
     const compactModeOffsetDirection = this.#libraryOnRight

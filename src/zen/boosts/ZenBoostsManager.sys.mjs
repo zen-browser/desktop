@@ -652,6 +652,7 @@ class nsZenBoostsManager {
     );
 
     const progressListener = {
+      QueryInterface: ChromeUtils.generateQI(["nsIWebProgressListener"]),
       onLocationChange: webProgress => {
         if (webProgress.isTopLevel) {
           editor.close();
@@ -659,7 +660,17 @@ class nsZenBoostsManager {
       },
     };
     const onTabSelect = editor.close.bind(editor);
-    if (!browser) {
+    if (browser) {
+      browser.addProgressListener(progressListener);
+      editor.addEventListener(
+        "unload",
+        () => {
+          browser.removeProgressListener(progressListener);
+          editor.browser = null;
+        },
+        { once: true }
+      );
+    } else {
       // Close the editor if the tab is switched or navigates.
       parentWindow.gBrowser.tabContainer.addEventListener(
         "TabSelect",

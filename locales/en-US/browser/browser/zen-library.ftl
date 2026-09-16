@@ -2,6 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+zen-library-button =
+    .label = Library
+    .tooltiptext = Library
+
+library-footer-close-button =
+    .tooltiptext = Close library
+library-footer-donate-button =
+    .tooltiptext = Donate to Zen
+
 library-history-section-title = History
 library-downloads-section-title = Downloads
 library-boosts-section-title = Boosts

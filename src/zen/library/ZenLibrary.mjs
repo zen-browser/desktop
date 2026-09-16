@@ -86,6 +86,9 @@ export class ZenLibrary extends MozLitElement {
 
   static get isLibrarySlightlyOpen() {
     const lib = this.getInstance(/* createIfMissing = */ false);
+    if (!lib) {
+      return false;
+    }
     // Due to calculation inaccuracies assume
     // that openProgress never goes back to 0
     return lib.openProgress > 0.001;

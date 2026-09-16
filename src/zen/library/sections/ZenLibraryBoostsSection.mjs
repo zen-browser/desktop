@@ -98,12 +98,6 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
     lazy.gZenBoostsManager.toggleBoostActiveForDomain(boost.domain, boost.id);
   }
 
-  /**
-   * A disabled boost is enabled first; an enabled one opens for editing.
-   *
-   * @param {object} boost - The clicked boost
-   * @param {Element} row - Its row
-   */
   #onRowClick(boost, row) {
     if (boost.enabled) {
       this.#edit(boost, row);
@@ -112,14 +106,6 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
     }
   }
 
-  /**
-   * Opens the site in a detached glance and the boost editor next to it. The
-   * editor closes itself on the next top-level location change, so it waits
-   * until the glance has actually navigated.
-   *
-   * @param {object} boost - The boost to edit
-   * @param {Element} row - The row the glance animates out of
-   */
   async #edit(boost, row) {
     if (this.#glanceBrowser) {
       return;
@@ -143,7 +129,6 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
     const { browser } = glance;
     this.#glanceBrowser = browser;
     glance.closed.then(() => {
-      // The editor lives and dies with the glance.
       this.#glanceBrowser = null;
       this.#editor?.close();
       this.#editor = null;

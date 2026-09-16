@@ -8,11 +8,13 @@
   display: none !important;
 }
 
-zen-folder {
+:root {
   --zen-folder-behind-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color) 60%, gray), color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1));
   --zen-folder-front-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color), white 70%), color-mix(in srgb, var(--zen-primary-color), black 40%));
   --zen-folder-stroke: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
+}
 
+zen-folder {
   display: flex;
   flex-direction: column;
   visibility: visible;

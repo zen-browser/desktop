@@ -259,6 +259,8 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     dataTransfer.setData("text/plain", visit.url);
     dataTransfer.effectAllowed = "copyLink";
     dataTransfer.addElement(event.currentTarget);
+    // eslint-disable-next-line mozilla/valid-services
+    Services.zen.playHapticFeedback();
   }
 
   #renderVisit(visit) {

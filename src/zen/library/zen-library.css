@@ -18,14 +18,14 @@
 }
 
 #zen-main-app-wrapper[zen-compact-mode="true"] #navigator-toolbox {
-  @media -moz-pref('zen.view.compact.hide-tabbar') {
+  @media -moz-pref('zen.view.compact.hide-tabbar') or -moz-pref('zen.view.use-single-toolbar') {
     transform: translateX(calc(var(--toolbox-progress) * -100%));
     opacity: 1;
   }
 }
 
 :root[zen-right-side="true"] #zen-main-app-wrapper[zen-compact-mode="true"] #navigator-toolbox {
-  @media -moz-pref('zen.view.compact.hide-tabbar') {
+  @media -moz-pref('zen.view.compact.hide-tabbar') or -moz-pref('zen.view.use-single-toolbar') {
     transform: translateX(calc(var(--toolbox-progress) * 100%));
   }
 }
@@ -499,6 +499,8 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   gap: 14px;
   padding: 10px 12px;
   border-radius: 16px;
+  /* The open library window is draggable; let rows be dragged as items. */
+  -moz-window-dragging: no-drag;
 
   &:hover {
     background: color-mix(in srgb, currentColor 10%, transparent);

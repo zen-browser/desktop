@@ -460,6 +460,8 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     dataTransfer.effectAllowed = "copyMove";
     dataTransfer.setData("text/uri-list", Services.io.newFileURI(file).spec);
     dataTransfer.addElement(event.currentTarget);
+    // eslint-disable-next-line mozilla/valid-services
+    Services.zen.playHapticFeedback();
   }
 
   // Context menu

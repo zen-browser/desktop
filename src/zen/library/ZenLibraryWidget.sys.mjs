@@ -15,6 +15,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const ENTRIES = 4;
 const CLOSE_DELAY_MS = 200;
+const FILE_MIME = "application/x-moz-file";
 const BADGE_MARKUP = `
   <span class="zen-library-download-badge no-squircles">
     <span class="zen-library-download-progress no-squircles"></span>
@@ -196,6 +197,10 @@ class ZenLibraryDownloadStack {
     }
     this.#entries = [...list.children];
     for (const entry of this.#entries) {
+      entry.setAttribute("draggable", "true");
+      entry.addEventListener("dragstart", event =>
+        this.#onDragStart(event, entry.download)
+      );
       entry.addEventListener("click", event => {
         if (event.button === 0) {
           this.#openDownload(entry.download);
@@ -235,6 +240,21 @@ class ZenLibraryDownloadStack {
     } else if (download.source?.url) {
       this.#window.openTrustedLinkIn(download.source.url, "tab");
     }
+  }
+
+  #onDragStart(event, download) {
+    if (!download?.succeeded || download.deleted || !download.target?.exists) {
+      event.preventDefault();
+      return;
+    }
+    const file = new lazy.FileUtils.File(download.target.path);
+    const { dataTransfer } = event;
+    dataTransfer.mozSetDataAt(FILE_MIME, file, 0);
+    dataTransfer.effectAllowed = "copyMove";
+    dataTransfer.setData("text/uri-list", Services.io.newFileURI(file).spec);
+    dataTransfer.addElement(event.currentTarget);
+    // eslint-disable-next-line mozilla/valid-services
+    Services.zen.playHapticFeedback();
   }
 
   #updateList() {

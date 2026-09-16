@@ -22,8 +22,6 @@ export const ZenCustomizableUI = new (class {
   ];
 
   startup(CustomizableUIInternal) {
-    // The built-in widgets are defined before this runs, so it goes in the
-    // same way on its own.
     CustomizableUIInternal.createBuiltinWidget(lazy.ZenLibraryWidget);
     CustomizableUIInternal.registerArea(
       "zen-sidebar-top-buttons",

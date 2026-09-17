@@ -52,14 +52,18 @@ export class ZenUrlbarProviderPinnedTabs extends UrlbarProvider {
         continue;
       }
       for (const tab of win.gBrowser.tabs) {
-        if (
-          !tab.pinned ||
-          typeof tab.zenStaticLabel != "string" ||
-          !tab.zenStaticLabel
-        ) {
+        if (!tab.pinned) {
           continue;
         }
-        if (tab.zenStaticLabel.toLocaleLowerCase().includes(needle)) {
+        const candidates = [
+          tab.zenStaticLabel,
+          tab.linkedBrowser?.contentTitle,
+        ].filter(candidate => typeof candidate == "string" && candidate);
+        if (
+          candidates.some(candidate =>
+            candidate.toLocaleLowerCase().includes(needle)
+          )
+        ) {
           tabs.push([win, tab]);
         }
       }
@@ -87,7 +91,7 @@ export class ZenUrlbarProviderPinnedTabs extends UrlbarProvider {
           source: UrlbarShared.RESULT_SOURCE.TABS,
           payload: {
             url,
-            title: tab.zenStaticLabel,
+            title: tab.zenStaticLabel || tab.linkedBrowser?.contentTitle,
             icon: win.gBrowser.getIcon(tab),
             userContext: UrlbarUtils.getUserContextData(userContextId),
             tabGroup: tab.group?.id ?? null,

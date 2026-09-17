@@ -592,8 +592,43 @@ window.gZenUIManager = {
     this._prevUrlbarLabel = gURLBar._untrimmedValue || "";
 
     // Set up URL bar for new tab
-    gURLBar._zenHandleUrlbarClose = (onSwitch, onElementPicked) =>
-      this.handleUrlbarClose(closeSeq, onSwitch, onElementPicked);
+    gURLBar._zenPickPending = null;
+    gURLBar._zenHandleUrlbarClose = (onSwitch, onElementPicked, tab) => {
+      const pending = gURLBar._zenPickPending;
+      gURLBar._zenPickPending = null;
+      this.handleUrlbarClose(
+        closeSeq,
+        onSwitch,
+        onElementPicked || !!pending,
+        tab ?? null,
+        pending ? pending.focused : gURLBar.focused
+      );
+    };
+    gURLBar._zenOnPickStart = () => {
+      gURLBar._zenPickPending = {
+        focused: gURLBar.focused,
+        tab: gBrowser.selectedTab,
+      };
+    };
+    gURLBar._zenSettlePick = () => {
+      const pending = gURLBar._zenPickPending;
+      if (!pending) {
+        return;
+      }
+      if (!gURLBar._zenHandleUrlbarClose) {
+        gURLBar._zenPickPending = null;
+        return;
+      }
+      /* _zenSettlePick is invoked synchronously after _zenOnPickStart at the
+       * end of the pick. If the selected tab changed in the meantime it should
+       * be safe to assume it was because it was picked by the url bar. */
+      const switched = gBrowser.selectedTab !== pending.tab;
+      gURLBar._zenHandleUrlbarClose(
+        switched,
+        true,
+        switched ? gBrowser.selectedTab : null
+      );
+    };
     this._urlbarOwner = closeSeq;
     gURLBar.setAttribute("zen-newtab", true);
 
@@ -634,7 +669,13 @@ window.gZenUIManager = {
     this._lastSearch = "";
   },
 
-  handleUrlbarClose(closeSeq, onSwitch = false, onElementPicked = false) {
+  handleUrlbarClose(
+    closeSeq,
+    onSwitch = false,
+    onElementPicked = false,
+    tab = null,
+    focused = gURLBar.focused
+  ) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn("Browser state invalid for URL bar close operation");
@@ -646,69 +687,68 @@ window.gZenUIManager = {
       gURLBar._zenHandleUrlbarClose = null;
     }
 
-    const isFocusedBefore = gURLBar.focused;
+    const isFocusedBefore = focused;
+
+    window.dispatchEvent(
+      new CustomEvent("ZenURLBarClosed", {
+        detail: { onSwitch, onElementPicked, closeSeq, tab },
+      })
+    );
+
+    if (!this._isOwner(closeSeq)) {
+      return;
+    }
     setTimeout(() => {
       /* If someone else opened the url bar in the meantime don't be
        * stingy and leave it open for them.*/
-      if (this._isOwner(closeSeq)) {
-        // We use this attribute on Tabbrowser::addTab
-        gURLBar.removeAttribute("zen-newtab");
+      // We use this attribute on Tabbrowser::addTab
+      gURLBar.removeAttribute("zen-newtab");
 
-        // Safely restore tab visual state with proper validation
-        if (
-          this._lastTab &&
-          !this._lastTab.closing &&
-          this._lastTab.documentGlobal &&
-          !this._lastTab.documentGlobal.closed &&
-          gBrowser.selectedTab === this._lastTab
-        ) {
-          this._lastTab._visuallySelected = true;
-          this._lastTab = null;
-        }
-
-        // Reset newtab buttons
-        for (const button of this.newtabButtons) {
-          button.removeAttribute("in-urlbar");
-        }
-
-        // Handle search data
-        if (onSwitch) {
-          this.clearUrlbarData();
-        } else {
-          this._lastSearch = gURLBar._untrimmedValue || "";
-
-          if (this._clearTimeout) {
-            clearTimeout(this._clearTimeout);
-          }
-
-          this._clearTimeout = setTimeout(() => {
-            this.clearUrlbarData();
-          }, this.urlbarWaitToClear);
-        }
-
-        // Safely restore URL bar state with proper validation
-        if (this._prevUrlbarLabel) {
-          gURLBar.setURI({
-            uri: this._prevUrlbarLabel,
-            dueToTabSwitch: onSwitch,
-            isSameDocument: !onSwitch,
-          });
-        }
-
-        gURLBar.handleRevert();
+      // Safely restore tab visual state with proper validation
+      if (
+        this._lastTab &&
+        !this._lastTab.closing &&
+        this._lastTab.documentGlobal &&
+        !this._lastTab.documentGlobal.closed &&
+        gBrowser.selectedTab === this._lastTab
+      ) {
+        this._lastTab._visuallySelected = true;
+        this._lastTab = null;
       }
+
+      // Reset newtab buttons
+      for (const button of this.newtabButtons) {
+        button.removeAttribute("in-urlbar");
+      }
+
+      // Handle search data
+      if (onSwitch) {
+        this.clearUrlbarData();
+      } else {
+        this._lastSearch = gURLBar._untrimmedValue || "";
+
+        if (this._clearTimeout) {
+          clearTimeout(this._clearTimeout);
+        }
+
+        this._clearTimeout = setTimeout(() => {
+          this.clearUrlbarData();
+        }, this.urlbarWaitToClear);
+      }
+
+      // Safely restore URL bar state with proper validation
+      if (this._prevUrlbarLabel) {
+        gURLBar.setURI({
+          uri: this._prevUrlbarLabel,
+          dueToTabSwitch: onSwitch,
+          isSameDocument: !onSwitch,
+        });
+      }
+
+      gURLBar.handleRevert();
 
       if (isFocusedBefore) {
         setTimeout(() => {
-          window.dispatchEvent(
-            new CustomEvent("ZenURLBarClosed", {
-              detail: { onSwitch, onElementPicked, closeSeq },
-            })
-          );
-
-          if (!this._isOwner(closeSeq)) {
-            return;
-          }
           this._urlbarOwner = null;
 
           gURLBar.view.close({ elementPicked: onElementPicked });

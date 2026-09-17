@@ -866,7 +866,9 @@ class nsZenWorkspaces {
       !this._shouldOverrideTabs
     ) {
       const tabs = gBrowser.tabs;
-      if (Services.prefs.getBoolPref("zen.workspaces.continue-where-left-off")) {
+      if (
+        Services.prefs.getBoolPref("zen.workspaces.continue-where-left-off")
+      ) {
         this._tabToSelect = this._sessionSelected - 1;
       }
       if (

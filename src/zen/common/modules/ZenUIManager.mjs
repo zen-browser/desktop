@@ -1404,17 +1404,36 @@ window.gZenVerticalTabsManager = {
 
       if (isSingleToolbar) {
         this._navbarParent = navBar.parentElement;
-        let elements = document.querySelectorAll(
-          '#nav-bar-customization-target > :is([cui-areatype="toolbar"], .chromeclass-toolbar-additional):not(#urlbar-container):not(toolbarspring)'
+        let elements = Array.from(
+          document.querySelectorAll(
+            '#nav-bar-customization-target > :is([cui-areatype="toolbar"], .chromeclass-toolbar-additional):not(#urlbar-container):not(toolbarspring)'
+          )
         );
-        elements = Array.from(elements).reverse();
+        let normalButtons = [];
+        let extensionButtons = [];
+        for (const element of elements) {
+          if (
+            element.hasAttribute("data-extensionid") &&
+            Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true)
+          ) {
+            extensionButtons.push(element);
+          } else {
+            normalButtons.push(element);
+          }
+        }
         // Add separator if it doesn't exist
         if (!this._hasSetSingleToolbar) {
           buttonsTarget.append(this._topButtonsSeparatorElement);
         }
         this._hasSetSingleToolbar = true;
-        for (const button of elements) {
+        for (const button of normalButtons.reverse()) {
           this.appendCustomizableItem(this._topButtonsSeparatorElement, button);
+        }
+        for (const extension of extensionButtons) {
+          this.appendCustomizableItem(
+            this._topButtonsSeparatorElement,
+            extension
+          );
         }
         buttonsTarget.prepend(
           document.getElementById("unified-extensions-button")

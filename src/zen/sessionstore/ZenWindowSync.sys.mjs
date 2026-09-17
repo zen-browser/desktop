@@ -383,6 +383,12 @@ class nsZenWindowSync {
 
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
+    // The library builds copies of tabs and folders that fire these same
+    // events while being built. Their ids are suffixed with "-copy" (see
+    // ZenLibrarySpacesSection#renameIds), so never sync anything from one.
+    if (aEvent.target?.id?.endsWith("-copy")) {
+      return;
+    }
     if (
       !window.gZenStartup.isReady ||
       !window.gZenWorkspaces?.shouldHaveWorkspaces ||

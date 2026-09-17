@@ -800,3 +800,15 @@
     display: none;
   }
 }
+
+#tabbrowser-tabs:is([zen-library-stack-open], [zen-library-stack-closing]) {
+  --gradient-pos: calc(100% - var(--zen-library-stack-height, 0px));
+  mask-image: linear-gradient(
+    to bottom,
+    black
+      calc(var(--gradient-pos) - 60px),
+    color-mix(transparent calc(var(--zen-library-progress) * 100%), black)
+      var(--gradient-pos));
+}
+
+%include zen-library-widget.css

@@ -1,0 +1,297 @@
+
+@property --zen-library-progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+#zen-sidebar-foot-buttons,
+#tabbrowser-tabs {
+  --zen-library-open-duration: 0.3s;
+  --zen-library-open-easing: linear(0, 0.34 12%, 0.7 24%, 0.93 38%, 1.03 55%, 1);
+  transition: --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
+
+  &[zen-library-stack-open] {
+    --zen-library-progress: 1;
+  }
+}
+
+#zen-library-button {
+  position: relative;
+
+  --zen-library-sprite-size: 18px;
+  &::before {
+    content: "";
+    position: absolute;
+    width: var(--zen-library-sprite-size);
+    height: var(--zen-library-sprite-size);
+    background-image: url("chrome://browser/skin/zen-icons/library/library-sprite.svg");
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      animation: zen-library-sprite-unhover 0.3s steps(36, jump-none);
+    }
+    &:hover::before {
+      animation: zen-library-sprite-hover 0.35s steps(36, jump-none) forwards;
+    }
+  }
+}
+
+#zen-library-button > .toolbarbutton-badge-stack {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: none !important;
+  pointer-events: none;
+
+  &[downloading] {
+    animation: 0.4s library-badge-download ease;
+  }
+
+  /* The badge flies from its spot on the button to the newest entry's badge
+   * along an arc, the target being set as the list opens. */
+  & #library-button-badge {
+    position: absolute;
+    margin: 0 !important;
+    transform-origin: left top;
+
+    --zen-library-badge-x: 14px;
+    --zen-library-badge-y: -8px;
+    --zen-library-badge-to-x: var(--zen-library-badge-x);
+    --zen-library-badge-to-y: var(--zen-library-badge-y);
+    --zen-library-badge-mid-x: calc(
+      (var(--zen-library-badge-x) + var(--zen-library-badge-to-x)) / 2 +
+        abs(var(--zen-library-badge-to-y) - var(--zen-library-badge-y)) / 2
+    );
+    --zen-library-badge-mid-y: calc(
+      (var(--zen-library-badge-y) + var(--zen-library-badge-to-y)) / 2 -
+        abs(var(--zen-library-badge-to-x) - var(--zen-library-badge-x)) / 2
+    );
+    --zen-library-left: calc(1 - var(--zen-library-progress));
+    left: calc(
+      var(--zen-library-left) * var(--zen-library-left) * var(--zen-library-badge-x) +
+        2 * var(--zen-library-left) * var(--zen-library-progress) * var(--zen-library-badge-mid-x) +
+        var(--zen-library-progress) * var(--zen-library-progress) * var(--zen-library-badge-to-x)
+    );
+    top: calc(
+      var(--zen-library-left) * var(--zen-library-left) * var(--zen-library-badge-y) +
+        2 * var(--zen-library-left) * var(--zen-library-progress) * var(--zen-library-badge-mid-y) +
+        var(--zen-library-progress) * var(--zen-library-progress) * var(--zen-library-badge-to-y)
+    );
+
+    &:not([downloading]) {
+      transform: scale(calc((var(--zen-library-progress) * 0.5 + 0.5) * 100%));
+    }
+
+    &[downloading] {
+      transform: scale(calc((var(--zen-library-progress) * 0.2 + 0.8) * 100%));
+    }
+  }
+}
+
+#library-button-badge,
+#zen-sidebar-foot-buttons[zen-library-badge] #zen-library-download-list > :last-child .zen-library-download-badge {
+  visibility: hidden;
+}
+
+#zen-sidebar-foot-buttons[zen-library-badge] {
+  & #library-button-badge {
+    visibility: visible;
+  }
+
+  &[zen-library-stack-open] {
+    & #library-button-badge {
+      visibility: hidden;
+      transition: visibility 0s var(--zen-library-open-duration);
+    }
+
+    & #zen-library-download-list > :last-child .zen-library-download-badge {
+      visibility: visible;
+      transition: visibility 0s var(--zen-library-open-duration);
+    }
+  }
+}
+
+.zen-library-download-badge {
+  pointer-events: none;
+}
+
+.zen-library-download-badge:not([downloading]) {
+  background-image: var(--download-image);
+  width: 20px;
+  height: 20px;
+  border-radius: 8px;
+  background-size: cover;
+  scale: 2;
+
+  & .zen-library-download-progress {
+    display: none !important;
+  }
+}
+
+.zen-library-download-badge[downloading] {
+  will-change: transform;
+  align-self: start;
+  transform: translateX(-2px);
+
+  --border-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0,0,0,.8), white) 70%);
+
+  background-color: color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%);
+  border: 3px solid var(--border-color);
+  box-shadow: 0 0 6px 2px rgba(0,0,0,.1);
+  color: var(--border-color);
+  width: 25px;
+  height: 25px;
+  border-radius: 100%;
+
+  position: relative;
+}
+
+.zen-library-download-badge[downloading]::after {
+  background-image: url("chrome://browser/skin/zen-icons/forward.svg");
+  rotate: 90deg;
+
+  position: absolute;
+  content: '';
+  background-size: contain;
+  inset: 2px;
+  fill: currentColor;
+  -moz-context-properties: fill;
+}
+
+.zen-library-download-progress {
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+
+  --badge-size: 25px;
+  --border-width: 4px;
+  --size: calc(var(--badge-size) + 2 * var(--border-width));
+  margin: calc(-1 * var(--border-width));
+
+  --thickness: 3px;
+  --progress: var(--zen-accent-button-background);
+
+  background: conic-gradient(
+    from -0deg,
+    var(--progress) calc(var(--value) * 1%),
+    transparent 0
+  );
+
+  mask: radial-gradient(
+    circle closest-side,
+    transparent calc(100% - var(--thickness)),
+    black calc(100% - var(--thickness))
+  );
+}
+
+#zen-library-download-list {
+  width: 100%;
+  height: auto;
+
+  position: absolute;
+  bottom: 100%;
+
+  visibility: hidden;
+  transition: visibility 0s var(--zen-library-open-duration);
+
+  #zen-sidebar-foot-buttons[zen-library-stack-open] & {
+    visibility: visible;
+    transition: none;
+  }
+
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  padding-top: 10px;
+  gap: 4px;
+
+  .zen-library-download-list-download {
+    container-type: inline-size;
+    -moz-window-dragging: no-drag;
+
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    position: relative;
+    padding: 0 4px;
+
+    --zen-library-progress: 0;
+    --zen-library-entry-index: 0;
+    transition: --zen-library-progress 0.22s var(--zen-library-open-easing)
+      calc(var(--zen-library-entry-index) * 12ms);
+
+    &:nth-last-child(2) {
+      --zen-library-entry-index: 1;
+    }
+    &:nth-last-child(3) {
+      --zen-library-entry-index: 2;
+    }
+    &:nth-last-child(4) {
+      --zen-library-entry-index: 3;
+    }
+
+    #zen-sidebar-foot-buttons[zen-library-stack-open] & {
+      --zen-library-progress: 1;
+    }
+
+    transform: translateY(calc((1 - var(--zen-library-progress)) * 25px));
+    opacity: var(--zen-library-progress);
+
+    &:hover {
+      background: var(--zen-toolbar-element-bg);
+    }
+
+    & .zen-library-download-list-title-container {
+      @container (max-width: 50px) {
+        display: none !important;
+      }
+
+      margin: auto 0;
+      min-width: 0;
+      flex: 1;
+
+      & .zen-library-download-list-title {
+        font-size: 11pt;
+        opacity: 0.9;
+
+        text-overflow: ellipsis;
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      & .zen-library-download-list-subtitle {
+        font-size: 9pt;
+        opacity: 0.6;
+
+        text-overflow: ellipsis;
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
+    & .zen-library-download-badge {
+      margin: auto 20px auto 8px;
+      @container (max-width: 50px) {
+        margin: auto;
+      }
+    }
+
+    & .zen-library-download-action {
+      display: none;
+      margin: auto 4px auto 0;
+
+      @container (max-width: 50px) {
+        display: none !important;
+      }
+    }
+
+    &[downloading] .zen-library-download-action {
+      display: flex;
+      list-style-image: url("chrome://browser/skin/zen-icons/close.svg");
+    }
+  }
+}

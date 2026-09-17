@@ -411,3 +411,7 @@ menuseparator {
 #window-modal-dialog {
   inset: 0;
 }
+
+.tab-preview-thumbnail-container > canvas {
+  border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
+}

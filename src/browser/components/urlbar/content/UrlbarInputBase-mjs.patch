@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
-index 8be35b58c5369e123ca69426e852e3849bf75513..170cffbdd12a72dab15976cdab9207dc4292d4e6 100644
+index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da6e01bec5 100644
 --- a/browser/components/urlbar/content/UrlbarInputBase.mjs
 +++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
 @@ -83,6 +83,12 @@ if (lazy) {
@@ -347,7 +347,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..170cffbdd12a72dab15976cdab9207dc
          // Also ignore mousedown on the urlbarView context menu: opening/closing the
          // view is already handled by the result opening flow.
 -        if (event.target.closest?.("tab, #urlbarView-context-menu")) {
-+        if (event.target.closest?.("tab, #urlbarView-context-menu") || event.target.closest?.("#tabs-newtab-button")) {
++        if (event.target.closest?.("tab, #urlbarView-context-menu") || event.target.closest?.("menupopup") || event.target.closest?.("#tabs-newtab-button")) {
            break;
          }
  

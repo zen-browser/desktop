@@ -146,6 +146,20 @@ window.gZenUIManager = {
     });
   },
 
+  /**
+   * Shakes an element from side to side to catch the user's eye.
+   *
+   * @param {Element} element
+   * @param {number} delay Milliseconds to wait before shaking.
+   */
+  shakeElement(element, delay = 0) {
+    return this.elementAnimate(
+      element,
+      { x: [0, -12, 8, -4, 2, 0] },
+      { duration: 600, delay, easing: "ease-out" }
+    );
+  },
+
   _addNewCustomizableButtonsIfNeeded() {
     const kPref = "zen.ui.migration.compact-mode-button-added";
     let navbarPlacements = CustomizableUI.getWidgetIdsInArea(
@@ -1576,10 +1590,6 @@ window.gZenVerticalTabsManager = {
   },
 
   rebuildURLBarMenus() {
-    if (document.getElementById("paste-and-go")) {
-      return;
-    }
-    gURLBar._initCopyCutController();
     gURLBar.updatePlaceholder();
   },
 

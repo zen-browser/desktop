@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
-index 0ac5330223c84fbb98880a5c2d83ae58a8f3079e..f9d3d27333f5552404bd8a1138fb1e5d6150a3d8 100644
+index 0ac5330223c84fbb98880a5c2d83ae58a8f3079e..ff488cf5a2c8b7857a8e145e40aaf861cfa655ec 100644
 --- a/browser/components/urlbar/content/UrlbarShared.mjs
 +++ b/browser/components/urlbar/content/UrlbarShared.mjs
 @@ -158,6 +158,7 @@ export const UrlbarShared = {
@@ -71,3 +71,11 @@ index 0ac5330223c84fbb98880a5c2d83ae58a8f3079e..f9d3d27333f5552404bd8a1138fb1e5d
          case "UrlbarProviderOmnibox":
            return UrlbarShared.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":
+@@ -1060,6 +1080,7 @@ export const UrlbarShared = {
+       case "UrlbarProviderAboutPages":
+         return UrlbarShared.RESULT_GROUP.ABOUT_PAGES;
+       case "UrlbarProviderInputHistory":
++      case "ZenUrlbarProviderSidebar":
+         return UrlbarShared.RESULT_GROUP.INPUT_HISTORY;
+       case "UrlbarProviderQuickSuggest":
+         return UrlbarShared.RESULT_GROUP.GENERAL_PARENT;

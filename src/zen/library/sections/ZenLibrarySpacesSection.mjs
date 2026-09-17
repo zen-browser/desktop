@@ -190,8 +190,27 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     const sideWidth = window.windowUtils.getBoundsWithoutFlushing(side).width;
     this.library.style.setProperty(
       "--zen-library-content-width",
-      `${sideWidth + list.scrollWidth}px`
+      `${sideWidth + this.#cardsWidth(list)}px`
     );
+  }
+
+  /**
+   * The list stretches to the library, so its scroll width never gets
+   * smaller than the library already is. The cards' own extent does.
+   *
+   * @param {Element} list - The cards' scroller
+   * @returns {number} The width the cards need, the list's padding included
+   */
+  #cardsWidth(list) {
+    const cards = this.#cards;
+    const { paddingLeft, paddingRight } = window.getComputedStyle(list);
+    const padding = parseFloat(paddingLeft) + parseFloat(paddingRight);
+    if (!cards.length) {
+      return padding;
+    }
+    const first = cards[0];
+    const last = cards.at(-1);
+    return last.offsetLeft + last.offsetWidth - first.offsetLeft + padding;
   }
 
   get #cards() {
@@ -756,7 +775,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
         style=${styleMap(this.#themeStyles(workspace))}
         ?active=${workspace.uuid === gZenWorkspaces.activeWorkspace}
       >
-        <div class="zen-library-space-header">
+        <div class="zen-library-space-header zen-squircle-before">
           ${this.#renderIcon(workspace)} ${this.#renderName(workspace)}
           <toolbarbutton
             class="toolbarbutton-1"

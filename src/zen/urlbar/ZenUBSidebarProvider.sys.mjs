@@ -1,0 +1,212 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+import {
+  UrlbarProvider,
+  UrlbarUtils,
+} from "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs";
+import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
+
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  UrlbarPrefs: "moz-src:///browser/components/urlbar/UrlbarPrefs.sys.mjs",
+  UrlbarProviderOpenTabs:
+    "moz-src:///browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs",
+  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+});
+
+const DYNAMIC_TYPE_NAME = "zen-folders";
+
+export class ZenUrlbarProviderSidebar extends UrlbarProvider {
+  get name() {
+    return "ZenUrlbarProviderSidebar";
+  }
+
+  /**
+   * @returns {Values<typeof UrlbarShared.PROVIDER_TYPE>}
+   */
+  get type() {
+    return UrlbarShared.PROVIDER_TYPE.PROFILE;
+  }
+
+  async isActive(queryContext) {
+    // The sidebar data never holds tabs from private windows.
+    return (
+      !queryContext.isPrivate &&
+      !!queryContext.tokens.length &&
+      queryContext.sources.includes(UrlbarShared.RESULT_SOURCE.TABS) &&
+      lazy.UrlbarPrefs.get("suggest.openpage")
+    );
+  }
+
+  async startQuery(queryContext, addCallback) {
+    const sidebar = lazy.ZenSessionStore.getSidebarData();
+    if (!sidebar) {
+      return;
+    }
+    const tokens = queryContext.tokens.map(t => t.lowerCaseValue);
+    const matches = text => {
+      text = text.toLowerCase();
+      return tokens.every(token => text.includes(token));
+    };
+    this.#addFolders(sidebar, matches, addCallback);
+    this.#addTabs(sidebar, matches, queryContext, addCallback);
+  }
+
+  #addTabs(sidebar, matches, queryContext, addCallback) {
+    const openTabUrls = lazy.UrlbarProviderOpenTabs.getOpenTabUrls();
+    const activeSpace =
+      lazy.BrowserWindowTracker.getTopWindow().gZenWorkspaces.activeWorkspace;
+    let resultsAdded = 0;
+    for (const tabData of sidebar.tabs || []) {
+      // Essentials have no space, they are part of every one of them.
+      if (!tabData.zenEssential && tabData.zenWorkspace != activeSpace) {
+        continue;
+      }
+      const entries = tabData.entries || [];
+      const entry = entries[(tabData.index || entries.length) - 1];
+      const label = tabData.zenStaticLabel || entry?.title;
+      if (typeof label !== "string" || !label || !matches(label)) {
+        continue;
+      }
+      const url = entry?.url;
+      if (!url || url == queryContext.currentPage) {
+        // Don't suggest switching to the current tab.
+        continue;
+      }
+      const userContextId = tabData.userContextId || 0;
+      // The sidebar data can lag behind a navigation, only offer tabs that
+      // are still registered as open with this url.
+      const openTab = [...(openTabUrls.get(url) || [])].find(
+        ([contextId]) => contextId == userContextId
+      );
+      if (!openTab) {
+        continue;
+      }
+      addCallback(
+        this,
+        new lazy.UrlbarResult({
+          type: UrlbarShared.RESULT_TYPE.TAB_SWITCH,
+          source: UrlbarShared.RESULT_SOURCE.TABS,
+          payload: {
+            url,
+            title: label,
+            icon: UrlbarShared.getIconForUrl(url),
+            userContext: UrlbarUtils.getUserContextData(userContextId),
+            tabGroup: openTab[1],
+            action: lazy.UrlbarPrefs.get("secondaryActions.switchToTab")
+              ? UrlbarUtils.createTabSwitchSecondaryAction(userContextId)
+              : undefined,
+          },
+          highlights: {
+            url: UrlbarShared.HIGHLIGHT.TYPED,
+            title: UrlbarShared.HIGHLIGHT.TYPED,
+          },
+        })
+      );
+      if (++resultsAdded == queryContext.maxResults) {
+        return;
+      }
+    }
+  }
+
+  #addFolders(sidebar, matches, addCallback) {
+    const folders = new Map(
+      (sidebar.folders || []).map(folder => [folder.id, folder])
+    );
+    for (const folder of folders.values()) {
+      if (folder.splitViewGroup || !folder.name || !matches(folder.name)) {
+        continue;
+      }
+      const space = sidebar.spaces?.find(s => s.uuid == folder.workspaceId);
+      const path = [];
+      for (
+        let parent = folders.get(folder.parentId);
+        parent;
+        parent = folders.get(parent.parentId)
+      ) {
+        path.unshift(parent.name);
+      }
+      if (space?.name) {
+        path.unshift(space.name);
+      }
+      addCallback(
+        this,
+        new lazy.UrlbarResult({
+          type: UrlbarShared.RESULT_TYPE.DYNAMIC,
+          source: UrlbarShared.RESULT_SOURCE.TABS,
+          payload: {
+            dynamicType: DYNAMIC_TYPE_NAME,
+            zenFolderId: folder.id,
+            title: folder.name,
+            icon:
+              folder.userIcon || "chrome://browser/skin/zen-icons/folder.svg",
+            path: path.join(" / "),
+          },
+        })
+      );
+    }
+  }
+
+  getViewUpdate(result) {
+    return {
+      icon: { attributes: { src: result.payload.icon } },
+      titleStrong: {
+        textContent: result.payload.title,
+        attributes: { dir: "ltr" },
+      },
+      path: {
+        textContent: result.payload.path,
+        attributes: { dir: "ltr", hidden: !result.payload.path },
+      },
+    };
+  }
+
+  getViewTemplate() {
+    return {
+      attributes: {
+        selectable: true,
+      },
+      children: [
+        {
+          name: "icon",
+          tag: "img",
+          classList: ["urlbarView-favicon"],
+        },
+        {
+          name: "title",
+          tag: "span",
+          classList: ["urlbarView-title"],
+          children: [
+            {
+              name: "titleStrong",
+              tag: "strong",
+            },
+          ],
+        },
+        {
+          name: "path",
+          tag: "span",
+          classList: ["urlbarView-prettyName"],
+        },
+      ],
+    };
+  }
+
+  onEngagement(queryContext, controller, details) {
+    const { zenFolderId } = details.result.payload;
+    if (!zenFolderId) {
+      return;
+    }
+    const ownerGlobal = details.element.documentGlobal;
+    ownerGlobal.gBrowser.selectedBrowser.focus();
+    const folder = ownerGlobal.document.getElementById(zenFolderId);
+    if (folder?.isZenFolder) {
+      ownerGlobal.gZenFolders.revealFolder(folder);
+    }
+  }
+}

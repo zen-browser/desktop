@@ -2229,6 +2229,31 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     );
   }
 
+  /**
+   * Switches to the folder's space, expands its parents (root first) and the
+   * folder itself, then jiggles it so it's easy to spot.
+   *
+   * @param {MozTabbrowserTabGroup} folder The folder to reveal.
+   */
+  async revealFolder(folder) {
+    const workspaceId = folder.getAttribute("zen-workspace-id");
+    if (workspaceId && workspaceId != gZenWorkspaces.activeWorkspace) {
+      await gZenWorkspaces.changeWorkspaceWithID(workspaceId);
+    }
+    let collapsedRoot = folder.rootMostCollapsedFolder;
+    const wasCollapsed = !!collapsedRoot;
+    while (collapsedRoot) {
+      collapsedRoot.collapsed = false;
+      collapsedRoot = folder.rootMostCollapsedFolder;
+    }
+    const label = folder.labelElement.parentElement;
+    label.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    await gZenUIManager.shakeElement(
+      label,
+      wasCollapsed ? this.#folderRevealDuration * 1000 : 0
+    );
+  }
+
   styleCleanup(items) {
     items.forEach(item => {
       item.style.removeProperty("opacity");

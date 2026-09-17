@@ -12,6 +12,7 @@
 .tab-group-overflow-count,
 .tab-group-editor-swatch,
 .tab-preview-container-indicator,
+.tab-preview-thumbnail-container > canvas,
 #tabbrowser-tabs[orient='vertical']:not([expanded]) .tab-close-button,
 .all-tabs-item > toolbarbutton.all-tabs-container-indicator::before,
 .urlbarView-button,

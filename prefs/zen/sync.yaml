@@ -14,3 +14,304 @@
 
 - name: services.sync.prefs.sync.zen.spaces-sync.normal-tabs
   value: true
+
+# Tabs
+- name: services.sync.prefs.sync.zen.tabs.vertical
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.vertical.right-side
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.rename-tabs
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.show-newtab-vertical
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.close-window-with-empty
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.select-recently-used-on-close
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.folder-dragover-threshold-percent
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.dnd-switch-space-delay
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.open-pinned-in-new-tab
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.close-on-back-with-no-history
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.ctrl-tab.ignore-essential-tabs
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.ctrl-tab.ignore-pending-tabs
+  value: true
+
+- name: services.sync.prefs.sync.zen.ctrlTab.show-pending-tabs
+  value: true
+
+- name: services.sync.prefs.sync.zen.mediacontrols.enabled
+  value: true
+
+- name: services.sync.prefs.sync.zen.startup.smooth-scroll-in-tabs
+  value: true
+
+# URL bar
+- name: services.sync.prefs.sync.zen.urlbar.replace-newtab
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.show-protections-icon
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.show-contextual-id
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.behavior
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.wait-to-clear
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.show-domain-only-in-sidebar
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.hide-one-offs
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.enable-overrides
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.single-toolbar-show-copy-url
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.show-pip-button
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.open-on-startup
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.suggestions.quick-actions
+  value: true
+
+- name: services.sync.prefs.sync.browser.urlbar.shortcuts.workspaces
+  value: true
+
+# Workspaces
+- name: services.sync.prefs.sync.zen.workspaces.continue-where-left-off
+  value: true
+
+- name: services.sync.prefs.sync.zen.workspaces.hide-default-container-indicator
+  value: true
+
+- name: services.sync.prefs.sync.zen.workspaces.force-container-workspace
+  value: true
+
+- name: services.sync.prefs.sync.zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed
+  value: true
+
+- name: services.sync.prefs.sync.zen.workspaces.switch-animation-duration
+  value: true
+
+- name: services.sync.prefs.sync.zen.workspaces.wrap-around-navigation
+  value: true
+
+- name: services.sync.prefs.sync.zen.workspaces.separate-essentials
+  value: true
+
+- name: services.sync.prefs.sync.zen.pinned-tab-manager.wheel-close-if-pending
+  value: true
+
+- name: services.sync.prefs.sync.zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url
+  value: true
+
+- name: services.sync.prefs.sync.zen.pinned-tab-manager.close-shortcut-behavior
+  value: true
+
+# Glance
+- name: services.sync.prefs.sync.zen.glance.enabled
+  value: true
+
+- name: services.sync.prefs.sync.zen.glance.enable-contextmenu-search
+  value: true
+
+- name: services.sync.prefs.sync.zen.glance.open-essential-external-links
+  value: true
+
+- name: services.sync.prefs.sync.zen.glance.activation-method
+  value: true
+
+- name: services.sync.prefs.sync.zen.glance.animation-duration
+  value: true
+
+# Browser view
+- name: services.sync.prefs.sync.zen.view.use-single-toolbar
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.show-newtab-button-top
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.window.scheme
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.drag-window-from-content
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.drag-window-from-content.height-percentage
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.borderless-fullscreen
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.shift-down-site-on-hover
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.show-clear-tabs-button
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.draggable-sidebar
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.enable-loading-indicator
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.grey-out-inactive-windows
+  value: true
+
+# Compact mode
+- name: services.sync.prefs.sync.zen.view.compact.hide-tabbar
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.hide-toolbar
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.toolbar-flash-popup
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.toolbar-flash-popup.duration
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.toolbar-hide-after-hover.duration
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.sidebar-keep-hover.duration
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.animate-sidebar
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.show-sidebar-and-toolbar-on-hover
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.compact.show-background-tab-toast
+  value: true
+
+# Theme
+- name: services.sync.prefs.sync.zen.theme.accent-color
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.content-element-separation
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.dark-mode-bias
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.gradient.show-custom-colors
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.essentials-favicon-bg
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.disable-lightweight
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.use-system-colors
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.hide-tab-throbber
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.hide-unified-extensions-button
+  value: true
+
+- name: services.sync.prefs.sync.zen.theme.border-radius
+  value: true
+
+# Split view
+- name: services.sync.prefs.sync.zen.splitView.enable-tab-drop
+  value: true
+
+- name: services.sync.prefs.sync.zen.splitView.enable-tab-click-split
+  value: true
+
+- name: services.sync.prefs.sync.zen.splitView.enable-drag-over-split
+  value: true
+
+- name: services.sync.prefs.sync.zen.splitView.drag-over-split-delayMC
+  value: true
+
+- name: services.sync.prefs.sync.zen.splitView.drag-over-split-threshold
+  value: true
+
+# Folders
+- name: services.sync.prefs.sync.zen.folders.search.enabled
+  value: true
+
+- name: services.sync.prefs.sync.zen.folders.search.hover-delay
+  value: true
+
+- name: services.sync.prefs.sync.zen.folders.max-subfolders
+  value: true
+
+- name: services.sync.prefs.sync.zen.folders.owned-tabs-in-folder
+  value: true
+
+# Window sync
+- name: services.sync.prefs.sync.zen.window-sync.prefer-unsynced-windows
+  value: true
+
+- name: services.sync.prefs.sync.zen.window-sync.open-link-in-new-unsynced-window
+  value: true
+
+- name: services.sync.prefs.sync.zen.window-sync.sync-only-pinned-tabs
+  value: true
+
+# Downloads
+- name: services.sync.prefs.sync.zen.downloads.download-animation
+  value: true
+
+- name: services.sync.prefs.sync.zen.downloads.download-animation-duration
+  value: true
+
+- name: services.sync.prefs.sync.zen.downloads.icon-popup-position
+  value: true
+
+# Boosts
+- name: services.sync.prefs.sync.zen.boosts.enabled
+  value: true
+
+- name: services.sync.prefs.sync.zen.boosts.dissolve-on-zap
+  value: true
+
+# Mods
+- name: services.sync.prefs.sync.zen.mods.auto-update
+  value: true
+
+- name: services.sync.prefs.sync.zen.mods.auto-update-days
+  value: true
+
+# Updates
+- name: services.sync.prefs.sync.zen.updates.show-update-notification
+  value: true
+
+# Sharing
+- name: services.sync.prefs.sync.zen.share.dont-ask-before-sharing
+  value: true
+
+# Session store
+- name: services.sync.prefs.sync.zen.session-store.restore-unsynced-windows
+  value: true

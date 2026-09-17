@@ -8,7 +8,8 @@
 #zen-sidebar-foot-buttons,
 #tabbrowser-tabs {
   --zen-library-open-duration: 0.3s;
-  --zen-library-open-easing: linear(0, 0.34 12%, 0.7 24%, 0.93 38%, 1.03 55%, 1);
+  --zen-library-open-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --zen-library-entry-easing: linear(0, 0.34 12%, 0.7 24%, 0.93 38%, 1.03 55%, 1);
   transition: --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
 
   &[zen-library-stack-open] {
@@ -220,8 +221,13 @@
 
     --zen-library-progress: 0;
     --zen-library-entry-index: 0;
-    transition: --zen-library-progress 0.22s var(--zen-library-open-easing)
-      calc(var(--zen-library-entry-index) * 12ms);
+    --zen-library-entry-delay: calc(var(--zen-library-entry-index) * 12ms);
+    --zen-library-entry-settle: 0s;
+    transition:
+      --zen-library-progress 0.22s var(--zen-library-entry-easing) var(--zen-library-entry-delay),
+      pointer-events 0s var(--zen-library-entry-settle) allow-discrete;
+
+    pointer-events: none;
 
     &:nth-last-child(2) {
       --zen-library-entry-index: 1;
@@ -235,6 +241,8 @@
 
     #zen-sidebar-foot-buttons[zen-library-stack-open] & {
       --zen-library-progress: 1;
+      --zen-library-entry-settle: calc(0.22s + var(--zen-library-entry-delay));
+      pointer-events: auto;
     }
 
     transform: translateY(calc((1 - var(--zen-library-progress)) * 25px));

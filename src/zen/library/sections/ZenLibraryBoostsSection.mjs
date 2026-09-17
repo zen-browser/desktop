@@ -238,7 +238,7 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
           this.#openMenu(boost, event.currentTarget, event);
         }}
       >
-        <div class="zen-library-boost-icon">
+        <div class="zen-library-boost-icon zen-squircle-before">
           <img src="page-icon:https://${boost.domain}/" alt="" />
         </div>
         <div class="zen-library-row-text">

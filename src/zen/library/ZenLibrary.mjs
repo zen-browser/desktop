@@ -72,8 +72,10 @@ export class ZenLibrary extends MozLitElement {
       history: lazy.ZenLibraryHistorySection,
       downloads: lazy.ZenLibraryDownloadsSection,
       boosts: lazy.ZenLibraryBoostsSection,
-      spaces: lazy.ZenLibrarySpacesSection,
     };
+    if (!window.gZenWorkspaces.privateWindowOrDisabled) {
+      this.zenLibrarySections.spaces = lazy.ZenLibrarySpacesSection;
+    }
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
     this.#hijackFirefoxCommands();
@@ -383,7 +385,7 @@ export class ZenLibrary extends MozLitElement {
     if (!this.#isWrapperSwipeAttached) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
       this.#wrapperGestureControl =
-        window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(
+        window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
           appWrapper
         );
       this.#isWrapperSwipeAttached = true;
@@ -393,7 +395,7 @@ export class ZenLibrary extends MozLitElement {
   #detachWrapperOfSwipe() {
     if (this.#isWrapperSwipeAttached || this.#wrapperGestureControl) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
-      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
+      window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
         appWrapper,
         this.#wrapperGestureControl
       );
@@ -450,7 +452,7 @@ export class ZenLibrary extends MozLitElement {
     document.addEventListener("keydown", this.onKeyDown, true);
     this.#resizeObserver.observe(this);
 
-    window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
+    window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(this);
 
     this._tabOpen = this.onTabOpen.bind(this);
     window.addEventListener("TabOpen", this._tabOpen);

@@ -865,7 +865,7 @@ class nsZenWorkspaces {
       !removedEmptyTab &&
       !this._shouldOverrideTabs
     ) {
-      const tabs = gBrowser.tabs;
+      const tabs = gBrowser.tabs.filter(tab => !tab.collapsed);
       if (
         Services.prefs.getBoolPref("zen.workspaces.continue-where-left-off")
       ) {

@@ -35,7 +35,7 @@ const globalActionsTemplate = [
   {
     l10nId: "zen-action-open-theme-picker",
     command: "cmd_zenOpenZenThemePicker",
-    icon: "chrome://browser/skin/zen-icons/edit-theme.svg",
+    icon: "chrome://browser/skin/zen-icons/paintbrush-fill.svg",
   },
   {
     l10nId: "zen-action-new-split-view",

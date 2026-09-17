@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/Tabbrowser.sys.mjs b/browser/components/tabbrowser/Tabbrowser.sys.mjs
-index f68e37926001384d0c8e80a3c163dc89e9c4ee5c..350cebd50aa6ee58fbbbb53d0f5334aa074f1ac2 100644
+index f68e37926001384d0c8e80a3c163dc89e9c4ee5c..485ef24f3e3f5da02bfa4973ce87d89abb1c071b 100644
 --- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
 +++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
 @@ -484,6 +484,7 @@ export class Tabbrowser {
@@ -211,7 +211,7 @@ index f68e37926001384d0c8e80a3c163dc89e9c4ee5c..350cebd50aa6ee58fbbbb53d0f5334aa
  
      let activeEl = this.document.activeElement;
 +    if (this.documentGlobal.gURLBar._zenHandleUrlbarClose) {
-+      this.documentGlobal.gURLBar._zenHandleUrlbarClose(true);
++      this.documentGlobal.gURLBar._zenHandleUrlbarClose(true, false, newTab);
 +    }
      // If focus is on the old tab, move it to the new tab.
      if (activeEl == oldTab) {

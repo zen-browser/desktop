@@ -1,13 +1,13 @@
 diff --git a/browser/base/content/nsContextMenu.sys.mjs b/browser/base/content/nsContextMenu.sys.mjs
-index a9173d534626f18adcbfe570cbcdc0cd929cc31d..e09340242048a21ce6b3bd4d26bedc606354235e 100644
+index 305a6b1eb41d35cf165a2ea1d90321338de19758..ef6ae453631cb0af74758df8dec9988a3f889bf3 100644
 --- a/browser/base/content/nsContextMenu.sys.mjs
 +++ b/browser/base/content/nsContextMenu.sys.mjs
-@@ -373,6 +373,9 @@ export class nsContextMenu {
+@@ -382,6 +382,9 @@ export class nsContextMenu {
      this.initTextFragmentItems();
      this.pdfjsContextMenu.initItems();
  
 +    this.showItem("context-zenSplitLink", this.onLink && !this.onMailtoLink && !this.onTelLink);
-+    this.showItem("context-zenOpenLinkInGlance", this.onLink && !this.onMailtoLink && !this.onTelLink); 
++    this.showItem("context-zenOpenLinkInGlance", Services.prefs.getBoolPref("zen.glance.enabled", true) && this.onLink && !this.onMailtoLink && !this.onTelLink);
 +
      this.showHideSeparators(aXulMenu);
      if (!aXulMenu.showHideSeparators) {

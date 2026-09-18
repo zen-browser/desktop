@@ -14,6 +14,9 @@
 - name: zen.glance.activation-method
   value: "alt" # ctrl, alt, shift
 
+- name: zen.glance.long-press-duration
+  value: 300 # in milliseconds
+
 - name: zen.glance.animation-duration
   value: 350 # in milliseconds
 

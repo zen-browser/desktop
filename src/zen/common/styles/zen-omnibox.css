@@ -164,11 +164,12 @@
     }
 
     #navigator-toolbox[zen-has-implicit-hover="true"] &,
-    &[open],
+    &:is([open], [showing]),
     #urlbar[has-popup-open="true"] &,
     :root[zen-has-empty-tab="true"] & {
       opacity: 1;
       visibility: visible;
+      transition: opacity 0.15s !important;
     }
   }
 }

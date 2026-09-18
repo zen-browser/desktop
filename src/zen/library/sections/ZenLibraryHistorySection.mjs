@@ -303,7 +303,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
           >
             <img
               class="toolbarbutton-icon"
-              src="chrome://browser/skin/zen-icons/arrow-rotate-anticlockwise.svg"
+              src="chrome://browser/skin/zen-icons/u-turn-to-left.svg"
               alt=""
             />
           </toolbarbutton>

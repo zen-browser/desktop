@@ -87,7 +87,7 @@
     }
 
     &[downloading] {
-      transform: scale(calc((var(--zen-library-progress) * 0.2 + 0.8) * 100%));
+      transform: scale(calc((var(--zen-library-progress) * 0.2 + 0.81) * 100%));
     }
   }
 }

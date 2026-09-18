@@ -30,6 +30,8 @@ support-files = [
 
 ["browser_folder_reset_button.js"]
 
+["browser_folder_rename.js"]
+
 ["browser_folder_subfolder.js"]
 
 ["browser_folder_visible_tabs.js"]

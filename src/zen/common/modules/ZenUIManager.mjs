@@ -1679,55 +1679,72 @@ window.gZenVerticalTabsManager = {
   async renameTabKeydown(event) {
     event.stopPropagation();
     if (event.key === "Enter") {
+      const tabEdited = this._tabEdited;
+      const input = event.target;
+      if (!tabEdited) {
+        return;
+      }
       const isTab = !!event.target.closest(".tabbrowser-tab");
-      let label = isTab
-        ? this._tabEdited.querySelector(".tab-label-container-editing")
-        : this._tabEdited;
-      let input = document.getElementById("tab-label-input");
       let newName = input.value.replace(/\s+/g, " ").trim();
       const hasChanged = input.value !== input._originalValue && newName;
 
-      document.documentElement.removeAttribute("zen-renaming-tab");
+      input.removeEventListener("blur", this._renameTabHalt);
       input.remove();
-      if (!isTab) {
-        await this._tabEdited.onRenameFinished(newName);
-      } else {
-        // Check if name is blank, reset if so
-        // Always remove, so we can always rename and if it's empty,
-        // it will reset to the original name anyway
-        if (hasChanged || (this._tabEdited.zenStaticLabel && newName)) {
-          this._tabEdited.zenStaticLabel = newName;
-          gBrowser._setTabLabel(this._tabEdited, newName, {
-            _zenChangeLabelFlag: true,
-          });
-          gZenUIManager.showToast("zen-tabs-renamed");
+      try {
+        if (!isTab) {
+          await tabEdited.onRenameFinished(newName);
         } else {
-          delete this._tabEdited.zenStaticLabel;
-          gBrowser.setTabTitle(this._tabEdited);
-        }
-
-        gZenUIManager.motion.animate(
-          this._tabEdited,
-          {
-            scale: [1, 0.98, 1],
-          },
-          {
-            duration: 0.25,
+          // Check if name is blank, reset if so
+          // Always remove, so we can always rename and if it's empty,
+          // it will reset to the original name anyway
+          if (hasChanged || (tabEdited.zenStaticLabel && newName)) {
+            tabEdited.zenStaticLabel = newName;
+            gBrowser._setTabLabel(tabEdited, newName, {
+              _zenChangeLabelFlag: true,
+            });
+            gZenUIManager.showToast("zen-tabs-renamed");
+          } else {
+            delete tabEdited.zenStaticLabel;
+            gBrowser.setTabTitle(tabEdited);
           }
-        );
-      }
 
-      const editorContainer = this._tabEdited.querySelector(
-        ".tab-editor-container"
-      );
-      if (editorContainer) {
-        editorContainer.remove();
+          gZenUIManager.motion.animate(
+            tabEdited,
+            {
+              scale: [1, 0.98, 1],
+            },
+            {
+              duration: 0.25,
+            }
+          );
+        }
+      } finally {
+        this._clearRenameState(tabEdited);
       }
-      label.classList.remove("tab-label-container-editing");
-
-      this._tabEdited = null;
     } else if (event.key === "Escape") {
       event.target.blur();
+    }
+  },
+
+  _clearRenameState(tabEdited = this._tabEdited, input = null) {
+    input ??= document.getElementById("tab-label-input");
+    input?.removeEventListener("blur", this._renameTabHalt);
+    input?.remove();
+
+    const editorContainer = tabEdited?.querySelector(
+      ".tab-editor-container"
+    );
+    editorContainer?.remove();
+
+    const isTab = !!tabEdited?.closest(".tabbrowser-tab");
+    const label = isTab
+      ? tabEdited?.querySelector(".tab-label-container-editing")
+      : tabEdited;
+    label?.classList.remove("tab-label-container-editing");
+
+    if (this._tabEdited === tabEdited) {
+      this._tabEdited = null;
+      document.documentElement.removeAttribute("zen-renaming-tab");
     }
   },
 
@@ -1737,8 +1754,17 @@ window.gZenVerticalTabsManager = {
       target = TabContextMenu.contextTab;
     }
     const isTab = !!target.closest(".tabbrowser-tab");
+    if (this._tabEdited) {
+      const previousInput = document.getElementById("tab-label-input");
+      if (!previousInput) {
+        return;
+      }
+      previousInput.blur();
+      if (this._tabEdited) {
+        this._clearRenameState(this._tabEdited, previousInput);
+      }
+    }
     if (
-      this._tabEdited ||
       ((!Services.prefs.getBoolPref("zen.tabs.rename-tabs") ||
         (Services.prefs.getBoolPref("browser.tabs.closeTabByDblclick") &&
           event.type === "dblclick")) &&
@@ -1767,10 +1793,14 @@ window.gZenVerticalTabsManager = {
     }
     gZenFolders.cancelPopupTimer();
     event.stopPropagation?.();
-    document.documentElement.setAttribute("zen-renaming-tab", "true");
     const label = isTab
       ? this._tabEdited.querySelector(".tab-label-container")
       : this._tabEdited;
+    if (!label) {
+      this._tabEdited = null;
+      return;
+    }
+    document.documentElement.setAttribute("zen-renaming-tab", "true");
     label.classList.add("tab-label-container-editing");
 
     if (isTab) {
@@ -1785,6 +1815,7 @@ window.gZenVerticalTabsManager = {
     input._originalValue = content;
     input.value = content;
     input.addEventListener("keydown", this.renameTabKeydown.bind(this));
+    input.addEventListener("blur", this._renameTabHalt);
 
     if (isTab) {
       const containerHtml = this._tabEdited.querySelector(
@@ -1797,29 +1828,12 @@ window.gZenVerticalTabsManager = {
     input.focus();
     input.setSelectionRange(0, input.value.length, "backward");
     input.scrollLeft = 0;
-
-    input.addEventListener("blur", this._renameTabHalt);
   },
 
   renameTabHalt(event) {
     if (document.activeElement === event.target || !this._tabEdited) {
       return;
     }
-    document.documentElement.removeAttribute("zen-renaming-tab");
-    const editorContainer = this._tabEdited.querySelector(
-      ".tab-editor-container"
-    );
-    let input = document.getElementById("tab-label-input");
-    input.remove();
-    if (editorContainer) {
-      editorContainer.remove();
-    }
-    const isTab = !!this._tabEdited.closest(".tabbrowser-tab");
-    const label = isTab
-      ? this._tabEdited.querySelector(".tab-label-container-editing")
-      : this._tabEdited;
-    label.classList.remove("tab-label-container-editing");
-
-    this._tabEdited = null;
+    this._clearRenameState(this._tabEdited, event.target);
   },
 };

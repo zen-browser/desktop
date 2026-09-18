@@ -302,6 +302,10 @@ const globalActionsTemplate = [
   },
 ];
 
+export function formatValueSync(l10nId) {
+  return lazy.l10n.formatValueSync(l10nId);
+}
+
 export const globalActions = globalActionsTemplate.map(action => ({
   isAvailable: window => {
     return (
@@ -317,6 +321,6 @@ export const globalActions = globalActionsTemplate.map(action => ({
   extraPayload: {},
   ...action,
   get label() {
-    return lazy.l10n.formatValueSync(action.l10nId);
+    return formatValueSync(action.l10nId);
   },
 }));

@@ -16,6 +16,8 @@ support-files = [
 
 ["browser_split_inset_checks.js"]
 
+["browser_split_resize_teardown.js"]
+
 ["browser_split_view_empty.js"]
 
 ["browser_split_view_with_folders.js"]

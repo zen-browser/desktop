@@ -198,6 +198,8 @@ zen-library[transitioning] {
     text-align: center;
   }
 
+  isolation: isolate;
+
   &::before {
     content: "";
     position: absolute;

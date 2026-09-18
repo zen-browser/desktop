@@ -55,7 +55,12 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
       return matchCount / tokens.length >= percentage;
     };
     this.#addFolders(sidebar, matches.bind(undefined, 0.7), addCallback);
-    this.#addTabs(sidebar, matches.bind(undefined, 0.4), queryContext, addCallback);
+    this.#addTabs(
+      sidebar,
+      matches.bind(undefined, 0.4),
+      queryContext,
+      addCallback
+    );
   }
 
   #addTabs(sidebar, matches, queryContext, addCallback) {
@@ -165,7 +170,10 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
         attributes: { dir: "ltr", hidden: !result.payload.path },
       },
       userIcon: {
-        attributes: { src: result.payload.userIcon, hidden: !result.payload.userIcon },
+        attributes: {
+          src: result.payload.userIcon,
+          hidden: !result.payload.userIcon,
+        },
       },
     };
   }

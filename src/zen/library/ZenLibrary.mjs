@@ -20,6 +20,8 @@ ChromeUtils.defineESModuleGetters(
       "moz-src:///zen/library/sections/ZenLibraryDownloadsSection.mjs",
     ZenLibraryBoostsSection:
       "moz-src:///zen/library/sections/ZenLibraryBoostsSection.mjs",
+    ZenLibraryMediaSection:
+      "moz-src:///zen/library/sections/ZenLibraryMediaSection.mjs",
     ZenLibrarySpacesSection:
       "moz-src:///zen/library/sections/ZenLibrarySpacesSection.mjs",
   },
@@ -69,13 +71,16 @@ export class ZenLibrary extends MozLitElement {
   constructor() {
     super();
     this.zenLibrarySections = {
-      history: lazy.ZenLibraryHistorySection,
+      media: lazy.ZenLibraryMediaSection,
       downloads: lazy.ZenLibraryDownloadsSection,
       boosts: lazy.ZenLibraryBoostsSection,
+      ...(!window.gZenWorkspaces.privateWindowOrDisabled
+        ? {
+            spaces: lazy.ZenLibrarySpacesSection,
+          }
+        : {}),
+      history: lazy.ZenLibraryHistorySection,
     };
-    if (!window.gZenWorkspaces.privateWindowOrDisabled) {
-      this.zenLibrarySections.spaces = lazy.ZenLibrarySpacesSection;
-    }
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
     this.#hijackFirefoxCommands();

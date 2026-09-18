@@ -32,8 +32,6 @@ const STRIP_EVENTS = [
   "TabGroupCreate",
   "TabGroupRemoved",
   "TabGroupMoved",
-  "TabGroupCollapse",
-  "TabGroupExpand",
 ];
 const SHOWN_ATTRIBUTES = ["label", "image", "pending", "muted", "soundplaying"];
 

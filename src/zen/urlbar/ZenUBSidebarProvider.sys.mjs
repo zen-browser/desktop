@@ -7,6 +7,7 @@ import {
   UrlbarUtils,
 } from "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs";
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
+import { formatValueSync } from "resource:///modules/ZenUBGlobalActions.sys.mjs";
 
 const lazy = {};
 
@@ -34,7 +35,6 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
   }
 
   async isActive(queryContext) {
-    // The sidebar data never holds tabs from private windows.
     return (
       !queryContext.isPrivate &&
       !!queryContext.tokens.length &&
@@ -49,12 +49,13 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
       return;
     }
     const tokens = queryContext.tokens.map(t => t.lowerCaseValue);
-    const matches = text => {
+    const matches = (percentage, text) => {
       text = text.toLowerCase();
-      return tokens.every(token => text.includes(token));
+      const matchCount = tokens.filter(token => text.includes(token)).length;
+      return matchCount / tokens.length >= percentage;
     };
-    this.#addFolders(sidebar, matches, addCallback);
-    this.#addTabs(sidebar, matches, queryContext, addCallback);
+    this.#addFolders(sidebar, matches.bind(undefined, 0.7), addCallback);
+    this.#addTabs(sidebar, matches.bind(undefined, 0.4), queryContext, addCallback);
   }
 
   #addTabs(sidebar, matches, queryContext, addCallback) {
@@ -123,7 +124,7 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
         continue;
       }
       const space = sidebar.spaces?.find(s => s.uuid == folder.workspaceId);
-      const path = [];
+      const path = [folder.name];
       for (
         let parent = folders.get(folder.parentId);
         parent;
@@ -142,9 +143,9 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
           payload: {
             dynamicType: DYNAMIC_TYPE_NAME,
             zenFolderId: folder.id,
-            title: folder.name,
-            icon:
-              folder.userIcon || "chrome://browser/skin/zen-icons/folder.svg",
+            titleL10n: "zen-action-open",
+            userIcon: folder.userIcon,
+            icon: "chrome://browser/skin/zen-icons/folder.svg",
             path: path.join(" / "),
           },
         })
@@ -156,12 +157,15 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
     return {
       icon: { attributes: { src: result.payload.icon } },
       titleStrong: {
-        textContent: result.payload.title,
+        textContent: formatValueSync(result.payload.titleL10n),
         attributes: { dir: "ltr" },
       },
       path: {
         textContent: result.payload.path,
         attributes: { dir: "ltr", hidden: !result.payload.path },
+      },
+      userIcon: {
+        attributes: { src: result.payload.userIcon, hidden: !result.payload.userIcon },
       },
     };
   }
@@ -175,7 +179,7 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
         {
           name: "icon",
           tag: "img",
-          classList: ["urlbarView-favicon"],
+          classList: ["urlbarView-favicon", "urlbarView-action-favicon"],
         },
         {
           name: "title",
@@ -189,9 +193,19 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
           ],
         },
         {
-          name: "path",
           tag: "span",
           classList: ["urlbarView-prettyName"],
+          children: [
+            {
+              name: "userIcon",
+              tag: "img",
+              attributes: { hidden: true },
+            },
+            {
+              name: "path",
+              tag: "span",
+            },
+          ],
         },
       ],
     };

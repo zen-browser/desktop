@@ -652,11 +652,10 @@
   --urlbarview-row-padding-block: 10px;
   color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) !important;
 
-  &:hover {
-    &,
-    & .urlbarView-favicon {
-      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse) 5%, transparent 95%) !important;
-    }
+  &:hover,
+  &:hover .urlbarView-favicon,
+  .urlbarView-action-favicon {
+    background-color: color-mix(in srgb, var(--zen-branding-bg-reverse) 5%, transparent 95%) !important;
   }
 
   &[selected] {

@@ -52,7 +52,6 @@ export class ZenLibrary extends MozLitElement {
   #canSwipe = false;
   #isOpen = false;
 
-  #isWrapperSwipeAttached = false;
   #wrapperGestureControl = null;
   #gestureControl = null;
 
@@ -318,7 +317,6 @@ export class ZenLibrary extends MozLitElement {
 
   static async animateProgress(target) {
     const lib = this.getInstance();
-    lib.#detachWrapperOfSwipe();
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
     lib.style.visibility = "";
@@ -368,9 +366,6 @@ export class ZenLibrary extends MozLitElement {
     await lib.#whenStylesLoaded();
     lib.style.visibility = "";
     await window.promiseDocumentFlushed(() => {});
-    if (!lib.#canSwipe) {
-      return;
-    }
 
     lib.#onOpenLibrary();
 
@@ -380,7 +375,6 @@ export class ZenLibrary extends MozLitElement {
     }
 
     lib.style.setProperty("pointer-events", "none");
-    lib.#attachWrapperToSwipe();
   }
 
   static stopSwipe(direction) {
@@ -396,7 +390,6 @@ export class ZenLibrary extends MozLitElement {
       const target = Math.max(-direction, 0);
       this.animateProgress(target);
     }
-    lib.#detachWrapperOfSwipe();
 
     // Return library open state
     return lib.#isOpen;
@@ -412,25 +405,23 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #attachWrapperToSwipe() {
-    if (!this.#isWrapperSwipeAttached) {
+    if (!this.#wrapperGestureControl) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
       this.#wrapperGestureControl =
         window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
           appWrapper
         );
-      this.#isWrapperSwipeAttached = true;
     }
   }
 
   #detachWrapperOfSwipe() {
-    if (this.#isWrapperSwipeAttached || this.#wrapperGestureControl) {
+    if (this.#wrapperGestureControl) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
       window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
         appWrapper,
         this.#wrapperGestureControl
       );
       this.#wrapperGestureControl = null;
-      this.#isWrapperSwipeAttached = false;
     }
   }
 
@@ -484,6 +475,7 @@ export class ZenLibrary extends MozLitElement {
     document.addEventListener("keydown", this, true);
     window.addEventListener("TabOpen", this);
 
+    this.#attachWrapperToSwipe();
     this.#gestureControl = window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
     this.#resizeObserver.observe(this);
     ZenLibraryWidget.attachLibrary(this);
@@ -497,6 +489,7 @@ export class ZenLibrary extends MozLitElement {
       this.#springControls = null;
     }
 
+    this.#detachWrapperOfSwipe();
     if (this.#gestureControl) {
       window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(this, this.#gestureControl);
     }

@@ -48,16 +48,15 @@ export class ZenSpacesSwipe {
     if (this.#readySwipeLibrary) {
       return this.#readySwipeLibrary;
     }
-    
+
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
     const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
 
-    this.#readySwipeLibrary = (
+    this.#readySwipeLibrary =
       spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
-      libraryEnabled
-    );
+      libraryEnabled;
     return this.#readySwipeLibrary;
   }
 
@@ -162,8 +161,16 @@ export class ZenSpacesSwipe {
   }
 
   #toggleSwipeGestureAttr() {
-    const elements = ["zen-workspace", "#tabbrowser-arrowscrollbox", ".zen-browser-grain"];
-    elements.forEach(el => document.querySelectorAll(el).forEach(node => node?.toggleAttribute("swipe-gesture")));
+    const elements = [
+      "zen-workspace",
+      "#tabbrowser-arrowscrollbox",
+      ".zen-browser-grain",
+    ];
+    elements.forEach(el =>
+      document
+        .querySelectorAll(el)
+        .forEach(node => node?.toggleAttribute("swipe-gesture"))
+    );
   }
 
   _handleSwipeStart(event) {

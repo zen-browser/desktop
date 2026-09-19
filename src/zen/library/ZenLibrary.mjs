@@ -133,27 +133,40 @@ export class ZenLibrary extends MozLitElement {
     const isOpen = p > 0.001;
 
     if (this.#stylesLoaded) {
-      let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
+      let libraryWidth =
+        window.windowUtils.getBoundsWithoutFlushing(this).width;
       const compactModeOffsetDirection = this.#libraryOnRight
         ? -this.#toolboxWidth
         : this.#toolboxWidth;
       const compactModeOffset = this.#isCompactMode
         ? compactModeOffsetDirection
         : 0;
-      
+
       let webOffset =
         (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth) +
         compactModeOffset;
 
-      this.style.setProperty("transform", `translateX(calc(-100% * (1 - ${value})))`);
-      lazy.appContentWrapper?.style.setProperty("transform", `translateX(${value * webOffset}px)`);
-      
+      this.style.setProperty(
+        "transform",
+        `translateX(calc(-100% * (1 - ${value})))`
+      );
+      lazy.appContentWrapper?.style.setProperty(
+        "transform",
+        `translateX(${value * webOffset}px)`
+      );
+
       const toolboxProgress = Math.min(1, value * 1.5);
       if (this.#isCompactMode) {
         if (this.#libraryOnRight) {
-          gNavToolbox.style.setProperty("transform", `translateX(calc(100% * ${toolboxProgress}))`);
+          gNavToolbox.style.setProperty(
+            "transform",
+            `translateX(calc(100% * ${toolboxProgress}))`
+          );
         } else {
-          gNavToolbox.style.setProperty("transform", `translateX(calc(-100% * ${toolboxProgress}))`);
+          gNavToolbox.style.setProperty(
+            "transform",
+            `translateX(calc(-100% * ${toolboxProgress}))`
+          );
         }
       } else {
         const toolboxScale = 1 - toolboxProgress * 0.04;
@@ -165,12 +178,14 @@ export class ZenLibrary extends MozLitElement {
 
     if (isOpen && !wasOpen) {
       this.setAttribute("open", "true");
-      document.getElementById("zen-sidebar-splitter")
+      document
+        .getElementById("zen-sidebar-splitter")
         .setAttribute("zen-library-open", "true");
       this.#init();
     } else if (!isOpen && wasOpen) {
       this.removeAttribute("open");
-      document.getElementById("zen-sidebar-splitter")
+      document
+        .getElementById("zen-sidebar-splitter")
         .removeAttribute("zen-library-open");
       this.#cleanup();
     }
@@ -484,7 +499,8 @@ export class ZenLibrary extends MozLitElement {
     document.addEventListener("keydown", this, true);
     window.addEventListener("TabOpen", this);
 
-    this.#gestureControl = window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
+    this.#gestureControl =
+      window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
     this.#resizeObserver.observe(this);
     ZenLibraryWidget.attachLibrary(this);
     this.isHidden = false;
@@ -498,7 +514,10 @@ export class ZenLibrary extends MozLitElement {
     }
 
     if (this.#gestureControl) {
-      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(this, this.#gestureControl);
+      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
+        this,
+        this.#gestureControl
+      );
     }
 
     this.#restoreWindowButtons();
@@ -512,8 +531,8 @@ export class ZenLibrary extends MozLitElement {
   get #isCompactMode() {
     return (
       window.gZenCompactModeManager.preference &&
-      (Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") 
-      || Services.prefs.getBoolPref("zen.view.use-single-toolbar"))
+      (Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") ||
+        Services.prefs.getBoolPref("zen.view.use-single-toolbar"))
     );
   }
 
@@ -625,9 +644,7 @@ export class ZenLibrary extends MozLitElement {
           ></toolbar>
         </vbox>
         <vbox id="zen-library-content">
-          ${this.#contentMounted
-          ? this.activeSection.render(this)
-          : nothing}
+          ${this.#contentMounted ? this.activeSection.render(this) : nothing}
         </vbox>
       </hbox>
     `;

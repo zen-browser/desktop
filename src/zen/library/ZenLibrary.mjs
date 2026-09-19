@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { html } from "chrome://global/content/vendor/lit.all.mjs";
+import { html, nothing } from "chrome://global/content/vendor/lit.all.mjs";
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 const { ZenLibraryWidget } = ChromeUtils.importESModule(
@@ -34,6 +34,7 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
 
 export class ZenLibrary extends MozLitElement {
   static instance = null;
+  #contentMounted = true;
   #progress = 0;
 
   #springControls = null;
@@ -118,31 +119,46 @@ export class ZenLibrary extends MozLitElement {
     const isPastWindowButtonSwitchPoint = p > stealWindowButtonsPastPoint;
     const isOpen = p > 0.001;
 
-    let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
-    const compactModeOffsetDirection = this.#libraryOnRight
-      ? -this.#toolboxWidth
-      : this.#toolboxWidth;
-    const compactModeOffset = this.#isCompactMode
-      ? compactModeOffsetDirection
-      : 0;
-    let webOffset =
-      (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth) +
-      compactModeOffset;
+    if (this.#stylesLoaded) {
+      let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
+      const compactModeOffsetDirection = this.#libraryOnRight
+        ? -this.#toolboxWidth
+        : this.#toolboxWidth;
+      const compactModeOffset = this.#isCompactMode
+        ? compactModeOffsetDirection
+        : 0;
+      
+      let webOffset =
+        (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth) +
+        compactModeOffset;
 
-    lazy.appContentWrapper?.style.setProperty(
-      "--library-wrapper-target-px",
-      `${webOffset}px`
-    );
-    [this, lazy.appContentWrapper, gNavToolbox].forEach(elem => {
-      elem?.style.setProperty("--library-progress", String(p));
-    });
+      // Apply attributes manually
+      this.style.setProperty("transform", `translateX(calc(-100% * (1 - ${value})))`);
+      lazy.appContentWrapper?.style.setProperty("transform", `translateX(${value * webOffset}px)`);
+      
+      const toolboxProgress = Math.min(1, value * 1.5);
+      if (this.#isCompactMode) {
+        if (this.#libraryOnRight) {
+          gNavToolbox?.style.setProperty("transform", `translateX(calc(100% * ${toolboxProgress}))`);
+        } else {
+          gNavToolbox?.style.setProperty("transform", `translateX(calc(-100% * ${toolboxProgress}))`);
+        }
+      } else {
+        const toolboxScale = 1 - toolboxProgress * 0.04;
+        const toolboxOpacity = 1 - toolboxProgress;
+        gNavToolbox?.style.setProperty("transform", `scale(${toolboxScale})`);
+        gNavToolbox?.style.setProperty("opacity", `${toolboxOpacity}`);
+      }
+    }
 
     if (isOpen && !wasOpen) {
       this.setAttribute("open", "true");
-      document.documentElement.setAttribute("zen-library-open", "true");
+      document.getElementById("zen-sidebar-splitter")
+        .setAttribute("zen-library-open", "true");
     } else if (!isOpen && wasOpen) {
       this.removeAttribute("open");
-      document.documentElement.removeAttribute("zen-library-open");
+      document.getElementById("zen-sidebar-splitter")
+        .removeAttribute("zen-library-open");
     }
 
     if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {
@@ -246,8 +262,9 @@ export class ZenLibrary extends MozLitElement {
     this.#idleCleanup = window.requestIdleCallback(() => {
       this.#idleCleanup = null;
       this.#stylesLoaded = null;
-      ZenLibrary.instance = null;
-      this.remove();
+
+      this.#contentMounted = false;
+      this.requestUpdate();
     });
   }
 
@@ -403,6 +420,12 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #onOpenLibrary() {
+    this.#cancelIdleCleanup();
+    if (!this.#contentMounted) {
+      this.#contentMounted = true;
+      this.requestUpdate();
+    }
+
     gURLBar.view.close();
     // Get the width from the css property,
     // getBoundsWithoutFlushing will fail as it takes the
@@ -481,7 +504,8 @@ export class ZenLibrary extends MozLitElement {
   get #isCompactMode() {
     return (
       window.gZenCompactModeManager.preference &&
-      Services.prefs.getBoolPref("zen.view.compact.hide-tabbar")
+      (Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") 
+      || Services.prefs.getBoolPref("zen.view.use-single-toolbar"))
     );
   }
 
@@ -582,7 +606,9 @@ export class ZenLibrary extends MozLitElement {
           ></toolbar>
         </vbox>
         <vbox id="zen-library-content">
-          ${this.activeSection.render(this)}
+          ${this.#contentMounted
+          ? this.activeSection.render(this)
+          : nothing}
         </vbox>
       </hbox>
     `;

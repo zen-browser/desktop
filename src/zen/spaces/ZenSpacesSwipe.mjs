@@ -43,15 +43,22 @@ export class ZenSpacesSwipe {
     );
   }
 
+  #readySwipeLibrary = null;
   #readySwipeOpenLibrary() {
+    if (this.#readySwipeLibrary) {
+      return this.#readySwipeLibrary;
+    }
+    
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
     const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
-    return (
+
+    this.#readySwipeLibrary = (
       spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
       libraryEnabled
     );
+    return this.#readySwipeLibrary;
   }
 
   attachWorkspaceSwipeGestures(element) {
@@ -154,6 +161,15 @@ export class ZenSpacesSwipe {
     }
   }
 
+  #setSwipeGestureAttr(isSwiping) {
+    const elements = ["#zen-workspace", "#tabbrowser-arrowscrollbox", ".zen-browser-grain"];
+    if (isSwiping) {
+      elements.forEach(el => document.querySelector(el)?.setAttribute("swipe-gesture", "true"));
+    } else {
+      elements.forEach(el => document.querySelector(el)?.removeAttribute("swipe-gesture"));
+    }
+  }
+
   _handleSwipeStart(event) {
     const ws = gZenWorkspaces;
 
@@ -163,7 +179,7 @@ export class ZenSpacesSwipe {
 
     gZenFolders.cancelPopupTimer();
 
-    document.documentElement.setAttribute("swipe-gesture", "true");
+    this.#setSwipeGestureAttr(true);
     document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
     });
@@ -297,6 +313,7 @@ export class ZenSpacesSwipe {
 
     if (this._swipeState.isSwipingLibrary) {
       lazy.ZenLibrary.stopSwipe(null);
+      this.#readySwipeLibrary = null;
     }
 
     // Reset swipe state
@@ -309,7 +326,7 @@ export class ZenSpacesSwipe {
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
-    document.documentElement.removeAttribute("swipe-gesture");
+    this.#setSwipeGestureAttr(false);
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
     [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
       element => {

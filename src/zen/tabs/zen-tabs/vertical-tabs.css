@@ -883,7 +883,7 @@ zen-library {
   display: none !important;
 }
 
-:root[zen-library-open="true"] #zen-sidebar-splitter {
+#zen-sidebar-splitter[zen-library-open="true"] {
   pointer-events: none !important;
 }
 

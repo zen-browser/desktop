@@ -20,6 +20,8 @@ ChromeUtils.defineESModuleGetters(
       "moz-src:///zen/library/sections/ZenLibraryDownloadsSection.mjs",
     ZenLibraryBoostsSection:
       "moz-src:///zen/library/sections/ZenLibraryBoostsSection.mjs",
+    ZenLibraryMediaSection:
+      "moz-src:///zen/library/sections/ZenLibraryMediaSection.mjs",
     ZenLibrarySpacesSection:
       "moz-src:///zen/library/sections/ZenLibrarySpacesSection.mjs",
   },
@@ -71,10 +73,15 @@ export class ZenLibrary extends MozLitElement {
   constructor() {
     super();
     this.zenLibrarySections = {
-      history: lazy.ZenLibraryHistorySection,
+      media: lazy.ZenLibraryMediaSection,
       downloads: lazy.ZenLibraryDownloadsSection,
       boosts: lazy.ZenLibraryBoostsSection,
-      spaces: lazy.ZenLibrarySpacesSection,
+      ...(!window.gZenWorkspaces.privateWindowOrDisabled
+        ? {
+            spaces: lazy.ZenLibrarySpacesSection,
+          }
+        : {}),
+      history: lazy.ZenLibraryHistorySection,
     };
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
@@ -407,7 +414,7 @@ export class ZenLibrary extends MozLitElement {
     if (!this.#isWrapperSwipeAttached) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
       this.#wrapperGestureControl =
-        window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(
+        window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
           appWrapper
         );
       this.#isWrapperSwipeAttached = true;
@@ -417,7 +424,7 @@ export class ZenLibrary extends MozLitElement {
   #detachWrapperOfSwipe() {
     if (this.#isWrapperSwipeAttached || this.#wrapperGestureControl) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
-      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
+      window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
         appWrapper,
         this.#wrapperGestureControl
       );

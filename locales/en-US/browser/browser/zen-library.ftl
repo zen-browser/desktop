@@ -14,6 +14,7 @@ library-footer-donate-button =
 library-history-section-title = History
 library-downloads-section-title = Downloads
 library-boosts-section-title = Boosts
+library-media-section-title = Media
 library-spaces-section-title = Spaces
 
 library-filter-button = Filter
@@ -33,6 +34,7 @@ library-history-site-other = Other
 library-history-search-placeholder =
     .placeholder = Search History…
 library-history-empty = No history found
+library-media-empty = No media found
 library-history-forget-button =
     .title = Remove from history
 library-history-reopen-button =

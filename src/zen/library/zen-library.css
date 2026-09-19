@@ -75,8 +75,18 @@ zen-library[open] {
   transition: width 0.3s cubic-bezier(.36,.06,0,.94);
 }
 
-zen-library[transitioning] #zen-library-content {
-  pointer-events: none;
+:is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
+  scrollbar-width: thin;
+}
+
+zen-library[transitioning] {
+  & #zen-library-content {
+    pointer-events: none;
+  }
+
+  & :is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
+    scrollbar-width: none;
+  }
 }
 
 #zen-library-panel {
@@ -94,11 +104,20 @@ zen-library[transitioning] #zen-library-content {
   min-width: 0;
   overflow: hidden;
   contain: content;
+  -moz-window-dragging: no-drag;
 }
 
 #zen-library-footer {
   display: flex;
   padding: 8px;
+}
+
+/* Caption buttons are taken in so the library can cover their place, but
+   only the traffic lights show in it. */
+@media not (-moz-platform: macos) {
+  #zen-library-header .titlebar-buttonbox-container {
+    display: none;
+  }
 }
 
 @media (-moz-platform: macos) {
@@ -188,7 +207,7 @@ zen-library[transitioning] #zen-library-content {
   }
 }
 
-@media (max-height: 275px) {
+@media (max-height: 575px) {
   .zen-library-tab {
     & label {
       display: none;
@@ -202,7 +221,8 @@ zen-library[transitioning] #zen-library-content {
   height: var(--zen-library-sprite-size);
   background-size: 100% 100%;
   --stroke: light-dark(var(--zen-colors-primary), var(--zen-accent-button-color));
-  fill: color-mix(in srgb, var(--stroke), light-dark(white, black) 70%);
+  --fill: color-mix(in srgb, var(--stroke), light-dark(white, black) 60%);
+  fill: var(--fill);
   stroke: var(--stroke);
   -moz-context-properties: fill, stroke;
   transform: translateX(0);
@@ -218,6 +238,11 @@ zen-library[transitioning] #zen-library-content {
 
 [data-section="downloads"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
   background-image: url("chrome://browser/skin/zen-icons/library/library-downloads-sprite.svg");
+}
+
+/* Filled like the selected tab for as long as anything is downloading. */
+zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"] .zen-library-tab-icon-image {
+  fill: var(--fill);
 }
 
 zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]::after {
@@ -611,15 +636,15 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
     inset: 0;
     box-sizing: border-box;
     border-radius: 10px;
-    border: 3px solid white;
-    background: #edededaa;
+    border: 3px solid rgba(255, 255, 255, .6);
+    background: rgba(237, 237, 237, 0.6);
     box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.1);
   }
 
   & img {
     position: relative;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
     -moz-context-properties: fill;
     fill: currentColor;
@@ -733,10 +758,13 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   /* The shift transforms assume the card is exactly this wide. */
   box-sizing: border-box;
   min-height: 0;
+  z-index: 0;
   color: var(--toolbox-textcolor);
   transition:
     translate 0.2s ease,
-    opacity 0.2s ease;
+    opacity 0.2s ease,
+    scale 0.2s ease,
+    z-index 0.2s step-end;
   background: var(--zen-branding-bg);
   border-radius: 14px;
   --toolbar-color: var(--toolbox-textcolor);
@@ -750,19 +778,23 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
     background: var(--zen-library-space-gradient);
     background-blend-mode: screen;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
   }
 
   &[dragging] {
     z-index: 1;
+    scale: 1.03;
+    transition: scale 0.2s ease;
 
     &::before {
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
   }
 
-  &[dragging],
   .zen-library-spaces[no-transition] & {
-    transition: none;
+    transition:
+      scale 0.2s ease,
+      z-index 0.2s step-end;
   }
 
   &[shift="left"] {

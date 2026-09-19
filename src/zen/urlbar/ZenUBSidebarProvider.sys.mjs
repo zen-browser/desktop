@@ -49,21 +49,18 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
       return;
     }
     const tokens = queryContext.tokens.map(t => t.lowerCaseValue);
-    const matches = (percentage, text) => {
+    const score = text => {
       text = text.toLowerCase();
-      const matchCount = tokens.filter(token => text.includes(token)).length;
-      return matchCount / tokens.length >= percentage;
+      if (!tokens.every(token => text.includes(token))) {
+        return 0;
+      }
+      return tokens.reduce((sum, token) => sum + token.length, 0) / text.length;
     };
-    this.#addFolders(sidebar, matches.bind(undefined, 0.7), addCallback);
-    this.#addTabs(
-      sidebar,
-      matches.bind(undefined, 0.4),
-      queryContext,
-      addCallback
-    );
+    this.#addFolders(sidebar, score, queryContext, addCallback);
+    this.#addTabs(sidebar, score, queryContext, addCallback);
   }
 
-  #addTabs(sidebar, matches, queryContext, addCallback) {
+  #addTabs(sidebar, score, queryContext, addCallback) {
     const openTabUrls = lazy.UrlbarProviderOpenTabs.getOpenTabUrls();
     const activeSpace =
       lazy.BrowserWindowTracker.getTopWindow().gZenWorkspaces.activeWorkspace;
@@ -76,7 +73,7 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
       const entries = tabData.entries || [];
       const entry = entries[(tabData.index || entries.length) - 1];
       const label = tabData.zenStaticLabel || entry?.title;
-      if (typeof label !== "string" || !label || !matches(label)) {
+      if (typeof label !== "string" || !label || !score(label)) {
         continue;
       }
       const url = entry?.url;
@@ -120,14 +117,17 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
     }
   }
 
-  #addFolders(sidebar, matches, addCallback) {
+  #addFolders(sidebar, score, queryContext, addCallback) {
     const folders = new Map(
       (sidebar.folders || []).map(folder => [folder.id, folder])
     );
-    for (const folder of folders.values()) {
-      if (folder.splitViewGroup || !folder.name || !matches(folder.name)) {
-        continue;
-      }
+    const matched = [...folders.values()]
+      .filter(folder => !folder.splitViewGroup && folder.name)
+      .map(folder => ({ folder, score: score(folder.name) }))
+      .filter(match => match.score)
+      .sort((a, b) => b.score - a.score);
+    for (const match of matched) {
+      const { folder } = match;
       const space = sidebar.spaces?.find(s => s.uuid == folder.workspaceId);
       const path = [folder.name];
       for (
@@ -153,6 +153,11 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
             icon: "chrome://browser/skin/zen-icons/folder.svg",
             path: path.join(" / "),
           },
+          suggestedIndex:
+            1 +
+            Math.round(
+              (1 - Math.min(match.score, 1)) * (queryContext.maxResults - 2)
+            ),
         })
       );
     }

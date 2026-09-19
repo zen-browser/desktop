@@ -334,6 +334,7 @@ export class ZenLibrary extends MozLitElement {
       lib.#isOpen = true;
     } else if (target === 0) {
       lib.#isOpen = false;
+      lib.#canSwipe = false;
     }
 
     lib.setAttribute("transitioning", "true");

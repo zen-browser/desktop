@@ -132,16 +132,15 @@ export class ZenLibrary extends MozLitElement {
         (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth) +
         compactModeOffset;
 
-      // Apply attributes manually
       this.style.setProperty("transform", `translateX(calc(-100% * (1 - ${value})))`);
       lazy.appContentWrapper?.style.setProperty("transform", `translateX(${value * webOffset}px)`);
       
       const toolboxProgress = Math.min(1, value * 1.5);
       if (this.#isCompactMode) {
         if (this.#libraryOnRight) {
-          gNavToolbox?.style.setProperty("transform", `translateX(calc(100% * ${toolboxProgress}))`);
+          gNavToolbox.style.setProperty("transform", `translateX(calc(100% * ${toolboxProgress}))`);
         } else {
-          gNavToolbox?.style.setProperty("transform", `translateX(calc(-100% * ${toolboxProgress}))`);
+          gNavToolbox.style.setProperty("transform", `translateX(calc(-100% * ${toolboxProgress}))`);
         }
       } else {
         const toolboxScale = 1 - toolboxProgress * 0.04;

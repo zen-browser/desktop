@@ -52,6 +52,7 @@ export class ZenLibrary extends MozLitElement {
 
   #isWrapperSwipeAttached = false;
   #wrapperGestureControl = null;
+  #gestureControl = null;
 
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
@@ -93,6 +94,11 @@ export class ZenLibrary extends MozLitElement {
     // Due to calculation inaccuracies assume
     // that openProgress never goes back to 0
     return lib.openProgress > 0.001;
+  }
+
+  set isHidden(value) {
+    this.requestUpdate();
+    this.hidden = value;
   }
 
   set activeTab(value) {
@@ -154,10 +160,12 @@ export class ZenLibrary extends MozLitElement {
       this.setAttribute("open", "true");
       document.getElementById("zen-sidebar-splitter")
         .setAttribute("zen-library-open", "true");
+      this.#init();
     } else if (!isOpen && wasOpen) {
       this.removeAttribute("open");
       document.getElementById("zen-sidebar-splitter")
         .removeAttribute("zen-library-open");
+      this.#cleanup();
     }
 
     if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {
@@ -464,40 +472,33 @@ export class ZenLibrary extends MozLitElement {
     return this;
   }
 
-  connectedCallback() {
-    if (super.connectedCallback) {
-      super.connectedCallback();
-    }
-    this.onKeyDown = this.onKeyDown.bind(this);
-    document.addEventListener("keydown", this.onKeyDown, true);
+  #init() {
+    document.addEventListener("keydown", this, true);
+    window.addEventListener("TabOpen", this);
+
+    this.#gestureControl = window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
     this.#resizeObserver.observe(this);
-
-    window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
-
-    this._tabOpen = this.onTabOpen.bind(this);
-    window.addEventListener("TabOpen", this._tabOpen);
-
     ZenLibraryWidget.attachLibrary(this);
+    this.isHidden = false;
   }
 
-  disconnectedCallback() {
+  #cleanup() {
     this.#cancelIdleCleanup();
     if (this.#springControls) {
       this.#springControls.stop();
       this.#springControls = null;
     }
 
+    if (this.#gestureControl) {
+      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(this, this.#gestureControl);
+    }
+
     this.#restoreWindowButtons();
     ZenLibraryWidget.detachLibrary(this);
-
-    super.disconnectedCallback();
-    document.removeEventListener("keydown", this.onKeyDown, true);
     this.#resizeObserver.disconnect();
-
-    if (this._tabOpen) {
-      window.removeEventListener("TabOpen", this._tabOpen);
-      this._tabOpen = null;
-    }
+    document.removeEventListener("keydown", this, true);
+    window.removeEventListener("TabOpen", this);
+    this.isHidden = true;
   }
 
   get #isCompactMode() {
@@ -506,6 +507,17 @@ export class ZenLibrary extends MozLitElement {
       (Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") 
       || Services.prefs.getBoolPref("zen.view.use-single-toolbar"))
     );
+  }
+
+  handleEvent(e) {
+    switch (e.type) {
+      case "TabOpen":
+        this.onTabOpen();
+        break;
+      case "keydown":
+        this.onKeyDown(e);
+        break;
+    }
   }
 
   onTabOpen() {

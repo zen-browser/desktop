@@ -161,13 +161,9 @@ export class ZenSpacesSwipe {
     }
   }
 
-  #setSwipeGestureAttr(isSwiping) {
-    const elements = ["#zen-workspace", "#tabbrowser-arrowscrollbox", ".zen-browser-grain"];
-    if (isSwiping) {
-      elements.forEach(el => document.querySelector(el)?.setAttribute("swipe-gesture", "true"));
-    } else {
-      elements.forEach(el => document.querySelector(el)?.removeAttribute("swipe-gesture"));
-    }
+  #toggleSwipeGestureAttr() {
+    const elements = ["zen-workspace", "#tabbrowser-arrowscrollbox", ".zen-browser-grain"];
+    elements.forEach(el => document.querySelectorAll(el).forEach(node => node?.toggleAttribute("swipe-gesture")));
   }
 
   _handleSwipeStart(event) {
@@ -179,7 +175,7 @@ export class ZenSpacesSwipe {
 
     gZenFolders.cancelPopupTimer();
 
-    this.#setSwipeGestureAttr(true);
+    this.#toggleSwipeGestureAttr();
     document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
     });
@@ -326,7 +322,7 @@ export class ZenSpacesSwipe {
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
-    this.#setSwipeGestureAttr(false);
+    this.#toggleSwipeGestureAttr();
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
     [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
       element => {

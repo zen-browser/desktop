@@ -4,6 +4,7 @@
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
+  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
   DownloadsCommon:
     "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
@@ -290,9 +291,10 @@ class ZenLibraryDownloadStack {
       badge.parentElement.toggleAttribute("downloading", pending);
     }
     if (download) {
+      const preview = this.#previewUrl(download);
       badge.style.setProperty(
         "--download-image",
-        `url('${this.#iconUrl(download)}')`
+        `${preview ? `url('${preview}'), ` : ""}url('${this.#iconUrl(download)}')`
       );
     }
     badge
@@ -396,6 +398,18 @@ class ZenLibraryDownloadStack {
     return download.target.path
       ? PathUtils.filename(download.target.path)
       : download.source.url;
+  }
+
+  /**
+   * @param {object} download - The download an entry stands for
+   * @returns {string|null} The finished file itself, when it is a picture
+   */
+  #previewUrl(download) {
+    const path = download.succeeded && download.target.path;
+    if (!path || !lazy.canDrawThumbnail(path)) {
+      return null;
+    }
+    return PathUtils.toFileURI(path);
   }
 
   #isPending(download) {

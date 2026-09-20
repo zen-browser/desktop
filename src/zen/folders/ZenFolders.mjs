@@ -498,6 +498,16 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     await this.animateCollapse(group);
   }
 
+  /**
+   * Settles a collapsed folder's own height. The library toggles folders
+   * through copies, so the real one needs telling once the dust settles.
+   *
+   * @param {Element} group - A folder
+   */
+  relayoutCollapsedFolder(group) {
+    this.#queueCollapsedRelayout(group);
+  }
+
   #queueCollapsedRelayout(group) {
     if (this.#collapsedRelayoutQueue.size === 0) {
       requestAnimationFrame(() => this.#flushCollapsedRelayout());

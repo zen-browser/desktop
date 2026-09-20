@@ -43,18 +43,28 @@
     fill: currentColor;
     scroll-margin: 0 20px;
 
+    @media (-moz-platform: macos) {
+      height: 32px;
+      max-width: 32px;
+    }
+
     & .zen-workspace-icon {
       pointer-events: none;
       line-height: 0;
       position: absolute;
       font-size: 12px;
 
-      @media (-moz-platform: macos) {
-        font-size: 14px;
-      }
 
       &:is(img) {
         width: 14px;
+      }
+
+      @media (-moz-platform: macos) {
+        font-size: 15px;
+
+        &:is(img) {
+          width: 16px;
+        }
       }
 
       &[no-icon='true'] {

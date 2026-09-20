@@ -27,6 +27,7 @@
     width: var(--zen-library-sprite-size);
     height: var(--zen-library-sprite-size);
     background-image: url("chrome://browser/skin/zen-icons/library/library-sprite.svg");
+    scale: 1.08;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -87,7 +88,7 @@
     }
 
     &[downloading] {
-      transform: scale(calc((var(--zen-library-progress) * 0.2 + 0.81) * 100%));
+      transform: scale(calc((var(--zen-library-progress) * 0.2 + 0.8) * 100%));
     }
   }
 }
@@ -123,7 +124,7 @@
   background-image: var(--download-image);
   width: 20px;
   height: 20px;
-  border-radius: 8px;
+  border-radius: var(--border-radius-small);
   background-size: cover;
   scale: 2;
 
@@ -140,7 +141,7 @@
   --border-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0,0,0,.8), white) 70%);
 
   background-color: color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%);
-  border: 3px solid var(--border-color);
+  border: 3px solid transparent;
   box-shadow: 0 0 6px 2px rgba(0,0,0,.1);
   color: var(--border-color);
   width: 25px;
@@ -175,17 +176,24 @@
   --thickness: 3px;
   --progress: var(--zen-accent-button-background);
 
-  background: conic-gradient(
-    from -0deg,
-    var(--progress) calc(var(--value) * 1%),
-    transparent 0
-  );
+  background:
+    conic-gradient(
+        from 0deg,
+        var(--progress) calc(var(--value) * 1%),
+        transparent 0
+      )
+      border-box,
+    var(--border-color) border-box;
 
   mask: radial-gradient(
     circle closest-side,
     transparent calc(100% - var(--thickness)),
     black calc(100% - var(--thickness))
   );
+}
+
+#zen-sidebar-foot-buttons:is([zen-library-stack-open], [zen-library-stack-closing]) {
+  z-index: 3;
 }
 
 #zen-library-download-list {

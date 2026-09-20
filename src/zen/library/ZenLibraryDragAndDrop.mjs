@@ -165,9 +165,7 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
           gBrowser.moveTabsBefore(moving, firstExisting);
         }
       } else {
-        const pinned = gBrowser.isTab(element)
-          ? element.pinned
-          : (element.tabs?.[0]?.pinned ?? element.pinned);
+        const pinned = this.#pinnedAt(event);
         for (const tab of tabs) {
           if (pinned && !tab.pinned) {
             gBrowser.pinTab(tab);
@@ -183,6 +181,23 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
       }
     }
     this.#land(tabs[0], placeBefore);
+  }
+
+  /**
+   * Whether a drop belongs to the pinned part of a card.
+   *
+   * @param {DragEvent} event - The drop
+   * @returns {boolean} Whether the tab should end up pinned
+   */
+  #pinnedAt(event) {
+    const strip = event.currentTarget
+      .closest(".zen-library-space")
+      ?.querySelector(".zen-library-space-tabs");
+    const pinnedRows = [...(strip?.querySelectorAll("tab[pinned]") ?? [])];
+    if (!pinnedRows.length) {
+      return false;
+    }
+    return event.clientY <= pinnedRows.at(-1).getBoundingClientRect().bottom;
   }
 
   get #landingSupported() {

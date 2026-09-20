@@ -11,6 +11,7 @@ import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 import { ZenLibraryDragAndDrop } from "moz-src:///zen/library/ZenLibraryDragAndDrop.mjs";
 
 const GRADIENT_TOPIC = "zen-space-gradient-update";
+const SIZING_FALLBACK_MS = 600;
 const SCROLL_EDGE_PX = 48;
 const SCROLL_STEP_PX = 12;
 
@@ -69,8 +70,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #observer = { observe: () => this.requestUpdate() };
   #onDataChanged = () => this.requestUpdate();
   #onStripEvent = event => {
-    // The copies raise the same events as they are built; those are not
-    // changes to the real strips.
     if (this.contains(event.target)) {
       return;
     }
@@ -100,15 +99,13 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     this.#dnd.clearDragOverVisuals();
     this.#refreshStrips();
   };
-  // A drag from a copy ran on the strip's drag and drop, whose own drag end
-  // only hears drags from the strip; it gets to finish this one too. The
-  // event comes to the copy itself, which the drop's rebuild has taken out
-  // of the document by then, so it never reaches the window.
   #onCopyDragEnd = event => {
     gBrowser.tabContainer.tabDragAndDrop.handle_dragend(event);
     this.#onDragEnd();
   };
   #landing = false;
+  #sizingTimer = null;
+  #pendingGroups = [];
   /** @type {WeakMap<Element, Element>} copied tab or group to the real one */
   #realElements = new WeakMap();
   #dnd = new ZenLibraryDragAndDrop(this);
@@ -162,6 +159,8 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     }
     clearTimeout(this.#refreshTimer);
     this.#refreshTimer = null;
+    window.clearTimeout(this.#sizingTimer);
+    this.library?.removeAttribute("sizing");
     this.library?.style.removeProperty("--zen-library-content-width");
   }
 
@@ -179,17 +178,55 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     }
   }
 
+  onShown() {
+    this.#updateLibraryWidth();
+  }
+
+  onHidden() {
+    window.clearTimeout(this.#sizingTimer);
+    this.library?.removeAttribute("sizing");
+    this.library?.style.removeProperty("--zen-library-content-width");
+  }
+
   #updateLibraryWidth() {
     const side = this.library?.querySelector("#zen-library-side");
     const list = this.querySelector(".zen-library-spaces");
-    if (!side || !list) {
+    if (!side || !list || this.hidden) {
       return;
     }
     const sideWidth = window.windowUtils.getBoundsWithoutFlushing(side).width;
-    this.library.style.setProperty(
-      "--zen-library-content-width",
-      `${sideWidth + this.#cardsWidth(list)}px`
-    );
+    const width = `${sideWidth + this.#cardsWidth(list)}px`;
+    if (
+      this.library.style.getPropertyValue("--zen-library-content-width") ===
+      width
+    ) {
+      return;
+    }
+    this.library.style.setProperty("--zen-library-content-width", width);
+    this.#markResizing();
+  }
+
+  /**
+   * Holds the cards' scrollbars back while the library grows or shrinks
+   * around them, where they would otherwise flash into view for the length
+   * of the animation.
+   */
+  #markResizing() {
+    const library = this.library;
+    library.setAttribute("sizing", "true");
+    window.clearTimeout(this.#sizingTimer);
+    const done = () => {
+      window.clearTimeout(this.#sizingTimer);
+      library.removeAttribute("sizing");
+      library.removeEventListener("transitionend", onEnd);
+    };
+    const onEnd = event => {
+      if (event.target === library && event.propertyName === "width") {
+        done();
+      }
+    };
+    library.addEventListener("transitionend", onEnd);
+    this.#sizingTimer = window.setTimeout(done, SIZING_FALLBACK_MS);
   }
 
   /**
@@ -285,18 +322,40 @@ export class ZenLibrarySpacesSection extends MozLitElement {
         continue;
       }
       const before = rebuild ? this.#rowPositions(strip) : null;
-      strip.textContent = "";
       const space = gZenWorkspaces.workspaceElement(card.dataset.uuid);
       if (!space) {
+        strip.textContent = "";
         continue;
       }
+      // Built away from the document, so a card's rows land in one go
+      // rather than one reflow at a time.
+      const rows = document.createDocumentFragment();
+      this.#pendingGroups = [];
       for (const section of [space.pinnedTabsContainer, space.tabsContainer]) {
-        this.#appendCopy(strip, section);
+        this.#appendCopy(rows, section);
       }
+      strip.replaceChildren(rows);
+      this.#fillGroups();
       // Rows slide to their new places, unless the drag image is landing on
       // the moved one, which is motion enough.
       if (before && !this.#landing) {
         this.#animateRows(strip, before);
+      }
+    }
+  }
+
+  /**
+   * Fills every copied group now that the strip is in the document. A group
+   * nested inside another is connected as soon as its parent takes it, so
+   * this list drains in order.
+   */
+  #fillGroups() {
+    while (this.#pendingGroups.length) {
+      const { copy, inner } = this.#pendingGroups.shift();
+      for (const child of inner.children) {
+        if (!child.classList.contains("zen-tab-group-start")) {
+          this.#appendCopy(copy, child);
+        }
       }
     }
   }
@@ -405,12 +464,12 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           ...[...realIcon.children].map(child => child.cloneNode(true))
         );
       }
-      const inner = node.querySelector(":scope > .tab-group-container") ?? node;
-      for (const child of inner.children) {
-        if (!child.classList.contains("zen-tab-group-start")) {
-          this.#appendCopy(copy, child);
-        }
-      }
+      // A group empties itself and builds its own scaffolding the moment it
+      // joins the document, so its rows are put in afterwards.
+      this.#pendingGroups.push({
+        copy,
+        inner: node.querySelector(":scope > .tab-group-container") ?? node,
+      });
       return;
     }
     if (!node.querySelector("tab, tab-group, zen-folder")) {
@@ -451,6 +510,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
         } else {
           gZenFolders.animateExpand(copy);
         }
+        gZenFolders.relayoutCollapsedFolder(group);
       }
       return;
     }

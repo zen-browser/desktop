@@ -70,7 +70,11 @@ export function contentTypeOf(fileName) {
   if (!extension) {
     return "";
   }
-  return lazy.mimeService.getTypeFromExtension(extension);
+  try {
+    return lazy.mimeService.getTypeFromExtension(extension);
+  } catch {
+    return "";
+  }
 }
 
 /**

@@ -3314,7 +3314,7 @@ class nsZenWorkspaces {
       parent.removeAttribute("icons-overflow");
       return;
     }
-    const maxButtonSize = 32; // IMPORTANT: This should match the CSS size of the icons
+    const maxButtonSize = AppConstants.platform == "macosx" ? 34 : 32; // IMPORTANT: This should match the CSS size of the icons
     const minButtonSize = maxButtonSize / 2; // Minimum size for icons when space is limited
     const separation = 3; // Space between icons
 

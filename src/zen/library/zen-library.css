@@ -427,7 +427,6 @@ zen-library-media-section[needs-opt-in] {
   overflow: clip;
 }
 
-/* Shape, colour and press come from .zen-big-accent-button.primary. */
 .zen-library-media-opt-in-button {
   width: 100%;
 }

@@ -757,6 +757,9 @@ class nsZenWorkspaces {
       : [this.#createWorkspaceData("Space", undefined)];
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
+    if (aWinData.selected) {
+      this._sessionSelected = aWinData.selected;
+    }
     let promise = this.#initializeWorkspaces();
     for (const workspace of spacesFromStore) {
       const element = this.workspaceElement(workspace.uuid);
@@ -834,6 +837,7 @@ class nsZenWorkspaces {
     });
 
     const cleanup = () => {
+      delete this._sessionSelected;
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
       delete this._shouldOverrideTabs;
@@ -862,6 +866,11 @@ class nsZenWorkspaces {
       !this._shouldOverrideTabs
     ) {
       const tabs = gBrowser.tabs.filter(tab => !tab.collapsed);
+      if (
+        Services.prefs.getBoolPref("zen.workspaces.continue-where-left-off")
+      ) {
+        this._tabToSelect = this._sessionSelected - 1;
+      }
       if (
         typeof this._tabToSelect === "number" &&
         this._tabToSelect >= 0 &&

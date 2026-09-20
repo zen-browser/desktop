@@ -381,7 +381,7 @@
 
 /* Hide .zen-media-focus-button if it doesn't fit in the toolbar */
 @container media-controls (max-width: 165px) {
-  .zen-media-focus-button {
+  .zen-media-card:not([media-sharing]) .zen-media-focus-button {
     display: none;
   }
 }

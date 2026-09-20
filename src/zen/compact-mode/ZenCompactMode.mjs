@@ -61,6 +61,12 @@ ChromeUtils.defineLazyGetter(lazy, "mainAppWrapper", () =>
   document.getElementById("zen-main-app-wrapper")
 );
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 window.gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
@@ -169,6 +175,9 @@ window.gZenCompactModeManager = {
   },
 
   set preference(value) {
+    if (lazy.ZenLibrary.isLibrarySlightlyOpen) {
+      return;
+    }
     if (!this.shouldBeCompact) {
       value = false;
     }

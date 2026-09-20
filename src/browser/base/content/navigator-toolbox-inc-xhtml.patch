@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index a76bb7aae7636c07989a4acb35281777d3103505..c5eafbdad5270cd9926ed4f1d850d134440d775b 100644
+index a76bb7aae7636c07989a4acb35281777d3103505..d35aa0457307e95ad00464861fcee2827325193e 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -55,3 +55,11 @@ index a76bb7aae7636c07989a4acb35281777d3103505..c5eafbdad5270cd9926ed4f1d850d134
  
    <toolbar id="nav-bar"
             class="browser-toolbar"
+@@ -180,7 +188,6 @@
+         <toolbartabstop/>
+         <html:moz-urlbar id="urlbar"
+               class="urlbar"
+-              popover="manual"
+               pageproxystate="invalid"
+               unifiedsearchbutton-available=""
+               sap-name="urlbar">

@@ -404,13 +404,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       return;
     }
 
-    const collapsedRoot = group.rootMostCollapsedFolder;
+    let collapsedRoot = group.rootMostCollapsedFolder;
     if (!collapsedRoot) {
       return;
     }
 
-    collapsedRoot.setAttribute("has-active", "true");
-    await this.animateSelect(collapsedRoot);
+    // If the folder got expanded instead, the tab may still be
+    // inside of another collapsed subfolder.
+    while (collapsedRoot) {
+      collapsedRoot.setAttribute("has-active", "true");
+      const expanded = await this.animateSelect(collapsedRoot);
+      collapsedRoot = expanded ? group.rootMostCollapsedFolder : null;
+    }
     gBrowser.tabContainer._invalidateCachedTabs();
   }
 
@@ -1505,22 +1510,28 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   #createAnimation(items, targetState, opts, callback = () => {}) {
     items = Array.isArray(items) ? items : [items];
     return items.map(item =>
-      this.#animateItem(item, targetState, opts).then(callback)
+      this.#animateItem(item, targetState, opts).then(
+        finished => finished && callback()
+      )
     );
   }
+
+  #itemAnimations = new WeakMap();
 
   /**
    * Animates an element to the given target state. An array value is a
    * [from, to] pair, "auto" endpoints are resolved by measuring and an
    * empty string animates back to the element's natural value. The final
-   * values are left applied as inline styles.
+   * values are left applied as inline styles. A running animation on the
+   * same element is replaced, continuing from its current values.
    *
    * @param {Element} item - The element to animate.
    * @param {object} targetState - Property to value (or [from, to]) map.
    * @param {object} opts - The animation options.
    * @param {number} opts.duration - The duration in seconds.
    * @param {string} opts.ease - The easing name.
-   * @returns {Promise} Resolves when the animation has finished.
+   * @returns {Promise<boolean>} Resolves when the animation has finished,
+   *   false if it got replaced by another one before that.
    */
   async #animateItem(item, targetState, { duration = 0.18, ease } = {}) {
     const computed = window.getComputedStyle(item);
@@ -1539,13 +1550,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const to = {};
     const finalStyles = new Map();
     for (const [prop, value] of Object.entries(targetState)) {
-      let [start, end] = Array.isArray(value) ? value : [undefined, value];
+      const start = Array.isArray(value) ? value[0] : undefined;
+      from[prop] =
+        start === undefined || start === "auto"
+          ? measure(prop)
+          : toCssValue(prop, start);
+    }
+    // The start values are taken, the natural values need to be measured
+    // without the previous animation applying.
+    this.#itemAnimations.get(item)?.cancel();
+    for (const [prop, value] of Object.entries(targetState)) {
+      let end = Array.isArray(value) ? value[1] : value;
       const cssProp = prop.replace(/[A-Z]/g, c => `-${c.toLowerCase()}`);
-      if (start === undefined || start === "auto") {
-        start = measure(prop);
-      } else {
-        start = toCssValue(prop, start);
-      }
       if (end === "" || end === "auto") {
         // Resolve the natural value by clearing any inline override.
         item.style.removeProperty(cssProp);
@@ -1555,18 +1571,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         end = toCssValue(prop, end);
         finalStyles.set(cssProp, end);
       }
-      from[prop] = start;
       to[prop] = end;
     }
     const animation = item.animate([from, to], {
       duration: duration * 1000,
       easing: ease === "easeInOut" ? "ease-in-out" : "ease",
     });
+    this.#itemAnimations.set(item, animation);
     try {
       await animation.finished;
     } catch (e) {
-      // The animation was cancelled, leave the element as-is.
-      return;
+      // The animation was replaced, leave the element to the new one.
+      return false;
     }
     for (const [cssProp, value] of finalStyles) {
       if (value === null) {
@@ -1575,6 +1591,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         item.style.setProperty(cssProp, value);
       }
     }
+    return true;
   }
 
   #calculateHeightShift(tabsContainer, selectedTabs) {
@@ -1757,49 +1774,53 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       }
     }
 
-    const afterMarginTop = () => {
-      tabsContainer.style.overflowY = "";
-      if (group.hasAttribute("has-active")) {
-        const activeTabs = group.activeTabs;
-        const folders = new Map();
-        group.removeAttribute("has-active");
-        for (let tab of activeTabs) {
-          const tabGroup = tab?.group?.hasAttribute("split-view-group")
-            ? tab?.group?.group
-            : tab?.group;
-          if (!folders.has(tabGroup?.id)) {
-            folders.set(tabGroup?.id, tabGroup?.activeGroups?.at(-1));
-          }
-          let activeGroup = folders.get(tabGroup?.id);
-          if (activeGroup) {
-            this.setFolderIndentation(
-              [tab],
-              activeGroup,
-              /* for collapse = */ true
-            );
+    // Update the active state and indentation right away instead of when
+    // the animation ends, it would otherwise be lost if the folder gets
+    // collapsed again before that.
+    if (group.hasAttribute("has-active")) {
+      const activeTabs = group.activeTabs;
+      group.removeAttribute("has-active");
+      for (const tab of activeTabs) {
+        const tabGroup = tab?.group?.hasAttribute("split-view-group")
+          ? tab?.group?.group
+          : tab?.group;
+        const activeGroup = tabGroup?.activeGroups?.at(-1);
+        if (activeGroup) {
+          this.setFolderIndentation(
+            [tab],
+            activeGroup,
+            /* for collapse = */ true
+          );
+        } else {
+          // Since the folder is now expanded, we should remove active attribute
+          // to the tab that was previously visible
+          tab.removeAttribute("folder-active");
+          if (tab.group?.hasAttribute("split-view-group")) {
+            tab.group.style.removeProperty("--zen-folder-indent");
           } else {
-            // Since the folder is now expanded, we should remove active attribute
-            // to the tab that was previously visible
-            tab.removeAttribute("folder-active");
-            if (tab.group?.hasAttribute("split-view-group")) {
-              tab.group.style.removeProperty("--zen-folder-indent");
-            } else {
-              tab.style.removeProperty("--zen-folder-indent");
-            }
+            tab.style.removeProperty("--zen-folder-indent");
           }
         }
-        folders.clear();
       }
-      // Folder has been expanded and has no active tabs
-      group.activeTabs = [];
+    }
+    // Folder has been expanded and has no active tabs
+    group.activeTabs = [];
+
+    const afterMarginTop = () => {
+      tabsContainer.style.overflowY = "";
     };
 
     let duration = this.#folderAnimationDuration;
 
+    // Items of collapsed subfolders must stay hidden, don't animate them twice.
+    const itemsToReveal = itemsToShow.filter(
+      item => !itemsToHide.includes(item)
+    );
+
     animations.push(
       ...this.#createAnimation(
-        itemsToShow,
-        { opacity: "", height: "" },
+        itemsToReveal,
+        { opacity: "", height: "", minHeight: "" },
         { duration, ease: "easeInOut" }
       ),
       ...this.#createAnimation(
@@ -1821,10 +1842,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     this.#animationCount += 1;
     await Promise.all(animations);
     this.#animationCount -= 1;
-
-    // Cleanup
-    this.styleCleanup(itemsToShow);
-    this.styleCleanup(itemsToHide);
   }
 
   async animateUnloadAll(group) {
@@ -1969,9 +1986,16 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     gBrowser.tabContainer._invalidateCachedTabs();
   }
 
+  /**
+   * Shows the selected tabs of a collapsed folder.
+   *
+   * @param {MozTabbrowserTabGroup} group - The collapsed folder.
+   * @returns {Promise<boolean>} True if the folder got expanded instead,
+   *   since all of its tabs are active.
+   */
   async animateSelect(group) {
     if (!group?.isZenFolder) {
-      return;
+      return false;
     }
 
     this.cancelPopupTimer();
@@ -1989,7 +2013,24 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     if (group.collapsed && selectedTabs.length) {
       const active = new Set([...(group.activeTabs ?? []), ...selectedTabs]);
-      const tabs = group.tabs.filter(tab => !tab.hasAttribute("zen-empty-tab"));
+      // Tabs inside of collapsed subfolders would stay hidden if the folder
+      // gets expanded, so they don't need to be active.
+      const isInsideCollapsedSubfolder = tab => {
+        let folder = tab.group?.hasAttribute("split-view-group")
+          ? tab.group.group
+          : tab.group;
+        while (folder && folder !== group) {
+          if (folder.collapsed) {
+            return true;
+          }
+          folder = folder.group;
+        }
+        return false;
+      };
+      const tabs = group.tabs.filter(
+        tab =>
+          !tab.hasAttribute("zen-empty-tab") && !isInsideCollapsedSubfolder(tab)
+      );
       if (
         tabs.length &&
         tabs.every(
@@ -2001,7 +2042,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         )
       ) {
         group.collapsed = false;
-        return;
+        return true;
       }
     }
 
@@ -2160,11 +2201,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     await Promise.all(animations);
     this.#animationCount -= 1;
     if (this.#animationCount) {
-      return;
+      return false;
     }
 
     // Cleanup
     this.styleCleanup(selectedTabs);
+    return false;
   }
 
   animateGroupMove(group, expand = false) {
@@ -2184,6 +2226,31 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         marginTop: expand ? 0 : -(heightContainer + 4),
       },
       { duration: this.#folderAnimationDuration, ease: "easeInOut" }
+    );
+  }
+
+  /**
+   * Switches to the folder's space, expands its parents (root first) and the
+   * folder itself, then jiggles it so it's easy to spot.
+   *
+   * @param {MozTabbrowserTabGroup} folder The folder to reveal.
+   */
+  async revealFolder(folder) {
+    const workspaceId = folder.getAttribute("zen-workspace-id");
+    if (workspaceId && workspaceId != gZenWorkspaces.activeWorkspace) {
+      await gZenWorkspaces.changeWorkspaceWithID(workspaceId);
+    }
+    let collapsedRoot = folder.rootMostCollapsedFolder;
+    const wasCollapsed = !!collapsedRoot;
+    while (collapsedRoot) {
+      collapsedRoot.collapsed = false;
+      collapsedRoot = folder.rootMostCollapsedFolder;
+    }
+    const label = folder.labelElement.parentElement;
+    label.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    await gZenUIManager.shakeElement(
+      label,
+      wasCollapsed ? this.#folderRevealDuration * 1000 : 0
     );
   }
 

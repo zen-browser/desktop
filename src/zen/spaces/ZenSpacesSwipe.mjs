@@ -12,15 +12,23 @@ ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
   return document.getElementById("zen-toolbar-background");
 });
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 export class ZenSpacesSwipe {
   _swipeState = {
     isGestureActive: false,
     lastDelta: 0,
     direction: null,
+    isSwipingLibrary: false,
+    beforeLibraryState: 0,
   };
 
   constructor() {
-    this.#attachWorkspaceSwipeGestures(gNavToolbox);
+    this.attachWorkspaceSwipeGestures(gNavToolbox);
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
   }
 
@@ -35,20 +43,39 @@ export class ZenSpacesSwipe {
     );
   }
 
-  #attachWorkspaceSwipeGestures(element) {
+  #readySwipeOpenLibrary() {
+    const spaces = gZenWorkspaces.getWorkspaces();
+    const current = gZenWorkspaces.getActiveWorkspaceFromCache();
+    const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
+    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
+    return (
+      spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
+      libraryEnabled
+    );
+  }
+
+  attachWorkspaceSwipeGestures(element) {
+    const gestureControl = {
+      _handleSwipeMayStart: this._handleSwipeMayStart.bind(this),
+      _handleSwipeStart: this._handleSwipeStart.bind(this),
+      _handleSwipeUpdate: this._handleSwipeUpdate.bind(this),
+      _handleSwipeEnd: this._handleSwipeEnd.bind(this),
+      _handleSwipeAnimationEnd: this.onSwipeGestureAnimationEnd.bind(this),
+    };
+
     element.addEventListener(
       "MozSwipeGestureMayStart",
-      this._handleSwipeMayStart.bind(this),
+      gestureControl._handleSwipeMayStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureStart",
-      this._handleSwipeStart.bind(this),
+      gestureControl._handleSwipeStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureUpdate",
-      this._handleSwipeUpdate.bind(this),
+      gestureControl._handleSwipeUpdate,
       true
     );
 
@@ -56,15 +83,47 @@ export class ZenSpacesSwipe {
     // while MozSwipeGesture is fired immediately after swipe ends.
     element.addEventListener(
       "MozSwipeGesture",
-      this._handleSwipeEnd.bind(this),
+      gestureControl._handleSwipeEnd,
       true
     );
 
     element.addEventListener(
       "MozSwipeGestureEnd",
-      () => {
-        this.onSwipeGestureAnimationEnd();
-      },
+      gestureControl._handleSwipeAnimationEnd,
+      true
+    );
+
+    return gestureControl;
+  }
+
+  detachWorkspaceSwipeGestures(element, gestureControl) {
+    element.removeEventListener(
+      "MozSwipeGestureMayStart",
+      gestureControl._handleSwipeMayStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureStart",
+      gestureControl._handleSwipeStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureUpdate",
+      gestureControl._handleSwipeUpdate,
+      true
+    );
+
+    // Use MozSwipeGesture instead of MozSwipeGestureEnd because MozSwipeGestureEnd is fired after animation ends,
+    // while MozSwipeGesture is fired immediately after swipe ends.
+    element.removeEventListener(
+      "MozSwipeGesture",
+      gestureControl._handleSwipeEnd,
+      true
+    );
+
+    element.removeEventListener(
+      "MozSwipeGestureEnd",
+      gestureControl._handleSwipeAnimationEnd,
       true
     );
   }
@@ -115,6 +174,8 @@ export class ZenSpacesSwipe {
       isGestureActive: true,
       lastDelta: 0,
       direction: null,
+      isSwipingLibrary: false,
+      beforeLibraryState: 0,
     };
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
   }
@@ -154,6 +215,55 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
+    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
+    const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
+    const couldClose = libraryOpen;
+    const wantsOpen =
+      !libraryOpen &&
+      (libraryOnRight ? translateX < 0 : translateX > 0) &&
+      this.#readySwipeOpenLibrary();
+
+    if (wantsOpen || couldClose || this._swipeState.isSwipingLibrary) {
+      if (!this._swipeState.isSwipingLibrary) {
+        this._swipeState.isSwipingLibrary = true;
+        this._swipeState.beforeLibraryState = libraryOpen ? 1 : 0;
+        lazy.ZenLibrary.startSwipe();
+      }
+
+      const rubberBand = function (offset, dimension, constant = 0.55) {
+        if (offset === 0 || dimension === 0) {
+          return 0;
+        }
+        return (
+          dimension *
+          (1 - Math.exp(-(Math.abs(offset) * constant) / dimension)) *
+          Math.sign(offset)
+        );
+      };
+
+      const DAMPING_DIMENSION = 0.2;
+      const RUBBER_BAND_CONSTANT = 0.08;
+
+      const LIBRARY_SWIPE_FULL = 0.8;
+      const translation = libraryOnRight ? -translateX : translateX;
+      const deltaProgress = (translation / stripWidth) * LIBRARY_SWIPE_FULL;
+      const progress = this._swipeState.beforeLibraryState + deltaProgress;
+
+      let progressDamped;
+      if (progress < 0) {
+        progressDamped =
+          0 + rubberBand(progress, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
+      } else if (progress > 1) {
+        progressDamped =
+          1 + rubberBand(progress - 1, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
+      } else {
+        progressDamped = progress;
+      }
+
+      lazy.ZenLibrary.swipeProgress(progressDamped);
+      return;
+    }
+
     // Apply a translateX to the tab strip to give the user feedback on the swipe
     const currentWorkspace = ws.getActiveWorkspaceFromCache();
     ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
@@ -173,17 +283,29 @@ export class ZenSpacesSwipe {
 
     const rawDirection = moveForward ? 1 : -1;
     const direction = ws.naturalScroll ? -1 : 1;
+
+    if (this._swipeState.isSwipingLibrary) {
+      lazy.ZenLibrary.stopSwipe(rawDirection * direction);
+      return;
+    }
+
     await ws.changeWorkspaceShortcut(rawDirection * direction, true);
   }
 
   onSwipeGestureAnimationEnd() {
     const ws = gZenWorkspaces;
 
+    if (this._swipeState.isSwipingLibrary) {
+      lazy.ZenLibrary.stopSwipe(null);
+    }
+
     // Reset swipe state
     this._swipeState = {
       isGestureActive: false,
       lastDelta: 0,
       direction: null,
+      isSwipingLibrary: false,
+      beforeLibraryState: 0,
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);

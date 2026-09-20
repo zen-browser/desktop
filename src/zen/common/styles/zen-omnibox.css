@@ -164,11 +164,12 @@
     }
 
     #navigator-toolbox[zen-has-implicit-hover="true"] &,
-    &[open],
+    &:is([open], [showing]),
     #urlbar[has-popup-open="true"] &,
     :root[zen-has-empty-tab="true"] & {
       opacity: 1;
       visibility: visible;
+      transition: opacity 0.15s !important;
     }
   }
 }
@@ -558,22 +559,24 @@
 }
 
 .urlbarView-prettyName,
+.urlbarView-tabGroup,
 .urlbarView-shortcutContent {
-  border-radius: 4px;
+  border-radius: 4px !important;
   font-weight: 600;
-  margin-top: auto;
-  margin-bottom: auto;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
 }
 
-.urlbarView-prettyName {
-  padding: 4px 6px;
-  background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 90%);
-  margin-left: 6px;
+.urlbarView-prettyName,
+.urlbarView-tabGroup {
+  padding: 4px 6px !important;
+  background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 90%) !important;
+  margin-left: 6px !important;
   font-size: 12px;
   align-items: center;
   gap: 6px;
   display: flex;
-  color: color-mix(in srgb, var(--zen-primary-color), currentColor 95%);
+  color: color-mix(in srgb, var(--zen-primary-color), currentColor 95%) !important;
 
   & img {
     -moz-context-properties: fill;
@@ -652,11 +655,10 @@
   --urlbarview-row-padding-block: 10px;
   color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) !important;
 
-  &:hover {
-    &,
-    & .urlbarView-favicon {
-      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse) 5%, transparent 95%) !important;
-    }
+  &:hover,
+  &:hover .urlbarView-favicon,
+  .urlbarView-action-favicon {
+    background-color: color-mix(in srgb, var(--zen-branding-bg-reverse) 5%, transparent 95%) !important;
   }
 
   &[selected] {
@@ -684,8 +686,9 @@
       background-color: rgba(255, 255, 255, 0.9) !important;
     }
 
-    & .urlbarView-prettyName {
-      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 80%);
+    & .urlbarView-prettyName,
+    & .urlbarView-tabGroup {
+      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 80%) !important;
     }
   }
 }

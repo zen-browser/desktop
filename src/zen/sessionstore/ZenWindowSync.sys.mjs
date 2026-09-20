@@ -773,8 +773,8 @@ class nsZenWindowSync {
     const otherBrowser = aTab.linkedBrowser;
 
     // We aren't closing the other tab so, we also need to swap its tablisteners.
-    let filter = otherTabBrowser._getTabProgressFilter(aTab);
-    let tabListener = otherTabBrowser._getTabProgressListener(aTab);
+    let filter = otherTabBrowser.zenGetTabProgressFilter(aTab);
+    let tabListener = otherTabBrowser.zenGetTabProgressListener(aTab);
     try {
       otherBrowser.webProgress.removeProgressListener(filter);
       filter.removeProgressListener(tabListener);
@@ -796,7 +796,7 @@ class nsZenWindowSync {
         true,
         false
       );
-      otherTabBrowser._setTabProgressListener(aTab, tabListener);
+      otherTabBrowser.zenSetTabProgressListener(aTab, tabListener);
 
       const notifyAll = Ci.nsIWebProgress.NOTIFY_ALL;
       filter.addProgressListener(tabListener, notifyAll);

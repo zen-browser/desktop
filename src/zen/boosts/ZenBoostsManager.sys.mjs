@@ -652,7 +652,10 @@ class nsZenBoostsManager {
     );
 
     const progressListener = {
-      QueryInterface: ChromeUtils.generateQI(["nsIWebProgressListener"]),
+      QueryInterface: ChromeUtils.generateQI([
+        "nsIWebProgressListener",
+        "nsISupportsWeakReference",
+      ]),
       onLocationChange: webProgress => {
         if (webProgress.isTopLevel) {
           editor.close();

@@ -1,0 +1,96 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+.zen-library-media-preview {
+  position: absolute;
+  inset: 0;
+  --zen-main-app-child-z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zen-library-media-preview-backdrop {
+  position: absolute;
+  inset: 0;
+  -moz-window-dragging: drag;
+  background: light-dark(rgba(255, 255, 255, 0.55), rgba(0, 0, 0, 0.45));
+}
+
+.zen-library-media-preview-panel {
+  position: relative;
+  -moz-window-dragging: no-drag;
+  display: flex;
+  flex-direction: column;
+  width: min(78vw, 1100px);
+  border-radius: 18px;
+  overflow: hidden;
+  background: light-dark(rgb(245, 245, 247), rgb(28, 30, 32));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.zen-library-media-preview-header {
+  --zen-toolbar-button-size: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  flex: none;
+  color: light-dark(rgb(28, 30, 32), rgb(233, 234, 237));
+}
+
+.zen-library-media-preview-name {
+  margin-inline-start: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-library-media-preview-date {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-inline-end: auto;
+  white-space: nowrap;
+}
+
+.zen-library-media-preview .toolbarbutton-1 > .toolbarbutton-icon {
+  box-sizing: border-box;
+  -moz-context-properties: fill;
+  fill: var(--toolbarbutton-icon-fill);
+}
+
+.zen-library-media-preview-open {
+  & > .toolbarbutton-text {
+    display: block;
+    margin: 0;
+    padding: 5px 10px;
+    border-radius: var(--toolbarbutton-border-radius);
+    background: color-mix(in srgb, currentColor 12%, transparent);
+    font-weight: 600;
+  }
+
+  &:hover > .toolbarbutton-text {
+    background: color-mix(in srgb, currentColor 20%, transparent);
+  }
+}
+
+.zen-library-media-preview-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: min(64vh, 620px);
+  padding: 16px;
+  background: light-dark(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.28));
+  border-top: 1px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.07));
+}
+
+.zen-library-media-preview-media {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+}

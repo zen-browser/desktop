@@ -202,13 +202,9 @@
 
 #zen-main-app-wrapper > #zen-glance-detached {
   position: fixed;
-  inset: 24px;
+  inset: calc(var(--zen-element-separation) / 2);
   z-index: 100;
   display: flex;
-
-  &[hidden] {
-    display: none;
-  }
 
   & .zen-glance-detached-backdrop {
     position: fixed;

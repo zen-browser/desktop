@@ -43,18 +43,28 @@
     fill: currentColor;
     scroll-margin: 0 20px;
 
+    @media (-moz-platform: macos) {
+      height: 32px;
+      max-width: 32px;
+    }
+
     & .zen-workspace-icon {
       pointer-events: none;
       line-height: 0;
       position: absolute;
       font-size: 12px;
 
-      @media (-moz-platform: macos) {
-        font-size: 14px;
-      }
 
       &:is(img) {
         width: 14px;
+      }
+
+      @media (-moz-platform: macos) {
+        font-size: 15px;
+
+        &:is(img) {
+          width: 16px;
+        }
       }
 
       &[no-icon='true'] {
@@ -356,7 +366,7 @@ zen-workspace {
       overscroll-behavior: auto;
     }
 
-    :root[swipe-gesture] &::part(scrollbox) {
+    &[swipe-gesture]::part(scrollbox) {
       scrollbar-width: none;
     }
 
@@ -404,7 +414,7 @@ zen-workspace {
     }
   }
 
-  :root:not(:is([animating-background], [swipe-gesture])) #navigator-toolbox:not([movingtab]) &:not([active]) {
+  &:not([swipe-gesture]) :root:not(:is([animating-background])) #navigator-toolbox:not([movingtab]) &:not([active]) {
     -moz-subtree-hidden-only-visually: 1;
     content-visibility: hidden;
   }

@@ -13,6 +13,9 @@ import {
 let lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  FILE_GROUPS: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
+  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
+  fileGroupOf: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
   DownloadsCommon:
@@ -24,22 +27,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const FILE_MIME = "application/x-moz-file";
 const OPENING_FEEDBACK_MS = 1500;
-
-const FILE_TYPES = {
-  images: "png jpg jpeg gif webp svg bmp tif tiff heic heif avif ico",
-  video: "mp4 mkv mov avi webm m4v wmv flv mpg mpeg",
-  audio: "mp3 wav flac aac ogg oga m4a opus wma aiff",
-  documents:
-    "pdf doc docx xls xlsx ppt pptx txt md rtf odt ods odp csv epub pages numbers key",
-  archives: "zip rar 7z tar gz bz2 xz tgz zst",
-  apps: "dmg pkg exe msi app deb rpm appimage apk jar",
-};
-const EXTENSION_TYPES = new Map();
-for (const [type, extensions] of Object.entries(FILE_TYPES)) {
-  for (const extension of extensions.split(" ")) {
-    EXTENSION_TYPES.set(extension, type);
-  }
-}
 
 export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   static id = "downloads";
@@ -103,7 +90,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       {
         id: "type",
         titleL10nId: "library-downloads-filter-type",
-        options: Object.keys(FILE_TYPES).map(id => ({
+        options: lazy.FILE_GROUPS.map(id => ({
           id,
           l10nId: `library-downloads-type-${id}`,
         })),
@@ -214,14 +201,11 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   }
 
   #fileType(download) {
-    const extension = this.#fileName(download).match(/\.([^.]+)$/)?.[1];
-    return extension ? EXTENSION_TYPES.get(extension.toLowerCase()) : undefined;
+    return lazy.fileGroupOf(this.#fileName(download)) ?? undefined;
   }
 
   #activeTypes() {
-    return Object.keys(FILE_TYPES).filter(id =>
-      this.isFilterActive("type", id)
-    );
+    return lazy.FILE_GROUPS.filter(id => this.isFilterActive("type", id));
   }
 
   #whenCutoff() {
@@ -258,6 +242,19 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     return `moz-icon://${download.target.path}?size=32${
       download.succeeded ? "&state=normal" : ""
     }`;
+  }
+
+  /**
+   * @param {object} download - The download a row stands for
+   * @returns {string|null} The finished file itself, when it is a picture
+   *   worth showing in place of a file icon
+   */
+  #previewUrl(download) {
+    const path = download.succeeded && download.target.path;
+    if (!path || !lazy.canDrawThumbnail(path)) {
+      return null;
+    }
+    return PathUtils.toFileURI(path);
   }
 
   #isPending(download) {
@@ -597,7 +594,12 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       >
         <img
           class="zen-library-row-icon"
-          src=${this.#iconUrl(download)}
+          ?preview=${!!this.#previewUrl(download)}
+          src=${this.#previewUrl(download) ?? this.#iconUrl(download)}
+          @error=${event => {
+            event.target.removeAttribute("preview");
+            event.target.src = this.#iconUrl(download);
+          }}
           alt=""
         />
         <div class="zen-library-row-text">

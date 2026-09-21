@@ -149,13 +149,13 @@ export class ZenLibrary extends MozLitElement {
         ? compactModeOffsetDirection
         : 0;
 
+      const leftAligned = this.#libraryOnRight ? -1 : 1;
       let webOffset =
-        (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth) +
-        compactModeOffset;
+        leftAligned * (libraryWidth - this.#toolboxWidth) + compactModeOffset;
 
       this.style.setProperty(
         "transform",
-        `translateX(calc(-100% * (1 - ${value})))`
+        `translateX(calc(${leftAligned} * -100% * (1 - ${value})))`
       );
       lazy.appContentWrapper?.style.setProperty(
         "transform",
@@ -473,8 +473,8 @@ export class ZenLibrary extends MozLitElement {
     if (!this.instance && createIfMissing) {
       this.instance = new ZenLibrary();
       this.instance.style.visibility = "collapse";
-      const mountRoot = document.getElementById("zen-main-app-wrapper");
-      mountRoot.append(this.instance);
+      const mountAfter = document.getElementById("navigator-toolbox");
+      mountAfter.after(this.instance);
     }
     return this.instance;
   }

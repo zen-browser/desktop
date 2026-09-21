@@ -43,6 +43,8 @@ export class ZenLibraryMediaPreview {
   #root = null;
   #parts = {};
   #menu = null;
+  /** @type {object|null} The media the open menu acts on */
+  #menuItem = null;
   #items = [];
   #index = -1;
   #origin = null;
@@ -135,6 +137,9 @@ export class ZenLibraryMediaPreview {
     openButton.addEventListener("click", () => this.#launch());
 
     const stage = make("div", "zen-library-media-preview-stage", panel);
+    stage.addEventListener("contextmenu", event =>
+      this.openContextMenu(event, this.#item)
+    );
 
     this.#parts = {
       panel,
@@ -472,8 +477,7 @@ export class ZenLibraryMediaPreview {
     event.dataTransfer.setData("text/uri-list", item.url);
   }
 
-  #launch() {
-    const item = this.#item;
+  #launch(item = this.#item) {
     if (!item) {
       return;
     }
@@ -484,15 +488,13 @@ export class ZenLibraryMediaPreview {
     }
   }
 
-  #reveal() {
-    const item = this.#item;
+  #reveal(item = this.#item) {
     if (item) {
       new lazy.FileUtils.File(item.path).reveal();
     }
   }
 
-  #copy() {
-    const item = this.#item;
+  #copy(item = this.#item) {
     if (!item) {
       return;
     }
@@ -513,6 +515,40 @@ export class ZenLibraryMediaPreview {
   }
 
   #openMenu(event) {
+    this.#menuItem = this.#item;
+    this.#ensureMenu().openPopup(
+      event.currentTarget,
+      "after_end",
+      0,
+      0,
+      false,
+      false
+    );
+  }
+
+  /**
+   * Opens the same menu as the more button, at the pointer, for any media
+   * in the grid or the one on show.
+   *
+   * @param {MouseEvent} event - The right click
+   * @param {object} item - The media it was on
+   */
+  openContextMenu(event, item) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!item) {
+      return;
+    }
+    this.#menuItem = item;
+    this.#ensureMenu().openPopupAtScreen(
+      event.screenX,
+      event.screenY,
+      true,
+      event
+    );
+  }
+
+  #ensureMenu() {
     if (!this.#menu) {
       this.#menu = this.#window.MozXULElement.parseXULToFragment(`
         <menupopup class="zen-library-media-menu">
@@ -523,20 +559,21 @@ export class ZenLibraryMediaPreview {
         </menupopup>
       `).firstElementChild;
       this.#menu.addEventListener("command", menuEvent => {
+        const item = this.#menuItem;
         switch (menuEvent.target.dataset.action) {
           case "open":
-            this.#launch();
+            this.#launch(item);
             break;
           case "show":
-            this.#reveal();
+            this.#reveal(item);
             break;
           case "copy":
-            this.#copy();
+            this.#copy(item);
             break;
         }
       });
       this.#document.getElementById("mainPopupSet").appendChild(this.#menu);
     }
-    this.#menu.openPopup(event.currentTarget, "after_end", 0, 0, false, false);
+    return this.#menu;
   }
 }

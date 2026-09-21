@@ -338,31 +338,20 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
   box-shadow: none;
 }
 
-#zen-library-panel
-  :is(.zen-library-section, .zen-library-search-results)
-  > * {
-  animation: zen-library-section-fade 0.22s ease;
-}
-
-@keyframes zen-library-section-fade {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
 .zen-library-media-skeleton {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
 
-  & .zen-library-media-item {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--zen-library-pill-bg);
+    mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 122 122'><rect x='6' y='6' width='110' height='110' rx='16'/></svg>");
+    mask-size: 150px auto;
+    mask-repeat: round repeat;
     animation: zen-library-media-wait 1.8s ease-in-out infinite;
-  }
-
-  & .zen-library-media-item:nth-child(even) {
-    animation-delay: 0.3s;
   }
 
   &[behind] {
@@ -821,6 +810,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   width: 46px;
   height: 46px;
   margin-inline: 2px 1px;
+  color-scheme: light;
 
   &::before {
     content: "";

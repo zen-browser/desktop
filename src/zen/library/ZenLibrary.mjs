@@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(
 );
 
 const LAST_TAB_PREF = "zen.library.last-tab";
+const CLEANUP_DELAY_MS = 30000;
 
 ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
@@ -183,18 +184,8 @@ export class ZenLibrary extends MozLitElement {
     }
 
     if (isOpen && !wasOpen) {
-      this.setAttribute("open", "true");
-      document
-        .getElementById("zen-sidebar-splitter")
-        .setAttribute("zen-library-open", "true");
       this.#init();
     } else if (!isOpen && wasOpen) {
-      this.removeAttribute("open");
-      this.#mounted = new Set([this.activeTab]);
-      this.requestUpdate();
-      document
-        .getElementById("zen-sidebar-splitter")
-        .removeAttribute("zen-library-open");
       this.#cleanup();
     }
 
@@ -293,20 +284,29 @@ export class ZenLibrary extends MozLitElement {
     return this.#stylesLoaded;
   }
 
+  #cleanupTimer = null;
   #idleCleanup = null;
 
   #scheduleIdleCleanup() {
-    this.#idleCleanup = window.requestIdleCallback(() => {
-      this.#idleCleanup = null;
-      this.#stylesLoaded = null;
+    this.#cancelIdleCleanup();
+    this.#cleanupTimer = window.setTimeout(() => {
+      this.#cleanupTimer = null;
+      this.#idleCleanup = window.requestIdleCallback(() => {
+        this.#idleCleanup = null;
+        this.#stylesLoaded = null;
 
-      this.#contentMounted = false;
-      this.#mounted = new Set([this.activeTab]);
-      this.requestUpdate();
-    });
+        this.#contentMounted = false;
+        this.#mounted = new Set([this.activeTab]);
+        this.requestUpdate();
+      });
+    }, CLEANUP_DELAY_MS);
   }
 
   #cancelIdleCleanup() {
+    if (this.#cleanupTimer) {
+      window.clearTimeout(this.#cleanupTimer);
+      this.#cleanupTimer = null;
+    }
     if (this.#idleCleanup) {
       window.cancelIdleCallback(this.#idleCleanup);
       this.#idleCleanup = null;
@@ -376,11 +376,6 @@ export class ZenLibrary extends MozLitElement {
           lib.openProgress = target;
           lib.#springControls = null;
           lib.removeAttribute("transitioning");
-          if (target === 0) {
-            lib.#mounted = new Set([lib.activeTab]);
-            lib.requestUpdate();
-            lib.#scheduleIdleCleanup();
-          }
         },
       }
     );
@@ -401,12 +396,12 @@ export class ZenLibrary extends MozLitElement {
       lib.#springControls = null;
     }
 
-    lib.style.setProperty("pointer-events", "none");
+    lib.style.pointerEvents = "none";
   }
 
   static stopSwipe(direction) {
     const lib = this.getInstance();
-    lib.style.setProperty("pointer-events", "unset");
+    lib.style.pointerEvents = "";
     lib.#canSwipe = false;
 
     if (lib.#libraryOnRight) {
@@ -418,7 +413,6 @@ export class ZenLibrary extends MozLitElement {
       this.animateProgress(target);
     }
 
-    // Return library open state
     return lib.#isOpen;
   }
 
@@ -499,6 +493,15 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #init() {
+    this.#cancelIdleCleanup();
+    if (!this.#contentMounted) {
+      this.#contentMounted = true;
+      this.requestUpdate();
+    }
+    this.setAttribute("open", "true");
+    document
+      .getElementById("zen-sidebar-splitter")
+      .setAttribute("zen-library-open", "true");
     document.addEventListener("keydown", this, true);
     window.addEventListener("TabOpen", this);
 
@@ -511,11 +514,18 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #cleanup() {
-    this.#cancelIdleCleanup();
+    this.removeAttribute("open");
+    this.#mounted = new Set([this.activeTab]);
+    this.requestUpdate();
+    document
+      .getElementById("zen-sidebar-splitter")
+      .removeAttribute("zen-library-open");
+
     if (this.#springControls) {
       this.#springControls.stop();
       this.#springControls = null;
     }
+    this.removeAttribute("transitioning");
 
     this.#detachWrapperOfSwipe();
     if (this.#gestureControl) {
@@ -531,6 +541,7 @@ export class ZenLibrary extends MozLitElement {
     document.removeEventListener("keydown", this, true);
     window.removeEventListener("TabOpen", this);
     this.isHidden = true;
+    this.#scheduleIdleCleanup();
   }
 
   get #isCompactMode() {

@@ -108,6 +108,13 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #pendingGroups = [];
   /** @type {WeakMap<Element, Element>} copied tab or group to the real one */
   #realElements = new WeakMap();
+  /**
+   * Folders are opened and closed here without touching the real ones, so
+   * rebuilt copies keep what was chosen here.
+   *
+   * @type {WeakMap<Element, boolean>} real group to its copy's collapsed state
+   */
+  #collapsedCopies = new WeakMap();
   #dnd = new ZenLibraryDragAndDrop(this);
   #dragIndex = -1;
   #dropIndex = -1;
@@ -455,6 +462,9 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     if (GROUP_TAGS.includes(node.localName)) {
       const copy = node.cloneNode(false);
       this.#renameIds(copy);
+      if (this.#collapsedCopies.has(node)) {
+        copy.toggleAttribute("collapsed", this.#collapsedCopies.get(node));
+      }
       container.appendChild(copy);
       this.#realElements.set(copy, node);
       const icon = copy.querySelector(".tab-group-folder-icon");
@@ -502,15 +512,12 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       const group = this.#realElements.get(copy);
       if (group) {
         event.stopPropagation();
-        const collapsed = !group.collapsed;
-        group.collapsed = collapsed;
-        copy.collapsed = collapsed;
-        if (collapsed) {
+        this.#collapsedCopies.set(group, copy.collapsed);
+        if (copy.collapsed) {
           gZenFolders.animateCollapse(copy);
         } else {
           gZenFolders.animateExpand(copy);
         }
-        gZenFolders.relayoutCollapsedFolder(group);
       }
       return;
     }
@@ -525,6 +532,35 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     }
     gBrowser.selectedTab = tab;
     this.library?.constructor.toggle();
+  };
+
+  /**
+   * A copy carries the real element's context menu, which would then act on
+   * the copy. The menu opens for the real tab or folder instead.
+   *
+   * @param {MouseEvent} event
+   */
+  #onStripContextMenu = event => {
+    let real = null;
+    const label = event.target.closest(".tab-group-label-container");
+    if (label) {
+      const group = this.#realElements.get(label.closest(GROUP_TAGS.join()));
+      real = group?.labelElement?.parentElement;
+    } else {
+      real = this.#realElements.get(event.target.closest("tab"));
+    }
+    const menu = real && document.getElementById(real.getAttribute("context"));
+    event.preventDefault();
+    event.stopPropagation();
+    if (!menu) {
+      return;
+    }
+    const trigger = new MouseEvent("ZenLibraryContextMenu", {
+      screenX: event.screenX,
+      screenY: event.screenY,
+    });
+    real.dispatchEvent(trigger);
+    menu.openPopupAtScreen(event.screenX, event.screenY, true, trigger);
   };
 
   /**
@@ -591,6 +627,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           orient="vertical"
           expanded="true"
           @click=${this.#onStripClick}
+          @contextmenu=${this.#onStripContextMenu}
           @mouseover=${this.#containHover}
           @mouseout=${this.#containHover}
           @dragstart=${this.#onStripDragStart}

@@ -18,7 +18,6 @@ const FILE_MIME = "application/x-moz-file";
 const HTML_NS = "http://www.w3.org/1999/xhtml";
 const FOLDERS_PREF = "zen.library.media.folders";
 const ENABLED_PREF = "zen.library.media.enabled";
-const SKELETON_CARDS = 10;
 
 const FOLDERS = {
   downloads: { key: "DfltDwnld", home: "Downloads" },
@@ -287,6 +286,11 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     dataTransfer.addElement(event.currentTarget);
   }
 
+  #onItemContextMenu(event, item) {
+    this.#preview ??= new ZenLibraryMediaPreview(window);
+    this.#preview.openContextMenu(event, item);
+  }
+
   #onItemClick(event, item) {
     this.#preview ??= new ZenLibraryMediaPreview(window);
     const shown = this.#shown;
@@ -313,6 +317,9 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     card.title = item.name;
     card.addEventListener("dragstart", event => this.#onDragStart(event, item));
     card.addEventListener("click", event => this.#onItemClick(event, item));
+    card.addEventListener("contextmenu", event =>
+      this.#onItemContextMenu(event, item)
+    );
 
     const frame = document.createElementNS(HTML_NS, "div");
     frame.className = "zen-library-media-frame";
@@ -443,12 +450,7 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
    */
   #renderOptIn() {
     return html`
-      <div class="zen-library-media-grid zen-library-media-skeleton" behind>
-        ${Array.from(
-          { length: SKELETON_CARDS },
-          () => html`<div class="zen-library-media-item"></div>`
-        )}
-      </div>
+      <div class="zen-library-media-skeleton" behind></div>
       <div class="zen-library-media-opt-in">
         <div class="zen-library-media-opt-in-icon">
           <div class="empty-state-icon-image"></div>

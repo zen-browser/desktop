@@ -124,7 +124,7 @@
   background-image: var(--download-image);
   width: 20px;
   height: 20px;
-  border-radius: var(--border-radius-small);
+  border-radius: var(--border-radius-xsmall);
   background-size: cover;
   scale: 2;
 

@@ -1,0 +1,18 @@
+{
+  "label": "slack.com",
+  "bugs": {
+    "1745313": {
+      "issue": "unsupported-warning",
+      "matches": ["*://app.slack.com/*"]
+    }
+  },
+  "interventions": [
+    {
+      "platforms": ["linux"],
+      "ua_string": ["change_OS_to_Windows"],
+      "content_scripts": {
+        "js": ["bug1745313-slack.com-huddles-os-token.js"]
+      }
+    }
+  ]
+}

@@ -14,13 +14,11 @@
 .zen-library-media-preview-backdrop {
   position: absolute;
   inset: 0;
-  -moz-window-dragging: drag;
   background: light-dark(rgba(255, 255, 255, 0.55), rgba(0, 0, 0, 0.45));
 }
 
 .zen-library-media-preview-panel {
   position: relative;
-  -moz-window-dragging: no-drag;
   display: flex;
   flex-direction: column;
   width: min(78vw, 1100px);

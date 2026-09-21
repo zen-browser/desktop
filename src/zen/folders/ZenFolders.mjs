@@ -100,7 +100,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const folderActionsMenu = document.getElementById("zenFolderActions");
     folderActionsMenu.addEventListener("popupshowing", event => {
-      const target = event.explicitOriginalTarget;
+      const target =
+        event.target === folderActionsMenu
+          ? (folderActionsMenu.triggerNode ?? event.explicitOriginalTarget)
+          : event.explicitOriginalTarget;
       let folder;
       if (gBrowser.isTabGroupLabel(target)) {
         folder = target.group;
@@ -496,16 +499,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateCollapse(group);
-  }
-
-  /**
-   * Settles a collapsed folder's own height. The library toggles folders
-   * through copies, so the real one needs telling once the dust settles.
-   *
-   * @param {Element} group - A folder
-   */
-  relayoutCollapsedFolder(group) {
-    this.#queueCollapsedRelayout(group);
   }
 
   #queueCollapsedRelayout(group) {

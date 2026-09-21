@@ -143,8 +143,8 @@ export class ZenLibrary extends MozLitElement {
       let libraryWidth =
         window.windowUtils.getBoundsWithoutFlushing(this).width;
       const compactModeOffsetDirection = this.#libraryOnRight
-        ? -this.#toolboxWidth
-        : this.#toolboxWidth;
+        ? -this.#toolboxWidth + ZenThemeModifier.elementSeparation
+        : this.#toolboxWidth - ZenThemeModifier.elementSeparation;
       const compactModeOffset = this.#isCompactMode
         ? compactModeOffsetDirection
         : 0;
@@ -463,9 +463,10 @@ export class ZenLibrary extends MozLitElement {
         .replace("/\D/g", "")
     );
     if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
-      this.#toolboxWidth += window.windowUtils.getBoundsWithoutFlushing(
+      const splitterWidth = window.windowUtils.getBoundsWithoutFlushing(
         document.getElementById("zen-sidebar-splitter")
       ).width;
+      this.#toolboxWidth += splitterWidth;
     }
   }
 

@@ -106,7 +106,7 @@ export class ZenLibrary extends MozLitElement {
     if (!lib) {
       return false;
     }
-    return lib.openProgress > 0;
+    return lib.openProgress > 0.001;
   }
 
   set isHidden(value) {
@@ -135,15 +135,6 @@ export class ZenLibrary extends MozLitElement {
 
   set openProgress(value) {
     let p = value;
-
-    // Snap the value to 0/1 in a
-    // within a tolerance of small epsilon
-    const epsilon = 0.001;
-    if (Math.abs(p) < epsilon) {
-      p = 0;
-    } else if (Math.abs(p - 1) < epsilon) {
-      p = 1;
-    }
 
     const stealWindowButtonsPastPoint = 0.6;
     this.#progress = p;
@@ -192,10 +183,6 @@ export class ZenLibrary extends MozLitElement {
         gNavToolbox?.style.setProperty("transform", `scale(${toolboxScale})`);
         gNavToolbox?.style.setProperty("opacity", `${toolboxOpacity}`);
       }
-    } else if (p === 0) {
-      lazy.appContentWrapper?.style.removeProperty("transform");
-      gNavToolbox?.style.removeProperty("transform");
-      gNavToolbox?.style.removeProperty("opacity");
     }
 
     if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {
@@ -203,6 +190,16 @@ export class ZenLibrary extends MozLitElement {
     } else if (!isPastWindowButtonSwitchPoint) {
       this.#restoreWindowButtons();
     }
+  }
+
+  /**
+   * Clears the styles for the library open/close animation
+   * to avoid unecessary layer creation
+   */
+  #clearStyleProperties() {
+    lazy.appContentWrapper?.style.removeProperty("transform");
+    gNavToolbox?.style.removeProperty("transform");
+    gNavToolbox?.style.removeProperty("opacity");
   }
 
   /**
@@ -462,7 +459,7 @@ export class ZenLibrary extends MozLitElement {
     // This will only run if the swipe was
     // cancelled, otherwise cleanup will happen
     // in animateProgress (onComplete)
-    if (this.#progress === 0) {
+    if (!ZenLibrary.isLibrarySlightlyOpen) {
       this.#cleanup();
     }
   }
@@ -578,6 +575,7 @@ export class ZenLibrary extends MozLitElement {
     if (!this.#initialized) return;
     this.#initialized = false;
 
+    this.#clearStyleProperties();
     this.removeAttribute("open");
     this.#mounted = new Set([this.activeTab]);
     this.requestUpdate();

@@ -894,7 +894,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 20;
+  static LATEST_KBS_VERSION = 21;
 
   constructor() {}
 
@@ -1318,6 +1318,20 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.setDisabled(true);
         }
       }
+    }
+
+    if (version < 21) {
+      data.push(
+        new KeyShortcut(
+          "zen-toggle-boost-dark-mode",
+          "",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenToggleBoostDarkMode",
+          "zen-toggle-boost-dark-mode-shortcut"
+        )
+      );
     }
 
     return data;

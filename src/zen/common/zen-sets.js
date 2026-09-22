@@ -166,6 +166,24 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenToggleBoostDarkMode": {
+            const { gZenBoostsManager } = ChromeUtils.importESModule(
+              "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs"
+            );
+            const uri = gBrowser.currentURI;
+            if (!gZenBoostsManager.canBoostSite(uri)) {
+              break;
+            }
+            const boost =
+              gZenBoostsManager.loadActiveBoostFromStore(uri.host) ??
+              gZenBoostsManager.createNewBoost(uri.host);
+            const { boostData } = boost.boostEntry;
+            boostData.smartInvert = !boostData.smartInvert;
+            boostData.changeWasMade = true;
+            gZenBoostsManager.saveBoostToStore(boost);
+            gZenBoostsManager.makeBoostActiveForDomain(uri.host, boost.id);
+            break;
+          }
           case "cmd_zenToggleLibrary": {
             const { ZenLibrary } = ChromeUtils.importESModule(
               "moz-src:///zen/library/ZenLibrary.mjs",

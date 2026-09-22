@@ -110,7 +110,7 @@
           const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)")
             .matches
             ? 11
-            : 9;
+            : 10;
           document.documentElement.style.setProperty(
             "--zen-border-radius",
             targetRadius + "px"

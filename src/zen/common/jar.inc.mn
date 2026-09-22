@@ -31,6 +31,7 @@
         content/browser/zen-styles/zen-popup.css                                (../../zen/common/styles/zen-popup.css)
         content/browser/zen-styles/zen-branding.css                             (../../zen/common/styles/zen-branding.css)
         content/browser/zen-styles/zen-sidebar-notification.css                 (../../zen/common/styles/zen-sidebar-notification.css)
+*       content/browser/zen-styles/zen-backdrop-filters.svg                     (../../zen/common/styles/zen-backdrop-filters.svg)
 
         content/browser/zen-styles/zen-panels/bookmarks.css                     (../../zen/common/styles/zen-panels/bookmarks.css)
         content/browser/zen-styles/zen-panels/print.css                         (../../zen/common/styles/zen-panels/print.css)

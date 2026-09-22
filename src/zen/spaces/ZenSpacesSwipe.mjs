@@ -182,6 +182,8 @@ export class ZenSpacesSwipe {
 
     gZenFolders.cancelPopupTimer();
 
+    this.#readySwipeLibrary = null;
+
     this.#toggleSwipeGestureAttr(true);
     document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
@@ -234,6 +236,8 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
+    const currentWorkspace = ws.getActiveWorkspaceFromCache();
+
     const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
     const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
     const couldClose = libraryOpen;
@@ -280,11 +284,15 @@ export class ZenSpacesSwipe {
       }
 
       lazy.ZenLibrary.swipeProgress(progressDamped);
+
+      // Reset workspace location to avoid freezing
+      ws._organizeWorkspaceStripLocations(currentWorkspace, true, 0);
       return;
+    } else {
+      lazy.ZenLibrary.swipeReset();
     }
 
     // Apply a translateX to the tab strip to give the user feedback on the swipe
-    const currentWorkspace = ws.getActiveWorkspaceFromCache();
     ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
   }
 
@@ -305,10 +313,9 @@ export class ZenSpacesSwipe {
 
     if (this._swipeState.isSwipingLibrary) {
       lazy.ZenLibrary.stopSwipe(rawDirection * direction);
-      this.#readySwipeLibrary = null;
       return;
     }
-
+    
     await ws.changeWorkspaceShortcut(rawDirection * direction, true);
   }
 
@@ -316,8 +323,7 @@ export class ZenSpacesSwipe {
     const ws = gZenWorkspaces;
 
     if (this._swipeState.isSwipingLibrary) {
-      lazy.ZenLibrary.stopSwipe(null);
-      this.#readySwipeLibrary = null;
+      lazy.ZenLibrary.swipeAnimationEnd();
     }
 
     // Reset swipe state

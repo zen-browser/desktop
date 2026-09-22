@@ -55,8 +55,10 @@ export class ZenLibrary extends MozLitElement {
     return this.#originalButtonsNextSibling !== null;
   }
 
+  #shouldUnfreezeSwipe = false;
   #canSwipe = false;
   #isOpen = false;
+  #initialized = false;
 
   #wrapperGestureControl = null;
   #gestureControl = null;
@@ -104,9 +106,7 @@ export class ZenLibrary extends MozLitElement {
     if (!lib) {
       return false;
     }
-    // Due to calculation inaccuracies assume
-    // that openProgress never goes back to 0
-    return lib.openProgress > 0.001;
+    return lib.openProgress > 0;
   }
 
   set isHidden(value) {
@@ -118,6 +118,8 @@ export class ZenLibrary extends MozLitElement {
     if (this._activeTab === value) {
       return;
     }
+    this.#refreshToolboxWidth();
+
     this._activeTab = value;
     this.#mounted.add(value);
     Services.prefs.setStringPref(LAST_TAB_PREF, value);
@@ -132,14 +134,22 @@ export class ZenLibrary extends MozLitElement {
   }
 
   set openProgress(value) {
-    const p = value;
+    let p = value;
+
+    // Snap the value to 0/1 in a
+    // within a tolerance of small epsilon
+    const epsilon = 0.001;
+    if (Math.abs(p) < epsilon) {
+      p = 0;
+    } else if (Math.abs(p - 1) < epsilon) {
+      p = 1;
+    }
+
     const stealWindowButtonsPastPoint = 0.6;
-    const wasOpen = this.#progress > 0.001;
     this.#progress = p;
     const isPastWindowButtonSwitchPoint = p > stealWindowButtonsPastPoint;
-    const isOpen = p > 0.001;
 
-    if (this.#stylesLoaded) {
+    if (this.#stylesLoaded && p !== 0) {
       let libraryWidth =
         window.windowUtils.getBoundsWithoutFlushing(this).width;
       const compactModeOffsetDirection = this.#libraryOnRight
@@ -175,18 +185,17 @@ export class ZenLibrary extends MozLitElement {
             `translateX(calc(-100% * ${toolboxProgress}))`
           );
         }
+        gNavToolbox?.style.removeProperty("opacity");
       } else {
         const toolboxScale = 1 - toolboxProgress * 0.04;
         const toolboxOpacity = 1 - toolboxProgress;
         gNavToolbox?.style.setProperty("transform", `scale(${toolboxScale})`);
         gNavToolbox?.style.setProperty("opacity", `${toolboxOpacity}`);
       }
-    }
-
-    if (isOpen && !wasOpen) {
-      this.#init();
-    } else if (!isOpen && wasOpen) {
-      this.#cleanup();
+    } else if (p === 0) {
+      lazy.appContentWrapper?.style.removeProperty("transform");
+      gNavToolbox?.style.removeProperty("transform");
+      gNavToolbox?.style.removeProperty("opacity");
     }
 
     if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {
@@ -342,9 +351,13 @@ export class ZenLibrary extends MozLitElement {
 
   static async animateProgress(target) {
     const lib = this.getInstance();
+
+    if (target === lib.#progress) {
+      return;
+    }
+
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
-    lib.style.visibility = "";
     await window.promiseDocumentFlushed(() => {});
 
     if (lib.#springControls) {
@@ -353,6 +366,7 @@ export class ZenLibrary extends MozLitElement {
     }
 
     if (target === 1) {
+      lib.#init();
       lib.#onOpenLibrary();
       lib.#isOpen = true;
     } else if (target === 0) {
@@ -373,6 +387,10 @@ export class ZenLibrary extends MozLitElement {
           lib.openProgress = latest;
         },
         onComplete: () => {
+          if (target === 0) {
+            lib.#cleanup();
+          }
+
           lib.openProgress = target;
           lib.#springControls = null;
           lib.removeAttribute("transitioning");
@@ -380,15 +398,31 @@ export class ZenLibrary extends MozLitElement {
       }
     );
   }
+  
+  static async swipeReset() {
+    const lib = this.getInstance();
+    if (!lib.#shouldUnfreezeSwipe) {
+      return;
+    }
+    lib.#shouldUnfreezeSwipe = false;
+
+    // If a swipe is cancelled and instantly interrupted by a new swipe
+    // that doesn't involve library (space switch),
+    // which will cancel but not reset the ongoing revert animation,
+    // the library will end up stuck. 
+    // To counteract this, we set the progress manually.
+    this.animateProgress(lib.#progress > 0.5 ? 1 : 0);
+  }
 
   static async startSwipe() {
     const lib = this.getInstance();
     lib.#cancelIdleCleanup();
     lib.#canSwipe = true;
+
     await lib.#whenStylesLoaded();
-    lib.style.visibility = "";
     await window.promiseDocumentFlushed(() => {});
 
+    lib.#init();
     lib.#onOpenLibrary();
 
     if (lib.#springControls) {
@@ -397,23 +431,40 @@ export class ZenLibrary extends MozLitElement {
     }
 
     lib.style.pointerEvents = "none";
+    lib.#shouldUnfreezeSwipe = true;
   }
 
   static stopSwipe(direction) {
     const lib = this.getInstance();
-    lib.style.pointerEvents = "";
-    lib.#canSwipe = false;
 
     if (lib.#libraryOnRight) {
       direction = direction * -1;
     }
 
-    if (direction) {
-      const target = Math.max(-direction, 0);
-      this.animateProgress(target);
-    }
+    const target = Math.max(-direction, 0);
+    this.animateProgress(target);
+    lib.#endSwipeAction();
+
+    lib.#shouldUnfreezeSwipe = false;
 
     return lib.#isOpen;
+  }
+
+  static swipeAnimationEnd() {
+    const lib = this.getInstance();
+    lib.#endSwipeAction();
+  }
+
+  #endSwipeAction() {
+    this.style.pointerEvents = "";
+    this.#canSwipe = false;
+
+    // This will only run if the swipe was
+    // cancelled, otherwise cleanup will happen
+    // in animateProgress (onComplete)
+    if (this.#progress === 0) {
+      this.#cleanup();
+    }
   }
 
   static swipeProgress(target) {
@@ -448,12 +499,18 @@ export class ZenLibrary extends MozLitElement {
 
   #onOpenLibrary() {
     this.#cancelIdleCleanup();
+    this.style.visibility = "";
+
     if (!this.#contentMounted) {
       this.#contentMounted = true;
       this.requestUpdate();
     }
 
     gURLBar.view.close();
+    this.#refreshToolboxWidth();
+  }
+
+  #refreshToolboxWidth() {
     // Get the width from the css property,
     // getBoundsWithoutFlushing will fail as it takes the
     // toolbox transformation during the animation into account
@@ -494,6 +551,9 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #init() {
+    if (this.#initialized) return;
+    this.#initialized = true;
+
     this.#cancelIdleCleanup();
     if (!this.#contentMounted) {
       this.#contentMounted = true;
@@ -515,6 +575,9 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #cleanup() {
+    if (!this.#initialized) return;
+    this.#initialized = false;
+
     this.removeAttribute("open");
     this.#mounted = new Set([this.activeTab]);
     this.requestUpdate();

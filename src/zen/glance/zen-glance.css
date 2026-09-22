@@ -105,12 +105,9 @@
 .browserSidebarContainer.zen-glance-background,
 :is(.browserSidebarContainer.zen-glance-overlay, #zen-glance-detached)
   .browserContainer:not([fade-out="true"]) {
-  border-radius: var(--zen-native-inner-radius);
-  @media not (-moz-pref("zen.theme.squircle-browser-view")) {
-    /* stylelint-disable-next-line property-no-unknown */
-    corner-shape: round;
-    border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
-  }
+  /* stylelint-disable-next-line property-no-unknown */
+  corner-shape: round;
+  border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
 }
 
 :is(.browserSidebarContainer.zen-glance-overlay, #zen-glance-detached) {
@@ -147,14 +144,11 @@
     }
 
     & .browserStack {
-      border-radius: var(--zen-native-inner-radius);
       overflow: hidden;
       box-shadow: var(--zen-big-shadow);
-      @media not (-moz-pref("zen.theme.squircle-browser-view")) {
-        /* stylelint-disable-next-line property-no-unknown */
-        corner-shape: round;
-        border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
-      }
+      /* stylelint-disable-next-line property-no-unknown */
+      corner-shape: round;
+      border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
     }
 
     & browser {

@@ -94,7 +94,7 @@
       opacity: 1;
     }
 
-    & .zen-media-focus-button::after {
+    & .zen-media-notes {
       display: none;
     }
 
@@ -227,41 +227,53 @@
     }
   }
 
-  & .zen-media-focus-button::after {
+  & .zen-media-notes {
     --zen-note-frame-w: 40px;
     --zen-note-frame-h: 44px;
 
-    content: "";
     position: absolute;
     z-index: 1;
+    display: block;
     left: 50%;
     bottom: 55%;
     width: var(--zen-note-frame-w);
     height: var(--zen-note-frame-h);
     margin-left: calc(var(--zen-note-frame-w) / -2);
+    overflow: clip;
     pointer-events: none;
-    background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
-    background-repeat: no-repeat;
-    background-size: auto 100%;
-    -moz-context-properties: fill;
-    fill: currentColor;
     opacity: 0;
     transition: opacity 0.8s ease;
   }
 
-  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-focus-button::after {
+  & .zen-media-notes-strip {
+    flex: none;
+    width: calc(90 * var(--zen-note-frame-w));
+    height: 100%;
+    background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    -moz-context-properties: fill;
+    fill: currentColor;
+  }
+
+  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind])
+    .zen-media-notes {
     opacity: 1;
+  }
+
+  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind])
+    .zen-media-notes-strip {
     animation: zen-note-sprite 3s steps(90, jump-none) infinite;
   }
 
   /* Background cards never show the floating notes — only their top sliver
      is visible and the notes would poke through it */
-  &[stacked-behind] .zen-media-focus-button::after {
+  &[stacked-behind] .zen-media-notes {
     display: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    & .zen-media-focus-button::after {
+    & .zen-media-notes {
       display: none;
     }
   }
@@ -413,9 +425,9 @@
 
 @keyframes zen-note-sprite {
   from {
-    background-position-x: 0%;
+    transform: translateX(0);
   }
   to {
-    background-position-x: 100%;
+    transform: translateX(calc(-89 * var(--zen-note-frame-w)));
   }
 }

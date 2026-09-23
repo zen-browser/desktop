@@ -50,7 +50,7 @@ export class nsZenSiteDataPanel {
     const button = this.window.MozXULElement.parseXULToFragment(`
       <box id="zen-site-data-icon-button" role="button" align="center" class="identity-box-button" delegatesanchor="true">
         <image />
-        <image class="zen-site-data-boost-animation" />
+        <box class="zen-site-data-boost-animation"><box class="zen-site-data-boost-strip"/></box>
       </box>
     `);
     this.anchor = button.querySelector("#zen-site-data-icon-button");

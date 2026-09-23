@@ -7,3 +7,9 @@
 
 - name: zen.library.last-tab
   value: "history"
+
+- name: zen.library.media.enabled
+  value: false
+
+- name: zen.library.media.folders
+  value: "downloads,documents,pictures"

@@ -437,17 +437,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     // Shake the new split group in the sidebar.
     const group = tabs[0]?.group;
     if (group?.hasAttribute("split-view-group")) {
-      requestAnimationFrame(() => {
-        gZenUIManager.motion
-          .animate(
-            group,
-            { x: [-32, 0] },
-            { type: "spring", bounce: 0.5, duration: 1.5 }
-          )
-          .then(() => {
-            group.style.removeProperty("transform");
-          });
-      });
+      gZenUIManager.shakeElement(group);
     }
   }
 

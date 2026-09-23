@@ -2,7 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { html } from "chrome://global/content/vendor/lit.all.mjs";
+import {
+  html,
+  nothing,
+  repeat,
+} from "chrome://global/content/vendor/lit.all.mjs";
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 const { ZenLibraryWidget } = ChromeUtils.importESModule(
@@ -20,6 +24,8 @@ ChromeUtils.defineESModuleGetters(
       "moz-src:///zen/library/sections/ZenLibraryDownloadsSection.mjs",
     ZenLibraryBoostsSection:
       "moz-src:///zen/library/sections/ZenLibraryBoostsSection.mjs",
+    ZenLibraryMediaSection:
+      "moz-src:///zen/library/sections/ZenLibraryMediaSection.mjs",
     ZenLibrarySpacesSection:
       "moz-src:///zen/library/sections/ZenLibrarySpacesSection.mjs",
   },
@@ -27,6 +33,7 @@ ChromeUtils.defineESModuleGetters(
 );
 
 const LAST_TAB_PREF = "zen.library.last-tab";
+const CLEANUP_DELAY_MS = 30000;
 
 ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
@@ -34,6 +41,8 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
 
 export class ZenLibrary extends MozLitElement {
   static instance = null;
+  #contentMounted = true;
+  #mounted = new Set();
   #progress = 0;
 
   #springControls = null;
@@ -49,8 +58,8 @@ export class ZenLibrary extends MozLitElement {
   #canSwipe = false;
   #isOpen = false;
 
-  #isWrapperSwipeAttached = false;
   #wrapperGestureControl = null;
+  #gestureControl = null;
 
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
@@ -69,13 +78,19 @@ export class ZenLibrary extends MozLitElement {
   constructor() {
     super();
     this.zenLibrarySections = {
-      history: lazy.ZenLibraryHistorySection,
+      media: lazy.ZenLibraryMediaSection,
       downloads: lazy.ZenLibraryDownloadsSection,
       boosts: lazy.ZenLibraryBoostsSection,
-      spaces: lazy.ZenLibrarySpacesSection,
+      ...(!window.gZenWorkspaces.privateWindowOrDisabled
+        ? {
+            spaces: lazy.ZenLibrarySpacesSection,
+          }
+        : {}),
+      history: lazy.ZenLibraryHistorySection,
     };
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
+    this.#mounted.add(this.activeTab);
     this.#hijackFirefoxCommands();
   }
 
@@ -94,11 +109,17 @@ export class ZenLibrary extends MozLitElement {
     return lib.openProgress > 0.001;
   }
 
+  set isHidden(value) {
+    this.requestUpdate();
+    this.hidden = value;
+  }
+
   set activeTab(value) {
     if (this._activeTab === value) {
       return;
     }
     this._activeTab = value;
+    this.#mounted.add(value);
     Services.prefs.setStringPref(LAST_TAB_PREF, value);
   }
 
@@ -118,31 +139,54 @@ export class ZenLibrary extends MozLitElement {
     const isPastWindowButtonSwitchPoint = p > stealWindowButtonsPastPoint;
     const isOpen = p > 0.001;
 
-    let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
-    const compactModeOffsetDirection = this.#libraryOnRight
-      ? -this.#toolboxWidth
-      : this.#toolboxWidth;
-    const compactModeOffset = this.#isCompactMode
-      ? compactModeOffsetDirection
-      : 0;
-    let webOffset =
-      (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth) +
-      compactModeOffset;
+    if (this.#stylesLoaded) {
+      let libraryWidth =
+        window.windowUtils.getBoundsWithoutFlushing(this).width;
+      const compactModeOffsetDirection = this.#libraryOnRight
+        ? -this.#toolboxWidth + ZenThemeModifier.elementSeparation
+        : this.#toolboxWidth - ZenThemeModifier.elementSeparation;
+      const compactModeOffset = this.#isCompactMode
+        ? compactModeOffsetDirection
+        : 0;
 
-    lazy.appContentWrapper?.style.setProperty(
-      "--library-wrapper-target-px",
-      `${webOffset}px`
-    );
-    [this, lazy.appContentWrapper, gNavToolbox].forEach(elem => {
-      elem?.style.setProperty("--library-progress", String(p));
-    });
+      const leftAligned = this.#libraryOnRight ? -1 : 1;
+      let webOffset =
+        leftAligned * (libraryWidth - this.#toolboxWidth) + compactModeOffset;
+
+      this.style.setProperty(
+        "transform",
+        `translateX(calc(${leftAligned} * -100% * (1 - ${value})))`
+      );
+      lazy.appContentWrapper?.style.setProperty(
+        "transform",
+        `translateX(${value * webOffset}px)`
+      );
+
+      const toolboxProgress = Math.min(1, value * 1.5);
+      if (this.#isCompactMode) {
+        if (this.#libraryOnRight) {
+          gNavToolbox.style.setProperty(
+            "transform",
+            `translateX(calc(100% * ${toolboxProgress}))`
+          );
+        } else {
+          gNavToolbox.style.setProperty(
+            "transform",
+            `translateX(calc(-100% * ${toolboxProgress}))`
+          );
+        }
+      } else {
+        const toolboxScale = 1 - toolboxProgress * 0.04;
+        const toolboxOpacity = 1 - toolboxProgress;
+        gNavToolbox?.style.setProperty("transform", `scale(${toolboxScale})`);
+        gNavToolbox?.style.setProperty("opacity", `${toolboxOpacity}`);
+      }
+    }
 
     if (isOpen && !wasOpen) {
-      this.setAttribute("open", "true");
-      document.documentElement.setAttribute("zen-library-open", "true");
+      this.#init();
     } else if (!isOpen && wasOpen) {
-      this.removeAttribute("open");
-      document.documentElement.removeAttribute("zen-library-open");
+      this.#cleanup();
     }
 
     if (isPastWindowButtonSwitchPoint && this.#coversWindowButtons) {
@@ -240,18 +284,29 @@ export class ZenLibrary extends MozLitElement {
     return this.#stylesLoaded;
   }
 
+  #cleanupTimer = null;
   #idleCleanup = null;
 
   #scheduleIdleCleanup() {
-    this.#idleCleanup = window.requestIdleCallback(() => {
-      this.#idleCleanup = null;
-      this.#stylesLoaded = null;
-      ZenLibrary.instance = null;
-      this.remove();
-    });
+    this.#cancelIdleCleanup();
+    this.#cleanupTimer = window.setTimeout(() => {
+      this.#cleanupTimer = null;
+      this.#idleCleanup = window.requestIdleCallback(() => {
+        this.#idleCleanup = null;
+        this.#stylesLoaded = null;
+
+        this.#contentMounted = false;
+        this.#mounted = new Set([this.activeTab]);
+        this.requestUpdate();
+      });
+    }, CLEANUP_DELAY_MS);
   }
 
   #cancelIdleCleanup() {
+    if (this.#cleanupTimer) {
+      window.clearTimeout(this.#cleanupTimer);
+      this.#cleanupTimer = null;
+    }
     if (this.#idleCleanup) {
       window.cancelIdleCallback(this.#idleCleanup);
       this.#idleCleanup = null;
@@ -287,7 +342,6 @@ export class ZenLibrary extends MozLitElement {
 
   static async animateProgress(target) {
     const lib = this.getInstance();
-    lib.#detachWrapperOfSwipe();
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
     lib.style.visibility = "";
@@ -303,6 +357,7 @@ export class ZenLibrary extends MozLitElement {
       lib.#isOpen = true;
     } else if (target === 0) {
       lib.#isOpen = false;
+      lib.#canSwipe = false;
     }
 
     lib.setAttribute("transitioning", "true");
@@ -321,9 +376,6 @@ export class ZenLibrary extends MozLitElement {
           lib.openProgress = target;
           lib.#springControls = null;
           lib.removeAttribute("transitioning");
-          if (target === 0) {
-            lib.#scheduleIdleCleanup();
-          }
         },
       }
     );
@@ -336,9 +388,6 @@ export class ZenLibrary extends MozLitElement {
     await lib.#whenStylesLoaded();
     lib.style.visibility = "";
     await window.promiseDocumentFlushed(() => {});
-    if (!lib.#canSwipe) {
-      return;
-    }
 
     lib.#onOpenLibrary();
 
@@ -347,13 +396,12 @@ export class ZenLibrary extends MozLitElement {
       lib.#springControls = null;
     }
 
-    lib.style.setProperty("pointer-events", "none");
-    lib.#attachWrapperToSwipe();
+    lib.style.pointerEvents = "none";
   }
 
   static stopSwipe(direction) {
     const lib = this.getInstance();
-    lib.style.setProperty("pointer-events", "unset");
+    lib.style.pointerEvents = "";
     lib.#canSwipe = false;
 
     if (lib.#libraryOnRight) {
@@ -364,9 +412,7 @@ export class ZenLibrary extends MozLitElement {
       const target = Math.max(-direction, 0);
       this.animateProgress(target);
     }
-    lib.#detachWrapperOfSwipe();
 
-    // Return library open state
     return lib.#isOpen;
   }
 
@@ -380,29 +426,33 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #attachWrapperToSwipe() {
-    if (!this.#isWrapperSwipeAttached) {
+    if (!this.#wrapperGestureControl) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
       this.#wrapperGestureControl =
-        window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(
+        window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
           appWrapper
         );
-      this.#isWrapperSwipeAttached = true;
     }
   }
 
   #detachWrapperOfSwipe() {
-    if (this.#isWrapperSwipeAttached || this.#wrapperGestureControl) {
+    if (this.#wrapperGestureControl) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
-      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
+      window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
         appWrapper,
         this.#wrapperGestureControl
       );
       this.#wrapperGestureControl = null;
-      this.#isWrapperSwipeAttached = false;
     }
   }
 
   #onOpenLibrary() {
+    this.#cancelIdleCleanup();
+    if (!this.#contentMounted) {
+      this.#contentMounted = true;
+      this.requestUpdate();
+    }
+
     gURLBar.view.close();
     // Get the width from the css property,
     // getBoundsWithoutFlushing will fail as it takes the
@@ -413,9 +463,10 @@ export class ZenLibrary extends MozLitElement {
         .replace("/\D/g", "")
     );
     if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
-      this.#toolboxWidth += window.windowUtils.getBoundsWithoutFlushing(
+      const splitterWidth = window.windowUtils.getBoundsWithoutFlushing(
         document.getElementById("zen-sidebar-splitter")
       ).width;
+      this.#toolboxWidth += splitterWidth;
     }
   }
 
@@ -423,8 +474,8 @@ export class ZenLibrary extends MozLitElement {
     if (!this.instance && createIfMissing) {
       this.instance = new ZenLibrary();
       this.instance.style.visibility = "collapse";
-      const mountRoot = document.getElementById("zen-main-app-wrapper");
-      mountRoot.append(this.instance);
+      const mountAfter = document.getElementById("navigator-toolbox");
+      mountAfter.after(this.instance);
     }
     return this.instance;
   }
@@ -442,47 +493,75 @@ export class ZenLibrary extends MozLitElement {
     return this;
   }
 
-  connectedCallback() {
-    if (super.connectedCallback) {
-      super.connectedCallback();
+  #init() {
+    this.#cancelIdleCleanup();
+    if (!this.#contentMounted) {
+      this.#contentMounted = true;
+      this.requestUpdate();
     }
-    this.onKeyDown = this.onKeyDown.bind(this);
-    document.addEventListener("keydown", this.onKeyDown, true);
+    this.setAttribute("open", "true");
+    document
+      .getElementById("zen-sidebar-splitter")
+      .setAttribute("zen-library-open", "true");
+    document.addEventListener("keydown", this, true);
+    window.addEventListener("TabOpen", this);
+
+    this.#attachWrapperToSwipe();
+    this.#gestureControl =
+      window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
     this.#resizeObserver.observe(this);
-
-    window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
-
-    this._tabOpen = this.onTabOpen.bind(this);
-    window.addEventListener("TabOpen", this._tabOpen);
-
     ZenLibraryWidget.attachLibrary(this);
+    this.isHidden = false;
   }
 
-  disconnectedCallback() {
-    this.#cancelIdleCleanup();
+  #cleanup() {
+    this.removeAttribute("open");
+    this.#mounted = new Set([this.activeTab]);
+    this.requestUpdate();
+    document
+      .getElementById("zen-sidebar-splitter")
+      .removeAttribute("zen-library-open");
+
     if (this.#springControls) {
       this.#springControls.stop();
       this.#springControls = null;
     }
+    this.removeAttribute("transitioning");
+
+    this.#detachWrapperOfSwipe();
+    if (this.#gestureControl) {
+      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
+        this,
+        this.#gestureControl
+      );
+    }
 
     this.#restoreWindowButtons();
     ZenLibraryWidget.detachLibrary(this);
-
-    super.disconnectedCallback();
-    document.removeEventListener("keydown", this.onKeyDown, true);
     this.#resizeObserver.disconnect();
-
-    if (this._tabOpen) {
-      window.removeEventListener("TabOpen", this._tabOpen);
-      this._tabOpen = null;
-    }
+    document.removeEventListener("keydown", this, true);
+    window.removeEventListener("TabOpen", this);
+    this.isHidden = true;
+    this.#scheduleIdleCleanup();
   }
 
   get #isCompactMode() {
     return (
       window.gZenCompactModeManager.preference &&
-      Services.prefs.getBoolPref("zen.view.compact.hide-tabbar")
+      (Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") ||
+        Services.prefs.getBoolPref("zen.view.use-single-toolbar"))
     );
+  }
+
+  handleEvent(e) {
+    switch (e.type) {
+      case "TabOpen":
+        this.onTabOpen();
+        break;
+      case "keydown":
+        this.onKeyDown(e);
+        break;
+    }
   }
 
   onTabOpen() {
@@ -536,11 +615,30 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
-  #animateTabIcon(tab) {
-    tab.removeAttribute("animate");
-    // Flush styles so re-adding the attribute restarts the animation.
-    void tab.offsetWidth;
-    tab.setAttribute("animate", "true");
+  updated(changedProperties) {
+    super.updated?.(changedProperties);
+    this.#updateMountedSections();
+  }
+
+  /**
+   * Shows the section being looked at and puts the others out of sight. A
+   * section is told which it is, so one that reaches outside itself, such as
+   * spaces setting the library's width, only does so while it is on show.
+   */
+  #updateMountedSections() {
+    for (const section of this._content?.children ?? []) {
+      const id = section.dataset?.section;
+      if (!id) {
+        continue;
+      }
+      const showing = id === this.activeTab;
+      const wasShowing = section.hasAttribute("showing");
+      section.hidden = !showing;
+      section.toggleAttribute("showing", showing);
+      if (showing !== wasShowing) {
+        (showing ? section.onShown : section.onHidden)?.call(section);
+      }
+    }
   }
 
   render() {
@@ -562,7 +660,14 @@ export class ZenLibrary extends MozLitElement {
                   @click=${event => {
                     if (this.activeTab !== Section.id) {
                       this.activeTab = Section.id;
-                      this.#animateTabIcon(event.currentTarget);
+                      const previousTab =
+                        event.currentTarget.parentNode.querySelector(
+                          `.zen-library-tab[animate="true"]`
+                        );
+                      if (previousTab) {
+                        previousTab.removeAttribute("animate");
+                      }
+                      event.currentTarget.setAttribute("animate", "true");
                     }
                   }}
                 >
@@ -582,7 +687,15 @@ export class ZenLibrary extends MozLitElement {
           ></toolbar>
         </vbox>
         <vbox id="zen-library-content">
-          ${this.activeSection.render(this)}
+          ${
+            this.#contentMounted
+              ? repeat(
+                  [...this.#mounted],
+                  id => id,
+                  id => this.zenLibrarySections[id].render(this)
+                )
+              : nothing
+          }
         </vbox>
       </hbox>
     `;

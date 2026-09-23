@@ -454,6 +454,13 @@ zen-library {
   }
 }
 
+@media (-moz-platform: macos) {
+  #zen-sidebar-foot-buttons,
+  #zen-library-footer {
+    --zen-toolbar-button-size: 20px;
+  }
+}
+
 #zen-sidebar-foot-buttons {
   position: relative;
   background: transparent;
@@ -883,7 +890,7 @@ zen-library {
   display: none !important;
 }
 
-:root[zen-library-open="true"] #zen-sidebar-splitter {
+#zen-sidebar-splitter[zen-library-open="true"] {
   pointer-events: none !important;
 }
 

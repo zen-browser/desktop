@@ -6,10 +6,13 @@ MOZ_SRC_FILES += [
   "sections/ZenLibraryBoostsSection.mjs",
   "sections/ZenLibraryDownloadsSection.mjs",
   "sections/ZenLibraryHistorySection.mjs",
+  "sections/ZenLibraryMediaSection.mjs",
   "sections/ZenLibrarySearchSection.mjs",
   "sections/ZenLibrarySpacesSection.mjs",
 
   "ZenLibrary.mjs",
   "ZenLibraryDragAndDrop.mjs",
+  "ZenLibraryFileTypes.sys.mjs",
+  "ZenLibraryMediaPreview.mjs",
   "ZenLibraryWidget.sys.mjs",
 ]

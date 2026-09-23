@@ -100,14 +100,14 @@ body,
     display: flex;
     opacity: var(--zen-grainy-background-opacity, 0);
 
-    :root:not([swipe-gesture="true"]) & {
+    &:not([swipe-gesture="true"]) {
       /* note: Keep in sync with kGlobalAnimationDuration */
       transition: opacity 0.2s ease-in-out;
     }
   }
 }
 
-:root[swipe-gesture] #tabbrowser-arrowscrollbox {
+#tabbrowser-arrowscrollbox[swipe-gesture] {
   /* See gh-13703 for rationale. */
   pointer-events: none;
 }

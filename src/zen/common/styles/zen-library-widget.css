@@ -8,7 +8,8 @@
 #zen-sidebar-foot-buttons,
 #tabbrowser-tabs {
   --zen-library-open-duration: 0.3s;
-  --zen-library-open-easing: linear(0, 0.34 12%, 0.7 24%, 0.93 38%, 1.03 55%, 1);
+  --zen-library-open-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --zen-library-entry-easing: linear(0, 0.34 12%, 0.7 24%, 0.93 38%, 1.03 55%, 1);
   transition: --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
 
   &[zen-library-stack-open] {
@@ -26,6 +27,7 @@
     width: var(--zen-library-sprite-size);
     height: var(--zen-library-sprite-size);
     background-image: url("chrome://browser/skin/zen-icons/library/library-sprite.svg");
+    scale: 1.08;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -122,7 +124,7 @@
   background-image: var(--download-image);
   width: 20px;
   height: 20px;
-  border-radius: 8px;
+  border-radius: var(--border-radius-xsmall);
   background-size: cover;
   scale: 2;
 
@@ -139,7 +141,7 @@
   --border-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0,0,0,.8), white) 70%);
 
   background-color: color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%);
-  border: 3px solid var(--border-color);
+  border: 3px solid transparent;
   box-shadow: 0 0 6px 2px rgba(0,0,0,.1);
   color: var(--border-color);
   width: 25px;
@@ -174,17 +176,24 @@
   --thickness: 3px;
   --progress: var(--zen-accent-button-background);
 
-  background: conic-gradient(
-    from -0deg,
-    var(--progress) calc(var(--value) * 1%),
-    transparent 0
-  );
+  background:
+    conic-gradient(
+        from 0deg,
+        var(--progress) calc(var(--value) * 1%),
+        transparent 0
+      )
+      border-box,
+    var(--border-color) border-box;
 
   mask: radial-gradient(
     circle closest-side,
     transparent calc(100% - var(--thickness)),
     black calc(100% - var(--thickness))
   );
+}
+
+#zen-sidebar-foot-buttons:is([zen-library-stack-open], [zen-library-stack-closing]) {
+  z-index: 3;
 }
 
 #zen-library-download-list {
@@ -220,8 +229,13 @@
 
     --zen-library-progress: 0;
     --zen-library-entry-index: 0;
-    transition: --zen-library-progress 0.22s var(--zen-library-open-easing)
-      calc(var(--zen-library-entry-index) * 12ms);
+    --zen-library-entry-delay: calc(var(--zen-library-entry-index) * 12ms);
+    --zen-library-entry-settle: 0s;
+    transition:
+      --zen-library-progress 0.22s var(--zen-library-entry-easing) var(--zen-library-entry-delay),
+      pointer-events 0s var(--zen-library-entry-settle) allow-discrete;
+
+    pointer-events: none;
 
     &:nth-last-child(2) {
       --zen-library-entry-index: 1;
@@ -235,6 +249,8 @@
 
     #zen-sidebar-foot-buttons[zen-library-stack-open] & {
       --zen-library-progress: 1;
+      --zen-library-entry-settle: calc(0.22s + var(--zen-library-entry-delay));
+      pointer-events: auto;
     }
 
     transform: translateY(calc((1 - var(--zen-library-progress)) * 25px));

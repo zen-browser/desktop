@@ -2,10 +2,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-<svg class="zen-library-icon" width="18" height="18" viewBox="4 4 18 18" fill="context-fill" fill-opacity="context-fill-opacity" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    @property --zen-triangle-anim { syntax: '&lt;number&gt;'; initial-value: 1; inherits: false; }
-    @property --zen-circle-anim { syntax: '&lt;number&gt;'; initial-value: 1; inherits: false; }
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="context-fill" fill-opacity="context-fill-opacity" class="zen-library-icon" viewBox="4 4 24 24"><style>@property --zen-triangle-anim { syntax: &apos;&lt;number&gt;&apos;; initial-value: 1; inherits: false; }
+    @property --zen-circle-anim { syntax: &apos;&lt;number&gt;&apos;; initial-value: 1; inherits: false; }
     @keyframes StarBackward {
       0% { transform: rotate(120deg); }
       100% { transform: rotate(0deg); }
@@ -36,33 +34,4 @@
     @media (prefers-color-scheme: dark) {
       .zen-library-glow-bg, .zen-library-glow-element { fill: white !important; }
       .zen-library-glow-rays { stroke: white !important; }
-    }
-  </style>
-  <defs>
-    <mask id="zen-library-box-mask">
-      <rect x="-10" y="-10" width="40" height="40" fill="white"/>
-      <rect x="-10" y="11.635" width="40" height="40" fill="black"/>
-    </mask>
-  </defs>
-  <g fill-rule="evenodd">
-    <g mask="url(#zen-library-box-mask)">
-      <path class="zen-library-star zen-library-glow-element" d="M 7.773 11.635 C 8.136 11.863 8.24 12.075 8.218 12.294 L 8.036 14.082 C 7.984 14.598 8.584 14.917 8.982 14.585 L 10.362 13.432 C 10.53 13.291 10.764 13.258 10.966 13.347 L 12.61 14.072 C 13.085 14.281 13.574 13.808 13.38 13.327 L 12.701 11.635 C 12.632 11.437 12.675 11.216 12.816 11.058 L 14.014 9.718 C 14.36 9.331 14.061 8.72 13.544 8.756 L 11.75 8.877 C 11.531 8.892 11.322 8.781 11.211 8.591 L 10.307 7.038 C 10.046 6.59 9.373 6.685 9.247 7.188 L 8.808 8.931 C 8.754 9.144 8.585 9.309 8.37 9.355 L 6.613 9.735 C 6.106 9.845 5.988 10.514 6.427 10.79 L 7.773 11.635 Z"/>
-      <path class="zen-library-star" d="M 7.773 11.635 C 8.136 11.863 8.24 12.075 8.218 12.294 L 8.036 14.082 C 7.984 14.598 8.584 14.917 8.982 14.585 L 10.362 13.432 C 10.53 13.291 10.764 13.258 10.966 13.347 L 12.61 14.072 C 13.085 14.281 13.574 13.808 13.38 13.327 L 12.701 11.635 C 12.632 11.437 12.675 11.216 12.816 11.058 L 14.014 9.718 C 14.36 9.331 14.061 8.72 13.544 8.756 L 11.75 8.877 C 11.531 8.892 11.322 8.781 11.211 8.591 L 10.307 7.038 C 10.046 6.59 9.373 6.685 9.247 7.188 L 8.808 8.931 C 8.754 9.144 8.585 9.309 8.37 9.355 L 6.613 9.735 C 6.106 9.845 5.988 10.514 6.427 10.79 L 7.773 11.635 Z"/>
-    </g>
-    <g transform="translate(14, 6.2)">
-      <circle class="zen-library-circle zen-library-glow-element" cx="0" cy="0" r="1.4"/>
-      <circle class="zen-library-circle" cx="0" cy="0" r="1"/>
-    </g>
-    <g class="zen-library-triangle-group">
-      <g transform="translate(17, 9.2)">
-        <path class="zen-library-triangle zen-library-glow-element" d="M -1.1 1.8 C -1.4 2.0, -1.7 1.8, -1.7 1.5 L -1.7 -1.5 C -1.7 -1.8, -1.4 -2.0, -1.1 -1.8 L 1.4 -0.4 C 1.7 -0.2, 1.7 0.2, 1.4 0.4 Z"/>
-        <path class="zen-library-triangle" d="M -1.1 1.8 C -1.4 2.0, -1.7 1.8, -1.7 1.5 L -1.7 -1.5 C -1.7 -1.8, -1.4 -2.0, -1.1 -1.8 L 1.4 -0.4 C 1.7 -0.2, 1.7 0.2, 1.4 0.4 Z"/>
-      </g>
-    </g>
-    <g class="zen-library-glow">
-      <path class="zen-library-glow-bg" d="M 6.6 6.6 L 8.04 12.7 L 17.96 12.7 L 19.4 6.6 Z"/>
-      <path class="zen-library-glow-rays" d="M 6.1 6.6 L 8.04 12.7 L 17.96 12.7 L 19.9 6.6"/>
-    </g>
-    <path class="zen-library-box" d="M 7.218 13.287 C 7.218 12.831 7.588 12.461 8.044 12.461 H 17.957 C 18.414 12.461 18.783 12.831 18.783 13.287 V 17.418 C 18.783 19.243 17.304 20.722 15.479 20.722 H 10.523 C 8.698 20.722 7.218 19.243 7.218 17.418 V 13.287 Z M 10.609 14.526 C 10.609 14.07 10.979 13.7 11.435 13.7 H 14.739 C 15.196 13.7 15.565 14.07 15.565 14.526 C 15.565 14.982 15.196 15.352 14.739 15.352 H 11.435 C 10.979 15.352 10.609 14.982 10.609 14.526 Z"/>
-  </g>
-</svg>
+    }</style><defs><mask id="zen-library-box-mask"><rect width="40" height="40" x="-10" y="-10" fill="#fff"/><rect width="40" height="40" x="-10" y="11.635" fill="#000"/></mask></defs><g fill-rule="evenodd"><g mask="url(#zen-library-box-mask)"><path d="M7.773 11.635c.363.228.467.44.445.659l-.182 1.788a.579.579 0 0 0 .946.503l1.38-1.153a.58.58 0 0 1 .604-.085l1.644.725a.578.578 0 0 0 .77-.745l-.679-1.692a.58.58 0 0 1 .115-.577l1.198-1.34a.578.578 0 0 0-.47-.962l-1.794.121a.58.58 0 0 1-.539-.286l-.904-1.553a.578.578 0 0 0-1.06.15l-.439 1.743a.58.58 0 0 1-.438.424l-1.757.38a.578.578 0 0 0-.186 1.055z" class="zen-library-star zen-library-glow-element"/><path d="M7.773 11.635c.363.228.467.44.445.659l-.182 1.788a.579.579 0 0 0 .946.503l1.38-1.153a.58.58 0 0 1 .604-.085l1.644.725a.578.578 0 0 0 .77-.745l-.679-1.692a.58.58 0 0 1 .115-.577l1.198-1.34a.578.578 0 0 0-.47-.962l-1.794.121a.58.58 0 0 1-.539-.286l-.904-1.553a.578.578 0 0 0-1.06.15l-.439 1.743a.58.58 0 0 1-.438.424l-1.757.38a.578.578 0 0 0-.186 1.055z" class="zen-library-star"/></g><g transform="translate(14, 6.2)"><circle r="1.4" class="zen-library-circle zen-library-glow-element"/><circle r="1" class="zen-library-circle"/></g><g class="zen-library-triangle-group"><g transform="translate(17, 9.2)"><path d="M-1.1 1.8c-.3.2-.6 0-.6-.3v-3c0-.3.3-.5.6-.3L1.4-.4c.3.2.3.6 0 .8Z" class="zen-library-triangle zen-library-glow-element"/><path d="M-1.1 1.8c-.3.2-.6 0-.6-.3v-3c0-.3.3-.5.6-.3L1.4-.4c.3.2.3.6 0 .8Z" class="zen-library-triangle"/></g></g><g class="zen-library-glow"><path d="m6.6 6.6 1.44 6.1h9.92l1.44-6.1Z" class="zen-library-glow-bg"/><path d="m6.1 6.6 1.94 6.1h9.92l1.94-6.1" class="zen-library-glow-rays"/></g><path d="M7.218 13.287c0-.456.37-.826.826-.826h9.913c.457 0 .826.37.826.826v4.131a3.304 3.304 0 0 1-3.304 3.304h-4.956a3.305 3.305 0 0 1-3.305-3.304zm3.391 1.239c0-.456.37-.826.826-.826h3.304a.826.826 0 1 1 0 1.652h-3.304a.826.826 0 0 1-.826-.826" class="zen-library-box"/></g></svg>

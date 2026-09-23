@@ -474,14 +474,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
 
     // Remove everything except the entry we want to keep
+    let url;
+    try {
+      url = Services.io.newURI(initialState.entry.url);
+    } catch {}
     state.entries = [
       {
         ...initialState.entry,
         triggeringPrincipal_base64: E10SUtils.serializePrincipal(
-          Services.scriptSecurityManager.createContentPrincipal(
-            Services.io.newURI(initialState.entry.url),
-            {}
-          )
+          url
+            ? Services.scriptSecurityManager.createContentPrincipal(url, {})
+            : Services.scriptSecurityManager.createNullPrincipal()
         ),
       },
     ];

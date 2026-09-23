@@ -43,15 +43,21 @@ export class ZenSpacesSwipe {
     );
   }
 
+  #readySwipeLibrary = null;
   #readySwipeOpenLibrary() {
+    if (this.#readySwipeLibrary) {
+      return this.#readySwipeLibrary;
+    }
+
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
     const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
-    return (
+
+    this.#readySwipeLibrary =
       spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
-      libraryEnabled
-    );
+      libraryEnabled;
+    return this.#readySwipeLibrary;
   }
 
   attachWorkspaceSwipeGestures(element) {
@@ -154,6 +160,19 @@ export class ZenSpacesSwipe {
     }
   }
 
+  #toggleSwipeGestureAttr(enable) {
+    const elements = [
+      "zen-workspace",
+      "#tabbrowser-arrowscrollbox",
+      ".zen-browser-grain",
+    ];
+    elements.forEach(el =>
+      document
+        .querySelectorAll(el)
+        .forEach(node => node?.toggleAttribute("swipe-gesture", enable))
+    );
+  }
+
   _handleSwipeStart(event) {
     const ws = gZenWorkspaces;
 
@@ -163,7 +182,7 @@ export class ZenSpacesSwipe {
 
     gZenFolders.cancelPopupTimer();
 
-    document.documentElement.setAttribute("swipe-gesture", "true");
+    this.#toggleSwipeGestureAttr(true);
     document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
     });
@@ -286,6 +305,7 @@ export class ZenSpacesSwipe {
 
     if (this._swipeState.isSwipingLibrary) {
       lazy.ZenLibrary.stopSwipe(rawDirection * direction);
+      this.#readySwipeLibrary = null;
       return;
     }
 
@@ -297,6 +317,7 @@ export class ZenSpacesSwipe {
 
     if (this._swipeState.isSwipingLibrary) {
       lazy.ZenLibrary.stopSwipe(null);
+      this.#readySwipeLibrary = null;
     }
 
     // Reset swipe state
@@ -309,7 +330,7 @@ export class ZenSpacesSwipe {
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
-    document.documentElement.removeAttribute("swipe-gesture");
+    this.#toggleSwipeGestureAttr(false);
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
     [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
       element => {

@@ -69,22 +69,19 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     return this.#detached?.browser ?? null;
   }
 
-  get #detachedHost() {
-    let host = document.getElementById("zen-glance-detached");
-    if (!host) {
-      host = window.MozXULElement.parseXULToFragment(`
-        <html:div id="zen-glance-detached" hidden="true">
-          <html:div class="zen-glance-detached-backdrop"/>
-          <html:div class="browserContainer">
-            <html:div class="browserStack"/>
-          </html:div>
+  #createDetachedHost() {
+    const host = window.MozXULElement.parseXULToFragment(`
+      <html:div id="zen-glance-detached">
+        <html:div class="zen-glance-detached-backdrop"/>
+        <html:div class="browserContainer">
+          <html:div class="browserStack"/>
         </html:div>
-      `).firstElementChild;
-      host
-        .querySelector(".zen-glance-detached-backdrop")
-        .addEventListener("click", () => this.closeDetachedGlance());
-      document.getElementById("zen-main-app-wrapper").appendChild(host);
-    }
+      </html:div>
+    `).firstElementChild;
+    host
+      .querySelector(".zen-glance-detached-backdrop")
+      .addEventListener("click", () => this.closeDetachedGlance());
+    document.getElementById("zen-main-app-wrapper").appendChild(host);
     return host;
   }
 
@@ -101,7 +98,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     if (this.#detached || !this.#isGlanceLoadAllowed(data)) {
       return null;
     }
-    const host = this.#detachedHost;
+    const host = this.#createDetachedHost();
     const wrapper = host.querySelector(".browserContainer");
     const browser = document.createXULElement("browser");
     browser.setAttribute("type", "content");
@@ -122,7 +119,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       wrapper.querySelector(selector)?.remove();
     }
 
-    host.hidden = false;
     const hostRect = host.getBoundingClientRect();
     const startPoint = {
       clientX: data.clientX - hostRect.left,
@@ -202,10 +198,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       );
     } finally {
       browser.destroy();
-      browser.remove();
-      wrapper.removeAttribute("animate");
-      host.removeAttribute("fade-out");
-      host.hidden = true;
+      host.remove();
       this.#detached = null;
     }
   }

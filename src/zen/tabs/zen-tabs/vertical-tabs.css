@@ -417,19 +417,26 @@ zen-library {
         display: none !important;
       }
 
-      &[soundplaying]:not([muted]) .tab-icon-stack::after {
-        content: "";
-        position: absolute;
-        width: 110%;
-        height: 110%;
-      background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
-        top: -70%;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 0;
-        pointer-events: none;
-        transition: opacity 0.8s ease;
-        opacity: 1;
+      @media not (prefers-reduced-motion: reduce) {
+        &[soundplaying]:not([muted]) .tab-icon-stack::before {
+          content: "";
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          --zen-note-frame-w: 40px;
+          --zen-note-frame-h: 44px;
+          width: var(--zen-note-frame-w);
+          height: var(--zen-note-frame-h);
+          margin-left: calc(var(--zen-note-frame-w) / -2);
+          z-index: 0;
+          pointer-events: none;
+          background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
+          background-repeat: no-repeat;
+          background-size: auto 100%;
+          -moz-context-properties: fill;
+          fill: var(--zen-primary-color);
+          animation: zen-note-sprite 3s steps(90, jump-none) infinite;
+        }
       }
     }
 
@@ -1384,5 +1391,14 @@ zen-library {
 
   :root[zen-right-side="true"] & {
     left: calc(-1 * var(--zen-toolbox-padding));
+  }
+}
+
+@keyframes zen-note-sprite {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 100%;
   }
 }

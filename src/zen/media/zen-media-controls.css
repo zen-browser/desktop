@@ -228,22 +228,30 @@
   }
 
   & .zen-media-focus-button::after {
+    --zen-note-frame-w: 40px;
+    --zen-note-frame-h: 44px;
+
     content: "";
     position: absolute;
-    background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
-    top: -70%;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 0;
+    z-index: 1;
+    left: 50%;
+    bottom: 55%;
+    width: var(--zen-note-frame-w);
+    height: var(--zen-note-frame-h);
+    margin-left: calc(var(--zen-note-frame-w) / -2);
     pointer-events: none;
+    background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    -moz-context-properties: fill;
+    fill: currentColor;
+    opacity: 0;
     transition: opacity 0.8s ease;
-    opacity: 1;
-    will-change: opacity;
   }
 
-  &:not(.playing:not([muted])) .zen-media-focus-button::after {
-    opacity: 0;
+  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-focus-button::after {
+    opacity: 1;
+    animation: zen-note-sprite 3s steps(90, jump-none) infinite;
   }
 
   /* Background cards never show the floating notes — only their top sliver
@@ -252,12 +260,19 @@
     display: none;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    & .zen-media-focus-button::after {
+      display: none;
+    }
+  }
+
   .zen-media-focus-button {
     align-self: center;
+    position: relative;
+    overflow: visible;
     transition:
       opacity 0.2s ease,
       transform 0.2s ease;
-    position: relative;
 
     & image {
       &:-moz-broken {
@@ -393,5 +408,14 @@
 :root:not([zen-sidebar-expanded="true"]) {
   #zen-media-controls-toolbar {
     display: none;
+  }
+}
+
+@keyframes zen-note-sprite {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 100%;
   }
 }

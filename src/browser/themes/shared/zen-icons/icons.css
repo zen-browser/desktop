@@ -536,16 +536,30 @@
 @media not (prefers-reduced-motion: reduce) {
   #zen-site-data-icon-button[boosting] .zen-site-data-boost-animation {
     position: absolute;
-    display: flex;
-    width: 100%;
+    top: 0;
+    left: 50%;
     height: 100%;
+    aspect-ratio: 1;
+    translate: -50%;
     color: var(--zen-sidebar-themed-icon-fill);
     -moz-context-properties: fill;
     fill: currentColor;
-    list-style-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
-    transform: translateX(-20%);
+    list-style-image: none;
+    background-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
+    background-repeat: no-repeat;
+    background-size: auto 100%;
     z-index: 0;
     pointer-events: none;
+    animation: zen-boost-sprite 3s steps(90, jump-none) infinite;
+  }
+}
+
+@keyframes zen-boost-sprite {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 100%;
   }
 }
 

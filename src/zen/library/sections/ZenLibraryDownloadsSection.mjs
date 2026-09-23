@@ -326,7 +326,34 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     lazy.DownloadsCommon.showDownloadedFile(this.#file(download));
   }
 
+  /**
+   * Whether a download that is still coming in will be opened the moment it
+   * finishes.
+   *
+   * @param {object} download
+   * @returns {boolean}
+   */
+  #opensWhenDone(download) {
+    return !download.stopped && !!download.launchWhenSucceeded;
+  }
+
+  /**
+   * Clicking a download that is still coming in asks for it to be opened as
+   * soon as it is here, the way the downloads panel does.
+   *
+   * @param {object} download
+   */
+  #toggleOpenWhenDone(download) {
+    download.launchWhenSucceeded = !download.launchWhenSucceeded;
+    download._launchedFromPanel = download.launchWhenSucceeded;
+    this.requestUpdate();
+  }
+
   #onRowClick(download) {
+    if (!download.stopped) {
+      this.#toggleOpenWhenDone(download);
+      return;
+    }
     if (!this.#hasFile(download)) {
       return;
     }
@@ -516,15 +543,22 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   // Rendering
 
   #renderSubtitle(download) {
-    const statusNode =
-      download === this.#openingDownload
-        ? html`<span
-            class="zen-library-download-status"
-            data-l10n-id="library-downloads-opening-in"
-          ></span>`
-        : html`<span class="zen-library-download-status"
-            >${this.#statusText(download)}</span
-          >`;
+    let statusNode;
+    if (download === this.#openingDownload) {
+      statusNode = html`<span
+        class="zen-library-download-status"
+        data-l10n-id="library-downloads-opening-in"
+      ></span>`;
+    } else if (this.#opensWhenDone(download)) {
+      statusNode = html`<span
+        class="zen-library-download-status"
+        data-l10n-id="library-downloads-open-when-done"
+      ></span>`;
+    } else {
+      statusNode = html`<span class="zen-library-download-status"
+        >${this.#statusText(download)}</span
+      >`;
+    }
     return html`
       <span class="zen-library-row-subtitle">
         ${statusNode}
@@ -584,6 +618,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         ?pending=${pending}
         ?indeterminate=${pending && !download.hasProgress}
         ?paused=${pending && download.stopped}
+        ?open-when-done=${this.#opensWhenDone(download)}
         ?opening=${download === this.#openingDownload}
         @click=${() => this.#onRowClick(download)}
         @contextmenu=${event => {

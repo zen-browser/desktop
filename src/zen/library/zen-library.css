@@ -882,6 +882,11 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   display: none;
 }
 
+.zen-library-row[pending][open-when-done]:not(:hover)
+  .zen-library-download-status {
+  display: inline;
+}
+
 .zen-library-row[pending]:not(:hover) .zen-library-row-subtitle::before {
   content: "";
   display: block;

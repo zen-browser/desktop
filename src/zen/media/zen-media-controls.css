@@ -228,17 +228,13 @@
   }
 
   & .zen-media-notes {
-    --zen-note-frame-w: 40px;
-    --zen-note-frame-h: 44px;
-
     position: absolute;
-    z-index: 1;
+    z-index: 0;
     display: block;
-    left: 50%;
-    bottom: 55%;
-    width: var(--zen-note-frame-w);
-    height: var(--zen-note-frame-h);
-    margin-left: calc(var(--zen-note-frame-w) / -2);
+    top: -70%;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 1;
     overflow: clip;
     pointer-events: none;
     opacity: 0;
@@ -247,7 +243,7 @@
 
   & .zen-media-notes-strip {
     flex: none;
-    width: calc(90 * var(--zen-note-frame-w));
+    width: calc(90 * 100%);
     height: 100%;
     background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
     background-repeat: no-repeat;
@@ -428,6 +424,6 @@
     transform: translateX(0);
   }
   to {
-    transform: translateX(calc(-89 * var(--zen-note-frame-w)));
+    transform: translateX(calc(-89 / 90 * 100%));
   }
 }

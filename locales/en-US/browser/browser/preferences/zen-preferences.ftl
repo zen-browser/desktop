@@ -353,6 +353,7 @@ zen-key-select-tab-7 = Select tab #7
 zen-key-select-tab-8 = Select tab #8
 zen-key-select-tab-last = Select last tab
 zen-key-show-all-tabs = Show all tabs
+zen-search-tabs-shortcut = Search Tabs
 zen-key-goto-history = Go to history
 zen-key-go-home = Go Home
 zen-bookmark-show-sidebar-shortcut = Show Bookmarks Sidebar

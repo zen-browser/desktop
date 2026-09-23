@@ -166,6 +166,10 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenSearchTabs": {
+            gURLBar.search("%");
+            break;
+          }
           case "cmd_zenToggleLibrary": {
             const { ZenLibrary } = ChromeUtils.importESModule(
               "moz-src:///zen/library/ZenLibrary.mjs",

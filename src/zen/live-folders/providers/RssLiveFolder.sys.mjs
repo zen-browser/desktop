@@ -17,6 +17,7 @@ ChromeUtils.defineLazyGetter(
 
 export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "rss";
+  #feedUrlUpdate = 0;
 
   constructor({ id, state, manager }) {
     super({ id, state, manager });
@@ -282,8 +283,21 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
           this.state.url
         );
         if (url) {
+          const updateId = ++this.#feedUrlUpdate;
           this.state.url = url;
           this.refresh();
+          this.requestSave();
+
+          const { label } = await this.getMetadata();
+          if (updateId !== this.#feedUrlUpdate) {
+            return;
+          }
+
+          const folder = this.manager.getFolderForLiveFolder(this);
+          if (folder && label) {
+            folder.label = label;
+          }
+          return;
         }
         break;
       }

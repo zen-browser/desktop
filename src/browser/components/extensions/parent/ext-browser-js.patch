@@ -1,29 +1,131 @@
 diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
-index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..e221b077dbfbe20c8696732f003bd5809d761a02 100644
+index 91adc6bc3649af47745818e6f9d00cbbdffc35a5...4ff10dc750e037dbc9c342f616b4132ee6ef2865 100644
 --- a/browser/components/extensions/parent/ext-browser.js
 +++ b/browser/components/extensions/parent/ext-browser.js
-@@ -362,6 +362,7 @@ class TabTracker extends TabTrackerBase {
+@@ -27,6 +27,40 @@ function isPrivateTab(nativeTab) {
+   return PrivateBrowsingUtils.isBrowserPrivate(nativeTab.linkedBrowser);
+ }
+ 
++// Zen hides placeholder "empty tabs" (workspace New Tab button, one per
++// folder) from extensions; _zenLogicalIndex holds the extension-facing index.
++function zenIsEmptyTab(nativeTab) {
++  return nativeTab?.hasAttribute("zen-empty-tab");
++}
++
++// Recompute _zenLogicalIndex for every tab; skip the closing tab, which is
++// still listed when TabClose fires.
++function zenSyncTabIndices(gBrowser, excludedTab) {
++  // gBrowser.tabs is cached and can be stale at event time.
++  gBrowser.tabContainer._invalidateCachedTabs();
++  let logical = 0;
++  for (let tab of gBrowser.tabs) {
++    if (tab === excludedTab) {
++      continue;
++    }
++    tab._zenLogicalIndex = zenIsEmptyTab(tab) ? -1 : logical++;
++  }
++}
++
++function zenGetNativeTabAtLogicalIndex(gBrowser, logicalIndex) {
++  let seen = 0;
++  for (let tab of gBrowser.tabs) {
++    if (zenIsEmptyTab(tab)) {
++      continue;
++    }
++    if (seen === logicalIndex) {
++      return tab;
++    }
++    seen++;
++  }
++  return undefined;
++}
++
+ /* eslint-disable mozilla/balanced-listeners */
+ extensions.on("uninstalling", (msg, extension) => {
+   if (extension.uninstallURL) {
+@@ -348,6 +382,7 @@ class TabTracker extends TabTrackerBase {
+ 
+     windowTracker.addListener("TabClose", this);
+     windowTracker.addListener("TabOpen", this);
++    windowTracker.addListener("TabMove", this);
+     windowTracker.addListener("TabSelect", this);
+     windowTracker.addListener("TabMultiSelect", this);
+     windowTracker.addOpenListener(this._handleWindowOpen);
+@@ -362,6 +397,9 @@ class TabTracker extends TabTrackerBase {
    }
  
    getId(nativeTab) {
-+    if (nativeTab.hasAttribute("zen-empty-tab")) return -1;
++    if (zenIsEmptyTab(nativeTab)) {
++      return -1;
++    }
      let id = this._tabs.get(nativeTab);
      if (id) {
        return id;
-@@ -395,6 +396,7 @@ class TabTracker extends TabTrackerBase {
+@@ -395,6 +433,9 @@ class TabTracker extends TabTrackerBase {
      if (nativeTab.documentGlobal.closed) {
        throw new Error("Cannot attach ID to a tab in a closed window.");
      }
-+    if (nativeTab.hasAttribute("zen-empty-tab")) return;
++    if (zenIsEmptyTab(nativeTab)) {
++      return;
++    }
  
      this._tabs.set(nativeTab, id);
      this._tabIds.set(id, nativeTab);
-@@ -1262,6 +1264,10 @@ class TabManager extends TabManagerBase {
+@@ -531,6 +572,7 @@ class TabTracker extends TabTrackerBase {
+ 
+     switch (event.type) {
+       case "TabOpen": {
++        zenSyncTabIndices(nativeTab.documentGlobal.gBrowser);
+         let { adoptedTab } = event.detail;
+         if (adoptedTab) {
+           // This tab is being created to adopt a tab from a different window.
+@@ -564,6 +606,7 @@ class TabTracker extends TabTrackerBase {
+       }
+ 
+       case "TabClose": {
++        zenSyncTabIndices(nativeTab.documentGlobal.gBrowser, nativeTab);
+         let { adoptedBy } = event.detail;
+         if (adoptedBy) {
+           // This tab is being closed because it was adopted by a new window.
+@@ -599,6 +642,10 @@ class TabTracker extends TabTrackerBase {
+           });
+         }
+         break;
++
++      case "TabMove":
++        zenSyncTabIndices(event.target.documentGlobal.gBrowser);
++        break;
+     }
+   }
+ 
+@@ -846,7 +893,11 @@ class Tab extends TabBase {
+   }
+ 
+   get index() {
+-    return this.nativeTab._tPos;
++    let { nativeTab } = this;
++    if (nativeTab._zenLogicalIndex === undefined) {
++      zenSyncTabIndices(nativeTab.documentGlobal.gBrowser);
++    }
++    return nativeTab._zenLogicalIndex;
+   }
+ 
+   get mutedInfo() {
+@@ -1197,7 +1248,7 @@ class Window extends WindowBase {
+   }
+ 
+   getTabAtIndex(index) {
+-    let nativeTab = this.window.gBrowser.tabs[index];
++    let nativeTab = zenGetNativeTabAtLogicalIndex(this.window.gBrowser, index);
+     if (nativeTab) {
+       return this.extension.tabManager.getWrapper(nativeTab);
+     }
+@@ -1262,6 +1313,10 @@ class TabManager extends TabManagerBase {
    }
  
    canAccessTab(nativeTab) {
-+    if (nativeTab.hasAttribute("zen-empty-tab")) {
-+      return false
++    if (zenIsEmptyTab(nativeTab)) {
++      return false;
 +    }
 +
      // Check private browsing access at browser window level.

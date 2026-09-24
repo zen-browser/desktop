@@ -20,6 +20,8 @@ support-files = [
 
 ["browser_folder_issue_9981.js"]
 
+["browser_folder_issue_15522.js"]
+
 ["browser_folder_level_checks.js"]
 
 ["browser_folder_max_subfolders.js"]

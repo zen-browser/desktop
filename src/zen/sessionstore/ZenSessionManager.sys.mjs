@@ -1006,6 +1006,9 @@ export class nsZenSessionManager {
     aWindow.gZenWorkspaces.restoreWorkspacesFromSessionStore({
       spaces: this.#sidebarWithoutCloning.spaces || [],
     });
+    // There is no restore coming for this window, so nothing else is going to
+    // tell the spaces their tabs are in place.
+    aWindow.gZenWorkspaces.onWindowRestored();
   }
 
   /**

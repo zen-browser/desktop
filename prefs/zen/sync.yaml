@@ -19,10 +19,6 @@
 - name: services.sync.prefs.sync.zen.tabs.show-newtab-vertical
   value: true
 
-- name: services.sync.prefs.sync.zen.tabs.select-recently-used-on-close
-  value: true
-
-
 - name: services.sync.prefs.sync.zen.tabs.open-pinned-in-new-tab
   value: true
 
@@ -42,10 +38,6 @@
   value: true
 
 # URL bar
-
-- name: services.sync.prefs.sync.zen.urlbar.show-protections-icon
-  value: true
-
 - name: services.sync.prefs.sync.zen.urlbar.show-contextual-id
   value: true
 
@@ -68,12 +60,6 @@
   value: true
 
 # Workspaces
-- name: services.sync.prefs.sync.zen.workspaces.force-container-workspace
-  value: true
-
-- name: services.sync.prefs.sync.zen.workspaces.switch-animation-duration
-  value: true
-
 - name: services.sync.prefs.sync.zen.workspaces.wrap-around-navigation
   value: true
 
@@ -100,37 +86,5 @@
 - name: services.sync.prefs.sync.zen.view.show-clear-tabs-button
   value: true
 
-
 - name: services.sync.prefs.sync.zen.view.enable-loading-indicator
-  value: true
-
-# Theme
-- name: services.sync.prefs.sync.zen.theme.accent-color
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.content-element-separation
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.dark-mode-bias
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.gradient.show-custom-colors
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.essentials-favicon-bg
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.disable-lightweight
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.use-system-colors
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.hide-tab-throbber
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.hide-unified-extensions-button
-  value: true
-
-- name: services.sync.prefs.sync.zen.theme.border-radius
   value: true

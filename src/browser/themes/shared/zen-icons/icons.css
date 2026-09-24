@@ -538,7 +538,7 @@
     position: absolute;
     display: block;
     top: 0;
-    left: 50%;
+    left: calc(4px + 30%);
     height: 100%;
     aspect-ratio: 1;
     translate: -50%;

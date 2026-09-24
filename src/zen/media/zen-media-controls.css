@@ -228,38 +228,14 @@
   }
 
   & .zen-media-notes {
-    position: absolute;
-    z-index: 0;
     display: block;
-    top: -70%;
-    left: 0;
-    width: 100%;
-    aspect-ratio: 1;
-    overflow: clip;
-    pointer-events: none;
     opacity: 0;
     transition: opacity 0.8s ease;
   }
 
-  & .zen-media-notes-strip {
-    flex: none;
-    width: calc(90 * 100%);
-    height: 100%;
-    background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    -moz-context-properties: fill;
-    fill: currentColor;
-  }
-
-  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind])
-    .zen-media-notes {
+  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-notes {
     opacity: 1;
-  }
-
-  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind])
-    .zen-media-notes-strip {
-    animation: zen-note-sprite 3s steps(90, jump-none) infinite;
+    --zen-media-notes-animation: zen-note-sprite;
   }
 
   /* Background cards never show the floating notes — only their top sliver
@@ -268,19 +244,13 @@
     display: none;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    & .zen-media-notes {
-      display: none;
-    }
-  }
-
   .zen-media-focus-button {
     align-self: center;
-    position: relative;
     overflow: visible;
     transition:
       opacity 0.2s ease,
       transform 0.2s ease;
+    position: relative;
 
     & image {
       &:-moz-broken {
@@ -417,6 +387,35 @@
   #zen-media-controls-toolbar {
     display: none;
   }
+}
+
+.zen-media-notes {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  top: -70%;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: clip;
+  pointer-events: none;
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none !important;
+  }
+}
+
+.zen-media-notes::before {
+  content: "";
+  display: block;
+  width: calc(90 * 100%);
+  height: 100%;
+  background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -moz-context-properties: fill;
+  fill: currentColor;
+  animation: var(--zen-media-notes-animation, none) 3s steps(90, jump-none) infinite;
 }
 
 @keyframes zen-note-sprite {

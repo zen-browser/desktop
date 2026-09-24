@@ -2,7 +2,7 @@ diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/t
 index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8c579171b 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
-@@ -21,6 +21,8 @@
+@@ -21,7 +21,9 @@
            <hbox class="tab-group-line"/>
          </vbox>
          <hbox class="tab-content" align="center">
@@ -10,7 +10,8 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
            <stack class="tab-icon-stack">
              <hbox class="tab-throbber"/>
              <hbox class="tab-icon-pending"/>
-+            <box class="zen-glance-notes"><box class="zen-glance-notes-strip"/></box>
++            <box class="zen-media-notes"/>
+             <html:img class="tab-icon-image" role="presentation" decoding="sync" />
 @@ -35,9 +37,11 @@
                  pack="center"
                  flex="1">

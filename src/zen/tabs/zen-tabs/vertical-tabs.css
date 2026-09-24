@@ -417,35 +417,12 @@ zen-library {
         display: none !important;
       }
 
-      & .zen-glance-notes {
-        display: none;
-      }
-
-      @media not (prefers-reduced-motion: reduce) {
-        &[soundplaying]:not([muted]) .zen-glance-notes {
-          display: block;
-          position: absolute;
-          top: -70%;
-          left: 50%;
-          width: 110%;
-          aspect-ratio: 1;
-          translate: -50% 0;
-          overflow: clip;
-          z-index: 0;
-          pointer-events: none;
-        }
-
-        &[soundplaying]:not([muted]) .zen-glance-notes-strip {
-          flex: none;
-          width: calc(90 * 100%);
-          height: 100%;
-          background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
-          background-repeat: no-repeat;
-          background-size: 100% 100%;
-          -moz-context-properties: fill;
-          fill: currentColor;
-          animation: zen-note-sprite 3s steps(90, jump-none) infinite;
-        }
+      &[soundplaying]:not([muted]) .zen-media-notes {
+        display: block;
+        left: 50%;
+        width: 110%;
+        translate: -50% 0;
+        --zen-media-notes-animation: zen-note-sprite;
       }
     }
 
@@ -1400,14 +1377,5 @@ zen-library {
 
   :root[zen-right-side="true"] & {
     left: calc(-1 * var(--zen-toolbox-padding));
-  }
-}
-
-@keyframes zen-note-sprite {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-89 / 90 * 100%));
   }
 }

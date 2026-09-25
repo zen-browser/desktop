@@ -657,6 +657,7 @@
   --urlbarview-row-padding-block: 12px;
   --urlbarView-row-gutter: 0px;
 
+  border-block: 2px solid transparent;
   color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) !important;
 
   &:hover,
@@ -698,7 +699,7 @@
 }
 
 #urlbar-results {
-  max-height: 244px;
+  max-height: 259px;
   overflow-y: auto;
   scrollbar-width: none;
   margin-block-start: calc(var(--urlbarView-results-padding) - 2px);

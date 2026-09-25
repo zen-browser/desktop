@@ -46,7 +46,7 @@ export class ZenZapBar {
       return bar;
     }
     const container = browser?.parentNode?.parentNode;
-    if (!container || !browser.ownerGlobal?.gBrowser) {
+    if (!container || !browser.documentGlobal?.gBrowser) {
       return null;
     }
     bar = new ZenZapBar(browser);
@@ -56,7 +56,7 @@ export class ZenZapBar {
 
   constructor(browser) {
     this.#browser = browser;
-    this.#window = browser.ownerGlobal;
+    this.#window = browser.documentGlobal;
     this.#container = browser.parentNode.parentNode;
     this.#tab = this.#window.gBrowser.getTabForBrowser(browser);
 

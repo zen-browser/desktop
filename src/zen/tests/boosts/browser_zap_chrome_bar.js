@@ -52,6 +52,7 @@ async function startZap(browser) {
     async () => isZapBarVisible(browser) && (await isZapEnabled(browser)),
     "Zap bar is shown and the page is zapping"
   );
+  await waitForRepaint(browser);
 }
 
 async function waitForZapStopped(browser) {
@@ -71,22 +72,33 @@ async function pressDone(browser) {
  * Returns the centre of an element inside the page's anonymous content.
  */
 function anonymousElementCenter(browser, id) {
-  return SpecialPowers.spawn(browser, [id], elementId => {
+  return SpecialPowers.spawn(browser, [id], async elementId => {
     const doc = content.document;
-    for (const node of InspectorUtils.getChildrenForNode(
+    const containers = InspectorUtils.getChildrenForNode(
       doc.documentElement,
       true,
       false
-    )) {
+    );
+    const hosts = containers.flatMap(node => [
+      ...(node.querySelectorAll?.(".anonymous-content-host") ?? []),
+    ]);
+    for (const node of hosts) {
       const element = node.openOrClosedShadowRoot?.getElementById(elementId);
       if (!element) {
         continue;
       }
+      if (content.getComputedStyle(element).visibility !== "visible") {
+        return null;
+      }
+      await new Promise(resolve => content.requestAnimationFrame(resolve));
+      await Promise.all(
+        element
+          .closest("#select-component")
+          .getAnimations()
+          .map(animation => animation.finished)
+      );
       const rect = element.getBoundingClientRect();
-      if (
-        !rect.width ||
-        content.getComputedStyle(element).visibility !== "visible"
-      ) {
+      if (!rect.width || !rect.height) {
         return null;
       }
       return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
@@ -101,7 +113,11 @@ function hasAnonymousElement(browser, id) {
       content.document.documentElement,
       true,
       false
-    ).some(node => !!node.openOrClosedShadowRoot?.getElementById(elementId));
+    ).some(container =>
+      [...(container.querySelectorAll?.(".anonymous-content-host") ?? [])].some(
+        node => !!node.openOrClosedShadowRoot?.getElementById(elementId)
+      )
+    );
   });
 }
 
@@ -131,16 +147,21 @@ function isBottomTargetHidden(browser) {
 }
 
 async function pageReceivesClick(browser) {
-  const clicked = SpecialPowers.spawn(browser, [], () => {
-    return new Promise(resolve => {
-      content.document.body.addEventListener("click", () => resolve(true), {
+  await SpecialPowers.spawn(browser, [], () => {
+    const body = content.document.body;
+    body.removeAttribute("data-clicked");
+    body.addEventListener(
+      "click",
+      () => body.setAttribute("data-clicked", ""),
+      {
         once: true,
-      });
-      content.setTimeout(() => resolve(false), 2000);
-    });
+      }
+    );
   });
   await BrowserTestUtils.synthesizeMouseAtCenter("#filler", {}, browser);
-  return clicked;
+  return SpecialPowers.spawn(browser, [], () =>
+    content.document.body.hasAttribute("data-clicked")
+  );
 }
 
 async function withTestTab(callback) {
@@ -164,6 +185,7 @@ add_setup(async function () {
     ],
   });
   const boost = gZenBoostsManager.createNewBoost(TEST_DOMAIN);
+  boost.boostEntry.boostData.changeWasMade = true;
   gZenBoostsManager.makeBoostActiveForDomain(TEST_DOMAIN, boost.id);
   registerCleanupFunction(() => gZenBoostsManager.deleteBoost(boost));
 });
@@ -256,6 +278,9 @@ add_task(async function test_find_and_zap_exclude_each_other() {
     const findbar = await gBrowser.getFindBar(tab);
     findbar.onFindCommand();
     await TestUtils.waitForCondition(() => !findbar.hidden, "Find is open");
+    await Promise.all(
+      findbar.getAnimations().map(animation => animation.finished)
+    );
     await waitForRepaint(browser);
     const findOnlyHeight = await contentInnerHeight(browser);
 
@@ -300,9 +325,8 @@ add_task(async function test_find_and_zap_exclude_each_other() {
       () => !otherFindbar.hidden,
       "Find opens in the other browser"
     );
-    BrowserTestUtils.removeTab(otherTab);
-
     await BrowserTestUtils.switchTab(gBrowser, tab);
+    BrowserTestUtils.removeTab(otherTab);
     ok(isZapBarVisible(browser), "The original browser keeps its Zap bar");
     ok(await isZapEnabled(browser), "The original page is still zapping");
     await pressDone(browser);

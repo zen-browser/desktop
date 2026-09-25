@@ -42,3 +42,15 @@ add_task(async function test_getSelectionPath_basic() {
     );
   }
 });
+
+add_task(async function test_getSelectionPath_bodyChild() {
+  const doc = document.implementation.createHTMLDocument("TestBodyChild");
+  const target = doc.createElement("div");
+  target.id = "target";
+  doc.body.appendChild(target);
+
+  const component = new SelectorComponent(doc, null, [], () => {});
+  const path = component.getSelectionPath(doc, 0, target);
+  ok(path, "A direct child of body has a nonempty selector");
+  is(doc.querySelector(path), target, "The selector matches the target");
+});

@@ -165,7 +165,7 @@ export class ZapOverlay {
 
         this.#getNextDissolveEffect().then(dissolve => {
           dissolve.dissolve(element, async () => {
-            element.ownerGlobal.requestAnimationFrame(() => {
+            element.documentGlobal.requestAnimationFrame(() => {
               element.style.removeProperty("opacity");
             });
 

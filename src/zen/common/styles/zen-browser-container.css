@@ -9,6 +9,7 @@
     overflow: clip;
 
     :root:not([zen-no-padding="true"]) &:not(.zen-glance-overlay) {
+      box-shadow: var(--zen-big-shadow);
       /* stylelint-disable-next-line property-no-unknown */
       corner-shape: round;
       border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));

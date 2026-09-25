@@ -235,7 +235,31 @@ class ZenLibraryDownloadStack {
       .finally(() => download.target.refresh());
   }
 
+  /**
+   * @param {object} download
+   * @returns {boolean} Whether it will be opened as soon as it is here
+   */
+  #opensWhenDone(download) {
+    return !download.stopped && !!download.launchWhenSucceeded;
+  }
+
+  /**
+   * Clicking a download that is still coming in asks for it to be opened as
+   * soon as it is here, the way the downloads panel does.
+   *
+   * @param {object} download
+   */
+  #toggleOpenWhenDone(download) {
+    download.launchWhenSucceeded = !download.launchWhenSucceeded;
+    download._launchedFromPanel = download.launchWhenSucceeded;
+    this.#updateList();
+  }
+
   #openDownload(download) {
+    if (!download.stopped) {
+      this.#toggleOpenWhenDone(download);
+      return;
+    }
     if (download.succeeded) {
       lazy.DownloadsCommon.openDownload(download).catch(console.error);
     } else if (download.source?.url) {
@@ -274,14 +298,29 @@ class ZenLibraryDownloadStack {
       );
       entry.querySelector(".zen-library-download-list-title").textContent =
         this.#fileName(download);
-      entry.querySelector(".zen-library-download-list-subtitle").textContent =
-        this.#statusText(download);
+      const subtitle = entry.querySelector(
+        ".zen-library-download-list-subtitle"
+      );
+      if (this.#opensWhenDone(download)) {
+        this.#window.document.l10n.setAttributes(
+          subtitle,
+          "library-downloads-open-when-done"
+        );
+      } else {
+        subtitle.removeAttribute("data-l10n-id");
+        subtitle.textContent = this.#statusText(download);
+      }
       entry.toggleAttribute("downloading", !download.stopped);
+      entry.toggleAttribute("open-when-done", this.#opensWhenDone(download));
     });
-    this.#tabs?.style.setProperty(
-      "--zen-library-stack-height",
-      `${this.#list.getBoundingClientRect().height}px`
-    );
+    this.#window
+      .promiseDocumentFlushed(() => this.#list.getBoundingClientRect().height)
+      .then(height => {
+        this.#tabs?.style.setProperty(
+          "--zen-library-stack-height",
+          `${height}px`
+        );
+      });
   }
 
   #updateBadge(badge, download) {

@@ -122,8 +122,7 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static get libraryOnRight() {
-    const lib = this.getInstance();
-    return lib.#libraryOnRight;
+    return this.getInstance().#libraryOnRight;
   }
 
   set isHidden(value) {

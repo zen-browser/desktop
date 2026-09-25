@@ -14,3 +14,77 @@
 
 - name: services.sync.prefs.sync.zen.spaces-sync.normal-tabs
   value: true
+
+# Tabs
+- name: services.sync.prefs.sync.zen.tabs.show-newtab-vertical
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.open-pinned-in-new-tab
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.close-on-back-with-no-history
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.ctrl-tab.ignore-essential-tabs
+  value: true
+
+- name: services.sync.prefs.sync.zen.tabs.ctrl-tab.ignore-pending-tabs
+  value: true
+
+- name: services.sync.prefs.sync.zen.ctrlTab.show-pending-tabs
+  value: true
+
+- name: services.sync.prefs.sync.zen.startup.smooth-scroll-in-tabs
+  value: true
+
+# URL bar
+- name: services.sync.prefs.sync.zen.urlbar.show-contextual-id
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.behavior
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.hide-one-offs
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.enable-overrides
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.single-toolbar-show-copy-url
+  value: true
+
+- name: services.sync.prefs.sync.zen.urlbar.suggestions.quick-actions
+  value: true
+
+- name: services.sync.prefs.sync.browser.urlbar.shortcuts.workspaces
+  value: true
+
+# Workspaces
+- name: services.sync.prefs.sync.zen.workspaces.wrap-around-navigation
+  value: true
+
+- name: services.sync.prefs.sync.zen.workspaces.separate-essentials
+  value: true
+
+# Glance
+- name: services.sync.prefs.sync.zen.glance.enable-contextmenu-search
+  value: true
+
+- name: services.sync.prefs.sync.zen.glance.open-essential-external-links
+  value: true
+
+# Browser view
+- name: services.sync.prefs.sync.zen.view.use-single-toolbar
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.show-newtab-button-top
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.drag-window-from-content
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.show-clear-tabs-button
+  value: true
+
+- name: services.sync.prefs.sync.zen.view.enable-loading-indicator
+  value: true

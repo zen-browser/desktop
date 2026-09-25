@@ -86,6 +86,7 @@ if (!Services.appinfo.inSafeMode) {
       esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
       events: {
         DOMDocElementInserted: {},
+        pagehide: {},
       },
     },
     safeForUntrustedWebProcess: true,

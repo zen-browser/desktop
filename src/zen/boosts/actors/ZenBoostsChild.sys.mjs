@@ -19,6 +19,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #zappedElementsTempShown = [];
 
   #overlay = null;
+  #pendingZapStart = null;
+  #zapToken = 0;
+  #listenerWindow = null;
 
   static STATES = {
     NONE: "none",
@@ -32,8 +35,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
     "pointermove",
     "pointerup",
     "scroll",
-    "resize",
   ];
+
+  // Viewport resizes are dispatched to the window, not the document.
+  static WINDOW_EVENTS = ["resize"];
 
   // A list of events that will be prevented from
   // reaching the document
@@ -65,21 +70,27 @@ export class ZenBoostsChild extends JSWindowActorChild {
   // Caching the events in sets for performance
   static ALL_EVENTS_SET = new Set([
     ...ZenBoostsChild.OVERLAY_EVENTS,
+    ...ZenBoostsChild.WINDOW_EVENTS,
     ...ZenBoostsChild.PREVENTABLE_EVENTS,
   ]);
 
   static PREVENTABLE_SET = new Set(ZenBoostsChild.PREVENTABLE_EVENTS);
 
   handleEvent(event) {
-    if (event.type === "DOMDocElementInserted") {
-      this.#applyBoostForPageIfAvailable();
+    switch (event.type) {
+      case "DOMDocElementInserted":
+        this.#applyBoostForPageIfAvailable();
+        break;
+      case "pagehide":
+        if (event.target === this.document) {
+          this.disableZapMode();
+        }
+        break;
     }
   }
 
   didDestroy() {
-    if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-      this.disableZapMode();
-    }
+    this.disableZapMode();
     this.#removeEventListeners();
   }
 
@@ -217,6 +228,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
       this.document.addEventListener(event, this._handleZapEvent, true);
     }
     this.#preventableEventsAdded = true;
+
+    this.#listenerWindow = this.contentWindow;
+    for (let event of ZenBoostsChild.WINDOW_EVENTS) {
+      this.#listenerWindow.addEventListener(event, this._handleZapEvent);
+    }
   }
 
   /**
@@ -225,6 +241,13 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #removeEventListeners() {
     for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
       this.document.removeEventListener(event, this._handleZapEvent, true);
+    }
+
+    if (this.#listenerWindow) {
+      for (let event of ZenBoostsChild.WINDOW_EVENTS) {
+        this.#listenerWindow.removeEventListener(event, this._handleZapEvent);
+      }
+      this.#listenerWindow = null;
     }
 
     if (this.#preventableEventsAdded) {
@@ -248,24 +271,38 @@ export class ZenBoostsChild extends JSWindowActorChild {
         break;
       }
       case "ZenBoost:DisableZapMode":
-        if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-          this.disableZapMode();
+        this.disableZapMode();
+        break;
+      case "ZenBoost:ZapCommand": {
+        const { token, command, selector } = message.data ?? {};
+        if (
+          this.#currentState === ZenBoostsChild.STATES.ZAP &&
+          token === this.#zapToken
+        ) {
+          this.#overlay.handleBarCommand(command, selector);
         }
         break;
+      }
       case "ZenBoost:DisablePickerMode":
         if (this.#currentState === ZenBoostsChild.STATES.PICKER) {
           this.disablePickerMode();
         }
         break;
       case "ZenBoost:ToggleZapMode":
-        if (this.#currentState === ZenBoostsChild.STATES.NONE) {
-          this.#startZappingOverlay();
-        } else if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+        if (
+          this.#currentState === ZenBoostsChild.STATES.ZAP ||
+          this.#pendingZapStart
+        ) {
           this.disableZapMode();
+        } else if (this.#currentState === ZenBoostsChild.STATES.NONE) {
+          this.#startZappingOverlay();
         }
         break;
       case "ZenBoost:TogglePickerMode":
-        if (this.#currentState === ZenBoostsChild.STATES.NONE) {
+        if (
+          this.#currentState === ZenBoostsChild.STATES.NONE &&
+          !this.#pendingZapStart
+        ) {
           this.#startPickingOverlay();
         } else if (this.#currentState === ZenBoostsChild.STATES.PICKER) {
           this.disablePickerMode();
@@ -470,10 +507,41 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
   }
 
+  /**
+   * Asks browser chrome for the Zap bar and only intercepts page input once
+   * the bar has accepted this document.
+   */
   async #startZappingOverlay() {
-    if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+    if (
+      this.#currentState !== ZenBoostsChild.STATES.NONE ||
+      this.#pendingZapStart ||
+      this.browsingContext?.parent
+    ) {
       return;
     }
+    const request = {};
+    this.#pendingZapStart = request;
+
+    let token = 0;
+    try {
+      token = await this.sendQuery("ZenBoost:ZapStart");
+    } catch {
+      token = 0;
+    }
+
+    if (this.#pendingZapStart !== request) {
+      // Cancelled while chrome was starting; release the bar it may have shown.
+      if (token) {
+        this.#trySend("ZenBoost:ZapStop", { token });
+      }
+      return;
+    }
+    this.#pendingZapStart = null;
+    if (!token || this.#currentState !== ZenBoostsChild.STATES.NONE) {
+      return;
+    }
+
+    this.#zapToken = token;
     this.#currentState = ZenBoostsChild.STATES.ZAP;
 
     this.#overlay = new lazy.ZapOverlay(this.document, this);
@@ -481,6 +549,26 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     this.#addEventListeners();
     this.sendNotify("zap-state-update");
+  }
+
+  /**
+   * Sends the current Unzap list to the chrome Zap bar.
+   *
+   * @param {Array<{selector: string, count: number}>} zaps
+   */
+  updateZapBar(zaps) {
+    if (this.#currentState !== ZenBoostsChild.STATES.ZAP) {
+      return;
+    }
+    this.#trySend("ZenBoost:ZapListUpdate", { token: this.#zapToken, zaps });
+  }
+
+  #trySend(name, data) {
+    try {
+      this.sendAsyncMessage(name, data);
+    } catch {
+      // The actor is being destroyed; the parent side detaches on its own.
+    }
   }
 
   async #startPickingOverlay() {
@@ -508,7 +596,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   addZapSelector(selector) {
     const domain = this.#hostWithoutPort;
-    this.sendQuery("ZenBoost:ZapSelector", {
+    return this.sendQuery("ZenBoost:ZapSelector", {
       action: "add",
       selector,
       domain,
@@ -517,7 +605,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   removeZapSelector(selector) {
     const domain = this.#hostWithoutPort;
-    this.sendQuery("ZenBoost:ZapSelector", {
+    return this.sendQuery("ZenBoost:ZapSelector", {
       action: "remove",
       selector,
       domain,
@@ -536,7 +624,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   async tempHideZappedElement() {
     this.#zappedElementsTempShown.forEach(selector => {
-      this.document.querySelectorAll(selector).forEach(element => {
+      this.document?.querySelectorAll(selector).forEach(element => {
         element.removeAttribute("zen-zap-unhide");
       });
     });
@@ -545,15 +633,20 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   disableZapMode() {
-    if (this.#currentState === ZenBoostsChild.STATES.NONE) {
+    this.#pendingZapStart = null;
+    if (this.#currentState !== ZenBoostsChild.STATES.ZAP) {
       return;
     }
     this.#currentState = ZenBoostsChild.STATES.NONE;
+    const token = this.#zapToken;
+    this.#zapToken = 0;
 
+    this.tempHideZappedElement();
     this.#overlay?.tearDown();
     this.#overlay = null;
 
     this.#removeEventListeners();
+    this.#trySend("ZenBoost:ZapStop", { token });
     this.sendNotify("zap-state-update");
   }
 
@@ -571,6 +664,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   sendNotify(topic, msg = null) {
-    this.sendAsyncMessage("ZenBoost:Notify", { topic, msg });
+    this.#trySend("ZenBoost:Notify", { topic, msg });
   }
 }

@@ -63,6 +63,140 @@
   }
 }
 
+/* Zap shares the findbar row, so an open bar takes height from the page. The
+   Boost tokens come from #zenBoostWindow in zen-boosts.css. */
+.zen-zap-bar {
+  --zen-boosts-primary-background: light-dark(#fcfcfe, #171717);
+  --zen-boosts-primary-color: light-dark(#3a3a3b, #f3f3f3);
+  --zen-boosts-button-background: light-dark(#ebebed, #262626);
+  --zen-boosts-primary-border-color: light-dark(#ededef, #3a3a3a);
+
+  grid-area: findbar;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 54px;
+  padding: 0 10px;
+  box-sizing: border-box;
+
+  border-top: 1px solid var(--zen-boosts-primary-border-color);
+  background-color: var(--zen-boosts-primary-background);
+  color: var(--zen-boosts-primary-color);
+  font: 10pt/1.35 system-ui;
+
+  &[hidden] {
+    display: none;
+  }
+
+  & button {
+    flex: 0 0 auto;
+    appearance: none;
+    height: 38px;
+    margin: 0;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 6px;
+    @media (-moz-platform: macos) {
+      border-radius: 12px;
+    }
+
+    background-color: var(--zen-boosts-button-background);
+    color: inherit;
+    font: inherit;
+
+    transition:
+      0.4s background-color cubic-bezier(0.075, 0.82, 0.165, 1),
+      0.4s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
+      0.4s filter cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &:active {
+      opacity: 0.9;
+      filter: brightness(0.9);
+    }
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -3px;
+    }
+  }
+}
+
+.zen-zap-bar-list {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-padding-inline: 3px;
+  scrollbar-width: thin;
+  white-space: nowrap;
+
+  .zen-zap-bar[empty] > & {
+    overflow: visible;
+  }
+}
+
+.zen-zap-bar .zen-zap-bar-unzap {
+  position: relative;
+  width: 38px;
+  padding: 0;
+
+  &:is(:hover, :focus-visible) > .zen-zap-bar-number {
+    visibility: hidden;
+  }
+
+  &:is(:hover, :focus-visible) > .zen-zap-bar-cross {
+    display: grid;
+  }
+}
+
+.zen-zap-bar-cross {
+  display: none;
+  position: absolute;
+  inset: 0;
+  place-items: center;
+}
+
+.zen-zap-bar-helper {
+  flex: 0 0 auto;
+  margin: 0;
+  padding-inline-start: 12px;
+  user-select: none;
+
+  .zen-zap-bar[empty] & {
+    flex: 1 1 auto;
+    padding: 0;
+    text-align: center;
+    white-space: normal;
+  }
+}
+
+@media (forced-colors: active) {
+  .zen-zap-bar {
+    border-color: CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    & button {
+      border: 1px solid ButtonText;
+      background-color: ButtonFace;
+      color: ButtonText;
+
+      &:focus-visible {
+        outline-color: Highlight;
+      }
+    }
+  }
+}
+
 .zen-pseudo-browser-image {
   position: absolute;
   transform: scale(1);

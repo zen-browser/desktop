@@ -54,6 +54,18 @@ export class nsZenSiteDataPanel {
       </box>
     `);
     this.anchor = button.querySelector("#zen-site-data-icon-button");
+    Object.defineProperty(this.anchor, "open", {
+      get() {
+        return this.hasAttribute("open");
+      },
+      set(val) {
+        if (val) {
+          this.setAttribute("open", "true");
+        } else {
+          this.removeAttribute("open");
+        }
+      },
+    });
     this.document.getElementById("identity-icon-box").before(button);
 
     this.extensionsPanelButton = this.document.getElementById(
@@ -70,7 +82,6 @@ export class nsZenSiteDataPanel {
     this.#initCopyUrlButton();
     this.#initEventListeners();
     this.#initBrowserListeners();
-    this.#initUnifiedExtensionsManageHook();
     this.#maybeShowFeatureCallout();
   }
 
@@ -105,6 +116,7 @@ export class nsZenSiteDataPanel {
       onLocationChange: aWebProgress => {
         if (aWebProgress.isTopLevel) {
           this.checkIfTabIsBoosted();
+          this.unifiedPanel.hidePopup();
         }
       },
     });
@@ -201,16 +213,6 @@ export class nsZenSiteDataPanel {
     for (let [id, handler] of Object.entries(kCommands)) {
       this.document.getElementById(id).addEventListener("command", handler);
     }
-  }
-
-  #initUnifiedExtensionsManageHook() {
-    const manageExtensionItem = this.document.getElementById(
-      "unified-extensions-context-menu-manage-extension"
-    );
-
-    manageExtensionItem.addEventListener("command", () => {
-      this.unifiedPanel.hidePopup();
-    });
   }
 
   #initExtensionsPanel() {

@@ -417,19 +417,12 @@ zen-library {
         display: none !important;
       }
 
-      &[soundplaying]:not([muted]) .tab-icon-stack::after {
-        content: "";
-        position: absolute;
-        width: 110%;
-        height: 110%;
-      background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
-        top: -70%;
+      &[soundplaying]:not([muted]) .zen-media-notes {
+        display: block;
         left: 50%;
-        transform: translateX(-50%);
-        z-index: 0;
-        pointer-events: none;
-        transition: opacity 0.8s ease;
-        opacity: 1;
+        width: 110%;
+        translate: -50% 0;
+        --zen-media-notes-animation: zen-note-sprite;
       }
     }
 

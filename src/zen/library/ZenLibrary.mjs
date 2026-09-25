@@ -57,6 +57,7 @@ export class ZenLibrary extends MozLitElement {
 
   #shouldUnfreezeSwipe = false;
   #canSwipe = false;
+  #beforeSwipeState = 0;
   #isOpen = false;
   #initialized = false;
 
@@ -107,6 +108,11 @@ export class ZenLibrary extends MozLitElement {
       return false;
     }
     return lib.openProgress > 0.001;
+  }
+
+  static get libraryProgress() {
+    const lib = this.getInstance();
+    return lib.#progress;
   }
 
   set isHidden(value) {
@@ -395,7 +401,30 @@ export class ZenLibrary extends MozLitElement {
       }
     );
   }
-  
+
+  #readySwipeLibrary = null;
+  static readySwipeOpenLibrary() {
+    const lib = this.getInstance();
+    if (lib.#readySwipeLibrary) {
+      return lib.#readySwipeLibrary;
+    }
+
+    const spaces = gZenWorkspaces.getWorkspaces();
+    const current = gZenWorkspaces.getActiveWorkspaceFromCache();
+    const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
+    const libraryOnRight = this.libraryOnRight;
+
+    lib.#readySwipeLibrary =
+      spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
+      libraryEnabled;
+    return lib.#readySwipeLibrary;
+  }
+
+  static clearReadySwipeLibraryCache() {
+    const lib = this.getInstance();
+    lib.#readySwipeLibrary = null;
+  }
+
   static async swipeReset() {
     const lib = this.getInstance();
     if (!lib.#shouldUnfreezeSwipe) {
@@ -406,7 +435,7 @@ export class ZenLibrary extends MozLitElement {
     // If a swipe is cancelled and instantly interrupted by a new swipe
     // that doesn't involve library (space switch),
     // which will cancel but not reset the ongoing revert animation,
-    // the library will end up stuck. 
+    // the library will end up stuck.
     // To counteract this, we set the progress manually.
     this.animateProgress(lib.#progress > 0.5 ? 1 : 0);
   }
@@ -415,6 +444,7 @@ export class ZenLibrary extends MozLitElement {
     const lib = this.getInstance();
     lib.#cancelIdleCleanup();
     lib.#canSwipe = true;
+    lib.#beforeSwipeState = this.isLibraryOpen ? 1 : 0;
 
     await lib.#whenStylesLoaded();
     await window.promiseDocumentFlushed(() => {});
@@ -429,6 +459,55 @@ export class ZenLibrary extends MozLitElement {
 
     lib.style.pointerEvents = "none";
     lib.#shouldUnfreezeSwipe = true;
+  }
+
+  /**
+   * Helper function to create an overshoot /
+   * rubber band effect for the swipe interaction.
+   *
+   * @param {number} offset The amount that overshot
+   * @param {number} dimension Reference scale
+   * @param {number} constant Rubber constant
+   * @returns The damped value
+   */
+  static #rubberBand(offset, dimension, constant = 0.55) {
+    if (offset === 0 || dimension === 0) {
+      return 0;
+    }
+    return (
+      dimension *
+      (1 - Math.exp(-(Math.abs(offset) * constant) / dimension)) *
+      Math.sign(offset)
+    );
+  }
+
+  static swipeProgress(rawProgress) {
+    const lib = this.getInstance();
+    if (!lib.#canSwipe) {
+      return;
+    }
+
+    const DAMPING_DIMENSION = 0.2;
+    const RUBBER_BAND_CONSTANT = 0.08;
+    const LIBRARY_SWIPE_FULL = 0.8;
+
+    const translation = lib.#libraryOnRight ? -rawProgress : rawProgress;
+    const deltaProgress = translation * LIBRARY_SWIPE_FULL;
+    const progress = lib.#beforeSwipeState + deltaProgress;
+
+    let progressDamped;
+    if (progress < 0) {
+      progressDamped =
+        0 + this.#rubberBand(progress, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
+    } else if (progress > 1) {
+      progressDamped =
+        1 +
+        this.#rubberBand(progress - 1, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
+    } else {
+      progressDamped = progress;
+    }
+
+    lib.openProgress = progressDamped;
   }
 
   static stopSwipe(direction) {
@@ -455,6 +534,7 @@ export class ZenLibrary extends MozLitElement {
   #endSwipeAction() {
     this.style.pointerEvents = "";
     this.#canSwipe = false;
+    this.#beforeSwipeState = null;
 
     // This will only run if the swipe was
     // cancelled, otherwise cleanup will happen
@@ -462,15 +542,6 @@ export class ZenLibrary extends MozLitElement {
     if (!ZenLibrary.isLibrarySlightlyOpen) {
       this.#cleanup();
     }
-  }
-
-  static swipeProgress(target) {
-    const lib = this.getInstance();
-    if (!lib.#canSwipe) {
-      return;
-    }
-
-    lib.openProgress = target;
   }
 
   #attachWrapperToSwipe() {
@@ -548,7 +619,9 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #init() {
-    if (this.#initialized) return;
+    if (this.#initialized) {
+      return;
+    }
     this.#initialized = true;
 
     this.#cancelIdleCleanup();
@@ -572,7 +645,9 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #cleanup() {
-    if (!this.#initialized) return;
+    if (!this.#initialized) {
+      return;
+    }
     this.#initialized = false;
 
     this.#clearStyleProperties();

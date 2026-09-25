@@ -223,6 +223,41 @@ add_task(async function test_bar_takes_viewport_height_and_zaps_bottom() {
   });
 });
 
+add_task(async function test_animated_zap_is_saved_and_can_be_restored() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.boosts.dissolve-on-zap", true]],
+  });
+  try {
+    await withTestTab(async browser => {
+      await startZap(browser);
+      await zapBottomTarget(browser);
+      ok(
+        await hasAnonymousElement(browser, "zen-zap-dissolve-canvas"),
+        "Zapping with animation creates the dissolve effect"
+      );
+      await TestUtils.waitForCondition(
+        () => isBottomTargetHidden(browser),
+        "The animated Zap finishes and hides the target"
+      );
+      Assert.equal(zapSelectors().length, 1, "The animated Zap is saved");
+
+      EventUtils.synthesizeMouseAtCenter(unzapButtons(browser)[0], {}, window);
+      await TestUtils.waitForCondition(
+        async () =>
+          !zapSelectors().length && !(await isBottomTargetHidden(browser)),
+        "Unzap restores the animated target"
+      );
+      await pressDone(browser);
+      ok(
+        !(await hasAnonymousElement(browser, "zen-zap-dissolve-canvas")),
+        "Done removes the animation canvas"
+      );
+    });
+  } finally {
+    await SpecialPowers.popPrefEnv();
+  }
+});
+
 add_task(async function test_preview_and_unzap() {
   await withTestTab(async browser => {
     const isPreviewing = () =>

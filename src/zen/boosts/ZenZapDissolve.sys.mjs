@@ -489,15 +489,14 @@ void main() {
     if (!this.#initialized || this.#hasTriggered || !element) {
       return;
     }
-    this.#hasTriggered = true;
-
-    this.#onComplete = onComplete;
-
     const rect = element.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) {
       console.warn("[ZapDissolve]: element has zero size. Skipping dissolve");
       return;
     }
+
+    this.#hasTriggered = true;
+    this.#onComplete = onComplete;
 
     const captureCanvas = this.document.createElement("canvas");
     captureCanvas.width = rect.width;
@@ -516,8 +515,8 @@ void main() {
       "rgba(0,0,0,0)"
     );
 
-    this.#loadTexture(captureCanvas);
     this.#bindParameters(element);
+    this.#loadTexture(captureCanvas);
 
     this.#animationStartTime = -1;
     this.#requestDraw();

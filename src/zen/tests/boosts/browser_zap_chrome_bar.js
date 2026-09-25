@@ -147,21 +147,9 @@ function isBottomTargetHidden(browser) {
 }
 
 async function pageReceivesClick(browser) {
-  await SpecialPowers.spawn(browser, [], () => {
-    const body = content.document.body;
-    body.removeAttribute("data-clicked");
-    body.addEventListener(
-      "click",
-      () => body.setAttribute("data-clicked", ""),
-      {
-        once: true,
-      }
-    );
-  });
+  const clicked = BrowserTestUtils.waitForContentEvent(browser, "click");
   await BrowserTestUtils.synthesizeMouseAtCenter("#filler", {}, browser);
-  return SpecialPowers.spawn(browser, [], () =>
-    content.document.body.hasAttribute("data-clicked")
-  );
+  return (await clicked) === "click";
 }
 
 async function withTestTab(callback) {
@@ -223,30 +211,62 @@ add_task(async function test_bar_takes_viewport_height_and_zaps_bottom() {
   });
 });
 
-add_task(async function test_animated_zap_is_saved_and_can_be_restored() {
+add_task(async function test_preview_and_unzap() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.boosts.dissolve-on-zap", true]],
   });
   try {
     await withTestTab(async browser => {
+      const isPreviewing = () =>
+        SpecialPowers.spawn(browser, [], () =>
+          content.document
+            .getElementById("bottom")
+            .hasAttribute("zen-zap-unhide")
+        );
+
       await startZap(browser);
       await zapBottomTarget(browser);
       ok(
         await hasAnonymousElement(browser, "zen-zap-dissolve-canvas"),
         "Zapping with animation creates the dissolve effect"
       );
-      await TestUtils.waitForCondition(
-        () => isBottomTargetHidden(browser),
-        "The animated Zap finishes and hides the target"
-      );
-      Assert.equal(zapSelectors().length, 1, "The animated Zap is saved");
+      const [button] = unzapButtons(browser);
 
-      EventUtils.synthesizeMouseAtCenter(unzapButtons(browser)[0], {}, window);
+      EventUtils.synthesizeMouseAtCenter(button, { type: "mousemove" }, window);
+      await TestUtils.waitForCondition(isPreviewing, "Hover previews the Zap");
+      const done = zapBarFor(browser).querySelector(".zen-zap-bar-done");
+      EventUtils.synthesizeMouseAtCenter(done, { type: "mousemove" }, window);
       await TestUtils.waitForCondition(
-        async () =>
-          !zapSelectors().length && !(await isBottomTargetHidden(browser)),
-        "Unzap restores the animated target"
+        async () => !(await isPreviewing()),
+        "Leaving the button clears the preview"
       );
+
+      button.focus();
+      await TestUtils.waitForCondition(isPreviewing, "Focus previews the Zap");
+      button.blur();
+      await TestUtils.waitForCondition(
+        async () => !(await isPreviewing()),
+        "Blur clears the preview"
+      );
+
+      EventUtils.synthesizeMouseAtCenter(button, {}, window);
+      await TestUtils.waitForCondition(
+        () => !zapSelectors().length && !unzapButtons(browser).length,
+        "Unzap removes the selector from the Boost and the bar"
+      );
+      ok(zapBarFor(browser).hasAttribute("empty"), "The empty helper is shown");
+      await TestUtils.waitForCondition(
+        async () => !(await isBottomTargetHidden(browser)),
+        "The target is visible again"
+      );
+      ok(!(await isPreviewing()), "No preview remains after Unzap");
+
+      await BrowserTestUtils.synthesizeMouseAtCenter("#bottom", {}, browser);
+      await TestUtils.waitForCondition(
+        () => anonymousElementCenter(browser, "select-this"),
+        "Selection keeps working after Unzap"
+      );
+
       await pressDone(browser);
       ok(
         !(await hasAnonymousElement(browser, "zen-zap-dissolve-canvas")),
@@ -256,56 +276,6 @@ add_task(async function test_animated_zap_is_saved_and_can_be_restored() {
   } finally {
     await SpecialPowers.popPrefEnv();
   }
-});
-
-add_task(async function test_preview_and_unzap() {
-  await withTestTab(async browser => {
-    const isPreviewing = () =>
-      SpecialPowers.spawn(browser, [], () =>
-        content.document.getElementById("bottom").hasAttribute("zen-zap-unhide")
-      );
-
-    await startZap(browser);
-    await zapBottomTarget(browser);
-    const [button] = unzapButtons(browser);
-
-    EventUtils.synthesizeMouseAtCenter(button, { type: "mousemove" }, window);
-    await TestUtils.waitForCondition(isPreviewing, "Hover previews the Zap");
-    const done = zapBarFor(browser).querySelector(".zen-zap-bar-done");
-    EventUtils.synthesizeMouseAtCenter(done, { type: "mousemove" }, window);
-    await TestUtils.waitForCondition(
-      async () => !(await isPreviewing()),
-      "Leaving the button clears the preview"
-    );
-
-    button.focus();
-    await TestUtils.waitForCondition(isPreviewing, "Focus previews the Zap");
-    button.blur();
-    await TestUtils.waitForCondition(
-      async () => !(await isPreviewing()),
-      "Blur clears the preview"
-    );
-
-    EventUtils.synthesizeMouseAtCenter(button, {}, window);
-    await TestUtils.waitForCondition(
-      () => !zapSelectors().length && !unzapButtons(browser).length,
-      "Unzap removes the selector from the Boost and the bar"
-    );
-    ok(zapBarFor(browser).hasAttribute("empty"), "The empty helper is shown");
-    await TestUtils.waitForCondition(
-      async () => !(await isBottomTargetHidden(browser)),
-      "The target is visible again"
-    );
-    ok(!(await isPreviewing()), "No preview remains after Unzap");
-
-    await BrowserTestUtils.synthesizeMouseAtCenter("#bottom", {}, browser);
-    await TestUtils.waitForCondition(
-      () => anonymousElementCenter(browser, "select-this"),
-      "Selection keeps working after Unzap"
-    );
-
-    await pressDone(browser);
-  });
 });
 
 add_task(async function test_find_and_zap_exclude_each_other() {

@@ -35,7 +35,7 @@ export class ZapOverlay {
       document,
       zenBoostsChild,
       [],
-      this.handleSelectComponentSelect.bind(this),
+      this.#handleZap.bind(this),
       [
         { id: "zen-zap-this" },
         { id: "zen-zap-related" },
@@ -58,7 +58,13 @@ export class ZapOverlay {
     this.#selectorComponent.initialize();
 
     this.#content = this.document.insertAnonymousContent();
-    this.#content.root.appendChild(this.fragment);
+    const htmlNS = "http://www.w3.org/1999/xhtml";
+    const stylesheet = this.document.createElementNS(htmlNS, "link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = "chrome://browser/content/zen-styles/content/zen-zap.css";
+    const border = this.document.createElementNS(htmlNS, "div");
+    border.id = "zap-border";
+    this.#content.root.append(stylesheet, border);
 
     this.#initialized = true;
     this.#updateZappedList();
@@ -84,53 +90,6 @@ export class ZapOverlay {
       (this.#currentDissolveIndex + 1) % this.#dissolvePoolSize;
 
     return this.#dissolveEffectPool[returnIndex];
-  }
-
-  get content() {
-    if (!this.#content || Cu.isDeadWrapper(this.#content)) {
-      return null;
-    }
-    return this.#content;
-  }
-
-  /**
-   * Helper for getting an anonymous element by id
-   *
-   * @param {string} id The id of the element
-   */
-  getElementById(id) {
-    return this.content.root.getElementById(id);
-  }
-
-  get markup() {
-    return `
-    <template>
-      <link rel="stylesheet" href="chrome://browser/content/zen-styles/content/zen-zap.css" />
-      <div id="zap-border"></div>
-    </template>
-    `;
-  }
-
-  get fragment() {
-    if (!this.template) {
-      let parser = new DOMParser();
-      let doc = parser.parseFromString(this.markup, "text/html");
-      this.template = this.document.importNode(
-        doc.querySelector("template"),
-        true
-      );
-    }
-    let fragment = this.template.content.cloneNode(true);
-    return fragment;
-  }
-
-  /**
-   * Handles the onSelect callback from the SelectComponent
-   *
-   * @param {string} cssSelector The CSS selector of the selected element
-   */
-  handleSelectComponentSelect(cssSelector) {
-    this.#handleZap(cssSelector);
   }
 
   /**

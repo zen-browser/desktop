@@ -41,8 +41,8 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
 
 export class ZenLibrary extends MozLitElement {
   static instance = null;
-  static getInstance(createIfMissing = true) {
-    if (!this.instance && createIfMissing) {
+  static getInstance() {
+    if (!this.instance) {
       this.instance = new ZenLibrary();
       this.instance.style.visibility = "collapse";
       const mountAfter = document.getElementById("navigator-toolbox");
@@ -110,10 +110,7 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static get isLibrarySlightlyOpen() {
-    const lib = this.getInstance(/* createIfMissing = */ false);
-    if (!lib) {
-      return false;
-    }
+    const lib = this.getInstance();
     return lib.openProgress > 0.001;
   }
 

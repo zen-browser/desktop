@@ -96,6 +96,7 @@
 
     & .zen-media-notes {
       display: none;
+      transition: none;
     }
 
     & .zen-media-card::after {
@@ -230,18 +231,19 @@
   & .zen-media-notes {
     display: block;
     opacity: 0;
-    transition: opacity 0.8s ease;
-  }
-
-  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-notes {
-    opacity: 1;
+    visibility: hidden;
     --zen-media-notes-animation: zen-note-sprite;
+    transition:
+      opacity 0.8s ease,
+      visibility 0s 0.8s;
   }
 
   /* Background cards never show the floating notes — only their top sliver
      is visible and the notes would poke through it */
-  &[stacked-behind] .zen-media-notes {
-    display: none;
+  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-notes {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.8s ease;
   }
 
   .zen-media-focus-button {

@@ -205,9 +205,24 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     return visits;
   }
 
-  #openVisit(visit) {
-    window.openTrustedLinkIn(visit.url, "tab");
-    this.library?.constructor.toggle();
+  /**
+   * Opens a visit in a tab. Holding the accel key, or clicking with the
+   * middle button, leaves the tab in the background and the library open.
+   *
+   * @param {object} visit
+   * @param {MouseEvent} [event] - What asked for it
+   */
+  #openVisit(visit, event) {
+    const inBackground =
+      !!event && (event.getModifierState("Accel") || event.button === 1);
+    const open = () =>
+      window.openTrustedLinkIn(visit.url, "tab", { inBackground });
+    if (!inBackground) {
+      open();
+      this.library.constructor.toggle();
+      return;
+    }
+    this.library.keepOpenWhile(open);
   }
 
   #forgetVisit(visit) {
@@ -268,7 +283,13 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
       <div
         class="zen-library-row"
         draggable="true"
-        @click=${() => this.#openVisit(visit)}
+        @click=${event => this.#openVisit(visit, event)}
+        @auxclick=${event => {
+          if (event.button === 1) {
+            event.preventDefault();
+            this.#openVisit(visit, event);
+          }
+        }}
         @dragstart=${event => this.#onDragStart(event, visit)}
       >
         <img class="zen-library-row-icon" src="page-icon:${visit.url}" alt="" />
@@ -298,7 +319,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
             data-l10n-id="library-history-reopen-button"
             @click=${event => {
               event.stopPropagation();
-              this.#openVisit(visit);
+              this.#openVisit(visit, event);
             }}
           >
             <img

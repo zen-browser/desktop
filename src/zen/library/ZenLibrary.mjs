@@ -724,6 +724,9 @@ export class ZenLibrary extends MozLitElement {
 
     this.#clearStyleProperties();
     this.removeAttribute("open");
+    for (const tab of this.querySelectorAll(".zen-library-tab[animate]")) {
+      tab.removeAttribute("animate");
+    }
     this.#mounted = new Set([this.activeTab]);
     this.requestUpdate();
     document
@@ -765,8 +768,26 @@ export class ZenLibrary extends MozLitElement {
   }
 
   onTabOpen() {
-    if (this.#isOpen) {
+    if (this.#isOpen && !this.#keepingOpen) {
       ZenLibrary.animateProgress(0);
+    }
+  }
+
+  #keepingOpen = false;
+
+  /**
+   * Opens something in a tab without the library taking that as a reason to
+   * close itself, for a tab asked for from inside it that stays in the
+   * background.
+   *
+   * @param {function()} open - Opens the tab
+   */
+  keepOpenWhile(open) {
+    this.#keepingOpen = true;
+    try {
+      open();
+    } finally {
+      this.#keepingOpen = false;
     }
   }
 

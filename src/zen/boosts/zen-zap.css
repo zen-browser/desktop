@@ -36,9 +36,9 @@
   outline: 4px solid #dfd43a;
   animation: 0.15s zap-border-in ease-out;
 
-  border-radius: 4px;
+  border-radius: 4px 4px 0 0;
   @media (-moz-platform: macos) {
-    border-radius: 8px;
+    border-radius: 8px 8px 0 0;
   }
 }
 

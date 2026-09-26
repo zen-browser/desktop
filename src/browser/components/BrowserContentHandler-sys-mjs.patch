@@ -1,8 +1,8 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
+index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..390e6377078504b84e47d44672a9352ecdfe1ae3 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {
+@@ -672,6 +672,28 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -31,9 +31,9 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -672,6 +694,7 @@ nsBrowserContentHandler.prototype = {
-       "  --new-window <url> Open <url> in a new window.\n" +
+@@ -742,6 +764,7 @@ nsBrowserContentHandler.prototype = {
        "  --new-tab <url>    Open <url> in a new tab.\n" +
+       "  --data <data-URL>  Open a data: URL.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
 +    info += "  --blank-window [<url>]  Open the new blank window.\n";
      if (AppConstants.platform == "win") {

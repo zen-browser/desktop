@@ -33,10 +33,6 @@ async function getUpgradeBackups() {
 }
 
 add_setup(async function () {
-  await SpecialPowers.pushPrefEnv({
-    set: [["test.wait300msAfterTabSwitch", true]],
-  });
-
   // Wait until initialization is complete
   await SessionStore.promiseInitialized;
 });

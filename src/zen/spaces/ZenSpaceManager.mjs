@@ -13,6 +13,12 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
   return document.getElementById("zen-browser-background");
 });
@@ -1933,6 +1939,16 @@ class nsZenWorkspaces {
     }
   }
 
+  #setAnimatingBackground(animating) {
+    for (const element of [
+      lazy.browserBackgroundElement,
+      lazy.toolbarBackgroundElement,
+      gNavToolbox,
+    ]) {
+      element.toggleAttribute("animating-background", animating);
+    }
+  }
+
   _organizeWorkspaceStripLocations(
     workspace,
     justMove = false,
@@ -2030,7 +2046,7 @@ class nsZenWorkspaces {
             "--zen-main-browser-background-toolbar-old",
             nextToolbarGradient
           );
-          document.documentElement.setAttribute("animating-background", "true");
+          this.#setAnimatingBackground(true);
         }
         // Fit the offsetPixels into the grain limits. Both ends may be nextGrain and existingGrain,
         // so we need to use the min and max of both. For example, existing may be 0.2 and next may be 0.5,
@@ -2155,7 +2171,7 @@ class nsZenWorkspaces {
         });
       }
     }
-    document.documentElement.setAttribute("animating-background", "true");
+    this.#setAnimatingBackground(true);
     if (shouldAnimate && previousWorkspace) {
       let previousBackgroundOpacity =
         lazy.browserBackgroundElement.style.getPropertyValue(
@@ -2327,7 +2343,7 @@ class nsZenWorkspaces {
       console.error
     );
     this.#currentSpaceSwitchContext.animations = [];
-    document.documentElement.removeAttribute("animating-background");
+    this.#setAnimatingBackground(false);
     if (shouldAnimate) {
       for (const data of essentialsAnimData) {
         if (this.creatingWorkspaceId && data.finalOffset) {
@@ -2796,6 +2812,7 @@ class nsZenWorkspaces {
   onPinnedTabsResize(entries, forAnimation = false) {
     if (
       document.documentElement.hasAttribute("inDOMFullscreen") ||
+      lazy.ZenLibrary.isLibrarySlightlyOpen ||
       !this._hasInitializedTabsStrip ||
       (this._organizingWorkspaceStrip && !forAnimation) ||
       document.documentElement.hasAttribute("zen-creating-workspace") ||

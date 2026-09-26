@@ -1761,7 +1761,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (this.#animationCount || !group.collapsed) {
       return;
     }
-    if (!selectedTabs.length) {
+    if (!selectedTabs.length && !groupIsCollapsiblePins(group)) {
       tabsContainer.setAttribute("hidden", true);
       this.styleCleanup(itemsToHide);
       this.#queueCollapsedRelayout(group);

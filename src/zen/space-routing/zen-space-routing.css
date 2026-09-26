@@ -180,6 +180,7 @@ menulist[image]::part(icon) {
 }
 
 button {
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-background-without-text-color */
   background-color: var(--select-background-color) !important;
   min-height: unset !important;
 

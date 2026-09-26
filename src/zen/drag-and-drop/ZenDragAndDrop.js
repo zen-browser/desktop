@@ -61,6 +61,8 @@
   };
 
   window.ZenDragAndDrop = class extends window.TabDragAndDrop {
+    static elementToMove = elementToMove;
+
     #dragOverBackground = null;
     #lastDropTarget = null;
     originalDragImageArgs = [];

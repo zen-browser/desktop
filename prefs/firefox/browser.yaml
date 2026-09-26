@@ -112,3 +112,11 @@
 
 - name: browser.shell.customIcon.enabled
   value: false # For now?
+
+- name: browser.nova.enabled
+  value: false
+  locked: true
+
+- name: pdfjs.enableNova
+  value: false
+  locked: true

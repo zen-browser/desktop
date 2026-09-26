@@ -215,14 +215,15 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
   #openVisit(visit, event) {
     const inBackground =
       !!event && (event.getModifierState("Accel") || event.button === 1);
-    const open = () =>
+    const openTab = () =>
       window.openTrustedLinkIn(visit.url, "tab", { inBackground });
     if (!inBackground) {
-      open();
+      openTab();
       this.library.constructor.toggle();
       return;
     }
-    this.library.keepOpenWhile(open);
+    this.library.keepOpenWhile(openTab);
+    gZenUIManager.showToast("library-history-opened-in-background");
   }
 
   #forgetVisit(visit) {

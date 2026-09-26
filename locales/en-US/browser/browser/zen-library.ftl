@@ -57,6 +57,7 @@ library-media-menu-open =
     .label = Open
 library-media-menu-copy =
     .label = Copy
+library-history-opened-in-background = Opened tab in a new tab
 library-history-forget-button =
     .title = Remove from history
 library-history-reopen-button =

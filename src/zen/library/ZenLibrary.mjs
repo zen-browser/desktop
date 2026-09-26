@@ -411,6 +411,7 @@ export class ZenLibrary extends MozLitElement {
     } else if (target === 0) {
       lib.#isOpen = false;
       lib.#canSwipe = false;
+      lib.#tellSection("onLibraryClosing");
     }
 
     lib.setAttribute("transitioning", "true");
@@ -677,6 +678,7 @@ export class ZenLibrary extends MozLitElement {
    * library is about to be opened.
    */
   #onOpenInit() {
+    this.#tellSection("onLibraryOpening");
     if (this.#initialized) {
       return;
     }
@@ -775,12 +777,12 @@ export class ZenLibrary extends MozLitElement {
    * close itself, for a tab asked for from inside it that stays in the
    * background.
    *
-   * @param {function()} open - Opens the tab
+   * @param {function()} openTab - Opens the tab
    */
-  keepOpenWhile(open) {
+  keepOpenWhile(openTab) {
     this.#keepingOpen = true;
     try {
-      open();
+      openTab();
     } finally {
       this.#keepingOpen = false;
     }
@@ -841,10 +843,19 @@ export class ZenLibrary extends MozLitElement {
   }
 
   /**
-   * Shows the section being looked at and puts the others out of sight. A
-   * section is told which it is, so one that reaches outside itself, such as
-   * spaces setting the library's width, only does so while it is on show.
+   * Tells the section being looked at that the library is opening or closing,
+   * for one that would rather not be dragged along as it slides.
+   *
+   * @param {"onLibraryOpening"|"onLibraryClosing"} hook
    */
+  #tellSection(hook) {
+    for (const section of this._content?.children ?? []) {
+      if (section.dataset?.section === this.activeTab) {
+        section[hook]?.();
+      }
+    }
+  }
+
   #updateMountedSections() {
     for (const section of this._content?.children ?? []) {
       const id = section.dataset?.section;

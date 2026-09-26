@@ -39,6 +39,10 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
 
+ChromeUtils.defineLazyGetter(lazy, "toastContainer", function () {
+  return document.getElementById("zen-toast-container");
+});
+
 export class ZenLibrary extends MozLitElement {
   static instance = null;
   static getInstance() {
@@ -175,9 +179,13 @@ export class ZenLibrary extends MozLitElement {
         "transform",
         `translateX(calc(${leftAligned} * -100% * (1 - ${value})))`
       );
-      lazy.appContentWrapper?.style.setProperty(
+      lazy.appContentWrapper.style.setProperty(
         "transform",
         `translateX(${value * webOffset}px)`
+      );
+      lazy.toastContainer.style.setProperty(
+        "transform",
+        `translateX(${-(value * webOffset)}px)`
       );
 
       const toolboxProgress = Math.min(1, value * 1.5);
@@ -240,9 +248,10 @@ export class ZenLibrary extends MozLitElement {
    * to avoid unecessary layer creation
    */
   #clearStyleProperties() {
-    lazy.appContentWrapper?.style.removeProperty("transform");
-    gNavToolbox?.style.removeProperty("transform");
-    gNavToolbox?.style.removeProperty("opacity");
+    lazy.appContentWrapper.style.removeProperty("transform");
+    lazy.toastContainer.style.removeProperty("transform");
+    gNavToolbox.style.removeProperty("transform");
+    gNavToolbox.style.removeProperty("opacity");
   }
 
   #hijackFirefoxCommands() {

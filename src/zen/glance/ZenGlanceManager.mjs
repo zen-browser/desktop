@@ -31,7 +31,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   // Click handling
   #lastLinkClickData = { clientX: 0, clientY: 0, height: 0, width: 0 };
-
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
     ARC_STEPS: 80, // Browser interpolates between keyframes natively
@@ -1865,7 +1864,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   openGlanceForBookmark(event) {
     const activationMethod = Services.prefs.getStringPref(
       "zen.glance.activation-method",
-      "ctrl"
+      "alt"
     );
 
     if (!this.#isActivationKeyPressed(event, activationMethod)) {

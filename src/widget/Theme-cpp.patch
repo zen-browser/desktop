@@ -1,5 +1,5 @@
 diff --git a/widget/Theme.cpp b/widget/Theme.cpp
-index 0d9c9014dabfe7177c25d6f983ff823c4435a327..7995de05ed556fa6373b83e3e44bffc1b857dd73 100644
+index 93c947bb8dad0d4abd68871d9e6eb401bba2a24f..e4358a5906527fe5578b37624210928ea08ed3cd 100644
 --- a/widget/Theme.cpp
 +++ b/widget/Theme.cpp
 @@ -25,6 +25,7 @@
@@ -10,7 +10,7 @@ index 0d9c9014dabfe7177c25d6f983ff823c4435a327..7995de05ed556fa6373b83e3e44bffc1
  #include "mozilla/webrender/WebRenderAPI.h"
  #include "nsCSSColorUtils.h"
  #include "nsCSSRendering.h"
-@@ -671,10 +672,15 @@ template <typename PaintBackendData>
+@@ -673,10 +674,15 @@ template <typename PaintBackendData>
  void Theme::PaintTextField(PaintBackendData& aPaintData,
                             const LayoutDeviceRect& aRect,
                             const ElementState& aState, const Colors& aColors,
@@ -24,10 +24,10 @@ index 0d9c9014dabfe7177c25d6f983ff823c4435a327..7995de05ed556fa6373b83e3e44bffc1
 +  backgroundColor = sRGBColor::FromABGR(zen::nsZenBoostsBackend::ResolveStyleColor(
 +      backgroundColor.ToABGR(), aFrame));
 +
-   const CSSCoord radius = 2.0f;
+   const CSSCoord radius = 4.0f;
  
    ThemeDrawing::PaintRoundedRectWithRadius(aPaintData, aRect, backgroundColor,
-@@ -691,9 +697,9 @@ template <typename PaintBackendData>
+@@ -693,9 +699,9 @@ template <typename PaintBackendData>
  void Theme::PaintListbox(PaintBackendData& aPaintData,
                           const LayoutDeviceRect& aRect,
                           const ElementState& aState, const Colors& aColors,
@@ -39,7 +39,7 @@ index 0d9c9014dabfe7177c25d6f983ff823c4435a327..7995de05ed556fa6373b83e3e44bffc1
  }
  
  template <typename PaintBackendData>
-@@ -1159,10 +1165,12 @@ bool Theme::DoDrawWidgetBackground(PaintBackendData& aPaintData,
+@@ -1161,10 +1167,12 @@ bool Theme::DoDrawWidgetBackground(PaintBackendData& aPaintData,
      case StyleAppearance::Textfield:
      case StyleAppearance::NumberInput:
      case StyleAppearance::PasswordInput:

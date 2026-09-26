@@ -414,9 +414,8 @@ zen-workspace {
     }
   }
 
-  &:not([swipe-gesture]) :root:not(:is([animating-background])) #navigator-toolbox:not([movingtab]) &:not([active]) {
-    -moz-subtree-hidden-only-visually: 1;
-    content-visibility: hidden;
+  #navigator-toolbox:not([movingtab], [animating-background]) &:not([swipe-gesture], [active]) {
+    visibility: hidden;
   }
 }
 

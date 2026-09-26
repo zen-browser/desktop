@@ -483,5 +483,11 @@ disabled="Disabled by import_external_tests.py"
 ["browser_windowStateContainer.js"]
 disabled="Disabled by import_external_tests.py"
 
+["browser_window_position_precision.js"]
+skip-if = [
+  # Wayland does not let clients position their own windows.
+  "os == 'linux' && display == 'wayland'",
+]
+
 ["browser_wireframe_basic.js"]
 disabled="Disabled by import_external_tests.py"

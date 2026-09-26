@@ -801,7 +801,7 @@
   }
 }
 
-#tabbrowser-tabs:is([zen-library-stack-open], [zen-library-stack-closing]) {
+#TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
   --gradient-pos: calc(100% - var(--zen-library-stack-height, 0px) + 20px);
   mask-image: linear-gradient(
     to bottom,

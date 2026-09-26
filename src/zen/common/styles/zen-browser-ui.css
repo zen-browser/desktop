@@ -83,7 +83,7 @@ body,
     }
   }
 
-  :root:not([animating-background="true"]) &::before {
+  &:not([animating-background])::before {
     transition: background-color var(--inactive-window-transition);
   }
 
@@ -267,6 +267,7 @@ body,
   &::before {
     height: 50px;
     width: 2px;
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-background-without-text-color */
     background: var(--button-background-color-primary);
     border-radius: 2px;
     content: "";
@@ -286,6 +287,7 @@ body,
   &::before {
     height: 2px;
     width: 50px;
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-background-without-text-color */
     background: var(--button-background-color-primary);
     border-radius: 2px;
     content: "";

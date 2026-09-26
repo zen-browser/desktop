@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
-index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da6e01bec5 100644
+index 3c1964335b25a3f23db29e78203784bc487c9917..0594e6b0aaa352ec96ad3873b390c4355f35e9f0 100644
 --- a/browser/components/urlbar/content/UrlbarInputBase.mjs
 +++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
-@@ -83,6 +83,12 @@ if (lazy) {
+@@ -85,6 +85,12 @@ if (lazy) {
        Ci.nsIURLQueryStringStripper,
      ],
    });
@@ -15,7 +15,137 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
  }
  
  const logger = () => UrlbarShared.getLogger({ prefix: "Input" });
-@@ -917,7 +923,16 @@ ${
+@@ -96,6 +102,23 @@ const UNLIMITED_MAX_RESULTS = 99;
+ const SCHEMELESS_INPUT_SCHEMEFUL = 1;
+ const SCHEMELESS_INPUT_SCHEMELESS = 2;
+ 
++let getBoundsWithoutFlushing = UrlbarShared.getBoundsWithoutFlushing;
++
++// `promiseDocumentFlushed` is chrome-only. A frame does instead, since the
++// measurements it guards flush layout themselves in a content document.
++let promiseLayoutFlushed =
++  typeof ChromeUtils != "undefined"
++    ? win => win.promiseDocumentFlushed(() => {})
++    : win => new Promise(resolve => win.requestAnimationFrame(resolve));
++
++let px = number => number.toFixed(2) + "px";
++
++let getUntransformedTop =
++  typeof ChromeUtils != "undefined"
++    ? element =>
++        element.getBoxQuads({ ignoreTransforms: true, flush: false })[0].p1.y
++    : element => element.getBoundingClientRect().top;
++
+ const XHTML_NS = "http://www.w3.org/1999/xhtml";
+ 
+ /**
+@@ -139,7 +162,6 @@ export class UrlbarInputBase extends HTMLElement {
+     return `
+       <div class="urlbar-background"/>
+       <div class="urlbar-input-container"
+-           role="presentation"
+            pageproxystate="invalid">
+         <moz-urlbar-slot name="remote-control-box" />
+ 
+@@ -192,10 +214,8 @@ ${
+         <moz-urlbar-slot name="page-actions" />
+       </div>
+       <div class="urlbarView"
+-           popover="manual"
+            role="group"
+            tooltip="aHTMLTooltip">
+-        <div class="urlbarView-background"/>
+         <div class="urlbarView-body-outer">
+           <div class="urlbarView-body-inner">
+             <div class="urlbarView-results"
+@@ -258,6 +278,37 @@ ${
+    */
+   #popoverAllowed = false;
+ 
++  /**
++   * How many things currently suppress the popover, e.g. a window-modal dialog
++   * blocks while showing.
++   */
++  #popoverBlockerCount = 0;
++
++  /**
++   * Invalidates an anchor measurement that is still in flight when a newer one
++   * starts.
++   */
++  #popoverAnchorUpdateKey = {};
++
++  /**
++   * The container the popover anchors to, which also reserves the space the
++   * bar leaves behind while it is in the top layer.
++   *
++   * @type {Element}
++   */
++  get #popoverAnchor() {
++    return this.parentNode;
++  }
++
++  /**
++   * Whether the popover may open right now.
++   *
++   * @type {boolean}
++   */
++  get #canOpenPopover() {
++    return this.#popoverAllowed && !this.#popoverBlockerCount;
++  }
++
+   #gBrowserListenersAdded = false;
+   #isAddressbar = false;
+   /**
+@@ -526,8 +577,8 @@ ${
+ 
+     // Don't attach event listeners if the urlbar is readonly.
+     if (this.readOnly) {
++      this.#releasePopoverAnchor();
+       this.#popoverAllowed = false;
+-      this.updatePopover();
+       // Focused won't be updated so remove it to avoid it becoming stale.
+       this.removeAttribute("focused");
+       return;
+@@ -576,6 +627,7 @@ ${
+     // recording abandonment events when the command causes a blur event.
+     this.view.panel.addEventListener("command", this, true);
+ 
++
+     if (this.window.gBrowser) {
+       // On startup, this will be called again by browser-init.js
+       // once gBrowser has been initialized.
+@@ -592,14 +644,17 @@ ${
+     }
+ 
+     this.#popoverAllowed =
+-      // A content document has no toolbar to overlay, so there the embedder
+-      // saying the bar is hosted in a page is what says it may use the top
+-      // layer.
++      // A content document has no toolbar to break out of, so there the popover
++      // attribute is what says the element can go in the top layer.
+       (typeof ChromeUtils == "undefined"
+-        ? this.hasAttribute("in-page")
++        ? this.hasAttribute("popover")
+         : !!this.closest("toolbar")) &&
+       !document.documentElement.hasAttribute("customizing");
+-    this.updatePopover();
++    if (this.#canOpenPopover) {
++      this.#updatePopoverAnchor();
++    } else {
++      this.#releasePopoverAnchor();
++    }
+ 
+     this._addObservers();
+   }
+@@ -653,6 +708,7 @@ ${
+     // recording abandonment events when the command causes a blur event.
+     this.view.panel.removeEventListener("command", this, true);
+ 
++
+     if (this.#gBrowserListenersAdded) {
+       this.window.gBrowser.tabContainer.removeEventListener("TabSelect", this);
+       this.window.gBrowser.tabContainer.removeEventListener("TabClose", this);
+@@ -894,7 +950,16 @@ ${
      // See _on_select().  HTMLInputElement.select() dispatches a "select"
      // event but does not set the primary selection.
      this._suppressPrimaryAdjustment = true;
@@ -32,7 +162,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      this._suppressPrimaryAdjustment = false;
    }
  
-@@ -992,6 +1007,10 @@ ${
+@@ -969,6 +1034,10 @@ ${
      hideSearchTerms = false,
      isSameDocument = false,
    } = {}) {
@@ -43,7 +173,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      if (!this.#isAddressbar) {
        throw new Error(
          "Cannot set URI for UrlbarInput that is not an address bar"
-@@ -1289,7 +1308,16 @@ ${
+@@ -1271,7 +1340,16 @@ ${
        this.searchModeSwitcher?.updateSearchIcon();
      }
  
@@ -60,17 +190,17 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
    }
  
    /**
-@@ -1401,6 +1429,9 @@ ${
+@@ -1383,6 +1461,9 @@ ${
        where,
        query: searchString,
      });
 +    if (where != "current" && this.sapName != "searchbar") {
 +      this.handleRevert();
 +    }
-     this.controller.openSERP(
+     this.parentController.openSERP(
        engine.id,
        searchString,
-@@ -1884,7 +1915,11 @@ ${
+@@ -1880,7 +1961,11 @@ ${
      openParams.avoidBrowserFocus = keepViewOpen;
  
      if (!this.#providesSearchMode(result) && !keepViewOpen) {
@@ -83,10 +213,29 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      }
  
      if (isCanonized) {
-@@ -3181,6 +3216,42 @@ ${
-     await this.#updateLayoutBreakoutDimensions();
+@@ -3152,35 +3237,153 @@ ${
+     return state;
    }
  
++  async #updatePopoverAnchor() {
++    if (!this.#canOpenPopover) {
++      return;
++    }
++    if (this.document.fullscreenElement) {
++      // Toolbars are hidden in DOM fullscreen mode, so we can't get proper
++      // layout information and need to retry after leaving that mode.
++      this.window.addEventListener(
++        "fullscreen",
++        () => {
++          this.#updatePopoverAnchor();
++        },
++        { once: true }
++      );
++      return;
++    }
++    await this.#measurePopoverAnchor();
++  }
++
 +  zenFormatURLValue() {
 +    return this.#getValueFormatter().update();
 +  }
@@ -123,16 +272,22 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
 +    return [strippedURI ? this.makeURIReadable(strippedURI) : uri, lazy.ClipboardHelper];
 +  }
 +
-   startLayoutExtend() {
-     if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
-       // Do not expand if the Urlbar does not support being expanded or it is
-@@ -3193,8 +3264,16 @@ ${
+   #openPopover() {
+-    if (this.panel.matches(":popover-open")) {
++    if (!this.#canOpenPopover || this.matches(":popover-open")) {
++      // Do not expand if the Urlbar can't be expanded right now or is already
++      // expanded.
+       return;
      }
  
-     this.toggleAttribute("breakout-extend", true);
-+    this.#showBreakoutPopover();
-     this.#updateTextboxPosition();
- 
+-    this.panel.showPopover();
++    if (this.#isAddressbar) {
++      this.setAttribute("popover", "manual");
++    }
++    this.showPopover();
++    this.#fixAddressbarSearchbarOrder();
++
++    this.toggleAttribute("breakout-extend", true);
 +    this.window.gZenUIManager.onUrlbarOpen();
 +    if (this.zenUrlbarBehavior == 'float' || (this.zenUrlbarBehavior == 'floating-on-type' && !this.focusedViaMousedown)) {
 +      this.setAttribute("zen-floating-urlbar", "true");
@@ -140,16 +295,36 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
 +    } else {
 +      this.removeAttribute("zen-floating-urlbar");
 +    }
-     // Enable the animation only after the first extend call to ensure it
-     // doesn't run when opening a new window.
-     if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -3218,7 +3297,33 @@ ${
++    this.#updateTextboxPosition();
++
++    // Enable the animation only after the first extend call to ensure it
++    // doesn't run when opening a new window.
++    if (!this.hasAttribute("popover-animate")) {
++      promiseLayoutFlushed(this.window).then(() => {
++        this.window.requestAnimationFrame(() => {
++          this.toggleAttribute("popover-animate", true);
++        });
++      });
++    }
+   }
+ 
+   #closePopover() {
+-    if (!this.panel.matches(":popover-open")) {
++    // If reduce motion is enabled, we want to collapse the Urlbar here so the
++    // user sees only sees two states: not expanded, and expanded with the view
++    // open.
++    if (!this.matches(":popover-open")) {
++      return;
++    }
++
++    if (this.view.isOpen && this.view.visibleRowCount) {
        return;
      }
  
+-    this.panel.hidePopover();
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
-+    } else if (!this._untrimmedValue || (this.#isAddressbar && (this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar))) {
++    } else if (!this._untrimmedValue || this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar) {
 +      // Restore the current page URL when the urlbar is empty on blur
 +      this.window.requestAnimationFrame(() => {
 +        this.handleRevert();
@@ -164,20 +339,45 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
 +      zenToolbox.hasAttribute("zen-user-show")
 +    ));
 +    this.window.gBrowser.selectedBrowser.focus();
-+    this.document.documentGlobal.setTimeout(() => {
++    this.window.setTimeout(() => {
 +      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
 +    }, 100);
 +    this.window.gZenUIManager.onUrlbarClose();
 +    this.removeAttribute("zen-floating-urlbar");
++    this.toggleAttribute("breakout-extend", false);
++    this.#updateTextboxPosition();
 +
-     this.toggleAttribute("breakout-extend", false);
-+    if (this.#isAddressbar) {
-+      this.#hideBreakoutPopover();
++    if (this.matches(":popover-open")) {
++      this.hidePopover();
 +    }
-     this.#updateTextboxPosition();
++    if (this.#isAddressbar) {
++      this.removeAttribute("popover");
++    }
    }
  
-@@ -3256,7 +3361,7 @@ ${
+   /**
+-   * Keeps the view's popover in the top layer, and the `popover-open`
+-   * attribute set, for as long as the view is open. `popover-open` says the
+-   * sheet the background paints is bigger than the input.
++   * Opens the popover while the user is interacting with the input. An in-page
++   * element also counts focus, so that a modal dialog the page opens paints
++   * over the closed bar. Entering and leaving the top layer reconstructs the
++   * input's frame, which drops the editor's undo history (bug 2017065), so both
++   * transitions stay outside the interaction.
+    */
+   updatePopover() {
+-    let popoverOpen = this.#popoverAllowed && this.view.isOpen;
+-    if (popoverOpen) {
++    if (this.view.isOpen || (this.hasAttribute("in-page") && this.focused)) {
+       this.#openPopover();
+     } else {
+       this.#closePopover();
+     }
+-    this.toggleAttribute("popover-open", popoverOpen);
+   }
+ 
+   /**
+@@ -3209,7 +3412,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -186,75 +386,152 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3533,7 +3638,11 @@ ${
-       return;
-     }
- 
--    this.style.top = px(getUntransformedTop(this.parentNode));
-+    this.style.top = px(
-+      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ?
-+      getUntransformedTop(this.parentNode)
-+      : (UrlbarContentUtils.getPlatform() == "macosx" ? -2 : -5)
-+    );
+@@ -3442,6 +3645,91 @@ ${
+     this.view.close();
    }
  
-   #updateTextboxPositionNextFrame() {
-@@ -3553,12 +3662,29 @@ ${
-     this.removeAttribute("breakout");
-     this.parentNode.removeAttribute("breakout");
-     this.style.top = "";
-+    this.#hideBreakoutPopover();
-+    this._layoutBreakoutUpdateKey = {};
++  /**
++   * Hides the popover and releases the anchor state on its container, undoing
++   * #measurePopoverAnchor. #closePopover only hides the popover, leaving the
++   * anchor in place for the next open.
++   */
++  #updateTextboxPosition() {
++    if (this.hasAttribute("in-page")) {
++      // An in-page element anchors its popover to its container in CSS.
++      return;
++    }
++    if (!this.hasAttribute("breakout-extend")) {
++      this.style.top = "";
++      return;
++    }
++
++    this.style.top = px(
++      this.window.gZenVerticalTabsManager._hasSetSingleToolbar
++        ? getUntransformedTop(this.parentNode)
++        : UrlbarContentUtils.getPlatform() == "macosx"
++          ? -2
++          : -5
++    );
 +  }
 +
-+  #showBreakoutPopover() {
-+    if (this.#isAddressbar) {
-+      this.setAttribute("popover", "manual");
++  #releasePopoverAnchor() {
++    if (this.matches(":popover-open")) {
++      this.hidePopover();
 +    }
-+    if (!this.matches(":popover-open")) {
-+      this.showPopover();
-+    }
-+    this.#fixAddressbarSearchbarOrder();
-+  }
-+
-+  #hideBreakoutPopover() {
-     try {
-       this.hidePopover();
-     } catch (ex) {
-       // No big deal if not a popover already.
-     }
--    this._layoutBreakoutUpdateKey = {};
 +    if (this.#isAddressbar) {
 +      this.removeAttribute("popover");
 +    }
++    this.#popoverAnchor.style.removeProperty("--urlbar-container-height");
++    this.style.top = "";
++    this.#popoverAnchorUpdateKey = {};
++  }
++
++  incrementPopoverBlockerCount() {
++    this.#popoverBlockerCount++;
++    if (this.#popoverBlockerCount == 1) {
++      this.#releasePopoverAnchor();
++    }
++  }
++
++  decrementPopoverBlockerCount() {
++    if (this.#popoverBlockerCount > 0) {
++      this.#popoverBlockerCount--;
++    }
++    if (this.#popoverBlockerCount === 0) {
++      this.#updatePopoverAnchor();
++    }
++  }
++
++  async #measurePopoverAnchor() {
++    this.#releasePopoverAnchor();
++
++    // When this method gets called a second time before the first call
++    // finishes, we need to disregard the first one.
++    let updateKey = {};
++    this.#popoverAnchorUpdateKey = updateKey;
++    await promiseLayoutFlushed(this.window);
++    await new Promise(resolve => {
++      this.window.requestAnimationFrame(() => {
++        if (this.#popoverAnchorUpdateKey != updateKey || !this.isConnected) {
++          return;
++        }
++
++        if (!this.#canOpenPopover) {
++          return;
++        }
++
++        this.window.gZenVerticalTabsManager.recalculateURLBarHeight();
++        this.#popoverAnchor.style.setProperty(
++          "--urlbar-container-height",
++          px(getBoundsWithoutFlushing(this.#popoverAnchor).height + 8)
++        );
++        this.setAttribute("breakout", "true");
++        this.#popoverAnchor.setAttribute("breakout", "true");
++        this.updatePopover();
++        this.#updateTextboxPosition();
++
++        resolve();
++      });
++    });
++  }
++
+   /**
+    * Sets the input field value.
+    *
+@@ -3783,6 +4071,52 @@ ${
+     );
    }
  
-   incrementBreakoutBlockerCount() {
-@@ -3591,9 +3717,10 @@ ${
-           return;
-         }
- 
-+        this.window.gZenVerticalTabsManager.recalculateURLBarHeight();
-         this.parentNode.style.setProperty(
-           "--urlbar-container-height",
--          px(getBoundsWithoutFlushing(this.parentNode).height)
-+          px(getBoundsWithoutFlushing(this.parentNode).height + 8)
-         );
- 
-         if (this.#breakoutBlockerCount) {
-@@ -3602,8 +3729,9 @@ ${
- 
-         this.setAttribute("breakout", "true");
-         this.parentNode.setAttribute("breakout", "true");
--        this.showPopover();
--        this.#fixAddressbarSearchbarOrder();
-+        if (!this.#isAddressbar || this.hasAttribute("breakout-extend")) {
-+          this.#showBreakoutPopover();
-+        }
-         this.#updateTextboxPosition();
- 
-         resolve();
-@@ -4108,6 +4236,7 @@ ${
++  /**
++   * Should be directly after every showPopover to fix the popover order
++   * among urlbar and searchbar.
++   * Since a moz-urlbar only extends downwards when focused, the moz-urlbar
++   * that's higher (along the y axis) should also be on top (along the z axis).
++   *
++   * Note: this is a hack necessary because of bug 2014481.
++   * Once that's fixed, we can simply always show the focused one on top.
++   */
++  #fixAddressbarSearchbarOrder() {
++    let addressbar = /** @type {?UrlbarInput} */ (
++      this.document.getElementById("urlbar")
++    );
++    let searchbar = /** @type {?UrlbarInput} */ (
++      this.document.getElementById("searchbar-new")
++    );
++    if (
++      !searchbar?.matches(":popover-open") ||
++      !addressbar?.matches(":popover-open")
++    ) {
++      return;
++    }
++
++    let searchbarArea =
++      lazy.CustomizableUI.getPlacementOfWidget("search-container")?.area;
++    if (!searchbarArea) {
++      return;
++    }
++
++    const areasAboveNavbar = [
++      lazy.CustomizableUI.AREA_MENUBAR,
++      lazy.CustomizableUI.AREA_TABSTRIP,
++    ];
++    const areasBelowNavbar = [lazy.CustomizableUI.AREA_BOOKMARKS];
++
++    // If `this` is higher than the other bar, we don't need to do anything since
++    // showPopover was just called (hence we're already on top of the other one).
++    if (areasAboveNavbar.includes(searchbarArea) && this != searchbar) {
++      searchbar.hidePopover();
++      searchbar.showPopover();
++    } else if (areasBelowNavbar.includes(searchbarArea) && this != addressbar) {
++      addressbar.hidePopover();
++      addressbar.showPopover();
++    }
++  }
++
+   _updateUrlTooltip() {
+     if (this.focused || !this._overflowing) {
+       this.inputField.removeAttribute("title");
+@@ -3893,6 +4227,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -262,7 +539,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -4206,9 +4335,10 @@ ${
+@@ -3991,9 +4326,10 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -276,7 +553,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
      return UrlbarContentUtils.isTextDirectionRTL(trimmedValue, window) ||
-@@ -4410,6 +4540,11 @@ ${
+@@ -4195,6 +4531,11 @@ ${
      keepViewOpen = false,
      browserId = null,
    }) {
@@ -288,23 +565,23 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      let keyDownEnterDeferred;
      if (
        this._keyDownEnterDeferred &&
-@@ -4731,6 +4866,7 @@ ${
+@@ -4516,6 +4857,7 @@ ${
            this.setResultForCurrentValue(null);
            this.handleCommand();
-           this.controller.clearLastQueryContextCache();
+           this.parentController.clearLastQueryContextCache();
 +          this.view.close();
  
            this._suppressStartQuery = false;
          });
-@@ -4742,7 +4878,6 @@ ${
+@@ -4527,7 +4869,6 @@ ${
          // Close the results pane, because paste and go doesn't want a result
-         // selection. This has to happen before the menu opens: ending
-         // breakout-extend once it's open keeps it from showing (bug 2037468).
+         // selection. This has to happen before the menu opens: hiding the
+         // popover once it's open keeps it from showing (bug 2037468).
 -        this.view.close();
  
          let controller =
            this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -5025,7 +5160,11 @@ ${
+@@ -4810,7 +5151,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -317,7 +594,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5335,6 +5474,7 @@ ${
+@@ -5123,6 +5468,7 @@ ${
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -325,7 +602,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5385,6 +5525,12 @@ ${
+@@ -5173,6 +5519,12 @@ ${
      }
  
      logger().debug("Blur Event");
@@ -338,7 +615,15 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      // We cannot count every blur events after a missed engagement as abandoment
      // because the user may have clicked on some view element that executes
      // a command causing a focus change. For example opening preferences from
-@@ -5464,6 +5610,11 @@ ${
+@@ -5227,6 +5579,7 @@ ${
+     if (!UrlbarPrefs.get("ui.popup.disable_autohide")) {
+       this.view.close();
+     }
++    this.updatePopover();
+ 
+     // We may have hidden popup notifications, show them again if necessary.
+     if (
+@@ -5252,6 +5605,11 @@ ${
    }
  
    _on_click(event) {
@@ -350,7 +635,15 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5558,10 +5709,11 @@ ${
+@@ -5312,6 +5670,7 @@ ${
+     if (!this._hideFocus) {
+       this.toggleAttribute("focused", true);
+     }
++    this.updatePopover();
+ 
+     // If the value was trimmed, check whether we should untrim it.
+     // This is necessary when a protocol was typed, but the whole url has
+@@ -5346,10 +5705,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -363,7 +656,7 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5605,9 +5757,16 @@ ${
+@@ -5393,9 +5753,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -379,9 +672,9 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
 +          return true;
 +        }
          if (
-           event.composedTarget != this.inputField &&
-           event.composedTarget != this._inputContainer
-@@ -5617,6 +5776,10 @@ ${
+           event.target != this.inputField &&
+           event.target != this._inputContainer
+@@ -5405,6 +5772,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -392,16 +685,16 @@ index 8be35b58c5369e123ca69426e852e3849bf75513..778d8aecce4da6748ecbf8b86a38c2da
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5654,7 +5817,7 @@ ${
+@@ -5440,7 +5811,7 @@ ${
+         }
+         // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
-         // Also ignore mousedown on the urlbarView context menu: opening/closing the
-         // view is already handled by the result opening flow.
--        if (event.target.closest?.("tab, #urlbarView-context-menu")) {
-+        if (event.target.closest?.("tab, #urlbarView-context-menu") || event.target.closest?.("menupopup") || event.target.closest?.("#tabs-newtab-button")) {
+-        if (event.target.closest?.("tab")) {
++        if (event.target.closest?.("tab") || event.target.closest?.("menupopup") || event.target.closest?.("#tabs-newtab-button")) {
            break;
          }
  
-@@ -5948,7 +6111,7 @@ ${
+@@ -5734,7 +6105,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

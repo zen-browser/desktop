@@ -76,6 +76,7 @@ export default [
   "isInitialPage",
   "browserWindows",
   "MozTabbrowserTabGroup",
+  "ZenDragAndDrop",
   "updateBookmarkToolbarVisibility",
   "gNavigatorBundle",
   "updateFxaToolbarMenu",

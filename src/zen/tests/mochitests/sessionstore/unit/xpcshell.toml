@@ -18,6 +18,8 @@ skip-if = [
 
 ["test_final_write_cleanup.js"]
 
+["test_glean_backup_can_be_loaded.js"]
+
 ["test_histogram_corrupt_files.js"]
 
 ["test_migration_lz4compression.js"]

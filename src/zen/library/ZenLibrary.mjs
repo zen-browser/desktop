@@ -39,6 +39,10 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
 
+ChromeUtils.defineLazyGetter(lazy, "toastContainer", function () {
+  return document.getElementById("zen-toast-container");
+});
+
 export class ZenLibrary extends MozLitElement {
   static instance = null;
   static getInstance() {
@@ -175,9 +179,13 @@ export class ZenLibrary extends MozLitElement {
         "transform",
         `translateX(calc(${leftAligned} * -100% * (1 - ${value})))`
       );
-      lazy.appContentWrapper?.style.setProperty(
+      lazy.appContentWrapper.style.setProperty(
         "transform",
         `translateX(${value * webOffset}px)`
+      );
+      lazy.toastContainer.style.setProperty(
+        "transform",
+        `translateX(${-(value * webOffset)}px)`
       );
 
       const toolboxProgress = Math.min(1, value * 1.5);
@@ -240,9 +248,10 @@ export class ZenLibrary extends MozLitElement {
    * to avoid unecessary layer creation
    */
   #clearStyleProperties() {
-    lazy.appContentWrapper?.style.removeProperty("transform");
-    gNavToolbox?.style.removeProperty("transform");
-    gNavToolbox?.style.removeProperty("opacity");
+    lazy.appContentWrapper.style.removeProperty("transform");
+    lazy.toastContainer.style.removeProperty("transform");
+    gNavToolbox.style.removeProperty("transform");
+    gNavToolbox.style.removeProperty("opacity");
   }
 
   #hijackFirefoxCommands() {
@@ -411,6 +420,7 @@ export class ZenLibrary extends MozLitElement {
     } else if (target === 0) {
       lib.#isOpen = false;
       lib.#canSwipe = false;
+      lib.#tellSection("onLibraryClosing");
     }
 
     lib.setAttribute("transitioning", "true");
@@ -677,6 +687,7 @@ export class ZenLibrary extends MozLitElement {
    * library is about to be opened.
    */
   #onOpenInit() {
+    this.#tellSection("onLibraryOpening");
     if (this.#initialized) {
       return;
     }
@@ -775,12 +786,12 @@ export class ZenLibrary extends MozLitElement {
    * close itself, for a tab asked for from inside it that stays in the
    * background.
    *
-   * @param {function()} open - Opens the tab
+   * @param {function()} openTab - Opens the tab
    */
-  keepOpenWhile(open) {
+  keepOpenWhile(openTab) {
     this.#keepingOpen = true;
     try {
-      open();
+      openTab();
     } finally {
       this.#keepingOpen = false;
     }
@@ -841,10 +852,19 @@ export class ZenLibrary extends MozLitElement {
   }
 
   /**
-   * Shows the section being looked at and puts the others out of sight. A
-   * section is told which it is, so one that reaches outside itself, such as
-   * spaces setting the library's width, only does so while it is on show.
+   * Tells the section being looked at that the library is opening or closing,
+   * for one that would rather not be dragged along as it slides.
+   *
+   * @param {"onLibraryOpening"|"onLibraryClosing"} hook
    */
+  #tellSection(hook) {
+    for (const section of this._content?.children ?? []) {
+      if (section.dataset?.section === this.activeTab) {
+        section[hook]?.();
+      }
+    }
+  }
+
   #updateMountedSections() {
     for (const section of this._content?.children ?? []) {
       const id = section.dataset?.section;

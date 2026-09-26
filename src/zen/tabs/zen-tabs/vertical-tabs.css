@@ -1100,6 +1100,7 @@ zen-library {
 
     &[in-urlbar] {
       background: var(--tab-background-color-selected) !important;
+      color: var(--tab-text-color-selected);
       box-shadow: var(--tab-box-shadow-selected);
     }
   }

@@ -253,10 +253,6 @@
   order: 2 !important;
 }
 
-#urlbar[breakout] {
-  position: fixed;
-}
-
 #urlbar[breakout-extend] {
   z-index: 2;
 
@@ -471,7 +467,7 @@
 
 :root[zen-single-toolbar="true"] {
   #urlbar[open] {
-    min-width: min(90%, 40rem);
+    width: min(90%, 40rem);
   }
 
   &[zen-right-side="true"] #urlbar[open]:not([zen-floating-urlbar="true"]) {

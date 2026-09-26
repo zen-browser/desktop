@@ -195,6 +195,19 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     this.library?.style.removeProperty("--zen-library-content-width");
   }
 
+  onLibraryClosing() {
+    for (const card of this.#cards) {
+      card.querySelector(".zen-library-space-tabs").replaceChildren();
+    }
+    this.#pendingSpaces = new Set();
+    clearTimeout(this.#refreshTimer);
+    this.#refreshTimer = null;
+  }
+
+  onLibraryOpening() {
+    this.#fillStrips();
+  }
+
   #updateLibraryWidth() {
     const side = this.library?.querySelector("#zen-library-side");
     const list = this.querySelector(".zen-library-spaces");

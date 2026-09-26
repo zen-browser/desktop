@@ -77,9 +77,10 @@ class ZenLibraryDownloadStack {
     return this.#list.parentElement;
   }
 
-  /** The tab strip, once the window has it. */
-  get #tabs() {
-    return this.#window.gBrowser?.tabContainer ?? null;
+  get #downloadsListWrapper() {
+    return this.#window.document.getElementById(
+      "TabsToolbar-customization-target"
+    );
   }
 
   #parse(markup) {
@@ -114,9 +115,9 @@ class ZenLibraryDownloadStack {
       return;
     }
     this.#aimBadge();
-    this.#tabs?.removeAttribute("zen-library-stack-closing");
-    for (const host of [this.#footButtons, this.#tabs]) {
-      host?.setAttribute("zen-library-stack-open", "true");
+    this.#downloadsListWrapper.removeAttribute("zen-library-stack-closing");
+    for (const host of [this.#footButtons, this.#downloadsListWrapper]) {
+      host.setAttribute("zen-library-stack-open", "true");
     }
   }
 
@@ -126,19 +127,16 @@ class ZenLibraryDownloadStack {
     }
     this.#recentNewDownload = false;
     this.#updateBadgeShowing();
-    for (const host of [this.#footButtons, this.#tabs]) {
-      host?.removeAttribute("zen-library-stack-open");
+    for (const host of [this.#footButtons, this.#downloadsListWrapper]) {
+      host.removeAttribute("zen-library-stack-open");
     }
     // The strip's fade stays until its progress is back at zero.
-    const tabs = this.#tabs;
-    if (!tabs) {
-      return;
-    }
-    tabs.setAttribute("zen-library-stack-closing", "true");
-    tabs.addEventListener("transitionend", function onEnd(event) {
+    const wrapper = this.#downloadsListWrapper;
+    wrapper.setAttribute("zen-library-stack-closing", "true");
+    wrapper.addEventListener("transitionend", function onEnd(event) {
       if (event.propertyName === "--zen-library-progress") {
-        tabs.removeEventListener("transitionend", onEnd);
-        tabs.removeAttribute("zen-library-stack-closing");
+        wrapper.removeEventListener("transitionend", onEnd);
+        wrapper.removeAttribute("zen-library-stack-closing");
       }
     });
   }
@@ -316,7 +314,7 @@ class ZenLibraryDownloadStack {
     this.#window
       .promiseDocumentFlushed(() => this.#list.getBoundingClientRect().height)
       .then(height => {
-        this.#tabs?.style.setProperty(
+        this.#downloadsListWrapper.style.setProperty(
           "--zen-library-stack-height",
           `${height}px`
         );

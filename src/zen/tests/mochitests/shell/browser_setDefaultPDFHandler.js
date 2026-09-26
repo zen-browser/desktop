@@ -2,6 +2,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
 ChromeUtils.defineESModuleGetters(this, {
+  ASRouter: "resource:///modules/asrouter/ASRouter.sys.mjs",
   ExperimentAPI: "resource://nimbus/ExperimentAPI.sys.mjs",
   NimbusFeatures: "resource://nimbus/ExperimentAPI.sys.mjs",
   NimbusTestUtils: "resource://testing-common/NimbusTestUtils.sys.mjs",
@@ -51,10 +52,16 @@ const shellStub = sinon.stub(ShellService, "shellService").value({
   QueryInterface: ChromeUtils.generateQI([]),
 });
 
+// Tasks here drive setDefaultBrowser down its fallback path, which fires the
+// set-default guidance trigger. Left unstubbed that pops a real Windows toast
+// on the machine running the test.
+const sendTriggerStub = sinon.stub(ASRouter, "sendTriggerMessage");
+
 registerCleanupFunction(() => {
   defaultAgentStub.restore();
   _userChoiceImpossibleTelemetryResultStub.restore();
   shellStub.restore();
+  sendTriggerStub.restore();
 });
 
 add_task(async function ready() {

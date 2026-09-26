@@ -10,23 +10,17 @@ ChromeUtils.defineESModuleGetters(lazy, {
     "resource:///modules/zen/boosts/ZenSelectorComponent.sys.mjs",
 });
 
-ChromeUtils.defineLazyGetter(lazy, "overlayLocalization", () => {
-  return new Localization(["browser/zen-boosts.ftl"], true);
-});
-
 export class ZapOverlay {
   document = null;
   window = null;
   #initialized = false;
   #content = null;
 
-  #zapContentIDs = ["zap-list", "zap-controls-container"];
   #selectorComponent = null;
 
   #dissolvePoolSize = 5;
   #dissolveEffectPool = [];
   #currentDissolveIndex = 0;
-  #onZapDoneClick = null;
 
   /**
    * @param {*} document Webpage document
@@ -40,17 +34,14 @@ export class ZapOverlay {
     this.#selectorComponent = new lazy.SelectorComponent(
       document,
       zenBoostsChild,
-      this.#zapContentIDs,
-      this.handleSelectComponentSelect.bind(this),
+      [],
+      this.#handleZap.bind(this),
       [
         { id: "zen-zap-this" },
         { id: "zen-zap-related" },
         { id: "zen-zap-cancel" },
       ]
     );
-
-    // Remove the bottom unzap bar to the safe area
-    this.#selectorComponent.safeAreaPadding.bottom = 65;
   }
 
   /**
@@ -67,20 +58,15 @@ export class ZapOverlay {
     this.#selectorComponent.initialize();
 
     this.#content = this.document.insertAnonymousContent();
-    this.#content.root.appendChild(this.fragment);
-    this.#initializeElements();
+    const htmlNS = "http://www.w3.org/1999/xhtml";
+    const stylesheet = this.document.createElementNS(htmlNS, "link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = "chrome://browser/content/zen-styles/content/zen-zap.css";
+    const border = this.document.createElementNS(htmlNS, "div");
+    border.id = "zap-border";
+    this.#content.root.append(stylesheet, border);
 
     this.#initialized = true;
-  }
-
-  /**
-   * Initializes all anonymous content and events
-   */
-  #initializeElements() {
-    this.zapDoneButton = this.getElementById("zap-done");
-    this.#onZapDoneClick = this.#disableZapMode.bind(this);
-    this.zapDoneButton.addEventListener("click", this.#onZapDoneClick);
-
     this.#updateZappedList();
   }
 
@@ -106,67 +92,13 @@ export class ZapOverlay {
     return this.#dissolveEffectPool[returnIndex];
   }
 
-  get content() {
-    if (!this.#content || Cu.isDeadWrapper(this.#content)) {
-      return null;
-    }
-    return this.#content;
-  }
-
-  /**
-   * Helper for getting an anonymous element by id
-   *
-   * @param {string} id The id of the element
-   */
-  getElementById(id) {
-    return this.content.root.getElementById(id);
-  }
-
-  get markup() {
-    // Fetch localizations
-    let [done] = lazy.overlayLocalization.formatMessagesSync([
-      { id: "zen-zap-done" },
-    ]);
-
-    return `
-    <template>
-      <link rel="stylesheet" href="chrome://browser/content/zen-styles/content/zen-zap.css" />
-      <div id="zap-controls-container">
-        <div id="zap-list">
-        </div>
-        <input type="button" id="zap-done" value="${done.value}"/>
-      </div>
-      <div id="zap-border"></div>
-    </template>
-    `;
-  }
-
-  get fragment() {
-    if (!this.template) {
-      let parser = new DOMParser();
-      let doc = parser.parseFromString(this.markup, "text/html");
-      this.template = this.document.importNode(
-        doc.querySelector("template"),
-        true
-      );
-    }
-    let fragment = this.template.content.cloneNode(true);
-    return fragment;
-  }
-
-  /**
-   * Handles the onSelect callback from the SelectComponent
-   *
-   * @param {string} cssSelector The CSS selector of the selected element
-   */
-  handleSelectComponentSelect(cssSelector) {
-    this.#handleZap(cssSelector);
-  }
-
   /**
    * Notifies listeners for an update in the zap list
    */
   onZapUpdate() {
+    if (!this.#initialized) {
+      return;
+    }
     this.#updateZappedList();
     this.zenBoostsChild.sendNotify("zap-list-update");
   }
@@ -191,20 +123,21 @@ export class ZapOverlay {
         counter++;
 
         this.#getNextDissolveEffect().then(dissolve => {
-          dissolve.dissolve(element, () => {
-            this.zenBoostsChild.addZapSelector(cssPath);
-            this.onZapUpdate();
-
-            this.window.requestAnimationFrame(() => {
+          dissolve.dissolve(element, async () => {
+            element.documentGlobal.requestAnimationFrame(() => {
               element.style.removeProperty("opacity");
             });
+
+            await this.zenBoostsChild.addZapSelector(cssPath);
+            this.onZapUpdate();
           });
           element.style.setProperty("opacity", "0", "important");
         });
       });
     } else {
-      this.zenBoostsChild.addZapSelector(cssPath);
-      this.onZapUpdate();
+      this.zenBoostsChild.addZapSelector(cssPath).then(() => {
+        this.onZapUpdate();
+      });
     }
   }
 
@@ -213,8 +146,8 @@ export class ZapOverlay {
    *
    * @param {string} cssPath The css selector of the zap
    */
-  #handleUnzap(cssPath) {
-    this.zenBoostsChild.removeZapSelector(cssPath);
+  async #handleUnzap(cssPath) {
+    await this.zenBoostsChild.removeZapSelector(cssPath);
     this.onZapUpdate();
   }
 
@@ -226,121 +159,64 @@ export class ZapOverlay {
   }
 
   /**
-   * Helper function for leaving the zap mode
-   */
-  #disableZapMode() {
-    this.zenBoostsChild.disableZapMode();
-  }
-
-  /**
-   * Rebuilds the unzap button list at the bottom of the website
+   * Sends the zapped selectors and their element counts to the chrome Zap bar
    */
   async #updateZappedList() {
-    const zapList = this.getElementById("zap-list");
-    zapList.innerHTML = "";
-
     const boost = await this.zenBoostsChild.getWebsiteBoost();
-    const { boostData } = boost.boostEntry;
-
-    boostData.zapSelectors.forEach(selector => {
-      const unzapButton = zapList.ownerDocument.createElement("input");
-      unzapButton.type = "button";
-      unzapButton.id = "zen-zap-unzap";
-
-      const index = boostData.zapSelectors.indexOf(selector) + 1;
-      const zappedElementsCount =
-        selector == "" ? 0 : this.document.querySelectorAll(selector).length;
-
-      const [tooltip] = lazy.overlayLocalization.formatMessagesSync([
-        {
-          id: "zen-unzap-tooltip",
-          args: { elementCount: zappedElementsCount },
-        },
-      ]);
-
-      unzapButton.value = index;
-      unzapButton.title = tooltip.value;
-
-      unzapButton.setAttribute("index", index);
-      unzapButton.setAttribute("selector", selector);
-      zapList.appendChild(unzapButton);
-    });
-
-    // Fetch localizations
-    let [addZapHelper, removeZapHelper] =
-      lazy.overlayLocalization.formatMessagesSync([
-        { id: "zen-add-zap-helper" },
-        { id: "zen-remove-zap-helper" },
-      ]);
-
-    if (!boostData.zapSelectors.length) {
-      const addZapHelperText = zapList.ownerDocument.createElement("p");
-      addZapHelperText.setHTML(addZapHelper.value);
-      addZapHelperText.classList.add("pcenter");
-      zapList.appendChild(addZapHelperText);
-    } else {
-      const removeZapHelperText = zapList.ownerDocument.createElement("p");
-      removeZapHelperText.setHTML(removeZapHelper.value);
-      zapList.appendChild(removeZapHelperText);
+    if (!this.#initialized) {
+      return;
     }
+    const zapSelectors = boost?.boostEntry.boostData.zapSelectors ?? [];
+
+    this.zenBoostsChild.updateZapBar(
+      zapSelectors.map(selector => ({
+        selector,
+        count: selector ? this.document.querySelectorAll(selector).length : 0,
+      }))
+    );
   }
 
   /**
-   * Handles the mouse enter event for the unzap buttons
+   * Handles a command from an Unzap button in the chrome Zap bar
    *
-   * @param {Event} event
+   * @param {string} command One of "preview", "clearPreview" or "unzap"
+   * @param {string} selector The zapped selector the button represents
    */
-  #unzapButtonHover(event) {
-    const button = event.originalTarget;
-    const selector = button.getAttribute("selector");
-    this.zenBoostsChild.tempShowZappedElement(selector);
+  handleBarCommand(command, selector) {
+    switch (command) {
+      case "preview":
+        if (typeof selector !== "string") {
+          return;
+        }
+        this.zenBoostsChild.tempHideZappedElement();
+        this.zenBoostsChild.tempShowZappedElement(selector);
+        this.#cancelZap();
 
-    button.value = "×";
-
-    // This has to run with later, as the elements we are trying to highlight do not exist yet.
-    // The css has to load first and calculate the bounding boxes for the elements before we can highlight.
-    this.window.requestAnimationFrame(() => {
-      const selection = this.document.querySelectorAll(selector);
-      if (selection.length) {
-        this.#selectorComponent.showHighlight(selection);
-      }
-    });
-
-    // Cancle an ongoing select action
-    this.#cancelZap();
-  }
-
-  /**
-   * Handles the mouse exit event for the unzap buttons
-   *
-   * @param {Event} event
-   */
-  #unzapButtonUnhover(event) {
-    const button = event.originalTarget;
-    button.value = button.getAttribute("index");
-
-    this.zenBoostsChild.tempHideZappedElement();
-    this.#selectorComponent.removeHighlight();
-  }
-
-  /**
-   * Handles button clicks from the unzap list
-   *
-   * @param {Event} event
-   */
-  #unzapButtonClick(event) {
-    const button = event.originalTarget;
-    const selector = button.getAttribute("selector");
-
-    this.zenBoostsChild.tempHideZappedElement();
-    this.#selectorComponent.removeHighlight();
-    this.#cancelZap();
-
-    // In order to avoid the clicked element being null when the
-    // SelectorComponent receives it, push the list re-creation to the next frame
-    this.window.requestAnimationFrame(() => {
-      this.#handleUnzap(selector);
-    });
+        // The unhide rule has to apply before the elements have bounding boxes to highlight.
+        this.window.requestAnimationFrame(() => {
+          if (!this.#initialized) {
+            return;
+          }
+          const selection = this.document.querySelectorAll(selector);
+          if (selection.length) {
+            this.#selectorComponent.showHighlight(selection);
+          }
+        });
+        break;
+      case "clearPreview":
+        this.zenBoostsChild.tempHideZappedElement();
+        this.#selectorComponent.removeHighlight();
+        break;
+      case "unzap":
+        if (typeof selector !== "string") {
+          return;
+        }
+        this.zenBoostsChild.tempHideZappedElement();
+        this.#selectorComponent.removeHighlight();
+        this.#cancelZap();
+        this.#handleUnzap(selector);
+        break;
+    }
   }
 
   /**
@@ -353,12 +229,6 @@ export class ZapOverlay {
     this.#dissolveEffectPool.forEach(dissolve => {
       dissolve.tearDown();
     });
-
-    if (this.zapDoneButton && this.#onZapDoneClick) {
-      this.zapDoneButton.removeEventListener("click", this.#onZapDoneClick);
-    }
-    this.#onZapDoneClick = null;
-    this.zapDoneButton = null;
 
     if (this.#content) {
       try {
@@ -380,50 +250,6 @@ export class ZapOverlay {
    * @param {boolean} prevent True if the event should be prevented
    */
   handleEvent(event, prevent) {
-    switch (event.type) {
-      case "click":
-        this.#handleClick(event);
-        break;
-      case "mouseover":
-        this.#handleHoverDelegation(event);
-        break;
-      case "mouseout":
-        this.#handleUnhoverDelegation(event);
-    }
-
     this.#selectorComponent.handleEvent(event, prevent);
-  }
-
-  /**
-   * Handles the mouse click event
-   *
-   * @param {Event} event Mouse move event params
-   */
-  #handleClick(event) {
-    if (event.originalTarget.id == "zen-zap-unzap") {
-      this.#unzapButtonClick(event);
-    }
-  }
-
-  /**
-   * Handles the mouse enter event
-   *
-   * @param {Event} event Mouse enter event params
-   */
-  #handleHoverDelegation(event) {
-    if (event.originalTarget.id == "zen-zap-unzap") {
-      this.#unzapButtonHover(event);
-    }
-  }
-
-  /**
-   * Handles the mouse leave event
-   *
-   * @param {Event} event Mouse leave event params
-   */
-  #handleUnhoverDelegation(event) {
-    if (event.originalTarget.id == "zen-zap-unzap") {
-      this.#unzapButtonUnhover(event);
-    }
   }
 }

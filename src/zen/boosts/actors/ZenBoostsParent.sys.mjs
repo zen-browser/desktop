@@ -6,6 +6,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
+  ZenZapBar: "resource:///modules/zen/boosts/ZenZapBar.sys.mjs",
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
@@ -25,6 +26,8 @@ export class ZenBoostsParent extends JSWindowActorParent {
     "selector-picker-state-update",
     "selector-picker-picked",
   ]);
+
+  #zapBar = null;
 
   /**
    * Creates a new ZenBoostsParent actor instance and sets up an observer
@@ -46,6 +49,25 @@ export class ZenBoostsParent extends JSWindowActorParent {
     ZenBoostsParent.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this._observe, observe);
     });
+    this.#zapBar?.detach(this);
+    this.#zapBar = null;
+  }
+
+  /**
+   * Attaches this document to its browser's Zap bar. Only the top-level
+   * document of a tabbed browser may start a session.
+   *
+   * @returns {number} Session token, or 0 if the start was rejected
+   */
+  #startZapSession() {
+    if (this.browsingContext?.parent) {
+      return 0;
+    }
+    const browser = this.browsingContext?.top.embedderElement;
+    const zapBar = browser ? lazy.ZenZapBar.forBrowser(browser) : null;
+    const token = zapBar?.start(this) ?? 0;
+    this.#zapBar = token ? zapBar : null;
+    return token;
   }
 
   /**
@@ -126,6 +148,18 @@ export class ZenBoostsParent extends JSWindowActorParent {
           break;
         }
         Services.obs.notifyObservers(null, topic, msg);
+        break;
+      }
+      case "ZenBoost:ZapStart":
+        return this.#startZapSession();
+      case "ZenBoost:ZapListUpdate": {
+        const { token, zaps } = message.data ?? {};
+        this.#zapBar?.update(this, token, zaps);
+        break;
+      }
+      case "ZenBoost:ZapStop": {
+        const { token } = message.data ?? {};
+        this.#zapBar?.release(this, token);
         break;
       }
       case "ZenBoost:ZapSelector": {

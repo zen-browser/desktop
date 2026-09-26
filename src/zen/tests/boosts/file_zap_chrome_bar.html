@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- Any copyright is dedicated to the Public Domain.
+     https://creativecommons.org/publicdomain/zero/1.0/ -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Zap chrome bar fixture</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #filler {
+        margin: 0;
+        padding: 20px;
+      }
+
+      #bottom {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40px;
+        background: rgb(200, 50, 50);
+      }
+    </style>
+  </head>
+  <body>
+    <p id="filler">Non-scrolling page with a fixed-bottom target</p>
+    <div id="bottom">Bottom target</div>
+  </body>
+</html>

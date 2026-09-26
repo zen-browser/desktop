@@ -706,7 +706,7 @@ export class SelectorComponent {
           : []
       ).length;
 
-      if (!buildMap.has(pathParentElementLength)) {
+      if (pathParentElementBuilt && !buildMap.has(pathParentElementLength)) {
         buildMap.set(pathParentElementLength, pathParentElementBuilt);
       }
 

@@ -24,7 +24,6 @@ export class ZenSpacesSwipe {
     lastDelta: 0,
     direction: null,
     isSwipingLibrary: false,
-    beforeLibraryState: 0,
   };
 
   constructor() {
@@ -41,23 +40,6 @@ export class ZenSpacesSwipe {
         document.getElementById("zen-sidebar-splitter")
       ).width
     );
-  }
-
-  #readySwipeLibrary = null;
-  #readySwipeOpenLibrary() {
-    if (this.#readySwipeLibrary) {
-      return this.#readySwipeLibrary;
-    }
-
-    const spaces = gZenWorkspaces.getWorkspaces();
-    const current = gZenWorkspaces.getActiveWorkspaceFromCache();
-    const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
-    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
-
-    this.#readySwipeLibrary =
-      spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
-      libraryEnabled;
-    return this.#readySwipeLibrary;
   }
 
   attachWorkspaceSwipeGestures(element) {
@@ -182,6 +164,8 @@ export class ZenSpacesSwipe {
 
     gZenFolders.cancelPopupTimer();
 
+    lazy.ZenLibrary.clearReadySwipeLibraryCache();
+
     this.#toggleSwipeGestureAttr(true);
     document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
@@ -194,7 +178,6 @@ export class ZenSpacesSwipe {
       lastDelta: 0,
       direction: null,
       isSwipingLibrary: false,
-      beforeLibraryState: 0,
     };
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
   }
@@ -234,57 +217,31 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
+    const currentWorkspace = ws.getActiveWorkspaceFromCache();
+
     const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
     const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
-    const couldClose = libraryOpen;
     const wantsOpen =
       !libraryOpen &&
       (libraryOnRight ? translateX < 0 : translateX > 0) &&
-      this.#readySwipeOpenLibrary();
+      lazy.ZenLibrary.readySwipeOpenLibrary();
 
-    if (wantsOpen || couldClose || this._swipeState.isSwipingLibrary) {
+    if (wantsOpen || libraryOpen || this._swipeState.isSwipingLibrary) {
       if (!this._swipeState.isSwipingLibrary) {
         this._swipeState.isSwipingLibrary = true;
-        this._swipeState.beforeLibraryState = libraryOpen ? 1 : 0;
         lazy.ZenLibrary.startSwipe();
       }
 
-      const rubberBand = function (offset, dimension, constant = 0.55) {
-        if (offset === 0 || dimension === 0) {
-          return 0;
-        }
-        return (
-          dimension *
-          (1 - Math.exp(-(Math.abs(offset) * constant) / dimension)) *
-          Math.sign(offset)
-        );
-      };
+      const rawProgress = translateX / stripWidth;
+      lazy.ZenLibrary.swipeProgress(rawProgress);
 
-      const DAMPING_DIMENSION = 0.2;
-      const RUBBER_BAND_CONSTANT = 0.08;
-
-      const LIBRARY_SWIPE_FULL = 0.8;
-      const translation = libraryOnRight ? -translateX : translateX;
-      const deltaProgress = (translation / stripWidth) * LIBRARY_SWIPE_FULL;
-      const progress = this._swipeState.beforeLibraryState + deltaProgress;
-
-      let progressDamped;
-      if (progress < 0) {
-        progressDamped =
-          0 + rubberBand(progress, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
-      } else if (progress > 1) {
-        progressDamped =
-          1 + rubberBand(progress - 1, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
-      } else {
-        progressDamped = progress;
-      }
-
-      lazy.ZenLibrary.swipeProgress(progressDamped);
+      // Reset workspace location to avoid freezing
+      ws._organizeWorkspaceStripLocations(currentWorkspace, true, 0);
       return;
     }
+    lazy.ZenLibrary.swipeReset();
 
     // Apply a translateX to the tab strip to give the user feedback on the swipe
-    const currentWorkspace = ws.getActiveWorkspaceFromCache();
     ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
   }
 
@@ -305,7 +262,6 @@ export class ZenSpacesSwipe {
 
     if (this._swipeState.isSwipingLibrary) {
       lazy.ZenLibrary.stopSwipe(rawDirection * direction);
-      this.#readySwipeLibrary = null;
       return;
     }
 
@@ -316,8 +272,7 @@ export class ZenSpacesSwipe {
     const ws = gZenWorkspaces;
 
     if (this._swipeState.isSwipingLibrary) {
-      lazy.ZenLibrary.stopSwipe(null);
-      this.#readySwipeLibrary = null;
+      lazy.ZenLibrary.swipeAnimationEnd();
     }
 
     // Reset swipe state
@@ -326,7 +281,6 @@ export class ZenSpacesSwipe {
       lastDelta: 0,
       direction: null,
       isSwipingLibrary: false,
-      beforeLibraryState: 0,
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);

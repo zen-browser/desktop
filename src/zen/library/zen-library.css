@@ -72,7 +72,10 @@ zen-library[open] {
   visibility: visible;
   pointer-events: auto;
   -moz-window-dragging: drag;
-  transition: width 0.3s cubic-bezier(.36,.06,0,.94);
+
+  &:not([transitioning]) {
+    transition: width 0.3s cubic-bezier(.36,.06,0,.94);
+  }
 }
 
 :is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
@@ -880,6 +883,11 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
 
 .zen-library-row[pending]:not(:hover) .zen-library-download-status {
   display: none;
+}
+
+.zen-library-row[pending][open-when-done]:not(:hover)
+  .zen-library-download-status {
+  display: inline;
 }
 
 .zen-library-row[pending]:not(:hover) .zen-library-row-subtitle::before {

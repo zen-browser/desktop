@@ -1597,6 +1597,54 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     return true;
   }
 
+  /**
+   * Stops the animation running on an element and pins the value it had
+   * reached as an inline style.
+   *
+   * @param {Element} item - The element to settle.
+   * @param {string} prop - The camel cased property to pin.
+   * @returns {string|undefined} The value the property was left at, or
+   *   undefined if nothing was animating it.
+   */
+  #settleAnimation(item, prop) {
+    const animation = this.#itemAnimations.get(item);
+    if (
+      animation?.playState !== "running" &&
+      animation?.playState !== "paused"
+    ) {
+      return undefined;
+    }
+    const value = window.getComputedStyle(item)[prop];
+    animation.cancel();
+    item.style[prop] = value;
+    return value;
+  }
+
+  /**
+   * Measures how far up the group container has to be shifted to be fully
+   * collapsed, ignoring any collapse offset already applied to it.
+   *
+   * @param {Element} tabsContainer - The container to measure.
+   * @param {Element} groupStart - The element carrying the collapse offset.
+   * @returns {number} The height to shift the container by.
+   */
+  #measureCollapsedShift(tabsContainer, groupStart) {
+    const currentMargin = groupStart.style.marginTop;
+    if (!parseFloat(currentMargin)) {
+      // The container is not shifted, it already measures its full height.
+      return this.#calculateHeightShift(tabsContainer, []);
+    }
+    groupStart.style.marginTop = "0px";
+    // Note that these have to flush, the margin has just been changed.
+    let heightShift = tabsContainer.getBoundingClientRect().height;
+    if (tabsContainer.separatorElement) {
+      heightShift -=
+        tabsContainer.separatorElement.getBoundingClientRect().height;
+    }
+    groupStart.style.marginTop = currentMargin;
+    return heightShift;
+  }
+
   #calculateHeightShift(tabsContainer, selectedTabs) {
     let heightShift = 0;
     if (selectedTabs.length) {
@@ -1641,10 +1689,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (selectedTabs.length) {
       tabsContainer.removeAttribute("hidden");
     }
-    const collapsedHeight = this.#calculateHeightShift(
-      tabsContainer,
-      selectedTabs
-    );
+    const startMargin = this.#settleAnimation(groupStart, "marginTop");
+    const collapsedHeight = selectedTabs.length
+      ? 0
+      : this.#measureCollapsedShift(tabsContainer, groupStart);
 
     if (selectedTabs.length) {
       for (let i = 0; i < groupItems.length; i++) {
@@ -1697,10 +1745,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       ...this.#createAnimation(
         groupStart,
         {
-          marginTop: -(
-            collapsedHeight +
-            4 * (selectedTabs.length === 0 ? 1 : 0)
-          ),
+          marginTop: [
+            startMargin,
+            -(collapsedHeight + 4 * (selectedTabs.length === 0 ? 1 : 0)),
+          ],
         },
         { duration, ease: "easeInOut" }
       )
@@ -1709,16 +1757,15 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     gBrowser.tabContainer._invalidateCachedVisibleTabs();
     this.#animationCount += 1;
     await Promise.all(animations);
-    if (this.#animationCount) {
-      this.#animationCount -= 1;
+    this.#animationCount -= 1;
+    if (this.#animationCount || !group.collapsed) {
       return;
     }
-    // Prevent hiding if we spam the group animations
-    if (!selectedTabs.length && !this.#animationCount) {
+    if (!selectedTabs.length) {
       tabsContainer.setAttribute("hidden", true);
+      this.styleCleanup(itemsToHide);
+      this.#queueCollapsedRelayout(group);
     }
-
-    this.styleCleanup(itemsToHide);
   }
 
   async animateExpand(group) {

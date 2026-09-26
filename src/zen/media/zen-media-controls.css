@@ -94,8 +94,9 @@
       opacity: 1;
     }
 
-    & .zen-media-focus-button::after {
+    & .zen-media-notes {
       display: none;
+      transition: none;
     }
 
     & .zen-media-card::after {
@@ -227,33 +228,27 @@
     }
   }
 
-  & .zen-media-focus-button::after {
-    content: "";
-    position: absolute;
-    background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
-    top: -70%;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 0;
-    pointer-events: none;
-    transition: opacity 0.8s ease;
-    opacity: 1;
-    will-change: opacity;
-  }
-
-  &:not(.playing:not([muted])) .zen-media-focus-button::after {
+  & .zen-media-notes {
+    display: block;
     opacity: 0;
+    visibility: hidden;
+    --zen-media-notes-animation: zen-note-sprite;
+    transition:
+      opacity 0.8s ease,
+      visibility 0s 0.8s;
   }
 
   /* Background cards never show the floating notes — only their top sliver
      is visible and the notes would poke through it */
-  &[stacked-behind] .zen-media-focus-button::after {
-    display: none;
+  &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-notes {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.8s ease;
   }
 
   .zen-media-focus-button {
     align-self: center;
+    overflow: visible;
     transition:
       opacity 0.2s ease,
       transform 0.2s ease;
@@ -393,5 +388,43 @@
 :root:not([zen-sidebar-expanded="true"]) {
   #zen-media-controls-toolbar {
     display: none;
+  }
+}
+
+.zen-media-notes {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  top: -70%;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: clip;
+  pointer-events: none;
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none !important;
+  }
+}
+
+.zen-media-notes::before {
+  content: "";
+  display: block;
+  width: calc(90 * 100%);
+  height: 100%;
+  background-image: url("chrome://browser/content/zen-images/note-indicator.svg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -moz-context-properties: fill;
+  fill: currentColor;
+  animation: var(--zen-media-notes-animation, none) 3s steps(90, jump-none) infinite;
+}
+
+@keyframes zen-note-sprite {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-89 / 90 * 100%));
   }
 }

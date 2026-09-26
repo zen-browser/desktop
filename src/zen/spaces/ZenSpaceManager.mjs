@@ -253,9 +253,10 @@ class nsZenWorkspaces {
       }
 
       // Fall back to creating a new tab
+      // The homepage pref can hold several URLs separated by "|".
       const newTabUrl =
         newTabTarget ||
-        Services.prefs.getStringPref("browser.startup.homepage");
+        Services.prefs.getStringPref("browser.startup.homepage").split("|")[0];
       let tab = gZenUIManager.openAndChangeToTab(newTabUrl);
 
       // Set workspace ID if available
@@ -937,6 +938,23 @@ class nsZenWorkspaces {
       delete this._initialTab;
       resolveSelectPromise();
     };
+
+    // The startup page loads its first URL into the tab we marked as empty
+    // (see gBrowserInit._handleURIToLoad), so removing it would drop that URL.
+    let startupURI = await gBrowserInit.uriToLoadPromise;
+    if (Array.isArray(startupURI)) {
+      startupURI = startupURI[0];
+    }
+    if (
+      this._tabToRemoveForEmpty &&
+      !this._initialTab &&
+      typeof startupURI === "string" &&
+      !isInitialPage(startupURI.split("|")[0])
+    ) {
+      delete this._tabToRemoveForEmpty._markedForReplacement;
+      this._initialTab = this._tabToRemoveForEmpty;
+      delete this._tabToRemoveForEmpty;
+    }
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;

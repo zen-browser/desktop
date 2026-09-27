@@ -269,12 +269,13 @@
     padding: 6px;
 
     & > #statuspanel-label {
+      color-scheme: var(--toolbar-color-scheme);
       border-radius: 16px !important;
-      border: 1px solid rgba(225, 225, 225, 0.15) !important;
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(225, 225, 225, 0.15)) !important;
       padding: 4px 8px 5px 8px !important;
       font-weight: 600 !important;
-      background: color-mix(in srgb, var(--zen-primary-color), black 70%) !important;
-      color: rgba(255, 255, 255, 0.8) !important;
+      background: color-mix(in srgb, var(--zen-primary-color), light-dark(white, black) 70%) !important;
+      color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
     }
   }
 }

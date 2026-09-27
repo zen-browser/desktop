@@ -64,6 +64,26 @@
     }
   }
 
+  :root:not([privatebrowsingmode='temporary']) & toolbarbutton:not([waitconfirmation]) {
+    @media -moz-pref('zen.view.window.scheme', 1) {
+      background: color-mix(in srgb, var(--zen-primary-color) 3%, white);
+      color: #222 !important;
+
+      &:hover {
+        background: color-mix(in srgb, var(--zen-primary-color) 8%, #eee);
+      }
+    }
+
+    @media (-moz-pref('zen.view.window.scheme', 2)) and (not (-moz-system-dark-theme)) {
+      background: color-mix(in srgb, var(--zen-primary-color) 3%, white);
+      color: #222 !important;
+
+      &:hover {
+        background: color-mix(in srgb, var(--zen-primary-color) 8%, #eee);
+      }
+    }
+  }
+
   & .zen-glance-sidebar-close {
     width: fit-content;
     & label {

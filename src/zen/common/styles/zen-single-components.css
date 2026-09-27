@@ -276,6 +276,20 @@
       background: color-mix(in srgb, var(--zen-primary-color), black 70%) !important;
       color: rgba(255, 255, 255, 0.8) !important;
     }
+
+    :root:not([privatebrowsingmode='temporary']) & > #statuspanel-label {
+      @media -moz-pref('zen.view.window.scheme', 1) {
+        background: color-mix(in srgb, var(--zen-primary-color) 3%, white) !important;
+        color: #222 !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+      }
+
+      @media (-moz-pref('zen.view.window.scheme', 2)) and (not (-moz-system-dark-theme)) {
+        background: color-mix(in srgb, var(--zen-primary-color) 3%, white) !important;
+        color: #222 !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+      }
+    }
   }
 }
 

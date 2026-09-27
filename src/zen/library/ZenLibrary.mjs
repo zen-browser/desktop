@@ -72,8 +72,7 @@ export class ZenLibrary extends MozLitElement {
   #isOpen = false;
   #initialized = false;
 
-  #wrapperGestureControl = null;
-  #gestureControl = null;
+  #wrapperSwipeAttached = false;
 
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
@@ -448,8 +447,6 @@ export class ZenLibrary extends MozLitElement {
     );
   }
 
-  #readySwipeLibrary = null;
-
   /**
    * Checks if the library can be opened
    * if a swipe would happen right now.
@@ -457,25 +454,16 @@ export class ZenLibrary extends MozLitElement {
    * @returns {boolean} True if library can be swiped
    */
   static readySwipeOpenLibrary() {
-    const lib = this.getInstance();
-    if (lib.#readySwipeLibrary) {
-      return lib.#readySwipeLibrary;
-    }
-
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
     const libraryOnRight = this.libraryOnRight;
 
-    lib.#readySwipeLibrary =
+    return (
       spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
-      libraryEnabled;
-    return lib.#readySwipeLibrary;
-  }
-
-  static clearReadySwipeLibraryCache() {
-    const lib = this.getInstance();
-    lib.#readySwipeLibrary = null;
+      libraryEnabled &&
+      gZenWorkspaces.shouldSwipeEdgeActions
+    );
   }
 
   /**
@@ -633,13 +621,14 @@ export class ZenLibrary extends MozLitElement {
    * ending unexpectedly mid-swipe.
    */
   #attachWrapperToSwipe() {
-    if (!this.#wrapperGestureControl) {
-      const appWrapper = document.getElementById("zen-main-app-wrapper");
-      this.#wrapperGestureControl =
-        window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
-          appWrapper
-        );
+    if (this.#wrapperSwipeAttached) {
+      return;
     }
+    const appWrapper = document.getElementById("zen-main-app-wrapper");
+    window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
+      appWrapper
+    );
+    this.#wrapperSwipeAttached = true;
   }
 
   /**
@@ -647,14 +636,14 @@ export class ZenLibrary extends MozLitElement {
    * the main app wrapper.
    */
   #detachWrapperOfSwipe() {
-    if (this.#wrapperGestureControl) {
-      const appWrapper = document.getElementById("zen-main-app-wrapper");
-      window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
-        appWrapper,
-        this.#wrapperGestureControl
-      );
-      this.#wrapperGestureControl = null;
+    if (!this.#wrapperSwipeAttached) {
+      return;
     }
+    const appWrapper = document.getElementById("zen-main-app-wrapper");
+    window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
+      appWrapper
+    );
+    this.#wrapperSwipeAttached = false;
   }
 
   /**
@@ -711,8 +700,7 @@ export class ZenLibrary extends MozLitElement {
     window.addEventListener("TabOpen", this);
 
     this.#attachWrapperToSwipe();
-    this.#gestureControl =
-      window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
+    window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
     this.#resizeObserver.observe(this);
     ZenLibraryWidget.attachLibrary(this);
     this.#refreshToolboxWidth();
@@ -746,12 +734,7 @@ export class ZenLibrary extends MozLitElement {
     this.removeAttribute("transitioning");
 
     this.#detachWrapperOfSwipe();
-    if (this.#gestureControl) {
-      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
-        this,
-        this.#gestureControl
-      );
-    }
+    window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(this);
 
     this.#restoreWindowButtons();
     ZenLibraryWidget.detachLibrary(this);
@@ -801,7 +784,10 @@ export class ZenLibrary extends MozLitElement {
     if (!this.hasAttribute("open")) {
       return;
     }
-    if (e.key === "Escape") {
+    if (
+      e.key === "Escape" &&
+      document.activeElement?.closest("zen-library") === this
+    ) {
       ZenLibrary.animateProgress(0);
     }
   }

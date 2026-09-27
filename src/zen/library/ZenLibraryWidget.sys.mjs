@@ -151,7 +151,7 @@ class ZenLibraryDownloadStack {
       return;
     }
     const target = entry.querySelector(".zen-library-download-badge");
-    const from = this.#badge.getBoundingClientRect();
+    const from = this.#window.windowUtils.getBoundsWithoutFlushing(this.#badge);
     const to = target.getBoundingClientRect();
     const style = this.#window.getComputedStyle(this.#badge);
     // The entry is still translated down while closed; land where it ends.

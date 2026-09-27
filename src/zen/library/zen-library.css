@@ -223,7 +223,7 @@ zen-library:is([transitioning], [sizing])
   width: calc(36 * var(--zen-library-sprite-size));
   height: var(--zen-library-sprite-size);
   background-size: 100% 100%;
-  --stroke: light-dark(var(--zen-colors-primary), var(--zen-accent-button-color));
+  --stroke: var(--zen-accent-button-color);
   --fill: color-mix(in srgb, var(--stroke), light-dark(white, black) 60%);
   fill: var(--fill);
   stroke: var(--stroke);

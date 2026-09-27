@@ -2,16 +2,11 @@ diff --git a/browser/components/contextualidentity/content/ContainerCreationPane
 index e04d7a4738192703e8f7f8555f50aaf0a619a5bd..d7e79b87bf741272d93b6cc5eacac4c5e76cefbf 100644
 --- a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
 +++ b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
-@@ -7 +7 @@
--const ANCHOR_ID = "userContext-icons";
-+const ANCHOR_ID = "navigator-toolbox";
-@@ -79 +79,5 @@
+@@ -79 +79,3 @@
 -    let anchor = doc.getElementById(ANCHOR_ID);
-+    let anchor =
-+      win.gZenWorkspaces?.activeWorkspaceStrip?.querySelector(
-+        "#tabs-newtab-button"
-+      ) ??
-+      doc.getElementById(ANCHOR_ID);
-@@ -98 +102 @@
++    let anchor = win.gZenWorkspaces.activeWorkspaceStrip.querySelector(
++      "#tabs-newtab-button"
++    );
+@@ -98 +100 @@
 -    panel.openPopup(anchor, "bottomright topright");
 +    panel.openPopup(anchor, win.gZenUIManager.panelUIPosition(panel, anchor));

@@ -469,6 +469,7 @@ class ZenMediaCard {
  */
 class nsZenMediaController {
   #cards = new Map();
+  #closedOrDiscardedBrowsers = new WeakSet();
   #cardTemplate = null;
 
   mediaControlBar = null;
@@ -581,7 +582,9 @@ class nsZenMediaController {
 
   activateMediaDeviceControls(browser) {
     if (
-      !browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections()
+      !browser ||
+      this.#closedOrDiscardedBrowsers.has(browser) ||
+      !browser.browsingContext.currentWindowGlobal.hasActivePeerConnections()
     ) {
       return;
     }
@@ -601,6 +604,13 @@ class nsZenMediaController {
     for (const browser of window.gBrowser.browsers) {
       if (browser.innerWindowID !== windowId) {
         continue;
+      }
+
+      // TabClose runs before the browser is removed from gBrowser. A late
+      // WebRTC update can still match it during that gap, after its card was
+      // destroyed, and would otherwise create an orphaned replacement.
+      if (this.#closedOrDiscardedBrowsers.has(browser)) {
+        break;
       }
 
       const sharingCard = this.#sharingCard;
@@ -627,6 +637,10 @@ class nsZenMediaController {
     if (!linkedBrowser) {
       return;
     }
+
+    // Keep only a weak reference: late media updates must not revive cards
+    // for this browser, but closed browser objects should remain collectible.
+    this.#closedOrDiscardedBrowsers.add(linkedBrowser);
 
     for (const card of Array.from(this.#cards.values())) {
       if (card.browser.browserId === linkedBrowser.browserId) {

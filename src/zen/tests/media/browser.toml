@@ -7,6 +7,8 @@ support-files = [
   "head.js",
 ]
 
+["browser_media_closed_tab.js"]
+
 ["browser_media_metadata.js"]
 
 ["browser_media_mute.js"]

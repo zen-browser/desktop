@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
-
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(
@@ -12,20 +10,21 @@ ChromeUtils.defineESModuleGetters(
   { global: "current" }
 );
 
-class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
+export class ZenSpaceAddSwipe {
   #progressVal = 0;
   #element = null;
   #progressBadge = null;
   #backgroundGradient = null;
   #swipeOngoing = false;
+  #hiddenForSwipe = [];
 
-  #springControls = null;
-  #isAnimatingBack = false;
+  static SUCCESS_THRESHOLD = 0.7;
+  static SUCCESS_VELOCITY_CONTRIBUTION = 0;
 
-  static CREATION_THRESHOLD = 1;
   static SPACES_TRANSLATION = -25;
 
-  async init() {}
+  static ENTRY_TRAVEL = 55;
+  static ENTRY_PROGRESS = 0.75;
 
   #easeInOut(x) {
     x = Math.min(Math.max(x, 0), 1);
@@ -41,15 +40,18 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
     const isNowUnready = this.#progressVal >= 1 && value < 1;
     this.#progressVal = value;
 
-    const moveProgress = 1 - Math.min(value * 2, 1);
+    // The element and the gradient behind it come in together, and are both
+    // settled before the swipe is all the way there.
+    const entryProgress = Math.min(value / ZenSpaceAddSwipe.ENTRY_PROGRESS, 1);
 
     const rightSide = this.#tabsOnRight;
     const rightSideFactor = rightSide ? -1 : 1;
-    this.#element.style.translate = `calc(100% * ${moveProgress * rightSideFactor}) 0`;
+    this.#element.style.translate = `${
+      (1 - entryProgress) * rightSideFactor * ZenSpaceAddSwipe.ENTRY_TRAVEL
+    }% 0`;
 
-    this.#backgroundGradient.style.setProperty("scale", `${value} 3`);
-    this.#backgroundGradient.style.setProperty("opacity", `${value}`);
-
+    this.#backgroundGradient.style.scale = `${entryProgress} 3`;
+    this.#backgroundGradient.style.opacity = `${entryProgress}`;
     this.#progressBadge.style.setProperty(
       "--value",
       this.#easeInOut(value) * 100
@@ -65,7 +67,7 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
     gZenWorkspaces._organizeWorkspaceStripLocations(
       currentWorkspace,
       true,
-      value * nsZenSpaceAddSwipe.SPACES_TRANSLATION * rightSideFactor
+      value * ZenSpaceAddSwipe.SPACES_TRANSLATION * rightSideFactor
     );
   }
 
@@ -81,36 +83,23 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
     return lazy.ZenLibrary.libraryOnRight;
   }
 
-  #readySwipeAdd = null;
-
   /**
-   * Checks if the space add element should show
-   * if a swipe would happen right now.
+   * Whether the space add element should show for a swipe starting now. The
+   * swipe manager asks once per swipe and remembers the answer itself.
    *
    * @returns {boolean} True if it should show
    */
   readySwipeAddSpace() {
-    if (this.#readySwipeAdd !== null) {
-      return this.#readySwipeAdd;
-    }
-
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
-    const wrapAroundEnabled = Services.prefs.getBoolPref(
-      "zen.workspaces.wrap-around-navigation"
-    );
     const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
 
-    this.#readySwipeAdd =
+    return (
       spaces.indexOf(current) === (libraryOnRight ? 0 : spaces.length - 1) &&
       libraryEnabled &&
-      !wrapAroundEnabled;
-    return this.#readySwipeAdd;
-  }
-
-  clearReadySwipeLibraryCache() {
-    this.#readySwipeAdd = null;
+      gZenWorkspaces.shouldSwipeEdgeActions
+    );
   }
 
   /**
@@ -118,8 +107,6 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
    * to be stuck during the cancel animation
    */
   swipeReset() {
-    this.#cancelAnimateClose();
-
     if (this.#progress != 0) {
       this.#progress = 0;
       this.#afterSwipeAction();
@@ -130,8 +117,6 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
    * Callback for when a swipe action is started.
    */
   startSwipe() {
-    this.#cancelAnimateClose();
-
     this.#addElement();
     this.#progress = 0;
 
@@ -139,19 +124,9 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
     this.#hideNextSpaceChild();
   }
 
-  /**
-   * Callback for when a swipe is
-   * successfully stopped. Another additional check will
-   * ensure that a specific threshold was reached before
-   * opening the space creation form.
-   */
   endSwipe() {
-    if (this.#progress >= nsZenSpaceAddSwipe.CREATION_THRESHOLD) {
-      this.#progress = 0;
-      gZenWorkspaces.openWorkspaceCreation(null);
-    } else {
-      this.#animateClose();
-    }
+    this.#progress = 0;
+    gZenWorkspaces.openWorkspaceCreation(null);
   }
 
   /**
@@ -176,18 +151,17 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
 
   /**
    * Calculates the correct progress based on the
-   * normalized swipe translation and updates the
+   * swipe's gesture amount and updates the
    * swipe progress with additional rubber banding.
    *
-   * @param {number} rawProgress - The normalized swipe translation
+   * @param {number} gestureAmount - The swipe's gesture amount
    */
-  swipeProgress(rawProgress) {
+  swipeProgress(gestureAmount) {
     const DAMPING_DIMENSION = 0.2;
     const RUBBER_BAND_CONSTANT = 0.08;
-    const ADD_SWIPE_FULL = 1.55;
 
-    const translation = !this.#libraryOnRight ? -rawProgress : rawProgress;
-    const deltaProgress = translation * ADD_SWIPE_FULL;
+    const translation = !this.#libraryOnRight ? -gestureAmount : gestureAmount;
+    const deltaProgress = translation / ZenSpaceAddSwipe.SUCCESS_THRESHOLD;
 
     let progressDamped;
     if (deltaProgress < 0) {
@@ -222,46 +196,8 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
     this.#afterSwipeAction();
   }
 
-  /**
-   * Cancels ongoing close animations to
-   * avoid conflicts during new swipe actions.
-   */
-  #cancelAnimateClose() {
-    this.#isAnimatingBack = false;
-    if (this.#springControls) {
-      this.#springControls.stop();
-      this.#springControls = null;
-    }
-  }
-
-  /**
-   * Animates the cancel animation and
-   * destroys the element afterwards.
-   */
-  #animateClose() {
-    this.#cancelAnimateClose();
-
-    this.#isAnimatingBack = true;
-    this.#springControls = gZenUIManager.motion.animate(this.#progress, 0, {
-      type: "spring",
-      stiffness: 620,
-      damping: 47,
-      mass: 2,
-      onUpdate: latest => {
-        this.#progress = latest;
-      },
-      onComplete: () => {
-        this.#progress = 0;
-        this.#springControls = null;
-        this.#isAnimatingBack = false;
-
-        this.#afterSwipeAction();
-      },
-    });
-  }
-
   #afterSwipeAction() {
-    if (!this.#swipeOngoing || this.#isAnimatingBack) {
+    if (!this.#swipeOngoing) {
       return;
     }
     this.#swipeOngoing = false;
@@ -270,21 +206,34 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
     this.#restoreNextSpaceChild();
   }
 
-  /**
-   * Helper method for hiding the next space
-   * before the swipe to avoid visual conflicts
-   * during the swipe/create space form animation
-   */
   #hideNextSpaceChild() {
-    // TODO: Properly hide next/previous space
+    const current = gZenWorkspaces.getActiveWorkspaceFromCache();
+    const currentElement = gZenWorkspaces.workspaceElement(current.uuid);
+
+    for (const space of document.querySelectorAll("zen-workspace")) {
+      if (space !== currentElement) {
+        this.#hideDuringSwipe(space);
+      }
+    }
+    for (const essentials of document.querySelectorAll(
+      "#zen-essentials .zen-workspace-tabs-section"
+    )) {
+      if (essentials.getAttribute("container") != current.containerTabId) {
+        this.#hideDuringSwipe(essentials);
+      }
+    }
   }
 
-  /**
-   * Helper method for restoring the
-   * next space's visibility
-   */
+  #hideDuringSwipe(element) {
+    element.style.visibility = "hidden";
+    this.#hiddenForSwipe.push(element);
+  }
+
   #restoreNextSpaceChild() {
-    // TODO: Restore next/previous space
+    for (const element of this.#hiddenForSwipe) {
+      element.style.removeProperty("visibility");
+    }
+    this.#hiddenForSwipe = [];
   }
 
   #addElement() {
@@ -299,7 +248,8 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
     this.#backgroundGradient.className = "zen-swipe-add-space-background";
 
     this.#progressBadge = document.createElement("div");
-    this.#progressBadge.className = "zen-swipe-add-space-progress-badge";
+    this.#progressBadge.className =
+      "zen-swipe-add-space-progress-badge no-squircles";
     container.append(this.#progressBadge);
 
     const plusIcon = document.createElement("span");
@@ -315,10 +265,9 @@ class nsZenSpaceAddSwipe extends nsZenDOMOperatedFeature {
 
   #destroyElement() {
     this.#element.remove();
+    this.#backgroundGradient.remove();
     this.#element = null;
     this.#progressBadge = null;
     this.#backgroundGradient = null;
   }
 }
-
-window.gZenSpaceAddSwipe = new nsZenSpaceAddSwipe();

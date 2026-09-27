@@ -802,13 +802,22 @@
 }
 
 #TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
-  --gradient-pos: calc(100% - var(--zen-library-stack-height, 0px) + 20px);
+  --zen-library-mask-ramp: 50px;
+
+  mask-repeat: no-repeat;
+  mask-size: 100% calc(100% + var(--zen-library-mask-ramp));
+  transition: mask-size var(--zen-library-open-duration) var(--zen-library-open-easing);
+
   mask-image: linear-gradient(
     to bottom,
     black
-      calc(var(--gradient-pos) - 50px),
-    color-mix(transparent calc(var(--zen-library-progress) * 100%), black)
-      var(--gradient-pos));
+      calc(100% - var(--zen-library-mask-ramp)),
+    transparent
+      100%);
+
+  &[zen-library-stack-open] {
+    mask-size: 100% calc(100% - var(--zen-library-stack-height, 0px) + 20px);
+  }
 }
 
 %include zen-library-widget.css
@@ -834,8 +843,10 @@
   position: absolute;
   width: 200px;
 
+  --bg: color-mix(in srgb, var(--zen-accent-button-color), transparent 30%);
+
   background: radial-gradient(circle at right, 
-    #fffa 0%,
+    var(--bg) 0%,
     transparent 30%);
   background-position-y: center;
   transform-origin: right;
@@ -846,13 +857,13 @@
     right: unset;
     
     background: radial-gradient(circle at left, 
-      #fffa 0%,
-      transparent 30%);
+      var(--bg) 0%,
+      transparent 20%);
     transform-origin: left;
   }
 }
 
-@property --thickness {
+@property --zen-swipe-add-space-thickness {
   syntax: '<length-percentage>';
   initial-value: 20%;
   inherits: true;
@@ -860,11 +871,12 @@
 
 .zen-swipe-add-space-progress-badge {
   position: absolute;
-  width: 32px;
+  width: 30px;
   aspect-ratio: 1;
 
-  --thickness: 16%;
-  transition: --thickness 0.2s ease-out;
+  --zen-swipe-add-space-thickness: 16%;
+  transition: --zen-swipe-add-space-thickness 0.2s ease-in-out;
+  contain: content;
 
   --progress: white;
   --background: color-mix(var(--zen-primary-color), white 15%);
@@ -874,20 +886,14 @@
   translate: 0 -50%;
  
   border-radius: 100%;
-  /* stylelint-disable-next-line property-no-unknown */
-  corner-shape: round;
 
   background: var(--background);
-  
   box-shadow: 0px 1px 8px #0005;
   
   & .zen-swipe-add-space-icon {
     position: absolute;
-
     width: 100%;
     height: 100%;
-    border-radius: 100%;
-
     background: url("chrome://browser/skin/zen-icons/plus.svg") center / 55% no-repeat;
     -moz-context-properties: fill;
     fill: white;
@@ -914,8 +920,8 @@
 
     mask: radial-gradient(
       circle closest-side,
-      transparent calc(100% - var(--thickness)),
-      black calc(100% - var(--thickness))
+      transparent calc(100% - var(--zen-swipe-add-space-thickness)),
+      black calc(100% - var(--zen-swipe-add-space-thickness))
     );
   }
 
@@ -927,9 +933,9 @@
 
 .zen-swipe-add-space-container[readytoadd] {
   & .zen-swipe-add-space-progress-badge {
-    --thickness: 100%;
+    --zen-swipe-add-space-thickness: 100%;
     transform-origin: center;
-    animation: zen-swipe-add-icon-jump 0.275s ease-out;
+    animation: zen-swipe-add-icon-jump 0.2s ease-in-out;
   }
   
   & .zen-swipe-add-space-icon {

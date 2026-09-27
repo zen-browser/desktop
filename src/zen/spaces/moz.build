@@ -11,3 +11,9 @@ EXTRA_JS_MODULES.zen += [
   "ZenSpaceManager.mjs",
   "ZenSpacesSwipe.mjs",
 ]
+
+SOURCES += [
+  "nsZenSwipeOverrides.cpp",
+]
+
+FINAL_LIBRARY = "xul"

@@ -514,26 +514,6 @@ window.gZenUIManager = {
     return this._urlbarOwner === closeSeq;
   },
 
-  // Check if browser elements are in a valid state for tab operations
-  _validateBrowserState() {
-    // Check if browser window is still open
-    if (window.closed) {
-      return false;
-    }
-
-    // Check if gBrowser is available
-    if (!gBrowser || !gBrowser.tabContainer) {
-      return false;
-    }
-
-    // Check if URL bar is available
-    if (!gURLBar) {
-      return false;
-    }
-
-    return true;
-  },
-
   handleNewTab(
     werePassedURL,
     searchClipboard,
@@ -546,12 +526,6 @@ window.gZenUIManager = {
     // to increment it in one of the early returns.
     const closeSeq = ++this._urlbarSessionCounter;
     closeToken.id = closeSeq;
-
-    // Validate browser state first
-    if (!this._validateBrowserState()) {
-      console.warn("Browser state invalid for new tab operation");
-      return false;
-    }
 
     if (this.testingEnabled && !overridePreferance) {
       return false;
@@ -649,12 +623,6 @@ window.gZenUIManager = {
   },
 
   handleUrlbarClose(closeSeq, onSwitch = false, onElementPicked = false) {
-    // Validate browser state first
-    if (!this._validateBrowserState()) {
-      console.warn("Browser state invalid for URL bar close operation");
-      return;
-    }
-
     // Reset URL bar state
     if (gURLBar._zenHandleUrlbarClose) {
       gURLBar._zenHandleUrlbarClose = null;
@@ -1007,12 +975,6 @@ window.gZenVerticalTabsManager = {
       return document.documentElement.hasAttribute("popup-window");
     });
 
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
-      "_canReplaceNewTab",
-      "zen.urlbar.replace-newtab",
-      true
-    );
     var updateEvent = this._updateEvent.bind(this);
     var onPrefChange = this._onPrefChange.bind(this);
 
@@ -1866,3 +1828,10 @@ window.gZenVerticalTabsManager = {
     this._tabEdited = null;
   },
 };
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenVerticalTabsManager,
+  "_canReplaceNewTab",
+  "zen.urlbar.replace-newtab",
+  true
+);

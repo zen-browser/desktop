@@ -27,7 +27,7 @@
   value: 250
 
 - name: zen.workspaces.wrap-around-navigation
-  value: false
+  value: true
 
 - name: zen.workspaces.natural-scroll
   value: false

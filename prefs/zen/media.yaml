@@ -10,3 +10,9 @@
 
 - name: media.eme.enabled
   value: true
+
+# Disable HEVC decoding on Windows to prevent frame drops, video stuttering,
+# and playback freezes on platforms like TikTok using WMF MSE playback.
+- name: media.hevc.enabled
+  value: false
+  condition: "defined(XP_WIN)"

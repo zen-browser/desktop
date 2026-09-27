@@ -122,7 +122,7 @@ class nsZenWindowSync {
    * Used to make sure we don't schedule a swap for the tabs
    * that are already being swapped.
    */
-  #inflightSwapTabs = new WeakSet();
+  #inflightSwapTabs = new Set();
 
   /**
    * A list containing all swaped tabs with their respective browser permanent
@@ -758,11 +758,11 @@ class nsZenWindowSync {
    * @param {Function} aCallback
    */
   async #withTabSwapInFlight(aOurTab, aCallback) {
-    this.#inflightSwapTabs.add(aOurTab);
+    this.#inflightSwapTabs.add(aOurTab.id);
     try {
       return await aCallback();
     } finally {
-      this.#inflightSwapTabs.delete(aOurTab);
+      this.#inflightSwapTabs.delete(aOurTab.id);
     }
   }
 

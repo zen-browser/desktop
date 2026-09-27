@@ -44,10 +44,7 @@ add_task(async function test_Issue_9981() {
 
   const tab2ResetButton = tab2.querySelector(".tab-reset-button");
   tab2ResetButton.style.display = "flex";
-  await TestUtils.waitForCondition(
-    () => tab2ResetButton.getBoundingClientRect().width != 0
-  );
-  EventUtils.synthesizeMouseAtCenter(tab2ResetButton, {});
+  await clickWhenReady(tab2ResetButton);
 
   await TestUtils.waitForCondition(
     () => !tab2.hasAttribute("folder-active"),

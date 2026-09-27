@@ -7,6 +7,8 @@ import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  CustomizableUI:
+    "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
   SessionStore:
     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
 });
@@ -23,6 +25,7 @@ class nsZenUIMigration {
         console.error("ZenUIMigration: Error during migration", e);
       }
     }
+    this.#migrateLibraryButton();
     this.clearVariables();
     if (this.shouldRestart) {
       Services.startup.quit(
@@ -49,6 +52,41 @@ class nsZenUIMigration {
 
   clearVariables() {
     this._migrationVersion = this.MIGRATION_VERSION;
+  }
+
+  #migrateLibraryButton() {
+    const donePref = "zen.library.migrated-downloads-button";
+    if (
+      !Services.prefs.getBoolPref("zen.library.enabled", false) ||
+      Services.prefs.getBoolPref(donePref, false)
+    ) {
+      return;
+    }
+    // A toolbar's saved placements are only there once a window has it.
+    const footButtons = "zen-sidebar-foot-buttons";
+    const listener = {
+      onAreaNodeRegistered: area => {
+        if (area !== footButtons) {
+          return;
+        }
+        lazy.CustomizableUI.removeListener(listener);
+        Services.prefs.setBoolPref(donePref, true);
+        const downloads =
+          lazy.CustomizableUI.getPlacementOfWidget("downloads-button");
+        if (
+          downloads?.area === footButtons &&
+          !lazy.CustomizableUI.getPlacementOfWidget("zen-library-button")
+        ) {
+          lazy.CustomizableUI.addWidgetToArea(
+            "zen-library-button",
+            footButtons,
+            downloads.position
+          );
+          lazy.CustomizableUI.removeWidgetFromArea("downloads-button");
+        }
+      },
+    };
+    lazy.CustomizableUI.addListener(listener);
   }
 
   _migrateV1() {

@@ -109,7 +109,7 @@
         if (AppConstants.platform == "macosx") {
           const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)")
             .matches
-            ? 12
+            ? 11
             : 10;
           document.documentElement.style.setProperty(
             "--zen-border-radius",

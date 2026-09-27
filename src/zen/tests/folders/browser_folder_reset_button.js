@@ -42,7 +42,10 @@ add_task(async function test_Issue_() {
     "Tab 2 should be in the active folder"
   );
 
-  EventUtils.synthesizeMouseAtCenter(folder.resetButton, {});
+  EventUtils.synthesizeMouseAtCenter(folder.labelElement, {
+    type: "mousemove",
+  });
+  await clickWhenReady(folder.resetButton);
 
   await new Promise(resolve =>
     /* eslint-disable mozilla/no-arbitrary-setTimeout */

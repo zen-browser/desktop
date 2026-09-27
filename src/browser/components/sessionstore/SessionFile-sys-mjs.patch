@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionFile.sys.mjs b/browser/components/sessionstore/SessionFile.sys.mjs
-index 370e5c105c3d9bee05c2d9d7b63d0ee45b8331e1..1c37c19794ebe863a25f780e9a74d63526b929d7 100644
+index 3c5cfef8c5c4c4439b2f4eca57a9423f9ae3f0e0..4daf32d50c7ad11fea7f073be5c32397c4c467c7 100644
 --- a/browser/components/sessionstore/SessionFile.sys.mjs
 +++ b/browser/components/sessionstore/SessionFile.sys.mjs
 @@ -25,6 +25,7 @@ const lazy = XPCOMUtils.declareLazy({
@@ -10,12 +10,11 @@ index 370e5c105c3d9bee05c2d9d7b63d0ee45b8331e1..1c37c19794ebe863a25f780e9a74d635
  });
  
  const PREF_UPGRADE_BACKUP = "browser.sessionstore.upgradeBackup.latestBuildID";
-@@ -384,7 +385,7 @@ var SessionFileInternal = {
+@@ -387,6 +388,7 @@ var SessionFileInternal = {
+     }
      this._readOrigin = result.origin;
  
-     result.noFilesFound = noFilesFound;
--
 +    await lazy.ZenSessionStore.readFile();
-     return result;
+     return { ...result, noFilesFound };
    },
  

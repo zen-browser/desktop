@@ -1425,9 +1425,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *                                use -1 to avoid selecting any tab.
    * @param {object} options - Additional options.
    * @param {string|null} options.groupFetchId - An optional group fetch ID.
+   * @param {boolean} options.activate - Whether to select the split after creating it.
    * @returns {object|undefined} The split view data or undefined if the split was not performed.
    */
-  splitTabs(tabs, gridType, initialIndex = 0, { groupFetchId = null } = {}) {
+  splitTabs(
+    tabs,
+    gridType,
+    initialIndex = 0,
+    { groupFetchId = null, activate = true } = {}
+  ) {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
@@ -1443,6 +1449,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       const existingSplitTab = tabs.find(tab => tab.splitView);
       let shouldActivateSplit =
+        activate &&
         (initialIndex >= 0 || tabs.includes(window.gBrowser.selectedTab)) &&
         !this._sessionRestoring;
 

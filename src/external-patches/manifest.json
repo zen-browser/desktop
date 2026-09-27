@@ -13,10 +13,9 @@
     "name": "Issue 15123"
   },
   {
-    "type": "local",
-    // TODO: Convert into https://phabricator.services.mozilla.com/D298079
-    //    once it gets accepted.
-    "path": "firefox/allow_backdrop_to_work_on_transparency.patch"
+    "type": "phabricator",
+    "id": "D327914",
+    "name": "Backdrop filter reads web content"
   },
   {
     "type": "local",

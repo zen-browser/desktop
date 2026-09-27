@@ -61,6 +61,8 @@
   };
 
   window.ZenDragAndDrop = class extends window.TabDragAndDrop {
+    static elementToMove = elementToMove;
+
     #dragOverBackground = null;
     #lastDropTarget = null;
     originalDragImageArgs = [];
@@ -137,6 +139,7 @@
     }
 
     startTabDrag(event, tab, ...args) {
+      const options = args[0] ?? {};
       this.ZenDragAndDropService.onDragStart(1);
       this.#isOutOfWindow = false;
       gZenCompactModeManager._isTabBeingDragged = true;
@@ -145,25 +148,33 @@
       if (isTabGroupLabel(tab)) {
         tab = tab.group;
       }
-      const draggingTabs = tab.multiselected ? gBrowser.selectedTabs : [tab];
+      const shown = options.dragImageSource ?? tab;
+      let draggingTabs;
+      if (options.dragImageSource) {
+        draggingTabs = [shown];
+      } else {
+        draggingTabs = tab.multiselected ? gBrowser.selectedTabs : [tab];
+      }
       const { offsetX, offsetY } = this.#getDragImageOffset(
         event,
-        tab,
+        shown,
         draggingTabs
       );
-      const dragImage = this.#createDragImageForTabs(draggingTabs);
+      const dragImage = this._createDragImageForTabs(draggingTabs);
       this.originalDragImageArgs = [dragImage, offsetX, offsetY];
       this.#dragImageEssential = tab.hasAttribute("zen-essential");
       dt.setDragImage(...this.originalDragImageArgs);
       if (tab.hasAttribute("zen-essential")) {
         tab.style.visibility = "hidden";
       }
-      this.ZenDragAndDropService.armDropLanding(
-        !args[0]?.fromTabList && this.getDropEffectForTabDrag(event) == "move"
-      );
+      this._dropLandingArmed =
+        options.armLanding ??
+        (!args[0]?.fromTabList &&
+          this.getDropEffectForTabDrag(event) == "move");
+      this.ZenDragAndDropService.armDropLanding(this._dropLandingArmed);
     }
 
-    #createDragImageForTabs(movingTabs) {
+    _createDragImageForTabs(movingTabs) {
       const periphery = gZenWorkspaces.activeWorkspaceElement.querySelector(
         "#tabbrowser-arrowscrollbox-periphery"
       );
@@ -675,7 +686,7 @@
         return;
       }
       this.#handle_sidebarDragOver(event);
-      this.#handle_tabDragOverToSplit(event);
+      this._handle_tabDragOverToSplit(event);
     }
 
     #shouldSwitchSpace(event) {
@@ -721,16 +732,30 @@
 
     #onSpaceChanged(spaceChanged, dt) {
       if (AppConstants.platform !== "macosx") {
-        // See the hack in #createDragImageForTabs for more details which
+        // See the hack in _createDragImageForTabs for more details which
         // explains why we need to do this on non-macOS platforms.
         return;
       }
-      let tabs = this.originalDragImageArgs[0].children;
+      this._recolorDragImage(spaceChanged);
+      this._refreshDragImage(dt);
+    }
+
+    /**
+     * Recolours the current drag image's tab clones for a workspace's theme,
+     * so the image reads as the space it is over.
+     *
+     * @param {object} workspace
+     */
+    _recolorDragImage(workspace) {
+      const wrapper = this.originalDragImageArgs?.[0];
+      if (!wrapper || !workspace) {
+        return;
+      }
       const { isDarkMode, isExplicitMode } =
-        gZenThemePicker.getGradientForWorkspace(spaceChanged, {
+        gZenThemePicker.getGradientForWorkspace(workspace, {
           getGradient: false,
         });
-      for (let tab of tabs) {
+      for (const tab of wrapper.querySelectorAll("tab")) {
         if (isExplicitMode) {
           tab.style.colorScheme = isDarkMode ? "dark" : "light";
           tab.style.setProperty(
@@ -742,9 +767,21 @@
           tab.style.removeProperty("--tab-selected-textcolor");
         }
       }
+    }
+
+    /**
+     * Re-hands the drag image to the drag session once its new styles have
+     * been laid out.
+     *
+     * @param {DataTransfer} dt
+     */
+    _refreshDragImage(dt) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          dt.updateDragImage(...this.originalDragImageArgs);
+          // The drag may have ended over the two frames, clearing the image.
+          if (this.originalDragImageArgs.length) {
+            dt.updateDragImage(...this.originalDragImageArgs);
+          }
         });
       });
     }
@@ -802,7 +839,60 @@
       });
     }
 
-    #handle_tabDragOverToSplit(event) {
+    /**
+     * The element a drop on `element` acts on.
+     *
+     * @param {Element} element
+     * @returns {Element}
+     */
+    _targetForDrop(element) {
+      return element;
+    }
+
+    /**
+     * Whether a drop lands before (vs after) an element, from how far down its
+     * box the pointer sits and the move-over threshold pref.
+     *
+     * @param {DragEvent} event
+     * @param {DOMRect} rect - The element's bounds
+     * @returns {boolean}
+     */
+    _dropsBefore(event, rect) {
+      const threshold =
+        Services.prefs.getIntPref(
+          "browser.tabs.dragDrop.moveOverThresholdPercent"
+        ) / 100;
+      return (event.clientY - rect.top) / rect.height <= threshold;
+    }
+
+    /**
+     * Lays the shared drop indicator across an element, horizontally.
+     *
+     * @param {object} options
+     * @param {Element} [options.parent] - Reparent the indicator here first
+     * @param {number} options.left - Inset from the left, in px
+     * @param {number} options.width - Indicator width, in px
+     * @param {number} options.top - Top offset, in px
+     * @returns {Element} The indicator
+     */
+    _placeDropIndicator({ parent = null, left, width, top }) {
+      const indicator = gZenPinnedTabManager.dragIndicator;
+      if (parent && indicator.parentNode !== parent) {
+        parent.appendChild(indicator);
+      }
+      indicator.setAttribute("orientation", "horizontal");
+      indicator.style.setProperty("--indicator-left", `${left}px`);
+      indicator.style.setProperty("--indicator-width", `${width}px`);
+      indicator.style.top = `${Math.round(top)}px`;
+      indicator.style.removeProperty("left");
+      return indicator;
+    }
+
+    get _splitDropReady() {
+      return !!this.#dragOverSplit.canDrop;
+    }
+
+    _handle_tabDragOverToSplit(event) {
       if (!this._dndSplitEnabled) {
         return;
       }
@@ -831,7 +921,7 @@
       }
 
       if (
-        movingTabsSet.has(dropElement) ||
+        movingTabsSet.has(this._targetForDrop(dropElement)) ||
         !isTab(draggedTab) ||
         draggedTab?.group?.hasAttribute("split-view-group") ||
         draggedTab.hasAttribute("zen-live-folder-item-id") ||
@@ -907,6 +997,8 @@
 
       this.#dragOverSplit.fakeTab = element;
       this.#dragOverSplit.canDrop = true;
+      // A drop into the split takes the drag image away at once.
+      this.ZenDragAndDropService.armDropLanding(false);
     }
 
     _clearDragOverSplit() {
@@ -914,6 +1006,9 @@
         clearTimeout(this.#dragOverSplit.timer);
       }
       this.#dragOverSplit.fakeTab?.remove();
+      if (this.#dragOverSplit.canDrop && this._dropLandingArmed) {
+        this.ZenDragAndDropService.armDropLanding(true);
+      }
 
       this.#dragOverSplit.timer = null;
       this.#dragOverSplit.fakeTab = null;
@@ -1040,12 +1135,38 @@
       }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
+      const toSplit = !!this.#dragOverSplit.canDrop;
+      const placesBefore = new Map(
+        this.#draggedElements(event).map(element => [
+          element,
+          this._placeOf(element),
+        ])
+      );
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       this.#handle_dropSwitchSpace(event);
-      this.#handle_dropCreateSplit(event);
+      this._handle_dropCreateSplit(event);
       this._clearDragOverSplit();
-      this.#landDragImage(event);
+      if (!toSplit) {
+        this.#landDragImage(event, placesBefore);
+      }
+    }
+
+    /**
+     * @param {DragEvent} event
+     * @returns {Element[]} The elements of the dragged tabs, in the order of
+     *   their drag images, when they are this window's
+     */
+    #draggedElements(event) {
+      const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (draggedTab?.documentGlobal !== window) {
+        return [];
+      }
+      return (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
+    }
+
+    _placeOf(element) {
+      return `${element.screenX},${element.screenY}`;
     }
 
     /**
@@ -1054,36 +1175,42 @@
      * which is when the tab shows again. Only macOS does so.
      *
      * @param {DragEvent} event - The drop
+     * @param {Map<Element, string>} placesBefore - Where each dragged element
+     *   was before the drop.
      */
-    #landDragImage(event) {
+    #landDragImage(event, placesBefore) {
       // The drop is done, so its indicator goes before the image lands.
       this.clearDragOverVisuals();
-      const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (draggedTab?.documentGlobal !== window || gReduceMotion) {
+      if (gReduceMotion) {
         return;
       }
-      const elements = (this._dragImageTabs ?? [draggedTab])
-        .map(elementToMove)
-        .filter(element => element?.isConnected);
-      if (!elements.length) {
-        return;
-      }
-      for (const tab of this._dragImageTabs ?? [draggedTab]) {
-        const element = elementToMove(tab);
-        const rect = (
-          element?.isConnected ? element : elements[0]
-        ).getBoundingClientRect();
-        this.ZenDragAndDropService.addDropLandingRect(
-          Math.round(window.mozInnerScreenX + rect.left),
-          Math.round(window.mozInnerScreenY + rect.top),
-          Math.round(rect.width),
-          Math.round(rect.height)
-        );
-      }
+      this._landDragImageOnElements(this.#draggedElements(event), placesBefore);
+    }
+
+    /**
+     * Marks where the drag image lands, one item per element in order, and
+     * keeps those elements out of sight until the drag ends.
+     *
+     * @param {Element[]} elements - Where the dropped items land
+     * @param {Map<Element, string>} [placesBefore] - Where each element was
+     *   before the drop; one still there stays in sight under the image
+     */
+    _landDragImageOnElements(elements, placesBefore = null) {
+      const landing = [];
       for (const element of elements) {
-        element.style.visibility = "hidden";
+        const { width, height } = element.getBoundingClientRect();
+        this.ZenDragAndDropService.addDropLandingRect(
+          Math.round(element.screenX),
+          Math.round(element.screenY),
+          Math.round(width),
+          Math.round(height)
+        );
+        if (placesBefore?.get(element) !== this._placeOf(element)) {
+          element.style.visibility = "hidden";
+          landing.push(element);
+        }
       }
-      this._landingElements = elements;
+      this._landingElements = landing;
     }
 
     #handle_dropSwitchSpace(event) {
@@ -1112,9 +1239,16 @@
       gZenWorkspaces.updateTabsContainers();
     }
 
-    #handle_dropCreateSplit(event) {
+    /**
+     * @param {DragEvent} event
+     * @param {object} [options]
+     * @param {boolean} [options.activate] - Whether to select the created split
+     * @returns {boolean} Whether the drop split the dragged tab with the tab
+     *   it was held over
+     */
+    _handle_dropCreateSplit(event, { activate = true } = {}) {
       if (!this.#dragOverSplit.canDrop) {
-        return;
+        return false;
       }
 
       const dragData = this.#dragOverSplit.data;
@@ -1122,11 +1256,11 @@
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
 
       if (!dragData || !draggedTab) {
-        return;
+        return false;
       }
 
       this._dontAnimateTabMove = true;
-      const droppedOnTab = dragData.dropElement;
+      const droppedOnTab = this._targetForDrop(dragData.dropElement);
       const dropSide = dragData.dropSide;
 
       // Clear any visuals and timer
@@ -1136,10 +1270,13 @@
       gZenViewSplitter.splitTabs(
         isLeft ? [draggedTab, droppedOnTab] : [droppedOnTab, draggedTab],
         "vsep",
-        isLeft ? 0 : 1
+        isLeft ? 0 : 1,
+        { activate }
       );
+      return true;
     }
 
+    // eslint-disable-next-line complexity
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
       if (
         dropElement?.hasAttribute("zen-empty-tab") &&
@@ -1165,6 +1302,7 @@
       try {
         if (
           this.#isAnimatingTabMove ||
+          this.#dragOverSplit.canDrop ||
           !gZenStartup.isReady ||
           gReduceMotion ||
           !dropElement ||
@@ -1307,6 +1445,7 @@
       thisFromGlobal._clearDragOverSplit();
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
+      thisFromGlobal._dropLandingArmed = false;
       this.#firstHapticFeedbackPlayed = false;
       window.removeEventListener(
         "dragenter",
@@ -1522,33 +1661,17 @@
             this.#dragShiftableItems.at(-1)
           );
         }
-        const indicator = gZenPinnedTabManager.dragIndicator;
-        let top = 0;
-        threshold =
-          Services.prefs.getIntPref(
-            "browser.tabs.dragDrop.moveOverThresholdPercent"
-          ) / 100;
-        if (overlapPercent > threshold || showIndicatorUnderNewTabButton) {
-          top = Math.round(rect.top + rect.height) + "px";
-          dropBefore = false;
-        } else {
-          top = Math.round(rect.top) + "px";
-          dropBefore = true;
-        }
-        if (indicator.style.top !== top) {
+        dropBefore =
+          !showIndicatorUnderNewTabButton && this._dropsBefore(event, rect);
+        const top = Math.round(dropBefore ? rect.top : rect.top + rect.height);
+        if (gZenPinnedTabManager.dragIndicator.style.top !== `${top}px`) {
           shouldPlayHapticFeedback = true;
         }
-        indicator.setAttribute("orientation", "horizontal");
-        indicator.style.setProperty(
-          "--indicator-left",
-          rect.left + separation / 2 + "px"
-        );
-        indicator.style.setProperty(
-          "--indicator-width",
-          rect.width - separation + "px"
-        );
-        indicator.style.top = top;
-        indicator.style.removeProperty("left");
+        this._placeDropIndicator({
+          left: rect.left + separation / 2,
+          width: rect.width - separation,
+          top,
+        });
         this.#removeDragOverBackground();
         if (!isTab(dropElement) && dropElement?.parentElement?.isZenFolder) {
           dropElement = dropElement.parentElement;

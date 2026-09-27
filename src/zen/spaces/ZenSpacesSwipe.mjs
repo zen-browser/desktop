@@ -12,15 +12,22 @@ ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
   return document.getElementById("zen-toolbar-background");
 });
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 export class ZenSpacesSwipe {
   _swipeState = {
     isGestureActive: false,
     lastDelta: 0,
     direction: null,
+    isSwipingLibrary: false,
   };
 
   constructor() {
-    this.#attachWorkspaceSwipeGestures(gNavToolbox);
+    this.attachWorkspaceSwipeGestures(gNavToolbox);
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
   }
 
@@ -35,20 +42,28 @@ export class ZenSpacesSwipe {
     );
   }
 
-  #attachWorkspaceSwipeGestures(element) {
+  attachWorkspaceSwipeGestures(element) {
+    const gestureControl = {
+      _handleSwipeMayStart: this._handleSwipeMayStart.bind(this),
+      _handleSwipeStart: this._handleSwipeStart.bind(this),
+      _handleSwipeUpdate: this._handleSwipeUpdate.bind(this),
+      _handleSwipeEnd: this._handleSwipeEnd.bind(this),
+      _handleSwipeAnimationEnd: this.onSwipeGestureAnimationEnd.bind(this),
+    };
+
     element.addEventListener(
       "MozSwipeGestureMayStart",
-      this._handleSwipeMayStart.bind(this),
+      gestureControl._handleSwipeMayStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureStart",
-      this._handleSwipeStart.bind(this),
+      gestureControl._handleSwipeStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureUpdate",
-      this._handleSwipeUpdate.bind(this),
+      gestureControl._handleSwipeUpdate,
       true
     );
 
@@ -56,15 +71,47 @@ export class ZenSpacesSwipe {
     // while MozSwipeGesture is fired immediately after swipe ends.
     element.addEventListener(
       "MozSwipeGesture",
-      this._handleSwipeEnd.bind(this),
+      gestureControl._handleSwipeEnd,
       true
     );
 
     element.addEventListener(
       "MozSwipeGestureEnd",
-      () => {
-        this.onSwipeGestureAnimationEnd();
-      },
+      gestureControl._handleSwipeAnimationEnd,
+      true
+    );
+
+    return gestureControl;
+  }
+
+  detachWorkspaceSwipeGestures(element, gestureControl) {
+    element.removeEventListener(
+      "MozSwipeGestureMayStart",
+      gestureControl._handleSwipeMayStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureStart",
+      gestureControl._handleSwipeStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureUpdate",
+      gestureControl._handleSwipeUpdate,
+      true
+    );
+
+    // Use MozSwipeGesture instead of MozSwipeGestureEnd because MozSwipeGestureEnd is fired after animation ends,
+    // while MozSwipeGesture is fired immediately after swipe ends.
+    element.removeEventListener(
+      "MozSwipeGesture",
+      gestureControl._handleSwipeEnd,
+      true
+    );
+
+    element.removeEventListener(
+      "MozSwipeGestureEnd",
+      gestureControl._handleSwipeAnimationEnd,
       true
     );
   }
@@ -95,6 +142,19 @@ export class ZenSpacesSwipe {
     }
   }
 
+  #toggleSwipeGestureAttr(enable) {
+    const elements = [
+      "zen-workspace",
+      "#tabbrowser-arrowscrollbox",
+      ".zen-browser-grain",
+    ];
+    elements.forEach(el =>
+      document
+        .querySelectorAll(el)
+        .forEach(node => node?.toggleAttribute("swipe-gesture", enable))
+    );
+  }
+
   _handleSwipeStart(event) {
     const ws = gZenWorkspaces;
 
@@ -104,7 +164,9 @@ export class ZenSpacesSwipe {
 
     gZenFolders.cancelPopupTimer();
 
-    document.documentElement.setAttribute("swipe-gesture", "true");
+    lazy.ZenLibrary.clearReadySwipeLibraryCache();
+
+    this.#toggleSwipeGestureAttr(true);
     document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
     });
@@ -115,6 +177,7 @@ export class ZenSpacesSwipe {
       isGestureActive: true,
       lastDelta: 0,
       direction: null,
+      isSwipingLibrary: false,
     };
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
   }
@@ -154,8 +217,31 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
-    // Apply a translateX to the tab strip to give the user feedback on the swipe
     const currentWorkspace = ws.getActiveWorkspaceFromCache();
+
+    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
+    const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
+    const wantsOpen =
+      !libraryOpen &&
+      (libraryOnRight ? translateX < 0 : translateX > 0) &&
+      lazy.ZenLibrary.readySwipeOpenLibrary();
+
+    if (wantsOpen || libraryOpen || this._swipeState.isSwipingLibrary) {
+      if (!this._swipeState.isSwipingLibrary) {
+        this._swipeState.isSwipingLibrary = true;
+        lazy.ZenLibrary.startSwipe();
+      }
+
+      const rawProgress = translateX / stripWidth;
+      lazy.ZenLibrary.swipeProgress(rawProgress);
+
+      // Reset workspace location to avoid freezing
+      ws._organizeWorkspaceStripLocations(currentWorkspace, true, 0);
+      return;
+    }
+    lazy.ZenLibrary.swipeReset();
+
+    // Apply a translateX to the tab strip to give the user feedback on the swipe
     ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
   }
 
@@ -173,21 +259,32 @@ export class ZenSpacesSwipe {
 
     const rawDirection = moveForward ? 1 : -1;
     const direction = ws.naturalScroll ? -1 : 1;
+
+    if (this._swipeState.isSwipingLibrary) {
+      lazy.ZenLibrary.stopSwipe(rawDirection * direction);
+      return;
+    }
+
     await ws.changeWorkspaceShortcut(rawDirection * direction, true);
   }
 
   onSwipeGestureAnimationEnd() {
     const ws = gZenWorkspaces;
 
+    if (this._swipeState.isSwipingLibrary) {
+      lazy.ZenLibrary.swipeAnimationEnd();
+    }
+
     // Reset swipe state
     this._swipeState = {
       isGestureActive: false,
       lastDelta: 0,
       direction: null,
+      isSwipingLibrary: false,
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
-    document.documentElement.removeAttribute("swipe-gesture");
+    this.#toggleSwipeGestureAttr(false);
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
     [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
       element => {

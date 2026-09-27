@@ -61,6 +61,12 @@ ChromeUtils.defineLazyGetter(lazy, "mainAppWrapper", () =>
   document.getElementById("zen-main-app-wrapper")
 );
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 window.gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
@@ -165,12 +171,13 @@ window.gZenCompactModeManager = {
   },
 
   get shouldBeCompact() {
-    return !document.documentElement
-      .getAttribute("chromehidden")
-      ?.includes("toolbar");
+    return !document.documentElement.hasAttribute("popup-window");
   },
 
   set preference(value) {
+    if (lazy.ZenLibrary.isLibrarySlightlyOpen) {
+      return;
+    }
     if (!this.shouldBeCompact) {
       value = false;
     }
@@ -543,7 +550,7 @@ window.gZenCompactModeManager = {
                 ease: "easeIn",
                 type: "spring",
                 bounce: 0,
-                duration: 0.12,
+                duration: 0.1,
               }
             )
             .then(() => {
@@ -599,7 +606,7 @@ window.gZenCompactModeManager = {
                 ease: "easeOut",
                 type: "spring",
                 bounce: 0,
-                duration: 0.12,
+                duration: 0.1,
               }
             )
             .then(() => {
@@ -864,7 +871,6 @@ window.gZenCompactModeManager = {
               "supress-primary-adjustment"
             ) === "true" &&
               gZenVerticalTabsManager._hasSetSingleToolbar) ||
-            this._hasHoveredUrlbar ||
             this._ignoreNextHover ||
             (event.type === "dragleave" &&
               event.explicitOriginalTarget !== target &&
@@ -877,7 +883,10 @@ window.gZenCompactModeManager = {
             return;
           }
 
-          if (this.hoverableElements[i].keepHoverDuration) {
+          if (
+            this.hoverableElements[i].keepHoverDuration &&
+            !this._hasHoveredUrlbar
+          ) {
             this.flashElement(
               target,
               this.hoverableElements[i].keepHoverDuration,

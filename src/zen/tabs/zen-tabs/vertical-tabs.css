@@ -83,7 +83,8 @@
   height: 100%;
 }
 
-#browser {
+#browser,
+zen-library {
   --zen-min-toolbox-padding: 5px;
   @media (-moz-platform: macos) {
     --zen-min-toolbox-padding: 6px;
@@ -229,7 +230,8 @@
 /* ==========================================================================
    Navigator Toolbox (Main Sidebar Container) Base Styles
    ========================================================================== */
-#navigator-toolbox {
+#navigator-toolbox,
+.zen-library-space-body {
   /* Define theme variables, including platform specifics for native look */
   --zen-toolbox-min-width: 1px;
   --border-radius-medium: 14px;
@@ -329,8 +331,8 @@
       display: none;
     }
 
-    &[drag-image] {
-      border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
+    &[drag-image] .tab-background {
+      border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value)) !important;
     }
 
     /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
@@ -415,19 +417,12 @@
         display: none !important;
       }
 
-      &[soundplaying]:not([muted]) .tab-icon-stack::after {
-        content: "";
-        position: absolute;
-        width: 110%;
-        height: 110%;
-      background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
-        top: -70%;
+      &[soundplaying]:not([muted]) .zen-media-notes {
+        display: block;
         left: 50%;
-        transform: translateX(-50%);
-        z-index: 0;
-        pointer-events: none;
-        transition: opacity 0.8s ease;
-        opacity: 1;
+        width: 110%;
+        translate: -50% 0;
+        --zen-media-notes-animation: zen-note-sprite;
       }
     }
 
@@ -452,13 +447,25 @@
   }
 }
 
+@media (-moz-platform: macos) {
+  #zen-sidebar-foot-buttons,
+  #zen-library-footer {
+    --zen-toolbar-button-size: 20px;
+  }
+}
+
 #zen-sidebar-foot-buttons {
+  position: relative;
   background: transparent;
   gap: 5px;
   align-items: center;
 
   & > toolbarbutton:not(#zen-workspaces-button) {
     padding: 0 !important;
+  }
+
+  :root[zen-right-side="true"][zen-sidebar-expanded="true"] & {
+    flex-direction: row-reverse;
   }
 }
 
@@ -508,7 +515,7 @@
   }
 }
 
-#navigator-toolbox[zen-sidebar-expanded="true"] {
+:is(#navigator-toolbox, .zen-library-space-body)[zen-sidebar-expanded="true"] {
   --zen-toolbox-min-width: fit-content;
 
   padding: var(--zen-toolbox-padding);
@@ -564,7 +571,6 @@
 
   & #zen-sidebar-foot-buttons {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     width: 100%;
     position: relative;
@@ -629,6 +635,8 @@
     --tab-icon-end-margin: 8.5px;
 
     & .tabbrowser-tab {
+      overflow: visible;
+
       & .tab-label-container {
         opacity: 1;
         display: flex;
@@ -875,6 +883,10 @@
   display: none !important;
 }
 
+#zen-sidebar-splitter[zen-library-open="true"] {
+  pointer-events: none !important;
+}
+
 #zen-sidebar-splitter {
   opacity: 0;
   max-width: var(--zen-toolbox-padding) !important;
@@ -1088,6 +1100,7 @@
 
     &[in-urlbar] {
       background: var(--tab-background-color-selected) !important;
+      color: var(--tab-text-color-selected);
       box-shadow: var(--tab-box-shadow-selected);
     }
   }

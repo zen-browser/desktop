@@ -4,17 +4,25 @@
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
+const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenLibraryWidget: "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
+});
+
 export const ZenCustomizableUI = new (class {
   constructor() {}
 
   TYPE_TOOLBAR = "toolbar";
   defaultSidebarIcons = [
-    "downloads-button",
+    Services.prefs.getBoolPref("zen.library.enabled")
+      ? "zen-library-button"
+      : "downloads-button",
     "zen-workspaces-button",
     "zen-create-new-button",
   ];
 
   startup(CustomizableUIInternal) {
+    CustomizableUIInternal.createBuiltinWidget(lazy.ZenLibraryWidget);
     CustomizableUIInternal.registerArea(
       "zen-sidebar-top-buttons",
       {

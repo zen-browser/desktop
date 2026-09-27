@@ -880,7 +880,7 @@ class nsZenSpacesSyncApplier {
         prev &&
         prev.parentNode &&
         prev.parentNode === el.parentNode &&
-        prev.nextElementSibling !== el
+        prev.compareDocumentPosition(el) & win.Node.DOCUMENT_POSITION_PRECEDING
       ) {
         win.gBrowser.zenHandleTabMove(el, () => prev.after(el));
       }

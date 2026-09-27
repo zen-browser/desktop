@@ -203,10 +203,6 @@
                 "state": "false",
                 "value": "false"
               },
-              "browserLayoutShowSidebar": {
-                "state": "on",
-                "value": "on"
-              },
               "web-appearance-chooser": {
                 "state": "auto",
                 "value": "auto"

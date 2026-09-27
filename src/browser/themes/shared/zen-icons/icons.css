@@ -536,16 +536,37 @@
 @media not (prefers-reduced-motion: reduce) {
   #zen-site-data-icon-button[boosting] .zen-site-data-boost-animation {
     position: absolute;
-    display: flex;
-    width: 100%;
+    display: block;
+    top: 0;
+    left: calc(4px + 30%);
+    height: 100%;
+    aspect-ratio: 1;
+    translate: -50%;
+    overflow: clip;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #zen-site-data-icon-button[boosting] .zen-site-data-boost-strip {
+    flex: none;
+    width: calc(90 * 100%);
     height: 100%;
     color: var(--zen-sidebar-themed-icon-fill);
     -moz-context-properties: fill;
     fill: currentColor;
-    list-style-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
-    transform: translateX(-20%);
-    z-index: 0;
-    pointer-events: none;
+    background-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    animation: zen-boost-sprite 3s steps(90, jump-none) infinite;
+  }
+}
+
+@keyframes zen-boost-sprite {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-89 / 90 * 100%));
   }
 }
 

@@ -13,6 +13,10 @@
     "name": "Issue 15123"
   },
   {
+    "type": "local",
+    "path": "firefox/issue_15432.patch"
+  },
+  {
     "type": "phabricator",
     "id": "D327914",
     "name": "Backdrop filter reads web content"

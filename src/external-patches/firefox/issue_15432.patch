@@ -1,0 +1,153 @@
+--- a/toolkit/modules/subprocess/subprocess_worker_common.js
++++ b/toolkit/modules/subprocess/subprocess_worker_common.js
+@@ -209,6 +209,22 @@
+       self.postMessage(response, result.transfer || []);
+     })
+     .catch(error => {
++      if (error instanceof Error) {
++        error = {
++          message: error.message,
++          fileName: error.fileName,
++          lineNumber: error.lineNumber,
++          column: error.column,
++          stack: error.stack,
++          errorCode: error.errorCode,
++        };
++      } else {
++        // The rejection value may not be a structured-cloneable Error (e.g. a
++        // DOMException from another scope or a thrown string). Serialize it
++        // ourselves so the failure message cannot be lost (gh-15432).
++        error = { message: String(error?.message ?? error) };
++      }
++
+       self.postMessage({
+         msg: "failure",
+         msgId,
+@@ -224,7 +240,7 @@
+       self.postMessage({
+         msg: "failure",
+         msgId,
+-        error: {},
++        error: { message: String(error) },
+       });
+     });
+ };
+--- a/toolkit/components/extensions/NativeMessaging.sys.mjs
++++ b/toolkit/components/extensions/NativeMessaging.sys.mjs
+@@ -37,6 +37,22 @@
+ 
+ const { ExtensionError, promiseTimeout } = ExtensionUtils;
+ 
++// Errors can arrive from the subprocess worker as plain objects when the
++// original error could not be structured-cloned (gh-15432). Normalize them so
++// that error reporting keeps a useful message and the ClonedErrorHolder used
++// to forward disconnect errors to extensions does not throw, which would
++// leave the port connected forever with no error visible anywhere.
++function toError(err) {
++  if (!err || err instanceof Error || DOMException.isInstance(err)) {
++    return err;
++  }
++  let error = new ExtensionError(`${err?.message ?? err}`);
++  if (err?.errorCode !== undefined) {
++    error.errorCode = err.errorCode;
++  }
++  return error;
++}
++
+ // For a graceful shutdown (i.e., when the extension is unloaded or when it
+ // explicitly calls disconnect() on a native port), how long we give the native
+ // application to exit before we start trying to kill it.  (in milliseconds)
+@@ -128,7 +144,7 @@
+       })
+       .catch(err => {
+         this.startupPromise = null;
+-        Cu.reportError(err instanceof Error ? err : err.message);
++        Cu.reportError(toError(err));
+         this._cleanup(err);
+       });
+   }
+@@ -265,7 +281,7 @@
+       })
+       .catch(err => {
+         if (err.errorCode != lazy.Subprocess.ERROR_END_OF_FILE) {
+-          Cu.reportError(err instanceof Error ? err : err.message);
++          Cu.reportError(toError(err));
+         }
+         this._cleanup(err);
+       });
+@@ -292,7 +308,7 @@
+         this._startWrite();
+       })
+       .catch(err => {
+-        Cu.reportError(err.message);
++        Cu.reportError(toError(err));
+         this._cleanup(err);
+       });
+   }
+@@ -363,9 +379,19 @@
+ 
+     if (!fromExtension) {
+       if (err && err.errorCode == lazy.Subprocess.ERROR_END_OF_FILE) {
++        // A clean EOF from the host. If it exited with a non-zero status,
++        // surface that in the console, otherwise "the host starts and exits
++        // without any error" is impossible to diagnose (gh-15432).
+         err = null;
++        this.proc?.wait().then(exit => {
++          if (exit.exitCode != 0) {
++            Services.console.logStringMessage(
++              `Native application ${this.name} exited with code ${exit.exitCode}`
++            );
++          }
++        }).catch(Cu.reportError);
+       }
+-      this.emit("disconnect", err);
++      this.emit("disconnect", toError(err));
+     }
+ 
+     await this.startupPromise;
+--- a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
++++ b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+@@ -24,6 +24,8 @@
+ 
+ ["test_subprocess_pathSearch.js"]
+ 
++["test_subprocess_spawn_failure.js"]
++
+ ["test_subprocess_perf.js"]
+ requesttimeoutfactor = 2  # Slow on Windows
+ 
+--- /dev/null
++++ b/toolkit/modules/subprocess/test/xpcshell/test_subprocess_spawn_failure.js
+@@ -0,0 +1,32 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++"use strict";
++
++// A spawn failure must always reject with a descriptive error. When the
++// worker-side error could not be structured-cloned, it used to arrive as an
++// empty object, which native messaging then reported as "undefined" and
++// forwarded to extensions in a form that broke the port disconnect
++// (gh-15432).
++add_task(async function test_subprocess_spawn_failure_message() {
++  const path = PathUtils.join(
++    PathUtils.tempDir,
++    "subprocess-test-not-executable.txt"
++  );
++  await IOUtils.writeUTF8(path, "this is not an executable file");
++
++  let error;
++  try {
++    await Subprocess.call({ command: path, stderr: "pipe" });
++  } catch (e) {
++    error = e;
++  }
++
++  ok(error, "Subprocess.call rejects for a non-executable file");
++  ok(error instanceof Error, `The rejection value is an Error, got ${error}`);
++  ok(
++    typeof error.message == "string" && error.message.length > 0,
++    `The rejection carries a message: ${error.message}`
++  );
++});

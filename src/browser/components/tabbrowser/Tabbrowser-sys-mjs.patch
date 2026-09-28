@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/Tabbrowser.sys.mjs b/browser/components/tabbrowser/Tabbrowser.sys.mjs
-index e41d07a03d564b2c5960d5b70cd76f8e528e6532..1abf6b811f1fd2aad0e4701549a4215e450ab482 100644
+index e41d07a03d564b2c5960d5b70cd76f8e528e6532..44e0d9877eecc9ae17d2e769108784f0ea0efa98 100644
 --- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
 +++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
 @@ -491,6 +491,7 @@ export class Tabbrowser {
@@ -413,7 +413,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..1abf6b811f1fd2aad0e4701549a4215e
        }
      }
  
-+    if (typeof this.documentGlobal.gZenVerticalTabsManager !== "undefined") {
++    if (typeof this.documentGlobal.gZenVerticalTabsManager !== "undefined" && !skipAnimation) {
 +      this.documentGlobal.gZenVerticalTabsManager.animateItemOpen(t);
 +    }
 +    if (typeof this.documentGlobal.gZenCompactModeManager !== "undefined" && !skipLoad && insertTab) {

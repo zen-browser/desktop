@@ -1,0 +1,12 @@
+diff --git a/browser/components/backup/content/turn-on-scheduled-backups.mjs b/browser/components/backup/content/turn-on-scheduled-backups.mjs
+index c697639..c8bca8a 100644
+--- a/browser/components/backup/content/turn-on-scheduled-backups.mjs
++++ b/browser/components/backup/content/turn-on-scheduled-backups.mjs
+@@ -277,6 +277,7 @@ export default class TurnOnScheduledBackups extends MozLitElement {
+       new CustomEvent("BackupUI:ProbeDefaultBackupDir", {
+         bubbles: true,
+         composed: true,
++        detail: { parentDirPath: this._newPath || undefined },
+       })
+     );
+   }

@@ -1,0 +1,30 @@
+diff --git a/browser/components/backup/tests/browser/browser_settings_turn_on_scheduled_backups.js b/browser/components/backup/tests/browser/browser_settings_turn_on_scheduled_backups.js
+index 0254a05..314eec8 100644
+--- a/browser/components/backup/tests/browser/browser_settings_turn_on_scheduled_backups.js
++++ b/browser/components/backup/tests/browser/browser_settings_turn_on_scheduled_backups.js
+@@ -136,7 +136,7 @@ add_task(async function test_turn_on_custom_location_filepicker() {
+   await BrowserTestUtils.withNewTab("about:preferences#sync", async browser => {
+     let sandbox = sinon.createSandbox();
+     sandbox.stub(BackupService.prototype, "createBackup").resolves(true);
+-    sandbox
++    let probeDefaultDirAccessStub = sandbox
+       .stub(BackupService.prototype, "probeDefaultDirAccess")
+       .resolves(true);
+ 
+@@ -222,6 +222,16 @@ add_task(async function test_turn_on_custom_location_filepicker() {
+     await confirmButtonPromise;
+     await settings.updateComplete;
+ 
++    Assert.ok(
++      probeDefaultDirAccessStub.calledOnce,
++      "Backup directory should be checked once before enabling backups"
++    );
++    Assert.deepEqual(
++      probeDefaultDirAccessStub.firstCall.args,
++      [mockCustomParentDir],
++      "The probe should check the custom directory selected in the dialog"
++    );
++
+     // Backup folder should be joined with the updated path
+     let locationPrefVal = Services.prefs.getStringPref(
+       "browser.backup.location"

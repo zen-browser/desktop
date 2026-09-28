@@ -1,0 +1,16 @@
+diff --git a/browser/components/backup/actors/BackupUIChild.sys.mjs b/browser/components/backup/actors/BackupUIChild.sys.mjs
+index 50f7d5a..0e12a3d 100644
+--- a/browser/components/backup/actors/BackupUIChild.sys.mjs
++++ b/browser/components/backup/actors/BackupUIChild.sys.mjs
+@@ -159,7 +159,10 @@ export class BackupUIChild extends JSWindowActorChild {
+       let targetNodeName = event.composedTarget.nodeName;
+       let readAccessGranted = false;
+       try {
+-        ({ readAccessGranted } = await this.sendQuery("ProbeDefaultBackupDir"));
++        ({ readAccessGranted } = await this.sendQuery(
++          "ProbeDefaultBackupDir",
++          event.detail
++        ));
+       } catch (e) {
+         lazy.logConsole.error("ProbeDefaultBackupDir failed:", e);
+       }

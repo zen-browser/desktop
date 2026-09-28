@@ -1,0 +1,15 @@
+diff --git a/browser/components/backup/actors/BackupUIParent.sys.mjs b/browser/components/backup/actors/BackupUIParent.sys.mjs
+index 0c8699d..272aa1a 100644
+--- a/browser/components/backup/actors/BackupUIParent.sys.mjs
++++ b/browser/components/backup/actors/BackupUIParent.sys.mjs
+@@ -270,7 +270,9 @@ export class BackupUIParent extends JSWindowActorParent {
+       });
+     } else if (message.name == "ProbeDefaultBackupDir") {
+       let readAccessGranted = await this.#bs.probeDefaultDirAccess(
+-        this.#bs.state.embeddedComponentPersistentData?.path || undefined
++        message.data?.parentDirPath ||
++          this.#bs.state.embeddedComponentPersistentData?.path ||
++          undefined
+       );
+       return { readAccessGranted };
+     } else if (message.name == "PrepareRestoreDialog") {

@@ -483,7 +483,6 @@ export class ZenLibrary extends MozLitElement {
     // the library will end up stuck.
     // To counteract this, we set the progress manually.
     this.animateProgress(lib.openProgress > 0.5 ? 1 : 0);
-    this.removeAttribute("transitioning");
   }
 
   /**

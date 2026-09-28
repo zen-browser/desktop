@@ -557,6 +557,11 @@ class nsZenWindowSync {
         aTargetItem,
         "zen-workspace-id"
       );
+      this.#maybeSyncAttributeChange(
+        aOriginalItem,
+        aTargetItem,
+        "zenDefaultUserContextId"
+      );
       this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
     }
     if (aOriginalItem.hasAttribute("zen-live-folder-item-id")) {

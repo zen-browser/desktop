@@ -1673,10 +1673,22 @@ class nsZenWorkspaces {
           : container.lastChild;
 
         const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
+        const updateDefaultContainerIndicator = aTab => {
+          const targetWorkspace = this.getWorkspaceFromId(workspaceID);
+          if (
+            targetWorkspace?.containerTabId &&
+            aTab.userContextId === targetWorkspace.containerTabId
+          ) {
+            aTab.setAttribute("zenDefaultUserContextId", "true");
+          } else {
+            aTab.removeAttribute("zenDefaultUserContextId");
+          }
+        };
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
             for (const subTab of tab.group.tabs) {
               subTab.setAttribute("zen-workspace-id", workspaceID);
+              updateDefaultContainerIndicator(subTab);
             }
             container.insertBefore(tab.group, insertElement);
           });
@@ -1684,6 +1696,7 @@ class nsZenWorkspaces {
         }
         gBrowser.zenHandleTabMove(tab, () => {
           tab.setAttribute("zen-workspace-id", workspaceID);
+          updateDefaultContainerIndicator(tab);
           container.insertBefore(tab, insertElement);
         });
 

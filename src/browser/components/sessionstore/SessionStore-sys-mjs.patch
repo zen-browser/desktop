@@ -356,7 +356,7 @@ index 52fc803050cd257d6de52b1e4a92f3211cbaba88..ecfcef5dabb7056886972651cd358355
 +      tab.zenStaticIcon = tabData.image;
 +    }
 +    if (tabData.zenDefaultUserContextId) {
-+      tab.setAttribute("zenDefaultUserContextId", true);
++      tab.setAttribute("zenDefaultUserContextId", "true");
 +    }
 +    if (tabData.zenWorkspace) {
 +      tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);

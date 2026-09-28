@@ -8,6 +8,12 @@ ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
   return new Localization(["browser/zen-workspaces.ftl"], true);
 });
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 class nsZenWorkspaceCreation extends MozXULElement {
   #wasInCollapsedMode = false;
   #urlbarDimmed = false;
@@ -149,6 +155,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
       return;
     }
 
+    lazy.ZenLibrary.close();
     this.appendChild(this.constructor.fragment);
     this.initializeAttributeInheritance();
 
@@ -259,8 +266,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     document.getElementById("zen-sidebar-splitter").style.pointerEvents =
       "none";
-
-    gZenCompactModeManager.getAndApplySidebarWidth({});
     this.#dimUrlbar();
     this.resolveInitialized();
   }

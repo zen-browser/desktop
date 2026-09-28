@@ -71,14 +71,9 @@ export class ZenSpacesSwipe {
   }
 
   get #stripWidth() {
-    return (
-      window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("navigator-toolbox")
-      ).width +
-      window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("zen-sidebar-splitter")
-      ).width
-    );
+    return window.windowUtils.getBoundsWithoutFlushing(
+      document.getElementById("navigator-toolbox")
+    ).width;
   }
 
   attachWorkspaceSwipeGestures(element) {

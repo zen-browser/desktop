@@ -45,8 +45,8 @@ ChromeUtils.defineLazyGetter(lazy, "toastContainer", function () {
 
 export class ZenLibrary extends MozLitElement {
   static instance = null;
-  static getInstance() {
-    if (!this.instance) {
+  static getInstance(createIfMissing = true) {
+    if (!this.instance && createIfMissing) {
       this.instance = new ZenLibrary();
       this.instance.style.visibility = "collapse";
       const mountAfter = document.getElementById("navigator-toolbox");
@@ -108,21 +108,21 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static get isLibraryOpen() {
-    const lib = this.getInstance();
-    return lib.#isOpen;
+    const lib = this.getInstance(false);
+    return lib?.#isOpen;
   }
 
   static get isLibrarySlightlyOpen() {
-    const lib = this.getInstance();
-    return lib.openProgress > 0.001;
+    const lib = this.getInstance(false);
+    return lib?.openProgress > 0.001;
   }
 
   static get libraryProgress() {
-    return this.getInstance().openProgress;
+    return this.getInstance(false)?.openProgress;
   }
 
   static get libraryOnRight() {
-    return this.getInstance().#libraryOnRight;
+    return this.getInstance(false)?.#libraryOnRight;
   }
 
   set isHidden(value) {
@@ -447,6 +447,13 @@ export class ZenLibrary extends MozLitElement {
     );
   }
 
+  static close() {
+    let lib = this.getInstance(false);
+    if (lib) {
+      this.animateProgress(0);
+    }
+  }
+
   /**
    * Checks if the library can be opened
    * if a swipe would happen right now.
@@ -656,17 +663,7 @@ export class ZenLibrary extends MozLitElement {
     // Get the width from the css property,
     // getBoundsWithoutFlushing will fail as it takes the
     // toolbox transformation during the animation into account
-    this.#toolboxWidth = parseFloat(
-      gNavToolbox.style
-        .getPropertyValue("--actual-zen-sidebar-width")
-        .replace("/\D/g", "")
-    );
-    if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
-      const splitterWidth = window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("zen-sidebar-splitter")
-      ).width;
-      this.#toolboxWidth += splitterWidth;
-    }
+    this.#toolboxWidth = parseFloat(gNavToolbox.getAttribute("width"));
   }
 
   createRenderRoot() {
@@ -695,9 +692,6 @@ export class ZenLibrary extends MozLitElement {
     }
 
     this.setAttribute("open", "true");
-    document
-      .getElementById("zen-sidebar-splitter")
-      .setAttribute("zen-library-open", "true");
     document.addEventListener("keydown", this, true);
     window.addEventListener("TabOpen", this);
 
@@ -725,9 +719,6 @@ export class ZenLibrary extends MozLitElement {
     }
     this.#mounted = new Set([this.activeTab]);
     this.requestUpdate();
-    document
-      .getElementById("zen-sidebar-splitter")
-      .removeAttribute("zen-library-open");
 
     if (this.#springControls) {
       this.#springControls.stop();

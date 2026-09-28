@@ -29,6 +29,16 @@ ChromeUtils.defineLazyGetter(
   () => new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
 );
 
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "visitFormat",
+  () =>
+    new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })
+);
+
 const HISTORY_DAYS_OLD = 120;
 const SORT_OPTIONS = ["date", "site", "mostvisited", "lastvisited"];
 
@@ -297,7 +307,11 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
         <div class="zen-library-row-text">
           <span class="zen-library-row-title">${visit.title || visit.url}</span>
           <span class="zen-library-row-subtitle"
-            >${this.#formatUrl(visit.url)}</span
+            ><span class="zen-library-visit-url"
+              >${this.#formatUrl(visit.url)}</span
+            ><span class="zen-library-visit-date"
+              >${lazy.visitFormat.format(visit.date)}</span
+            ></span
           >
         </div>
         <div class="zen-library-row-actions">

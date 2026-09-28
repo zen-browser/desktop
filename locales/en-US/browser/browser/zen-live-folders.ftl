@@ -101,4 +101,21 @@ zen-live-folder-github-option-repo-list-note =
     .label = This list is generated based on your currently active pull requests.
 
 zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+zen-live-folders-promotion-description = Latest content from your RSS feeds, GitHub pull requests, or YouTube Watch Later will appear here automatically.
+
+zen-live-folder-type-youtube =
+    .label = YouTube Watch Later
+
+zen-live-folder-youtube-item-limit =
+    .label = Video Limit
+
+zen-live-folder-youtube-item-limit-num =
+    .label = { $limit } videos
+
+zen-live-folder-youtube-no-auth =
+    .label = Sign in to YouTube
+    .tooltiptext = Open Watch Later to sign in or complete consent.
+
+zen-live-folder-youtube-unexpected-response =
+    .label = Could not read Watch Later
+    .tooltiptext = Open Watch Later and try refreshing again.

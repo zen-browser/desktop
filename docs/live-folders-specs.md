@@ -52,6 +52,16 @@ interface LiveFolderProvider {
 - **Configuration**:
   - `username`: GitHub username.
 
+#### `YoutubeLiveFolderProvider`
+
+- **Description**: Mirrors YouTube Watch Later using the signed-in website session in the folder's workspace container.
+- **Configuration**: `limit` is 50, 100 (default), 250, or 500 available videos. Configuration syncs with the folder; each device uses its own YouTube login.
+- Fetches videos in YouTube's returned order, without reordering existing Zen tabs. Closing a tab dismisses it locally and does not remove the video from Watch Later.
+- Videos outside the selected portion are removed from the folder. Failed or incomplete refreshes preserve existing tabs. Only a valid authenticated playlist response can clear the folder when no available videos remain.
+- Uses embedded page JSON and authenticated internal browse requests because the official YouTube API does not expose Watch Later. Website changes can require provider updates. Credentials, page context, and continuation tokens are never persisted or synced.
+- Sign-in/consent and unexpected-format recovery opens Watch Later in the same container. Refresh every 30 minutes by default, with manual refresh and interval settings available.
+- Browser fixtures are in `src/zen/tests/live-folders`; run `npm test -- live-folders` after importing and building the engine. Before marking an integration PR ready, also verify initial loading and pagination with real signed-in YouTube sessions in both the default and a non-default workspace container. Confirm refresh additions/removals, local dismissals/order, limit changes, and restoration after restart.
+
 #### `RestAPILiveFolderProvider`
 
 - **Description**: Updates live folder contents from a REST API endpoint.

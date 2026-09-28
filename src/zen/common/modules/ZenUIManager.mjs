@@ -1625,7 +1625,10 @@ window.gZenVerticalTabsManager = {
       "zen.view.sidebar-expanded.max-width"
     );
     const toolbox = gNavToolbox;
-    toolbox.style.setProperty("--zen-toolbox-min-width", `${this.getSidebarMinWidth()}px`);
+    toolbox.style.setProperty(
+      "--zen-toolbox-min-width",
+      `${this.getSidebarMinWidth()}px`
+    );
     if (!this._prefsCompactMode) {
       toolbox.style.maxWidth = `${maxWidth}px`;
     } else {

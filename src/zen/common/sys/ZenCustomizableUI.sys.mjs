@@ -138,7 +138,9 @@ export const ZenCustomizableUI = new (class {
     };
 
     const getWidthLimits = () => {
-      const min = parseFloat(toolbox.style.getPropertyValue("--zen-toolbox-min-width"));
+      const min = parseFloat(
+        toolbox.style.getPropertyValue("--zen-toolbox-min-width")
+      );
       const max = parseFloat(toolbox.style.maxWidth);
       return {
         min: Number.isFinite(min) ? min : 0,

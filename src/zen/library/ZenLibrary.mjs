@@ -483,6 +483,7 @@ export class ZenLibrary extends MozLitElement {
     // the library will end up stuck.
     // To counteract this, we set the progress manually.
     this.animateProgress(lib.openProgress > 0.5 ? 1 : 0);
+    this.removeAttribute("transitioning");
   }
 
   /**
@@ -504,6 +505,7 @@ export class ZenLibrary extends MozLitElement {
       lib.#springControls = null;
     }
 
+    lib.setAttribute("transitioning", "true");
     lib.style.pointerEvents = "none";
     lib.#shouldUnfreezeSwipe = true;
   }
@@ -606,6 +608,7 @@ export class ZenLibrary extends MozLitElement {
     this.style.pointerEvents = "";
     this.#canSwipe = false;
     this.#beforeSwipeState = null;
+    this.removeAttribute("transitioning");
 
     // This will only run if the swipe was
     // cancelled, otherwise cleanup will happen

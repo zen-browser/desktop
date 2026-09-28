@@ -470,6 +470,7 @@ class ZenMediaCard {
 class nsZenMediaController {
   #cards = new Map();
   #cardTemplate = null;
+  #closingBrowserIds = new Set();
 
   mediaControlBar = null;
 
@@ -580,8 +581,11 @@ class nsZenMediaController {
   }
 
   activateMediaDeviceControls(browser) {
+    const tab = window.gBrowser.getTabForBrowser(browser);
     if (
-      !browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections()
+      !browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections() ||
+      tab?.closing ||
+      this.#closingBrowserIds.has(browser?.browserId)
     ) {
       return;
     }
@@ -627,6 +631,11 @@ class nsZenMediaController {
     if (!linkedBrowser) {
       return;
     }
+
+    this.#closingBrowserIds.add(linkedBrowser.browserId);
+    setTimeout(() => {
+      this.#closingBrowserIds.delete(linkedBrowser.browserId);
+    }, 1000);
 
     for (const card of Array.from(this.#cards.values())) {
       if (card.browser.browserId === linkedBrowser.browserId) {

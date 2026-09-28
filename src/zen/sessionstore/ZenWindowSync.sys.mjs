@@ -1551,10 +1551,18 @@ class nsZenWindowSync {
     window.addEventListener("TabSelect", onTabSelect, { once: true });
     // eslint-disable-next-line no-async-promise-executor
     this.#docShellSwitchPromise = new Promise(async resolve => {
-      await this.#onTabSwitchOrWindowFocus(window);
-      window.removeEventListener("TabSelect", onTabSelect);
-      resolve();
-      this.#docShellSwitchPromise = null;
+      try {
+        await this.#onTabSwitchOrWindowFocus(window);
+      } catch (e) {
+        console.error(
+          "ZenWindowSync: Error during tab switch or window focus",
+          e
+        );
+      } finally {
+        window.removeEventListener("TabSelect", onTabSelect);
+        resolve();
+        this.#docShellSwitchPromise = null;
+      }
     });
   }
 
@@ -1571,10 +1579,15 @@ class nsZenWindowSync {
     }
     // eslint-disable-next-line no-async-promise-executor
     this.#docShellSwitchPromise = new Promise(async resolve => {
-      await promise;
-      await this.#onTabSwitchOrWindowFocus(tab.documentGlobal, previousTab);
-      resolve();
-      this.#docShellSwitchPromise = null;
+      try {
+        await promise;
+        await this.#onTabSwitchOrWindowFocus(tab.documentGlobal, previousTab);
+      } catch (e) {
+        console.error("ZenWindowSync: Error during tab switch", e);
+      } finally {
+        resolve();
+        this.#docShellSwitchPromise = null;
+      }
     });
   }
 
@@ -1582,7 +1595,7 @@ class nsZenWindowSync {
     const window = aEvent.target.documentGlobal ?? aEvent.target;
     window._zenClosingWindow = true;
     for (let eventName of EVENTS) {
-      window.removeEventListener(eventName, this);
+      window.removeEventListener(eventName, this, true);
     }
     delete window.gZenWindowSync;
     const { promise, resolve } = Promise.withResolvers();

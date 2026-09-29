@@ -144,16 +144,6 @@ window.gZenCompactModeManager = {
       true
     );
 
-    if (AppConstants.platform == "macosx") {
-      window.addEventListener("mouseover", event => {
-        const buttons = gZenVerticalTabsManager.actualWindowButtons;
-        if (event.target.closest(".titlebar-buttonbox-container") === buttons) {
-          return;
-        }
-        this._setElementExpandAttribute(buttons, false);
-      });
-    }
-
     SessionStore.promiseAllWindowsRestored.then(() => {
       this.preference = this._wasInCompactMode;
     });
@@ -543,7 +533,7 @@ window.gZenCompactModeManager = {
                     marginRight: [`-${sidebarWidth}px`, 0],
                     transform: ["translateX(100%)", "translateX(0)"],
                   }
-                : { marginLeft: 0 },
+                : { marginLeft: [`-${sidebarWidth}px`, 0] },
               {
                 ease: "easeOut",
                 type: "spring",
@@ -689,11 +679,27 @@ window.gZenCompactModeManager = {
     const isToolbar = element.id === "zen-appcontent-navbar-wrapper";
     this.log("Setting", attr, "to", value, "on element", element?.id);
     if (value) {
-      if (
-        attr === "zen-has-hover" &&
-        element !== gZenVerticalTabsManager.actualWindowButtons
-      ) {
-        element.setAttribute("zen-has-implicit-hover", "true");
+      if (attr === "zen-has-hover") {
+        if (element === gZenVerticalTabsManager.actualWindowButtons) {
+          window.addEventListener(
+            "mouseover",
+            event => {
+              if (
+                event.target.closest(".titlebar-buttonbox-container") ===
+                gZenVerticalTabsManager.actualWindowButtons
+              ) {
+                return;
+              }
+              this._setElementExpandAttribute(
+                gZenVerticalTabsManager.actualWindowButtons,
+                false
+              );
+            },
+            { once: true }
+          );
+        } else {
+          element.setAttribute("zen-has-implicit-hover", "true");
+        }
         if (!lazy.COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER) {
           return;
         }
@@ -735,12 +741,6 @@ window.gZenCompactModeManager = {
     gURLBar.addEventListener("mouseenter", event => {
       this.log("Mouse entered URL bar:", event.target);
       if (event.target.closest("#urlbar[zen-floating-urlbar]")) {
-        window.requestAnimationFrame(() => {
-          this._setElementExpandAttribute(
-            gZenVerticalTabsManager.actualWindowButtons,
-            false
-          );
-        });
         this._hasHoveredUrlbar = true;
       }
     });
@@ -827,7 +827,8 @@ window.gZenCompactModeManager = {
 
           if (
             this.hoverableElements[i].keepHoverDuration &&
-            !this._hasHoveredUrlbar
+            !this._hasHoveredUrlbar &&
+            target.hasAttribute("zen-has-hover")
           ) {
             this.flashElement(
               target,

@@ -2806,7 +2806,9 @@ class nsZenWorkspaces {
       !this._hasInitializedTabsStrip ||
       (this._organizingWorkspaceStrip && !forAnimation) ||
       document.documentElement.hasAttribute("zen-creating-workspace") ||
-      document.documentElement.hasAttribute("customizing")
+      document.documentElement.hasAttribute("customizing") ||
+      this._swipeManager?.isGestureActive ||
+      this._animatingChange
     ) {
       return;
     }

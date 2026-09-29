@@ -314,7 +314,7 @@ body,
 
   &:is(:hover, [zen-resizing="true"]) {
     transition-delay: 0.2s;
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 

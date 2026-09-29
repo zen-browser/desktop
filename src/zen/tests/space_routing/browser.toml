@@ -11,6 +11,8 @@ support-files = [
 
 ["browser_space_routing_dialog.js"]
 
+["browser_space_routing_external_window.js"]
+
 ["browser_space_routing_fuzz.js"]
 
 ["browser_space_routing_lifecycle.js"]

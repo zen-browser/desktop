@@ -65,7 +65,7 @@
     }
 
     --zen-compact-hidden-distance: calc(
-      var(--zen-sidebar-width) + var(--zen-element-separation) - 1px
+      var(--zen-sidebar-width) + var(--zen-compact-float) - 1px
     );
     --zen-compact-hidden-translate: calc(-1 * var(--zen-compact-hidden-distance));
     &[zen-right-side='true'] {
@@ -84,8 +84,8 @@
         visibility 0.15s ease;
       bottom: var(--zen-compact-float);
       padding: 0 var(--zen-compact-float) !important;
-      width: calc(var(--zen-sidebar-width) + var(--zen-element-separation) * 2) !important;
-      min-width: calc(var(--zen-toolbox-min-width) + var(--zen-element-separation) * 2) !important;
+      width: calc(var(--zen-sidebar-width) + var(--zen-compact-float) * 2) !important;
+      min-width: calc(var(--zen-toolbox-min-width) + var(--zen-compact-float) * 2) !important;
       :root[zen-single-toolbar='true'] & {
         /* We add an extra offset since windows users have a border top
              * in the window in order to compensate how windows renders the
@@ -274,8 +274,15 @@
       --zen-compact-mode-time: 0.25s;
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
+      @media -moz-pref('zen.theme.acrylic-elements') {
+        .zen-toolbar-background:not(:-moz-window-inactive) {
+          background: transparent;
+          backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+        }
+      }
+
       :root:not([supress-primary-adjustment='true']) & {
-        & #titlebar {
+        #titlebar {
           transition: none;
           visibility: visible;
         }

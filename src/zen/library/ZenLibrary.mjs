@@ -104,7 +104,6 @@ export class ZenLibrary extends MozLitElement {
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
     this.#mounted.add(this.activeTab);
-    this.#hijackFirefoxCommands();
   }
 
   static get isLibraryOpen() {
@@ -187,7 +186,7 @@ export class ZenLibrary extends MozLitElement {
         `translateX(${-(value * webOffset)}px)`
       );
 
-      const toolboxProgress = Math.min(1, value * 1.5);
+      const toolboxProgress = Math.min(1, value * 3);
       if (this.#isCompactMode) {
         if (this.#libraryOnRight) {
           gNavToolbox.style.setProperty(
@@ -251,17 +250,6 @@ export class ZenLibrary extends MozLitElement {
     lazy.toastContainer.style.removeProperty("transform");
     gNavToolbox.style.removeProperty("transform");
     gNavToolbox.style.removeProperty("opacity");
-  }
-
-  #hijackFirefoxCommands() {
-    document
-      .getElementById("Browser:ShowAllHistory")
-      .addEventListener("command", event => {
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-
-        ZenLibrary.toggle("history");
-      });
   }
 
   /**
@@ -779,7 +767,7 @@ export class ZenLibrary extends MozLitElement {
     }
     if (
       e.key === "Escape" &&
-      document.activeElement?.closest("zen-library") === this
+      document.activeElement?.closest("zen-library") !== this
     ) {
       ZenLibrary.animateProgress(0);
     }

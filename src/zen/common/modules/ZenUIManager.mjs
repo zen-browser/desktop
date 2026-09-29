@@ -1302,6 +1302,10 @@ window.gZenVerticalTabsManager = {
         if (typeof height !== "undefined") {
           gURLBar.style.setProperty("--urlbar-height", `${height}px`);
         }
+        gURLBar.style.setProperty(
+          "--urlbar-width",
+          `${window.windowUtils.getBoundsWithoutFlushing(document.getElementById("urlbar-container")).width}px`
+        );
         if (shouldUpdateFormat) {
           gURLBar.zenFormatURLValue();
         }
@@ -1314,11 +1318,12 @@ window.gZenVerticalTabsManager = {
     let captionButtonsWidth = this._prefsRightSide
       ? window.windowUtils.getBoundsWithoutFlushing(captionButtons).width
       : 0;
+    let isSingleToolbar = this._hasSetSingleToolbar;
     switch (AppConstants.platform) {
       case "macosx":
         return 163;
       default:
-        return 160 + captionButtonsWidth;
+        return (isSingleToolbar ? 117 : 36) + captionButtonsWidth;
     }
   },
 

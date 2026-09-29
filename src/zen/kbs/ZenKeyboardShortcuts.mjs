@@ -894,7 +894,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 20;
+  static LATEST_KBS_VERSION = 21;
 
   constructor() {}
 
@@ -1318,6 +1318,23 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.setDisabled(true);
         }
       }
+    }
+
+    if (version < 21) {
+      // Migrate from version 20 to 21.
+      // Add a shortcut to focus the address bar in the "Tabs" search mode,
+      // letting the user search across all open tabs.
+      data.push(
+        new KeyShortcut(
+          "zen-search-tabs",
+          "E",
+          "",
+          "searchAndFind",
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          "cmd_zenSearchTabs",
+          "zen-search-tabs-shortcut"
+        )
+      );
     }
 
     return data;

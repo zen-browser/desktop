@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
-index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98751b6993 100644
+index d81f8498f212e990b4129e305728154dd7aa6d35..d8b21405abf62b57fcd4d64bcee269f5a88933be 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
-@@ -822,7 +822,7 @@ export class UrlbarView {
+@@ -820,7 +820,7 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -22,7 +22,26 @@ index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98
  
      // Search mode is active.  If the one-offs should be shown, make sure they
      // are enabled and show the view.
-@@ -3306,6 +3302,8 @@ export class UrlbarView {
+@@ -1043,6 +1039,18 @@ export class UrlbarView {
+         // them, resembling tab-to-search. In that case, the input value is
+         // still associated with the first result.
+         this.input.setResultForCurrentValue(firstResult);
++      } else if (
++        this.input.searchMode?.source == UrlbarShared.RESULT_SOURCE.TABS
++      ) {
++        // In the tabs search mode results are never heuristic, so select the
++        // first one to let the user pick it right away. Keep the typed value
++        // intact in the input, otherwise further typing would edit it.
++        let firstSelectable = this.getFirstSelectableElement();
++        if (firstSelectable) {
++          this.#selectElement(firstSelectable, {
++            updateInput: false,
++          });
++        }
+       }
+     }
+ 
+@@ -3286,6 +3294,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -31,7 +50,7 @@ index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3972,7 +3970,7 @@ export class UrlbarView {
+@@ -3952,7 +3962,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {
@@ -40,7 +59,7 @@ index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
-@@ -4387,6 +4385,12 @@ export class UrlbarView {
+@@ -4367,6 +4377,12 @@ export class UrlbarView {
    }
  
    on_blur() {

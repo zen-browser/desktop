@@ -60,6 +60,8 @@ export function extensionOf(fileName) {
   return dot > 0 ? name.slice(dot + 1).toLowerCase() : "";
 }
 
+const TYPE_BY_EXTENSION = new Map();
+
 /**
  * @param {string} fileName - A file's name
  * @returns {string} What the browser believes the file holds, or "" when it
@@ -70,11 +72,16 @@ export function contentTypeOf(fileName) {
   if (!extension) {
     return "";
   }
-  try {
-    return lazy.mimeService.getTypeFromExtension(extension);
-  } catch {
-    return "";
+  let type = TYPE_BY_EXTENSION.get(extension);
+  if (type === undefined) {
+    try {
+      type = lazy.mimeService.getTypeFromExtension(extension);
+    } catch {
+      type = "";
+    }
+    TYPE_BY_EXTENSION.set(extension, type);
   }
+  return type;
 }
 
 /**

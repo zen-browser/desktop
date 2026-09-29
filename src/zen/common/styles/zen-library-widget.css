@@ -101,7 +101,7 @@
   visibility: hidden;
 }
 
-#zen-sidebar-foot-buttons[zen-library-badge] {
+:root:not([inDOMFullscreen="true"]) #zen-sidebar-foot-buttons[zen-library-badge] {
   & #library-button-badge {
     visibility: visible;
   }
@@ -219,9 +219,9 @@
   padding: 0;
   padding-top: 10px;
   gap: 4px;
+  container-type: inline-size;
 
   .zen-library-download-list-download {
-    container-type: inline-size;
     -moz-window-dragging: no-drag;
 
     height: 52px;
@@ -264,7 +264,7 @@
     }
 
     & .zen-library-download-list-title-container {
-      @container (max-width: 50px) {
+      @container (max-width: 58px) {
         display: none !important;
       }
 
@@ -294,7 +294,7 @@
 
     & .zen-library-download-badge {
       margin: auto 20px auto 8px;
-      @container (max-width: 50px) {
+      @container (max-width: 58px) {
         margin: auto;
       }
     }
@@ -303,7 +303,7 @@
       display: none;
       margin: auto 4px auto 0;
 
-      @container (max-width: 50px) {
+      @container (max-width: 58px) {
         display: none !important;
       }
     }

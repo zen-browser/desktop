@@ -779,7 +779,7 @@ export class ZenLibrary extends MozLitElement {
     }
     if (
       e.key === "Escape" &&
-      document.activeElement?.closest("zen-library") === this
+      document.activeElement?.closest("zen-library") !== this
     ) {
       ZenLibrary.animateProgress(0);
     }

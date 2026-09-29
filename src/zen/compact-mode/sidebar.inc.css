@@ -274,8 +274,15 @@
       --zen-compact-mode-time: 0.25s;
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
+      @media -moz-pref('zen.theme.acrylic-elements') {
+        .zen-toolbar-background:not(:-moz-window-inactive) {
+          background: transparent;
+          backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+        }
+      }
+
       :root:not([supress-primary-adjustment='true']) & {
-        & #titlebar {
+        #titlebar {
           transition: none;
           visibility: visible;
         }

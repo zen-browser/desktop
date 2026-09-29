@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar.css b/browser/themes/shared/urlbar.css
-index f340b5fa0866c7185734fba0e5152c3f8ece7e44..2fb69956b7421bf1be25e4c9fdf423d8aa570af4 100644
+index f340b5fa0866c7185734fba0e5152c3f8ece7e44..9e1e400e61f77de4daf6eb05e3b66858e4141e80 100644
 --- a/browser/themes/shared/urlbar.css
 +++ b/browser/themes/shared/urlbar.css
 @@ -26,29 +26,14 @@
@@ -276,7 +276,7 @@ index f340b5fa0866c7185734fba0e5152c3f8ece7e44..2fb69956b7421bf1be25e4c9fdf423d8
    }
 +
 +  .urlbar:popover-open:where([open], :not([in-page])) {
-+    width: calc(100% + 2 * var(--urlbar-margin-inline));
++    width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));
 +
 +    > .urlbar-input-container {
 +      height: var(--urlbar-container-height);

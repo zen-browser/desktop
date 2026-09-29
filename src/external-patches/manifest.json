@@ -53,5 +53,10 @@
   {
     "type": "local",
     "path": "firefox/override_cert_checks_temp.patch"
+  },
+  {
+    "type": "phabricator",
+    "id": "D323514",
+    "name": "Fix HEVC video stutters and dropped frames"
   }
 ]

@@ -65,7 +65,7 @@
     }
 
     --zen-compact-hidden-distance: calc(
-      var(--zen-sidebar-width) + var(--zen-element-separation) - 1px
+      var(--zen-sidebar-width) + var(--zen-compact-float) - 1px
     );
     --zen-compact-hidden-translate: calc(-1 * var(--zen-compact-hidden-distance));
     &[zen-right-side='true'] {
@@ -84,8 +84,8 @@
         visibility 0.15s ease;
       bottom: var(--zen-compact-float);
       padding: 0 var(--zen-compact-float) !important;
-      width: calc(var(--zen-sidebar-width) + var(--zen-element-separation) * 2) !important;
-      min-width: calc(var(--zen-toolbox-min-width) + var(--zen-element-separation) * 2) !important;
+      width: calc(var(--zen-sidebar-width) + var(--zen-compact-float) * 2) !important;
+      min-width: calc(var(--zen-toolbox-min-width) + var(--zen-compact-float) * 2) !important;
       :root[zen-single-toolbar='true'] & {
         /* We add an extra offset since windows users have a border top
              * in the window in order to compensate how windows renders the

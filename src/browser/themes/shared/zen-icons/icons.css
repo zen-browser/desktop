@@ -558,6 +558,10 @@
     background-repeat: no-repeat;
     background-size: 100% 100%;
     animation: zen-boost-sprite 3s steps(90, jump-none) infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 }
 

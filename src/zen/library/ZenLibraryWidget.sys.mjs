@@ -47,6 +47,11 @@ class ZenLibraryDownloadStack {
     button.classList.add("toolbarbutton-badge-stack-host");
     button.appendChild(
       this.#parse(
+        `<box class="zen-library-sprite"/>`
+      )
+    );
+    button.appendChild(
+      this.#parse(
         `<box class="toolbarbutton-badge-stack">${BADGE_MARKUP}</box>`
       )
     );

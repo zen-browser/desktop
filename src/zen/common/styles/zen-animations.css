@@ -30,21 +30,21 @@
 
 @keyframes zen-library-sprite-hover {
   from {
-    background-position-x: 0%;
+    transform: translateX(0);
   }
 
   to {
-    background-position-x: 100%;
+    transform: translateX(calc(-35 / 36 * 100%));
   }
 }
 
 @keyframes zen-library-sprite-unhover {
   from {
-    background-position-x: 100%;
+    transform: translateX(calc(-35 / 36 * 100%));
   }
 
   to {
-    background-position-x: 0%;
+    transform: translateX(0);
   }
 }
 

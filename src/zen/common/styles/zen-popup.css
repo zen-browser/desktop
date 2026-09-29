@@ -419,3 +419,8 @@ menuseparator {
 .tab-preview-thumbnail-container > canvas {
   border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
 }
+@media (-moz-platform: windows) {
+  menupopup > :is(menu, menuitem) > .menu-text {
+    padding-block: 2px;
+  }
+}

@@ -18,6 +18,8 @@ support-files = [
 
 ["browser_issue_14948.js"]
 
+["browser_issue_14948_startup_tab.js"]
+
 ["browser_issue_8699.js"]
 
 ["browser_issue_9900.js"]

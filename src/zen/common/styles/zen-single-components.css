@@ -269,12 +269,13 @@
     padding: 6px;
 
     & > #statuspanel-label {
+      color-scheme: var(--toolbar-color-scheme);
       border-radius: 16px !important;
-      border: 1px solid rgba(225, 225, 225, 0.15) !important;
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(225, 225, 225, 0.15)) !important;
       padding: 4px 8px 5px 8px !important;
       font-weight: 600 !important;
-      background: color-mix(in srgb, var(--zen-primary-color), black 70%) !important;
-      color: rgba(255, 255, 255, 0.8) !important;
+      background: color-mix(in srgb, var(--zen-primary-color), light-dark(white, black) 70%) !important;
+      color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
     }
   }
 }
@@ -802,14 +803,143 @@
 }
 
 #TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
-  --gradient-pos: calc(100% - var(--zen-library-stack-height, 0px) + 20px);
+  --zen-library-mask-ramp: 50px;
+
+  mask-repeat: no-repeat;
+  mask-size: 100% calc(100% + var(--zen-library-mask-ramp));
+  transition: mask-size var(--zen-library-open-duration) var(--zen-library-open-easing);
+
   mask-image: linear-gradient(
     to bottom,
     black
-      calc(var(--gradient-pos) - 50px),
-    color-mix(transparent calc(var(--zen-library-progress) * 100%), black)
-      var(--gradient-pos));
+      calc(100% - var(--zen-library-mask-ramp)),
+    transparent
+      100%);
+
+  &[zen-library-stack-open] {
+    mask-size: 100% calc(100% - var(--zen-library-stack-height, 0px) + 20px);
+  }
 }
 
 %include zen-library-widget.css
 %include zen-library-media-preview.css
+
+.zen-swipe-add-space-container {
+  position: absolute;
+  height: 100%;
+  width: 100px;
+  right: 0;
+  translate: 100px 0;
+
+  :root[zen-right-side="true"] & {
+    left: 0px;
+    right:  unset;
+    translate: -100px 0;
+  }
+}
+
+.zen-swipe-add-space-background {
+  right: -50px;
+  height: 100%;
+  position: absolute;
+  width: 200px;
+
+  --bg: color-mix(in srgb, var(--zen-accent-button-color), transparent 30%);
+
+  background: radial-gradient(circle at right, 
+    var(--bg) 0%,
+    transparent 30%);
+  background-position-y: center;
+  transform-origin: right;
+  z-index: -1;
+
+  :root[zen-right-side="true"] & {
+    left: -50px;
+    right: unset;
+    
+    background: radial-gradient(circle at left, 
+      var(--bg) 0%,
+      transparent 20%);
+    transform-origin: left;
+  }
+}
+
+@property --zen-swipe-add-space-thickness {
+  syntax: '<length-percentage>';
+  initial-value: 20%;
+  inherits: true;
+}
+
+.zen-swipe-add-space-progress-badge {
+  position: absolute;
+  width: 30px;
+  aspect-ratio: 1;
+
+  --zen-swipe-add-space-thickness: 16%;
+  transition: --zen-swipe-add-space-thickness 0.2s ease-in-out;
+  contain: content;
+
+  --progress: white;
+  --background: color-mix(var(--zen-primary-color), white 15%);
+  
+  right: 10px;
+  top: 50%;
+  translate: 0 -50%;
+ 
+  border-radius: 100%;
+
+  background: var(--background);
+  box-shadow: 0px 1px 8px #0005;
+  
+  & .zen-swipe-add-space-icon {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url("chrome://browser/skin/zen-icons/plus.svg") center / 55% no-repeat;
+    -moz-context-properties: fill;
+    fill: white;
+  }
+
+  &::after {
+    content: ''; 
+    display: block;
+    position: relative;
+    z-index: -1;
+    
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    
+    background:
+    conic-gradient(
+        from 0deg,
+        var(--background) calc(100% - var(--value) * 1%),
+        var(--progress) calc(100% - var(--value) * 1%)
+      )
+      border-box,
+    var(--border-color) border-box;
+
+    mask: radial-gradient(
+      circle closest-side,
+      transparent calc(100% - var(--zen-swipe-add-space-thickness)),
+      black calc(100% - var(--zen-swipe-add-space-thickness))
+    );
+  }
+
+  :root[zen-right-side="true"] & {
+    right: unset;
+    left: 10px;
+  }
+}
+
+.zen-swipe-add-space-container[readytoadd] {
+  & .zen-swipe-add-space-progress-badge {
+    --zen-swipe-add-space-thickness: 100%;
+    transform-origin: center;
+    animation: zen-swipe-add-icon-jump 0.2s ease-in-out;
+  }
+  
+  & .zen-swipe-add-space-icon {
+    fill: var(--zen-primary-color) !important;
+  }
+}

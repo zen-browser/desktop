@@ -120,3 +120,7 @@
 - name: pdfjs.enableNova
   value: false
   locked: true
+
+- name: browser.sessionstore.interval
+  # Interval in milliseconds (40 seconds, firefox defaults to 15000, but we write twice for our stores)
+  value: 40000

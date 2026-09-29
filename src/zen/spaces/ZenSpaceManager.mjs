@@ -115,6 +115,12 @@ class nsZenWorkspaces {
     );
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
+      "shouldSwipeEdgeActions",
+      "zen.workspaces.swipe-actions.edge-actions",
+      true
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
       "shouldForceContainerTabsToWorkspace",
       "zen.workspaces.force-container-workspace",
       true
@@ -214,33 +220,7 @@ class nsZenWorkspaces {
     }
   }
 
-  // Validate browser state before tab operations
-  _validateBrowserState() {
-    // Check if browser window is still open
-    if (window.closed) {
-      return false;
-    }
-
-    // Check if gBrowser is available
-    if (!gBrowser || !gBrowser.tabContainer) {
-      return false;
-    }
-
-    // Check if URL bar is available
-    if (!gURLBar) {
-      return false;
-    }
-
-    return true;
-  }
-
   selectEmptyTab(newTabTarget = null) {
-    // Validate browser state first
-    if (!this._validateBrowserState()) {
-      console.warn("Browser state invalid for empty tab selection");
-      return null;
-    }
-
     if (gZenUIManager.testingEnabled) {
       return null;
     }
@@ -259,9 +239,10 @@ class nsZenWorkspaces {
       }
 
       // Fall back to creating a new tab
+      // The homepage pref can hold several URLs separated by "|".
       const newTabUrl =
         newTabTarget ||
-        Services.prefs.getStringPref("browser.startup.homepage");
+        Services.prefs.getStringPref("browser.startup.homepage").split("|")[0];
       let tab = gZenUIManager.openAndChangeToTab(newTabUrl);
 
       // Set workspace ID if available
@@ -271,16 +252,7 @@ class nsZenWorkspaces {
       return tab;
     } catch (e) {
       console.error("Error in selectEmptyTab:", e);
-
-      // Create a fallback tab as a last resort, with proper validation
-      try {
-        if (this._validateBrowserState()) {
-          return gBrowser.addTrustedTab("about:blank");
-        }
-      } catch (fallbackError) {
-        console.error("Critical error creating fallback tab:", fallbackError);
-      }
-      return null;
+      return gBrowser.addTrustedTab("about:blank");
     }
   }
 
@@ -888,16 +860,6 @@ class nsZenWorkspaces {
     await this.changeWorkspace(activeWorkspace, { onInit: true });
     this.#fixTabPositions();
     this.onWindowResize();
-    // The spaces hold their tabs now, so the tab the user is waiting for can
-    // be selected without waiting on anything else.
-    try {
-      await this.selectStartPage();
-    } catch (e) {
-      console.error("gZenWorkspaces: Error selecting the start page", e);
-    }
-    this._resolveInitialized();
-    this.#clearAnyZombieTabs(); // Dont call with await
-    delete this._resolveInitialized;
 
     const tabUpdateListener = this.updateTabsContainers.bind(this);
     window.addEventListener("TabOpen", tabUpdateListener);
@@ -912,6 +874,17 @@ class nsZenWorkspaces {
       "TabBrowserInserted",
       this.onTabBrowserInserted.bind(this)
     );
+
+    // The spaces hold their tabs now, so the tab the user is waiting for can
+    // be selected without waiting on anything else.
+    try {
+      await this.selectStartPage();
+    } catch (e) {
+      console.error("gZenWorkspaces: Error selecting the start page", e);
+    }
+    this._resolveInitialized();
+    this.#clearAnyZombieTabs(); // Dont call with await
+    delete this._resolveInitialized;
 
     this.updateWorkspacesChangeContextMenu();
   }
@@ -3344,13 +3317,7 @@ class nsZenWorkspaces {
   }
 
   async switchTabIfNeeded(tab) {
-    // Validate browser state first
-    if (!this._validateBrowserState()) {
-      console.warn("Browser state invalid for tab switching");
-      return;
-    }
-
-    if (!tab) {
+    if (!tab || window.closed) {
       console.warn("switchTabIfNeeded called with null tab");
       return;
     }

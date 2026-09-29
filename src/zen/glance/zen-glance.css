@@ -5,6 +5,7 @@
  */
 
 .zen-glance-sidebar-container {
+  color-scheme: var(--toolbar-color-scheme);
   position: absolute;
   display: flex;
   z-index: 999;
@@ -28,7 +29,7 @@
   & toolbarbutton {
     width: var(--size-item-large);
     height: var(--size-item-large);
-    background: color-mix(in srgb, light-dark(rgb(24, 24, 24), rgb(231, 231, 231)) 96%, var(--zen-primary-color));
+    background: color-mix(in srgb, light-dark(rgb(231, 231, 231), rgb(24, 24, 24)) 96%, var(--zen-primary-color));
     transition:
       background 0.05s ease,
       scale 0.05s ease;
@@ -37,10 +38,10 @@
     box-shadow: 0 0 12px 1px rgba(0, 0, 0, 0.07);
     padding: 8px;
     opacity: 1 !important;
-    color: var(--zen-primary-color) !important;
+    color: var(--zen-branding-bg-reverse) !important;
 
     &:hover {
-      background: light-dark(rgb(41, 41, 41), rgb(204, 204, 204));
+      background: light-dark(rgb(204, 204, 204), rgb(41, 41, 41));
       scale: 1.02;
     }
 
@@ -127,7 +128,6 @@
     height: 100%;
 
     &:not([has-finished-animation="true"]) {
-      will-change: transform;
       contain: layout size;
       transform-origin: 0 0;
 

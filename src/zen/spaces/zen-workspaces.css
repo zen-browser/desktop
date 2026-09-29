@@ -362,7 +362,7 @@ zen-workspace {
       scrollbar-width: auto;
       scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
       overflow-y: auto;
-      padding-block-end: 120px;
+      padding-block-end: calc((var(--tab-min-height) * 3) + (var(--tab-margin-block) * 4));
       overscroll-behavior: auto;
     }
 

@@ -98,7 +98,8 @@ export class ZenSpaceAddSwipe {
     return (
       spaces.indexOf(current) === (libraryOnRight ? 0 : spaces.length - 1) &&
       libraryEnabled &&
-      gZenWorkspaces.shouldSwipeEdgeActions
+      gZenWorkspaces.shouldSwipeEdgeActions &&
+      !gZenWorkspaces.creatingWorkspaceId
     );
   }
 

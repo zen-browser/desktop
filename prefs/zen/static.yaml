@@ -7,10 +7,3 @@
   value: true
   mirror: always
   type: static
-
-- name: zen.swipe.is-fast-swipe
-  cpptype: bool
-  value: true
-  mirror: always
-  hidden: true
-  type: static

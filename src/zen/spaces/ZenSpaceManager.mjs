@@ -13,6 +13,12 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
   return document.getElementById("zen-browser-background");
 });
@@ -105,6 +111,12 @@ class nsZenWorkspaces {
       this,
       "shouldWrapAroundNavigation",
       "zen.workspaces.wrap-around-navigation",
+      true
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "shouldSwipeEdgeActions",
+      "zen.workspaces.swipe-actions.edge-actions",
       true
     );
     XPCOMUtils.defineLazyPreferenceGetter(
@@ -208,33 +220,7 @@ class nsZenWorkspaces {
     }
   }
 
-  // Validate browser state before tab operations
-  _validateBrowserState() {
-    // Check if browser window is still open
-    if (window.closed) {
-      return false;
-    }
-
-    // Check if gBrowser is available
-    if (!gBrowser || !gBrowser.tabContainer) {
-      return false;
-    }
-
-    // Check if URL bar is available
-    if (!gURLBar) {
-      return false;
-    }
-
-    return true;
-  }
-
   selectEmptyTab(newTabTarget = null) {
-    // Validate browser state first
-    if (!this._validateBrowserState()) {
-      console.warn("Browser state invalid for empty tab selection");
-      return null;
-    }
-
     if (gZenUIManager.testingEnabled) {
       return null;
     }
@@ -253,9 +239,10 @@ class nsZenWorkspaces {
       }
 
       // Fall back to creating a new tab
+      // The homepage pref can hold several URLs separated by "|".
       const newTabUrl =
         newTabTarget ||
-        Services.prefs.getStringPref("browser.startup.homepage");
+        Services.prefs.getStringPref("browser.startup.homepage").split("|")[0];
       let tab = gZenUIManager.openAndChangeToTab(newTabUrl);
 
       // Set workspace ID if available
@@ -265,16 +252,7 @@ class nsZenWorkspaces {
       return tab;
     } catch (e) {
       console.error("Error in selectEmptyTab:", e);
-
-      // Create a fallback tab as a last resort, with proper validation
-      try {
-        if (this._validateBrowserState()) {
-          return gBrowser.addTrustedTab("about:blank");
-        }
-      } catch (fallbackError) {
-        console.error("Critical error creating fallback tab:", fallbackError);
-      }
-      return null;
+      return gBrowser.addTrustedTab("about:blank");
     }
   }
 
@@ -882,16 +860,6 @@ class nsZenWorkspaces {
     await this.changeWorkspace(activeWorkspace, { onInit: true });
     this.#fixTabPositions();
     this.onWindowResize();
-    // The spaces hold their tabs now, so the tab the user is waiting for can
-    // be selected without waiting on anything else.
-    try {
-      await this.selectStartPage();
-    } catch (e) {
-      console.error("gZenWorkspaces: Error selecting the start page", e);
-    }
-    this._resolveInitialized();
-    this.#clearAnyZombieTabs(); // Dont call with await
-    delete this._resolveInitialized;
 
     const tabUpdateListener = this.updateTabsContainers.bind(this);
     window.addEventListener("TabOpen", tabUpdateListener);
@@ -906,6 +874,17 @@ class nsZenWorkspaces {
       "TabBrowserInserted",
       this.onTabBrowserInserted.bind(this)
     );
+
+    // The spaces hold their tabs now, so the tab the user is waiting for can
+    // be selected without waiting on anything else.
+    try {
+      await this.selectStartPage();
+    } catch (e) {
+      console.error("gZenWorkspaces: Error selecting the start page", e);
+    }
+    this._resolveInitialized();
+    this.#clearAnyZombieTabs(); // Dont call with await
+    delete this._resolveInitialized;
 
     this.updateWorkspacesChangeContextMenu();
   }
@@ -937,6 +916,23 @@ class nsZenWorkspaces {
       delete this._initialTab;
       resolveSelectPromise();
     };
+
+    // The initial tab is marked as empty before Firefox knows what to load.
+    // Firefox then loads the homepage into it (only the first URL if there
+    // are several, see loadOneOrMoreURIs). If that is a real page, treat the
+    // tab like any other initial tab instead of removing it, or the first
+    // homepage would be lost.
+    const startupURI = await gBrowserInit.uriToLoadPromise;
+    if (
+      this._tabToRemoveForEmpty &&
+      !this._initialTab &&
+      typeof startupURI === "string" &&
+      !isInitialPage(startupURI.split("|")[0])
+    ) {
+      delete this._tabToRemoveForEmpty._markedForReplacement;
+      this._initialTab = this._tabToRemoveForEmpty;
+      delete this._tabToRemoveForEmpty;
+    }
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;
@@ -1933,6 +1929,16 @@ class nsZenWorkspaces {
     }
   }
 
+  #setAnimatingBackground(animating) {
+    for (const element of [
+      lazy.browserBackgroundElement,
+      lazy.toolbarBackgroundElement,
+      gNavToolbox,
+    ]) {
+      element.toggleAttribute("animating-background", animating);
+    }
+  }
+
   _organizeWorkspaceStripLocations(
     workspace,
     justMove = false,
@@ -2030,7 +2036,7 @@ class nsZenWorkspaces {
             "--zen-main-browser-background-toolbar-old",
             nextToolbarGradient
           );
-          document.documentElement.setAttribute("animating-background", "true");
+          this.#setAnimatingBackground(true);
         }
         // Fit the offsetPixels into the grain limits. Both ends may be nextGrain and existingGrain,
         // so we need to use the min and max of both. For example, existing may be 0.2 and next may be 0.5,
@@ -2155,7 +2161,7 @@ class nsZenWorkspaces {
         });
       }
     }
-    document.documentElement.setAttribute("animating-background", "true");
+    this.#setAnimatingBackground(true);
     if (shouldAnimate && previousWorkspace) {
       let previousBackgroundOpacity =
         lazy.browserBackgroundElement.style.getPropertyValue(
@@ -2327,7 +2333,7 @@ class nsZenWorkspaces {
       console.error
     );
     this.#currentSpaceSwitchContext.animations = [];
-    document.documentElement.removeAttribute("animating-background");
+    this.#setAnimatingBackground(false);
     if (shouldAnimate) {
       for (const data of essentialsAnimData) {
         if (this.creatingWorkspaceId && data.finalOffset) {
@@ -2796,6 +2802,7 @@ class nsZenWorkspaces {
   onPinnedTabsResize(entries, forAnimation = false) {
     if (
       document.documentElement.hasAttribute("inDOMFullscreen") ||
+      lazy.ZenLibrary.isLibrarySlightlyOpen ||
       !this._hasInitializedTabsStrip ||
       (this._organizingWorkspaceStrip && !forAnimation) ||
       document.documentElement.hasAttribute("zen-creating-workspace") ||
@@ -3310,13 +3317,7 @@ class nsZenWorkspaces {
   }
 
   async switchTabIfNeeded(tab) {
-    // Validate browser state first
-    if (!this._validateBrowserState()) {
-      console.warn("Browser state invalid for tab switching");
-      return;
-    }
-
-    if (!tab) {
+    if (!tab || window.closed) {
       console.warn("switchTabIfNeeded called with null tab");
       return;
     }

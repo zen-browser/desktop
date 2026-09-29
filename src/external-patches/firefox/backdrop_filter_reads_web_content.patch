@@ -51,8 +51,8 @@ index 068182d..1442528 100644
  use crate::gpu_types::QuadSegment;
  use crate::internal_types::{FastHashMap, PlaneSplitter, FrameStamp};
  use crate::invalidation::DirtyRegion;
--use crate::tile_cache::{SliceId, TileCacheInstance};
-+use crate::tile_cache::{SliceId, TileCacheInstance, update_cross_slice_backdrops};
+-use crate::tile_cache::{max_surface_size_for_screen, SliceId, TileCacheInstance};
++use crate::tile_cache::{max_surface_size_for_screen, SliceId, TileCacheInstance, update_cross_slice_backdrops};
  use crate::picture::PictureInstance;
  use crate::picture::ResolvedSurfaceTexture;
  use crate::picture::{RasterConfig, PictureScratch};
@@ -265,7 +265,7 @@ index 032a0e1..dd91394 100644
      CompositeRoundedCorner, NativeTileId, ResolvedExternalSurface,
 @@ -20,7 +21,11 @@ use crate::debug_item::DebugItem;
  use crate::segment::EdgeMask;
- use crate::device::DrawTarget;
+ use crate::device::{BlendMode, DrawTarget, LoadOp, RenderPassDescriptor, StoreOp};
  use crate::gpu_types::{CompositeInstance, ZBufferId};
 -use crate::internal_types::{FastHashMap, TextureSource};
 +use crate::internal_types::{FastHashMap, Swizzle, TextureSource};
@@ -276,7 +276,7 @@ index 032a0e1..dd91394 100644
  use crate::picture::ResolvedSurfaceTexture;
  use super::RenderResults;
  use crate::profiler::{self};
-@@ -435,6 +440,134 @@ impl Renderer {
+@@ -435,6 +440,131 @@ impl Renderer {
          }
      }
  
@@ -284,7 +284,6 @@ index 032a0e1..dd91394 100644
 +        &mut self,
 +        resolve_op: &ResolveOp,
 +        render_tasks: &RenderTaskGraph,
-+        draw_target: DrawTarget,
 +        projection: &default::Transform3D<f32>,
 +        src_copies: &[(TextureSource, DeviceIntRect, DeviceIntRect)],
 +        stats: &mut RendererStats,
@@ -373,11 +372,9 @@ index 032a0e1..dd91394 100644
 +            draws.push((instance, *texture, Some(texture_size)));
 +        }
 +
-+        self.device.bind_draw_target(draw_target);
-+        self.device.disable_depth();
-+        self.device.disable_depth_write();
-+        self.set_blend(true, FramebufferKind::Other);
-+        self.set_blend_mode_premultiplied_alpha(FramebufferKind::Other);
++        self.device.set_depth_test(None);
++        self.device.set_depth_write(false);
++        self.set_blend_mode(BlendMode::PremultipliedAlpha, FramebufferKind::Other);
 +
 +        for (instance, texture, texture_size) in draws {
 +            let features = instance.get_rgb_features();
@@ -405,7 +402,7 @@ index 032a0e1..dd91394 100644
 +            );
 +        }
 +
-+        self.set_blend(false, FramebufferKind::Other);
++        self.set_blend_mode(BlendMode::None, FramebufferKind::Other);
 +    }
 +
      // Composite tiles in a swapchain. When using LayerCompositor, we may
@@ -459,7 +456,7 @@ index d177263..a45ec70 100644
                  let (cache_texture, _) = self.texture_resolver
                      .resolve(&texture_source).expect("bug: no source texture");
  
-@@ -2836,6 +2851,17 @@ impl Renderer {
+@@ -2836,6 +2851,16 @@ impl Renderer {
                  );
              }
          }
@@ -468,7 +465,6 @@ index d177263..a45ec70 100644
 +            self.draw_resolve_with_lower_slices(
 +                resolve_op,
 +                render_tasks,
-+                draw_target,
 +                projection,
 +                &src_copies,
 +                stats,
@@ -498,7 +494,7 @@ index 20536bb..f8a8709 100644
 +use crate::render_target::{LowerSliceSource, LowerSliceSourceKind, ResolveOp};
  use crate::render_task::{RenderTask, RenderTaskKind, RenderTaskLocation};
  use crate::space::SpaceMapper;
- use crate::spatial_tree::{CoordinateSpaceMapping, SpatialTree, SpatialNodeIndex};
+ use crate::spatial_tree::{CoordinateSpaceMapping, CoordinateSystemId, SpatialTree, SpatialNodeIndex};
 @@ -380,6 +380,8 @@ pub struct SurfaceTileDescriptor {
      pub composite_task_id: Option<RenderTaskId>,
      /// Dirty rect for this tile
@@ -689,7 +685,7 @@ index 731be26..d20e6ac 100644
  
 @@ -970,6 +988,7 @@ impl TileCacheInstance {
          self.background_color = params.background_color;
-         self.shared_clip_leaf_id = params.shared_clip_leaf_id;
+         self.tile_clip_node_id = params.tile_clip_node_id;
          self.shared_clip_node_id = params.shared_clip_node_id;
 +        self.backdrop_reads_lower_slices = params.backdrop_reads_lower_slices;
  

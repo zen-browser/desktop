@@ -18,6 +18,13 @@ const MAX_RECENT_ACTIONS = 5;
 const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
+// Exact and prefix matches must outrank any fuzzy match. The fuzzy score grows
+// quadratically with a run of consecutive matches, so a longer label that merely
+// contains the query ("Reopen Closed Tab" for "close tab") could beat the label
+// that is exactly the query.
+const EXACT_MATCH_SCORE = 1_000_000;
+const PREFIX_MATCH_SCORE = 100_000;
+
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
@@ -298,11 +305,11 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     }
     // 1. Exact match gets the highest score.
     if (targetLower === queryLower) {
-      return 200;
+      return EXACT_MATCH_SCORE;
     }
     // 2. Exact prefix matches are heavily prioritized.
     if (targetLower.startsWith(queryLower)) {
-      return 100 + queryLen;
+      return PREFIX_MATCH_SCORE + queryLen;
     }
     let score = 0;
     let queryIndex = 0;

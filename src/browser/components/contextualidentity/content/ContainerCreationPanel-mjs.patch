@@ -1,21 +1,31 @@
 diff --git a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
-index e04d7a4738192703e8f7f8555f50aaf0a619a5bd..b86e4853c421856f84ad8e017062f0d611b88aad 100644
+index 9868c288653b83717afb0403901c8adc0058bd4d..acc42f8c11c2467f19931f619496ac619fd21726 100644
 --- a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
 +++ b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
-@@ -4,7 +4,7 @@
+@@ -4,7 +4,6 @@
  
  import { ContainerEditor } from "chrome://browser/content/usercontext/ContainerEditor.mjs";
  
 -const ANCHOR_ID = "userContext-icons";
-+const ANCHOR_ID = "navigator-toolbox";
  const ANCHOR_PINNED_CLASS = "container-anchor-pinned";
  
  const lazy = {};
-@@ -95,6 +95,6 @@ export const ContainerCreationPanel = {
+@@ -80,7 +79,9 @@ export const ContainerCreationPanel = {
+     createButton.addEventListener("click", onCreate);
+     cancelButton.addEventListener("click", onCancel);
+ 
+-    let anchor = doc.getElementById(ANCHOR_ID);
++    let anchor = win.gZenWorkspaces.activeWorkspaceStrip.querySelector(
++      "#tabs-newtab-button"
++    );
+ 
+     panel.addEventListener("popupshown", () => editor.focus(), { once: true });
+     panel.addEventListener(
+@@ -99,6 +100,6 @@ export const ContainerCreationPanel = {
        anchor.hidden = false;
      }
  
 -    panel.openPopup(anchor, "bottomright topright");
-+    panel.openPopup(anchor, win.gZenUIManager.panelUIPosition());
++    panel.openPopup(anchor, win.gZenUIManager.panelUIPosition(panel, anchor));
    },
  };

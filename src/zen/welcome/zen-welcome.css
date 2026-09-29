@@ -33,10 +33,6 @@
 :root[zen-welcome-stage] {
   min-width: 875px;
   min-height: 560px;
-
-  #zen-sidebar-splitter {
-    display: none;
-  }
 }
 
 #zen-welcome {

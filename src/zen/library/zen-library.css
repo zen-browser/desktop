@@ -72,7 +72,10 @@ zen-library[open] {
   visibility: visible;
   pointer-events: auto;
   -moz-window-dragging: drag;
-  transition: width 0.3s cubic-bezier(.36,.06,0,.94);
+
+  &:not([transitioning]) {
+    transition: width 0.3s cubic-bezier(.36,.06,0,.94);
+  }
 }
 
 :is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
@@ -220,7 +223,7 @@ zen-library:is([transitioning], [sizing])
   width: calc(36 * var(--zen-library-sprite-size));
   height: var(--zen-library-sprite-size);
   background-size: 100% 100%;
-  --stroke: light-dark(var(--zen-colors-primary), var(--zen-accent-button-color));
+  --stroke: var(--zen-accent-button-color);
   --fill: color-mix(in srgb, var(--stroke), light-dark(white, black) 60%);
   fill: var(--fill);
   stroke: var(--stroke);
@@ -727,6 +730,22 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   opacity: 0.6;
 }
 
+zen-library-history-section {
+  & .zen-library-visit-date {
+    display: none;
+  }
+
+  & .zen-library-row:hover {
+    & .zen-library-visit-url {
+      display: none;
+    }
+
+    & .zen-library-visit-date {
+      display: inline;
+    }
+  }
+}
+
 .zen-library-row-actions {
   display: flex;
   gap: 4px;
@@ -1029,6 +1048,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
+  --zen-toolbox-min-width: fit-content;
   --zen-library-scroll-border: color-mix(
     in srgb,
     var(--toolbox-textcolor) 15%,

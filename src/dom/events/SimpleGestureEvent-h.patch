@@ -1,0 +1,16 @@
+diff --git a/dom/events/SimpleGestureEvent.h b/dom/events/SimpleGestureEvent.h
+index 4b9f6584ba5a0d279dea130c059fef16cdb4de84..34b3c36760b34de8ded047f947a17e1be20bd3fd 100644
+--- a/dom/events/SimpleGestureEvent.h
++++ b/dom/events/SimpleGestureEvent.h
+@@ -27,6 +27,11 @@ class SimpleGestureEvent : public MouseEvent {
+ 
+   uint32_t AllowedDirections() const;
+   void SetAllowedDirections(uint32_t aAllowedDirections);
++  double SwipeSuccessThreshold() const;
++  void SetSwipeSuccessThreshold(double aSwipeSuccessThreshold);
++  double SwipeSuccessVelocityContribution() const;
++  void SetSwipeSuccessVelocityContribution(
++      double aSwipeSuccessVelocityContribution);
+   uint32_t Direction() const;
+   double Delta() const;
+   uint32_t ClickCount() const;

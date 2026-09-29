@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.library.enabled
-  value: "@IS_TWILIGHT@"
+  value: true
 
 - name: zen.library.last-tab
   value: "history"

@@ -441,6 +441,7 @@ class ZenMediaCard {
     const { element } = this;
     if (element.hidden) {
       element.remove();
+      this.manager.onCardDestroyed(this);
     } else {
       // Animate the card out instead of popping it away. It leaves the
       // flex flow immediately (so the remaining cards re-slot right away)
@@ -454,10 +455,11 @@ class ZenMediaCard {
       // immediately if they never start (e.g. reduced motion).
       Promise.allSettled(
         element.getAnimations().map(animation => animation.finished)
-      ).then(() => element.remove());
+      ).then(() => {
+        element.remove();
+        this.manager.onCardDestroyed(this);
+      });
     }
-
-    this.manager.onCardDestroyed(this);
   }
 }
 

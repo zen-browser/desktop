@@ -178,7 +178,12 @@ class nsZenWorkspaceIcons extends MozXULElement {
       return;
     }
     buttons[selected].setAttribute("active", true);
-    buttons[selected].scrollIntoView({ behavior: "smooth", inline: "nearest" });
+    window.promiseDocumentFlushed(() => {
+      buttons[selected].scrollIntoView({
+        behavior: "smooth",
+        inline: "nearest",
+      });
+    });
     this.setAttribute("selected", selected);
   }
 

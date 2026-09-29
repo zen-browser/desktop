@@ -145,10 +145,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
     const tab = event.target;
-    if (this._ignoreNextTabPinnedEvent) {
-      delete this._ignoreNextTabPinnedEvent;
-      return;
-    }
     switch (action) {
       case "TabPinned":
         tab._zenClickEventListener = this._zenClickEventListener;
@@ -558,7 +554,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         });
       } else {
         gBrowser.pinTab(tab);
-        this._ignoreNextTabPinnedEvent = true;
       }
       tab.setAttribute("zenDefaultUserContextId", true);
       if (tab.selected) {

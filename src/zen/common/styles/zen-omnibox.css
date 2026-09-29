@@ -253,10 +253,6 @@
   order: 2 !important;
 }
 
-#urlbar[breakout] {
-  position: fixed;
-}
-
 #urlbar[breakout-extend] {
   z-index: 2;
 
@@ -471,7 +467,7 @@
 
 :root[zen-single-toolbar="true"] {
   #urlbar[open] {
-    min-width: min(90%, 40rem);
+    width: min(90%, 40rem);
   }
 
   &[zen-right-side="true"] #urlbar[open]:not([zen-floating-urlbar="true"]) {
@@ -703,7 +699,7 @@
   overflow-y: auto;
   scrollbar-width: none;
   margin-block-start: calc(var(--urlbarView-results-padding) - 2px);
-  margin-block-end: var(--urlbarView-results-padding);
+  margin-block-end: calc(var(--urlbarView-results-padding) - 2px);
   padding-block: 0 !important;
 
   & .action-contextualidentity {

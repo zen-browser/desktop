@@ -67,7 +67,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-tests
 
   ac_add_options --enable-rust-simd
-  ac_add_options --enable-wasm-simd
 
   ac_add_options --disable-geckodriver
   ac_add_options --disable-rust-tests

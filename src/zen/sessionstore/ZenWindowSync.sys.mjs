@@ -1572,7 +1572,7 @@ class nsZenWindowSync {
 
   on_TabSelect(aEvent) {
     const tab = aEvent.target;
-    if (this.#inflightSwapTabs.has(tab)) {
+    if (this.#inflightSwapTabs.has(tab.id)) {
       return;
     }
     const previousTab = aEvent.detail.previousTab;

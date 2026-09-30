@@ -11,7 +11,7 @@ const CONFIG = Object.freeze({
   ANIMATION: {
     ARC_STEPS: 60,
     MAX_ARC_HEIGHT: 1200,
-    ARC_HEIGHT_RATIO: 0.8, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
+    ARC_HEIGHT_RATIO: 2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
     SCALE_END: 0.45, // Final scale at destination
   },
 });

@@ -133,7 +133,6 @@ export class ZenLibrary extends MozLitElement {
     if (this._activeTab === value) {
       return;
     }
-    this.#refreshToolboxWidth();
 
     this._activeTab = value;
     this.#mounted.add(value);
@@ -648,10 +647,8 @@ export class ZenLibrary extends MozLitElement {
    * navigator-toolbox and caches it.
    */
   #refreshToolboxWidth() {
-    // Get the width from the css property,
-    // getBoundsWithoutFlushing will fail as it takes the
-    // toolbox transformation during the animation into account
-    this.#toolboxWidth = parseFloat(gNavToolbox.getAttribute("width"));
+    this.#toolboxWidth =
+      window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
   }
 
   createRenderRoot() {

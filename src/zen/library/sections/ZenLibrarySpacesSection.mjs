@@ -837,7 +837,9 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     let content = "";
     if (hasIcon) {
       const icon = gZenWorkspaces.getWorkspaceIcon(workspace);
-      content = icon.endsWith(".svg") ? html`<img src=${icon} alt="" />` : icon;
+      content = icon.endsWith(".svg")
+        ? html`<img src=${icon} draggable="false" alt="" />`
+        : icon;
     }
     return html`
       <button
@@ -893,6 +895,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
             <img
               class="toolbarbutton-icon"
               src="chrome://browser/skin/zen-icons/paintbrush-fill.svg"
+              draggable="false"
               alt=""
             />
           </toolbarbutton>
@@ -923,6 +926,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
             <img
               class="toolbarbutton-icon"
               src="chrome://global/skin/icons/more.svg"
+              draggable="false"
               alt=""
             />
           </toolbarbutton>

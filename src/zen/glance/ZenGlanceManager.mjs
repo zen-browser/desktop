@@ -1779,6 +1779,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     this.#prepareTabForFullOpen();
 
+    gZenVerticalTabsManager.animateItemOpen(this.#currentTab);
+
     const sidebarButtons = this.browserWrapper.querySelector(
       ".zen-glance-sidebar-container"
     );

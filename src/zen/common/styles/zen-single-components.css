@@ -838,6 +838,7 @@
     top: 0;
     bottom: 0;
     translate: unset;
+    --value: 0;
   }
 }
 

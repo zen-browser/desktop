@@ -10,14 +10,6 @@ import {
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 import { ZenLibraryDragAndDrop } from "moz-src:///zen/library/ZenLibraryDragAndDrop.mjs";
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(
-  lazy,
-  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
-  { global: "current" }
-);
-
 const GRADIENT_TOPIC = "zen-space-gradient-update";
 const SIZING_FALLBACK_MS = 600;
 const SCROLL_EDGE_PX = 48;
@@ -223,7 +215,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       return;
     }
     const sideWidth = window.windowUtils.getBoundsWithoutFlushing(side).width;
-    const width = `${sideWidth + this.#cardsWidth(list) + this.#plusButtonWidth()}px`;
+    const width = `${sideWidth + this.#cardsWidth(list)}px`;
     if (
       this.library.style.getPropertyValue("--zen-library-content-width") ===
       width
@@ -943,51 +935,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     `;
   }
 
-  /**
-   * @returns {number} The width of the button container in px.
-   */
-  #plusButtonWidth() {
-    const { paddingRight } = window.getComputedStyle(this.#list);
-    const padding = parseFloat(paddingRight);
-    return 100 - padding;
-  }
-
-  #plusButtonHover = {
-    handleEvent: event => {
-      const badge = event.target.closest(".zen-swipe-add-space-container");
-      const isOver = event.type === "mouseover";
-
-      badge.style.setProperty("--value", isOver ? 100 : 0);
-
-      if (isOver) {
-        badge.setAttribute("readytoadd", "true");
-      } else {
-        badge.removeAttribute("readytoadd");
-      }
-    },
-    capture: true,
-  };
-
-  #onPlusButtonClick() {
-    lazy.ZenLibrary.animateProgress(0);
-    gZenWorkspaces.openWorkspaceCreation(null);
-  }
-
-  #renderPlusButton() {
-    return html`
-      <div class="zen-swipe-add-space-container space-section">
-        <div
-          class="zen-swipe-add-space-progress-badge no-squircles"
-          @click=${this.#onPlusButtonClick}
-          @mouseover=${this.#plusButtonHover}
-          @mouseout=${this.#plusButtonHover}
-        >
-          <span class="zen-swipe-add-space-icon"></span>
-        </div>
-      </div>
-    `;
-  }
-
   render() {
     return html`
       <div class="zen-library-spaces">
@@ -996,7 +943,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           workspace => workspace.uuid,
           workspace => this.#renderSpace(workspace)
         )}
-        ${this.#renderPlusButton()}
       </div>
     `;
   }

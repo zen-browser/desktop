@@ -215,7 +215,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       return;
     }
     const sideWidth = window.windowUtils.getBoundsWithoutFlushing(side).width;
-    const width = `${sideWidth + this.#cardsWidth(list)}px`;
+    const width = `${sideWidth + this.#cardsWidth(list) + this.#plusButtonWidth()}px`;
     if (
       this.library.style.getPropertyValue("--zen-library-content-width") ===
       width
@@ -372,6 +372,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #fillGroups() {
     while (this.#pendingGroups.length) {
       const { copy, inner } = this.#pendingGroups.shift();
+      this.#copyFolderIcon(copy);
       for (const child of inner.children) {
         if (!child.classList.contains("zen-tab-group-start")) {
           this.#appendCopy(copy, child);
@@ -480,13 +481,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       }
       container.appendChild(copy);
       this.#realElements.set(copy, node);
-      const icon = copy.querySelector(".tab-group-folder-icon");
-      const realIcon = node.querySelector(".tab-group-folder-icon");
-      if (icon && realIcon) {
-        icon.replaceChildren(
-          ...[...realIcon.children].map(child => child.cloneNode(true))
-        );
-      }
+      this.#copyFolderIcon(copy);
       // A group empties itself and builds its own scaffolding the moment it
       // joins the document, so its rows are put in afterwards.
       this.#pendingGroups.push({
@@ -506,6 +501,18 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     container.appendChild(copy);
     for (const child of node.children) {
       this.#appendCopy(copy, child);
+    }
+  }
+
+  #copyFolderIcon(copy) {
+    const icon = copy.querySelector(".tab-group-folder-icon");
+    const realIcon = this.#realElements
+      .get(copy)
+      ?.querySelector(".tab-group-folder-icon");
+    if (icon && realIcon) {
+      icon.replaceChildren(
+        ...[...realIcon.children].map(child => child.cloneNode(true))
+      );
     }
   }
 
@@ -935,6 +942,48 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     `;
   }
 
+  /**
+   * @returns {number} The width of the button container in px.
+   */
+  #plusButtonWidth() {
+    return 75;
+  }
+
+  #plusButtonHover = {
+    handleEvent: event => {
+      const badge = event.target.closest(".zen-swipe-add-space-container");
+      const isOver = event.type === "mouseover";
+
+      badge.style.setProperty("--value", isOver ? 100 : 0);
+
+      if (isOver) {
+        badge.setAttribute("readytoadd", "true");
+      } else {
+        badge.removeAttribute("readytoadd");
+      }
+    },
+    capture: true,
+  };
+
+  #onPlusButtonClick() {
+    gZenWorkspaces.openWorkspaceCreation();
+  }
+
+  #renderPlusButton() {
+    return html`
+      <div class="zen-swipe-add-space-container space-section">
+        <div
+          class="zen-swipe-add-space-progress-badge no-squircles"
+          @click=${this.#onPlusButtonClick}
+          @mouseover=${this.#plusButtonHover}
+          @mouseout=${this.#plusButtonHover}
+        >
+          <span class="zen-swipe-add-space-icon"></span>
+        </div>
+      </div>
+    `;
+  }
+
   render() {
     return html`
       <div class="zen-library-spaces">
@@ -943,6 +992,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           workspace => workspace.uuid,
           workspace => this.#renderSpace(workspace)
         )}
+        ${this.#renderPlusButton()}
       </div>
     `;
   }

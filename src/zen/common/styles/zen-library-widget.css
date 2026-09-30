@@ -231,7 +231,6 @@
   padding: 0;
   padding-top: 10px;
   gap: 4px;
-  container-type: inline-size;
 
   .zen-library-download-list-download {
     -moz-window-dragging: no-drag;
@@ -276,7 +275,7 @@
     }
 
     & .zen-library-download-list-title-container {
-      @container (max-width: 58px) {
+      :root:not([zen-sidebar-expanded="true"]) & {
         display: none !important;
       }
 
@@ -306,7 +305,8 @@
 
     & .zen-library-download-badge {
       margin: auto 20px auto 8px;
-      @container (max-width: 58px) {
+
+      :root:not([zen-sidebar-expanded="true"]) & {
         margin: auto;
       }
     }
@@ -315,7 +315,7 @@
       display: none;
       margin: auto 4px auto 0;
 
-      @container (max-width: 58px) {
+      :root:not([zen-sidebar-expanded="true"]) & {
         display: none !important;
       }
     }

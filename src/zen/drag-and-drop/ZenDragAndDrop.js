@@ -871,10 +871,22 @@
         parent.appendChild(indicator);
       }
       indicator.setAttribute("orientation", "horizontal");
-      indicator.style.setProperty("--indicator-left", `${left}px`);
-      indicator.style.setProperty("--indicator-width", `${width}px`);
-      indicator.style.top = `${Math.round(top)}px`;
-      indicator.style.removeProperty("left");
+      const style = indicator.style;
+      const leftValue = `${left}px`;
+      const widthValue = `${width}px`;
+      const topValue = `${Math.round(top)}px`;
+      if (style.getPropertyValue("--indicator-left") !== leftValue) {
+        style.setProperty("--indicator-left", leftValue);
+      }
+      if (style.getPropertyValue("--indicator-width") !== widthValue) {
+        style.setProperty("--indicator-width", widthValue);
+      }
+      if (style.top !== topValue) {
+        style.top = topValue;
+      }
+      if (style.left) {
+        style.removeProperty("left");
+      }
       return indicator;
     }
 

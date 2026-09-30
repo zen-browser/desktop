@@ -45,11 +45,7 @@ class ZenLibraryDownloadStack {
     this.#button = button;
     button.setAttribute("command", "cmd_zenToggleLibrary");
     button.classList.add("toolbarbutton-badge-stack-host");
-    button.appendChild(
-      this.#parse(
-        `<box class="zen-library-sprite"/>`
-      )
-    );
+    button.appendChild(this.#parse(`<box class="zen-library-sprite"/>`));
     button.appendChild(
       this.#parse(
         `<box class="toolbarbutton-badge-stack">${BADGE_MARKUP}</box>`

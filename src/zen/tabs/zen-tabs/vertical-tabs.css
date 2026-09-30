@@ -1126,9 +1126,8 @@ zen-library {
   }
 
   &[hidden="true"] {
-    --hidden-essentials-width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
-    max-width: var(--hidden-essentials-width) !important; /* To still allow essentials to grid the tabs */
-    min-width: var(--hidden-essentials-width) !important;
+    max-width: var(--zen-sidebar-width) !important; /* To still allow essentials to grid the tabs */
+    min-width: var(--zen-sidebar-width) !important;
 
     visibility: hidden;
     pointer-events: none;
@@ -1219,6 +1218,10 @@ zen-library {
 
     &[visuallyselected]:hover .tab-background::before {
       background: var(--zen-essential-tab-selected-bg-hover);
+    }
+
+    &[drag-image][visuallyselected] > .tab-stack > .tab-background::before {
+      border-radius: calc((var(--border-radius-medium) - var(--zen-essential-bg-margin)) / var(--zen-squircle-value));
     }
   }
 }
@@ -1333,12 +1336,8 @@ zen-library {
   position: absolute;
   z-index: -1;
   /* Extra width to cover the sidebar splitter */
-  width: calc(100% + var(--zen-toolbox-padding));
+  width: 100%;
   left: 0;
   pointer-events: none;
   background: var(--zen-primary-color);
-
-  :root[zen-right-side="true"] & {
-    left: calc(-1 * var(--zen-toolbox-padding));
-  }
 }

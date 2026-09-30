@@ -6,9 +6,9 @@
 
 &:not([zen-compact-animating]) {
   #zen-dragover-background {
-    width: calc(100% - var(--zen-toolbox-padding) * 2 - 7px);
+    width: calc(100% - var(--zen-toolbox-padding) * 2 - 4px);
     left: unset;
-    right: calc(var(--zen-toolbox-padding) + 3px);
+    right: calc(var(--zen-toolbox-padding) + 2px);
     transform: translateY(-4px);
 
     :root:not([zen-single-toolbar="true"]) & {

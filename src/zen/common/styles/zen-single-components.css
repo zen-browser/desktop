@@ -833,6 +833,12 @@
     right:  unset;
     translate: -100px 0;
   }
+
+  &.space-section {
+    top: 0;
+    bottom: 0;
+    translate: unset;
+  }
 }
 
 .zen-swipe-add-space-background {
@@ -926,6 +932,11 @@
   :root[zen-right-side="true"] & {
     right: unset;
     left: 10px;
+  }
+
+  .space-section & {
+    left: 50% !important;
+    translate: -50% 0;
   }
 }
 

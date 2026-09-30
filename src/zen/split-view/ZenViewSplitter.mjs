@@ -77,7 +77,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   __hasSetMenuListener = false;
   overlay = null;
   _splitNodeToSplitters = new Map();
-  _tabToSplitNode = new Map();
+  _tabToSplitNode = new WeakMap();
   dropZone;
   _edgeHoverSize;
   minResizeWidth;

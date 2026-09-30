@@ -2061,8 +2061,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       splitViewIds,
     });
 
-    if (group.collapsed && selectedTabs.length) {
-      const active = new Set([...(group.activeTabs ?? []), ...selectedTabs]);
+    const previouslyActive = group.activeTabs ?? [];
+    const activatesNewTab = selectedTabs.some(
+      tab => !previouslyActive.includes(tab)
+    );
+    if (group.collapsed && activatesNewTab) {
+      const active = new Set([...previouslyActive, ...selectedTabs]);
       // Tabs inside of collapsed subfolders would stay hidden if the folder
       // gets expanded, so they don't need to be active.
       const isInsideCollapsedSubfolder = tab => {

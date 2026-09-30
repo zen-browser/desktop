@@ -239,9 +239,10 @@ class nsZenWorkspaces {
       }
 
       // Fall back to creating a new tab
+      // The homepage pref can hold several URLs separated by "|".
       const newTabUrl =
         newTabTarget ||
-        Services.prefs.getStringPref("browser.startup.homepage");
+        Services.prefs.getStringPref("browser.startup.homepage").split("|")[0];
       let tab = gZenUIManager.openAndChangeToTab(newTabUrl);
 
       // Set workspace ID if available
@@ -915,6 +916,23 @@ class nsZenWorkspaces {
       delete this._initialTab;
       resolveSelectPromise();
     };
+
+    // The initial tab is marked as empty before Firefox knows what to load.
+    // Firefox then loads the homepage into it (only the first URL if there
+    // are several, see loadOneOrMoreURIs). If that is a real page, treat the
+    // tab like any other initial tab instead of removing it, or the first
+    // homepage would be lost.
+    const startupURI = await gBrowserInit.uriToLoadPromise;
+    if (
+      this._tabToRemoveForEmpty &&
+      !this._initialTab &&
+      typeof startupURI === "string" &&
+      !isInitialPage(startupURI.split("|")[0])
+    ) {
+      delete this._tabToRemoveForEmpty._markedForReplacement;
+      this._initialTab = this._tabToRemoveForEmpty;
+      delete this._tabToRemoveForEmpty;
+    }
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;
@@ -2788,7 +2806,9 @@ class nsZenWorkspaces {
       !this._hasInitializedTabsStrip ||
       (this._organizingWorkspaceStrip && !forAnimation) ||
       document.documentElement.hasAttribute("zen-creating-workspace") ||
-      document.documentElement.hasAttribute("customizing")
+      document.documentElement.hasAttribute("customizing") ||
+      this._swipeManager?.isGestureActive ||
+      this._animatingChange
     ) {
       return;
     }

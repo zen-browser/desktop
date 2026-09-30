@@ -128,7 +128,6 @@
     height: 100%;
 
     &:not([has-finished-animation="true"]) {
-      will-change: transform;
       contain: layout size;
       transform-origin: 0 0;
 

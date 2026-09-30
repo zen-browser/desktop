@@ -46,15 +46,6 @@ window.gZenUIManager = {
       return document.getElementById("zen-toast-container");
     });
 
-    new ResizeObserver(
-      gZenCommonActions.throttle(
-        gZenCompactModeManager.getAndApplySidebarWidth.bind(
-          gZenCompactModeManager
-        ),
-        Services.prefs.getIntPref("zen.view.sidebar-height-throttle", 500)
-      )
-    ).observe(gNavToolbox);
-
     gZenWorkspaces.promiseInitialized.finally(() => {
       this._hasLoadedDOM = true;
       this.updateTabsToolbar();
@@ -1088,7 +1079,8 @@ window.gZenVerticalTabsManager = {
       // so we can capture and improve them.
       (gZenUIManager.testingEnabled && !gZenUIManager.profilingEnabled) ||
       !gZenStartup.isReady ||
-      aItem.group?.hasAttribute("split-view-group")
+      aItem.group?.hasAttribute("split-view-group") ||
+      aItem.hasAttribute("zen-glance-tab")
     ) {
       return;
     }
@@ -1310,11 +1302,29 @@ window.gZenVerticalTabsManager = {
         if (typeof height !== "undefined") {
           gURLBar.style.setProperty("--urlbar-height", `${height}px`);
         }
+        gURLBar.style.setProperty(
+          "--urlbar-width",
+          `${window.windowUtils.getBoundsWithoutFlushing(document.getElementById("urlbar-container")).width}px`
+        );
         if (shouldUpdateFormat) {
           gURLBar.zenFormatURLValue();
         }
       });
     });
+  },
+
+  getSidebarMinWidth() {
+    let captionButtons = this.actualWindowButtons;
+    let captionButtonsWidth = this._prefsRightSide
+      ? window.windowUtils.getBoundsWithoutFlushing(captionButtons).width
+      : 0;
+    let isSingleToolbar = this._hasSetSingleToolbar;
+    switch (AppConstants.platform) {
+      case "macosx":
+        return 163;
+      default:
+        return (isSingleToolbar ? 117 : 36) + captionButtonsWidth;
+    }
   },
 
   // eslint-disable-next-line complexity
@@ -1595,15 +1605,7 @@ window.gZenVerticalTabsManager = {
       }
 
       gZenCompactModeManager.updateCompactModeContext(isSingleToolbar);
-
-      // Always move the splitter next to the sidebar
-      const splitter = document.getElementById("zen-sidebar-splitter");
-      splitter.addEventListener("dragover", gBrowser.tabContainer);
-      this.navigatorToolbox.after(splitter);
       window.dispatchEvent(new Event("resize"));
-      if (!isCompactMode) {
-        gZenCompactModeManager.getAndApplySidebarWidth({});
-      }
       gZenUIManager.updateTabsToolbar();
       this.rebuildURLBarMenus();
       appContentNavbarWrapper.style.transition = "";
@@ -1628,6 +1630,10 @@ window.gZenVerticalTabsManager = {
       "zen.view.sidebar-expanded.max-width"
     );
     const toolbox = gNavToolbox;
+    toolbox.style.setProperty(
+      "--zen-toolbox-min-width",
+      `${this.getSidebarMinWidth()}px`
+    );
     if (!this._prefsCompactMode) {
       toolbox.style.maxWidth = `${maxWidth}px`;
     } else {

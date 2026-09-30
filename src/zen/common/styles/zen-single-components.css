@@ -345,16 +345,13 @@
       align-items: center;
       border-radius: 6px;
 
-      @media not (-moz-platform: macos) {
-        border-radius: 4px;
-      }
-
       transition:
         background-color 0.1s ease-in-out,
         transform 0.12s ease-in-out;
 
       & toolbarbutton {
         background: transparent !important;
+        border-radius: 6px;
       }
 
       & .toolbarbutton-badge-stack {

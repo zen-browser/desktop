@@ -9,6 +9,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenLibraryWidget: "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
 });
 
+const kCollapseSidebarWidth = 60;
+const kCompactModeHintPref = "zen.view.compact.drag-collapse-hint-seen";
+const kCompactModeToggleCommand = "cmd_toggleCompactModeIgnoreHover";
+
 export const ZenCustomizableUI = new (class {
   constructor() {}
 
@@ -56,12 +60,12 @@ export const ZenCustomizableUI = new (class {
     const toolbox = window.gNavToolbox;
 
     // Set a splitter to navigator-toolbox
-    const splitter = window.document.createXULElement("splitter");
-    splitter.setAttribute("id", "zen-sidebar-splitter");
-    splitter.setAttribute("orient", "horizontal");
-    splitter.setAttribute("resizebefore", "sibling");
-    splitter.setAttribute("resizeafter", "none");
-    toolbox.insertAdjacentElement("afterend", splitter);
+    const splitter = window.document.createElement("div");
+    splitter.id = "zen-sidebar-splitter";
+    splitter.setAttribute("role", "separator");
+    splitter.setAttribute("aria-orientation", "vertical");
+    splitter.setAttribute("aria-controls", toolbox.id);
+    toolbox.appendChild(splitter);
 
     const sidebarBox = window.MozXULElement.parseXULToFragment(`
       <toolbar id="zen-sidebar-top-buttons"
@@ -94,28 +98,15 @@ export const ZenCustomizableUI = new (class {
       </toolbar>
     `);
     toolbox.prepend(sidebarBox);
-    new window.MutationObserver(e => {
-      if (e[0].type !== "attributes" || e[0].attributeName !== "width") {
-        return;
-      }
-      this._dispatchResizeEvent(window);
-    }).observe(toolbox, {
-      attributes: true, //configure it to listen to attribute changes
-    });
 
     // remove all styles except for the width, since we are xulstoring the complet style list
     const width = toolbox.style.width || kDefaultSidebarWidth;
     toolbox.removeAttribute("style");
     toolbox.style.width = width;
+    toolbox.style.setProperty("--zen-sidebar-width", width);
     toolbox.setAttribute("width", width);
 
-    splitter.addEventListener("dblclick", e => {
-      if (e.button !== 0) {
-        return;
-      }
-      toolbox.style.width = kDefaultSidebarWidth;
-      toolbox.setAttribute("width", kDefaultSidebarWidth);
-    });
+    this.#initSidebarResizer(window, splitter, toolbox, kDefaultSidebarWidth);
 
     const newTab = window.document.getElementById(
       "vertical-tabs-newtab-button"
@@ -132,6 +123,155 @@ export const ZenCustomizableUI = new (class {
 
     this.#initCreateNewButton(window);
     this.#moveWindowButtons(window);
+  }
+
+  #initSidebarResizer(window, splitter, toolbox, defaultWidth) {
+    const setWidth = width => {
+      if (window.gZenCompactModeManager.preference) {
+        width -= window.ZenThemeModifier.elementSeparation * 2;
+      }
+      const value = `${Math.round(width)}px`;
+      toolbox.style.width = value;
+      toolbox.style.setProperty("--zen-sidebar-width", value);
+      toolbox.setAttribute("width", value);
+      this.#dispatchResizeEvent(window);
+    };
+
+    const getWidthLimits = () => {
+      const min = parseFloat(
+        toolbox.style.getPropertyValue("--zen-toolbox-min-width")
+      );
+      const max = parseFloat(toolbox.style.maxWidth);
+      return {
+        min: Number.isFinite(min) ? min : 0,
+        max: Number.isFinite(max) ? max : Infinity,
+      };
+    };
+
+    let drag = null;
+    let frame = 0;
+    let pointerX = 0;
+
+    const endDrag = settle => {
+      if (!drag) {
+        return;
+      }
+      const { pointerId, moved, reveal } = drag;
+      drag = null;
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+      }
+      if (splitter.hasPointerCapture(pointerId)) {
+        splitter.releasePointerCapture(pointerId);
+      }
+      splitter.removeAttribute("zen-resizing");
+      window.setCursor("auto");
+      if (settle && moved && !reveal) {
+        setWidth(toolbox.getBoundingClientRect().width);
+      }
+    };
+
+    const applyDrag = () => {
+      frame = 0;
+      if (!drag) {
+        return;
+      }
+      const width = drag.startWidth + drag.direction * (pointerX - drag.startX);
+      if (drag.reveal) {
+        if (width < kCollapseSidebarWidth) {
+          return;
+        }
+        drag.reveal = false;
+        this.#toggleCompactMode(window);
+      } else if (
+        width < kCollapseSidebarWidth &&
+        !window.gZenCompactModeManager.preference
+      ) {
+        setWidth(drag.startWidth);
+        drag.reveal = true;
+        this.#collapseSidebarIntoCompactMode(window);
+        return;
+      }
+      setWidth(Math.min(drag.max, Math.max(drag.min, width)));
+    };
+
+    splitter.addEventListener("pointerdown", event => {
+      if (event.button !== 0 || drag) {
+        return;
+      }
+      const toolboxRect = window.windowUtils.getBoundsWithoutFlushing(toolbox);
+      const rightSide =
+        window.document.documentElement.hasAttribute("zen-right-side");
+      drag = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startWidth: toolboxRect.width,
+        direction: rightSide ? -1 : 1,
+        ...getWidthLimits(),
+      };
+      pointerX = event.clientX;
+      event.preventDefault();
+      splitter.setPointerCapture(event.pointerId);
+      splitter.setAttribute("zen-resizing", "true");
+      window.setCursor("ew-resize");
+    });
+
+    splitter.addEventListener("pointermove", event => {
+      if (!drag) {
+        return;
+      }
+      pointerX = event.clientX;
+      drag.moved = true;
+      if (!frame) {
+        frame = window.requestAnimationFrame(applyDrag);
+      }
+    });
+
+    splitter.addEventListener("lostpointercapture", () => endDrag(true));
+    splitter.addEventListener("pointerup", () => endDrag(true));
+
+    splitter.addEventListener("dragover", event => {
+      window.gBrowser.tabContainer.handleEvent(event);
+    });
+
+    splitter.addEventListener("dblclick", event => {
+      if (event.button !== 0) {
+        return;
+      }
+      toolbox.style.width = defaultWidth;
+      toolbox.setAttribute("width", defaultWidth);
+    });
+  }
+
+  /**
+   * Enables compact mode after the sidebar was dragged closed, and tells the user
+   * once how to get it back, since the sidebar is the thing that just went away.
+   *
+   * @param {Window} window
+   */
+  #toggleCompactMode(window) {
+    window.gZenCompactModeManager._preventAnimateCollapse = true;
+    window.document.getElementById(kCompactModeToggleCommand).doCommand();
+  }
+
+  #collapseSidebarIntoCompactMode(window) {
+    this.#toggleCompactMode(window);
+    if (Services.prefs.getBoolPref(kCompactModeHintPref, false)) {
+      return;
+    }
+    const shortcut =
+      window.gZenKeyboardShortcutsManager?.getShortcutDisplayFromCommand(
+        kCompactModeToggleCommand
+      );
+    if (!shortcut) {
+      return;
+    }
+    Services.prefs.setBoolPref(kCompactModeHintPref, true);
+    window.gZenUIManager.showToast("zen-sidebar-drag-collapsed-toast", {
+      l10nArgs: { shortcut },
+      timeout: 5000,
+    });
   }
 
   #initCreateNewButton(window) {
@@ -195,7 +335,7 @@ export const ZenCustomizableUI = new (class {
       .removeAttribute("overflows");
   }
 
-  _dispatchResizeEvent(window) {
+  #dispatchResizeEvent(window) {
     window.dispatchEvent(new window.Event("resize"));
   }
 

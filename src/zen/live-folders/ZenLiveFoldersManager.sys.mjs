@@ -346,7 +346,7 @@ class nsZenLiveFoldersManager {
       browser: gBrowser.selectedBrowser,
       theme: { preset: "chrome" },
     });
-    callout.showFeatureCallout({
+    const shown = callout.showFeatureCallout({
       id: "ZEN_LIVE_FOLDERS_CALLOUT",
       template: "feature_callout",
       groups: ["cfr"],
@@ -387,6 +387,13 @@ class nsZenLiveFoldersManager {
           },
         ],
       },
+    });
+    shown.then(() => {
+      lazy.setTimeout(() => {
+        if (callout.ready) {
+          callout.endTour();
+        }
+      }, 8000);
     });
   }
 

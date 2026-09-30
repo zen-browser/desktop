@@ -697,9 +697,6 @@
       const padding = Services.prefs.getIntPref(
         "zen.workspaces.dnd-switch-padding"
       );
-      // If we are hovering over the edges of the gNavToolbox or the splitter, we
-      // can change the workspace after a short delay.
-      const splitter = document.getElementById("zen-sidebar-splitter");
       let rect = window.windowUtils.getBoundsWithoutFlushing(gNavToolbox);
       // If we are hovering over the essentials container, we can't change the workspace
       const essentialsContainer = event.target.closest(
@@ -707,13 +704,6 @@
       );
       if (essentialsContainer) {
         return { isNearLeftEdge: false, isNearRightEdge: false };
-      }
-      if (!(
-        gZenCompactModeManager.preference &&
-        gZenCompactModeManager.canHideSidebar
-      )) {
-        rect.width +=
-          window.windowUtils.getBoundsWithoutFlushing(splitter).width;
       }
       const { clientX } = event;
       const isNearLeftEdge =
@@ -1746,6 +1736,8 @@
           numEssentials
         );
         this._fakeEssentialTab = document.createXULElement("vbox");
+        this._fakeEssentialTab.style.height =
+          "calc(var(--tab-min-height) + var(--tab-margin-block) * 2)";
         this._fakeEssentialTab.elementIndex = numEssentials;
         delete dragData.animDropElementIndex;
         if (!draggedTab.hasAttribute("zen-essential")) {

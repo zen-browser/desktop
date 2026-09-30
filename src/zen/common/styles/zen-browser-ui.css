@@ -20,11 +20,8 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [popup-window]) {
-  #navigator-toolbox,
-  #zen-sidebar-splitter {
-    visibility: collapse;
-  }
+:root:is([inDOMFullscreen="true"], [popup-window]) #navigator-toolbox {
+  visibility: collapse;
 }
 
 :root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
@@ -263,26 +260,8 @@ body,
     height: unset;
     cursor: ew-resize;
   }
-
-  &::before {
-    height: 50px;
-    width: 2px;
-    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-background-without-text-color */
-    background: var(--button-background-color-primary);
-    border-radius: 2px;
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
-    pointer-events: none;
-  }
-
-  &:hover::before {
-    opacity: 1;
-  }
 }
+
 .zen-split-view-splitter[orient="horizontal"] {
   &::before {
     height: 2px;
@@ -320,16 +299,22 @@ body,
 }
 
 #zen-sidebar-splitter {
-  border-radius: 14px;
-  transition:
-    background 0.2s ease-in-out,
-    opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+  border-radius: 4px;
+  background: var(--zen-accent-button-background);
+  height: calc(100% - var(--zen-element-separation) * 2);
+  top: var(--zen-element-separation);
+  width: var(--zen-toolbox-padding);
+  position: absolute;
+  :root:not([zen-right-side="true"]) & {
+    right: 0;
+    left: unset;
+  }
 
-  &:hover {
-    background: var(--zen-primary-color);
-    transition: background 0.2s ease-in-out;
+  &:is(:hover, [zen-resizing="true"]) {
     transition-delay: 0.2s;
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 

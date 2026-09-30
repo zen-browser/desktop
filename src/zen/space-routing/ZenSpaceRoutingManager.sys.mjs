@@ -4,6 +4,13 @@
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+});
+
 class nsZenSpaceRoutingManager {
   #file = null;
   #saveFilename = "zen-space-routing.jsonlz4";
@@ -203,6 +210,69 @@ class nsZenSpaceRoutingManager {
     return win.gZenWorkspaces.getWorkspaceFromId(targetRoute)
       ? targetRoute
       : null;
+  }
+
+  /**
+   * Picks the browser window an externally opened URI should be handed to.
+   *
+   * @param {nsIURI} uri - The URI about to be opened
+   * @param {Window} defaultWindow - The window Firefox picked
+   * @returns {Window} The window the URI should be opened in
+   */
+  getWindowForExternalUri(uri, defaultWindow) {
+    try {
+      const targetRoute = this.routeUri(uri?.spec, { fromExternal: true });
+      if (
+        targetRoute === "most-recent-space" ||
+        this.#isDisplayingWorkspace(defaultWindow, targetRoute)
+      ) {
+        return defaultWindow;
+      }
+
+      const isPrivate =
+        lazy.PrivateBrowsingUtils.isWindowPrivate(defaultWindow);
+      if (isPrivate) {
+        return defaultWindow;
+      }
+      const candidates = lazy.BrowserWindowTracker.getOrderedWindows({
+        private: isPrivate,
+      });
+      for (const win of candidates) {
+        if (
+          win !== defaultWindow &&
+          this.#isDisplayingWorkspace(win, targetRoute)
+        ) {
+          return win;
+        }
+      }
+    } catch (err) {
+      console.error(
+        "[ZenSpaceRouting]: Error picking a window for an external URI:",
+        err
+      );
+    }
+
+    return defaultWindow;
+  }
+
+  /**
+   * Checks whether a window is a usable routing destination that already
+   * displays the given space.
+   *
+   * @param {Window} win - The candidate window
+   * @param {string} workspaceId - The space the URI routes to
+   * @returns {boolean} True when the window currently displays that space
+   * @private
+   */
+  #isDisplayingWorkspace(win, workspaceId) {
+    return (
+      !!win &&
+      !win.closed &&
+      !!win.toolbar?.visible &&
+      !!win.gZenStartup?.isReady &&
+      !!win.gZenWorkspaces?.workspaceEnabled &&
+      win.gZenWorkspaces.activeWorkspace === workspaceId
+    );
   }
 
   /**

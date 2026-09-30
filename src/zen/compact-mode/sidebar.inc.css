@@ -5,14 +5,10 @@
  */
 
 &:not([zen-compact-animating]) {
-  & #zen-sidebar-splitter {
-    display: none !important;
-  }
-
   #zen-dragover-background {
-    width: calc(100% - var(--zen-toolbox-padding) * 2 - 7px);
+    width: calc(100% - var(--zen-toolbox-padding) * 2 - 4px);
     left: unset;
-    right: calc(var(--zen-toolbox-padding) + 3px);
+    right: calc(var(--zen-toolbox-padding) + 2px);
     transform: translateY(-4px);
 
     :root:not([zen-single-toolbar="true"]) & {
@@ -33,7 +29,10 @@
   }
 
   #zen-sidebar-splitter {
-    display: none !important;
+    transform: translateX(-150%);
+    :root[zen-right-side='true'] & {
+      transform: translateX(150%);
+    }
   }
 
   #zen-sidebar-top-buttons-customization-target {
@@ -51,6 +50,10 @@
     --zen-toolbox-max-width: 74px !important;
     --zen-compact-float: var(--zen-element-separation);
 
+    @media (-moz-platform: macos) {
+      --zen-compact-mode-no-padding-radius-fix: -2px;
+    }
+
     @media (-moz-mac-tahoe-theme) {
       --zen-compact-mode-no-padding-radius-fix: -4px;
     }
@@ -62,8 +65,7 @@
     }
 
     --zen-compact-hidden-distance: calc(
-      var(--actual-zen-sidebar-width) - var(--zen-element-separation) / 2 - 1px -
-        var(--zen-compact-float) / 2
+      var(--zen-sidebar-width) + var(--zen-compact-float) - 1px
     );
     --zen-compact-hidden-translate: calc(-1 * var(--zen-compact-hidden-distance));
     &[zen-right-side='true'] {
@@ -82,6 +84,8 @@
         visibility 0.15s ease;
       bottom: var(--zen-compact-float);
       padding: 0 var(--zen-compact-float) !important;
+      width: calc(var(--zen-sidebar-width) + var(--zen-compact-float) * 2) !important;
+      min-width: calc(var(--zen-toolbox-min-width) + var(--zen-compact-float) * 2) !important;
       :root[zen-single-toolbar='true'] & {
         /* We add an extra offset since windows users have a border top
              * in the window in order to compensate how windows renders the
@@ -147,9 +151,8 @@
     min-width: var(--zen-toolbox-min-width);
     transition: visibility 0.15s; /* Same as the toolbox */
     visibility: hidden;
-
     :root[zen-sidebar-expanded='true'] & {
-      width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
+      width: var(--zen-sidebar-width);
     }
 
     & .zen-toolbar-background {
@@ -271,8 +274,15 @@
       --zen-compact-mode-time: 0.25s;
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
+      @media -moz-pref('zen.theme.acrylic-elements') {
+        .zen-toolbar-background:not(:-moz-window-inactive) {
+          background: transparent;
+          backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+        }
+      }
+
       :root:not([supress-primary-adjustment='true']) & {
-        & #titlebar {
+        #titlebar {
           transition: none;
           visibility: visible;
         }

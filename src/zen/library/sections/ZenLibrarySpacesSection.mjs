@@ -940,7 +940,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   }
 
   /**
-   * @returns {Number} The width of the button container in px.
+   * @returns {number} The width of the button container in px.
    */
   #plusButtonWidth() {
     const { paddingRight } = window.getComputedStyle(this.#list);
@@ -950,13 +950,10 @@ export class ZenLibrarySpacesSection extends MozLitElement {
 
   #plusButtonHover = {
     handleEvent: event => {
-      const badge = event.target.closest('.zen-swipe-add-space-container');
+      const badge = event.target.closest(".zen-swipe-add-space-container");
       const isOver = event.type === "mouseover";
 
-      badge.style.setProperty(
-        "--value",
-        isOver ?  100 : 0
-      );
+      badge.style.setProperty("--value", isOver ? 100 : 0);
 
       if (isOver) {
         badge.setAttribute("readytoadd", "true");
@@ -970,19 +967,20 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #onPlusButtonClick() {
     lazy.ZenLibrary.animateProgress(0);
     gZenWorkspaces.openWorkspaceCreation(null);
-  };
+  }
 
   #renderPlusButton() {
     return html`
-    <div class="zen-swipe-add-space-container space-section">
-      <div 
-        class="zen-swipe-add-space-progress-badge no-squircles"
-        @click=${this.#onPlusButtonClick}
-        @mouseover=${this.#plusButtonHover}
-        @mouseout=${this.#plusButtonHover}>
-        <span class="zen-swipe-add-space-icon"></span>
+      <div class="zen-swipe-add-space-container space-section">
+        <div
+          class="zen-swipe-add-space-progress-badge no-squircles"
+          @click=${this.#onPlusButtonClick}
+          @mouseover=${this.#plusButtonHover}
+          @mouseout=${this.#plusButtonHover}
+        >
+          <span class="zen-swipe-add-space-icon"></span>
+        </div>
       </div>
-    </div>
     `;
   }
 

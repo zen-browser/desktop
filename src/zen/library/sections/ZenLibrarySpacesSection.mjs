@@ -10,14 +10,6 @@ import {
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 import { ZenLibraryDragAndDrop } from "moz-src:///zen/library/ZenLibraryDragAndDrop.mjs";
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(
-  lazy,
-  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
-  { global: "current" }
-);
-
 const GRADIENT_TOPIC = "zen-space-gradient-update";
 const SIZING_FALLBACK_MS = 600;
 const SCROLL_EDGE_PX = 48;
@@ -380,6 +372,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #fillGroups() {
     while (this.#pendingGroups.length) {
       const { copy, inner } = this.#pendingGroups.shift();
+      this.#copyFolderIcon(copy);
       for (const child of inner.children) {
         if (!child.classList.contains("zen-tab-group-start")) {
           this.#appendCopy(copy, child);
@@ -488,13 +481,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       }
       container.appendChild(copy);
       this.#realElements.set(copy, node);
-      const icon = copy.querySelector(".tab-group-folder-icon");
-      const realIcon = node.querySelector(".tab-group-folder-icon");
-      if (icon && realIcon) {
-        icon.replaceChildren(
-          ...[...realIcon.children].map(child => child.cloneNode(true))
-        );
-      }
+      this.#copyFolderIcon(copy);
       // A group empties itself and builds its own scaffolding the moment it
       // joins the document, so its rows are put in afterwards.
       this.#pendingGroups.push({
@@ -514,6 +501,18 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     container.appendChild(copy);
     for (const child of node.children) {
       this.#appendCopy(copy, child);
+    }
+  }
+
+  #copyFolderIcon(copy) {
+    const icon = copy.querySelector(".tab-group-folder-icon");
+    const realIcon = this.#realElements
+      .get(copy)
+      ?.querySelector(".tab-group-folder-icon");
+    if (icon && realIcon) {
+      icon.replaceChildren(
+        ...[...realIcon.children].map(child => child.cloneNode(true))
+      );
     }
   }
 
@@ -947,9 +946,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
    * @returns {number} The width of the button container in px.
    */
   #plusButtonWidth() {
-    const { paddingRight } = window.getComputedStyle(this.#list);
-    const padding = parseFloat(paddingRight);
-    return 100 - padding;
+    return 75;
   }
 
   #plusButtonHover = {
@@ -969,8 +966,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   };
 
   #onPlusButtonClick() {
-    lazy.ZenLibrary.animateProgress(0);
-    gZenWorkspaces.openWorkspaceCreation(null);
+    gZenWorkspaces.openWorkspaceCreation();
   }
 
   #renderPlusButton() {

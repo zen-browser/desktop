@@ -18,7 +18,7 @@ export class ZenSpaceAddSwipe {
   #swipeOngoing = false;
   #hiddenForSwipe = [];
 
-  static SUCCESS_THRESHOLD = 0.7;
+  static SUCCESS_THRESHOLD = 0.8;
   static SUCCESS_VELOCITY_CONTRIBUTION = 0;
 
   static SPACES_TRANSLATION = -25;
@@ -127,7 +127,7 @@ export class ZenSpaceAddSwipe {
 
   endSwipe() {
     this.#progress = 0;
-    gZenWorkspaces.openWorkspaceCreation(null);
+    gZenWorkspaces.openWorkspaceCreation();
   }
 
   /**

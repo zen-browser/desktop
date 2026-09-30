@@ -1595,7 +1595,7 @@ class nsZenWindowSync {
     const window = aEvent.target.documentGlobal ?? aEvent.target;
     window._zenClosingWindow = true;
     for (let eventName of EVENTS) {
-      window.removeEventListener(eventName, this, true);
+      window.removeEventListener(eventName, this);
     }
     delete window.gZenWindowSync;
     const { promise, resolve } = Promise.withResolvers();

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/Tabbrowser.sys.mjs b/browser/components/tabbrowser/Tabbrowser.sys.mjs
-index e41d07a03d564b2c5960d5b70cd76f8e528e6532..44e0d9877eecc9ae17d2e769108784f0ea0efa98 100644
+index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1f3049fcc 100644
 --- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
 +++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
 @@ -491,6 +491,7 @@ export class Tabbrowser {
@@ -344,7 +344,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..44e0d9877eecc9ae17d2e769108784f0
 +
 +    let hasZenDefaultUserContextId = false;
 +    let zenForcedWorkspaceId = undefined;
-+    if (beforeRouteResult.isRouteFound && (typeof userContextId === "undefined" || fromExternal)) {
++    if (beforeRouteResult.isRouteFound && this.documentGlobal.gZenSpaceRoutingManager.shouldUseRouteContainer(userContextId, fromExternal, this.documentGlobal)) {
 +      userContextId = beforeRouteResult.userContextId;
 +      hasZenDefaultUserContextId = true;
 +    } else if (typeof this.documentGlobal.gZenWorkspaces !== "undefined" && !_forZenEmptyTab) {

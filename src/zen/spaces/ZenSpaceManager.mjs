@@ -1974,7 +1974,10 @@ class nsZenWorkspaces {
         diff += spaceLen;
       }
       const newTransform = diff * 100;
-      element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
+      const transform = `translateX(${newTransform + offsetPixels / 2}%)`;
+      if (element.style.transform !== transform) {
+        element.style.transform = transform;
+      }
     }
     // Hide other essentials with different containerTabId
     for (const container of otherContainersEssentials) {
@@ -1998,11 +2001,13 @@ class nsZenWorkspaces {
       ) {
         container.removeAttribute("hidden");
         // Animate from the currently selected workspace
-        if (container.getAttribute("container") == workspaceContextId) {
-          container.style.transform = `translateX(${offsetPixels / 2}%)`;
-        } else {
-          // Animate from the next workspace, transitioning towards the current one
-          container.style.transform = `translateX(${offsetPixels / 2 + (offsetPixels > 0 ? -100 : 100)}%)`;
+        const transform =
+          container.getAttribute("container") == workspaceContextId
+            ? `translateX(${offsetPixels / 2}%)`
+            : // Animate from the next workspace, towards the current one
+              `translateX(${offsetPixels / 2 + (offsetPixels > 0 ? -100 : 100)}%)`;
+        if (container.style.transform !== transform) {
+          container.style.transform = transform;
         }
       }
     }

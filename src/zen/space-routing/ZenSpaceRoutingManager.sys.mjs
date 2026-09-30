@@ -276,6 +276,30 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Whether a matched route's destination container should replace the one the
+   * new tab would otherwise get.
+   *
+   * @param {number|undefined} userContextId - The container the tab would inherit
+   * @param {boolean} fromExternal - True when the link came from outside the browser
+   * @param {Window} win - The window the tab is being added to
+   * @returns {boolean} True when the route's container should be applied
+   */
+  shouldUseRouteContainer(userContextId, fromExternal, win) {
+    if (typeof userContextId === "undefined" || fromExternal) {
+      return true;
+    }
+
+    const workspaces = win?.gZenWorkspaces;
+    if (!workspaces?.workspaceEnabled) {
+      return false;
+    }
+
+    const sourceContainerId =
+      workspaces.getActiveWorkspaceFromCache()?.containerTabId ?? 0;
+    return (userContextId ?? 0) === sourceContainerId;
+  }
+
+  /**
    * Checks if the tab should be processed or not
    *
    * @param {object} options - The tab creation options

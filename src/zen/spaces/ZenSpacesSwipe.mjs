@@ -171,6 +171,9 @@ export class ZenSpacesSwipe {
       isGestureActive: true,
       lastDelta: 0,
       direction: null,
+      deltaMultiplier: Services.prefs.getIntPref(
+        "zen.workspaces.swipe-actions.delta-multiplier"
+      ),
       action: libraryOpen ? ZenSpacesSwipe.ACTIONS.LIBRARY : null,
       allowed: {
         library: libraryOpen || lazy.ZenLibrary.readySwipeOpenLibrary(),
@@ -195,11 +198,7 @@ export class ZenSpacesSwipe {
     event.preventDefault();
     event.stopPropagation();
 
-    const delta =
-      event.delta *
-      Services.prefs.getIntPref(
-        "zen.workspaces.swipe-actions.delta-multiplier"
-      );
+    const delta = event.delta * this.#swipeState.deltaMultiplier;
     let translateX = this.#swipeState.lastDelta + delta;
     // Add a force multiplier as we are translating the strip depending on how close to the edge we are
     let forceMultiplier = Math.min(

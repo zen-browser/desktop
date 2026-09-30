@@ -1,8 +1,17 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..390e6377078504b84e47d44672a9352ecdfe1ae3 100644
+index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e94a81c28 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -672,6 +672,28 @@ nsBrowserContentHandler.prototype = {
+@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   ShellService: "moz-src:///browser/components/shell/ShellService.sys.mjs",
+   SpecialMessageActions:
+     "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
++  gZenSpaceRoutingManager:
++    "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
+ });
+ 
+ /**
+@@ -672,6 +674,28 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -31,7 +40,7 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..390e6377078504b84e47d44672a9352e
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -742,6 +764,7 @@ nsBrowserContentHandler.prototype = {
+@@ -742,6 +766,7 @@ nsBrowserContentHandler.prototype = {
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --data <data-URL>  Open a data: URL.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
@@ -39,3 +48,14 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..390e6377078504b84e47d44672a9352e
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
+@@ -1330,7 +1355,9 @@ function handURIToExistingBrowser(
+   });
+ 
+   if (navWin) {
+-    openInWindow(navWin);
++    openInWindow(
++      lazy.gZenSpaceRoutingManager.getWindowForExternalUri(uri, navWin)
++    );
+     return;
+   }
+ 

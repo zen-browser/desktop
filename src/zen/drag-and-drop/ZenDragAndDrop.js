@@ -1736,6 +1736,8 @@
           numEssentials
         );
         this._fakeEssentialTab = document.createXULElement("vbox");
+        this._fakeEssentialTab.style.height =
+          "calc(var(--tab-min-height) + var(--tab-margin-block) * 2)";
         this._fakeEssentialTab.elementIndex = numEssentials;
         delete dragData.animDropElementIndex;
         if (!draggedTab.hasAttribute("zen-essential")) {

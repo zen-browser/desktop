@@ -9,7 +9,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenLibraryWidget: "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
 });
 
-const kCollapseSidebarWidth = 55;
+const kCollapseSidebarWidth = 60;
 const kCompactModeHintPref = "zen.view.compact.drag-collapse-hint-seen";
 const kCompactModeToggleCommand = "cmd_toggleCompactModeIgnoreHover";
 
@@ -156,7 +156,7 @@ export const ZenCustomizableUI = new (class {
       if (!drag) {
         return;
       }
-      const { pointerId, moved } = drag;
+      const { pointerId, moved, reveal } = drag;
       drag = null;
       if (frame) {
         window.cancelAnimationFrame(frame);
@@ -167,7 +167,7 @@ export const ZenCustomizableUI = new (class {
       }
       splitter.removeAttribute("zen-resizing");
       window.setCursor("auto");
-      if (settle && moved) {
+      if (settle && moved && !reveal) {
         setWidth(toolbox.getBoundingClientRect().width);
       }
     };
@@ -177,13 +177,19 @@ export const ZenCustomizableUI = new (class {
       if (!drag) {
         return;
       }
-      let width = drag.startWidth + drag.direction * (pointerX - drag.startX);
-      if (
+      const width = drag.startWidth + drag.direction * (pointerX - drag.startX);
+      if (drag.reveal) {
+        if (width < kCollapseSidebarWidth) {
+          return;
+        }
+        drag.reveal = false;
+        this.#toggleCompactMode(window);
+      } else if (
         width < kCollapseSidebarWidth &&
         !window.gZenCompactModeManager.preference
       ) {
         setWidth(drag.startWidth);
-        endDrag(false);
+        drag.reveal = true;
         this.#collapseSidebarIntoCompactMode(window);
         return;
       }
@@ -195,17 +201,13 @@ export const ZenCustomizableUI = new (class {
         return;
       }
       const toolboxRect = window.windowUtils.getBoundsWithoutFlushing(toolbox);
-      const splitterRect =
-        window.windowUtils.getBoundsWithoutFlushing(splitter);
+      const rightSide =
+        window.document.documentElement.hasAttribute("zen-right-side");
       drag = {
         pointerId: event.pointerId,
         startX: event.clientX,
         startWidth: toolboxRect.width,
-        direction:
-          splitterRect.left + splitterRect.width / 2 <
-          toolboxRect.left + toolboxRect.width / 2
-            ? -1
-            : 1,
+        direction: rightSide ? -1 : 1,
         ...getWidthLimits(),
       };
       pointerX = event.clientX;
@@ -248,9 +250,13 @@ export const ZenCustomizableUI = new (class {
    *
    * @param {Window} window
    */
-  #collapseSidebarIntoCompactMode(window) {
+  #toggleCompactMode(window) {
     window.gZenCompactModeManager._preventAnimateCollapse = true;
     window.document.getElementById(kCompactModeToggleCommand).doCommand();
+  }
+
+  #collapseSidebarIntoCompactMode(window) {
+    this.#toggleCompactMode(window);
     if (Services.prefs.getBoolPref(kCompactModeHintPref, false)) {
       return;
     }

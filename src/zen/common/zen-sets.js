@@ -143,7 +143,7 @@
               });
               break;
             case "cmd_zenOpenWorkspaceCreation":
-              gZenWorkspaces.openWorkspaceCreation(event);
+              gZenWorkspaces.openWorkspaceCreation();
               break;
             case "cmd_zenOpenFolderCreation":
               gZenFolders.createFolder([], {

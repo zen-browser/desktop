@@ -1158,6 +1158,10 @@ class nsZenWindowSync {
    * @param {object} aPreviousTab - The previously selected tab.
    */
   async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
+    if(Services.focus.activeWindow !== aWindow) {
+      return;
+    }
+
     let activeBrowsers = aWindow.gBrowser.selectedBrowsers;
     let activeTabs = activeBrowsers
       .map(browser => aWindow.gBrowser.getTabForBrowser(browser))

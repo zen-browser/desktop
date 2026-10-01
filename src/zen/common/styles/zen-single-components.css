@@ -833,6 +833,13 @@
     right:  unset;
     translate: -100px 0;
   }
+
+  &.space-section {
+    top: 0;
+    bottom: 0;
+    translate: unset;
+    --value: 0;
+  }
 }
 
 .zen-swipe-add-space-background {
@@ -876,7 +883,7 @@
   transition: --zen-swipe-add-space-thickness 0.2s ease-in-out;
   contain: content;
 
-  --progress: white;
+  --progress: var(--toolbox-textcolor);
   --background: color-mix(var(--zen-primary-color), white 15%);
   
   right: 10px;
@@ -886,7 +893,7 @@
   border-radius: 100%;
 
   background: var(--background);
-  box-shadow: 0px 1px 8px #0005;
+  box-shadow: 0px 1px 8px #0003;
   
   & .zen-swipe-add-space-icon {
     position: absolute;
@@ -894,7 +901,7 @@
     height: 100%;
     background: url("chrome://browser/skin/zen-icons/plus.svg") center / 55% no-repeat;
     -moz-context-properties: fill;
-    fill: white;
+    fill: var(--toolbox-textcolor);
   }
 
   &::after {
@@ -926,6 +933,11 @@
   :root[zen-right-side="true"] & {
     right: unset;
     left: 10px;
+  }
+
+  .space-section & {
+    left: 50% !important;
+    translate: -50% 0;
   }
 }
 

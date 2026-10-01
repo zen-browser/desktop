@@ -181,7 +181,7 @@ zen-library:is([transitioning], [sizing])
     position: absolute;
     inset: 0;
     z-index: -2;
-    border-radius: 8px;
+    border-radius: 10px;
     transition: transform 0.1s ease-in-out;
   }
 

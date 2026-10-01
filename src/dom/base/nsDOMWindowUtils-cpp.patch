@@ -1,0 +1,20 @@
+diff --git a/dom/base/nsDOMWindowUtils.cpp b/dom/base/nsDOMWindowUtils.cpp
+index 5d3805f04534a82ba8b68eb26ffdceb68f8832bc..8c3ee8d3a86fff50fe427dcbb9ebe1c8d6cace6d 100644
+--- a/dom/base/nsDOMWindowUtils.cpp
++++ b/dom/base/nsDOMWindowUtils.cpp
+@@ -3499,6 +3499,15 @@
+   return NS_OK;
+ }
+ 
++NS_IMETHODIMP
++nsDOMWindowUtils::GetIsBrowserFullscreen(bool* aResult) {
++  NS_ENSURE_ARG_POINTER(aResult);
++  nsCOMPtr<nsPIDOMWindowOuter> window = do_QueryReferent(mWindow);
++  NS_ENSURE_STATE(window);
++  *aResult = nsGlobalWindowOuter::Cast(window)->IsBrowserFullscreen();
++  return NS_OK;
++}
++
+ static void PrepareForFullscreenChange(nsIDocShell* aDocShell,
+                                        const nsSize& aSize,
+                                        nsSize* aOldSize = nullptr) {

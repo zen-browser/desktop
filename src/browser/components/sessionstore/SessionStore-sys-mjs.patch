@@ -382,6 +382,18 @@ index 52fc803050cd257d6de52b1e4a92f3211cbaba88..ecfcef5dabb7056886972651cd358355
        aState.windows &&
        aState.windows.every(win => win.tabs.every(tab => tab.pinned));
  
+@@ -6854,6 +6937,11 @@ class _SessionStore {
+         switch (aSizeMode) {
+           case "maximized":
+             aWindow.maximize();
+             break;
++          case "fullscreen":
++            if (AppConstants.platform == "macosx") {
++              aWindow.fullScreen = true;
++            }
++            break;
+           case "minimized":
+             if (aSizeModeBeforeMinimized == "maximized") {
 @@ -7116,7 +7199,7 @@ class _SessionStore {
  
        let groupsToSave = new Map();
@@ -400,6 +412,18 @@ index 52fc803050cd257d6de52b1e4a92f3211cbaba88..ecfcef5dabb7056886972651cd358355
            // Convert any open groups into saved groups.
            let groupStateToSave = window.groups.find(
              groupState => groupState.id == window.tabs[tIndex].groupId
+@@ -7210,6 +7298,11 @@ class _SessionStore {
+       switch (aWindow.windowState) {
+         case aWindow.STATE_FULLSCREEN:
++          // Preserve the browser mode even when DOM fullscreen is layered on it.
++          return AppConstants.platform == "macosx" &&
++            aWindow.windowUtils.isBrowserFullscreen
++            ? "fullscreen"
++            : "maximized";
+         case aWindow.STATE_MAXIMIZED:
+           return "maximized";
+         case aWindow.STATE_MINIMIZED:
+           return "minimized";
 @@ -7691,7 +7774,6 @@ class _SessionStore {
      timer.initWithCallback(
        () => {

@@ -1,0 +1,19 @@
+diff --git a/dom/interfaces/base/nsIDOMWindowUtils.idl b/dom/interfaces/base/nsIDOMWindowUtils.idl
+index 83313786eba285ecd6895869f9991c722c99f799..1a2416941f2f2edea5cef142b7695ec78b016e5a 100644
+--- a/dom/interfaces/base/nsIDOMWindowUtils.idl
++++ b/dom/interfaces/base/nsIDOMWindowUtils.idl
+@@ -1270,6 +1270,14 @@
+   void remoteFrameFullscreenReverted();
+ 
+   /**
++   * Whether this window is fullscreen because of browser fullscreen mode.
++   * Remains true when DOM fullscreen is entered over browser fullscreen;
++   * false when fullscreen was entered only through the Fullscreen API.
++   * This query is intended for the top-level chrome window.
++   */
++  readonly attribute boolean isBrowserFullscreen;
++
++  /**
+    * Calls the document to handle any pending fullscreen requests.
+    * It is called when the parent document has entered fullscreen, and
+    * we want to put the current document into fullscreen as well.

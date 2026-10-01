@@ -1,0 +1,15 @@
+diff --git a/dom/base/nsGlobalWindowOuter.h b/dom/base/nsGlobalWindowOuter.h
+index 6958d974b4416151d1327f98d162c32f84e65e8e..2ce03276bc9173568d0f1812c5d47998bc9e6121 100644
+--- a/dom/base/nsGlobalWindowOuter.h
++++ b/dom/base/nsGlobalWindowOuter.h
+@@ -602,6 +602,10 @@
+   float GetMozInnerScreenXOuter(mozilla::dom::CallerType aCallerType);
+   float GetMozInnerScreenYOuter(mozilla::dom::CallerType aCallerType);
+   bool GetFullscreenOuter();
++  bool IsBrowserFullscreen() const {
++    return mFullscreen.isSome() &&
++           mFullscreen.value() == FullscreenReason::ForFullscreenMode;
++  }
+   bool GetFullScreen() override;
+   MOZ_CAN_RUN_SCRIPT void SetFullscreenOuter(bool aFullscreen,
+                                              mozilla::ErrorResult& aError);

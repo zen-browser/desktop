@@ -19,6 +19,8 @@ ChromeUtils.defineESModuleGetters(
   { global: "current" }
 );
 
+ChromeUtils.defineLazyGetter(lazy, "graphemes", () => new Intl.Segmenter());
+
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
   return document.getElementById("zen-browser-background");
 });
@@ -1410,7 +1412,7 @@ class nsZenWorkspaces {
       return workspace.icon;
     }
     try {
-      return new Intl.Segmenter()
+      return lazy.graphemes
         .segment(workspace.name)
         .containing()
         .segment.toUpperCase();

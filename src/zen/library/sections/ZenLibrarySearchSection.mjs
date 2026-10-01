@@ -248,7 +248,11 @@ export class ZenLibrarySearchSection extends MozLitElement {
                   this.filtersOpen = true;
                 }}
               >
-                <img src="chrome://browser/skin/zen-icons/sliders.svg" alt="" />
+                <img
+                  src="chrome://browser/skin/zen-icons/circle-bars-filter.svg"
+                  draggable="false"
+                  alt=""
+                />
                 <span data-l10n-id="library-filter-button"></span>
               </button>
             `

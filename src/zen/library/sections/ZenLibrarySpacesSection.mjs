@@ -919,7 +919,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           >
             <img
               class="toolbarbutton-icon"
-              src="chrome://browser/skin/zen-icons/drag-indicator.svg"
+              src="chrome://browser/skin/zen-icons/move-cursor.svg"
               draggable="false"
               alt=""
             />

@@ -3,6 +3,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const lazy = {};
+
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "relativeTimeFormat",
+  () =>
+    new Intl.RelativeTimeFormat(Services.locale.appLocaleAsBCP47, {
+      numeric: "auto",
+    })
+);
+
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenLiveFoldersManager:
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
@@ -205,9 +215,7 @@ class nsZenLiveFoldersUI {
       return "-";
     }
 
-    const rtf = new Intl.RelativeTimeFormat(Services.locale.appLocaleAsBCP47, {
-      numeric: "auto",
-    });
+    const rtf = lazy.relativeTimeFormat;
     const secondsDiff = (date - Date.now()) / 1000;
     const absSeconds = Math.abs(secondsDiff);
 

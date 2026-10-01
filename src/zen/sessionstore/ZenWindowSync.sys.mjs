@@ -1158,7 +1158,7 @@ class nsZenWindowSync {
    * @param {object} aPreviousTab - The previously selected tab.
    */
   async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
-    if(Services.focus.activeWindow !== aWindow) {
+    if (Services.focus.activeWindow !== aWindow) {
       return;
     }
 

@@ -66,7 +66,7 @@
     }
 
     --zen-compact-hidden-distance: calc(
-      var(--zen-sidebar-width) + var(--zen-compact-float) - 1px
+      100% - var(--zen-compact-float) - 1px
     );
     --zen-compact-hidden-translate: calc(-1 * var(--zen-compact-hidden-distance));
     &[zen-right-side='true'] {
@@ -85,8 +85,7 @@
         visibility 0.15s ease;
       bottom: var(--zen-compact-float);
       padding: 0 var(--zen-compact-float) !important;
-      width: calc(var(--zen-sidebar-width) + var(--zen-compact-float) * 2) !important;
-      min-width: calc(var(--zen-toolbox-min-width) + var(--zen-compact-float) * 2) !important;
+      width: unset !important;
       :root[zen-single-toolbar='true'] & {
         /* We add an extra offset since windows users have a border top
              * in the window in order to compensate how windows renders the
@@ -143,13 +142,14 @@
 
   #navigator-toolbox:not([animate='true']) #titlebar {
     padding: var(--zen-toolbox-padding) !important;
+    min-width: var(--zen-toolbox-min-width);
     :root:not([zen-sidebar-expanded='true']) & {
       padding: var(--zen-toolbox-padding) 0 !important;
-      max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding) * 2);
-      width: var(--zen-sidebar-width);
+      max-width: var(--zen-toolbox-max-width);
+      width: var(--zen-toolbox-max-width);
+      min-width: var(--zen-toolbox-max-width);
     }
     position: relative;
-    min-width: var(--zen-toolbox-min-width);
     transition: visibility 0.15s; /* Same as the toolbox */
     visibility: hidden;
     :root[zen-sidebar-expanded='true'] & {
@@ -275,7 +275,7 @@
       --zen-compact-mode-time: 0.25s;
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
-      @media -moz-pref('zen.theme.acrylic-elements') {
+      @media -moz-pref('zen.theme.acrylic-elements') and (not (prefers-reduced-transparency: reduce))  {
         .zen-toolbar-background:not(:-moz-window-inactive) {
           background: transparent;
           backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;

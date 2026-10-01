@@ -30,6 +30,8 @@
   --urlbar-icon-border-radius: 8px !important;
   --urlbar-inner-border-radius: 8px !important;
 
+  --urlbarview-row-min-height: 49px;
+
   &[breakout-extend] {
     --urlbar-container-padding: 0px;
   }
@@ -290,7 +292,7 @@
     outline-offset: var(--zen-urlbar-outline-offset) !important;
 
     /* stylelint-disable-next-line media-query-no-invalid */
-    @media -moz-pref("zen.theme.acrylic-elements") {
+    @media -moz-pref("zen.theme.acrylic-elements") and (not (prefers-reduced-transparency: reduce))  {
       backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
     }
   }
@@ -663,7 +665,7 @@
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1)));
+    --zen-selected-bg: color-mix(in srgb, var(--zen-accent-button-background), transparent 40%);
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -695,7 +697,7 @@
 }
 
 #urlbar-results {
-  max-height: 259px;
+  max-height: 264px;
   overflow-y: auto;
   scrollbar-width: none;
   margin-block-start: calc(var(--urlbarView-results-padding) - 2px);

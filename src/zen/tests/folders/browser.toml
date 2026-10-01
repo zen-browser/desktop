@@ -10,6 +10,8 @@ support-files = [
 
 ["browser_folder_basic_toggle.js"]
 
+["browser_folder_collapse_all.js"]
+
 ["browser_folder_create.js"]
 
 ["browser_folder_density.js"]

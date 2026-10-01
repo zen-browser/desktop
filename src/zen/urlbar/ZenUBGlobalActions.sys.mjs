@@ -61,6 +61,26 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/folder.svg",
   },
   {
+    l10nId: "zen-action-collapse-all-folders",
+    command: window => window.gZenFolders.collapseAllFolders(),
+    icon: "chrome://browser/skin/zen-icons/arrows-collapse.svg",
+    isAvailable: window => {
+      return !!window.gZenFolders?.activeSpaceFolders.some(
+        folder => !folder.collapsed
+      );
+    },
+  },
+  {
+    l10nId: "zen-action-expand-all-folders",
+    command: window => window.gZenFolders.expandAllFolders(),
+    icon: "chrome://browser/skin/zen-icons/arrows-expand.svg",
+    isAvailable: window => {
+      return !!window.gZenFolders?.activeSpaceFolders.some(
+        folder => folder.collapsed
+      );
+    },
+  },
+  {
     l10nId: "zen-action-copy-current-url",
     command: "cmd_zenCopyCurrentURL",
     icon: "chrome://browser/skin/zen-icons/link.svg",

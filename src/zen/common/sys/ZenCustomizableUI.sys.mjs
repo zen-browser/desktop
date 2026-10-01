@@ -100,11 +100,17 @@ export const ZenCustomizableUI = new (class {
     toolbox.prepend(sidebarBox);
 
     // remove all styles except for the width, since we are xulstoring the complet style list
-    const width = toolbox.style.width || kDefaultSidebarWidth;
-    toolbox.removeAttribute("style");
-    toolbox.style.width = width;
-    toolbox.style.setProperty("--zen-sidebar-width", width);
-    toolbox.setAttribute("width", width);
+    {
+      const minWidth = window.gZenVerticalTabsManager.getSidebarMinWidth();
+      const rawWidth = parseFloat(
+        toolbox.getAttribute("width") || kDefaultSidebarWidth
+      );
+      const width = `${Math.max(minWidth, rawWidth)}px`;
+      toolbox.removeAttribute("style");
+      toolbox.style.width = width;
+      toolbox.style.setProperty("--zen-sidebar-width", width);
+      toolbox.setAttribute("width", width);
+    }
 
     this.#initSidebarResizer(window, splitter, toolbox, kDefaultSidebarWidth);
 

@@ -62,6 +62,8 @@
 }
 
 .zen-library-media-preview-open {
+  flex: none;
+
   & > .toolbarbutton-text {
     display: block;
     margin: 0;
@@ -69,6 +71,9 @@
     border-radius: var(--toolbarbutton-border-radius);
     background: color-mix(in srgb, currentColor 12%, transparent);
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &:hover > .toolbarbutton-text {

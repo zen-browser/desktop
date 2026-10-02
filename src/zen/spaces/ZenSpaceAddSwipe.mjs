@@ -226,13 +226,13 @@ export class ZenSpaceAddSwipe {
   }
 
   #hideDuringSwipe(element) {
-    element.style.visibility = "hidden";
+    element.style.opacity = "0";
     this.#hiddenForSwipe.push(element);
   }
 
   #restoreNextSpaceChild() {
     for (const element of this.#hiddenForSwipe) {
-      element.style.removeProperty("visibility");
+      element.style.removeProperty("opacity");
     }
     this.#hiddenForSwipe = [];
   }

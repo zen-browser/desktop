@@ -20,7 +20,7 @@
   --urlbarview-separator-color: light-dark(rgb(233, 233, 233), rgb(46 46 47));
   --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
-  --urlbarView-results-padding: 10px !important;
+  --urlbarView-results-padding: 12px !important;
   --urlbar-container-height: 48px !important;
   --urlbar-input-container-border: none;
 
@@ -30,7 +30,7 @@
   --urlbar-icon-border-radius: 8px !important;
   --urlbar-inner-border-radius: 8px !important;
 
-  --urlbarview-row-min-height: 49px;
+  --urlbarview-row-min-height: 45px;
 
   &[breakout-extend] {
     --urlbar-container-padding: 0px;
@@ -281,7 +281,7 @@
       &:not(:-moz-window-inactive) { 
         --zen-urlbar-background-transparent: light-dark(
           rgba(255, 255, 255, .93),
-          rgba(20, 20, 20, .93)
+          rgba(20, 20, 20, .92)
         );
       }
     }
@@ -652,7 +652,7 @@
 
 .urlbarView-row {
   --urlbarView-row-padding-inline: 8px;
-  --urlbarview-row-padding-block: 12px;
+  --urlbarview-row-padding-block: 10px;
   --urlbarView-row-gutter: 0px;
 
   border-block: 2px solid transparent;
@@ -697,10 +697,10 @@
 }
 
 #urlbar-results {
-  max-height: 264px;
+  max-height: 244px;
   overflow-y: auto;
   scrollbar-width: none;
-  margin-block-start: calc(var(--urlbarView-results-padding) - 2px);
+  margin-block-start: calc(var(--urlbarView-results-padding) - 6px);
   margin-block-end: calc(var(--urlbarView-results-padding) - 2px);
   padding-block: 0 !important;
 

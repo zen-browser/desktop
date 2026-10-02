@@ -4,4 +4,4 @@
 
 color-scheme: dark;
 --zen-backdrop-underlay: url("chrome://browser/content/zen-styles/zen-backdrop-filters.svg#underlay-dark");
---zen-urlbar-outline-offset: -2px;
+--zen-urlbar-outline-offset: -1px;

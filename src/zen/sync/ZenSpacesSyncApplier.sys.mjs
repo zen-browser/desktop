@@ -568,6 +568,7 @@ class nsZenSpacesSyncApplier {
       inBackground: true,
       skipAnimation: true,
       skipBackgroundNotify: true,
+      noInitialLabel: true,
       lazyTabTitle: data.title || undefined,
       userContextId,
       skipRoute: true,

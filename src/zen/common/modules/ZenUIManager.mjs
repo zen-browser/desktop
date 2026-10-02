@@ -1035,41 +1035,15 @@ window.gZenVerticalTabsManager = {
   },
 
   /**
-   * The strip items that sit below aItem and therefore have to move when its
-   * space appears or collapses.
+   * Whether aItem is a strip item that should animate in. Checked again a
+   * frame after the item opens, because glance and split view only claim a
+   * tab once it has been created.
    *
    * @param {Element} aItem
-   * @returns {Element[]} The elements carrying those items' space.
+   * @returns {boolean}
    */
-  _itemsBelowInStrip(aItem) {
-    const items = gBrowser.tabContainer.ariaFocusableItems;
-    const index = items.findIndex(
-      item =>
-        !aItem.contains(item) &&
-        !!(
-          aItem.compareDocumentPosition(item) & Node.DOCUMENT_POSITION_FOLLOWING
-        )
-    );
-    if (index < 0) {
-      return [];
-    }
-    const elements = [];
-    for (const item of items.slice(index)) {
-      let element;
-      try {
-        element = ZenDragAndDrop.elementToMove(item);
-      } catch {
-        continue;
-      }
-      if (element && !elements.includes(element)) {
-        elements.push(element);
-      }
-    }
-    return elements;
-  },
-
-  animateItemOpen(aItem) {
-    if (
+  _canAnimateItemOpen(aItem) {
+    return !(
       gReduceMotion ||
       !gZenUIManager.motion ||
       !aItem ||
@@ -1080,37 +1054,55 @@ window.gZenVerticalTabsManager = {
       (gZenUIManager.testingEnabled && !gZenUIManager.profilingEnabled) ||
       !gZenStartup.isReady ||
       aItem.group?.hasAttribute("split-view-group") ||
-      aItem.hasAttribute("zen-glance-tab")
-    ) {
+      aItem.hasAttribute("zen-glance-tab") ||
+      window.gZenViewSplitter?.waitingForSplitTab
+    );
+  },
+
+  animateItemOpen(aItem) {
+    if (!this._canAnimateItemOpen(aItem)) {
       return;
     }
+
+    const isLastItem = () => {
+      const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
+      return visibleItems[visibleItems.length - 1] === aItem;
+    };
+
     try {
-      const itemSize =
-        window.windowUtils.getBoundsWithoutFlushing(aItem).height;
-      const itemsBelow = this._itemsBelowInStrip(aItem);
-      for (const item of itemsBelow) {
-        item.style.transform = `translateY(-${itemSize}px)`;
-      }
-      for (const item of itemsBelow) {
-        gZenUIManager
-          .elementAnimate(
-            item,
-            { y: [-itemSize, 0] },
-            { duration: 120, easing: "ease-out" }
-          )
-          .catch(err => {
-            console.error(err);
-          })
-          .finally(() => {
-            item.style.removeProperty("transform");
-          });
-      }
+      const itemSize = aItem.getBoundingClientRect().height;
+      const transform = `-${itemSize}px`;
+      const marginBottom = isLastItem() ? ["0px", "0px"] : [transform, "0px"];
+      // Hold the collapsed start state now so the item doesn't take its space
+      // for a frame, then start once its destination is settled.
+      aItem.style.marginBottom = marginBottom[0];
+      aItem.style.opacity = "0";
+      window.requestAnimationFrame(() => {
+        if (!this._canAnimateItemOpen(aItem)) {
+          aItem.style.removeProperty("margin-bottom");
+          aItem.style.removeProperty("opacity");
+          return;
+        }
+        this._startItemOpenAnimation(aItem, marginBottom);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  },
+
+  /**
+   * @param {Element} aItem
+   * @param {string[]} marginBottom Keyframes collapsing the item's space.
+   */
+  _startItemOpenAnimation(aItem, marginBottom) {
+    try {
       gZenUIManager.motion
         .animate(
           aItem,
           {
             opacity: [0, 1],
             transform: ["scale(0.95)", "scale(1)"],
+            marginBottom,
           },
           {
             duration: 0.12,
@@ -1122,6 +1114,7 @@ window.gZenVerticalTabsManager = {
           console.error(err);
         })
         .finally(() => {
+          aItem.style.removeProperty("margin-bottom");
           aItem.style.removeProperty("transform");
           aItem.style.removeProperty("opacity");
         });
@@ -1318,12 +1311,11 @@ window.gZenVerticalTabsManager = {
     let captionButtonsWidth = this._prefsRightSide
       ? window.windowUtils.getBoundsWithoutFlushing(captionButtons).width
       : 0;
-    let isSingleToolbar = this._hasSetSingleToolbar;
     switch (AppConstants.platform) {
       case "macosx":
         return 163;
       default:
-        return (isSingleToolbar ? 117 : 36) + captionButtonsWidth;
+        return (this._prefsRightSide ? 117 : 152) + captionButtonsWidth;
     }
   },
 

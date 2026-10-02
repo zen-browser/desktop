@@ -801,9 +801,12 @@
 
 #TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
   --zen-library-mask-ramp: 50px;
+  --zen-library-mask-bleed: var(--zen-toolbox-padding);
 
   mask-repeat: no-repeat;
-  mask-size: 100% calc(100% + var(--zen-library-mask-ramp));
+  mask-clip: no-clip;
+  mask-position: calc(-1 * var(--zen-library-mask-bleed)) calc(-1 * var(--zen-library-mask-bleed));
+  mask-size: calc(100% + var(--zen-library-mask-bleed) * 2) calc(100% + var(--zen-library-mask-bleed) + var(--zen-library-mask-ramp));
   transition: mask-size var(--zen-library-open-duration) var(--zen-library-open-easing);
 
   mask-image: linear-gradient(
@@ -814,7 +817,7 @@
       100%);
 
   &[zen-library-stack-open] {
-    mask-size: 100% calc(100% - var(--zen-library-stack-height, 0px) + 20px);
+    mask-size: calc(100% + var(--zen-library-mask-bleed) * 2) calc(100% - var(--zen-library-stack-height, 0px) + 20px + var(--zen-library-mask-bleed));
   }
 }
 

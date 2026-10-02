@@ -131,12 +131,15 @@ class ZenLibraryDownloadStack {
     for (const host of [this.#footButtons, this.#downloadsListWrapper]) {
       host.removeAttribute("zen-library-stack-open");
     }
-    // The strip's fade stays until its progress is back at zero.
     const wrapper = this.#downloadsListWrapper;
     wrapper.setAttribute("zen-library-stack-closing", "true");
-    wrapper.addEventListener("transitionend", function onEnd(event) {
-      if (event.propertyName === "--zen-library-progress") {
-        wrapper.removeEventListener("transitionend", onEnd);
+    const fading = wrapper
+      .getAnimations()
+      .filter(animation => animation.transitionProperty === "mask-size")
+      .map(animation => animation.finished);
+    Promise.allSettled(fading).then(() => {
+      // Opening again mid-close takes the attribute off by itself.
+      if (!this.#footButtons.hasAttribute("zen-library-stack-open")) {
         wrapper.removeAttribute("zen-library-stack-closing");
       }
     });

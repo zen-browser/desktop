@@ -2051,6 +2051,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const parentWindow = window.parent;
     const targetWindow = parentWindow || window;
     const tab = targetWindow.gBrowser.addTab(url, {
+      skipAnimation: true,
       ...options,
       triggeringPrincipal,
     });
@@ -2553,6 +2554,16 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
+  /**
+   * Clears the flag a frame late, so a tab opened just before the urlbar
+   * closed is still covered when the strip checks whether to animate it.
+   */
+  #clearWaitingForSplitTab() {
+    window.requestAnimationFrame(() => {
+      this.waitingForSplitTab = false;
+    });
+  }
+
   createEmptySplit(side = "right") {
     const selectedTab = gBrowser.selectedTab;
     const emptyTab = gZenWorkspaces._emptyTab;
@@ -2572,6 +2583,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         const closeToken = {};
         const controller = new AbortController();
         const cleanup = (onSwitch = false, groupIndex = null) => {
+          this.#clearWaitingForSplitTab();
           if (groupIndex === null) {
             groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
@@ -2591,6 +2603,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               return;
             }
             controller.abort();
+            this.#clearWaitingForSplitTab();
             const { onElementPicked, onSwitch } = event.detail;
             const groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
@@ -2624,6 +2637,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           },
           { signal: controller.signal }
         );
+        this.waitingForSplitTab = true;
         if (
           !gZenUIManager.handleNewTab(false, false, "tab", true, closeToken)
         ) {

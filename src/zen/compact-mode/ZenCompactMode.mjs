@@ -187,13 +187,6 @@ window.gZenCompactModeManager = {
     delete this._isTabBeingDragged;
     this._stopTrackingMouseOutsideWindow();
     this.sidebar.removeAttribute("zen-user-show");
-    // We use this element in order to make it persis across restarts, by using the XULStore.
-    // main-window can't store attributes other than window sizes, so we use this instead
-    lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
-    document.documentElement.setAttribute("zen-compact-mode", value);
-    if (typeof this._wasInCompactMode === "undefined") {
-      Services.prefs.setBoolPref("zen.view.compact.enable-at-startup", value);
-    }
     this._updateEvent();
   },
 
@@ -386,16 +379,28 @@ window.gZenCompactModeManager = {
   },
 
   async _updateEvent() {
+    const value = !this.preference;
+    const setAttrs = () => {
+      // We use this element in order to make it persis across restarts, by using the XULStore.
+      // main-window can't store attributes other than window sizes, so we use this instead
+      lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
+      document.documentElement.setAttribute("zen-compact-mode", value);
+      if (typeof this._wasInCompactMode === "undefined") {
+        Services.prefs.setBoolPref("zen.view.compact.enable-at-startup", value);
+      }
+    };
     const isUrlbarFocused = gURLBar.focused;
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
     this.updateContextMenu();
     gZenWorkspaces._processingResize = true;
     if (!this.preference) {
+      setAttrs();
       this.callAllEventListeners();
-      await this.animateCompactMode();
+      await this.animateCompactMode(value);
     } else {
-      await this.animateCompactMode();
+      await this.animateCompactMode(value);
+      setAttrs();
       this.callAllEventListeners();
     }
     gZenWorkspaces._processingResize = false;
@@ -426,11 +431,9 @@ window.gZenCompactModeManager = {
     );
   },
 
-  animateCompactMode() {
-    // Get the splitter width before hiding it (we need to hide it before animating on right)
-    document.documentElement.setAttribute("zen-compact-animating", "true");
+  animateCompactMode(isCompactMode) {
     return new Promise(resolve => {
-      const isCompactMode = this.preference;
+      document.documentElement.setAttribute("zen-compact-animating", "true");
       const canHideSidebar = this.canHideSidebar;
       let canAnimate =
         lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR &&
@@ -453,116 +456,109 @@ window.gZenCompactModeManager = {
       this.sidebar.style.removeProperty("margin-right");
       this.sidebar.style.removeProperty("margin-left");
       this.sidebar.style.removeProperty("transform");
-      window.requestAnimationFrame(() => {
-        let sidebarWidth = window.windowUtils.getBoundsWithoutFlushing(
-          this.sidebar
-        ).width;
-        const elementSeparation = ZenThemeModifier.elementSeparation;
-        if (!canAnimate) {
-          this.sidebar.removeAttribute("animate");
-          document.documentElement.removeAttribute("zen-compact-animating");
+      let sidebarWidth = window.windowUtils.getBoundsWithoutFlushing(
+        this.sidebar
+      ).width;
+      const elementSeparation = ZenThemeModifier.elementSeparation;
+      if (!canAnimate) {
+        this.sidebar.removeAttribute("animate");
+        document.documentElement.removeAttribute("zen-compact-animating");
 
-          setTimeout(() => {
-            this.sidebar.style.transition = "";
-            delete this._ignoreNextHover;
-          }, 500);
-
-          resolve();
-          return;
-        }
-        sidebarWidth -= elementSeparation;
-        if (canHideSidebar && isCompactMode) {
-          this._setElementExpandAttribute(this.sidebar, false);
-          gZenUIManager.motion
-            .animate(
-              this.sidebar,
-              {
-                marginRight: [
-                  0,
-                  this.sidebarIsOnRight ? `-${sidebarWidth}px` : 0,
-                ],
-                marginLeft: [
-                  0,
-                  this.sidebarIsOnRight ? 0 : `-${sidebarWidth}px`,
-                ],
-              },
-              {
-                ease: "easeIn",
-                type: "spring",
-                bounce: 0,
-                duration: 0.09,
-              }
-            )
-            .then(() => {
-              this.sidebar.style.transition = "none";
-              this.sidebar.style.pointEvents = "none";
-              this.sidebar.removeAttribute("animate");
-
-              if (this._ignoreNextHover) {
-                setTimeout(() => {
-                  delete this._ignoreNextHover;
-                });
-              }
-
-              document.documentElement.removeAttribute("zen-compact-animating");
-              this.sidebar.style.removeProperty("margin-right");
-              this.sidebar.style.removeProperty("margin-left");
-              this.sidebar.style.removeProperty("transform");
-              this.sidebar.style.removeProperty("point-events");
-
-              requestAnimationFrame(() => {
-                this.sidebar.style.removeProperty("transition");
-              });
-
-              resolve();
-            });
-        } else if (canHideSidebar && !isCompactMode) {
-          // Shouldn't be ever true, but just in case
+        setTimeout(() => {
+          this.sidebar.style.transition = "";
           delete this._ignoreNextHover;
-          document.getElementById("browser").style.overflow = "clip";
-          if (this.sidebarIsOnRight) {
-            this.sidebar.style.marginRight = `-${sidebarWidth}px`;
-          } else {
-            this.sidebar.style.marginLeft = `-${sidebarWidth}px`;
-          }
-          gZenUIManager.motion
-            .animate(
-              this.sidebar,
-              this.sidebarIsOnRight
-                ? {
-                    marginRight: [`-${sidebarWidth}px`, 0],
-                    transform: ["translateX(100%)", "translateX(0)"],
-                  }
-                : { marginLeft: [`-${sidebarWidth}px`, 0] },
-              {
-                ease: "easeOut",
-                type: "spring",
-                bounce: 0,
-                duration: 0.09,
-              }
-            )
-            .then(() => {
-              this.sidebar.removeAttribute("animate");
-              document
-                .getElementById("browser")
-                .style.removeProperty("overflow");
-              this.sidebar.style.transition = "none";
-              this.sidebar.style.removeProperty("margin-right");
-              this.sidebar.style.removeProperty("margin-left");
-              this.sidebar.style.removeProperty("transform");
-              document.documentElement.removeAttribute("zen-compact-animating");
+        }, 500);
+
+        resolve();
+        return;
+      }
+      sidebarWidth -= elementSeparation * (isCompactMode ? 1 : 3);
+      if (canHideSidebar && isCompactMode) {
+        this._setElementExpandAttribute(this.sidebar, false);
+        gZenUIManager.motion
+          .animate(
+            this.sidebar,
+            {
+              marginRight: [
+                0,
+                this.sidebarIsOnRight ? `-${sidebarWidth}px` : 0,
+              ],
+              marginLeft: [0, this.sidebarIsOnRight ? 0 : `-${sidebarWidth}px`],
+            },
+            {
+              ease: "easeIn",
+              type: "spring",
+              bounce: 0,
+              duration: 0.1,
+            }
+          )
+          .then(() => {
+            this.sidebar.style.transition = "none";
+            this.sidebar.style.pointEvents = "none";
+            this.sidebar.removeAttribute("animate");
+
+            if (this._ignoreNextHover) {
               setTimeout(() => {
-                this.sidebar.style.removeProperty("transition");
-                resolve();
+                delete this._ignoreNextHover;
               });
+            }
+
+            document.documentElement.removeAttribute("zen-compact-animating");
+            this.sidebar.style.removeProperty("margin-right");
+            this.sidebar.style.removeProperty("margin-left");
+            this.sidebar.style.removeProperty("transform");
+            this.sidebar.style.removeProperty("point-events");
+
+            requestAnimationFrame(() => {
+              this.sidebar.style.removeProperty("transition");
             });
+
+            resolve();
+          });
+      } else if (canHideSidebar && !isCompactMode) {
+        // Shouldn't be ever true, but just in case
+        delete this._ignoreNextHover;
+        document.getElementById("browser").style.overflow = "clip";
+        if (this.sidebarIsOnRight) {
+          this.sidebar.style.marginRight = `-${sidebarWidth}px`;
         } else {
-          this.sidebar.removeAttribute("animate"); // remove the attribute if we are not animating
-          document.documentElement.removeAttribute("zen-compact-animating");
-          delete this._ignoreNextHover;
-          resolve();
+          this.sidebar.style.marginLeft = `-${sidebarWidth}px`;
         }
-      });
+        gZenUIManager.motion
+          .animate(
+            this.sidebar,
+            this.sidebarIsOnRight
+              ? {
+                  marginRight: [`-${sidebarWidth}px`, 0],
+                  transform: ["translateX(100%)", "translateX(0)"],
+                }
+              : { marginLeft: [`-${sidebarWidth}px`, 0] },
+            {
+              ease: "easeOut",
+              type: "spring",
+              bounce: 0,
+              duration: 0.1,
+            }
+          )
+          .then(() => {
+            this.sidebar.removeAttribute("animate");
+            document.getElementById("browser").style.removeProperty("overflow");
+            this.sidebar.style.transition = "none";
+            this.sidebar.style.removeProperty("margin-right");
+            this.sidebar.style.removeProperty("margin-left");
+            this.sidebar.style.removeProperty("transform");
+            document.documentElement.removeAttribute("zen-compact-animating");
+            setTimeout(() => {
+              this.sidebar.style.removeProperty("transition");
+            });
+            resolve();
+          });
+      } else {
+        this.sidebar.removeAttribute("animate"); // remove the attribute if we are not animating
+        document.documentElement.removeAttribute("zen-compact-animating");
+        delete this._ignoreNextHover;
+        resolve();
+      }
     });
   },
 

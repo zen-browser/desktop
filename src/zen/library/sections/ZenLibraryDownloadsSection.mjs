@@ -51,6 +51,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   #visible = [];
   #refreshed = new WeakSet();
   #secondsLeft = new WeakMap();
+  #finishedStatuses = new WeakMap();
 
   #menu = null;
   #menuDownload = null;
@@ -267,6 +268,49 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       .reduce((a, b) => lazy.DownloadsCommon.strings.statusSeparator(a, b));
   }
 
+  /**
+   * What a finished download's row says under its name. Nothing in it changes
+   * while the download sits there, but a row builds its line again every time
+   * it is drawn.
+   *
+   * @param {object} download - A download that finished
+   * @returns {string} Its status line
+   */
+  #finishedStatus(download) {
+    const day = new Date().setHours(0, 0, 0, 0);
+    const kept = this.#finishedStatuses.get(download);
+    if (
+      kept &&
+      kept.day === day &&
+      kept.endTime === download.endTime &&
+      kept.url === download.source.url &&
+      kept.size === download.target.size
+    ) {
+      return kept.text;
+    }
+    const parsed = URL.parse(download.source.url);
+    const uri = parsed && Services.io.newURI(parsed.href);
+    const host = uri
+      ? lazy.BrowserUtils.formatURIForDisplay(uri, { onlyBaseDomain: true })
+      : "";
+    const [date] = lazy.DownloadUtils.getReadableDates(
+      new Date(download.endTime)
+    );
+    const text = this.#joinStatus(
+      lazy.DownloadsViewUI.getSizeWithUnits(download),
+      host,
+      date
+    );
+    this.#finishedStatuses.set(download, {
+      day,
+      endTime: download.endTime,
+      url: download.source.url,
+      size: download.target.size,
+      text,
+    });
+    return text;
+  }
+
   #statusText(download) {
     const strings = lazy.DownloadsCommon.strings;
     const totalBytes = download.hasProgress ? download.totalBytes : -1;
@@ -288,19 +332,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       if (!download.target.exists) {
         return strings.fileMovedOrMissing;
       }
-      const parsed = URL.parse(download.source.url);
-      const uri = parsed && Services.io.newURI(parsed.href);
-      const host = uri
-        ? lazy.BrowserUtils.formatURIForDisplay(uri, { onlyBaseDomain: true })
-        : "";
-      const [date] = lazy.DownloadUtils.getReadableDates(
-        new Date(download.endTime)
-      );
-      return this.#joinStatus(
-        lazy.DownloadsViewUI.getSizeWithUnits(download),
-        host,
-        date
-      );
+      return this.#finishedStatus(download);
     }
     if (download.canceled && download.hasPartialData) {
       return this.#joinStatus(

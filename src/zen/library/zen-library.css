@@ -963,6 +963,7 @@ zen-library-history-section {
   flex: 0 0 var(--zen-library-space-width);
   /* The shift transforms assume the card is exactly this wide. */
   box-sizing: border-box;
+  min-width: 1px;
   min-height: 0;
   z-index: 0;
   color: var(--toolbox-textcolor);
@@ -1045,7 +1046,9 @@ zen-library-history-section {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 1px;
   min-height: 0;
+  overflow-x: clip;
   overflow-y: auto;
   scrollbar-width: none;
   --zen-toolbox-min-width: fit-content;

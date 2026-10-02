@@ -19,9 +19,6 @@
 - name: services.sync.prefs.sync.zen.tabs.show-newtab-vertical
   value: true
 
-- name: services.sync.prefs.sync.zen.tabs.open-pinned-in-new-tab
-  value: true
-
 - name: services.sync.prefs.sync.zen.tabs.close-on-back-with-no-history
   value: true
 
@@ -34,23 +31,9 @@
 - name: services.sync.prefs.sync.zen.ctrlTab.show-pending-tabs
   value: true
 
-- name: services.sync.prefs.sync.zen.startup.smooth-scroll-in-tabs
-  value: true
-
 # URL bar
-- name: services.sync.prefs.sync.zen.urlbar.show-contextual-id
-  value: true
 
 - name: services.sync.prefs.sync.zen.urlbar.behavior
-  value: true
-
-- name: services.sync.prefs.sync.zen.urlbar.hide-one-offs
-  value: true
-
-- name: services.sync.prefs.sync.zen.urlbar.enable-overrides
-  value: true
-
-- name: services.sync.prefs.sync.zen.urlbar.single-toolbar-show-copy-url
   value: true
 
 - name: services.sync.prefs.sync.zen.urlbar.suggestions.quick-actions
@@ -74,8 +57,6 @@
   value: true
 
 # Browser view
-- name: services.sync.prefs.sync.zen.view.use-single-toolbar
-  value: true
 
 - name: services.sync.prefs.sync.zen.view.show-newtab-button-top
   value: true

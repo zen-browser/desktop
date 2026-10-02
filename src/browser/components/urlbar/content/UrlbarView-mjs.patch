@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
-index 99ee8ec42297a56fd72d344179b021e604fefd48..931d33c4a576ec7917393797d48ddd85cde8950e 100644
+index 99ee8ec42297a56fd72d344179b021e604fefd48..fbcaf420da55d76273ab3159beac862eba778045 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
 @@ -818,7 +818,7 @@ export class UrlbarView {
@@ -11,7 +11,44 @@ index 99ee8ec42297a56fd72d344179b021e604fefd48..931d33c4a576ec7917393797d48ddd85
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -962,10 +962,6 @@ export class UrlbarView {
+@@ -931,6 +931,24 @@ export class UrlbarView {
+     this.#cacheL10nStrings();
+   }
+ 
++  /**
++   * Preselects the most recent page when the urlbar opens with an empty query.
++   *
++   * @param {UrlbarQueryContext} queryContext
++   */
++  #preselectRecentHistory(queryContext) {
++    if (
++      queryContext.searchString ||
++      queryContext.results[0]?.providerName != "ZenUrlbarProviderRecentHistory"
++    ) {
++      return;
++    }
++    this.#selectElement(this.getFirstSelectableElement(), {
++      updateInput: false,
++      setAccessibleFocus: this.controller.userSelectionBehavior == "arrow",
++    });
++  }
++
+   onQueryCancelled() {
+     this.#queryWasCancelled = true;
+     this.#cancelRemoveStaleRowsTimer();
+@@ -946,6 +964,11 @@ export class UrlbarView {
+     // results, remove stale rows. Otherwise remove all rows.
+     if (this.#queryUpdatedResults) {
+       this.#removeStaleRows();
++      // The selected row may have been a stale one, e.g. the heuristic of the
++      // previous query.
++      if (!this.#selectedElement && !this.oneOffSearchButtons?.selectedButton) {
++        this.#preselectRecentHistory(queryContext);
++      }
+     } else {
+       this.clear();
+     }
+@@ -962,10 +985,6 @@ export class UrlbarView {
      }
  
      // If search mode isn't active, close the view.
@@ -22,23 +59,16 @@ index 99ee8ec42297a56fd72d344179b021e604fefd48..931d33c4a576ec7917393797d48ddd85
  
      // Search mode is active.  If the one-offs should be shown, make sure they
      // are enabled and show the view.
-@@ -1042,6 +1038,15 @@ export class UrlbarView {
+@@ -1042,6 +1061,8 @@ export class UrlbarView {
          // them, resembling tab-to-search. In that case, the input value is
          // still associated with the first result.
          this.input.setResultForCurrentValue(firstResult);
-+      } else if (
-+        !queryContext.searchString &&
-+        firstResult.providerName == "ZenUrlbarProviderRecentHistory"
-+      ) {
-+        // Preselect the most recent page when the urlbar opens empty.
-+        this.#selectElement(this.getFirstSelectableElement(), {
-+          updateInput: false,
-+          setAccessibleFocus: this.controller.userSelectionBehavior == "arrow",
-+        });
++      } else {
++        this.#preselectRecentHistory(queryContext);
        }
      }
  
-@@ -3290,6 +3295,8 @@ export class UrlbarView {
+@@ -3290,6 +3311,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -47,7 +77,24 @@ index 99ee8ec42297a56fd72d344179b021e604fefd48..931d33c4a576ec7917393797d48ddd85
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3956,7 +3963,7 @@ export class UrlbarView {
+@@ -3309,6 +3332,16 @@ export class UrlbarView {
+     this.#setAccessibleFocus(setAccessibleFocus && element);
+     this.#rawSelectedElement = element;
+ 
++    // Recent pages are offered for an empty bar; browsing them with the
++    // keyboard must not write their url into the input.
++    if (
++      updateInput &&
++      result?.providerName == "ZenUrlbarProviderRecentHistory" &&
++      !this.#queryContext?.searchString
++    ) {
++      updateInput = false;
++    }
++
+     if (updateInput) {
+       let urlOverride = null;
+       if (element?.classList?.contains("urlbarView-button")) {
+@@ -3956,7 +3989,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {
@@ -56,7 +103,7 @@ index 99ee8ec42297a56fd72d344179b021e604fefd48..931d33c4a576ec7917393797d48ddd85
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
-@@ -4450,6 +4457,12 @@ export class UrlbarView {
+@@ -4450,6 +4483,12 @@ export class UrlbarView {
    }
  
    on_blur() {

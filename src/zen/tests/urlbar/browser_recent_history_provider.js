@@ -201,3 +201,41 @@ add_task(async function test_open_page_switches_to_tab() {
   BrowserTestUtils.removeTab(otherTab);
   await PlacesUtils.history.clear();
 });
+
+add_task(async function test_browsing_results_keeps_input_empty() {
+  await seedHistory(PAGES);
+  await BrowserTestUtils.withNewTab("about:blank", async () => {
+    await openEmptyUrlbar();
+    for (let i = 0; i < 3; i++) {
+      EventUtils.synthesizeKey("KEY_ArrowDown");
+      Assert.equal(gURLBar.value, "", `Input stays empty after arrow ${i + 1}`);
+    }
+    EventUtils.synthesizeKey("KEY_ArrowUp");
+    Assert.equal(gURLBar.value, "", "Input stays empty after arrow up");
+    await closeUrlbar();
+  });
+  await PlacesUtils.history.clear();
+});
+
+add_task(async function test_deleting_last_character_keeps_view_open() {
+  await seedHistory(PAGES);
+  await BrowserTestUtils.withNewTab("about:blank", async () => {
+    await UrlbarTestUtils.promiseAutocompleteResultPopup({
+      window,
+      waitForFocus,
+      value: "z",
+    });
+    EventUtils.synthesizeKey("KEY_Backspace");
+    await UrlbarTestUtils.promiseSearchComplete(window);
+    Assert.ok(gURLBar.view.isOpen, "The view stays open on an empty query");
+    const rows = await getProviderRows();
+    Assert.equal(rows.length, 5, "Recent pages are shown again");
+    Assert.equal(
+      UrlbarTestUtils.getSelectedRowIndex(window),
+      rows[0].index,
+      "The first page is preselected again"
+    );
+    await closeUrlbar();
+  });
+  await PlacesUtils.history.clear();
+});

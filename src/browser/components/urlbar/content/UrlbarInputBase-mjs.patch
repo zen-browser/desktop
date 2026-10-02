@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
-index 3c1964335b25a3f23db29e78203784bc487c9917..f11b45f3fb0fbdf742ddb553c8d67642addd6c8f 100644
+index 3c1964335b25a3f23db29e78203784bc487c9917..08c66f5c4d18831bb34764e9ebd0d90a3c7fa332 100644
 --- a/browser/components/urlbar/content/UrlbarInputBase.mjs
 +++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
 @@ -85,6 +85,12 @@ if (lazy) {
@@ -704,7 +704,23 @@ index 3c1964335b25a3f23db29e78203784bc487c9917..f11b45f3fb0fbdf742ddb553c8d67642
            break;
          }
  
-@@ -5734,7 +6108,7 @@ ${
+@@ -5549,7 +5923,14 @@ ${
+       // a tab preview was opened
+       this.view.maybeRollupPopups();
+ 
+-      if (!value && !UrlbarPrefs.get("suggest.topsites")) {
++      if (
++        !value &&
++        !UrlbarPrefs.get("suggest.topsites") &&
++        !Services.prefs.getBoolPref(
++          "zen.urlbar.suggestions.recent-history",
++          true
++        )
++      ) {
+         this.view.clear();
+         if (!this.searchMode || !this.view.oneOffSearchButtons?.hasView) {
+           this.view.close();
+@@ -5734,7 +6115,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

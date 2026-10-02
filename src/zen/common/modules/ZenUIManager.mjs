@@ -1311,12 +1311,11 @@ window.gZenVerticalTabsManager = {
     let captionButtonsWidth = this._prefsRightSide
       ? window.windowUtils.getBoundsWithoutFlushing(captionButtons).width
       : 0;
-    let isSingleToolbar = this._hasSetSingleToolbar;
     switch (AppConstants.platform) {
       case "macosx":
         return 163;
       default:
-        return (isSingleToolbar ? 117 : 36) + captionButtonsWidth;
+        return (this._prefsRightSide ? 117 : 152) + captionButtonsWidth;
     }
   },
 

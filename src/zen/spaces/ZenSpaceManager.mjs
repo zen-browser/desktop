@@ -801,6 +801,10 @@ class nsZenWorkspaces {
     this._workspaceCache = spacesFromStore.length
       ? [...spacesFromStore]
       : [this.#createWorkspaceData("Space", undefined)];
+    for (const workspace of this._workspaceCache) {
+      // Spaces created while containers were disabled were saved without one
+      workspace.containerTabId ??= 0;
+    }
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     if (aWinData.selected) {

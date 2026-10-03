@@ -165,6 +165,10 @@ class ZenLibraryDownloadStack {
     const from = this.#window.windowUtils.getBoundsWithoutFlushing(this.#badge);
     const to = target.getBoundingClientRect();
     const style = this.#window.getComputedStyle(this.#badge);
+    const badgeTransform =
+      style.transform === "none"
+        ? new this.#window.DOMMatrixReadOnly()
+        : new this.#window.DOMMatrixReadOnly(style.transform);
     // The entry is still translated down while closed; land where it ends.
     const entryTransform = this.#window.getComputedStyle(entry).transform;
     const rise =
@@ -173,11 +177,11 @@ class ZenLibraryDownloadStack {
         : new this.#window.DOMMatrixReadOnly(entryTransform).f;
     this.#badge.style.setProperty(
       "--zen-library-badge-to-x",
-      `${parseFloat(style.left) + to.left - from.left}px`
+      `${badgeTransform.e + to.left - from.left}px`
     );
     this.#badge.style.setProperty(
       "--zen-library-badge-to-y",
-      `${parseFloat(style.top) + to.top - from.top - rise}px`
+      `${badgeTransform.f + to.top - from.top - rise}px`
     );
   }
 

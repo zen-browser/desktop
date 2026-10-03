@@ -54,7 +54,7 @@
   value: false
 
 - name: browser.urlbar.suggest.topsites
-  value: true
+  value: false
   locked: true
 
 # See https://github.com/zen-browser/desktop/issues/7248

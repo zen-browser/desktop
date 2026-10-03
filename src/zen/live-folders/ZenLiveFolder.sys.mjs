@@ -11,6 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 export class nsZenLiveFolderProvider {
   #task = null;
+  #inFlight = null;
 
   constructor({ id, manager, state }) {
     this.id = id;
@@ -27,9 +28,9 @@ export class nsZenLiveFolderProvider {
   }
 
   async refresh() {
-    this.#task.disarm();
+    this.#task?.disarm();
     const result = await this.#fetchLiveFolder();
-    this.#task.arm();
+    this.#task?.arm();
     return result;
   }
 
@@ -70,7 +71,16 @@ export class nsZenLiveFolderProvider {
     }
   }
 
-  async #fetchLiveFolder() {
+  #fetchLiveFolder() {
+    if (!this.#inFlight) {
+      this.#inFlight = this.#performFetch().finally(() => {
+        this.#inFlight = null;
+      });
+    }
+    return this.#inFlight;
+  }
+
+  async #performFetch() {
     try {
       const items = await this.fetchItems();
       this.state.lastFetched = Date.now();
@@ -122,20 +132,25 @@ export class nsZenLiveFolderProvider {
     this.manager.saveState();
   }
 
-  fetch(url, { maxContentLength = 5 * 1024 * 1024, headers = {} } = {}) {
+  get userContextId() {
+    const folder = this.manager.getFolderForLiveFolder(this);
+    const space = folder?.documentGlobal.gZenWorkspaces.getWorkspaceFromId(
+      folder.getAttribute("zen-workspace-id")
+    );
+    return space?.containerTabId || 0;
+  }
+
+  fetch(
+    url,
+    {
+      maxContentLength = 5 * 1024 * 1024,
+      headers = {},
+      method = "GET",
+      body = null,
+    } = {}
+  ) {
     const uri = lazy.NetUtil.newURI(url);
-    // TODO: Support userContextId when fetching, it should be inherited from the folder's
-    // current space context ID.
-    let userContextId = 0;
-    let folder = this.manager.getFolderForLiveFolder(this);
-    if (folder) {
-      let space = folder.documentGlobal.gZenWorkspaces.getWorkspaceFromId(
-        folder.getAttribute("zen-workspace-id")
-      );
-      if (space) {
-        userContextId = space.containerTabId || 0;
-      }
-    }
+    const userContextId = this.userContextId;
     const principal = Services.scriptSecurityManager.createContentPrincipal(
       uri,
       { userContextId }
@@ -154,6 +169,28 @@ export class nsZenLiveFolderProvider {
         Ci.nsILoadInfo.SEC_COOKIES_INCLUDE,
       triggeringPrincipal: principal,
     }).QueryInterface(Ci.nsIHttpChannel);
+
+    channel.requestMethod = method;
+    if (body !== null) {
+      const stream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(
+        Ci.nsIStringInputStream
+      );
+      const bytes = new TextEncoder().encode(body);
+      stream.setUTF8Data(body);
+      channel
+        .QueryInterface(Ci.nsIUploadChannel2)
+        .explicitSetUploadStream(
+          stream,
+          headers["Content-Type"] || "application/json",
+          bytes.length,
+          method,
+          false
+        );
+    }
+    // Never forward session authorization to a redirect destination.
+    if (headers.Authorization) {
+      channel.redirectionLimit = 0;
+    }
 
     for (const [name, value] of Object.entries(headers)) {
       channel.setRequestHeader(name, value, false);
@@ -245,7 +282,12 @@ export class nsZenLiveFolderProvider {
           decoded = new TextDecoder("utf-8").decode(bytes);
         }
 
-        resolve({ text: decoded, status: httpStatus, contentType });
+        resolve({
+          text: decoded,
+          status: httpStatus,
+          contentType,
+          url: channel.URI.spec,
+        });
       },
     });
 

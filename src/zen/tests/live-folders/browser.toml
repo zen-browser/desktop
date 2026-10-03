@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [DEFAULT]
+support-files = ["fixtures/youtube-watch-later.html", "fixtures/youtube-continuation.json"]
 prefs = ["zen.live-folders.github.skip-new-pr-ui-check=true"]
 
 ["browser_github_live_folder.js"]
@@ -10,3 +11,5 @@ prefs = ["zen.live-folders.github.skip-new-pr-ui-check=true"]
 ["browser_live_folder.js"]
 
 ["browser_rss_live_folder.js"]
+
+["browser_youtube_live_folder.js"]

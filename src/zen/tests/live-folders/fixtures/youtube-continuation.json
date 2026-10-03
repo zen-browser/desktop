@@ -1,0 +1,81 @@
+{
+  "responseContext": {
+    "visitorData": "visitor-two"
+  },
+  "onResponseReceivedActions": [
+    {
+      "appendContinuationItemsAction": {
+        "targetId": "recommendations",
+        "continuationItems": [
+          {
+            "playlistVideoRenderer": {
+              "videoId": "XXXXXXXXXXX",
+              "title": {
+                "runs": [
+                  {
+                    "text": "A title with } braces and \"quotes\""
+                  }
+                ]
+              },
+              "shortBylineText": {
+                "runs": [
+                  {
+                    "text": "Example channel"
+                  }
+                ]
+              },
+              "isPlayable": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "appendContinuationItemsAction": {
+        "targetId": "playlist-video-list",
+        "continuationItems": [
+          {
+            "playlistVideoRenderer": {
+              "videoId": "AAAAAAAAAAA",
+              "title": {
+                "runs": [
+                  {
+                    "text": "A title with } braces and \"quotes\""
+                  }
+                ]
+              },
+              "shortBylineText": {
+                "runs": [
+                  {
+                    "text": "Example channel"
+                  }
+                ]
+              },
+              "isPlayable": true
+            }
+          },
+          {
+            "playlistVideoRenderer": {
+              "videoId": "CCCCCCCCCCC",
+              "title": {
+                "runs": [
+                  {
+                    "text": "Second video"
+                  }
+                ]
+              },
+              "shortBylineText": {
+                "runs": [
+                  {
+                    "text": "Example channel"
+                  }
+                ]
+              },
+              "isPlayable": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

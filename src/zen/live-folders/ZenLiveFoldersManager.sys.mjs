@@ -21,6 +21,10 @@ ChromeUtils.defineLazyGetter(
 const DEFAULT_FETCH_INTERVAL = 30 * 60 * 1000;
 const providers = [
   {
+    path: "resource:///modules/zen/YoutubeLiveFolder.sys.mjs",
+    module: "nsYoutubeLiveFolderProvider",
+  },
+  {
     path: "resource:///modules/zen/RssLiveFolder.sys.mjs",
     module: "nsRssLiveFolderProvider",
   },
@@ -145,6 +149,10 @@ class nsZenLiveFoldersManager {
             this.createFolder("github:issues");
             break;
           }
+          case "zen-live-folder-type-youtube": {
+            this.createFolder("youtube");
+            break;
+          }
           case "zen-live-folder-type-rss": {
             this.createFolder("rss");
             break;
@@ -267,6 +275,14 @@ class nsZenLiveFoldersManager {
         label = metadata.label;
         icon = metadata.icon;
 
+        break;
+      }
+      case "youtube": {
+        const [message] = await lazy.l10n.formatMessages([
+          { id: "zen-live-folder-type-youtube" },
+        ]);
+        label = message.attributes[0].value;
+        icon = "chrome://browser/content/zen-images/favicons/youtube.svg";
         break;
       }
       case "github": {

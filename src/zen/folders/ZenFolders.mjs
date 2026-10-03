@@ -88,6 +88,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
              command="cmd_zenNewLiveFolder"
              image="chrome://browser/skin/zen-icons/selectable/logo-github.svg" />
            <menuitem
+             data-l10n-id="zen-live-folder-type-youtube"
+             command="cmd_zenNewLiveFolder"
+             image="chrome://browser/content/zen-images/favicons/youtube.svg" />
+           <menuitem
              data-l10n-id="zen-live-folder-type-rss"
              command="cmd_zenNewLiveFolder"
              image="chrome://browser/skin/zen-icons/selectable/logo-rss.svg"/>

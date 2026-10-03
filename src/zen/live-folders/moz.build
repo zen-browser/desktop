@@ -5,6 +5,7 @@
 EXTRA_JS_MODULES.zen += [
     "providers/GithubLiveFolder.sys.mjs",
     "providers/RssLiveFolder.sys.mjs",
+    "providers/YoutubeLiveFolder.sys.mjs",
     "ZenLiveFolder.sys.mjs",
     "ZenLiveFoldersManager.sys.mjs",
 ]

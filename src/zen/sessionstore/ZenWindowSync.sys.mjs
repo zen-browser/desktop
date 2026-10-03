@@ -79,6 +79,29 @@ const SYNC_FLAG_LABEL = 1 << 0;
 const SYNC_FLAG_ICON = 1 << 1;
 const SYNC_FLAG_MOVE = 1 << 2;
 
+// A pinned tab's canonical icon is written into the session store on every
+// save. Sites serving multi-resolution .ico files, or SVGs behind
+// moz-remote-image:// (which percent-encodes the entire data URI), push this
+// one field into the hundreds of kilobytes and dominate the session file.
+// The icon is only ever used as a tab-sized background, and the consumer in
+// ZenPinnedTabManager already falls back to the live favicon when it is
+// missing, so refuse to carry an oversized one.
+const MAX_PINNED_ICON_LENGTH = 65536;
+
+/**
+ * Drops a pinned tab's canonical icon if it is too large to be worth
+ * persisting. Non-string values pass through untouched.
+ *
+ * @param {string} [aImage] - The icon to store.
+ * @returns {string|undefined} The icon, or undefined if it is oversized.
+ */
+function capPinnedTabIcon(aImage) {
+  if (typeof aImage !== "string" || aImage.length <= MAX_PINNED_ICON_LENGTH) {
+    return aImage;
+  }
+  return undefined;
+}
+
 class nsZenWindowSync {
   #initialized = false;
   constructor() {}
@@ -301,7 +324,9 @@ class nsZenWindowSync {
         }
         // Lets clear extra values to save some memory, we only really
         // care about the URL and title for the initial state, and we want
-        // to avoid keeping the whole session history around.
+        // to avoid keeping the whole session history around. The icon gets the
+        // same treatment so a profile that already stored an oversized one
+        // stops paying for it on every subsequent session write.
         if (tab._zenPinnedInitialState) {
           tab._zenPinnedInitialState = {
             ...tab._zenPinnedInitialState,
@@ -309,6 +334,7 @@ class nsZenWindowSync {
               url: tab._zenPinnedInitialState.entry.url,
               title: tab._zenPinnedInitialState.entry.title,
             },
+            image: capPinnedTabIcon(tab._zenPinnedInitialState.image),
           };
         }
         if (
@@ -1310,7 +1336,7 @@ class nsZenWindowSync {
    * @param {string} [aImage] - Optional icon to store.
    */
   setPinnedInitialState(aTab, aEntry, aImage) {
-    const initialState = { entry: aEntry, image: aImage };
+    const initialState = { entry: aEntry, image: capPinnedTabIcon(aImage) };
     this.#runOnAllWindows(null, win => {
       const targetTab = this.getItemFromWindow(win, aTab.id);
       if (targetTab) {

@@ -835,11 +835,16 @@
     left: 0px;
     right:  unset;
     translate: -100px 0;
+    
+    &.space-section {
+      order: -1;
+      translate: unset;
+    }
   }
-
+  
   &.space-section {
-    top: 0;
-    bottom: 0;
+    position: relative;
+    right: unset;
     translate: unset;
     --value: 0;
   }

@@ -1793,8 +1793,15 @@ class nsZenWorkspaces {
     return workspace;
   }
 
-  _cancelSwipeAnimation() {
-    this.#animateTabs(this.getActiveWorkspaceFromCache(), true);
+  async _cancelSwipeAnimation() {
+    const workspace = this.getActiveWorkspaceFromCache();
+    const previousWorkspaceIndex = this.getWorkspaces().findIndex(
+      w => w.uuid === workspace.uuid
+    );
+    await this.#animateTabs(workspace, true, gBrowser.selectedTab, {
+      previousWorkspaceIndex,
+    });
+    this._resetSwipePreview();
   }
 
   async #performWorkspaceChange(
@@ -1809,7 +1816,7 @@ class nsZenWorkspaces {
       previousWorkspace.uuid === workspace.uuid &&
       !alwaysChange
     ) {
-      this._cancelSwipeAnimation();
+      await this._cancelSwipeAnimation();
       return;
     }
 
@@ -1941,10 +1948,86 @@ class nsZenWorkspaces {
     }
   }
 
+  #resetSwipeBackground(workspace) {
+    for (const element of [
+      lazy.browserBackgroundElement,
+      lazy.toolbarBackgroundElement,
+    ]) {
+      element.style.setProperty("--zen-background-opacity", "1");
+    }
+    gZenThemePicker.updateNoise(
+      gZenThemePicker.getGradientForWorkspace(workspace).grain
+    );
+    this.#setAnimatingBackground(false);
+    delete this._hasAnimatedBackgrounds;
+  }
+
+  #updateSwipeBackground(workspace, nextWorkspace, offsetPixels) {
+    if (offsetPixels && nextWorkspace) {
+      const {
+        gradient: nextGradient,
+        grain: nextGrain,
+        toolbarGradient: nextToolbarGradient,
+      } = gZenThemePicker.getGradientForWorkspace(nextWorkspace);
+      const existingGrain =
+        gZenThemePicker.getGradientForWorkspace(workspace).grain;
+      const percentage = Math.abs(offsetPixels) / 200;
+      [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
+        element => {
+          element.style.setProperty("--zen-background-opacity", 1 - percentage);
+        }
+      );
+      if (!this._hasAnimatedBackgrounds) {
+        this._hasAnimatedBackgrounds = true;
+        lazy.browserBackgroundElement.style.setProperty(
+          "--zen-main-browser-background-old",
+          nextGradient
+        );
+        lazy.toolbarBackgroundElement.style.setProperty(
+          "--zen-main-browser-background-toolbar-old",
+          nextToolbarGradient
+        );
+        this.#setAnimatingBackground(true);
+      }
+      // Fit the offsetPixels into the grain limits. Both ends may be nextGrain and existingGrain,
+      // so we need to use the min and max of both. For example, existing may be 0.2 and next may be 0.5,
+      // meaning we should convert the offset to a percentage between 0.2 and 0.5. BUT if existingGrain
+      // is 0.5 and nextGrain is 0.2, we should still convert the offset to a percentage between 0.2 and 0.5.
+      const minGrain = Math.min(existingGrain, nextGrain);
+      const maxGrain = Math.max(existingGrain, nextGrain);
+      const grainValue =
+        minGrain +
+        (maxGrain - minGrain) *
+          (existingGrain > nextGrain ? 1 - percentage : percentage);
+      if (!this.#inChangingWorkspace) {
+        gZenThemePicker.updateNoise(grainValue);
+      }
+    } else if (
+      // Do not overwrite a committed workspace animation. Its completion
+      // will lay out the destination and restore the background itself.
+      !this.#inChangingWorkspace &&
+      !this._animatingChange &&
+      (this._hasAnimatedBackgrounds ||
+        lazy.browserBackgroundElement.hasAttribute("animating-background"))
+    ) {
+      this.#resetSwipeBackground(workspace);
+    } else {
+      delete this._hasAnimatedBackgrounds;
+    }
+  }
+
+  _resetSwipePreview() {
+    const workspace = this.getActiveWorkspaceFromCache();
+    this._organizeWorkspaceStripLocations(workspace, true);
+    this.#resetSwipeBackground(workspace);
+    this.updateTabsContainers();
+  }
+
   _organizeWorkspaceStripLocations(
     workspace,
     justMove = false,
-    offsetPixels = 0
+    offsetPixels = 0,
+    { forEdgeAction = false } = {}
   ) {
     this._organizingWorkspaceStrip = true;
     const workspaces = this.getWorkspaces();
@@ -1955,14 +2038,21 @@ class nsZenWorkspaces {
     const otherContainersEssentials = document.querySelectorAll(
       `#zen-essentials .zen-workspace-tabs-section`
     );
-    let nextSpaceIdx;
     const spaceLen = workspaces.length;
-    if (offsetPixels > 0) {
-      nextSpaceIdx = (workspaceIndex - 1 + spaceLen) % spaceLen;
-    } else if (offsetPixels < 0) {
-      nextSpaceIdx = (workspaceIndex + 1) % spaceLen;
-    } else {
-      nextSpaceIdx = workspaceIndex;
+    const candidateIndex = workspaceIndex - Math.sign(offsetPixels);
+    const hasDestination =
+      !forEdgeAction &&
+      spaceLen > 1 &&
+      candidateIndex !== workspaceIndex &&
+      (this.shouldWrapAroundNavigation ||
+        (candidateIndex >= 0 && candidateIndex < spaceLen));
+    const nextSpaceIdx = hasDestination
+      ? (candidateIndex + spaceLen) % spaceLen
+      : workspaceIndex;
+    // Edge actions own their strip displacement; ordinary navigation can
+    // only preview a workspace that can actually be reached on release.
+    if (!forEdgeAction && !hasDestination) {
+      offsetPixels = 0;
     }
     const workspaceContextId = workspace.containerTabId;
     const nextWorkspaceContextId = workspaces[nextSpaceIdx]?.containerTabId;
@@ -1995,8 +2085,9 @@ class nsZenWorkspaces {
         container.removeAttribute("hidden");
       }
       if (
+        !isCreatingWorkspace &&
+        hasDestination &&
         nextWorkspaceContextId !== workspaceContextId &&
-        offsetPixels &&
         this.shouldAnimateEssentials &&
         (container.getAttribute("container") == nextWorkspaceContextId ||
           container.getAttribute("container") == workspaceContextId)
@@ -2011,57 +2102,15 @@ class nsZenWorkspaces {
         if (container.style.transform !== transform) {
           container.style.transform = transform;
         }
+      } else if (!this.creatingWorkspaceId) {
+        container.style.removeProperty("transform");
       }
     }
-    if (offsetPixels) {
-      // Find the next workspace we are scrolling to
-      const nextWorkspace = workspaces[nextSpaceIdx];
-      if (nextWorkspace) {
-        const {
-          gradient: nextGradient,
-          grain: nextGrain,
-          toolbarGradient: nextToolbarGradient,
-        } = gZenThemePicker.getGradientForWorkspace(nextWorkspace);
-        const existingGrain =
-          gZenThemePicker.getGradientForWorkspace(workspace).grain;
-        const percentage = Math.abs(offsetPixels) / 200;
-        [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
-          element => {
-            element.style.setProperty(
-              "--zen-background-opacity",
-              1 - percentage
-            );
-          }
-        );
-        if (!this._hasAnimatedBackgrounds) {
-          this._hasAnimatedBackgrounds = true;
-          lazy.browserBackgroundElement.style.setProperty(
-            "--zen-main-browser-background-old",
-            nextGradient
-          );
-          lazy.toolbarBackgroundElement.style.setProperty(
-            "--zen-main-browser-background-toolbar-old",
-            nextToolbarGradient
-          );
-          this.#setAnimatingBackground(true);
-        }
-        // Fit the offsetPixels into the grain limits. Both ends may be nextGrain and existingGrain,
-        // so we need to use the min and max of both. For example, existing may be 0.2 and next may be 0.5,
-        // meaning we should convert the offset to a percentage between 0.2 and 0.5. BUT if existingGrain
-        // is 0.5 and nextGrain is 0.2, we should still convert the offset to a percentage between 0.2 and 0.5.
-        const minGrain = Math.min(existingGrain, nextGrain);
-        const maxGrain = Math.max(existingGrain, nextGrain);
-        const grainValue =
-          minGrain +
-          (maxGrain - minGrain) *
-            (existingGrain > nextGrain ? 1 - percentage : percentage);
-        if (!this.#inChangingWorkspace) {
-          gZenThemePicker.updateNoise(grainValue);
-        }
-      }
-    } else {
-      delete this._hasAnimatedBackgrounds;
-    }
+    this.#updateSwipeBackground(
+      workspace,
+      hasDestination ? workspaces[nextSpaceIdx] : null,
+      offsetPixels
+    );
     delete this._organizingWorkspaceStrip;
   }
 
@@ -2339,14 +2388,35 @@ class nsZenWorkspaces {
     await Promise.race([Promise.all(animations), promiseTimeout]).catch(
       console.error
     );
+    // The timeout may win before a spring has settled. Finish its controls
+    // before cleanup so that no later frame can restore a preview offset.
+    for (const animation of animations) {
+      animation.complete();
+    }
+    // Native animation finish events commit their styles asynchronously.
+    // Keep this wait bounded too, in case the window stops rendering.
+    let finishTimeoutId;
+    const finishTimeout = new Promise(resolve => {
+      finishTimeoutId = setTimeout(() => {
+        for (const animation of animations) {
+          animation.cancel();
+        }
+        resolve();
+      }, 50);
+    });
+    await Promise.race([Promise.all(animations), finishTimeout]).catch(
+      console.error
+    );
+    clearTimeout(finishTimeoutId);
     this.#currentSpaceSwitchContext.animations = [];
-    this.#setAnimatingBackground(false);
+    this.#resetSwipeBackground(newWorkspace);
     if (shouldAnimate) {
       for (const data of essentialsAnimData) {
         if (this.creatingWorkspaceId && data.finalOffset) {
           // The space being created has no essentials of its own, leave the
           // ones we just slid away parked off screen instead of snapping them
           // back under the creation form.
+          data.element.style.transform = `translateX(${data.finalOffset}%)`;
           continue;
         }
         data.element.style.removeProperty("transform");

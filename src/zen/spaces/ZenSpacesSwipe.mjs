@@ -6,14 +6,6 @@ import { ZenSpaceAddSwipe } from "resource:///modules/zen/ZenSpaceAddSwipe.mjs";
 
 const lazy = {};
 
-ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
-  return document.getElementById("zen-browser-background");
-});
-
-ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
-  return document.getElementById("zen-toolbar-background");
-});
-
 ChromeUtils.defineESModuleGetters(
   lazy,
   { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
@@ -41,6 +33,7 @@ export class ZenSpacesSwipe {
 
   #swipeState = {
     isGestureActive: false,
+    workspaceChangeStarted: false,
     lastDelta: 0,
     direction: null,
     /** One of ACTIONS, or null while the swipe still only moves spaces. */
@@ -113,7 +106,11 @@ export class ZenSpacesSwipe {
   #handleSwipeMayStart(event) {
     const ws = gZenWorkspaces;
 
-    if (ws.privateWindowOrDisabled || ws.isChangingWorkspace) {
+    if (
+      ws.privateWindowOrDisabled ||
+      ws.isChangingWorkspace ||
+      this.#swipeState.workspaceChangeStarted
+    ) {
       return;
     }
     if (
@@ -169,6 +166,7 @@ export class ZenSpacesSwipe {
     const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
     this.#swipeState = {
       isGestureActive: true,
+      workspaceChangeStarted: false,
       lastDelta: 0,
       direction: null,
       deltaMultiplier: Services.prefs.getIntPref(
@@ -234,7 +232,14 @@ export class ZenSpacesSwipe {
     }
 
     // Apply a translateX to the tab strip to give the user feedback on the swipe
-    ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
+    const isRTL = document.documentElement.matches(":-moz-locale-dir(rtl)");
+    const navigationTranslation =
+      translateX * (ws.naturalScroll ? -1 : 1) * (isRTL ? -1 : 1);
+    ws._organizeWorkspaceStripLocations(
+      currentWorkspace,
+      true,
+      navigationTranslation
+    );
   }
 
   /**
@@ -285,11 +290,17 @@ export class ZenSpacesSwipe {
         return;
     }
 
+    this.#swipeState.workspaceChangeStarted = true;
     await ws.changeWorkspaceShortcut(rawDirection * direction, true);
   }
 
   #onSwipeAnimationEnd() {
     const ws = gZenWorkspaces;
+    const resetWorkspacePreview =
+      this.#swipeState.isGestureActive &&
+      !this.#swipeState.action &&
+      !this.#swipeState.workspaceChangeStarted &&
+      !ws.isChangingWorkspace;
 
     switch (this.#swipeState.action) {
       case ZenSpacesSwipe.ACTIONS.LIBRARY:
@@ -303,6 +314,7 @@ export class ZenSpacesSwipe {
     // Reset swipe state
     this.#swipeState = {
       isGestureActive: false,
+      workspaceChangeStarted: false,
       lastDelta: 0,
       direction: null,
       action: null,
@@ -311,13 +323,11 @@ export class ZenSpacesSwipe {
 
     this.#toggleSwipeGestureAttr(false);
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
-    [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
-      element => {
-        element.style.setProperty("--zen-background-opacity", "1");
-      }
-    );
-    delete ws._hasAnimatedBackgrounds;
-    ws.updateTabsContainers();
+    if (resetWorkspacePreview) {
+      ws._resetSwipePreview();
+    } else {
+      ws.updateTabsContainers();
+    }
     document.removeEventListener("popupshown", this, { once: true });
   }
 

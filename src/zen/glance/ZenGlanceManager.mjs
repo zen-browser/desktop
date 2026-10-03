@@ -582,6 +582,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #animateGlanceOpening(data, browserElement) {
     this.#prepareGlanceAnimation(data);
+    const glanceID = this.#currentGlanceID;
     // FIXME(cheffy): We *must* have the call back async (at least,
     // until a better solution is found). If we do it inside the requestAnimationFrame,
     // we see flashing and if we do it directly, the animation does not play at all.
@@ -596,7 +597,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.contentWrapper.style.opacity = 0;
         data.elementData = await this.#getElementPreviewData(data);
       }
-      this.#glances.get(this.#currentGlanceID).elementData = data.elementData;
+      // The glance may have been closed while we were waiting for the
+      // element snapshot (e.g. a popup closed right away by a blocker).
+      // Animating the parent background now would cancel its closing
+      // animation and leave it dimmed and scaled down for good.
+      if (this.closingGlance || this.#currentGlanceID !== glanceID) {
+        if (data.elementData) {
+          URL.revokeObjectURL(data.elementData);
+        }
+        resolve(null);
+        return;
+      }
+      this.#glances.get(glanceID).elementData = data.elementData;
       this.#executeGlanceAnimation(data, browserElement, resolve);
     });
   }

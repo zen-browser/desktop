@@ -1049,21 +1049,8 @@ class nsZenWindowSync {
     const img = doc.createElement("img");
     img.className = "zen-pseudo-browser-image";
     img.src = aSrc;
-    let promise = new Promise(resolve => {
-      if (img.complete) {
-        resolve();
-        return;
-      }
-      let finish = () => {
-        win.requestAnimationFrame(() => {
-          resolve();
-        });
-      };
-      img.onload = finish;
-      img.onerror = finish;
-    });
     aBrowser.after(img);
-    return promise;
+    return img.decode().catch(console.error)
   }
 
   /**

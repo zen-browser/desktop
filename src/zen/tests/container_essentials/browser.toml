@@ -21,3 +21,5 @@ support-files = ["swipe_test_utils.js"]
 ["browser_issue_15525_wrapping.js"]
 
 ["browser_issue_15525_edge_actions.js"]
+
+["browser_issue_15588.js"]

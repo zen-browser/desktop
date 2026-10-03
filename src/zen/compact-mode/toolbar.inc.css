@@ -41,6 +41,11 @@
       transition: opacity var(--zen-hidden-toolbar-transition);
     }
 
+    /* Prevent fading after breakout-extend is removed */
+    & #urlbar[zen-newtab]:not([breakout-extend]) {
+      transition: none;
+    }
+
 %include windows-captions-fix-default.inc.css
 
     & #zen-appcontent-navbar-container {

@@ -2751,18 +2751,46 @@ class nsZenWorkspaces {
     if (target && !target.target?.parentNode) {
       target = null;
     }
+    // This is what happens when we join a resize observer, an event listener
+    // while using it as a method.
+    const resolvedTarget = target?.target ? target.target : target;
+    if (resolvedTarget) {
+      this.onPinnedTabsResize([{ target: resolvedTarget }], forAnimation);
+      return;
+    }
+    // Nothing points at one space, so they all need checking.
+    if (forAnimation) {
+      this.#updateAllTabsContainers(true);
+      return;
+    }
+    if (!this.#queuedContainersUpdate) {
+      this.#queuedContainersUpdate = window.requestAnimationFrame(() => {
+        this.#queuedContainersUpdate = 0;
+        this.#updateAllTabsContainers(false);
+      });
+    }
+  }
+
+  #queuedContainersUpdate = 0;
+
+  #updateAllTabsContainers(forAnimation) {
     this.onPinnedTabsResize(
-      // This is what happens when we join a resize observer, an event listener
-      // while using it as a method.
-      [
-        {
-          target:
-            (target?.target ? target.target : target) ??
-            this.pinnedTabsContainer,
-        },
-      ],
+      this.#allPinnedContainers().map(container => ({ target: container })),
       forAnimation
     );
+  }
+
+  #allPinnedContainers() {
+    const containers = [];
+    for (const workspace of this.getWorkspaces()) {
+      const container = this.workspaceElement(
+        workspace.uuid
+      )?.pinnedTabsContainer;
+      if (container) {
+        containers.push(container);
+      }
+    }
+    return containers.length ? containers : [this.pinnedTabsContainer];
   }
 
   updateShouldHideSeparator(

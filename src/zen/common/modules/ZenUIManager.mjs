@@ -61,6 +61,7 @@ window.gZenUIManager = {
     gZenVerticalTabsManager.init();
     gZenLiveFoldersUI.init();
 
+    this._markAcrylicSupport();
     this._initCreateNewPopup();
     this._debloatContextMenus();
     this._addNewCustomizableButtonsIfNeeded();
@@ -72,6 +73,25 @@ window.gZenUIManager = {
     document
       .getElementById("PersonalToolbar")
       .setAttribute("fullscreentoolbar", "true");
+  },
+
+  /**
+   * Software WebRender can't filter the web content behind the chrome, so the acrylic
+   * elements have nothing to blur there and must stay opaque. Safe mode blocks
+   * hardware acceleration, so it ends up on the same path.
+   */
+  _markAcrylicSupport() {
+    let supported = !Services.appinfo.inSafeMode;
+
+    try {
+      supported &&= !window.windowUtils.layerManagerType.includes("Software");
+    } catch (e) {
+      // No widget associated with this window yet, assume hardware rendering.
+    }
+
+    if (!supported) {
+      document.documentElement.setAttribute("zen-no-acrylic", "true");
+    }
   },
 
   /**

@@ -71,17 +71,18 @@ class nsZenUIMigration {
         }
         lazy.CustomizableUI.removeListener(listener);
         Services.prefs.setBoolPref(donePref, true);
+        if (lazy.CustomizableUI.getPlacementOfWidget("zen-library-button")) {
+          return;
+        }
         const downloads =
           lazy.CustomizableUI.getPlacementOfWidget("downloads-button");
-        if (
-          downloads?.area === footButtons &&
-          !lazy.CustomizableUI.getPlacementOfWidget("zen-library-button")
-        ) {
-          lazy.CustomizableUI.addWidgetToArea(
-            "zen-library-button",
-            footButtons,
-            downloads.position
-          );
+        const standsIn = downloads?.area === footButtons;
+        lazy.CustomizableUI.addWidgetToArea(
+          "zen-library-button",
+          footButtons,
+          standsIn ? downloads.position : 0
+        );
+        if (standsIn) {
           lazy.CustomizableUI.removeWidgetFromArea("downloads-button");
         }
       },

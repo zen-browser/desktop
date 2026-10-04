@@ -106,7 +106,7 @@ zen-library:is([transitioning], [sizing])
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  contain: paint size;
+  contain: paint size layout;
   -moz-window-dragging: no-drag;
 }
 

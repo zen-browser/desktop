@@ -334,6 +334,8 @@ zen-workspace {
   overflow: hidden;
   color: var(--toolbox-textcolor);
 
+  contain: size layout;
+
   --tab-background-color-selected: light-dark(
     color-mix(in srgb, rgba(255, 255, 255, 0.8) 98%, var(--zen-primary-color)),
     color-mix(in srgb, rgba(255, 255, 255, 0.18) 95%, var(--zen-primary-color))

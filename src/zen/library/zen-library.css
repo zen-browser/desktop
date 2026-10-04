@@ -522,6 +522,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   border: none;
   color: inherit;
   font: inherit;
+  flex: none;
 
   &:hover {
     background: var(--zen-library-pill-hover-bg);
@@ -565,7 +566,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
 }
 
 .zen-library-filter-button {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .zen-library-filter-header {
@@ -1052,6 +1053,8 @@ zen-library-history-section {
   overflow-y: auto;
   scrollbar-width: none;
   --zen-toolbox-min-width: fit-content;
+  --tab-min-width: var(--zen-library-space-width);
+  --zen-toolbox-padding: var(--zen-min-toolbox-padding);
   --zen-library-scroll-border: color-mix(
     in srgb,
     var(--toolbox-textcolor) 15%,
@@ -1099,6 +1102,14 @@ zen-library-history-section {
 
   & .tab-group-label-container[dragover] {
     background: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
+  }
+
+  :root:not([zen-sidebar-expanded="true"]) & {
+    & tab,
+    & zen-folder,
+    & .tab-group-label-container {
+      width: 100% !important;
+    }
   }
 
   & .zen-current-workspace-indicator {

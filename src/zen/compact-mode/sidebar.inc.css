@@ -275,10 +275,10 @@
       --zen-compact-mode-time: 0.25s;
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
-      @media -moz-pref('zen.theme.acrylic-elements') and (not (prefers-reduced-transparency: reduce))  {
-        .zen-toolbar-background:not(:-moz-window-inactive) {
+      @media -moz-pref('zen.theme.acrylic-sidebar') and (not (prefers-reduced-transparency: reduce))  {
+        :root:not([zen-no-acrylic='true']) & .zen-toolbar-background:not(:-moz-window-inactive) {
           background: transparent;
-          backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+          backdrop-filter: blur(42px) saturate(110%) brightness(0.5) contrast(100%) !important;
         }
       }
 

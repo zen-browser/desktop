@@ -223,6 +223,11 @@ export class ZenLibrarySearchSection extends MozLitElement {
     `;
   }
 
+  async onShown() {
+    await this.updateComplete;
+    this.querySelector(".zen-library-search-box input")?.focus();
+  }
+
   render() {
     const hasFilters = !!this.filterGroups.length;
     return html`

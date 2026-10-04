@@ -81,7 +81,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   #currentLightness = 50;
 
   #allowTransparencyOnSidebar = Services.prefs.getBoolPref(
-    "zen.theme.acrylic-elements",
+    "zen.theme.acrylic-sidebar",
     false
   );
 

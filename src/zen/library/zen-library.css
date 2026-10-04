@@ -674,6 +674,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   padding: 10px 12px;
   border-radius: 16px;
   /* skip painting rows scrolled out of view */
+  contain: strict;
   content-visibility: auto;
   contain-intrinsic-size: auto 54px;
   /* The open library window is draggable; let rows be dragged as items. */

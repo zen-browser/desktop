@@ -831,12 +831,6 @@
   right: 0;
   translate: 100px 0;
 
-  :root[zen-right-side="true"] & {
-    left: 0px;
-    right:  unset;
-    translate: -100px 0;
-  }
-
   &.space-section {
     position: relative;
     inset: auto;

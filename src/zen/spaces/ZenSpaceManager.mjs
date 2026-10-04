@@ -97,6 +97,11 @@ class nsZenWorkspaces {
     }
 
     this.ownerWindow = window;
+    this._pinnedTabsResizeObserver = new ResizeObserver((...args) => {
+      requestAnimationFrame(() => {
+        this.onPinnedTabsResize(...args);
+      });
+    });
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "activationMethod",
@@ -202,13 +207,6 @@ class nsZenWorkspaces {
   }
 
   #afterLoadInit() {
-    const onResize = (...args) => {
-      requestAnimationFrame(() => {
-        this.onPinnedTabsResize(...args);
-      });
-    };
-    this._pinnedTabsResizeObserver = new ResizeObserver(onResize);
-    this.registerPinnedResizeObserver();
     this.#initializeWorkspaceTabContextMenus();
 
     // Non UI related initializations
@@ -275,19 +273,6 @@ class nsZenWorkspaces {
       skipBackgroundNotify: true,
       bulkOrderedOpen: true,
     });
-  }
-
-  registerPinnedResizeObserver() {
-    if (!this._hasInitializedTabsStrip || !this._pinnedTabsResizeObserver) {
-      return;
-    }
-    this._pinnedTabsResizeObserver.disconnect();
-    for (let element of document.getElementById("zen-essentials").children) {
-      if (element.classList.contains("tabbrowser-tab")) {
-        continue;
-      }
-      this._pinnedTabsResizeObserver.observe(element, { box: "border-box" });
-    }
   }
 
   get activeWorkspaceStrip() {
@@ -389,6 +374,9 @@ class nsZenWorkspaces {
       document
         .getElementById("zen-essentials")
         .appendChild(essentialsContainer);
+      this._pinnedTabsResizeObserver?.observe(essentialsContainer, {
+        box: "border-box",
+      });
     }
 
     // Set a hidden state if the essentials section is not supposed
@@ -406,11 +394,19 @@ class nsZenWorkspaces {
     return essentialsContainer;
   }
 
-  getCurrentSpaceContainerId() {
-    const currentWorkspace = this.getActiveWorkspaceFromCache();
-    return typeof currentWorkspace?.containerTabId === "number"
-      ? currentWorkspace.containerTabId
+  /**
+   * @param {object} aWorkspace
+   * @returns {number} The space's container, defaulting to the one every
+   *          space without a container of its own lives in.
+   */
+  #spaceContainerId(aWorkspace) {
+    return typeof aWorkspace?.containerTabId === "number"
+      ? aWorkspace.containerTabId
       : 0;
+  }
+
+  getCurrentSpaceContainerId() {
+    return this.#spaceContainerId(this.getActiveWorkspaceFromCache());
   }
 
   getCurrentEssentialsContainer() {
@@ -2731,7 +2727,6 @@ class nsZenWorkspaces {
           console.error("Error in beforeChangeCallback:", e);
         }
       }
-      this.registerPinnedResizeObserver();
       this.updateTabsContainers({
         target: this.workspaceElement(workspaceData.uuid).pinnedTabsContainer,
       });
@@ -2863,13 +2858,15 @@ class nsZenWorkspaces {
       }
       const workspacesIds = [];
       if (entry.target.closest("#zen-essentials")) {
-        // Get all workspaces that have the same userContextId
-        const userContextId = parseInt(
-          entry.target.getAttribute("container") || "0"
-        );
-        const workspaces = this.getWorkspaces().filter(
-          w => w.containerTabId === userContextId
-        );
+        const workspaces = this.getWorkspaces().filter(w => {
+          if (!this.containerSpecificEssentials) {
+            return true;
+          }
+          const userContextId = parseInt(
+            entry.target.getAttribute("container") || "0"
+          );
+          return this.#spaceContainerId(w) === userContextId;
+        });
         workspacesIds.push(...workspaces.map(w => w.uuid));
       } else {
         workspacesIds.push(originalWorkspaceId);

@@ -101,9 +101,11 @@
     left: 0;
     top: 0;
 
+    scale: none;
+
     &:not([downloading]) {
       transform: translate(var(--zen-library-badge-tx), var(--zen-library-badge-ty))
-        scale(calc((var(--zen-library-progress) * 0.5 + 0.5) * 100%));
+        scale(calc((var(--zen-library-progress) + 1) * 100%));
     }
 
     &[downloading] {
@@ -130,7 +132,9 @@
   &[zen-library-stack-open] {
     & #library-button-badge {
       visibility: hidden;
-      transition: visibility 0s var(--zen-library-open-duration);
+      transition:
+        visibility 0s var(--zen-library-open-duration),
+        --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
     }
 
     & #zen-library-download-list > :last-child .zen-library-download-badge {

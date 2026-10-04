@@ -57,10 +57,10 @@ zen-library {
     background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.08));
     box-shadow: -9px 0 17px rgba(0, 0, 0, 0.04);
   }
-  
+
   & #zen-library-footer {
     flex-direction: row-reverse;
-    
+
     & toolbarbutton:first-child {
       rotate:180deg;
     }
@@ -673,6 +673,9 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   gap: 14px;
   padding: 10px 12px;
   border-radius: 16px;
+  /* skip painting rows scrolled out of view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 54px;
   /* The open library window is draggable; let rows be dragged as items. */
   -moz-window-dragging: no-drag;
 

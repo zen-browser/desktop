@@ -19,7 +19,14 @@ const CLOSE_DELAY_MS = 200;
 const FILE_MIME = "application/x-moz-file";
 const BADGE_MARKUP = `
   <span class="zen-library-download-badge no-squircles">
-    <span class="zen-library-download-progress no-squircles"></span>
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="zen-library-download-progress no-squircles"
+         viewBox="0 0 31 31">
+      <circle class="zen-library-download-progress-track"
+              cx="15.5" cy="15.5" r="14"/>
+      <circle class="zen-library-download-progress-arc"
+              cx="15.5" cy="15.5" r="14" pathLength="100"/>
+    </svg>
   </span>
 `;
 
@@ -300,6 +307,7 @@ class ZenLibraryDownloadStack {
       );
       entry.querySelector(".zen-library-download-list-title").textContent =
         this.#fileName(download);
+      entry.setAttribute("tooltiptext", this.#fileName(download));
       const subtitle = entry.querySelector(
         ".zen-library-download-list-subtitle"
       );
@@ -338,12 +346,11 @@ class ZenLibraryDownloadStack {
         `${preview ? `url('${preview}'), ` : ""}url('${this.#iconUrl(download)}')`
       );
     }
-    badge
-      .querySelector(".zen-library-download-progress")
-      .style.setProperty(
-        "--value",
-        download?.hasProgress ? download.progress : 0
-      );
+    badge.querySelector(
+      ".zen-library-download-progress-arc"
+    ).style.strokeDasharray = `${
+      download?.hasProgress ? download.progress : 0
+    } 100`;
   }
 
   #updateBadgeShowing() {

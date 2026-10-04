@@ -1,3 +1,38 @@
+diff --git a/gfx/webrender_bindings/WebRenderAPI.cpp b/gfx/webrender_bindings/WebRenderAPI.cpp
+index 8f7928c42a..d487279b30 100644
+--- a/gfx/webrender_bindings/WebRenderAPI.cpp
++++ b/gfx/webrender_bindings/WebRenderAPI.cpp
+@@ -302,7 +302,9 @@ RefPtr<WebRenderAPI::CreatePromise> WebRenderAPI::Create(
+                 StaticPrefs::gfx_webrender_low_quality_pinch_zoom_AtStartup(),
+                 StaticPrefs::gfx_webrender_max_shared_surface_size_AtStartup(),
+                 StaticPrefs::gfx_webrender_enable_subpixel_aa_AtStartup(),
+-                compositor->ShouldUseLayerCompositor())) {
++                compositor->ShouldUseLayerCompositor(),
++                StaticPrefs::zen_theme_acrylic_urlbar_AtStartup() ||
++                    StaticPrefs::zen_theme_acrylic_sidebar_AtStartup())) {
+           // wr_window_new puts a message into gfxCriticalNote if it returns
+           // false
+           MOZ_ASSERT(errorMessage);
+diff --git a/gfx/webrender_bindings/src/bindings.rs b/gfx/webrender_bindings/src/bindings.rs
+index e71a9dbe51..25a1b763b0 100644
+--- a/gfx/webrender_bindings/src/bindings.rs
++++ b/gfx/webrender_bindings/src/bindings.rs
+@@ -2163,6 +2163,7 @@ pub extern "C" fn wr_window_new(
+     max_shared_surface_size: i32,
+     enable_subpixel_aa: bool,
+     use_layer_compositor: bool,
++    cross_slice_backdrop_filters: bool,
+ ) -> bool {
+     assert!(unsafe { is_in_render_thread() });
+ 
+@@ -2343,6 +2344,7 @@ pub extern "C" fn wr_window_new(
+         texture_cache_config,
+         reject_software_rasterizer,
+         low_quality_pinch_zoom,
++        cross_slice_backdrop_filters,
+         max_shared_surface_size,
+         enable_dithering,
+         enable_shared_instance_buffer,
 diff --git a/gfx/wr/webrender/src/command_buffer.rs b/gfx/wr/webrender/src/command_buffer.rs
 index dcc28bd593..39d71f3587 100644
 --- a/gfx/wr/webrender/src/command_buffer.rs
@@ -44,7 +79,7 @@ index dcc28bd593..39d71f3587 100644
      }
  }
 diff --git a/gfx/wr/webrender/src/frame_builder.rs b/gfx/wr/webrender/src/frame_builder.rs
-index 8bf64f56ed..45c1a38af2 100644
+index 8bf64f56ed..35a98fc9aa 100644
 --- a/gfx/wr/webrender/src/frame_builder.rs
 +++ b/gfx/wr/webrender/src/frame_builder.rs
 @@ -17,7 +17,7 @@ use crate::gpu_types::{PrimitiveHeaders, ZBufferIdGenerator};
@@ -56,7 +91,16 @@ index 8bf64f56ed..45c1a38af2 100644
  use crate::picture::PictureInstance;
  use crate::picture::ResolvedSurfaceTexture;
  use crate::picture::{RasterConfig, PictureScratch};
-@@ -438,6 +438,10 @@ impl FrameBuilder {
+@@ -71,6 +71,8 @@ pub struct FrameBuilderConfig {
+     pub force_invalidation: bool,
+     pub is_software: bool,
+     pub low_quality_pinch_zoom: bool,
++    /// Whether a backdrop-filter may read back the picture cache slices below its own.
++    pub cross_slice_backdrop_filters: bool,
+     pub max_shared_surface_size: i32,
+     pub enable_dithering: bool,
+ }
+@@ -438,6 +440,10 @@ impl FrameBuilder {
                  }
              }
  
@@ -67,7 +111,7 @@ index 8bf64f56ed..45c1a38af2 100644
              for pic_index in scene.tile_cache_pictures.iter().rev() {
                  if !render_picture_cache_slices {
                      break;
-@@ -476,6 +480,11 @@ impl FrameBuilder {
+@@ -476,6 +482,11 @@ impl FrameBuilder {
                              &mut visibility_state,
                          );
  
@@ -79,7 +123,7 @@ index 8bf64f56ed..45c1a38af2 100644
                          // Push a new surface, supplying the list of clips that should be
                          // ignored, since they are handled by clipping when drawing this surface.
                          visibility_state.push_surface(
-@@ -503,6 +512,11 @@ impl FrameBuilder {
+@@ -503,6 +514,11 @@ impl FrameBuilder {
                              &mut visibility_state.scratch.primitive,
                          );
  
@@ -91,7 +135,7 @@ index 8bf64f56ed..45c1a38af2 100644
                          visibility_state.pop_clip_root();
                          visibility_state.pop_surface();
                          visibility_state.scratch.frame.surface_stack = visibility_state.surface_stack.take();
-@@ -514,6 +528,25 @@ impl FrameBuilder {
+@@ -514,6 +530,25 @@ impl FrameBuilder {
                  }
              }
  
@@ -443,6 +487,35 @@ index bbe6326c35..aa4b8d0111 100644
      // Composite tiles in a swapchain. When using LayerCompositor, we may
      // split the compositing in to multiple swapchains.
      fn composite_pass(
+diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/renderer/init.rs
+index d64a8a2a9f..3aa94d5637 100644
+--- a/gfx/wr/webrender/src/renderer/init.rs
++++ b/gfx/wr/webrender/src/renderer/init.rs
+@@ -224,6 +224,8 @@ pub struct WebRenderOptions {
+     /// items, if the zoom factor is relatively small, bilinear filtering should
+     /// make the result look quite close to the high-quality zoom, except for glyphs.
+     pub low_quality_pinch_zoom: bool,
++    /// Whether a backdrop-filter may read back the picture cache slices below its own.
++    pub cross_slice_backdrop_filters: bool,
+     pub max_shared_surface_size: i32,
+     /// If true, open a debug socket to listen for remote debugger.
+     /// Relies on `debugger` cargo feature being enabled.
+@@ -302,6 +304,7 @@ impl Default for WebRenderOptions {
+             enable_shared_instance_buffer: false,
+             reject_software_rasterizer: false,
+             low_quality_pinch_zoom: false,
++            cross_slice_backdrop_filters: false,
+             max_shared_surface_size: 2048,
+             enable_debugger: true,
+         }
+@@ -591,6 +594,7 @@ pub fn create_webrender_instance(
+         force_invalidation: false,
+         is_software,
+         low_quality_pinch_zoom: options.low_quality_pinch_zoom,
++        cross_slice_backdrop_filters: options.cross_slice_backdrop_filters,
+         max_shared_surface_size: options.max_shared_surface_size,
+         enable_dithering: options.enable_dithering,
+     };
 diff --git a/gfx/wr/webrender/src/renderer/mod.rs b/gfx/wr/webrender/src/renderer/mod.rs
 index 08781af789..f525e70171 100644
 --- a/gfx/wr/webrender/src/renderer/mod.rs
@@ -517,6 +590,18 @@ index 08781af789..f525e70171 100644
          );
  
          // Handle any blits from the texture cache to this target.
+diff --git a/gfx/wr/webrender/src/scene.rs b/gfx/wr/webrender/src/scene.rs
+index 4602152a83..672b678701 100644
+--- a/gfx/wr/webrender/src/scene.rs
++++ b/gfx/wr/webrender/src/scene.rs
+@@ -358,6 +358,7 @@ impl BuiltScene {
+                 force_invalidation: false,
+                 is_software: false,
+                 low_quality_pinch_zoom: false,
++                cross_slice_backdrop_filters: false,
+                 max_shared_surface_size: 2048,
+                 enable_dithering: false,
+             },
 diff --git a/gfx/wr/webrender/src/surface.rs b/gfx/wr/webrender/src/surface.rs
 index ea1705ea97..da3ebfdd23 100644
 --- a/gfx/wr/webrender/src/surface.rs
@@ -992,14 +1077,15 @@ index 8e00cd65f3..6ee5ebf7c4 100644
                  SurfacePromotionFailure::UnderlaySurfaceLimit => "hit the underlay surface limit",
                  SurfacePromotionFailure::UnderlayIntersectsOverlay => "underlay intersects already-promoted overlay",
 diff --git a/gfx/wr/webrender/src/tile_cache/slice_builder.rs b/gfx/wr/webrender/src/tile_cache/slice_builder.rs
-index 42c1fc1a61..7d2b9b180c 100644
+index 42c1fc1a61..e85e0cfb18 100644
 --- a/gfx/wr/webrender/src/tile_cache/slice_builder.rs
 +++ b/gfx/wr/webrender/src/tile_cache/slice_builder.rs
-@@ -679,6 +679,9 @@ fn create_tile_cache(
+@@ -679,6 +679,10 @@ fn create_tile_cache(
          virtual_surface_size: frame_builder_config.compositor_kind.get_virtual_surface_size(),
          image_surface_count: prim_list.image_surface_count,
          yuv_image_surface_count: prim_list.yuv_image_surface_count,
-+        backdrop_reads_lower_slices: iframe_clip.is_none() &&
++        backdrop_reads_lower_slices: frame_builder_config.cross_slice_backdrop_filters &&
++            iframe_clip.is_none() &&
 +            slice > 0 &&
 +            !frame_builder_config.is_software,
      });

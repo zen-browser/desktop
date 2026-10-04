@@ -18,6 +18,25 @@ library-media-section-title = Media
 library-spaces-section-title = Spaces
 
 library-filter-button = Filter
+library-open-legacy =
+    .label = Open the old library window
+library-history-clear =
+    .label = Clear history
+library-history-clear-last-hour =
+    .label = Last hour
+library-history-clear-last-12-hours =
+    .label = Last 12 hours
+library-history-clear-today =
+    .label = Today
+library-history-clear-last-week =
+    .label = Last week
+library-history-clear-last-month =
+    .label = Last month
+library-history-clear-all =
+    .label = Everything
+library-history-clear-prompt-title = Clear history?
+library-history-clear-prompt-message = The pages you visited in this time frame will be forgotten. This cannot be undone.
+library-history-clear-prompt-accept = Clear history
 library-filter-done = Done
 
 library-history-filter-title = Filter History…
@@ -64,6 +83,8 @@ library-history-reopen-button =
     .title = Reopen page
 
 library-downloads-empty = No downloads found
+library-downloads-clear-all =
+    .label = Clear all downloads
 library-downloads-more-button =
     .title = More options
 library-downloads-menu-open =

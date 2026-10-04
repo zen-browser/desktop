@@ -23,7 +23,17 @@ ChromeUtils.defineESModuleGetters(lazy, {
   DownloadsViewUI:
     "moz-src:///browser/components/downloads/DownloadsViewUI.sys.mjs",
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
+  PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
 });
+
+function clearDownloads() {
+  lazy.DownloadsCommon.getData(window, true).removeFinished();
+  lazy.PlacesUtils.history
+    .removeVisitsByFilter({
+      transition: lazy.PlacesUtils.history.TRANSITIONS.DOWNLOAD,
+    })
+    .catch(console.error);
+}
 
 const FILE_MIME = "application/x-moz-file";
 const OPENING_FEEDBACK_MS = 1500;
@@ -64,6 +74,14 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     this.#data = lazy.DownloadsCommon.getData(window, true);
     this.#data.addView(this);
     this.#menu = this.#buildMenu();
+  }
+
+  /** The view of the old library window this section stands in for. */
+  static legacyLibraryView = "Downloads";
+
+  /** @returns {object[]} What a right click on the downloads tab offers */
+  static get tabMenu() {
+    return [{ l10nId: "library-downloads-clear-all", command: clearDownloads }];
   }
 
   disconnectedCallback() {

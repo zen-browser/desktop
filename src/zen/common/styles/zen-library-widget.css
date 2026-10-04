@@ -13,6 +13,7 @@
 }
 
 #zen-sidebar-foot-buttons {
+  z-index: 2;
   transition: --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
 
   &[zen-library-stack-open] {
@@ -181,30 +182,28 @@
 .zen-library-download-progress {
   position: absolute;
   inset: 1px;
-  border-radius: 50%;
 
-  --badge-size: 25px;
   --border-width: 4px;
-  --size: calc(var(--badge-size) + 2 * var(--border-width));
   margin: calc(-1 * var(--border-width));
 
   --thickness: 3px;
   --progress: var(--zen-accent-button-background);
 
-  background:
-    conic-gradient(
-        from 0deg,
-        var(--progress) calc(var(--value) * 1%),
-        transparent 0
-      )
-      border-box,
-    var(--border-color) border-box;
+  & circle {
+    fill: none;
+    stroke-width: var(--thickness);
+  }
 
-  mask: radial-gradient(
-    circle closest-side,
-    transparent calc(100% - var(--thickness)),
-    black calc(100% - var(--thickness))
-  );
+  & .zen-library-download-progress-track {
+    stroke: var(--border-color);
+  }
+
+  & .zen-library-download-progress-arc {
+    stroke: var(--progress);
+    stroke-dasharray: 0 100;
+    rotate: -90deg;
+    transform-origin: center;
+  }
 }
 
 #zen-sidebar-foot-buttons:is([zen-library-stack-open], [zen-library-stack-closing]) {

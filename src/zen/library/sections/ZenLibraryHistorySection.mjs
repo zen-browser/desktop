@@ -44,6 +44,68 @@ const SORT_OPTIONS = ["date", "site", "mostvisited", "lastvisited"];
 
 const visitKey = visit => `${visit.guid}-${visit.date.getTime()}`;
 
+const MS_PER_HOUR = 60 * 60 * 1000;
+
+const CLEAR_RANGES = [
+  { l10nId: "library-history-clear-last-hour", hours: 1 },
+  { l10nId: "library-history-clear-last-12-hours", hours: 12 },
+  { l10nId: "library-history-clear-today", sinceMidnight: true },
+  { l10nId: "library-history-clear-last-week", hours: 24 * 7 },
+  { l10nId: "library-history-clear-last-month", hours: 24 * 30 },
+  { l10nId: "library-history-clear-all", separatorBefore: true },
+];
+
+/** @returns {Promise<boolean>} Whether the user agreed to forget the pages */
+async function confirmClear() {
+  const [title, message, accept] = await document.l10n.formatValues([
+    "library-history-clear-prompt-title",
+    "library-history-clear-prompt-message",
+    "library-history-clear-prompt-accept",
+  ]);
+  const flags = accept
+    ? Services.prompt.BUTTON_POS_0 * Services.prompt.BUTTON_TITLE_IS_STRING +
+      Services.prompt.BUTTON_POS_1 * Services.prompt.BUTTON_TITLE_CANCEL
+    : Services.prompt.STD_OK_CANCEL_BUTTONS;
+  const pressed = Services.prompt.confirmEx(
+    window,
+    title ?? "",
+    message ?? "",
+    flags,
+    accept,
+    null,
+    null,
+    null,
+    {}
+  );
+  return pressed === 0;
+}
+
+/**
+ * Forgets every page visited within one of the `CLEAR_RANGES`, once the user
+ * has confirmed it.
+ *
+ * @param {object} range - One of `CLEAR_RANGES`
+ */
+async function clearHistory(range) {
+  if (!(await confirmClear())) {
+    return;
+  }
+  let beginDate;
+  if (range.sinceMidnight) {
+    beginDate = new Date();
+    beginDate.setHours(0, 0, 0, 0);
+  } else if (range.hours) {
+    beginDate = new Date(Date.now() - range.hours * MS_PER_HOUR);
+  } else {
+    await lazy.PlacesUtils.history.clear();
+    return;
+  }
+  await lazy.PlacesUtils.history.removeVisitsByFilter({
+    beginDate,
+    endDate: new Date(),
+  });
+}
+
 export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
   static id = "history";
   static label = "library-history-section-title";
@@ -234,6 +296,23 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     }
     this.library.keepOpenWhile(openTab);
     gZenUIManager.showToast("library-history-opened-in-background");
+  }
+
+  /** The view of the old library window this section stands in for. */
+  static legacyLibraryView = "History";
+
+  /** @returns {object[]} What a right click on the history tab offers */
+  static get tabMenu() {
+    return [
+      {
+        l10nId: "library-history-clear",
+        items: CLEAR_RANGES.map(range => ({
+          l10nId: range.l10nId,
+          separatorBefore: range.separatorBefore,
+          command: () => clearHistory(range).catch(console.error),
+        })),
+      },
+    ];
   }
 
   #forgetVisit(visit) {

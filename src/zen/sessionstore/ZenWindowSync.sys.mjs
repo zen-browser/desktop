@@ -1423,6 +1423,9 @@ class nsZenWindowSync {
       if (!tab.hasAttribute("pending")) {
         newTab.removeAttribute("pending");
       }
+      if (tab.hasAttribute("zenDefaultUserContextId")) {
+        newTab.setAttribute("zenDefaultUserContextId", true);
+      }
       this.#syncItemWithOriginal(
         tab,
         newTab,

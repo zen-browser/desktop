@@ -4,6 +4,8 @@
 
 const lazy = {};
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+
 ChromeUtils.defineESModuleGetters(
   lazy,
   { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
@@ -14,6 +16,7 @@ export class ZenSpaceAddSwipe {
   #progressVal = 0;
   #element = null;
   #progressBadge = null;
+  #progressArc = null;
   #backgroundGradient = null;
   #swipeOngoing = false;
   #hiddenForSwipe = [];
@@ -52,10 +55,9 @@ export class ZenSpaceAddSwipe {
 
     this.#backgroundGradient.style.scale = `${entryProgress} 3`;
     this.#backgroundGradient.style.opacity = `${entryProgress}`;
-    this.#progressBadge.style.setProperty(
-      "--value",
+    this.#progressArc.style.strokeDasharray = `${
       this.#easeInOut(value) * 100
-    );
+    } 100`;
 
     if (isNowReady || isNowUnready) {
       this.#element.toggleAttribute("readytoadd");
@@ -253,6 +255,8 @@ export class ZenSpaceAddSwipe {
       "zen-swipe-add-space-progress-badge no-squircles";
     container.append(this.#progressBadge);
 
+    this.#progressBadge.append(this.#buildProgressRing());
+
     const plusIcon = document.createElement("span");
     plusIcon.className = "zen-swipe-add-space-icon";
     this.#progressBadge.append(plusIcon);
@@ -264,11 +268,33 @@ export class ZenSpaceAddSwipe {
     navbar.append(this.#backgroundGradient);
   }
 
+  /**
+   * The badge's progress, as an arc the stylesheet strokes and the swipe
+   * dashes. "pathLength" makes the circle 100 units long, so that the dashes
+   * can be the percentage of the way there.
+   *
+   * @returns {SVGElement} The ring to put behind the icon
+   */
+  #buildProgressRing() {
+    const ring = document.createElementNS(SVG_NS, "svg");
+    ring.setAttribute("class", "zen-swipe-add-space-progress-ring");
+    ring.setAttribute("viewBox", "0 0 30 30");
+    const arc = document.createElementNS(SVG_NS, "circle");
+    arc.setAttribute("class", "zen-swipe-add-space-progress-arc");
+    arc.setAttribute("cx", "15");
+    arc.setAttribute("cy", "15");
+    arc.setAttribute("pathLength", "100");
+    ring.append(arc);
+    this.#progressArc = arc;
+    return ring;
+  }
+
   #destroyElement() {
     this.#element.remove();
     this.#backgroundGradient.remove();
     this.#element = null;
     this.#progressBadge = null;
+    this.#progressArc = null;
     this.#backgroundGradient = null;
   }
 }

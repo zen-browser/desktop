@@ -682,6 +682,9 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
           ?preview=${!!this.#previewUrl(download)}
           src=${this.#previewUrl(download) ?? this.#iconUrl(download)}
           @error=${event => {
+            if (!event.target.hasAttribute("preview")) {
+              return;
+            }
             event.target.removeAttribute("preview");
             event.target.src = this.#iconUrl(download);
           }}

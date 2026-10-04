@@ -504,6 +504,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #appendCopy(container, node) {
     // A closing tab stays in the strip through its animation, but is gone.
     if (
+      !container ||
       node.nodeType !== Node.ELEMENT_NODE ||
       node.hasAttribute("hidden") ||
       node.closing
@@ -523,6 +524,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       container.appendChild(copy);
       this.#realElements.set(copy, node);
       if (node.glanceTab) {
+        copy.initialize?.();
         this.#appendCopy(copy.querySelector(".tab-content"), node.glanceTab);
       }
       return;

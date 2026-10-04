@@ -1045,12 +1045,11 @@ class nsZenWindowSync {
    */
   async #createPseudoImageForBrowser(aBrowser, aSrc) {
     const doc = aBrowser.ownerDocument;
-    const win = aBrowser.documentGlobal;
     const img = doc.createElement("img");
     img.className = "zen-pseudo-browser-image";
     img.src = aSrc;
-    await img.decode().catch(console.error)
-    if(aBrowser.isConnected) {
+    await img.decode().catch(console.error);
+    if (aBrowser.isConnected) {
       aBrowser.after(img);
     }
   }

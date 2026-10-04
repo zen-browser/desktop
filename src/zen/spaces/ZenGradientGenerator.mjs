@@ -2049,16 +2049,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     const previousOpacity = this.currentOpacity;
     const previousLightness = this.#currentLightness;
-    const theme = workspace.theme;
+    const theme = workspace.theme ?? {};
+    const colors = theme.gradientColors ?? [];
     this.currentOpacity = theme.opacity ?? 0.5;
     this.#currentLightness = theme.lightness ?? 50;
     let gradient;
     let toolbarGradient;
     if (getGradient) {
-      gradient = this.getGradient(theme.gradientColors);
-      toolbarGradient = this.getGradient(theme.gradientColors, true);
+      gradient = this.getGradient(colors);
+      toolbarGradient = this.getGradient(colors, true);
     }
-    let dominantColor = this.getMostDominantColor(theme.gradientColors);
+    let dominantColor = this.getMostDominantColor(colors);
     const isDefaultTheme = !dominantColor;
     if (isDefaultTheme) {
       dominantColor = this.getNativeAccentColor();

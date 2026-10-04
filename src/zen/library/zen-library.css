@@ -13,7 +13,7 @@ zen-library {
   --zen-library-pill-hover-bg: color-mix(in srgb, currentColor 12%, transparent);
   --zen-library-radius: 12px;
 
-  contain: content;
+  contain: strict;
 
   position: absolute;
   top: 0;
@@ -106,7 +106,7 @@ zen-library:is([transitioning], [sizing])
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  contain: content;
+  contain: paint size;
   -moz-window-dragging: no-drag;
 }
 

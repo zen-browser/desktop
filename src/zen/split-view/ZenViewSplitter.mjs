@@ -75,7 +75,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   _data = [];
   _tabBrowserPanel = null;
   __hasSetMenuListener = false;
-  overlay = null;
   _splitNodeToSplitters = new Map();
   _tabToSplitNode = new WeakMap();
   dropZone;
@@ -100,10 +99,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       "_edgeHoverSize",
       "zen.splitView.rearrange-edge-hover-size",
       24
-    );
-
-    ChromeUtils.defineLazyGetter(this, "overlay", () =>
-      document.getElementById("zen-splitview-overlay")
     );
 
     ChromeUtils.defineLazyGetter(this, "dropZone", () =>
@@ -693,7 +688,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   toggleWrapperDisplay(value) {
-    const wrapper = this.overlay?.parentNode;
+    const wrapper = document.getElementById("zen-splitview-overlay-wrapper");
     if (!wrapper) {
       return;
     }

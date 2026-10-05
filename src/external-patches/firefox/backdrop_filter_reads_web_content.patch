@@ -1,8 +1,16 @@
 diff --git a/gfx/webrender_bindings/WebRenderAPI.cpp b/gfx/webrender_bindings/WebRenderAPI.cpp
-index 8f7928c42a..d487279b30 100644
+index 8f7928c42a..3104a11624 100644
 --- a/gfx/webrender_bindings/WebRenderAPI.cpp
 +++ b/gfx/webrender_bindings/WebRenderAPI.cpp
-@@ -302,7 +302,9 @@ RefPtr<WebRenderAPI::CreatePromise> WebRenderAPI::Create(
+@@ -10,6 +10,7 @@
+ #include "mozilla/Logging.h"
+ #include "mozilla/StaticPrefs_gfx.h"
+ #include "mozilla/StaticPrefs_webgl.h"
++#include "mozilla/StaticPrefs_zen.h"
+ #include "mozilla/ToString.h"
+ #include "mozilla/XREAppData.h"
+ #include "mozilla/gfx/gfxVars.h"
+@@ -302,7 +303,9 @@ RefPtr<WebRenderAPI::CreatePromise> WebRenderAPI::Create(
                  StaticPrefs::gfx_webrender_low_quality_pinch_zoom_AtStartup(),
                  StaticPrefs::gfx_webrender_max_shared_surface_size_AtStartup(),
                  StaticPrefs::gfx_webrender_enable_subpixel_aa_AtStartup(),

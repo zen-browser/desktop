@@ -4,9 +4,21 @@
 
 const lazy = {};
 
+ChromeUtils.defineESModuleGetters(lazy, {
+  DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
+});
+
 ChromeUtils.defineLazyGetter(lazy, "mimeService", () =>
   Cc["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService)
 );
+
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "numberFormat",
+  () => new Services.intl.NumberFormat()
+);
+
+// What a file holds
 
 /**
  * Groups the browser cannot name on its own. Pictures, video and sound come
@@ -118,4 +130,63 @@ export function fileGroupOf(fileName) {
 export function canDrawThumbnail(fileName) {
   const type = contentTypeOf(fileName);
   return type.startsWith("image/") && type !== NOT_DRAWN;
+}
+
+// What a download has to say for itself
+
+/**
+ * What each download's last text settled on as its time left, so that the
+ * countdown moves the way it does in the downloads panel rather than with
+ * every swing of the transfer rate.
+ */
+const lastSeconds = new WeakMap();
+
+/**
+ * @param {object} download - A download that is still coming in
+ * @returns {string} What is left of it, as "1m 14s", or nothing at all while
+ *   its speed gives no answer
+ */
+function timeLeftText(download) {
+  const seconds =
+    download.hasProgress && download.speed > 0
+      ? (download.totalBytes - download.currentBytes) / download.speed
+      : -1;
+  if (seconds < 0) {
+    return "";
+  }
+  // Only for the smoothing it does; the text it makes is the long form.
+  const [, smoothed] = lazy.DownloadUtils.getTimeLeft(
+    seconds,
+    lastSeconds.get(download) ?? Infinity
+  );
+  lastSeconds.set(download, smoothed);
+  const [time, unit, subTime, subUnit] =
+    lazy.DownloadUtils.convertTimeUnits(smoothed);
+  const format = value => lazy.numberFormat.format(value);
+  return subTime > 0
+    ? `${format(time)}${unit} ${format(subTime)}${subUnit}`
+    : `${format(time)}${unit}`;
+}
+
+/**
+ * @param {object} download - A download that is still coming in
+ * @returns {string} How much of it is here and how long is left of it, as
+ *   "156 MB/1.07 GB · 1m 14s"
+ */
+export function transferText(download) {
+  const [current, currentUnit] = lazy.DownloadUtils.convertByteUnits(
+    download.currentBytes
+  );
+  if (!download.hasProgress) {
+    return `${current} ${currentUnit}`;
+  }
+  const [total, totalUnit] = lazy.DownloadUtils.convertByteUnits(
+    download.totalBytes
+  );
+  const transfer =
+    currentUnit === totalUnit
+      ? `${current}/${total} ${totalUnit}`
+      : `${current} ${currentUnit}/${total} ${totalUnit}`;
+  const left = timeLeftText(download);
+  return left ? `${transfer} · ${left}` : transfer;
 }

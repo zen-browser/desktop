@@ -13,9 +13,10 @@ import {
 let lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  FILE_GROUPS: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
-  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
-  fileGroupOf: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
+  FILE_GROUPS: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  fileGroupOf: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
   DownloadsCommon:
@@ -60,7 +61,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   #limit = PAGE_SIZE;
   #visible = [];
   #refreshed = new WeakSet();
-  #secondsLeft = new WeakMap();
   #finishedStatuses = new WeakMap();
 
   #menu = null;
@@ -276,6 +276,15 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     return PathUtils.toFileURI(path);
   }
 
+  /**
+   * @param {object} download - The download a row stands for
+   * @returns {boolean} Whether the file it brought in is gone from where it
+   *   was put
+   */
+  #isMissing(download) {
+    return download.deleted || (download.succeeded && !download.target.exists);
+  }
+
   #isPending(download) {
     return !download.stopped || (download.canceled && download.hasPartialData);
   }
@@ -331,18 +340,9 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
 
   #statusText(download) {
     const strings = lazy.DownloadsCommon.strings;
-    const totalBytes = download.hasProgress ? download.totalBytes : -1;
     if (!download.stopped) {
-      const [statusText, secondsLeft] = lazy.DownloadUtils.getDownloadStatus(
-        download.currentBytes,
-        totalBytes,
-        download.speed,
-        this.#secondsLeft.get(download) ?? Infinity
-      );
-      this.#secondsLeft.set(download, secondsLeft);
-      return statusText;
+      return lazy.transferText(download);
     }
-    this.#secondsLeft.delete(download);
     if (download.deleted) {
       return strings.fileDeleted;
     }
@@ -353,10 +353,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       return this.#finishedStatus(download);
     }
     if (download.canceled && download.hasPartialData) {
-      return this.#joinStatus(
-        strings.statePaused,
-        lazy.DownloadUtils.getTransferTotal(download.currentBytes, totalBytes)
-      );
+      return this.#joinStatus(strings.statePaused, lazy.transferText(download));
     }
     if (download.error?.becauseBlockedByParentalControls) {
       return strings.stateBlockedParentalControls;
@@ -475,7 +472,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     lazy.DownloadsCommon.deleteDownload(download).catch(console.error);
   }
 
-  #trashDownload(download) {
+  #deleteDownloadFile(download) {
     lazy.DownloadsCommon.deleteDownloadFiles(
       download,
       lazy.DownloadsViewUI.clearHistoryOnDelete
@@ -490,7 +487,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         return this.#hasFile(download);
       case "copy-link":
         return !download.source.isDataURICleared;
-      case "trash":
+      case "delete":
         return (
           this.#hasFile(download) ||
           !download.stopped ||
@@ -518,8 +515,8 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       case "hide":
         this.#hideDownload(download);
         break;
-      case "trash":
-        this.#trashDownload(download);
+      case "delete":
+        this.#deleteDownloadFile(download);
         break;
     }
   }
@@ -551,7 +548,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         <menuitem data-action="copy-link" data-l10n-id="downloads-cmd-copy-download-link"/>
         <menuseparator/>
         <menuitem data-action="hide" data-l10n-id="library-downloads-menu-hide"/>
-        <menuitem data-action="trash" data-l10n-id="library-downloads-menu-trash"/>
+        <menuitem data-action="delete" data-l10n-id="library-downloads-menu-delete"/>
       </menupopup>
     `).firstElementChild;
     menu.addEventListener("command", event => {
@@ -619,6 +616,29 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     `;
   }
 
+  /**
+   * @param {object} download - The download that is still coming in
+   * @returns {object} The arc around its icon, where "pathLength" being 100
+   *   makes the dashes the percentage of the way there, and one with no total
+   *   to go by keeps a quarter of the ring and spins
+   */
+  #renderProgressRing(download) {
+    const dash = download.hasProgress ? Math.round(download.progress) : 25;
+    return html`
+      <svg class="zen-library-row-progress" viewBox="0 0 32 32">
+        <circle class="zen-library-row-progress-track" cx="16" cy="16" r="14" />
+        <circle
+          class="zen-library-row-progress-arc"
+          cx="16"
+          cy="16"
+          r="14"
+          pathLength="100"
+          style="stroke-dasharray: ${dash} 100"
+        />
+      </svg>
+    `;
+  }
+
   #renderCancelButton(download) {
     return html`
       <toolbarbutton
@@ -659,13 +679,12 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
 
   #renderDownload(download) {
     const pending = this.#isPending(download);
-    const progress = download.hasProgress ? download.progress : 0;
     return html`
       <div
         class="zen-library-row"
         draggable="true"
-        style="--zen-library-download-progress: ${progress}%"
         ?pending=${pending}
+        ?missing=${this.#isMissing(download)}
         ?indeterminate=${pending && !download.hasProgress}
         ?paused=${pending && download.stopped}
         ?open-when-done=${this.#opensWhenDone(download)}
@@ -677,19 +696,26 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         }}
         @dragstart=${event => this.#onDragStart(event, download)}
       >
-        <img
-          class="zen-library-row-icon"
-          ?preview=${!!this.#previewUrl(download)}
-          src=${this.#previewUrl(download) ?? this.#iconUrl(download)}
-          @error=${event => {
-            if (!event.target.hasAttribute("preview")) {
-              return;
+        <div class="zen-library-row-icon-box">
+          <img
+            class="zen-library-row-icon"
+            ?preview=${!pending && !!this.#previewUrl(download)}
+            src=${
+              pending
+                ? "chrome://browser/skin/zen-icons/forward.svg"
+                : (this.#previewUrl(download) ?? this.#iconUrl(download))
             }
-            event.target.removeAttribute("preview");
-            event.target.src = this.#iconUrl(download);
-          }}
-          alt=""
-        />
+            @error=${event => {
+              if (!event.target.hasAttribute("preview")) {
+                return;
+              }
+              event.target.removeAttribute("preview");
+              event.target.src = this.#iconUrl(download);
+            }}
+            alt=""
+          />
+          ${when(pending, () => this.#renderProgressRing(download))}
+        </div>
         <div class="zen-library-row-text">
           <span class="zen-library-row-title">${this.#fileName(download)}</span>
           ${this.#renderSubtitle(download)}

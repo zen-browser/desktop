@@ -10,8 +10,8 @@ let lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
-  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
-  mediaKindOf: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
+  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  mediaKindOf: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
 });
 
 const FILE_MIME = "application/x-moz-file";

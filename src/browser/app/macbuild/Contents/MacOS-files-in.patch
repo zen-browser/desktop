@@ -1,0 +1,10 @@
+diff --git a/browser/app/macbuild/Contents/MacOS-files.in b/browser/app/macbuild/Contents/MacOS-files.in
+index 2f420f7736..01a5682ba7 100644
+--- a/browser/app/macbuild/Contents/MacOS-files.in
++++ b/browser/app/macbuild/Contents/MacOS-files.in
+@@ -21,4 +21,5 @@
+ /pk12util
+ /ssltunnel
+ /xpcshell
++/zen-firefox-password-import
+ /XUL

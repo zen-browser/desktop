@@ -1,8 +1,16 @@
 diff --git a/browser/installer/package-manifest.in b/browser/installer/package-manifest.in
-index 83e52b260c380b8a4fdcb9146c36a048adffba68..f55844c294bc0a0e648fd6fc09f63218c9b71de2 100644
+index 46725ca049..f41fa58b7f 100644
 --- a/browser/installer/package-manifest.in
 +++ b/browser/installer/package-manifest.in
-@@ -390,9 +390,9 @@ bin/libfreebl_64int_3.so
+@@ -163,6 +163,7 @@
+ #endif
+ @BINPATH@/@MOZ_APP_NAME@
+ #endif
++@BINPATH@/zen-firefox-password-import@BIN_SUFFIX@
+ @RESPATH@/application.ini
+ #ifdef MOZ_UPDATER
+ # update-settings.ini has been removed on macOS.
+@@ -395,9 +396,9 @@ bin/libfreebl_64int_3.so
  ;
  #ifdef MOZ_CRASHREPORTER
  #ifdef XP_MACOSX

@@ -1,0 +1,32 @@
+diff --git a/browser/locales/en-US/browser/migrationWizard.ftl b/browser/locales/en-US/browser/migrationWizard.ftl
+index 8341f95a6f..1d7e04e62a 100644
+--- a/browser/locales/en-US/browser/migrationWizard.ftl
++++ b/browser/locales/en-US/browser/migrationWizard.ftl
+@@ -336,3 +336,27 @@ migration-wizard-progress-success-payment-methods =
+ migration-wizard-safari-permissions-sub-header = To import Safari bookmarks and browsing history:
+ migration-wizard-safari-instructions-continue = Select “Continue”
+ migration-wizard-safari-instructions-folder = Select Safari folder in the list and choose “Open”
++
++# Browser and account provider names must remain unchanged.
++-zen-import-firefox-brand-name = Firefox
++-zen-import-mozilla-brand-name = Mozilla
++
++zen-firefox-import-browser-name = { -zen-import-firefox-brand-name } (local profile)
++zen-firefox-import-choose-folder = Choose a { -zen-import-firefox-brand-name } profile folder…
++zen-firefox-import-sign-ins = Website sign-ins (cookies)
++zen-firefox-import-description = Close { -zen-import-firefox-brand-name } before importing. No { -zen-import-mozilla-brand-name } account is needed. Existing Zen passwords are kept. Sites with existing Zen cookies are skipped to preserve your website sign-ins. Some websites will ask you to sign in again. Container sign-ins stay in their containers.
++zen-firefox-import-password-title = { -zen-import-firefox-brand-name } Primary Password
++zen-firefox-import-password-prompt = Enter the Primary Password for this { -zen-import-firefox-brand-name } profile. Cancelling skips passwords and continues importing other selected data.
++# Variables:
++#   $imported (Number): Number of imported entries.
++#   $skipped (Number): Number of skipped entries.
++#   $reason (String): Localized explanation of this category result.
++zen-firefox-import-result = { $imported } imported, { $skipped } skipped. { $reason }
++zen-firefox-import-result-complete = Existing or invalid entries are skipped.
++zen-firefox-import-result-locked = Close { -zen-import-firefox-brand-name } and try again.
++zen-firefox-import-result-profile = Select a readable { -zen-import-firefox-brand-name } profile folder different from your current Zen profile.
++zen-firefox-import-result-missing = This profile does not contain the selected data.
++zen-firefox-import-result-unsupported = This profile uses an unsupported or invalid data format.
++zen-firefox-import-result-password = The Primary Password could not unlock this profile. Other selected data can still be imported.
++zen-firefox-import-result-cancelled = Import cancelled. Data already imported has been kept.
++zen-firefox-import-result-failed = This category could not finish. Data already imported has been kept. Other selected categories can still be imported.

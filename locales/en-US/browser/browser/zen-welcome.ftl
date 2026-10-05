@@ -35,3 +35,6 @@ zen-welcome-workspace-colors-description = Personalize your browser by giving ea
 zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = You’re all set up and ready to go. Click the button below to start browsing with { -brand-short-name }.
 zen-welcome-start-browsing = Dive in!
+
+zen-welcome-firefox-import-hint = Moving from Firefox? Import a local profile without an account, including website sign-ins where possible. Or use your Mozilla account to sync supported data. Sync does not transfer website sign-ins.
+zen-welcome-firefox-sync = Use Firefox Sync with my Mozilla account.

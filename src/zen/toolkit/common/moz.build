@@ -27,3 +27,6 @@ if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
 
 FINAL_LIBRARY = "xul"
 XPIDL_MODULE = "zen"
+
+LOCAL_INCLUDES += ["/toolkit/xre"]
+DIRS += ["password-import"]

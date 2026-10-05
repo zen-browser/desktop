@@ -1,0 +1,40 @@
+diff --git a/browser/components/migration/content/migration-wizard.mjs b/browser/components/migration/content/migration-wizard.mjs
+index f6ada525e6..6f53879183 100644
+--- a/browser/components/migration/content/migration-wizard.mjs
++++ b/browser/components/migration/content/migration-wizard.mjs
+@@ -96,6 +96,9 @@ export class MigrationWizard extends HTMLElement {
+                 <label id="logins-and-passwords" class="resource-type-label" data-resource-type="PASSWORDS">
+                   <input type="checkbox"/><span data-l10n-id="migration-passwords-option-label"></span>
+                 </label>
++                <label id="website-sign-ins" class="resource-type-label" data-resource-type="COOKIES">
++                  <input type="checkbox"/><span data-l10n-id="zen-firefox-import-sign-ins"></span>
++                </label>
+                 <label id="history" class="resource-type-label" data-resource-type="HISTORY">
+                   <input type="checkbox"/><span data-l10n-id="migration-history-option-label"></span>
+                 </label>
+@@ -109,6 +112,7 @@ export class MigrationWizard extends HTMLElement {
+                   <input type="checkbox"/><span data-l10n-id="migration-payment-methods-option-label"></span>
+                 </label>
+               </fieldset>
++              <p id="firefox-import-description" hidden data-l10n-id="zen-firefox-import-description"></p>
+             </details>
+ 
+             <div class="file-import-error error-message">
+@@ -534,6 +538,8 @@ export class MigrationWizard extends HTMLElement {
+ 
+     let key = panelItem.getAttribute("key");
+     let resourceTypes = panelItem.resourceTypes;
++    this.#shadowRoot.querySelector("#firefox-import-description").hidden =
++      key !== "zen-firefox";
+ 
+     for (let child of this.#resourceTypeList.querySelectorAll(
+       "label[data-resource-type]"
+@@ -1279,6 +1285,8 @@ export class MigrationWizard extends HTMLElement {
+         "migration-list-bookmark-label",
+       [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.PASSWORDS]:
+         "migration-list-password-label",
++      [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.COOKIES]:
++        "zen-firefox-import-sign-ins",
+       [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.HISTORY]:
+         "migration-list-history-label",
+       [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.EXTENSIONS]:

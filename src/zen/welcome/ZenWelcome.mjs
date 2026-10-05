@@ -535,6 +535,16 @@
             l10n: "zen-welcome-import-yes",
           });
           content.appendChild(yes);
+          const hint = document.createElement("p");
+          document.l10n.setAttributes(hint, "zen-welcome-firefox-import-hint");
+          content.appendChild(hint);
+          content.appendChild(
+            createOption({
+              id: "zen-welcome-firefox-sync",
+              group: "zen-welcome-import",
+              l10n: "zen-welcome-firefox-sync",
+            })
+          );
           content.appendChild(
             createOption({
               id: "zen-welcome-import-no",
@@ -545,6 +555,9 @@
           );
         },
         commit(content) {
+          if (content.querySelector("#zen-welcome-firefox-sync").checked) {
+            gSync.openFxAEmailFirstPage("zen_welcome");
+          }
           if (content.querySelector("#zen-welcome-import-yes").checked) {
             MigrationUtils.showMigrationWizard(window, {
               isStartupMigration: true,

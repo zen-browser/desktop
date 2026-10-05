@@ -4,11 +4,13 @@
 
 #include "nsISupports.idl"
 #include "nsIURI.idl"
+interface nsIFile;
+interface nsIProfileLock;
 
 /**
  * @brief Common utility functions for Zen.
  */
-[scriptable, uuid(d034642a-43b1-4814-be1c-8ad75e337c84)]
+[scriptable, uuid(5189656b-188c-4b99-a1a9-26cdeef870da)]
 interface nsIZenCommonUtils : nsISupports {
   /*
    * @brief Share using the native share dialog.
@@ -32,4 +34,7 @@ interface nsIZenCommonUtils : nsISupports {
    * @brief Play a single haptic feedback note if supported.
    */
   void playHapticFeedback();
+
+  // Acquire the same exclusive lock Firefox uses while taking an import snapshot.
+  nsIProfileLock lockFirefoxProfile(in nsIFile directory);
 };

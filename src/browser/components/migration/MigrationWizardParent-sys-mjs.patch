@@ -1,0 +1,62 @@
+diff --git a/browser/components/migration/MigrationWizardParent.sys.mjs b/browser/components/migration/MigrationWizardParent.sys.mjs
+index 0a4b1a0191..4ba9bde1b7 100644
+--- a/browser/components/migration/MigrationWizardParent.sys.mjs
++++ b/browser/components/migration/MigrationWizardParent.sys.mjs
+@@ -44,7 +44,10 @@ let gHasOpenedBefore = false;
+  * the associated MigrationWizardChild.
+  */
+ export class MigrationWizardParent extends JSWindowActorParent {
++  #activeFirefoxMigrator = null;
++
+   didDestroy() {
++    this.#activeFirefoxMigrator?.cancel();
+     Services.obs.notifyObservers(this, "MigrationWizard:Destroyed");
+     MigrationUtils.finishMigration();
+   }
+@@ -441,6 +444,9 @@ export class MigrationWizardParent extends JSWindowActorParent {
+     }
+ 
+     try {
++      if (migrationDetails.key === "zen-firefox") {
++        this.#activeFirefoxMigrator = migrator;
++      }
+       await migrator.migrate(
+         resourceTypesToMigrate,
+         false,
+@@ -530,6 +536,27 @@ export class MigrationWizardParent extends JSWindowActorParent {
+                   ),
+                 };
+               }
++            } else if (
++              migrationDetails.key === "zen-firefox" &&
++              details?.zenFirefoxImport
++            ) {
++              const reason = await lazy.gFluentStrings.formatValue(
++                "zen-firefox-import-result-" + details.reason
++              );
++              progress[foundResourceTypeName] = {
++                value:
++                  success && !details.skipped
++                    ? lazy.MigrationWizardConstants.PROGRESS_VALUE.SUCCESS
++                    : lazy.MigrationWizardConstants.PROGRESS_VALUE.WARNING,
++                message: await lazy.gFluentStrings.formatValue(
++                  "zen-firefox-import-result",
++                  {
++                    imported: details.imported,
++                    skipped: details.skipped,
++                    reason,
++                  }
++                ),
++              };
+             } else {
+               progress[foundResourceTypeName] = {
+                 value: success
+@@ -550,6 +577,8 @@ export class MigrationWizardParent extends JSWindowActorParent {
+       );
+     } catch (e) {
+       console.error(e);
++    } finally {
++      this.#activeFirefoxMigrator = null;
+     }
+ 
+     return extraArgs;

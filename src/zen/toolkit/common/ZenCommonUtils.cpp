@@ -5,11 +5,13 @@
 #include "ZenCommonUtils.h"
 #include "ZenShareInternal.h"
 
+#include "nsAppRunner.h"
 #include "nsGlobalWindowOuter.h"
-#include "nsQueryObject.h"
-#include "nsIWindowMediator.h"
-#include "nsServiceManagerUtils.h"
 #include "nsISharePicker.h"
+#include "nsIToolkitProfile.h"
+#include "nsIWindowMediator.h"
+#include "nsQueryObject.h"
+#include "nsServiceManagerUtils.h"
 
 #include "mozilla/StaticPrefs_zen.h"
 
@@ -22,6 +24,13 @@ namespace zen {
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(ZenCommonUtils, nsIZenCommonUtils)
 using WindowGlobalChild = mozilla::dom::WindowGlobalChild;
+
+NS_IMETHODIMP ZenCommonUtils::LockFirefoxProfile(nsIFile* aDirectory,
+                                                 nsIProfileLock** aLock) {
+  NS_ENSURE_ARG_POINTER(aDirectory);
+  NS_ENSURE_ARG_POINTER(aLock);
+  return NS_LockProfilePath(aDirectory, aDirectory, nullptr, aLock);
+}
 
 namespace {
 /**

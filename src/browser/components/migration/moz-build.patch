@@ -1,0 +1,12 @@
+diff --git a/browser/components/migration/moz.build b/browser/components/migration/moz.build
+index f1f0587060..190f87f883 100644
+--- a/browser/components/migration/moz.build
++++ b/browser/components/migration/moz.build
+@@ -30,6 +30,7 @@ EXTRA_JS_MODULES += [
+     "MigrationUtils.sys.mjs",
+     "MigratorBase.sys.mjs",
+     "ProfileMigrator.sys.mjs",
++    "ZenFirefoxProfileMigrator.sys.mjs",
+ ]
+ 
+ FINAL_TARGET_FILES.actors = [

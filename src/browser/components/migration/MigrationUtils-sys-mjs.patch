@@ -1,0 +1,15 @@
+diff --git a/browser/components/migration/MigrationUtils.sys.mjs b/browser/components/migration/MigrationUtils.sys.mjs
+index a05920b847..f3eb7286dc 100644
+--- a/browser/components/migration/MigrationUtils.sys.mjs
++++ b/browser/components/migration/MigrationUtils.sys.mjs
+@@ -49,6 +49,10 @@ const FIREFOX_REFRESH_MIGRATOR_KEYS = new Set([
+ ]);
+ 
+ const MIGRATOR_MODULES = Object.freeze({
++  ZenFirefoxProfileMigrator: {
++    moduleURI: "resource:///modules/ZenFirefoxProfileMigrator.sys.mjs",
++    platforms: ["linux", "macosx", "win"],
++  },
+   EdgeProfileMigrator: {
+     moduleURI: "resource:///modules/EdgeProfileMigrator.sys.mjs",
+     platforms: ["win"],

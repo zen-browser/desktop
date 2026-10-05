@@ -491,6 +491,10 @@ zen-library {
   :root[zen-right-side="true"][zen-sidebar-expanded="true"] & {
     flex-direction: row-reverse;
   }
+
+  &[swipe-gesture] {
+    pointer-events: none;
+  }
 }
 
 #tabbrowser-arrowscrollbox {

@@ -117,7 +117,11 @@ export class ZenSpacesSwipe {
       return;
     }
 
-    if (event.target.closest('#urlbar[zen-floating-urlbar="true"]')) {
+    if (
+      event.target.closest(
+        '#urlbar[zen-floating-urlbar="true"], #zen-workspaces-button, #zen-library-download-list'
+      )
+    ) {
       return;
     }
 
@@ -137,6 +141,7 @@ export class ZenSpacesSwipe {
   #toggleSwipeGestureAttr(enable) {
     const elements = [
       "zen-workspace",
+      "#zen-sidebar-foot-buttons",
       "#tabbrowser-arrowscrollbox",
       ".zen-browser-grain",
     ];

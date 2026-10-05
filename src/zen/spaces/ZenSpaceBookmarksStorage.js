@@ -14,6 +14,8 @@ window.ZenWorkspaceBookmarksStorage = {
       this._resolveInitialized = resolve;
     });
     await this._ensureTable();
+    this._resolveInitialized();
+    delete this._resolveInitialized;
   },
 
   async _ensureTable() {
@@ -25,11 +27,16 @@ window.ZenWorkspaceBookmarksStorage = {
             SELECT value FROM moz_meta
             WHERE key = 'zen_bookmarks_workspaces_schema_version'
           `);
-          if (rows.length && rows[0].getResultByName("value") >= 1) {
+          // Skip once migrated. Places recovery keeps moz_meta but drops these tables.
+          if (
+            rows[0]?.getResultByName("value") >= 1 &&
+            (await db.tableExists("zen_bookmarks_workspaces")) &&
+            (await db.tableExists("zen_bookmarks_workspaces_changes"))
+          ) {
             return;
           }
 
-          // Rebuild once to fix uniqueness and remove the obsolete workspace foreign key.
+          // Rebuild with pair uniqueness and without the obsolete workspace foreign key.
           for (const [tableName, columns] of [
             [
               "zen_bookmarks_workspaces",
@@ -51,9 +58,12 @@ window.ZenWorkspaceBookmarksStorage = {
               )
             `);
             if (await db.tableExists(tableName)) {
-              await db.execute(
-                `INSERT INTO ${tableName}_new SELECT * FROM ${tableName}`
-              );
+              // Zen 1.18b to 1.18.5b disabled foreign keys, which can leave rows for deleted bookmarks.
+              await db.execute(`
+                INSERT INTO ${tableName}_new
+                SELECT * FROM ${tableName}
+                WHERE bookmark_guid IN (SELECT guid FROM moz_bookmarks)
+              `);
               await db.execute(`DROP TABLE ${tableName}`);
             }
             await db.execute(
@@ -76,8 +86,6 @@ window.ZenWorkspaceBookmarksStorage = {
         });
       }
     );
-    this._resolveInitialized?.();
-    delete this._resolveInitialized;
   },
 
   /**

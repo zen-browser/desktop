@@ -14,11 +14,6 @@
 
 #zen-sidebar-foot-buttons {
   z-index: 2;
-  transition: --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
-
-  &[zen-library-stack-open] {
-    --zen-library-progress: 1;
-  }
 }
 
 #zen-library-button {
@@ -75,6 +70,9 @@
     margin: 0 !important;
     transform-origin: left top;
 
+    --zen-library-progress: 0;
+    transition: --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
+
     --zen-library-badge-x: 14px;
     --zen-library-badge-y: -8px;
     --zen-library-badge-to-x: var(--zen-library-badge-x);
@@ -88,25 +86,36 @@
         abs(var(--zen-library-badge-to-x) - var(--zen-library-badge-x)) / 2
     );
     --zen-library-left: calc(1 - var(--zen-library-progress));
-    left: calc(
+    --zen-library-badge-tx: calc(
       var(--zen-library-left) * var(--zen-library-left) * var(--zen-library-badge-x) +
         2 * var(--zen-library-left) * var(--zen-library-progress) * var(--zen-library-badge-mid-x) +
         var(--zen-library-progress) * var(--zen-library-progress) * var(--zen-library-badge-to-x)
     );
-    top: calc(
+    --zen-library-badge-ty: calc(
       var(--zen-library-left) * var(--zen-library-left) * var(--zen-library-badge-y) +
         2 * var(--zen-library-left) * var(--zen-library-progress) * var(--zen-library-badge-mid-y) +
         var(--zen-library-progress) * var(--zen-library-progress) * var(--zen-library-badge-to-y)
     );
 
+    left: 0;
+    top: 0;
+
+    scale: none;
+
     &:not([downloading]) {
-      transform: scale(calc((var(--zen-library-progress) * 0.5 + 0.5) * 100%));
+      transform: translate(var(--zen-library-badge-tx), var(--zen-library-badge-ty))
+        scale(calc((var(--zen-library-progress) + 1) * 100%));
     }
 
     &[downloading] {
-      transform: scale(calc((var(--zen-library-progress) * 0.2 + 0.8) * 100%));
+      transform: translate(var(--zen-library-badge-tx), var(--zen-library-badge-ty))
+        scale(calc((var(--zen-library-progress) * 0.2 + 0.8) * 100%));
     }
   }
+}
+
+#zen-sidebar-foot-buttons[zen-library-stack-open] #library-button-badge {
+  --zen-library-progress: 1;
 }
 
 #library-button-badge,
@@ -122,7 +131,9 @@
   &[zen-library-stack-open] {
     & #library-button-badge {
       visibility: hidden;
-      transition: visibility 0s var(--zen-library-open-duration);
+      transition:
+        visibility 0s var(--zen-library-open-duration),
+        --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
     }
 
     & #zen-library-download-list > :last-child .zen-library-download-badge {
@@ -240,15 +251,18 @@
     position: relative;
     padding: 0 4px;
 
-    --zen-library-progress: 0;
     --zen-library-entry-index: 0;
     --zen-library-entry-delay: calc(var(--zen-library-entry-index) * 12ms);
     --zen-library-entry-settle: 0s;
     transition:
-      --zen-library-progress 0.22s var(--zen-library-entry-easing) var(--zen-library-entry-delay),
+      transform 0.22s var(--zen-library-entry-easing) var(--zen-library-entry-delay),
+      opacity 0.22s var(--zen-library-entry-easing) var(--zen-library-entry-delay),
       pointer-events 0s var(--zen-library-entry-settle) allow-discrete;
 
     pointer-events: none;
+
+    transform: translateY(25px);
+    opacity: 0;
 
     &:nth-last-child(2) {
       --zen-library-entry-index: 1;
@@ -261,13 +275,11 @@
     }
 
     #zen-sidebar-foot-buttons[zen-library-stack-open] & {
-      --zen-library-progress: 1;
       --zen-library-entry-settle: calc(0.22s + var(--zen-library-entry-delay));
       pointer-events: auto;
+      transform: translateY(0);
+      opacity: 1;
     }
-
-    transform: translateY(calc((1 - var(--zen-library-progress)) * 25px));
-    opacity: var(--zen-library-progress);
 
     &:hover {
       background: var(--zen-toolbar-element-bg);

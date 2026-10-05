@@ -24,8 +24,6 @@
   appearance: unset !important;
   height: fit-content;
   gap: 3px;
-
-  container-type: inline-size;
   width: 100%;
 
   & toolbarbutton {
@@ -334,6 +332,8 @@ zen-workspace {
   overflow: hidden;
   color: var(--toolbox-textcolor);
 
+  contain: size layout;
+
   --tab-background-color-selected: light-dark(
     color-mix(in srgb, rgba(255, 255, 255, 0.8) 98%, var(--zen-primary-color)),
     color-mix(in srgb, rgba(255, 255, 255, 0.18) 95%, var(--zen-primary-color))
@@ -415,7 +415,7 @@ zen-workspace {
   }
 
   #navigator-toolbox:not([movingtab], [animating-background]) &:not([swipe-gesture], [active]) {
-    visibility: hidden;
+    -moz-subtree-hidden-only-visually: 1;
   }
 }
 

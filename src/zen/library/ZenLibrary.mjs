@@ -821,15 +821,17 @@ export class ZenLibrary extends MozLitElement {
   }
 
   onKeyDown(e) {
-    if (!this.hasAttribute("open")) {
+    if (!this.hasAttribute("open") || e.key !== "Escape") {
       return;
     }
+    const focused = document.activeElement;
     if (
-      e.key === "Escape" &&
-      document.activeElement?.closest("zen-library") !== this
+      focused?.closest("zen-library") === this &&
+      !focused.closest(".zen-library-search-box")
     ) {
-      ZenLibrary.animateProgress(0);
+      return;
     }
+    ZenLibrary.animateProgress(0);
   }
 
   firstUpdated() {

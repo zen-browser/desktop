@@ -92,9 +92,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   #colorPage = 0;
   #gradientsCache = new Map();
+  #nativeAccentColorCache = null;
 
   constructor() {
     super();
+    this.#initNativeAccentColorInvalidation();
     if (
       !gZenWorkspaces.shouldHaveWorkspaces ||
       gZenWorkspaces.privateWindowOrDisabled
@@ -176,6 +178,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   handleDarkModeChange() {
+    this.#nativeAccentColorCache = null;
     this.updateCurrentWorkspace();
     Services.obs.notifyObservers(null, "zen-theme-change");
   }
@@ -1831,29 +1834,55 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return theme;
   }
 
+  #initNativeAccentColorInvalidation() {
+    const invalidate = () => {
+      this.#nativeAccentColorCache = null;
+    };
+    Services.obs.addObserver(invalidate, "look-and-feel-changed");
+    Services.prefs.addObserver("zen.theme.accent-color", invalidate);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.obs.removeObserver(invalidate, "look-and-feel-changed");
+        Services.prefs.removeObserver("zen.theme.accent-color", invalidate);
+      },
+      { once: true }
+    );
+  }
+
+  /**
+   * Resolves the raw `AccentColor` system color for this document.
+   */
+  #resolveSystemAccentColor() {
+    const rgba = InspectorUtils.colorToRGBA("AccentColor", document);
+    if (!rgba) {
+      return [0, 0, 0];
+    }
+    return [rgba.r, rgba.g, rgba.b];
+  }
+
   getNativeAccentColor() {
-    let accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
-    let rgb;
-    if (accentColor === "AccentColor") {
-      const rawRgb = window.getComputedStyle(
-        lazy.browserBackgroundElement
-      ).color;
-      rgb = rawRgb.match(/\d+/g).map(Number);
-      // Match our theme a bit more, since we can't always expect the OS
-      // to give us a color matching our theme scheme
-      rgb = this.blendColors(
-        rgb,
-        this.getToolbarModifiedBaseRaw().slice(0, 3),
-        this.isDarkMode ? 80 : 50
+    let rgb = this.#nativeAccentColorCache;
+    if (!rgb) {
+      const accentColor = Services.prefs.getStringPref(
+        "zen.theme.accent-color"
       );
-    } else {
-      rgb = this.hexToRgb(accentColor);
+      if (accentColor === "AccentColor") {
+        rgb = this.blendColors(
+          this.#resolveSystemAccentColor(),
+          this.getToolbarModifiedBaseRaw().slice(0, 3),
+          this.isDarkMode ? 80 : 50
+        );
+      } else {
+        rgb = this.hexToRgb(accentColor);
+      }
+      this.#nativeAccentColorCache = rgb;
     }
     if (this.isDarkMode) {
       // If the theme is dark, we want to use a lighter color
       return this.blendColors(rgb, [0, 0, 0], 40);
     }
-    return rgb;
+    return [...rgb];
   }
 
   resetCustomColorList() {

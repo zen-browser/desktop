@@ -13,7 +13,7 @@ zen-library {
   --zen-library-pill-hover-bg: color-mix(in srgb, currentColor 12%, transparent);
   --zen-library-radius: 12px;
 
-  contain: content;
+  contain: strict;
 
   position: absolute;
   top: 0;
@@ -57,10 +57,10 @@ zen-library {
     background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.08));
     box-shadow: -9px 0 17px rgba(0, 0, 0, 0.04);
   }
-  
+
   & #zen-library-footer {
     flex-direction: row-reverse;
-    
+
     & toolbarbutton:first-child {
       rotate:180deg;
     }
@@ -106,7 +106,7 @@ zen-library:is([transitioning], [sizing])
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  contain: content;
+  contain: paint size layout;
   -moz-window-dragging: no-drag;
 }
 
@@ -673,6 +673,10 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   gap: 14px;
   padding: 10px 12px;
   border-radius: 16px;
+  /* skip painting rows scrolled out of view */
+  contain: strict;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 34px;
   /* The open library window is draggable; let rows be dragged as items. */
   -moz-window-dragging: no-drag;
 

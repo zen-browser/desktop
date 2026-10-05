@@ -20,48 +20,64 @@ window.ZenWorkspaceBookmarksStorage = {
     await this.lazy.PlacesUtils.withConnectionWrapper(
       "ZenWorkspaceBookmarksStorage.init",
       async db => {
-        // Create table using GUIDs instead of IDs
-        await db.execute(`
-        CREATE TABLE IF NOT EXISTS zen_bookmarks_workspaces (
-          id INTEGER PRIMARY KEY,
-          bookmark_guid TEXT NOT NULL,
-          workspace_uuid TEXT NOT NULL,
-          created_at INTEGER NOT NULL,
-          updated_at INTEGER NOT NULL,
-          UNIQUE(bookmark_guid),
-          FOREIGN KEY(bookmark_guid) REFERENCES moz_bookmarks(guid) ON DELETE CASCADE
-          )
-      `);
+        await db.executeTransaction(async () => {
+          const rows = await db.execute(`
+            SELECT value FROM moz_meta
+            WHERE key = 'zen_bookmarks_workspaces_schema_version'
+          `);
+          if (rows.length && rows[0].getResultByName("value") >= 1) {
+            return;
+          }
 
-        // Create index for fast lookups
-        await db.execute(`
-        CREATE INDEX IF NOT EXISTS idx_bookmarks_workspaces_lookup
-          ON zen_bookmarks_workspaces(workspace_uuid, bookmark_guid)
-      `);
+          // Rebuild once to fix uniqueness and remove the obsolete workspace foreign key.
+          for (const [tableName, columns] of [
+            [
+              "zen_bookmarks_workspaces",
+              "created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL",
+            ],
+            [
+              "zen_bookmarks_workspaces_changes",
+              "change_type TEXT NOT NULL, timestamp INTEGER NOT NULL",
+            ],
+          ]) {
+            await db.execute(`
+              CREATE TABLE ${tableName}_new (
+                id INTEGER PRIMARY KEY,
+                bookmark_guid TEXT NOT NULL,
+                workspace_uuid TEXT NOT NULL,
+                ${columns},
+                UNIQUE(bookmark_guid, workspace_uuid),
+                FOREIGN KEY(bookmark_guid) REFERENCES moz_bookmarks(guid) ON DELETE CASCADE
+              )
+            `);
+            if (await db.tableExists(tableName)) {
+              await db.execute(
+                `INSERT INTO ${tableName}_new SELECT * FROM ${tableName}`
+              );
+              await db.execute(`DROP TABLE ${tableName}`);
+            }
+            await db.execute(
+              `ALTER TABLE ${tableName}_new RENAME TO ${tableName}`
+            );
+          }
 
-        // Add changes tracking table
-        await db.execute(`
-        CREATE TABLE IF NOT EXISTS zen_bookmarks_workspaces_changes (
-          id INTEGER PRIMARY KEY,
-          bookmark_guid TEXT NOT NULL,
-          workspace_uuid TEXT NOT NULL,
-          change_type TEXT NOT NULL,
-          timestamp INTEGER NOT NULL,
-          UNIQUE(bookmark_guid),
-          FOREIGN KEY(bookmark_guid) REFERENCES moz_bookmarks(guid) ON DELETE CASCADE
-        )
-      `);
-
-        // Create index for changes tracking
-        await db.execute(`
-          CREATE INDEX IF NOT EXISTS idx_bookmarks_workspaces_changes
-            ON zen_bookmarks_workspaces_changes(bookmark_guid, workspace_uuid)
-        `);
-
-        this._resolveInitialized();
-        delete this._resolveInitialized;
+          await db.execute(`
+            CREATE INDEX idx_bookmarks_workspaces_lookup
+              ON zen_bookmarks_workspaces(workspace_uuid, bookmark_guid)
+          `);
+          await db.execute(`
+            CREATE INDEX idx_bookmarks_workspaces_changes
+              ON zen_bookmarks_workspaces_changes(bookmark_guid, workspace_uuid)
+          `);
+          await db.execute(`
+            INSERT OR REPLACE INTO moz_meta (key, value)
+            VALUES ('zen_bookmarks_workspaces_schema_version', 1)
+          `);
+        });
       }
     );
+    this._resolveInitialized?.();
+    delete this._resolveInitialized;
   },
 
   /**

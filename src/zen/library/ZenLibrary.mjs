@@ -909,6 +909,20 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
+  /**
+   * The name a section goes by right now, which one that changes what it
+   * lists can have a say in once it is mounted.
+   *
+   * @param {object} Section - The section its tab stands for
+   * @returns {string} The Fluent id of the name to show
+   */
+  #sectionLabel(Section) {
+    const mounted = this._content?.querySelector(
+      `[data-section="${Section.id}"]`
+    );
+    return mounted?.tabLabel ?? Section.label;
+  }
+
   render() {
     return html`
       <link
@@ -943,7 +957,7 @@ export class ZenLibrary extends MozLitElement {
                   <div class="zen-library-tab-icon">
                     <div class="zen-library-tab-icon-image"></div>
                   </div>
-                  <label data-l10n-id=${Section.label}></label>
+                  <label data-l10n-id=${this.#sectionLabel(Section)}></label>
                 </vbox>
               `
             )}

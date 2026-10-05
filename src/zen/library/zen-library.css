@@ -541,6 +541,11 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   &:hover {
     background: var(--zen-library-pill-hover-bg);
   }
+
+  &:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
 }
 
 .zen-library-search-box img,

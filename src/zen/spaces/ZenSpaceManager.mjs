@@ -1872,7 +1872,7 @@ class nsZenWorkspaces {
         gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
       }
       const container = this.activeWorkspaceStrip;
-      if (container) {
+      if (container && container.firstChild !== emptyTab) {
         container.insertBefore(emptyTab, container.firstChild);
       }
     }

@@ -24,8 +24,6 @@
   appearance: unset !important;
   height: fit-content;
   gap: 3px;
-
-  container-type: inline-size;
   width: 100%;
 
   & toolbarbutton {

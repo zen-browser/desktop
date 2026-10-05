@@ -8,6 +8,9 @@
 - name: zen.library.last-tab
   value: "history"
 
+- name: zen.library.history.closed-tabs
+  value: false
+
 - name: zen.library.media.enabled
   value: false
 

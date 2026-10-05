@@ -223,7 +223,15 @@ export class ZenLibrarySearchSection extends MozLitElement {
     `;
   }
 
+  #faded = false;
+
   async onShown() {
+    if (this.#faded) {
+      this.removeAttribute("fade-in");
+    } else {
+      this.#faded = true;
+      this.setAttribute("fade-in", "true");
+    }
     await this.updateComplete;
     this.querySelector(".zen-library-search-box input")?.focus();
   }

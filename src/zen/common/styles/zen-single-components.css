@@ -800,8 +800,9 @@
 }
 
 #TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
-  --zen-library-mask-ramp: 50px;
+  --zen-library-mask-ramp: 80px;
   --zen-library-mask-bleed: var(--zen-toolbox-padding);
+  --zen-library-mask-overshoot: 10px;
 
   mask-repeat: no-repeat;
   mask-clip: no-clip;
@@ -817,7 +818,7 @@
       100%);
 
   &[zen-library-stack-open] {
-    mask-size: calc(100% + var(--zen-library-mask-bleed) * 2) calc(100% - var(--zen-library-stack-height, 0px) + 20px + var(--zen-library-mask-bleed));
+    mask-size: calc(100% + var(--zen-library-mask-bleed) * 2) calc(100% - var(--zen-library-stack-height, 0px) + var(--zen-library-mask-overshoot) + var(--zen-library-mask-bleed));
   }
 }
 

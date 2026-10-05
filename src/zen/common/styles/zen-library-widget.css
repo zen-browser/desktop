@@ -302,6 +302,10 @@
         display: block;
         overflow: hidden;
         white-space: nowrap;
+
+        @media not (-moz-platform: macos) {
+          font-size: 10pt;
+        }
       }
       & .zen-library-download-list-subtitle {
         font-size: 9pt;
@@ -311,6 +315,10 @@
         display: block;
         overflow: hidden;
         white-space: nowrap;
+
+        @media not (-moz-platform: macos) {
+          font-size: 8pt;
+        }
       }
     }
 

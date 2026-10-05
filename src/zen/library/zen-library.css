@@ -466,6 +466,20 @@ zen-library-media-section[needs-opt-in] {
   }
 }
 
+.zen-library-section[fade-in] .zen-library-search-results {
+  animation: zen-library-section-fade 0.1s ease-in-out both;
+}
+
+@keyframes zen-library-section-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .zen-library-section {
   display: flex;
   flex-direction: column;
@@ -884,7 +898,7 @@ zen-library-history-section {
 }
 
 .zen-library-boost-row {
-  padding: 6px 12px 6px 4px;
+  padding: 12px 12px 12px 4px;
   border-radius: 18px;
 }
 

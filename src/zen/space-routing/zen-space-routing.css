@@ -129,7 +129,9 @@ p {
     width: 165px;
   }
   &.bookmark-folder-match {
-    width: 145px;
+    width: max-content;
+    min-width: 180px;
+    flex-shrink: 0;
   }
   &.bookmark-folder-select {
     flex: 1;

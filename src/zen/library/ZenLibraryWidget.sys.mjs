@@ -4,7 +4,8 @@
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
-  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
+  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   DownloadsCommon:
     "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
@@ -43,7 +44,6 @@ class ZenLibraryDownloadStack {
   #recentNewDownload = false;
   #closeTimer = null;
   #contextMenuOpen = false;
-  #secondsLeft = new WeakMap();
 
   /**
    * @param {Element} button - The library toolbar button
@@ -488,18 +488,9 @@ class ZenLibraryDownloadStack {
 
   #statusText(download) {
     const strings = lazy.DownloadsCommon.strings;
-    const totalBytes = download.hasProgress ? download.totalBytes : -1;
     if (!download.stopped) {
-      const [statusText, secondsLeft] = lazy.DownloadUtils.getDownloadStatus(
-        download.currentBytes,
-        totalBytes,
-        download.speed,
-        this.#secondsLeft.get(download) ?? Infinity
-      );
-      this.#secondsLeft.set(download, secondsLeft);
-      return statusText;
+      return lazy.transferText(download);
     }
-    this.#secondsLeft.delete(download);
     if (download.deleted) {
       return strings.fileDeleted;
     }
@@ -522,10 +513,7 @@ class ZenLibraryDownloadStack {
       );
     }
     if (download.canceled && download.hasPartialData) {
-      return this.#joinStatus(
-        strings.statePaused,
-        lazy.DownloadUtils.getTransferTotal(download.currentBytes, totalBytes)
-      );
+      return this.#joinStatus(strings.statePaused, lazy.transferText(download));
     }
     if (download.error?.becauseBlockedByParentalControls) {
       return strings.stateBlockedParentalControls;

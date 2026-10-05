@@ -317,6 +317,10 @@
     & .zen-library-download-badge {
       margin: auto 20px auto 8px;
 
+      &[downloading] {
+        margin-right: 14px;
+      }
+
       :root:not([zen-sidebar-expanded="true"]) & {
         margin: auto;
       }
@@ -332,8 +336,11 @@
     }
 
     &[downloading] .zen-library-download-action {
-      display: flex;
       list-style-image: url("chrome://browser/skin/zen-icons/close.svg");
+    }
+
+    &[downloading]:hover .zen-library-download-action {
+      display: flex;
     }
   }
 }

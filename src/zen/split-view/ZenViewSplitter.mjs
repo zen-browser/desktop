@@ -77,7 +77,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   __hasSetMenuListener = false;
   _splitNodeToSplitters = new Map();
   _tabToSplitNode = new WeakMap();
-  dropZone;
   _edgeHoverSize;
   minResizeWidth;
 
@@ -99,10 +98,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       "_edgeHoverSize",
       "zen.splitView.rearrange-edge-hover-size",
       24
-    );
-
-    ChromeUtils.defineLazyGetter(this, "dropZone", () =>
-      document.getElementById("zen-splitview-dropzone")
     );
 
     window.addEventListener("TabClose", this.handleTabClose.bind(this));
@@ -687,19 +682,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
-  toggleWrapperDisplay(value) {
-    const wrapper = document.getElementById("zen-splitview-overlay-wrapper");
-    if (!wrapper) {
-      return;
-    }
-
-    if (!value) {
-      wrapper.setAttribute("hidden", "true");
-    } else {
-      wrapper.removeAttribute("hidden");
-    }
-  }
-
   enableTabRearrangeView(tabDrag = false) {
     if (this.rearrangeViewEnabled) {
       return;
@@ -906,57 +888,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return true;
   };
 
-  onBrowserDragOver = event => {
-    event.preventDefault();
-    const browser = event.target.querySelector("browser");
-    if (!browser) {
-      return;
-    }
-    const tab = gBrowser.getTabForBrowser(browser);
-    if (tab === this._draggingTab) {
-      if (this.dropZone.hasAttribute("enabled")) {
-        this.dropZone.removeAttribute("enabled");
-      }
-      return;
-    }
-    if (!this.dropZone.hasAttribute("enabled")) {
-      this.dropZone.setAttribute("enabled", true);
-    }
-    const splitNode = this.getSplitNodeFromTab(tab);
-    if (!splitNode) {
-      return;
-    }
-
-    const posToRoot = { ...splitNode.positionToRoot };
-    const browserRect = browser.getBoundingClientRect();
-    const hoverSide = this.calculateHoverSide(
-      event.clientX,
-      event.clientY,
-      browserRect
-    );
-
-    if (hoverSide !== "center") {
-      const isVertical = hoverSide === "top" || hoverSide === "bottom";
-      const browserSize =
-        100 -
-        (isVertical
-          ? posToRoot.top + posToRoot.bottom
-          : posToRoot.right + posToRoot.left);
-      const reduce = browserSize * 0.5;
-
-      posToRoot[this._oppositeSide(hoverSide)] += reduce;
-    }
-    const newInset = `${posToRoot.top}% ${posToRoot.right}% ${posToRoot.bottom}% ${posToRoot.left}%`;
-    if (this.dropZone.style.inset !== newInset) {
-      window.requestAnimationFrame(
-        () => (this.dropZone.style.inset = newInset)
-      );
-    }
-  };
+  onBrowserDragOver = event => event.preventDefault();
 
   onBrowserDragEnd = event => {
-    this.dropZone?.removeAttribute("enabled");
-
     // If we don't have drag state, just clean up what we can
     if (!this._dragState) {
       this._draggingTab = null;
@@ -978,17 +912,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this._draggingTab = null;
     this._dragState = null;
   };
-
-  _oppositeSide(side) {
-    const OPPOSITE_SIDES = {
-      top: "bottom",
-      bottom: "top",
-      left: "right",
-      right: "left",
-    };
-
-    return OPPOSITE_SIDES[side];
-  }
 
   calculateHoverSide(x, y, elementRect) {
     const hPixelHoverSize =
@@ -1576,7 +1499,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       .getElementById("tabbrowser-tabbox")
       .removeAttribute("zen-split-view");
     this.currentView = -1;
-    this.toggleWrapperDisplay(false);
     this.maybeDisableOpeningTabOnSplitView();
     window.dispatchEvent(
       new CustomEvent("ZenViewSplitter:SplitViewDeactivated")
@@ -1627,7 +1549,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
     this.applyGridLayout(splitData.layoutTree);
     this.setTabsDocShellState(splitData.tabs, true);
-    this.toggleWrapperDisplay(true);
     window.dispatchEvent(new CustomEvent("ZenViewSplitter:SplitViewActivated"));
   }
 
@@ -2367,7 +2288,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     if (tab.splitView) {
       // Unsplit the tab and exit from the drag view
-      this.dropZone?.removeAttribute("enabled");
       this.disableTabRearrangeView(event);
       this.removeTabFromSplit(event, browserContainer);
       return true;

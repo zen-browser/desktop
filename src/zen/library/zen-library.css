@@ -711,6 +711,68 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   }
 }
 
+.zen-library-row[missing] {
+  opacity: 0.5;
+}
+
+.zen-library-row[pending] .zen-library-row-icon {
+  fill: var(--color-accent-primary);
+  rotate: 90deg;
+  scale: 0.8;
+}
+
+.zen-library-row-icon-box {
+  position: relative;
+  display: flex;
+  flex: none;
+}
+
+.zen-library-row-progress {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+
+  & circle {
+    fill: none;
+    stroke-width: 3;
+  }
+
+  & .zen-library-row-progress-track {
+    stroke: color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  & .zen-library-row-progress-arc {
+    stroke: var(--color-accent-primary);
+    /* Starts at the top, where a ring is read from. */
+    rotate: -90deg;
+    transform-origin: center;
+    transition: stroke-dasharray 0.2s ease;
+  }
+}
+
+.zen-library-row[paused] .zen-library-row-progress-arc {
+  stroke: color-mix(in srgb, var(--color-accent-primary) 50%, transparent);
+}
+
+.zen-library-row[indeterminate] .zen-library-row-progress-arc {
+  transition: none;
+  animation: zen-library-ring-spin 1s linear infinite;
+}
+
+@keyframes zen-library-ring-spin {
+  from {
+    rotate: -90deg;
+  }
+
+  to {
+    rotate: 270deg;
+  }
+}
+
 .zen-library-row-text {
   flex: 1;
   min-width: 0;
@@ -899,50 +961,6 @@ zen-library-history-section {
 
   & .zen-library-download-url {
     display: inline;
-  }
-}
-
-.zen-library-row[pending]:not(:hover) .zen-library-download-status {
-  display: none;
-}
-
-.zen-library-row[pending][open-when-done]:not(:hover)
-  .zen-library-download-status {
-  display: inline;
-}
-
-.zen-library-row[pending]:not(:hover) .zen-library-row-subtitle::before {
-  content: "";
-  display: block;
-  height: 4px;
-  margin-block: calc((1lh - 4px) / 2);
-  border-radius: 2px;
-  background:
-    linear-gradient(var(--color-accent-primary), var(--color-accent-primary)) 0 0 / var(--zen-library-download-progress, 0%) 100% no-repeat,
-    color-mix(in srgb, currentColor 12%, transparent);
-  transition: background-size 0.2s ease;
-}
-
-.zen-library-row[paused] .zen-library-row-subtitle::before {
-  background-image: linear-gradient(
-    color-mix(in srgb, var(--color-accent-primary) 50%, transparent),
-    color-mix(in srgb, var(--color-accent-primary) 50%, transparent)
-  );
-}
-
-.zen-library-row[indeterminate] .zen-library-row-subtitle::before {
-  background-size: 40% 100%;
-  transition: none;
-  animation: zen-library-progress-indeterminate 1.2s ease-in-out infinite;
-}
-
-@keyframes zen-library-progress-indeterminate {
-  from {
-    background-position-x: -70%;
-  }
-
-  to {
-    background-position-x: 170%;
   }
 }
 

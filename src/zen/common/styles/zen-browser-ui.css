@@ -42,7 +42,7 @@ body,
   overflow: clip;
 
   isolation: isolate;
-  contain: content;
+  contain: strict;
 
   &::after,
   &::before {

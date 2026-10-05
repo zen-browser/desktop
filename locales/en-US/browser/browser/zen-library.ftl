@@ -93,8 +93,8 @@ library-downloads-menu-copy =
     .label = Copy { $name }
 library-downloads-menu-hide =
     .label = Hide from Zen
-library-downloads-menu-trash =
-    .label = Move to Trash
+library-downloads-menu-delete =
+    .label = Delete File
 library-downloads-opening-in = { PLATFORM() ->
     [macos] Opening in Finder…
     [windows] Opening in File Explorer…

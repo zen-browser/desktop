@@ -280,7 +280,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     const workspace = gZenWorkspaces.getActiveWorkspace();
     workspace.name = this.inputName.value.trim();
     workspace.icon = this.inputIcon.image || this.inputIcon.label || undefined;
-    workspace.containerTabId = this.currentProfile;
+    workspace.containerTabId = this.currentProfile ?? 0;
     await gZenWorkspaces.saveWorkspace(workspace);
 
     await this.#cleanup();

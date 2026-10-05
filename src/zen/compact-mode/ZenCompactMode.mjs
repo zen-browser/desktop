@@ -392,7 +392,6 @@ window.gZenCompactModeManager = {
     const isUrlbarFocused = gURLBar.focused;
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
-    this.updateContextMenu();
     gZenWorkspaces._processingResize = true;
     if (!this.preference) {
       setAttrs();
@@ -403,6 +402,7 @@ window.gZenCompactModeManager = {
       setAttrs();
       this.callAllEventListeners();
     }
+    this.updateContextMenu();
     gZenWorkspaces._processingResize = false;
     if (isUrlbarFocused) {
       gURLBar.focus();

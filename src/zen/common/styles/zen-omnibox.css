@@ -277,8 +277,8 @@
   & .urlbar-background {
     --zen-urlbar-background-base: light-dark(rgb(255, 255, 255), rgb(24 24 24));
     /* stylelint-disable-next-line media-query-no-invalid */
-    @media -moz-pref("zen.theme.acrylic-elements") and (not (prefers-reduced-transparency: reduce)) {
-      &:not(:-moz-window-inactive) { 
+    @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce)) {
+      :root:not([zen-no-acrylic="true"]) &:not(:-moz-window-inactive) {
         --zen-urlbar-background-transparent: light-dark(
           rgba(255, 255, 255, .93),
           rgba(20, 20, 20, .92)
@@ -292,8 +292,10 @@
     outline-offset: var(--zen-urlbar-outline-offset) !important;
 
     /* stylelint-disable-next-line media-query-no-invalid */
-    @media -moz-pref("zen.theme.acrylic-elements") and (not (prefers-reduced-transparency: reduce))  {
-      backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
+    @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce))  {
+      :root:not([zen-no-acrylic="true"]) & {
+        backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
+      }
     }
   }
 

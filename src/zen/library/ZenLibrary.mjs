@@ -45,13 +45,8 @@ ChromeUtils.defineLazyGetter(lazy, "toastContainer", function () {
 
 export class ZenLibrary extends MozLitElement {
   static instance = null;
-  static getInstance(createIfMissing = true) {
-    if (!this.instance && createIfMissing) {
-      this.instance = new ZenLibrary();
-      this.instance.style.visibility = "collapse";
-      const mountAfter = document.getElementById("navigator-toolbox");
-      mountAfter.after(this.instance);
-    }
+  static getInstance() {
+    this.instance ??= document.querySelector("zen-library");
     return this.instance;
   }
 
@@ -73,6 +68,8 @@ export class ZenLibrary extends MozLitElement {
   #initialized = false;
 
   #wrapperSwipeAttached = false;
+  #tabMenu = null;
+  #tabMenuItems = [];
 
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
@@ -107,21 +104,21 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static get isLibraryOpen() {
-    const lib = this.getInstance(false);
+    const lib = this.getInstance();
     return lib?.#isOpen;
   }
 
   static get isLibrarySlightlyOpen() {
-    const lib = this.getInstance(false);
+    const lib = this.getInstance();
     return lib?.openProgress > 0.001;
   }
 
   static get libraryProgress() {
-    return this.getInstance(false)?.openProgress;
+    return this.getInstance()?.openProgress;
   }
 
   static get libraryOnRight() {
-    return this.getInstance(false)?.#libraryOnRight;
+    return this.getInstance()?.#libraryOnRight;
   }
 
   set isHidden(value) {
@@ -241,9 +238,75 @@ export class ZenLibrary extends MozLitElement {
   }
 
   /**
-   * Clears the styles for the library open/close animation
-   * to avoid unecessary layer creation
+   * Right clicking a tab offers what that section has for the whole of what it
+   * lists, as its static `tabMenu` says, and the way back to the library window
+   * Firefox came with.
+   *
+   * @param {MouseEvent} event - The right click on a tab
+   * @param {object} Section - The section the tab stands for
    */
+  #openTabMenu(event, Section) {
+    const offered = Section.tabMenu ?? [];
+    if (!offered.length) {
+      return;
+    }
+    event.preventDefault();
+    const items = [
+      ...offered,
+      {
+        l10nId: "library-open-legacy",
+        separatorBefore: true,
+        command: () =>
+          window.PlacesCommandHook.showPlacesOrganizer(
+            Section.legacyLibraryView ?? "AllBookmarks"
+          ),
+      },
+    ];
+    if (!this.#tabMenu) {
+      this.#tabMenu = window.MozXULElement.parseXULToFragment(
+        `<menupopup class="zen-library-tab-menu"/>`
+      ).firstElementChild;
+      this.#tabMenu.addEventListener("command", menuEvent => {
+        this.#tabMenuItems[menuEvent.target.dataset.index]?.command();
+      });
+      document.getElementById("mainPopupSet").appendChild(this.#tabMenu);
+    }
+    this.#tabMenuItems = [];
+    this.#tabMenu.replaceChildren(...this.#buildTabMenuItems(items));
+    this.#tabMenu.openPopupAtScreen(event.screenX, event.screenY, true);
+  }
+
+  /**
+   * Turns what a section offers into menu nodes, an item carrying `items`
+   * becoming a submenu. Each command keeps its own index in `#tabMenuItems`,
+   * which is what the popup's single command listener looks it up by.
+   *
+   * @param {object[]} items - What the menu, or one of its submenus, offers
+   * @returns {Element[]} The nodes for it
+   */
+  #buildTabMenuItems(items) {
+    const nodes = [];
+    for (const item of items) {
+      if (item.separatorBefore && nodes.length) {
+        nodes.push(document.createXULElement("menuseparator"));
+      }
+      if (item.items) {
+        const menu = document.createXULElement("menu");
+        menu.setAttribute("data-l10n-id", item.l10nId);
+        const popup = document.createXULElement("menupopup");
+        popup.append(...this.#buildTabMenuItems(item.items));
+        menu.appendChild(popup);
+        nodes.push(menu);
+        continue;
+      }
+      const menuitem = document.createXULElement("menuitem");
+      menuitem.dataset.index = this.#tabMenuItems.push(item) - 1;
+      menuitem.setAttribute("data-l10n-id", item.l10nId);
+      nodes.push(menuitem);
+    }
+    return nodes;
+  }
+
   #clearStyleProperties() {
     lazy.appContentWrapper.style.removeProperty("transform");
     lazy.toastContainer.style.removeProperty("transform");
@@ -435,7 +498,7 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static close() {
-    let lib = this.getInstance(false);
+    let lib = this.getInstance();
     if (lib) {
       this.animateProgress(0);
     }
@@ -665,7 +728,6 @@ export class ZenLibrary extends MozLitElement {
       return;
     }
     this.#initialized = true;
-    this.style.visibility = "";
     this.isHidden = false;
 
     gURLBar.view.close();
@@ -681,7 +743,7 @@ export class ZenLibrary extends MozLitElement {
     window.addEventListener("TabOpen", this);
 
     this.#attachWrapperToSwipe();
-    window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
+    window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(this);
     this.#resizeObserver.observe(this);
     ZenLibraryWidget.attachLibrary(this);
     this.#refreshToolboxWidth();
@@ -712,7 +774,7 @@ export class ZenLibrary extends MozLitElement {
     this.removeAttribute("transitioning");
 
     this.#detachWrapperOfSwipe();
-    window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(this);
+    window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(this);
 
     this.#restoreWindowButtons();
     ZenLibraryWidget.detachLibrary(this);
@@ -759,15 +821,17 @@ export class ZenLibrary extends MozLitElement {
   }
 
   onKeyDown(e) {
-    if (!this.hasAttribute("open")) {
+    if (!this.hasAttribute("open") || e.key !== "Escape") {
       return;
     }
+    const focused = document.activeElement;
     if (
-      e.key === "Escape" &&
-      document.activeElement?.closest("zen-library") !== this
+      focused?.closest("zen-library") === this &&
+      !focused.closest(".zen-library-search-box")
     ) {
-      ZenLibrary.animateProgress(0);
+      return;
     }
+    ZenLibrary.animateProgress(0);
   }
 
   firstUpdated() {
@@ -861,6 +925,7 @@ export class ZenLibrary extends MozLitElement {
                   class="zen-library-tab"
                   ?active=${this.activeTab === Section.id}
                   data-section=${Section.id}
+                  @contextmenu=${event => this.#openTabMenu(event, Section)}
                   @click=${event => {
                     if (this.activeTab !== Section.id) {
                       this.activeTab = Section.id;

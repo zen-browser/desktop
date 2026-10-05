@@ -81,7 +81,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   #currentLightness = 50;
 
   #allowTransparencyOnSidebar = Services.prefs.getBoolPref(
-    "zen.theme.acrylic-elements",
+    "zen.theme.acrylic-sidebar",
     false
   );
 
@@ -92,9 +92,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   #colorPage = 0;
   #gradientsCache = new Map();
+  #nativeAccentColorCache = null;
 
   constructor() {
     super();
+    this.#initNativeAccentColorInvalidation();
     if (
       !gZenWorkspaces.shouldHaveWorkspaces ||
       gZenWorkspaces.privateWindowOrDisabled
@@ -176,6 +178,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   handleDarkModeChange() {
+    this.#nativeAccentColorCache = null;
     this.updateCurrentWorkspace();
     Services.obs.notifyObservers(null, "zen-theme-change");
   }
@@ -1831,29 +1834,55 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return theme;
   }
 
+  #initNativeAccentColorInvalidation() {
+    const invalidate = () => {
+      this.#nativeAccentColorCache = null;
+    };
+    Services.obs.addObserver(invalidate, "look-and-feel-changed");
+    Services.prefs.addObserver("zen.theme.accent-color", invalidate);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.obs.removeObserver(invalidate, "look-and-feel-changed");
+        Services.prefs.removeObserver("zen.theme.accent-color", invalidate);
+      },
+      { once: true }
+    );
+  }
+
+  /**
+   * Resolves the raw `AccentColor` system color for this document.
+   */
+  #resolveSystemAccentColor() {
+    const rgba = InspectorUtils.colorToRGBA("AccentColor", document);
+    if (!rgba) {
+      return [0, 0, 0];
+    }
+    return [rgba.r, rgba.g, rgba.b];
+  }
+
   getNativeAccentColor() {
-    let accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
-    let rgb;
-    if (accentColor === "AccentColor") {
-      const rawRgb = window.getComputedStyle(
-        lazy.browserBackgroundElement
-      ).color;
-      rgb = rawRgb.match(/\d+/g).map(Number);
-      // Match our theme a bit more, since we can't always expect the OS
-      // to give us a color matching our theme scheme
-      rgb = this.blendColors(
-        rgb,
-        this.getToolbarModifiedBaseRaw().slice(0, 3),
-        this.isDarkMode ? 80 : 50
+    let rgb = this.#nativeAccentColorCache;
+    if (!rgb) {
+      const accentColor = Services.prefs.getStringPref(
+        "zen.theme.accent-color"
       );
-    } else {
-      rgb = this.hexToRgb(accentColor);
+      if (accentColor === "AccentColor") {
+        rgb = this.blendColors(
+          this.#resolveSystemAccentColor(),
+          this.getToolbarModifiedBaseRaw().slice(0, 3),
+          this.isDarkMode ? 80 : 50
+        );
+      } else {
+        rgb = this.hexToRgb(accentColor);
+      }
+      this.#nativeAccentColorCache = rgb;
     }
     if (this.isDarkMode) {
       // If the theme is dark, we want to use a lighter color
       return this.blendColors(rgb, [0, 0, 0], 40);
     }
-    return rgb;
+    return [...rgb];
   }
 
   resetCustomColorList() {
@@ -2049,16 +2078,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     const previousOpacity = this.currentOpacity;
     const previousLightness = this.#currentLightness;
-    const theme = workspace.theme;
+    const theme = workspace.theme ?? {};
+    const colors = theme.gradientColors ?? [];
     this.currentOpacity = theme.opacity ?? 0.5;
     this.#currentLightness = theme.lightness ?? 50;
     let gradient;
     let toolbarGradient;
     if (getGradient) {
-      gradient = this.getGradient(theme.gradientColors);
-      toolbarGradient = this.getGradient(theme.gradientColors, true);
+      gradient = this.getGradient(colors);
+      toolbarGradient = this.getGradient(colors, true);
     }
-    let dominantColor = this.getMostDominantColor(theme.gradientColors);
+    let dominantColor = this.getMostDominantColor(colors);
     const isDefaultTheme = !dominantColor;
     if (isDefaultTheme) {
       dominantColor = this.getNativeAccentColor();

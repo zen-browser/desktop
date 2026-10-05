@@ -1043,27 +1043,15 @@ class nsZenWindowSync {
    * @param {object} aBrowser - The browser element to create the pseudo image for.
    * @param {string} aSrc - The source URL of the image.
    */
-  #createPseudoImageForBrowser(aBrowser, aSrc) {
+  async #createPseudoImageForBrowser(aBrowser, aSrc) {
     const doc = aBrowser.ownerDocument;
-    const win = aBrowser.documentGlobal;
     const img = doc.createElement("img");
     img.className = "zen-pseudo-browser-image";
     img.src = aSrc;
-    let promise = new Promise(resolve => {
-      if (img.complete) {
-        resolve();
-        return;
-      }
-      let finish = () => {
-        win.requestAnimationFrame(() => {
-          resolve();
-        });
-      };
-      img.onload = finish;
-      img.onerror = finish;
-    });
-    aBrowser.after(img);
-    return promise;
+    await img.decode().catch(console.error);
+    if (aBrowser.isConnected) {
+      aBrowser.after(img);
+    }
   }
 
   /**
@@ -1433,6 +1421,9 @@ class nsZenWindowSync {
       newTab.id = tab.id;
       if (!tab.hasAttribute("pending")) {
         newTab.removeAttribute("pending");
+      }
+      if (tab.hasAttribute("zenDefaultUserContextId")) {
+        newTab.setAttribute("zenDefaultUserContextId", true);
       }
       this.#syncItemWithOriginal(
         tab,

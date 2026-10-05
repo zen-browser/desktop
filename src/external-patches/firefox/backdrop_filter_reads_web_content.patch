@@ -14,10 +14,18 @@ index 8f7928c42a..d487279b30 100644
            // false
            MOZ_ASSERT(errorMessage);
 diff --git a/gfx/webrender_bindings/src/bindings.rs b/gfx/webrender_bindings/src/bindings.rs
-index e71a9dbe51..25a1b763b0 100644
+index e71a9dbe51..68ff1b72cf 100644
 --- a/gfx/webrender_bindings/src/bindings.rs
 +++ b/gfx/webrender_bindings/src/bindings.rs
-@@ -2163,6 +2163,7 @@ pub extern "C" fn wr_window_new(
+@@ -1295,6 +1295,7 @@ fn placeholder_frame_builder_config() -> FrameBuilderConfig {
+         force_invalidation: false,
+         is_software: false,
+         low_quality_pinch_zoom: false,
++        cross_slice_backdrop_filters: false,
+         max_shared_surface_size: 4096,
+         enable_dithering: false,
+     }
+@@ -2163,6 +2164,7 @@ pub extern "C" fn wr_window_new(
      max_shared_surface_size: i32,
      enable_subpixel_aa: bool,
      use_layer_compositor: bool,
@@ -25,7 +33,7 @@ index e71a9dbe51..25a1b763b0 100644
  ) -> bool {
      assert!(unsafe { is_in_render_thread() });
  
-@@ -2343,6 +2344,7 @@ pub extern "C" fn wr_window_new(
+@@ -2343,6 +2345,7 @@ pub extern "C" fn wr_window_new(
          texture_cache_config,
          reject_software_rasterizer,
          low_quality_pinch_zoom,
@@ -602,6 +610,18 @@ index 4602152a83..672b678701 100644
                  max_shared_surface_size: 2048,
                  enable_dithering: false,
              },
+diff --git a/gfx/wr/webrender/src/shutdown_test.rs b/gfx/wr/webrender/src/shutdown_test.rs
+index f78d8e6c67..fbd207ccb2 100644
+--- a/gfx/wr/webrender/src/shutdown_test.rs
++++ b/gfx/wr/webrender/src/shutdown_test.rs
+@@ -82,6 +82,7 @@ fn test_frame_config() -> FrameBuilderConfig {
+         max_target_size: 2048,
+         force_invalidation: false,
+         is_software: true,
++        cross_slice_backdrop_filters: false,
+         low_quality_pinch_zoom: false,
+         max_shared_surface_size: 2048,
+         enable_dithering: false,
 diff --git a/gfx/wr/webrender/src/surface.rs b/gfx/wr/webrender/src/surface.rs
 index ea1705ea97..da3ebfdd23 100644
 --- a/gfx/wr/webrender/src/surface.rs

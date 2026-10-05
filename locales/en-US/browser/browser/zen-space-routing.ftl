@@ -20,6 +20,14 @@ zen-space-routing-equal-to =
     .label = Is Equal To
 zen-space-routing-regex =
     .label = RegEx
+zen-space-routing-bookmark-folder =
+    .label = In Bookmark Folder
+zen-space-routing-folder-picker =
+    .aria-label = Bookmark folder
+zen-space-routing-select-folder = Select a bookmark folder
+zen-space-routing-folder-unavailable = Bookmark folder unavailable
+zen-space-routing-no-folders = No bookmark folders available
+zen-space-routing-folder-description = Matches exact bookmark URLs, including bookmarks in nested folders.
 
 zen-space-routing-open-in = Open In
 zen-space-routing-url = URL

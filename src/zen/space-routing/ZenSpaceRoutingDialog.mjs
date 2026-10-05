@@ -145,7 +145,7 @@ export class nsZenSpaceRoutingDialog {
     const matchTypePopup = this.doc.createXULElement("menupopup");
     matchTypeMenulist.appendChild(matchTypePopup);
 
-    ["contains", "equal-to", "regex"].forEach(id => {
+    ["contains", "equal-to", "regex", "bookmark-folder"].forEach(id => {
       const menuItem = this.doc.createXULElement("menuitem");
       menuItem.setAttribute("data-l10n-id", `zen-space-routing-${id}`);
       menuItem.setAttribute("value", id);
@@ -161,10 +161,48 @@ export class nsZenSpaceRoutingDialog {
     input.value = route.reference;
     this.updateInputPlaceholder(route.matchType, input);
 
+    const folderMenulist = this.doc.createXULElement("menulist");
+    folderMenulist.className = "select bookmark-folder-select";
+    folderMenulist.setAttribute(
+      "data-l10n-id",
+      "zen-space-routing-folder-picker"
+    );
+    folderMenulist.appendChild(this.doc.createXULElement("menupopup"));
+
+    const folderDescription = this.doc.createElement("p");
+    folderDescription.className = "sr-folder-description";
+    folderDescription.id = `sr-folder-description-${route.id}`;
+    folderDescription.setAttribute(
+      "data-l10n-id",
+      "zen-space-routing-folder-description"
+    );
+    folderMenulist.setAttribute("aria-describedby", folderDescription.id);
+
+    const updateReferenceControl = () => {
+      const currentRoute = gZenSpaceRoutingManager.getRoute(route.id);
+      const isFolder = currentRoute.matchType === "bookmark-folder";
+      input.hidden = isFolder;
+      folderMenulist.hidden = !isFolder;
+      folderDescription.hidden = !isFolder;
+      matchTypeMenulist.classList.toggle("bookmark-folder-match", isFolder);
+      if (isFolder) {
+        this.createBookmarkFolderList(folderMenulist, route.id);
+      } else {
+        input.value = currentRoute.reference;
+      }
+    };
+    updateReferenceControl();
+
     const removeButton = this.doc.createXULElement("button");
     removeButton.className = "sr-remove";
 
-    topRow.append(topLabelContainer, matchTypeMenulist, input, removeButton);
+    topRow.append(
+      topLabelContainer,
+      matchTypeMenulist,
+      input,
+      folderMenulist,
+      removeButton
+    );
 
     // ---- Bottom row
 
@@ -195,7 +233,7 @@ export class nsZenSpaceRoutingDialog {
 
     bottomRow.append(bottomLabelContainer, openInMenulist);
 
-    root.append(topRow, bottomRow);
+    root.append(topRow, folderDescription, bottomRow);
 
     root.style.display = "none";
     container.appendChild(root);
@@ -204,7 +242,7 @@ export class nsZenSpaceRoutingDialog {
     this.editorWindow.promiseDocumentFlushed(() =>
       this.editorWindow.requestAnimationFrame(() => {
         root.style.display = "";
-        input.focus();
+        (folderMenulist.hidden ? input : folderMenulist).focus();
       })
     );
 
@@ -215,9 +253,20 @@ export class nsZenSpaceRoutingDialog {
     input.addEventListener("input", e =>
       this.onRouteReferenceChange(e.target.value, route.id, input)
     );
-    matchTypeMenulist.addEventListener("command", e =>
-      this.onRouteMatchTypeChange(e.target.value, route.id, input)
-    );
+    matchTypeMenulist.addEventListener("command", e => {
+      this.onRouteMatchTypeChange(e.target.value, route.id, input);
+      updateReferenceControl();
+    });
+    folderMenulist.addEventListener("command", e => {
+      const currentRoute = gZenSpaceRoutingManager.getRoute(route.id);
+      currentRoute.reference = e.target.value;
+      gZenSpaceRoutingManager.updateRoute(currentRoute);
+    });
+    folderMenulist
+      .querySelector("menupopup")
+      .addEventListener("popupshowing", () => {
+        this.createBookmarkFolderList(folderMenulist, route.id);
+      });
     openInMenulist.addEventListener("command", e =>
       this.onRouteOpenInChange(e.target.value, route.id)
     );
@@ -284,6 +333,14 @@ export class nsZenSpaceRoutingDialog {
    */
   onRouteMatchTypeChange(value, routeId, input) {
     const route = gZenSpaceRoutingManager.getRoute(routeId);
+    if (
+      value !== route.matchType &&
+      (value === "bookmark-folder" || route.matchType === "bookmark-folder")
+    ) {
+      route.reference = "";
+      input.value = "";
+      input.classList.remove("invalid");
+    }
     route.matchType = value;
 
     this.updateInputPlaceholder(route.matchType, input);
@@ -296,6 +353,48 @@ export class nsZenSpaceRoutingDialog {
     }
 
     gZenSpaceRoutingManager.updateRoute(route);
+  }
+
+  /**
+   * Populates the folder picker, retaining a visible unavailable selection.
+   *
+   * @param {Element} selectElement - The folder menulist.
+   * @param {string} routeId - The route whose folder is being selected.
+   */
+  async createBookmarkFolderList(selectElement, routeId) {
+    const folders = await gZenSpaceRoutingManager.getBookmarkFolders();
+    const labels = await this.doc.l10n.formatValues([
+      "zen-space-routing-select-folder",
+      "zen-space-routing-folder-unavailable",
+      "zen-space-routing-no-folders",
+    ]);
+    const route = gZenSpaceRoutingManager.getRoute(routeId);
+    if (!selectElement.isConnected || route?.matchType !== "bookmark-folder") {
+      return;
+    }
+
+    const popup = selectElement.querySelector("menupopup");
+    popup.replaceChildren();
+    const available = folders.some(folder => folder.guid === route.reference);
+    const placeholder = this.doc.createXULElement("menuitem");
+    placeholder.setAttribute(
+      "label",
+      route.reference && !available
+        ? labels[1]
+        : folders.length
+          ? labels[0]
+          : labels[2]
+    );
+    placeholder.setAttribute("value", available ? "" : route.reference);
+    placeholder.setAttribute("disabled", "true");
+    popup.appendChild(placeholder);
+    for (const folder of folders) {
+      const item = this.doc.createXULElement("menuitem");
+      item.setAttribute("label", folder.title);
+      item.setAttribute("value", folder.guid);
+      popup.appendChild(item);
+    }
+    selectElement.value = route.reference;
   }
 
   /**

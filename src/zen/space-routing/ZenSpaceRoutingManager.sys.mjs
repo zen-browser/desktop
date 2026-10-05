@@ -9,11 +9,33 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
 });
 
 class nsZenSpaceRoutingManager {
   #file = null;
   #saveFilename = "zen-space-routing.jsonlz4";
+  #bookmarkFolders = [];
+  #bookmarkFolderURLs = new Map();
+  #bookmarkCachePromise = null;
+  #bookmarkCacheDirty = true;
+  #bookmarkObserverRegistered = false;
+
+  static BOOKMARK_EVENTS = [
+    "bookmark-added",
+    "bookmark-removed",
+    "bookmark-moved",
+    "bookmark-url-changed",
+    "bookmark-title-changed",
+    "bookmark-guid-changed",
+  ];
+
+  #onBookmarksChanged = () => {
+    this.#bookmarkCacheDirty = true;
+    // Do not route using stale membership while the snapshot is rebuilding.
+    this.#bookmarkFolderURLs.clear();
+    this.#refreshBookmarkFolders();
+  };
 
   static SKIP_TYPE = {
     NONE: "none",
@@ -22,7 +44,114 @@ class nsZenSpaceRoutingManager {
   };
 
   constructor() {
-    this.#readFromDisk();
+    this.#readFromDisk().then(() => {
+      if (
+        this.getAllRoutes().some(route => route.matchType === "bookmark-folder")
+      ) {
+        this.#refreshBookmarkFolders();
+      }
+    });
+  }
+
+  /**
+   * Returns bookmark folders with their full paths for the routing picker.
+   * Nested folders are included in their parent's routing membership.
+   *
+   * @returns {Promise<Array<object>>} Folder GUIDs and display paths.
+   */
+  async getBookmarkFolders() {
+    await this.#refreshBookmarkFolders();
+    return structuredClone(this.#bookmarkFolders);
+  }
+
+  /**
+   * Refreshes the bookmark snapshot outside the synchronous routing path.
+   * Changes arriving during a read trigger another read before publication.
+   *
+   * @returns {Promise<void>} Resolves when the snapshot has been refreshed.
+   */
+  #refreshBookmarkFolders() {
+    if (!this.#bookmarkObserverRegistered) {
+      PlacesObservers.addListener(
+        nsZenSpaceRoutingManager.BOOKMARK_EVENTS,
+        this.#onBookmarksChanged
+      );
+      Services.obs.addObserver(this, "xpcom-shutdown");
+      this.#bookmarkObserverRegistered = true;
+    }
+
+    if (this.#bookmarkCachePromise) {
+      return this.#bookmarkCachePromise;
+    }
+    if (!this.#bookmarkCacheDirty) {
+      return Promise.resolve();
+    }
+
+    this.#bookmarkCachePromise = (async () => {
+      do {
+        this.#bookmarkCacheDirty = false;
+        const tree = await lazy.PlacesUtils.promiseBookmarksTree();
+        if (this.#bookmarkCacheDirty) {
+          continue;
+        }
+
+        const folders = [];
+        const folderURLs = new Map();
+        const visit = (node, path, ancestors) => {
+          if (node.type === lazy.PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+            const isRoot = node.guid === lazy.PlacesUtils.bookmarks.rootGuid;
+            const folderPath = isRoot
+              ? path
+              : [...path, node.title || node.guid];
+            const urls = new Set();
+            if (!isRoot) {
+              folders.push({ guid: node.guid, title: folderPath.join(" / ") });
+              folderURLs.set(node.guid, urls);
+            }
+            for (const child of node.children || []) {
+              visit(
+                child,
+                folderPath,
+                isRoot ? ancestors : [...ancestors, urls]
+              );
+            }
+          } else if (node.type === lazy.PlacesUtils.TYPE_X_MOZ_PLACE) {
+            for (const urls of ancestors) {
+              urls.add(node.uri);
+            }
+          }
+        };
+        if (tree) {
+          visit(tree, [], []);
+        }
+        this.#bookmarkFolders = folders;
+        this.#bookmarkFolderURLs = folderURLs;
+      } while (this.#bookmarkCacheDirty);
+    })()
+      .catch(error => {
+        this.#bookmarkFolders = [];
+        this.#bookmarkFolderURLs.clear();
+        this.#bookmarkCacheDirty = true;
+        console.error(
+          "[ZenSpaceRouting]: Error reading bookmark folders:",
+          error
+        );
+      })
+      .finally(() => {
+        this.#bookmarkCachePromise = null;
+      });
+    return this.#bookmarkCachePromise;
+  }
+
+  observe(subject, topic) {
+    if (topic === "xpcom-shutdown" && this.#bookmarkObserverRegistered) {
+      PlacesObservers.removeListener(
+        nsZenSpaceRoutingManager.BOOKMARK_EVENTS,
+        this.#onBookmarksChanged
+      );
+      Services.obs.removeObserver(this, "xpcom-shutdown");
+      this.#bookmarkObserverRegistered = false;
+    }
   }
 
   /**
@@ -407,6 +536,12 @@ class nsZenSpaceRoutingManager {
   isRouteMatching(uriString, route) {
     if (typeof uriString !== "string" || typeof route?.reference !== "string") {
       return false;
+    }
+
+    if (route.matchType === "bookmark-folder") {
+      return (
+        this.#bookmarkFolderURLs.get(route.reference)?.has(uriString) ?? false
+      );
     }
 
     let reference = route.reference.toLowerCase();

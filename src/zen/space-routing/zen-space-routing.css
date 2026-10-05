@@ -128,6 +128,23 @@ p {
   &.open-in-select {
     width: 165px;
   }
+  &.bookmark-folder-match {
+    width: 145px;
+  }
+  &.bookmark-folder-select {
+    flex: 1;
+    min-width: 0;
+    width: 0;
+  }
+}
+
+.sr-folder-description {
+  font-size: small;
+  margin: 0 40px 4px 0;
+}
+
+.sr-rule-container [hidden] {
+  display: none;
 }
 
 menulist[image]::part(icon) {

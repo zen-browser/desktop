@@ -18,6 +18,10 @@ window.ZenWorkspaceBookmarksStorage = {
     delete this._resolveInitialized;
   },
 
+  /**
+   * Creates the bookmark space tables, or rebuilds them on the current
+   * schema if they come from an older version.
+   */
   async _ensureTable() {
     await this.lazy.PlacesUtils.withConnectionWrapper(
       "ZenWorkspaceBookmarksStorage.init",
@@ -27,7 +31,8 @@ window.ZenWorkspaceBookmarksStorage = {
             SELECT value FROM moz_meta
             WHERE key = 'zen_bookmarks_workspaces_schema_version'
           `);
-          // Skip once migrated. Places recovery keeps moz_meta but drops these tables.
+          // Nothing to do once the tables are on version 1. Places can drop
+          // them when it recovers a corrupt database, so check they still exist.
           if (
             rows[0]?.getResultByName("value") >= 1 &&
             (await db.tableExists("zen_bookmarks_workspaces")) &&
@@ -36,7 +41,8 @@ window.ZenWorkspaceBookmarksStorage = {
             return;
           }
 
-          // Rebuild with pair uniqueness and without the obsolete workspace foreign key.
+          // A bookmark can be in more than one space. Spaces live in the
+          // session store, so workspace_uuid has no foreign key.
           for (const [tableName, columns] of [
             [
               "zen_bookmarks_workspaces",
@@ -58,7 +64,8 @@ window.ZenWorkspaceBookmarksStorage = {
               )
             `);
             if (await db.tableExists(tableName)) {
-              // Zen 1.18b to 1.18.5b disabled foreign keys, which can leave rows for deleted bookmarks.
+              // Copy the existing rows over. Rows whose bookmark is gone would
+              // fail the foreign key, so leave them out.
               await db.execute(`
                 INSERT INTO ${tableName}_new
                 SELECT * FROM ${tableName}
@@ -71,6 +78,7 @@ window.ZenWorkspaceBookmarksStorage = {
             );
           }
 
+          // Create indexes for fast lookups
           await db.execute(`
             CREATE INDEX idx_bookmarks_workspaces_lookup
               ON zen_bookmarks_workspaces(workspace_uuid, bookmark_guid)

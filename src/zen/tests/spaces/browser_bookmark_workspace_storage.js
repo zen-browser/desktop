@@ -7,7 +7,7 @@ const { Sqlite } = ChromeUtils.importESModule(
   "resource://gre/modules/Sqlite.sys.mjs"
 );
 
-// Profiles keep the tables from the Zen version that created them.
+// Table constraints that older profiles can still have.
 const OLD_CONSTRAINTS = {
   "before 1.18": `UNIQUE(bookmark_guid, workspace_uuid),
     FOREIGN KEY(workspace_uuid) REFERENCES zen_workspaces(uuid) ON DELETE CASCADE`,
@@ -43,7 +43,7 @@ async function withTestDatabase(task) {
   try {
     await db.execute("CREATE TABLE moz_bookmarks (guid TEXT PRIMARY KEY)");
     await db.execute("CREATE TABLE moz_meta (key TEXT PRIMARY KEY, value)");
-    // Zen stopped adding Spaces to zen_workspaces in 1.18.
+    // Empty, so the old foreign key rejects every space.
     await db.execute("CREATE TABLE zen_workspaces (uuid TEXT PRIMARY KEY)");
     await db.execute("INSERT INTO moz_bookmarks VALUES ('bookmark-one')");
     await task(db);
@@ -53,7 +53,7 @@ async function withTestDatabase(task) {
   }
 }
 
-// Runs the production migration against the test database.
+// Runs _ensureTable() against the test database.
 function migrate(db) {
   return ZenWorkspaceBookmarksStorage._ensureTable.call({
     lazy: {
@@ -76,12 +76,12 @@ add_task(async function test_save_bookmark_in_two_spaces() {
   );
   const bookmark = await PlacesUtils.bookmarks.insert({
     parentGuid: PlacesUtils.bookmarks.unfiledGuid,
-    title: "Bookmark in two Spaces",
+    title: "Bookmark in two spaces",
     url: "https://example.com/",
   });
   registerCleanupFunction(() => PlacesUtils.bookmarks.remove(bookmark));
 
-  // Edit Bookmark saves Space changes through BookmarkState.
+  // Edit Bookmark saves space changes through BookmarkState.
   const state = new PlacesUIUtils.BookmarkState({
     info: {
       itemGuid: bookmark.guid,
@@ -98,7 +98,7 @@ add_task(async function test_save_bookmark_in_two_spaces() {
       await ZenWorkspaceBookmarksStorage.getBookmarkWorkspaces(bookmark.guid)
     ).sort(),
     spaceIds,
-    "Saving keeps both Spaces"
+    "Saving keeps both spaces"
   );
 
   await state._workspacesChanged([secondSpace.uuid]);
@@ -106,7 +106,7 @@ add_task(async function test_save_bookmark_in_two_spaces() {
   Assert.deepEqual(
     await ZenWorkspaceBookmarksStorage.getBookmarkWorkspaces(bookmark.guid),
     [secondSpace.uuid],
-    "Unchecking one Space keeps the other"
+    "Unchecking one space keeps the other"
   );
 });
 
@@ -124,7 +124,7 @@ add_task(async function test_migrate_old_tables() {
           FOREIGN KEY(bookmark_guid) REFERENCES moz_bookmarks(guid) ON DELETE CASCADE
         )`);
         await db.execute(`CREATE INDEX ${index} ON ${name}(${indexColumns})`);
-        // Row 42 belongs to a bookmark deleted while foreign keys were off.
+        // Row 42 points at a bookmark that no longer exists.
         await db.execute(
           `INSERT INTO ${name} VALUES
             (41, 'bookmark-one', 'space-one', ?, ?),
@@ -148,7 +148,7 @@ add_task(async function test_migrate_old_tables() {
             [41, "bookmark-one", "space-one", ...values],
             [43, "bookmark-one", "space-two", ...values],
           ],
-          `${name} keeps rows for existing bookmarks and accepts a second Space`
+          `${name} keeps rows for existing bookmarks and accepts a second space`
         );
       }
     });
@@ -157,7 +157,7 @@ add_task(async function test_migrate_old_tables() {
 
 add_task(async function test_recreate_tables_after_places_recovery() {
   await withTestDatabase(async db => {
-    // Places recovery copies only moz_ tables, so the schema version survives.
+    // Recovering a corrupt database keeps moz_meta but drops our tables.
     await db.execute(`
       INSERT INTO moz_meta (key, value)
       VALUES ('zen_bookmarks_workspaces_schema_version', 1)

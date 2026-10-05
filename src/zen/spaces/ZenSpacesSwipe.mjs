@@ -116,10 +116,8 @@ export class ZenSpacesSwipe {
     if (ws.privateWindowOrDisabled || ws.isChangingWorkspace) {
       return;
     }
-    if (
-      event.target.closest("#zen-sidebar-foot-buttons") ||
-      event.target.closest('#urlbar[zen-floating-urlbar="true"]')
-    ) {
+
+    if (event.target.closest('#urlbar[zen-floating-urlbar="true"]')) {
       return;
     }
 

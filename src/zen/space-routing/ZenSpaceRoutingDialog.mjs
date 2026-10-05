@@ -377,14 +377,11 @@ export class nsZenSpaceRoutingDialog {
     popup.replaceChildren();
     const available = folders.some(folder => folder.guid === route.reference);
     const placeholder = this.doc.createXULElement("menuitem");
-    placeholder.setAttribute(
-      "label",
-      route.reference && !available
-        ? labels[1]
-        : folders.length
-          ? labels[0]
-          : labels[2]
-    );
+    let placeholderLabel = folders.length ? labels[0] : labels[2];
+    if (route.reference && !available) {
+      placeholderLabel = labels[1];
+    }
+    placeholder.setAttribute("label", placeholderLabel);
     placeholder.setAttribute("value", available ? "" : route.reference);
     placeholder.setAttribute("disabled", "true");
     popup.appendChild(placeholder);

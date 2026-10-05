@@ -7,6 +7,8 @@ support-files = [
   "head.js",
 ]
 
+["browser_space_routing_bookmark_folder.js"]
+
 ["browser_space_routing_container.js"]
 
 ["browser_space_routing_crud.js"]

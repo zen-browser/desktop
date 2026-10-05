@@ -3,8 +3,16 @@
 
 "use strict";
 
+// eslint-disable-next-line mozilla/no-redeclare-with-import-autofix -- Retain the existing module singleton setup.
 const { gZenSpaceRoutingManager } = ChromeUtils.importESModule(
   "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs"
+);
+const { PromiseTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/PromiseTestUtils.sys.mjs"
+);
+// Zen's existing sync tests also exclude this unrelated startup rejection.
+PromiseTestUtils.allowMatchingRejectionsGlobally(
+  /\[fluent\] Couldn't find a message: menu-bookmark-tab/
 );
 
 const SR_DIALOG_URI =

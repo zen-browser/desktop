@@ -97,6 +97,11 @@ class nsZenWorkspaces {
     }
 
     this.ownerWindow = window;
+    this._pinnedTabsResizeObserver = new ResizeObserver((...args) => {
+      requestAnimationFrame(() => {
+        this.onPinnedTabsResize(...args);
+      });
+    });
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "activationMethod",
@@ -202,13 +207,6 @@ class nsZenWorkspaces {
   }
 
   #afterLoadInit() {
-    const onResize = (...args) => {
-      requestAnimationFrame(() => {
-        this.onPinnedTabsResize(...args);
-      });
-    };
-    this._pinnedTabsResizeObserver = new ResizeObserver(onResize);
-    this.registerPinnedResizeObserver();
     this.#initializeWorkspaceTabContextMenus();
 
     // Non UI related initializations
@@ -275,19 +273,6 @@ class nsZenWorkspaces {
       skipBackgroundNotify: true,
       bulkOrderedOpen: true,
     });
-  }
-
-  registerPinnedResizeObserver() {
-    if (!this._hasInitializedTabsStrip || !this._pinnedTabsResizeObserver) {
-      return;
-    }
-    this._pinnedTabsResizeObserver.disconnect();
-    for (let element of document.getElementById("zen-essentials").children) {
-      if (element.classList.contains("tabbrowser-tab")) {
-        continue;
-      }
-      this._pinnedTabsResizeObserver.observe(element, { box: "border-box" });
-    }
   }
 
   get activeWorkspaceStrip() {
@@ -389,6 +374,9 @@ class nsZenWorkspaces {
       document
         .getElementById("zen-essentials")
         .appendChild(essentialsContainer);
+      this._pinnedTabsResizeObserver?.observe(essentialsContainer, {
+        box: "border-box",
+      });
     }
 
     // Set a hidden state if the essentials section is not supposed
@@ -406,11 +394,19 @@ class nsZenWorkspaces {
     return essentialsContainer;
   }
 
-  getCurrentSpaceContainerId() {
-    const currentWorkspace = this.getActiveWorkspaceFromCache();
-    return typeof currentWorkspace?.containerTabId === "number"
-      ? currentWorkspace.containerTabId
+  /**
+   * @param {object} aWorkspace
+   * @returns {number} The space's container, defaulting to the one every
+   *          space without a container of its own lives in.
+   */
+  #spaceContainerId(aWorkspace) {
+    return typeof aWorkspace?.containerTabId === "number"
+      ? aWorkspace.containerTabId
       : 0;
+  }
+
+  getCurrentSpaceContainerId() {
+    return this.#spaceContainerId(this.getActiveWorkspaceFromCache());
   }
 
   getCurrentEssentialsContainer() {
@@ -801,6 +797,10 @@ class nsZenWorkspaces {
     this._workspaceCache = spacesFromStore.length
       ? [...spacesFromStore]
       : [this.#createWorkspaceData("Space", undefined)];
+    for (const workspace of this._workspaceCache) {
+      // Spaces created while containers were disabled were saved without one
+      workspace.containerTabId ??= 0;
+    }
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     if (aWinData.selected) {
@@ -1872,7 +1872,7 @@ class nsZenWorkspaces {
         gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
       }
       const container = this.activeWorkspaceStrip;
-      if (container) {
+      if (container && container.firstChild !== emptyTab) {
         container.insertBefore(emptyTab, container.firstChild);
       }
     }
@@ -2727,7 +2727,6 @@ class nsZenWorkspaces {
           console.error("Error in beforeChangeCallback:", e);
         }
       }
-      this.registerPinnedResizeObserver();
       this.updateTabsContainers({
         target: this.workspaceElement(workspaceData.uuid).pinnedTabsContainer,
       });
@@ -2747,18 +2746,46 @@ class nsZenWorkspaces {
     if (target && !target.target?.parentNode) {
       target = null;
     }
+    // This is what happens when we join a resize observer, an event listener
+    // while using it as a method.
+    const resolvedTarget = target?.target ? target.target : target;
+    if (resolvedTarget) {
+      this.onPinnedTabsResize([{ target: resolvedTarget }], forAnimation);
+      return;
+    }
+    // Nothing points at one space, so they all need checking.
+    if (forAnimation) {
+      this.#updateAllTabsContainers(true);
+      return;
+    }
+    if (!this.#queuedContainersUpdate) {
+      this.#queuedContainersUpdate = window.requestAnimationFrame(() => {
+        this.#queuedContainersUpdate = 0;
+        this.#updateAllTabsContainers(false);
+      });
+    }
+  }
+
+  #queuedContainersUpdate = 0;
+
+  #updateAllTabsContainers(forAnimation) {
     this.onPinnedTabsResize(
-      // This is what happens when we join a resize observer, an event listener
-      // while using it as a method.
-      [
-        {
-          target:
-            (target?.target ? target.target : target) ??
-            this.pinnedTabsContainer,
-        },
-      ],
+      this.#allPinnedContainers().map(container => ({ target: container })),
       forAnimation
     );
+  }
+
+  #allPinnedContainers() {
+    const containers = [];
+    for (const workspace of this.getWorkspaces()) {
+      const container = this.workspaceElement(
+        workspace.uuid
+      )?.pinnedTabsContainer;
+      if (container) {
+        containers.push(container);
+      }
+    }
+    return containers.length ? containers : [this.pinnedTabsContainer];
   }
 
   updateShouldHideSeparator(
@@ -2831,13 +2858,15 @@ class nsZenWorkspaces {
       }
       const workspacesIds = [];
       if (entry.target.closest("#zen-essentials")) {
-        // Get all workspaces that have the same userContextId
-        const userContextId = parseInt(
-          entry.target.getAttribute("container") || "0"
-        );
-        const workspaces = this.getWorkspaces().filter(
-          w => w.containerTabId === userContextId
-        );
+        const workspaces = this.getWorkspaces().filter(w => {
+          if (!this.containerSpecificEssentials) {
+            return true;
+          }
+          const userContextId = parseInt(
+            entry.target.getAttribute("container") || "0"
+          );
+          return this.#spaceContainerId(w) === userContextId;
+        });
         workspacesIds.push(...workspaces.map(w => w.uuid));
       } else {
         workspacesIds.push(originalWorkspaceId);

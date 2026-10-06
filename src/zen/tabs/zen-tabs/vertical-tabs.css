@@ -154,11 +154,21 @@ zen-library {
     padding: 0 5px;
   }
 
+  --zen-pinned-separator-color: light-dark(
+    rgba(0, 0, 0, 0.1),
+    rgba(255, 255, 255, 0.1)
+  );
+
   & toolbarseparator {
     height: 1px;
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    background: var(--zen-pinned-separator-color);
     padding: 0;
-    margin: auto 4px;
+    margin-block: auto;
+    margin-inline: 4px 0;
+
+    :root:not([zen-sidebar-expanded="true"]) & {
+      margin-inline-end: 4px;
+    }
 
     &::before {
       border-inline-start: none;
@@ -181,21 +191,35 @@ zen-library {
 
   & toolbarbutton {
     appearance: none;
-    opacity: 0;
-    visibility: collapse;
-    transition:
-      opacity 0.15s,
-      visibility 0.15s;
     font-size: 10px;
     font-weight: 500;
     gap: 2px;
+    pointer-events: none;
+    padding-inline-start: 8px;
+    background: linear-gradient(
+        var(--zen-pinned-separator-color),
+        var(--zen-pinned-separator-color)
+      )
+      0 50% / calc(100% - 4px) 1px no-repeat;
 
-    #navigator-toolbox[zen-has-implicit-hover="true"] & {
-      visibility: visible;
-      opacity: 0.5;
+    & .toolbarbutton-icon,
+    & .toolbarbutton-text {
+      opacity: 0;
+      transition: opacity 0.15s;
     }
 
-    &:hover {
+    #navigator-toolbox[zen-has-implicit-hover="true"] & {
+      pointer-events: auto;
+      background-image: none;
+
+      & .toolbarbutton-icon,
+      & .toolbarbutton-text {
+        opacity: 0.5;
+      }
+    }
+
+    &:hover .toolbarbutton-icon,
+    &:hover .toolbarbutton-text {
       opacity: 1 !important;
     }
 
@@ -209,7 +233,9 @@ zen-library {
 
     & .toolbarbutton-icon {
       width: 10px;
-      transition: transform 0.15s ease-in-out;
+      transition:
+        transform 0.15s ease-in-out,
+        opacity 0.15s;
       transform: translateY(0);
 
       @starting-style {
@@ -354,9 +380,8 @@ zen-library {
 
       &:not([src]),
       &:-moz-broken {
-        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
-        background: color-mix(in srgb, var(--zen-primary-color) 80%, light-dark(rgb(0, 0, 0), rgb(255, 255, 255)));
-        opacity: 0.5;
+        content: url("chrome://browser/skin/zen-icons/blank.svg") !important;
+        background: var(--zen-toolbar-element-bg);
       }
     }
 
@@ -464,6 +489,10 @@ zen-library {
 
   :root[zen-right-side="true"][zen-sidebar-expanded="true"] & {
     flex-direction: row-reverse;
+  }
+
+  &[swipe-gesture] {
+    pointer-events: none;
   }
 }
 
@@ -666,17 +695,20 @@ zen-library {
         }
       }
 
-      &:not(:hover) {
-        .tab-close-button,
-        .tab-reset-button {
-          display: none;
-        }
+      .tab-close-button,
+      .tab-reset-button {
+        visibility: collapse;
       }
 
-      &:is(:hover, [multiselected][selected]) .tab-close-button {
+      .tab-close-button {
         display: block;
         --tab-inline-padding: 0;
         margin-inline-end: 0;
+      }
+
+      &:is(:hover, [multiselected][selected]) .tab-close-button,
+      &:hover .tab-reset-button {
+        visibility: visible;
       }
 
       .tab-throbber,
@@ -878,11 +910,8 @@ zen-library {
       display: none !important;
     }
 
-    &[pinned]:is(:not([pending="true"]), [folder-active="true"]):not([zen-essential]) {
-      &:hover .tab-reset-button,
-      &[visuallyselected] .tab-reset-button {
-        display: block;
-      }
+    &[pinned]:is(:not([pending="true"]), [folder-active="true"]):not([zen-essential]) .tab-reset-button {
+      display: block;
     }
 
     &:not([zen-pinned-changed="true"]) .tab-reset-pin-button {
@@ -894,7 +923,7 @@ zen-library {
       display: none;
     }
 
-    &:not([pinned][visuallyselected]) .tab-reset-button {
+    &:not([pinned]) .tab-reset-button {
       display: none;
     }
 

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
-index bbf906c7bf1d6f0d71744953aeeb750c5181639a..dd116e22c38dc376c9c6b34dfa569bf4661a8971 100644
+index 2de4cfbb51e29108cdd92a2c0a80cbf6ef0ae4af..a1d4b9d173dc86672210161e7356302bc2dd4eec 100644
 --- a/browser/themes/shared/toolbarbuttons.css
 +++ b/browser/themes/shared/toolbarbuttons.css
 @@ -13,20 +13,6 @@
@@ -69,3 +69,12 @@ index bbf906c7bf1d6f0d71744953aeeb750c5181639a..dd116e22c38dc376c9c6b34dfa569bf4
      }
      > .toolbarbutton-badge-stack {
        align-items: center;
+@@ -603,7 +587,7 @@ toolbarspring {
+   }
+ }
+ 
+-#nav-bar:not([customizing]) toolbarspring:not(#vertical-spacer) {
++:is(#nav-bar, #zen-sidebar-top-buttons):not([customizing]) toolbarspring:not(#vertical-spacer) {
+   /* Allow flexible spacers to shrink further outside of customize mode. */
+   min-width: 1px;
+ }

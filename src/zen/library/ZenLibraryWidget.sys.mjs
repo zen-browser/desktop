@@ -4,7 +4,8 @@
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
-  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
+  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   DownloadsCommon:
     "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
@@ -19,7 +20,14 @@ const CLOSE_DELAY_MS = 200;
 const FILE_MIME = "application/x-moz-file";
 const BADGE_MARKUP = `
   <span class="zen-library-download-badge no-squircles">
-    <span class="zen-library-download-progress no-squircles"></span>
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="zen-library-download-progress no-squircles"
+         viewBox="0 0 31 31">
+      <circle class="zen-library-download-progress-track"
+              cx="15.5" cy="15.5" r="14"/>
+      <circle class="zen-library-download-progress-arc"
+              cx="15.5" cy="15.5" r="14" pathLength="100"/>
+    </svg>
   </span>
 `;
 
@@ -36,7 +44,6 @@ class ZenLibraryDownloadStack {
   #recentNewDownload = false;
   #closeTimer = null;
   #contextMenuOpen = false;
-  #secondsLeft = new WeakMap();
 
   /**
    * @param {Element} button - The library toolbar button
@@ -158,6 +165,10 @@ class ZenLibraryDownloadStack {
     const from = this.#window.windowUtils.getBoundsWithoutFlushing(this.#badge);
     const to = target.getBoundingClientRect();
     const style = this.#window.getComputedStyle(this.#badge);
+    const badgeTransform =
+      style.transform === "none"
+        ? new this.#window.DOMMatrixReadOnly()
+        : new this.#window.DOMMatrixReadOnly(style.transform);
     // The entry is still translated down while closed; land where it ends.
     const entryTransform = this.#window.getComputedStyle(entry).transform;
     const rise =
@@ -166,11 +177,11 @@ class ZenLibraryDownloadStack {
         : new this.#window.DOMMatrixReadOnly(entryTransform).f;
     this.#badge.style.setProperty(
       "--zen-library-badge-to-x",
-      `${parseFloat(style.left) + to.left - from.left}px`
+      `${badgeTransform.e + to.left - from.left}px`
     );
     this.#badge.style.setProperty(
       "--zen-library-badge-to-y",
-      `${parseFloat(style.top) + to.top - from.top - rise}px`
+      `${badgeTransform.f + to.top - from.top - rise}px`
     );
   }
 
@@ -300,6 +311,7 @@ class ZenLibraryDownloadStack {
       );
       entry.querySelector(".zen-library-download-list-title").textContent =
         this.#fileName(download);
+      entry.setAttribute("tooltiptext", this.#fileName(download));
       const subtitle = entry.querySelector(
         ".zen-library-download-list-subtitle"
       );
@@ -338,12 +350,11 @@ class ZenLibraryDownloadStack {
         `${preview ? `url('${preview}'), ` : ""}url('${this.#iconUrl(download)}')`
       );
     }
-    badge
-      .querySelector(".zen-library-download-progress")
-      .style.setProperty(
-        "--value",
-        download?.hasProgress ? download.progress : 0
-      );
+    badge.querySelector(
+      ".zen-library-download-progress-arc"
+    ).style.strokeDasharray = `${
+      download?.hasProgress ? download.progress : 0
+    } 100`;
   }
 
   #updateBadgeShowing() {
@@ -477,18 +488,9 @@ class ZenLibraryDownloadStack {
 
   #statusText(download) {
     const strings = lazy.DownloadsCommon.strings;
-    const totalBytes = download.hasProgress ? download.totalBytes : -1;
     if (!download.stopped) {
-      const [statusText, secondsLeft] = lazy.DownloadUtils.getDownloadStatus(
-        download.currentBytes,
-        totalBytes,
-        download.speed,
-        this.#secondsLeft.get(download) ?? Infinity
-      );
-      this.#secondsLeft.set(download, secondsLeft);
-      return statusText;
+      return lazy.transferText(download);
     }
-    this.#secondsLeft.delete(download);
     if (download.deleted) {
       return strings.fileDeleted;
     }
@@ -511,10 +513,7 @@ class ZenLibraryDownloadStack {
       );
     }
     if (download.canceled && download.hasPartialData) {
-      return this.#joinStatus(
-        strings.statePaused,
-        lazy.DownloadUtils.getTransferTotal(download.currentBytes, totalBytes)
-      );
+      return this.#joinStatus(strings.statePaused, lazy.transferText(download));
     }
     if (download.error?.becauseBlockedByParentalControls) {
       return strings.stateBlockedParentalControls;

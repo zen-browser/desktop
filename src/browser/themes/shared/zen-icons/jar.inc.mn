@@ -470,6 +470,7 @@
 *  skin/classic/browser/zen-icons/xr.svg                      (../shared/zen-icons/nucleo/xr.svg) 
 *  skin/classic/browser/zen-icons/zoom-out.svg                      (../shared/zen-icons/nucleo/zoom-out.svg) 
 #endif
+*  skin/classic/browser/zen-icons/blank.svg                      (../shared/zen-icons/common/blank.svg) 
 *  skin/classic/browser/zen-icons/urlbar-arrow.svg                      (../shared/zen-icons/common/urlbar-arrow.svg) 
 *  skin/classic/browser/zen-icons/selectable/airplane.svg          (../shared/zen-icons/common/selectable/airplane.svg) 
 *  skin/classic/browser/zen-icons/selectable/american-football.svg          (../shared/zen-icons/common/selectable/american-football.svg) 
@@ -564,5 +565,6 @@
 *  skin/classic/browser/zen-icons/library/library-media-sprite.svg          (../shared/zen-icons/common/library/library-media-sprite.svg) 
 *  skin/classic/browser/zen-icons/library/library-spaces-sprite.svg          (../shared/zen-icons/common/library/library-spaces-sprite.svg) 
 *  skin/classic/browser/zen-icons/library/library-sprite.svg          (../shared/zen-icons/common/library/library-sprite.svg) 
+*  skin/classic/browser/zen-icons/library/library-tile.svg          (../shared/zen-icons/common/library/library-tile.svg) 
 *  skin/classic/browser/zen-icons/library/library.svg          (../shared/zen-icons/common/library/library.svg) 
   skin/classic/browser/zen-icons/icons.css                      (../shared/zen-icons/icons.css) 

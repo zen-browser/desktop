@@ -64,7 +64,7 @@ export class ZenLibrarySearchSection extends MozLitElement {
    *
    * @returns {{id: string, titleL10nId: string, exclusive?: boolean,
    *            options: {id: string, l10nId?: string, label?: string,
-   *                      icon?: string}[]}[]}
+   *                      icon?: string, disabled?: boolean}[]}[]}
    */
   get filterGroups() {
     return [];
@@ -180,6 +180,7 @@ export class ZenLibrarySearchSection extends MozLitElement {
       <button
         class="zen-library-filter-chip"
         ?active=${this.isFilterActive(group.id, option.id)}
+        ?disabled=${option.disabled}
         @click=${() => this.#toggleFilter(group, option.id)}
       >
         ${when(option.icon, () => html`<img src=${option.icon} alt="" />`)}
@@ -221,6 +222,19 @@ export class ZenLibrarySearchSection extends MozLitElement {
         </div>
       </div>
     `;
+  }
+
+  #faded = false;
+
+  async onShown() {
+    if (this.#faded) {
+      this.removeAttribute("fade-in");
+    } else {
+      this.#faded = true;
+      this.setAttribute("fade-in", "true");
+    }
+    await this.updateComplete;
+    this.querySelector(".zen-library-search-box input")?.focus();
   }
 
   render() {

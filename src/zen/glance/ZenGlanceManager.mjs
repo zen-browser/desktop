@@ -471,7 +471,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     return await this.#imageBitmapToObjectURL(
       await window.browsingContext.currentWindowGlobal.drawSnapshot(
         rect,
-        zoomLevel,
+        zoomLevel * (window.devicePixelRatio || 1),
         "transparent",
         undefined
       )

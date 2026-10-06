@@ -41,6 +41,21 @@
     ) !important;
   }
 
+  @media (-moz-platform: macos) and (not -moz-pref('zen.view.compact.hide-toolbar')) {
+    &:dir(ltr):not([zen-single-toolbar='true']):not([zen-right-side='true']) #nav-bar {
+      /* Match the sidebar's inset, compensating for the navbar margin below. */
+      & > .titlebar-buttonbox-container {
+        margin-inline-start: calc(
+          var(--zen-toolbox-padding) - (var(--zen-element-separation) - 3px)
+        );
+      }
+
+      & #zen-sidebar-top-buttons-customization-target {
+        padding-inline-start: 0 !important;
+      }
+    }
+  }
+
   &[zen-window-buttons-reversed='true'] #zen-appcontent-navbar-wrapper #nav-bar {
     margin-right: var(--zen-element-separation) !important;
     margin-left: calc(var(--zen-element-separation) - 3px) !important;

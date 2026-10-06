@@ -807,6 +807,7 @@ const zenMissingKeyboardShortcutL10n = {
 
   key_inspectorMac: "zen-key-inspector-mac",
   key_findSelection: "zen-key-find-selection",
+  key_findAgain2: "zen-search-find-again-shortcut-alt",
   key_findPrevious2: "zen-search-find-again-shortcut-prev-alt",
 
   // Devtools

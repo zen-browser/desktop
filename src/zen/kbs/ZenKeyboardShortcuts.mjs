@@ -89,6 +89,9 @@ const defaultKeyboardGroups = {
     "zen-search-find-again-shortcut-alt",
     "zen-search-find-again-shortcut-prev",
     "zen-search-find-again-shortcut-prev-alt",
+    "id:key_findAgain2",
+    "id:key_findPrevious2",
+    "id:key_findSelection",
   ],
   pageOperations: [
     "zen-text-action-copy-url-markdown-shortcut",

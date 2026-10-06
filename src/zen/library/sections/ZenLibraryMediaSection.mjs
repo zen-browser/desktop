@@ -358,6 +358,7 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
       return;
     }
     const image = make("img");
+    image.decoding = "async";
     image.className =
       item.kind === "image"
         ? "zen-library-media-thumb"

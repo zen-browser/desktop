@@ -239,7 +239,11 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
         }}
       >
         <div class="zen-library-boost-icon zen-squircle-before">
-          <img src="page-icon:https://${boost.domain}/" alt="" />
+          <img
+            src="page-icon:https://${boost.domain}/"
+            decoding="async"
+            alt=""
+          />
         </div>
         <div class="zen-library-row-text">
           <span class="zen-library-row-title">${boost.name}</span>

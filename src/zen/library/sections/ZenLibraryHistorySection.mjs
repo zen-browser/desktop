@@ -115,6 +115,12 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
   static id = "history";
   static label = "library-history-section-title";
 
+  static get tabLabel() {
+    return Services.prefs.getBoolPref(CLOSED_TABS_PREF, false)
+      ? "library-archive-section-title"
+      : this.label;
+  }
+
   static render(library) {
     return html`
       <zen-library-history-section
@@ -171,13 +177,6 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
   /** @returns {boolean} Whether the list is of closed tabs, not of history */
   get #showingClosed() {
     return this.isFilterActive("source", "closed");
-  }
-
-  /** @returns {string} What the tab of this section is called right now */
-  get tabLabel() {
-    return this.#showingClosed
-      ? "library-archive-section-title"
-      : ZenLibraryHistorySection.label;
   }
 
   get searchPlaceholderL10nId() {
@@ -272,9 +271,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
    * @returns {Map<number, object[]>} The days, newest first, and their tabs
    */
   #closedTabs() {
-    const cutoff = this.activeWhenDays
-      ? Date.now() - this.activeWhenDays * MS_PER_DAY
-      : 0;
+    const cutoff = Date.now() - this.#activeDaysOld * MS_PER_DAY;
     const query = this.searchQuery.toLowerCase();
     const tabs = [];
     for (const tab of lazy.SessionStore.getClosedTabData(window)) {
@@ -442,15 +439,12 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
    * @param {MouseEvent} [event] - What asked for it
    */
   #openVisit(visit, event) {
-    if (visit.closedId !== undefined) {
-      lazy.SessionStore.undoCloseById(visit.closedId, true, window);
-      this.library.constructor.toggle();
-      return;
-    }
     const inBackground =
       !!event && (event.getModifierState("Accel") || event.button === 1);
-    const openTab = () =>
-      window.openTrustedLinkIn(visit.url, "tab", { inBackground });
+    const openTab =
+      visit.closedId === undefined
+        ? () => window.openTrustedLinkIn(visit.url, "tab", { inBackground })
+        : () => this.#restoreTab(visit, inBackground);
     if (!inBackground) {
       openTab();
       this.library.constructor.toggle();
@@ -458,6 +452,22 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     }
     this.library.keepOpenWhile(openTab);
     gZenUIManager.showToast("library-history-opened-in-background");
+  }
+
+  /**
+   * Puts a closed tab back where it was. A tab asked for in the background
+   * is left behind the one being looked at, which the session store would
+   * otherwise bring to the front.
+   *
+   * @param {object} visit - The closed tab a row stands for
+   * @param {boolean} inBackground - Whether it is wanted out of the way
+   */
+  #restoreTab(visit, inBackground) {
+    const selected = gBrowser.selectedTab;
+    lazy.SessionStore.undoCloseById(visit.closedId, true, window);
+    if (inBackground && gBrowser.selectedTab !== selected) {
+      gBrowser.selectedTab = selected;
+    }
   }
 
   /** The view of the old library window this section stands in for. */
@@ -560,7 +570,12 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
         }}
         @dragstart=${event => this.#onDragStart(event, visit)}
       >
-        <img class="zen-library-row-icon" src="page-icon:${visit.url}" alt="" />
+        <img
+          class="zen-library-row-icon"
+          src="page-icon:${visit.url}"
+          decoding="async"
+          alt=""
+        />
         <div class="zen-library-row-text">
           <span class="zen-library-row-title">${visit.title || visit.url}</span>
           <span class="zen-library-row-subtitle"

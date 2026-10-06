@@ -424,19 +424,46 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   on_TabOpen(event) {
     const tab = event.target;
+
+    // Consume the pending explicit folder target at TabOpen.
+    const pendingFolderNewTab = this._pendingFolderNewTab;
+    if (
+      pendingFolderNewTab &&
+      !pendingFolderNewTab.tab &&
+      !tab.closing &&
+      !tab.hasAttribute("zen-empty-tab")
+    ) {
+      const targetFolder =
+        document.getElementById(pendingFolderNewTab.folderId) ||
+        pendingFolderNewTab.folder;
+      if (
+        targetFolder?.isZenFolder &&
+        !targetFolder.isLiveFolder &&
+        targetFolder.isConnected
+      ) {
+        pendingFolderNewTab.tab = tab;
+        if (!tab.pinned) {
+          gBrowser.pinTab(tab);
+        }
+        if (tab.group !== targetFolder) {
+          targetFolder.addTabs([tab]);
+        }
+        gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
+        gBrowser.tabContainer._invalidateCachedTabs();
+      }
+    }
+
     const group = tab.group;
     if (!group?.isZenFolder || tab.pinned) {
       return;
     }
-    // Edge case: In occations where we add a tab with an ownerTab
-    // inside a folder, the tab gets added into the folder in an
-    // unpinned state. We need to pin it and re-add it into the folder.
+    // Native Zen edge case: owner-tab-created tabs inside folders can initially
+    // be unpinned. Preserve Zen's existing preference-controlled behavior.
     if (Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder")) {
       gBrowser.pinTab(tab);
       group.addTabs([tab]);
     }
   }
-
   async on_TabUngrouped(event) {
     const tab = event.detail;
     const group = event.target;
@@ -691,6 +718,211 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const level = targetElement?.group?.level + 1;
     return !(isZenFolder && level >= this.#ZEN_MAX_SUBFOLDERS);
   }
+
+  /**
+   * Start Zen's native floating new-tab flow and remember the exact static
+   * folder that should receive the real tab emitted by TabOpen.
+   *
+   * @param {MozTabbrowserTabGroup} folder
+   * @param {object} options
+   * @param {boolean} options.inBackground Keep the previously selected tab
+   *   selected after the URL/search is committed.
+   * @returns {boolean} Whether the native new-tab UI was started.
+   */
+  openNewTabInFolder(folder, { inBackground = false } = {}) {
+    if (
+      !folder?.isZenFolder ||
+      folder.isLiveFolder ||
+      !folder.isConnected ||
+      this._pendingFolderNewTab
+    ) {
+      return false;
+    }
+
+    const emptyTab = gZenWorkspaces._emptyTab;
+    if (!emptyTab || emptyTab.closing) {
+      return false;
+    }
+
+    const previousTab = gBrowser.selectedTab;
+    const wasCollapsed = folder.collapsed;
+    const closeToken = {};
+    const controller = new AbortController();
+    const selectionController = new AbortController();
+    const pending = {
+      folder,
+      folderId: folder.id,
+      closeToken,
+      tab: null,
+      previousTab,
+      inBackground,
+      wasCollapsed,
+    };
+    this._pendingFolderNewTab = pending;
+
+    const resolveFolder = () => {
+      const current = document.getElementById(pending.folderId);
+      return current?.isZenFolder ? current : pending.folder;
+    };
+
+    const restorePreviousTab = createdTab => {
+      if (
+        !pending.inBackground ||
+        !pending.previousTab ||
+        pending.previousTab.closing ||
+        !pending.previousTab.isConnected ||
+        pending.previousTab === createdTab
+      ) {
+        return false;
+      }
+
+      if (gBrowser.selectedTab !== pending.previousTab) {
+        gBrowser.selectedTab = pending.previousTab;
+      }
+      return true;
+    };
+
+    const stopSelectionGuard = () => {
+      if (!selectionController.signal.aborted) {
+        selectionController.abort();
+      }
+    };
+
+    const clearPending = ({ keepSelectionGuard = false } = {}) => {
+      if (this._pendingFolderNewTab === pending) {
+        this._pendingFolderNewTab = null;
+      }
+      if (!controller.signal.aborted) {
+        controller.abort();
+      }
+      if (!keepSelectionGuard) {
+        stopSelectionGuard();
+      }
+    };
+
+    const ensureTabInFolder = (tab, targetFolder) => {
+      if (
+        !tab ||
+        tab.closing ||
+        !targetFolder?.isZenFolder ||
+        targetFolder.isLiveFolder ||
+        !targetFolder.isConnected
+      ) {
+        return;
+      }
+      if (!tab.pinned) {
+        gBrowser.pinTab(tab);
+      }
+      if (tab.group !== targetFolder) {
+        targetFolder.addTabs([tab]);
+      }
+      gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
+      gBrowser.tabContainer._invalidateCachedTabs();
+    };
+
+    if (inBackground) {
+      window.addEventListener(
+        "TabSelect",
+        event => {
+          const createdTab = pending.tab;
+          if (!createdTab || event.target !== createdTab) {
+            return;
+          }
+
+          queueMicrotask(() => {
+            if (gBrowser.selectedTab === createdTab) {
+              restorePreviousTab(createdTab);
+            }
+          });
+        },
+        { signal: selectionController.signal }
+      );
+    }
+
+    window.addEventListener(
+      "ZenURLBarClosed",
+      event => {
+        if (!gZenUIManager.matchesCloseToken(closeToken, event)) {
+          return;
+        }
+
+        const { onElementPicked, onSwitch } = event.detail || {};
+        const targetFolder = resolveFolder();
+        const createdTab = pending.tab;
+        const committed =
+          !!onElementPicked &&
+          !onSwitch &&
+          !!createdTab &&
+          !createdTab.closing &&
+          !createdTab.hasAttribute("zen-empty-tab") &&
+          !!targetFolder?.isZenFolder &&
+          !targetFolder.isLiveFolder &&
+          targetFolder.isConnected;
+
+        if (committed) {
+          ensureTabInFolder(createdTab, targetFolder);
+
+          if (pending.inBackground) {
+            targetFolder.collapsed = pending.wasCollapsed;
+            restorePreviousTab(createdTab);
+            clearPending({ keepSelectionGuard: true });
+
+            requestAnimationFrame(() => {
+              restorePreviousTab(createdTab);
+              setTimeout(() => {
+                ensureTabInFolder(createdTab, targetFolder);
+                targetFolder.collapsed = pending.wasCollapsed;
+                restorePreviousTab(createdTab);
+
+                requestAnimationFrame(() => {
+                  restorePreviousTab(createdTab);
+                  stopSelectionGuard();
+                });
+              }, 0);
+            });
+            return;
+          }
+
+          targetFolder.collapsed = false;
+          gBrowser.selectedTab = createdTab;
+        } else if (
+          !onSwitch &&
+          pending.previousTab &&
+          !pending.previousTab.closing &&
+          pending.previousTab.isConnected &&
+          gBrowser.selectedTab?.hasAttribute("zen-empty-tab")
+        ) {
+          gBrowser.selectedTab = pending.previousTab;
+          targetFolder && (targetFolder.collapsed = pending.wasCollapsed);
+        }
+
+        clearPending();
+      },
+      { signal: controller.signal }
+    );
+
+    gBrowser.selectedTab = emptyTab;
+    setTimeout(() => {
+      if (!gZenUIManager.handleNewTab(false, false, "tab", true, closeToken)) {
+        if (
+          previousTab &&
+          !previousTab.closing &&
+          previousTab.isConnected
+        ) {
+          gBrowser.selectedTab = previousTab;
+        }
+        clearPending();
+      }
+    });
+
+    return true;
+  }
+
+
+
+
+
+
 
   createFolder(tabs = [], options = {}) {
     const filteredTabs = tabs.map(tab => {
@@ -1179,6 +1411,98 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     const labelContainer = group.querySelector(".tab-group-label-container");
+    if (
+      !group.isLiveFolder &&
+      !labelContainer.querySelector(".zen-folder-plus-actions")
+    ) {
+      const actions = document.createXULElement("hbox");
+      actions.className = "zen-folder-plus-actions";
+      actions.setAttribute("align", "center");
+
+      const stopFolderHeaderEvent = event => {
+        event.stopPropagation();
+      };
+
+      const prepareActionButton = button => {
+        button.classList.add("zen-folder-plus-action-button");
+        button.setAttribute("tabindex", "0");
+        button.addEventListener("mousedown", stopFolderHeaderEvent);
+        button.addEventListener("mouseup", stopFolderHeaderEvent);
+        button.addEventListener("dblclick", stopFolderHeaderEvent);
+        button.addEventListener("mouseenter", () => {
+          clearTimeout(this.#mouseTimer);
+        });
+      };
+
+      const newTabButton = document.createXULElement("toolbarbutton");
+      newTabButton.className = "zen-folder-new-tab-button";
+      newTabButton.setAttribute("data-l10n-id", "zen-folder-new-tab-button");
+      prepareActionButton(newTabButton);
+
+      newTabButton.addEventListener("click", event => {
+        if (event.button !== 0) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        this.openNewTabInFolder(group, {
+          inBackground:
+            !!event.shiftKey || !!event.getModifierState?.("Shift"),
+        });
+      });
+      newTabButton.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        this.openNewTabInFolder(group);
+      });
+      const newSubfolderButton = document.createXULElement("toolbarbutton");
+      newSubfolderButton.className = "zen-folder-new-subfolder-button";
+      newSubfolderButton.setAttribute(
+        "data-l10n-id",
+        "zen-folder-new-subfolder-button"
+      );
+      prepareActionButton(newSubfolderButton);
+
+      const updateSubfolderButtonState = () => {
+        const canCreate =
+          group.isConnected &&
+          !group.isLiveFolder &&
+          group.level < this.#ZEN_MAX_SUBFOLDERS - 1;
+        newSubfolderButton.toggleAttribute("disabled", !canCreate);
+        newSubfolderButton.toggleAttribute("hidden", !canCreate);
+        return canCreate;
+      };
+      newSubfolderButton.addEventListener("mouseenter", updateSubfolderButtonState);
+      newSubfolderButton.addEventListener("focus", updateSubfolderButtonState);
+      newSubfolderButton.addEventListener("click", event => {
+        if (event.button !== 0) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        if (updateSubfolderButtonState()) {
+          group.createSubfolder();
+        }
+      });
+      newSubfolderButton.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        if (updateSubfolderButtonState()) {
+          group.createSubfolder();
+        }
+      });
+      updateSubfolderButtonState();
+
+      actions.append(newTabButton, newSubfolderButton);
+      const resetButton = labelContainer.querySelector(".tab-reset-button");
+      labelContainer.insertBefore(actions, resetButton);
+    }
     // Setup mouseenter/mouseleave events for the folder
     labelContainer.addEventListener("mouseenter", event => {
       if (

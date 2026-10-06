@@ -336,3 +336,100 @@ zen-folder[collapsed] > .tab-group-container {
     display: none !important;
   }
 }
+
+/* Folder Plus native folder actions */
+:root[zen-sidebar-expanded]
+  zen-folder
+  > .tab-group-label-container
+  > label {
+  flex: 1;
+  min-width: 0;
+  width: auto !important;
+}
+
+zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex: 0 0 auto;
+}
+
+zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions
+  > .zen-folder-plus-action-button {
+  appearance: none;
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: var(--border-radius-small);
+  background: transparent;
+  color: inherit;
+  opacity: 0;
+  transition:
+    opacity 120ms ease,
+    background-color 120ms ease,
+    transform 120ms ease;
+}
+
+zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions
+  > .zen-folder-new-tab-button {
+  list-style-image: url("chrome://browser/skin/zen-icons/plus.svg");
+}
+
+zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions
+  > .zen-folder-new-subfolder-button {
+  list-style-image: url("chrome://browser/skin/zen-icons/folder.svg");
+}
+
+:root[zen-sidebar-expanded]
+  zen-folder
+  > .tab-group-label-container:hover
+  > .zen-folder-plus-actions
+  > .zen-folder-plus-action-button,
+:root[zen-sidebar-expanded]
+  zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions
+  > .zen-folder-plus-action-button:focus-visible {
+  opacity: 0.72;
+}
+
+:root[zen-sidebar-expanded]
+  zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions
+  > .zen-folder-plus-action-button:hover {
+  opacity: 1;
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  transform: scale(1.04);
+}
+
+zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions
+  > .zen-folder-plus-action-button[disabled] {
+  opacity: 0.3;
+}
+
+:root:not([zen-sidebar-expanded])
+  zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions,
+:root[zen-renaming-tab]
+  zen-folder
+  > .tab-group-label-container
+  > .zen-folder-plus-actions {
+  display: none;
+}

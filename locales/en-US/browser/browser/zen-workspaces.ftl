@@ -101,3 +101,8 @@ zen-panel-ui-workspaces-change-forward =
 
 zen-panel-ui-workspaces-change-back =
     .label = Previous Space
+
+# Folder Plus action shown in a Space header.
+zen-folder-plus-space-new-folder-button =
+    .tooltiptext = New folder in this Space
+    .aria-label = New folder in this Space

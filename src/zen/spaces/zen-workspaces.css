@@ -474,3 +474,64 @@ zen-workspace {
     transform: rotate(0deg);
   }
 }
+
+/* Folder Plus native Space action slots */
+.zen-current-workspace-indicator > .zen-folder-plus-space-actions {
+  position: relative;
+  flex: 0 0 52px;
+  width: 52px;
+  min-width: 52px;
+  height: 24px;
+  margin-inline-start: auto;
+}
+
+.zen-current-workspace-indicator
+  > .zen-folder-plus-space-actions
+  > .zen-folder-plus-space-new-folder-button,
+.zen-current-workspace-indicator
+  > .zen-folder-plus-space-actions
+  > .zen-workspaces-actions {
+  position: absolute;
+  top: 0;
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+
+.zen-current-workspace-indicator
+  > .zen-folder-plus-space-actions
+  > .zen-folder-plus-space-new-folder-button {
+  inset-inline-start: 0;
+  appearance: none;
+  list-style-image: url("chrome://browser/skin/zen-icons/folder.svg");
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  padding: 4px;
+  border: 0;
+  border-radius: var(--border-radius-small);
+  background: transparent;
+  color: inherit;
+  opacity: 0.72;
+}
+
+.zen-current-workspace-indicator
+  > .zen-folder-plus-space-actions
+  > .zen-workspaces-actions {
+  inset-inline-end: 0;
+}
+
+.zen-current-workspace-indicator
+  > .zen-folder-plus-space-actions
+  > .zen-folder-plus-space-new-folder-button:hover,
+.zen-current-workspace-indicator
+  > .zen-folder-plus-space-actions
+  > .zen-folder-plus-space-new-folder-button:focus-visible {
+  opacity: 1;
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+:root:not([zen-sidebar-expanded])
+  .zen-folder-plus-space-actions {
+  display: none;
+}

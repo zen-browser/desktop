@@ -158,6 +158,52 @@ export class nsZenWorkspace extends MozXULElement {
       this.indicator.removeAttribute("context");
     }
 
+    // Folder Plus: native new-folder control for this Space.
+    const folderPlusSpaceActions = document.createXULElement("hbox");
+    folderPlusSpaceActions.className = "zen-folder-plus-space-actions";
+
+    const folderPlusNewFolderButton = document.createXULElement("toolbarbutton");
+    folderPlusNewFolderButton.className =
+      "toolbarbutton-1 chromeclass-toolbar-additional zen-folder-plus-space-new-folder-button";
+    folderPlusNewFolderButton.setAttribute(
+      "data-l10n-id",
+      "zen-folder-plus-space-new-folder-button"
+    );
+    folderPlusNewFolderButton.setAttribute("tabindex", "0");
+
+    const workspaceActionsButton = this.indicator.querySelector(
+      ".zen-workspaces-actions"
+    );
+    workspaceActionsButton.before(folderPlusSpaceActions);
+    folderPlusSpaceActions.append(
+      folderPlusNewFolderButton,
+      workspaceActionsButton
+    );
+
+    const stopFolderPlusSpaceHeaderEvent = event => event.stopPropagation();
+    folderPlusNewFolderButton.addEventListener(
+      "click",
+      stopFolderPlusSpaceHeaderEvent
+    );
+    folderPlusNewFolderButton.addEventListener(
+      "mousedown",
+      stopFolderPlusSpaceHeaderEvent
+    );
+    folderPlusNewFolderButton.addEventListener(
+      "dblclick",
+      stopFolderPlusSpaceHeaderEvent
+    );
+    folderPlusNewFolderButton.addEventListener("command", event => {
+      event.stopPropagation();
+      if (gZenWorkspaces.privateWindowOrDisabled || !this.isConnected) {
+        return;
+      }
+      gZenFolders.createFolder([], {
+        workspaceId: this.id,
+        renameFolder: !gZenUIManager.testingEnabled,
+      });
+    });
+
     this.indicator
       .querySelector(".zen-workspaces-actions")
       .addEventListener("click", this.onActionsCommand.bind(this));

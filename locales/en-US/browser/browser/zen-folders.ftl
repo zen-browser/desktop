@@ -30,3 +30,11 @@ zen-folders-unload-folder =
     .label = Unload All Tabs
 
 zen-folders-search-no-results = No tabs matching that search 🤔
+
+# Folder Plus actions shown in regular static folder headers.
+zen-folder-new-tab-button =
+    .tooltiptext = New tab in folder (Shift+click: background)
+    .aria-label = New tab in folder
+zen-folder-new-subfolder-button =
+    .tooltiptext = New subfolder
+    .aria-label = New subfolder

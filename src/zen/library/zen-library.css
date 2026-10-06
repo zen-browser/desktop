@@ -1099,7 +1099,7 @@ zen-library-history-section {
   overflow-y: auto;
   scrollbar-width: none;
   --zen-toolbox-min-width: fit-content;
-  --tab-min-width: var(--zen-library-space-width);
+  --tab-min-width: var(--zen-library-space-width) !important;
   --zen-toolbox-padding: var(--zen-min-toolbox-padding);
   --zen-library-scroll-border: color-mix(
     in srgb,
@@ -1155,6 +1155,10 @@ zen-library-history-section {
     & zen-folder,
     & .tab-group-label-container {
       width: 100% !important;
+    }
+
+    & .tab-group-label {
+      visibility: visible !important;
     }
   }
 

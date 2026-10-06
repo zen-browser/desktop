@@ -696,7 +696,11 @@ var gZenLooksAndFeel = {
     this.__hasInitializedLayout = true;
     for (const layout of document.getElementById("zenLayoutList").children) {
       layout.addEventListener("click", () => {
-        if (layout.hasAttribute("disabled")) {
+        const browser = nsZenMultiWindowFeature.currentBrowser;
+        if (
+          layout.classList.contains("selected") ||
+          browser?.gZenVerticalTabsManager?._isUpdating
+        ) {
           return;
         }
 

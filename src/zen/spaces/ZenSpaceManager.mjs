@@ -831,10 +831,7 @@ class nsZenWorkspaces {
           ""
         );
     if (cmdLineWorkspace) {
-      // Set by the `--space` command line flag on a cold start,
-      // see BrowserContentHandler.sys.mjs. Consumed by the first syncing
-      // window that restores its workspaces; private and unsynced windows
-      // must not eat the pref.
+      // Set by the `--space` command line flag on a cold start
       Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
       const initialWorkspace =
         this.resolveWorkspaceFromCLIString(cmdLineWorkspace);
@@ -1803,12 +1800,6 @@ class nsZenWorkspaces {
     return await this.changeWorkspace(workspace, ...args);
   }
 
-  /**
-   * Handles the `--space` command line flag for an already running
-   * browser: switches to the workspace matching the given name or UUID.
-   *
-   * @param {string} workspaceMatch - The workspace UUID or name to switch to
-   */
   async changeWorkspaceFromCommandLine(workspaceMatch) {
     await this.promiseInitialized;
     const workspace = this.resolveWorkspaceFromCLIString(workspaceMatch);

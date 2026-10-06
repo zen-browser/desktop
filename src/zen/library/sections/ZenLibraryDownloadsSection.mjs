@@ -699,6 +699,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         <div class="zen-library-row-icon-box">
           <img
             class="zen-library-row-icon"
+            decoding="async"
             ?preview=${!pending && !!this.#previewUrl(download)}
             src=${
               pending

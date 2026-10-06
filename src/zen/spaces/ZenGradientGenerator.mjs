@@ -2078,6 +2078,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     const previousOpacity = this.currentOpacity;
     const previousLightness = this.#currentLightness;
+    const previousAlgo = this.useAlgo;
     const theme = workspace.theme ?? {};
     const colors = theme.gradientColors ?? [];
     this.currentOpacity = theme.opacity ?? 0.5;
@@ -2111,6 +2112,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;
+    this.useAlgo = previousAlgo;
     return this.#gradientsCache[uuid];
   }
 }

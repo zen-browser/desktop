@@ -295,6 +295,17 @@
     @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce))  {
       :root:not([zen-no-acrylic="true"]) & {
         backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
+        #urlbar[zen-floating-urlbar="true"] & {
+          /* The SVG underlay can flatten the page into an opaque surface in
+           * the top layer. Blur the page directly for the floating glass. */
+          backdrop-filter: blur(40px) !important;
+          &:not(:-moz-window-inactive) {
+            --zen-urlbar-background-transparent: light-dark(
+              rgba(255, 255, 255, 0.86),
+              rgba(20, 20, 20, 0.82)
+            );
+          }
+        }
       }
     }
   }
@@ -479,7 +490,7 @@
   }
 }
 
-#urlbar[open][zen-floating-urlbar="true"] {
+#urlbar:is([open], [zen-urlbar-closing])[zen-floating-urlbar="true"] {
   z-index: 1000;
   max-width: unset;
   --urlbar-container-height: 62px !important;
@@ -495,6 +506,8 @@
   translate: -50% 0%;
   left: 50% !important;
 
+  transform-origin: center;
+
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #urlbar-container:has(&) {
     border-radius: var(--border-radius-medium);
@@ -509,7 +522,15 @@
   }
 }
 
-#urlbar[open][zen-floating-urlbar="true"] #identity-icon-box,
+#urlbar[zen-urlbar-closing] {
+  pointer-events: none;
+
+  > .urlbarView {
+    display: block;
+  }
+}
+
+#urlbar:is([open], [zen-urlbar-closing])[zen-floating-urlbar="true"] #identity-icon-box,
 :root[zen-single-toolbar="true"] #urlbar[breakout-extend] #identity-icon-box {
   --urlbar-box-hover-bgcolor: transparent;
   margin-inline: 2px 4px;

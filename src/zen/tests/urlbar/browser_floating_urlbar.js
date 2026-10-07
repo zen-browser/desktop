@@ -9,6 +9,7 @@ ChromeUtils.defineESModuleGetters(this, {
 
 add_task(async function test_Floating_Urlbar() {
   gURLBar.blur();
+  await TestUtils.waitForCondition(() => !gURLBar.matches(":popover-open"));
 
   await SimpleTest.promiseFocus(window);
   document.getElementById("Browser:OpenLocation").doCommand();
@@ -26,6 +27,7 @@ add_task(async function test_Floating_Urlbar() {
 
 add_task(async function test_Click_Shoudnt_FLoat_Urlbar() {
   gURLBar.blur();
+  await TestUtils.waitForCondition(() => !gURLBar.matches(":popover-open"));
 
   await simulateClick(window);
 
@@ -43,6 +45,7 @@ add_task(async function test_Click_Shoudnt_FLoat_Urlbar() {
 
 add_task(async function test_Floating_Highlight_Everything() {
   gURLBar.blur();
+  await TestUtils.waitForCondition(() => !gURLBar.matches(":popover-open"));
 
   await SimpleTest.promiseFocus(window);
   await selectWithMouseDrag(2, 5);

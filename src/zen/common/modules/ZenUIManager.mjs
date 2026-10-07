@@ -319,8 +319,16 @@ window.gZenUIManager = {
   },
 
   onFloatingURLBarOpen() {
+    this._animateFloatingURLBarOpen();
+    const animations = this._floatingURLBarAnimations;
     requestAnimationFrame(() => {
       this.updateTabsToolbar();
+      // Start on the next frame, after the floating box has its final position.
+      requestAnimationFrame(() => {
+        if (this._floatingURLBarAnimations === animations) {
+          animations?.forEach(animation => animation.play());
+        }
+      });
     });
   },
 
@@ -384,6 +392,7 @@ window.gZenUIManager = {
   },
 
   onPopupShowing(showEvent) {
+    this.finishFloatingURLBarClose();
     if (
       AppConstants.platform === "macosx" &&
       Services.prefs.getBoolPref("widget.macos.native-context-menus", false)
@@ -444,6 +453,97 @@ window.gZenUIManager = {
 
   // Section: URL bar
 
+  _animateFloatingURLBarOpen() {
+    this._cancelFloatingURLBarAnimations();
+    if (!gURLBar.hasAttribute("zen-floating-urlbar") || gReduceMotion) {
+      return;
+    }
+
+    const easing = "cubic-bezier(0.16, 1, 0.3, 1)";
+    const timing = { duration: 320 };
+    this._floatingURLBarAnimations = [
+      gURLBar.animate(
+        [
+          { scale: 0.92, easing },
+          { scale: 1.01, offset: 0.6, easing },
+          { scale: 1 },
+        ],
+        { ...timing, id: "zen-floating-urlbar-open" }
+      ),
+      ...this._floatingURLBarContent().map(element =>
+        element.animate(
+          [{ opacity: 0, easing }, { opacity: 1, offset: 0.6 }, { opacity: 1 }],
+          { ...timing, id: "zen-floating-urlbar-fade" }
+        )
+      ),
+    ];
+    this._floatingURLBarAnimations.forEach(animation => animation.pause());
+  },
+
+  _floatingURLBarContent() {
+    // Opacity on the frosted surface prevents its backdrop blur from sampling
+    // the page. Fade the input and suggestions while keeping the glass intact.
+    return Array.from(gURLBar.children).filter(
+      element => !element.classList.contains("urlbar-background")
+    );
+  },
+
+  _cancelFloatingURLBarAnimations() {
+    this._floatingURLBarAnimations?.forEach(animation => animation.cancel());
+    this._floatingURLBarAnimations = null;
+  },
+
+  animateFloatingURLBarClose(closePopover) {
+    if (this._floatingURLBarClose) {
+      return true;
+    }
+    if (!gURLBar.hasAttribute("zen-floating-urlbar") || gReduceMotion) {
+      return false;
+    }
+
+    const scale = getComputedStyle(gURLBar).scale;
+    const children = this._floatingURLBarContent().map(element => ({
+      element,
+      opacity: getComputedStyle(element).opacity,
+    }));
+    this._cancelFloatingURLBarAnimations();
+    this._floatingURLBarClose = closePopover;
+    gURLBar.setAttribute("zen-urlbar-closing", "true");
+    const timing = { duration: 160, easing: "cubic-bezier(0.4, 0, 1, 1)" };
+    this._floatingURLBarAnimations = [
+      gURLBar.animate([{ scale }, { scale: 0.96 }], {
+        ...timing,
+        id: "zen-floating-urlbar-close",
+      }),
+      ...children.map(({ element, opacity }) =>
+        element.animate([{ opacity }, { opacity: 0 }], {
+          ...timing,
+          id: "zen-floating-urlbar-fade",
+        })
+      ),
+    ];
+    this._floatingURLBarAnimations[0].finished.then(
+      () => {
+        if (this._floatingURLBarClose === closePopover) {
+          this.finishFloatingURLBarClose();
+        }
+      },
+      () => {}
+    );
+    return true;
+  },
+
+  finishFloatingURLBarClose() {
+    if (!this._floatingURLBarClose) {
+      return;
+    }
+    const closePopover = this._floatingURLBarClose;
+    this._floatingURLBarClose = null;
+    this._cancelFloatingURLBarAnimations();
+    gURLBar.removeAttribute("zen-urlbar-closing");
+    closePopover();
+  },
+
   onUrlbarOpen() {
     setTimeout(() => {
       const hadValid = gURLBar.getAttribute("pageproxystate") === "valid";
@@ -453,6 +553,7 @@ window.gZenUIManager = {
   },
 
   onUrlbarClose() {
+    this._cancelFloatingURLBarAnimations();
     if (gURLBar.getAttribute("had-proxystate") == "true") {
       gURLBar.setPageProxyState("valid", false);
     }

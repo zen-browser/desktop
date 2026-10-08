@@ -800,33 +800,52 @@ window.gZenUIManager = {
     return [wrapper, false];
   },
 
+    /**
+   * Plays a CSS-driven toast animation and resolves once it has finished.
+   * The animation itself (and its reduced motion timing) lives in zen-popup.css.
+   *
+   * @param {Element} toast
+   * @param {string} name One of "in", "bump", "restore" or "out".
+   * @returns {Promise<void>}
+   */
+  _playToastAnimation(toast, name) {
+    return new Promise(resolve => {
+      const onEnd = event => {
+        if (event.target !== toast) {
+          return;
+        }
+        toast.removeEventListener("animationend", onEnd);
+        toast.removeEventListener("animationcancel", onEnd);
+        resolve();
+      };
+      toast.addEventListener("animationend", onEnd);
+      toast.addEventListener("animationcancel", onEnd);
+      toast.setAttribute("zen-toast-animation", name);
+    });
+  },
+
   async showToast(messageId, options = {}) {
     const [toast, reused] = this._createToastElement(messageId, options);
     this._toastContainer.removeAttribute("hidden");
-    this._toastContainer.appendChild(toast);
+    if (!reused) {
+      // Set before appending so the toast never flashes at full size.
+      toast.setAttribute("zen-toast-animation", "in");
+      this._toastContainer.appendChild(toast);
+    }
     const timeoutFunction = () => {
       if (Services.prefs.getBoolPref("ui.popup.disable_autohide")) {
         return;
       }
-      this.motion
-        .animate(
-          toast,
-          { opacity: [1, 0], scale: [1, 0.5] },
-          { duration: 0.2, bounce: 0 }
-        )
-        .then(() => {
-          toast.remove();
-          if (this._toastContainer.children.length === 0) {
-            this._toastContainer.setAttribute("hidden", true);
-          }
-        });
+      this._playToastAnimation(toast, "out").then(() => {
+        toast.remove();
+        if (this._toastContainer.children.length === 0) {
+          this._toastContainer.setAttribute("hidden", true);
+        }
+      });
     };
     if (reused) {
-      await this.motion.animate(
-        toast,
-        { scale: 0.2 },
-        { duration: 0.1, bounce: 0 }
-      );
+      await this._playToastAnimation(toast, "bump");
+      await this._playToastAnimation(toast, "restore");
     } else {
       toast.addEventListener("mouseover", () => {
         if (this._toastTimeouts[messageId]) {
@@ -842,15 +861,8 @@ window.gZenUIManager = {
           options.timeout || 2000
         );
       });
+      await this._playToastAnimation(toast, "in");
     }
-    if (!toast.style.transform) {
-      toast.style.transform = "scale(0)";
-    }
-    await this.motion.animate(
-      toast,
-      { scale: 1 },
-      { type: "spring", bounce: 0.2, duration: 0.5 }
-    );
     if (this._toastTimeouts[messageId]) {
       clearTimeout(this._toastTimeouts[messageId]);
     }

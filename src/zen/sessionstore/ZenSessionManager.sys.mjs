@@ -675,7 +675,12 @@ export class nsZenSessionManager {
       // every few hours (configurable via gBackupHourSpan), so that we
       // can have multiple backups per day for recent days, but only
       // one backup per day for older days.
-      let dateToUse = today.toISOString().slice(0, 10); // YYYY-MM-DD
+      // Use the local date, since the hour below is local too. Otherwise the
+      // file names don't sort in the order the backups were made.
+      const pad = n => String(n).padStart(2, "0");
+      const year = today.getFullYear();
+      const month = pad(today.getMonth() + 1);
+      let dateToUse = `${year}-${month}-${pad(today.getDate())}`; // YYYY-MM-DD
       const hourSpan = Math.min(Math.max(1, lazy.gBackupHourSpan), 24);
       const backupHour = Math.floor(today.getHours() / hourSpan) * hourSpan;
       dateToUse += `-${String(backupHour).padStart(2, "0")}`;

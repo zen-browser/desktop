@@ -66,6 +66,12 @@ export class ZenLibrary extends MozLitElement {
 
   #progress = 0;
   #isOpen = false;
+  // Where the last request to open or close is heading, which #isOpen only
+  // catches up with once that request has waited for styles and a flush.
+  #target = 0;
+  // Bumped by every request, so one that has been overtaken by a newer one,
+  // or a spring that has been replaced, no longer touches the library.
+  #animation = 0;
   #initialized = false;
 
   #wrapperSwipeAttached = false;
@@ -430,10 +436,11 @@ export class ZenLibrary extends MozLitElement {
     }
 
     const lib = this.getInstance();
+    const opening = lib.#target === 1;
     if (tab && tab in lib.zenLibrarySections) {
-      if (lib.#isOpen && lib.activeTab === tab) {
+      if (opening && lib.activeTab === tab) {
         this.animateProgress(0);
-      } else if (lib.#isOpen) {
+      } else if (opening) {
         lib.activeTab = tab;
       } else {
         lib.activeTab = tab;
@@ -441,7 +448,7 @@ export class ZenLibrary extends MozLitElement {
       }
       return;
     }
-    this.animateProgress(lib.#isOpen ? 0 : 1);
+    this.animateProgress(opening ? 0 : 1);
   }
 
   /**
@@ -454,13 +461,22 @@ export class ZenLibrary extends MozLitElement {
   static async animateProgress(target) {
     const lib = this.getInstance();
 
-    if (target === lib.openProgress) {
+    const settled =
+      target === lib.openProgress &&
+      lib.#isOpen === (target === 1) &&
+      !lib.#springControls;
+    if (settled) {
       return;
     }
 
+    const animation = ++lib.#animation;
+    lib.#target = target;
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
     await window.promiseDocumentFlushed(() => {});
+    if (animation !== lib.#animation) {
+      return;
+    }
 
     if (lib.#springControls) {
       lib.#springControls.stop();
@@ -476,7 +492,24 @@ export class ZenLibrary extends MozLitElement {
       lib.#tellSection("onLibraryClosing");
     }
 
+    const finish = () => {
+      if (animation !== lib.#animation) {
+        return;
+      }
+      if (target === 0) {
+        lib.#cleanup();
+      }
+
+      lib.openProgress = target;
+      lib.#springControls = null;
+      lib.removeAttribute("transitioning");
+    };
+
     lib.setAttribute("transitioning", "true");
+    if (lib.openProgress === target) {
+      finish();
+      return;
+    }
     lib.#springControls = gZenUIManager.motion.animate(
       lib.openProgress,
       target,
@@ -486,17 +519,11 @@ export class ZenLibrary extends MozLitElement {
         damping: 47,
         mass: 1.2,
         onUpdate: latest => {
-          lib.openProgress = latest;
-        },
-        onComplete: () => {
-          if (target === 0) {
-            lib.#cleanup();
+          if (animation === lib.#animation) {
+            lib.openProgress = latest;
           }
-
-          lib.openProgress = target;
-          lib.#springControls = null;
-          lib.removeAttribute("transitioning");
         },
+        onComplete: finish,
       }
     );
   }
@@ -551,12 +578,17 @@ export class ZenLibrary extends MozLitElement {
    */
   static async startSwipe() {
     const lib = this.getInstance();
+    const animation = ++lib.#animation;
     lib.#cancelIdleCleanup();
     lib.#canSwipe = true;
     lib.#beforeSwipeState = this.isLibraryOpen ? 1 : 0;
 
     await lib.#whenStylesLoaded();
     await window.promiseDocumentFlushed(() => {});
+    // The swipe may already have ended, its own animation taking over.
+    if (animation !== lib.#animation) {
+      return;
+    }
 
     lib.#onOpenInit();
 
@@ -672,8 +704,9 @@ export class ZenLibrary extends MozLitElement {
 
     // This will only run if the swipe was
     // cancelled, otherwise cleanup will happen
-    // in animateProgress (onComplete)
-    if (!ZenLibrary.isLibrarySlightlyOpen) {
+    // in animateProgress (onComplete). A spring still running may dip
+    // below zero on its way closed, and stopping it there would strand it.
+    if (!ZenLibrary.isLibrarySlightlyOpen && !this.#springControls) {
       this.#cleanup();
     }
   }
@@ -758,12 +791,13 @@ export class ZenLibrary extends MozLitElement {
    * after the library was just closed.
    */
   #cleanup() {
+    // Even an already cleaned up library may have been restyled since, by the
+    // last frames of a spring that outlived a swipe.
+    this.#clearStyleProperties();
     if (!this.#initialized) {
       return;
     }
     this.#initialized = false;
-
-    this.#clearStyleProperties();
     this.removeAttribute("open");
     for (const tab of this.querySelectorAll(".zen-library-tab[animate]")) {
       tab.removeAttribute("animate");

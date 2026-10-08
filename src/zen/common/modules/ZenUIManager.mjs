@@ -1333,10 +1333,11 @@ window.gZenVerticalTabsManager = {
 
     if (this._prefsRightSide && this._prefsUseSingleToolbar) {
       let captionButtons = this.actualWindowButtons;
-      let captionButtonsWidth = window.windowUtils.getBoundsWithoutFlushing(captionButtons).width;
+      let captionButtonsWidth =
+        window.windowUtils.getBoundsWithoutFlushing(captionButtons).width;
       return 117 + captionButtonsWidth;
     }
-    
+
     return 152;
   },
 

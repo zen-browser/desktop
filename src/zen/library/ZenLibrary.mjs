@@ -51,7 +51,7 @@ export class ZenLibrary extends MozLitElement {
     return this.instance;
   }
 
-  #contentMounted = true;
+  #contentMounted = false;
   #mounted = new Set();
 
   #springControls = null;
@@ -120,6 +120,11 @@ export class ZenLibrary extends MozLitElement {
 
   static get libraryOnRight() {
     return this.getInstance()?.#libraryOnRight;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("unload", this, { once: true });
   }
 
   set isHidden(value) {
@@ -252,17 +257,17 @@ export class ZenLibrary extends MozLitElement {
       return;
     }
     event.preventDefault();
-    const items = [
-      ...offered,
-      {
+    const items = [...offered];
+    if (Section.legacyLibraryView) {
+      items.push({
         l10nId: "library-open-legacy",
         separatorBefore: true,
         command: () =>
           window.PlacesCommandHook.showPlacesOrganizer(
-            Section.legacyLibraryView ?? "AllBookmarks"
+            Section.legacyLibraryView
           ),
-      },
-    ];
+      });
+    }
     if (!this.#tabMenu) {
       this.#tabMenu = window.MozXULElement.parseXULToFragment(
         `<menupopup class="zen-library-tab-menu"/>`
@@ -794,10 +799,21 @@ export class ZenLibrary extends MozLitElement {
       case "TabOpen":
         this.onTabOpen();
         break;
+      case "unload":
+        this.#teardown();
+        break;
       case "keydown":
         this.onKeyDown(e);
         break;
     }
+  }
+
+  #teardown() {
+    this.#cleanup();
+    this.#cancelIdleCleanup();
+    this.#contentMounted = false;
+    this.#mounted = new Set([this.activeTab]);
+    this._content?.replaceChildren();
   }
 
   onTabOpen() {

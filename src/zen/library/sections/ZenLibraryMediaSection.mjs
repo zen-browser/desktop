@@ -51,6 +51,19 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
   static id = "media";
   static label = "library-media-section-title";
 
+  /** @returns {object[]} What a right click on the media tab offers */
+  static get tabMenu() {
+    if (!Services.prefs.getBoolPref(ENABLED_PREF, false)) {
+      return [];
+    }
+    return [
+      {
+        l10nId: "library-media-turn-off",
+        command: () => Services.prefs.setBoolPref(ENABLED_PREF, false),
+      },
+    ];
+  }
+
   static properties = {
     items: { state: true },
     loading: { state: true },

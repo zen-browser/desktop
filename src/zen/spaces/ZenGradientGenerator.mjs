@@ -78,6 +78,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   currentOpacity = 0.5;
   dots = [];
   useAlgo = "";
+  #lastNoiseTexture = null;
   #currentLightness = 50;
 
   #allowTransparencyOnSidebar = Services.prefs.getBoolPref(
@@ -1443,6 +1444,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   updateNoise(texture) {
+    if (texture === this.#lastNoiseTexture) {
+      return;
+    }
+    this.#lastNoiseTexture = texture;
     [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
       element => {
         element.style.setProperty("--zen-grainy-background-opacity", texture);

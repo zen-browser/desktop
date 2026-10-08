@@ -5,6 +5,9 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  Downloads: "resource://gre/modules/Downloads.sys.mjs",
+  DownloadsCommon:
+    "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
 });
 
@@ -56,11 +59,19 @@ export const FILE_GROUPS = [
   ...Object.keys(GROUP_EXTENSIONS),
 ];
 
-/**
- * A picture the platform renders as a document rather than a bitmap. It is
- * left out of thumbnails, which are drawn inside the browser's own chrome.
- */
-const NOT_DRAWN = "image/svg+xml";
+const NOT_DRAWN = new Set([
+  "image/svg+xml",
+  "image/heic",
+  "image/heic-sequence",
+  "image/heif",
+  "image/heif-sequence",
+  "image/jxl",
+  "image/tiff",
+  "image/x-canon-cr2",
+  "image/x-nikon-nef",
+  "image/x-sony-arw",
+  "image/x-adobe-dng",
+]);
 
 /**
  * @param {string} fileName - A file's name, with or without its path
@@ -129,7 +140,67 @@ export function fileGroupOf(fileName) {
  */
 export function canDrawThumbnail(fileName) {
   const type = contentTypeOf(fileName);
-  return type.startsWith("image/") && type !== NOT_DRAWN;
+  return type.startsWith("image/") && !NOT_DRAWN.has(type);
+}
+
+/**
+ * Why a download was stopped before it landed.
+ *
+ * @param {object} download - A download blocked by the reputation check
+ * @returns {string} What to say about it
+ */
+export function blockedText(download) {
+  const strings = lazy.DownloadsCommon.strings;
+  switch (download.error?.reputationCheckVerdict) {
+    case lazy.Downloads.Error.BLOCK_VERDICT_UNCOMMON:
+      return strings.blockedUncommon2;
+    case lazy.Downloads.Error.BLOCK_VERDICT_INSECURE:
+      return strings.blockedPotentiallyInsecure;
+    case lazy.Downloads.Error.BLOCK_VERDICT_POTENTIALLY_UNWANTED:
+      return strings.blockedPotentiallyUnwanted;
+    default:
+      return strings.blockedMalware;
+  }
+}
+
+/**
+ * @param {object} download - Any download
+ * @returns {boolean} Whether the reputation check stopped it
+ */
+export function isBlocked(download) {
+  return !!download.error?.becauseBlockedByReputationCheck;
+}
+
+/**
+ * Asks whether a download the reputation check stopped should be kept after
+ * all, the way the downloads panel does, and does what the answer says.
+ *
+ * @param {object} download - A download blocked by the reputation check
+ * @param {Window} window - The window to ask in
+ * @param {Function} [openDownload] - Called with the download once it is
+ *   unblocked, when the answer is to open it
+ * @returns {Promise<void>}
+ */
+export function confirmUnblock(download, window, openDownload) {
+  return lazy.DownloadsCommon.confirmUnblockDownload({
+    verdict: download.error.reputationCheckVerdict,
+    becauseBlockedByReputationCheck: true,
+    window,
+    dialogType: "chooseUnblock",
+  })
+    .then(answer => {
+      switch (answer) {
+        case "open":
+          return download.unblock().then(() => openDownload?.(download));
+        case "unblock":
+          return download.unblock();
+        case "confirmBlock":
+          return download.confirmBlock();
+        default:
+          return undefined;
+      }
+    })
+    .catch(console.error);
 }
 
 // What a download has to say for itself

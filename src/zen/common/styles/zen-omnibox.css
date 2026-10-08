@@ -95,18 +95,14 @@
   & #identity-icon-box {
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) !important;
   }
-
-  & #identity-icon-label {
-    display: none;
-  }
 }
 
 #identity-permission-box:not(:hover):not(:focus-within) {
   background: transparent !important;
 }
 
-#identity-box:not(.chromeUI) #identity-icon-label {
-  padding-inline-start: 8px !important;
+#identity-icon-box #identity-icon-label {
+  display: none;
 }
 
 #urlbar:not([extend="true"]) #identity-box #identity-icon-box {
@@ -323,10 +319,6 @@
 :root[zen-single-toolbar="true"] {
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
-  }
-
-  #identity-icon-label {
-    display: none;
   }
 
   &:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) #identity-box {

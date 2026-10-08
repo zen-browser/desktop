@@ -305,54 +305,102 @@ menuseparator {
 /* Section: Toast notifications */
 
 #zen-toast-container {
-  position: fixed;
+  /* Tunables */
   --zen-toast-spacing: max(4px, var(--zen-element-separation));
+  --zen-toast-stack-peek: 8px; /* how far background toasts peek out */
+  --zen-toast-stack-gap: 8px; /* gap between toasts when expanded */
+  --zen-toast-peek-scale-step: 0.04;
+  --zen-toast-peek-fade-step: 0.125;
+  --zen-toast-easing: cubic-bezier(0.25, 1, 0.5, 1);
+
+  position: fixed;
   top: var(--zen-toast-spacing);
   z-index: 1000;
-  display: flex;
-  align-items: end;
 
-  &:empty {
+  /* Every toast shares one grid cell, so the container is as big as the
+     largest toast and the stack is built with transforms. The padding makes
+     room for the peeking background toasts. */
+  display: grid;
+  padding-bottom: calc(var(--zen-toast-stack-peek) * var(--zen-toast-stack-behind, 0));
+  transition: padding-bottom 0.3s var(--zen-toast-easing);
+
+  &:empty,
+  &[hidden] {
     display: none;
   }
 
+  /* Side placement */
   :root:not([zen-right-side="true"]) & {
+    --zen-toast-origin: top right;
     right: var(--zen-toast-spacing);
+    justify-items: end;
   }
 
   :root[zen-right-side="true"] & {
+    --zen-toast-origin: top left;
     left: var(--zen-toast-spacing);
+    justify-items: start;
   }
 
+  /* Toast */
   & .zen-toast {
-    :root[zen-right-side="true"] & {
-      translate: 100%;
-    }
-
     --zen-toast-padding: 6px;
-    --zen-toast-max-height: 42px;
+    --zen-toast-min-height: 42px;
+    --peek: var(--zen-toast-peek-level, 0);
+
     @media (-moz-platform: macos) {
       --zen-toast-padding: 8px;
-      --zen-toast-max-height: 48px;
+      --zen-toast-min-height: 48px;
     }
 
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: calc(100 - var(--zen-toast-index, 0));
+    display: flex;
+    align-items: center;
     gap: 8px;
-    z-index: 1000;
+    width: max-content;
+    min-height: var(--zen-toast-min-height);
     padding: var(--zen-toast-padding);
+    border: none;
     border-radius: 14px;
     background: linear-gradient(to bottom, var(--zen-primary-color) -40%, color-mix(in srgb, var(--zen-primary-color), #0f0f0f 20%));
     box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0 0 22px 2px;
-    border: none;
-    display: flex;
-    font-weight: 600;
-    align-items: center;
-    width: max-content;
-    position: absolute;
-    transform-origin: top center;
-    max-height: var(--zen-toast-max-height);
-    min-height: var(--zen-toast-max-height);
     font-size: 14px;
+    font-weight: 600;
 
+    /* Collapsed: background toasts shrink, fade and peek out below the
+       front one. `transform` is the stack position; `translate` and `scale`
+       are reserved for enter and exit, so they compose without conflicts. */
+    transform-origin: var(--zen-toast-origin);
+    transform: translateY(calc(var(--peek) * var(--zen-toast-stack-peek))) scale(calc(1 - var(--zen-toast-peek-scale-step) * var(--peek)));
+    opacity: calc(1 - var(--zen-toast-peek-fade-step) * var(--peek));
+    filter: blur(0);
+
+        transition:
+      transform 0.4s var(--zen-toast-easing),
+      translate 0.35s var(--zen-toast-easing),
+      scale 0.35s var(--zen-toast-easing),
+      opacity 0.3s var(--zen-toast-easing),
+      filter 0.3s var(--zen-toast-easing);
+
+    /* Enter */
+    @starting-style {
+      opacity: 0;
+      translate: 0 -0.75rem;
+      scale: 0.9;
+      filter: blur(4px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    &[stack-overflow] {
+      display: none;
+    }
+
+    /* Content */
     & .description {
       opacity: 0.6;
       font-size: smaller;
@@ -383,7 +431,6 @@ menuseparator {
       color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
       box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.05);
       background: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1)) !important;
-
       outline: 0.5px solid light-dark(transparent, rgba(255, 255, 255, 0.02));
       outline-offset: -0.5px;
 
@@ -400,6 +447,45 @@ menuseparator {
         opacity: 0.6;
       }
     }
+  }
+
+    /* Expanded: hovering fans the stack out downwards at full size. The
+     function list matches the collapsed `transform` (translateY + scale),
+     so the browser interpolates each function instead of whole matrices. */
+  &:hover .zen-toast {
+    transform: translateY(calc(var(--zen-toast-offset, 0px) + var(--zen-toast-index, 0) * var(--zen-toast-stack-gap))) scale(1);
+    /* Stagger the fan-out */
+    transition-delay: calc(var(--zen-toast-index, 0) * 25ms);
+  }
+
+  &:hover .zen-toast:not([closing]) {
+    opacity: 1;
+  }
+
+  /* Keeps the hover alive while the pointer crosses the gap between
+     expanded toasts. */
+  &:hover .zen-toast::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: var(--zen-toast-stack-gap);
+  }
+
+  /* Exit: the toast fades out from where it currently is. */
+    & .zen-toast[closing] {
+    translate: 0 -0.5rem;
+    scale: 0.9;
+    opacity: 0;
+    filter: blur(2px);
+    pointer-events: none;
+    transition-delay: 0s;
+    transition:
+      translate 0.3s var(--zen-toast-easing),
+      scale 0.3s var(--zen-toast-easing),
+      opacity 0.3s var(--zen-toast-easing),
+      filter 0.3s var(--zen-toast-easing);
   }
 }
 

@@ -6,6 +6,14 @@ import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components
 import { nsZenMenuBar } from "chrome://browser/content/zen-components/ZenMenubar.mjs";
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 
+// Maximum number of toasts shown in the stack; extra toasts stay hidden
+// until a slot frees up.
+const MAX_STACKED_TOASTS = 5;
+// How many background toasts visually peek out from behind the front one.
+// Deeper toasts hide perfectly behind the last peeking one.
+const MAX_TOAST_PEEK_LEVELS = 4;
+const DEFAULT_TOAST_TIMEOUT_MS = 2000;
+
 window.gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
@@ -42,8 +50,16 @@ window.gZenUIManager = {
       return motion;
     });
 
-    ChromeUtils.defineLazyGetter(this, "_toastContainer", () => {
-      return document.getElementById("zen-toast-container");
+        ChromeUtils.defineLazyGetter(this, "_toastContainer", () => {
+      const container = document.getElementById("zen-toast-container");
+      // Timers are paused while the stack is hovered and restarted together.
+      container.addEventListener("mouseenter", () => {
+        this._setToastTimersPaused(true);
+      });
+      container.addEventListener("mouseleave", () => {
+        this._setToastTimersPaused(false);
+      });
+      return container;
     });
 
     gZenWorkspaces.promiseInitialized.finally(() => {
@@ -762,101 +778,132 @@ window.gZenUIManager = {
       return button;
     };
 
-    // Check if this message ID already exists
-    for (const child of this._toastContainer.children) {
-      if (child._messageId === messageId) {
-        child.removeAttribute("button");
-        if (options.button) {
-          const button = createButton();
-          const existingButton = child.querySelector("button");
-          if (existingButton) {
-            existingButton.remove();
-          }
-          child.appendChild(button);
-          child.setAttribute("button", true);
-        }
-        return [child, true];
-      }
-    }
     const wrapper = document.createXULElement("hbox");
     const element = document.createXULElement("vbox");
     const label = document.createXULElement("label");
     document.l10n.setAttributes(label, messageId, options.l10nArgs);
     element.appendChild(label);
+
     if (options.descriptionId) {
       const description = document.createXULElement("label");
       description.classList.add("description");
       document.l10n.setAttributes(description, options.descriptionId, options);
       element.appendChild(description);
     }
+
     wrapper.appendChild(element);
+
     if (options.button) {
       const button = createButton();
       wrapper.appendChild(button);
       wrapper.setAttribute("button", true);
     }
+
     wrapper.classList.add("zen-toast");
     wrapper._messageId = messageId;
-    return [wrapper, false];
+    return wrapper;
   },
 
   async showToast(messageId, options = {}) {
-    const [toast, reused] = this._createToastElement(messageId, options);
-    this._toastContainer.removeAttribute("hidden");
-    this._toastContainer.appendChild(toast);
-    const timeoutFunction = () => {
-      if (Services.prefs.getBoolPref("ui.popup.disable_autohide")) {
-        return;
+    try {
+      const toast = this._createToastElement(messageId, options);
+      toast._duration = options.timeout || DEFAULT_TOAST_TIMEOUT_MS;
+
+      // Fluent applies text asynchronously. Wait for it so the toast is
+      // never shown (or measured) without its content.
+      await document.l10n.translateFragment(toast);
+
+      this._toastContainer.removeAttribute("hidden");
+      this._toastContainer.appendChild(toast);
+      this._updateToastStack();
+
+      // While the stack is hovered, timers stay paused; mouseleave restarts
+      // all of them together.
+      if (!this._toastContainer.matches(":hover")) {
+        this._startToastTimer(toast);
       }
-      this.motion
-        .animate(
-          toast,
-          { opacity: [1, 0], scale: [1, 0.5] },
-          { duration: 0.2, bounce: 0 }
-        )
-        .then(() => {
-          toast.remove();
-          if (this._toastContainer.children.length === 0) {
-            this._toastContainer.setAttribute("hidden", true);
-          }
-        });
-    };
-    if (reused) {
-      await this.motion.animate(
-        toast,
-        { scale: 0.2 },
-        { duration: 0.1, bounce: 0 }
+    } catch (e) {
+      console.error("showToast failed:", e);
+    }
+  },
+
+  _startToastTimer(toast) {
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => this._closeToast(toast), toast._duration);
+  },
+
+  _setToastTimersPaused(paused) {
+    for (const toast of this._toastContainer.children) {
+      clearTimeout(toast._timer);
+      if (!paused && !toast.hasAttribute("closing")) {
+        this._startToastTimer(toast);
+      }
+    }
+  },
+
+  _closeToast(toast) {
+    if (
+      toast.hasAttribute("closing") ||
+      Services.prefs.getBoolPref("ui.popup.disable_autohide")
+    ) {
+      return;
+    }
+
+    // The toast leaves the stack right away (the others re-slot) but stays
+    // where it is while it fades out.
+    toast.setAttribute("closing", "true");
+    this._updateToastStack();
+
+    // Resolves once the exit transitions finish or get cancelled, and
+    // immediately if they never start (e.g. reduced motion).
+    Promise.allSettled(
+      toast.getAnimations().map(animation => animation.finished)
+    ).then(() => {
+      toast.remove();
+      this._updateToastStack();
+
+      if (!this._toastContainer.children.length) {
+        this._toastContainer.setAttribute("hidden", true);
+      }
+    });
+  },
+
+  // Newest toast first. Closing toasts are excluded so they keep their last
+  // position while they fade out.
+  _getLiveToasts() {
+    return Array.from(this._toastContainer.children)
+      .filter(toast => !toast.hasAttribute("closing"))
+      .reverse();
+  },
+
+  // Gives every live toast its slot: index 0 is the front of the stack.
+  // CSS turns these variables into the collapsed and expanded layouts.
+  _updateToastStack() {
+    const toasts = this._getLiveToasts();
+
+    // Overflow must be settled before measuring, because hidden toasts have
+    // no height.
+    toasts.forEach((toast, index) => {
+      toast.toggleAttribute("stack-overflow", index >= MAX_STACKED_TOASTS);
+      toast.style.setProperty("--zen-toast-index", index);
+      toast.style.setProperty(
+        "--zen-toast-peek-level",
+        Math.min(index, MAX_TOAST_PEEK_LEVELS)
       );
-    } else {
-      toast.addEventListener("mouseover", () => {
-        if (this._toastTimeouts[messageId]) {
-          clearTimeout(this._toastTimeouts[messageId]);
-        }
-      });
-      toast.addEventListener("mouseout", () => {
-        if (this._toastTimeouts[messageId]) {
-          clearTimeout(this._toastTimeouts[messageId]);
-        }
-        this._toastTimeouts[messageId] = setTimeout(
-          timeoutFunction,
-          options.timeout || 2000
-        );
-      });
+    });
+
+    // When expanded, each toast is offset by the heights of those in front
+    // of it. The gap between toasts is added in CSS.
+    let offset = 0;
+    for (const toast of toasts) {
+      toast.style.setProperty("--zen-toast-offset", `${offset}px`);
+      offset += toast.offsetHeight;
     }
-    if (!toast.style.transform) {
-      toast.style.transform = "scale(0)";
-    }
-    await this.motion.animate(
-      toast,
-      { scale: 1 },
-      { type: "spring", bounce: 0.2, duration: 0.5 }
-    );
-    if (this._toastTimeouts[messageId]) {
-      clearTimeout(this._toastTimeouts[messageId]);
-    }
-    this._toastTimeouts[messageId] = setTimeout(
-      timeoutFunction,
-      options.timeout || 2000
+
+    const stackedCount = Math.min(toasts.length, MAX_STACKED_TOASTS);
+    this._toastContainer.style.setProperty(
+      "--zen-toast-stack-behind",
+      Math.max(Math.min(stackedCount - 1, MAX_TOAST_PEEK_LEVELS), 0)
     );
   },
 

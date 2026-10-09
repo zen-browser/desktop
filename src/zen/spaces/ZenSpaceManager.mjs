@@ -885,6 +885,7 @@ class nsZenWorkspaces {
       console.error("gZenWorkspaces: Error selecting the start page", e);
     }
     this._resolveInitialized();
+    this.#settleAdoptedTabs();
     this.#clearAnyZombieTabs(); // Dont call with await
     delete this._resolveInitialized;
 
@@ -1662,6 +1663,48 @@ class nsZenWorkspaces {
     );
 
     await gBrowser.explicitUnloadTabs(tabsToUnload);
+  }
+
+  /**
+   * Gives a tab that just came in from another window a space that this one
+   * has. A tab keeps the space it wore in the window it came from, which
+   * this window may know nothing about, leaving the tab somewhere nothing
+   * shows it (see gh-15810).
+   *
+   * @param {MozTabbrowserTab} aTab - The tab this window has just taken in
+   * @param {string?} [aSpaceId] - The space it was asked to land in
+   */
+  adoptTabIntoSpace(aTab, aSpaceId = null) {
+    if (!this.workspaceEnabled || aTab.hasAttribute("zen-essential")) {
+      return;
+    }
+    if (!this._workspaceCache?.length || !this.activeWorkspace) {
+      // A window opened for these tabs takes them in before it has spaces of
+      // its own, so there is nothing to put them in yet.
+      this.#adoptedBeforeSpaces.push([aTab, aSpaceId]);
+      return;
+    }
+    const asked = aSpaceId ?? aTab.getAttribute("zen-workspace-id");
+    const space = this.getWorkspaceFromId(asked) ? asked : this.activeWorkspace;
+    if (space === aTab.getAttribute("zen-workspace-id")) {
+      return;
+    }
+    aTab.setAttribute("zen-workspace-id", space);
+    this.moveTabToWorkspace(aTab, space);
+  }
+
+  /** Tabs taken in from another window before this one had its spaces. */
+  #adoptedBeforeSpaces = [];
+
+  /** Puts those tabs in a space now that this window has them. */
+  #settleAdoptedTabs() {
+    const adopted = this.#adoptedBeforeSpaces;
+    this.#adoptedBeforeSpaces = [];
+    for (const [tab, spaceId] of adopted) {
+      if (tab.isConnected && !tab.closing) {
+        this.adoptTabIntoSpace(tab, spaceId);
+      }
+    }
   }
 
   moveTabToWorkspace(tab, workspaceID) {

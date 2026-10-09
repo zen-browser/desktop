@@ -1,0 +1,27 @@
+diff --git a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
+--- a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
++++ b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
+@@ -153,7 +153,22 @@
+       lazy.UrlbarPrefs.get("maxRichResults"),
+       lazy.TOP_SITES_MAX_SITES_PER_ROW * UrlbarProviderTopSites.topSitesRows
+     );
+-    sites = sites.slice(0, numTopSites);
++    const showPinned = Services.prefs.getBoolPref(
++      "zen.urlbar.show-pinned",
++      false
++    );
++    const showSponsored = Services.prefs.getBoolPref(
++      "zen.urlbar.show-sponsored",
++      false
++    );
++    // Filter before limiting results so hidden shortcuts do not leave gaps.
++    sites = sites
++      .filter(
++        site =>
++          (showPinned || !site.isPinned) &&
++          (showSponsored || !site.sponsored_position)
++      )
++      .slice(0, numTopSites);
+ 
+     sites = sites.map(link => {
+       let site = {

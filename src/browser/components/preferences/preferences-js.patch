@@ -39,3 +39,16 @@ index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001db
  
    // Restore the cached Firefox Labs nav button visibility so it shows
    // immediately when recipes are expected to be available, before
+
+@@ -737,9 +744,9 @@ async function gotoPref(
+   let redesignEnabled = srdSectionPrefs.all;
+   let categories = document.getElementById("categories");
+   const kDefaultCategoryInternalName = redesignEnabled
+-    ? "paneSync"
++    ? "paneHome"
+     : "paneGeneral";
+-  const kDefaultCategory = redesignEnabled ? "sync" : "general";
++  const kDefaultCategory = redesignEnabled ? "home" : "general";
+   let hash = document.location.hash;
+   let category = aCategory || hash.substring(1) || kDefaultCategoryInternalName;
+ 

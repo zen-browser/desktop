@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/Tabbrowser.sys.mjs b/browser/components/tabbrowser/Tabbrowser.sys.mjs
-index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1f3049fcc 100644
+index e41d07a03d564b2c5960d5b70cd76f8e528e6532..1abe45f72d8a44a60263a5db056e618eb8787e79 100644
 --- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
 +++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
 @@ -491,6 +491,7 @@ export class Tabbrowser {
@@ -1183,7 +1183,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
      // Clear tabs cache after moving nodes because the order of tabs may have
      // changed.
      this.tabContainer._invalidateCachedTabs();
-@@ -8385,7 +8701,22 @@ export class Tabbrowser {
+@@ -8385,7 +8701,25 @@ export class Tabbrowser {
     * @returns {object}
     *    The new tab in the current window, null if the tab couldn't be adopted.
     */
@@ -1193,6 +1193,9 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
 +      const tabId = aTab.id;
 +      const thisTab = this.documentGlobal.gZenWindowSync.getItemFromWindow(this.documentGlobal, tabId);
 +      if (thisTab) {
++        // The counterpart wears the space of the window it was synced from,
++        // so settle it into one this window has before placing it.
++        this.documentGlobal.gZenWorkspaces.adoptTabIntoSpace(thisTab, spaceId);
 +        // Just move the tab to the index
 +        this.moveTabTo(thisTab, { elementIndex, tabIndex });
 +        if (spaceId) {
@@ -1207,7 +1210,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
      // Swap the dropped tab with a new one we create and then close
      // it in the other window (making it seem to have moved between
      // windows). We also ensure that the tab we create to swap into has
-@@ -8428,6 +8759,8 @@ export class Tabbrowser {
+@@ -8428,6 +8762,8 @@ export class Tabbrowser {
      }
      params.skipLoad = true;
      let newTab = this.addWebTab("about:blank", params);
@@ -1216,7 +1219,18 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
  
      aTab.container.tabDragAndDrop.finishAnimateTabMove();
  
-@@ -9249,7 +9582,7 @@ export class Tabbrowser {
+@@ -8437,6 +8773,10 @@ export class Tabbrowser {
+       return null;
+     }
+ 
++    // The swap brings the other window's space over with the tab, so settle
++    // it into one this window actually has.
++    this.documentGlobal.gZenWorkspaces?.adoptTabIntoSpace(newTab, spaceId);
++
+     if (selectTab) {
+       this.selectedTab = newTab;
+     }
+@@ -9249,7 +9589,7 @@ export class Tabbrowser {
        // preventDefault(). It will still raise the window if appropriate.
        return;
      }
@@ -1225,7 +1239,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
      this.documentGlobal.focus();
      aEvent.preventDefault();
    }
-@@ -9266,7 +9599,6 @@ export class Tabbrowser {
+@@ -9266,7 +9606,6 @@ export class Tabbrowser {
  
    on_TabGroupCollapse(aEvent) {
      aEvent.target.tabs.forEach(tab => {
@@ -1233,7 +1247,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
      });
    }
  
-@@ -9614,7 +9946,9 @@ export class Tabbrowser {
+@@ -9614,7 +9953,9 @@ export class Tabbrowser {
  
        let filter = this.#tabFilters.get(tab);
        if (filter) {
@@ -1243,7 +1257,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
  
          let listener = this.#tabListeners.get(tab);
          if (listener) {
-@@ -10414,6 +10748,7 @@ class TabProgressListener {
+@@ -10414,6 +10755,7 @@ class TabProgressListener {
            aWebProgress.isTopLevel
          ) {
            this._tab.setAttribute("busy", "true");
@@ -1251,7 +1265,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
            this.#tabbrowser._tabAttrModified(this._tab, ["busy"]);
            this._tab._notselectedsinceload = !this._tab.selected;
          }
-@@ -10494,6 +10829,7 @@ class TabProgressListener {
+@@ -10494,6 +10836,7 @@ class TabProgressListener {
        // known defaults. Note we use the original URL since about:newtab
        // redirects to a prerendered page.
        const shouldRemoveFavicon =
@@ -1259,7 +1273,7 @@ index e41d07a03d564b2c5960d5b70cd76f8e528e6532..bc36f935139caf58ce7abfc0fa3122a1
          !this._browser.mIconURL &&
          !ignoreBlank &&
          !(originalLocation.spec in FAVICON_DEFAULTS);
-@@ -10670,13 +11006,6 @@ class TabProgressListener {
+@@ -10670,13 +11013,6 @@ class TabProgressListener {
            this._browser.originalURI = aRequest.originalURI;
          }
  

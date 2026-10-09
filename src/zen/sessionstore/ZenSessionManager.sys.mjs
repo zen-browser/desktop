@@ -758,6 +758,36 @@ export class nsZenSessionManager {
     return tabData && !(tabData.zenIsEmpty && !tabData.groupId);
   }
 
+  /**
+   * Whether a tab's data holds nothing.
+   *
+   * @param {object} aTabData - A tab's collected data
+   * @returns {boolean} Whether it is one of those stand-ins
+   */
+  #isBlankTabData(aTabData) {
+    const entries = aTabData.entries || [];
+    return (
+      !entries.length ||
+      (entries.length === 1 && entries[0].url === "about:blank")
+    );
+  }
+
+  /**
+   * Decides which of a tab's two copies to keep for the session.
+   *
+   * @param {object} aCandidate - The copy just come across
+   * @param {object} aKept - The copy held so far
+   * @returns {boolean} Whether the candidate should take its place
+   */
+  #isBetterTabData(aCandidate, aKept) {
+    // See gh-14004.
+    const candidateIsBlank = this.#isBlankTabData(aCandidate);
+    if (candidateIsBlank !== this.#isBlankTabData(aKept)) {
+      return !candidateIsBlank;
+    }
+    return !!aCandidate._zenIsActiveTab;
+  }
+
   #collectUsedTabsFromWindows(aStateWindows) {
     const tabIdRelationMap = new Map();
     for (const window of aStateWindows) {
@@ -769,10 +799,8 @@ export class nsZenSessionManager {
         if (!this.#shouldCollectTab(tabData)) {
           continue;
         }
-        if (
-          !tabIdRelationMap.has(tabData.zenSyncId) ||
-          tabData._zenIsActiveTab
-        ) {
+        const kept = tabIdRelationMap.get(tabData.zenSyncId);
+        if (!kept || this.#isBetterTabData(tabData, kept)) {
           tabIdRelationMap.set(tabData.zenSyncId, tabData);
         }
       }

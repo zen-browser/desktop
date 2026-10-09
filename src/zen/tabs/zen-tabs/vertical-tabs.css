@@ -994,11 +994,13 @@ zen-library {
 
 @media not (forced-colors) {
   .tab-reset-button:hover,
+  .tab-close-button:hover,
   .tab-reset-pin-button:hover {
     background-color: color-mix(in srgb, currentColor 10%, transparent);
   }
 
   .tab-reset-button:hover:active,
+  .tab-close-button:hover:active,
   .tab-reset-pin-button:hover:active {
     background-color: color-mix(in srgb, currentColor 20%, transparent);
   }

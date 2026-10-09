@@ -96,4 +96,10 @@
   max-height: 100%;
   border-radius: 8px;
   object-fit: contain;
+
+  &[file] {
+    width: 128px;
+    height: 128px;
+    border-radius: 0;
+  }
 }

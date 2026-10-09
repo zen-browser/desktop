@@ -1327,16 +1327,18 @@ window.gZenVerticalTabsManager = {
   },
 
   getSidebarMinWidth() {
-    let captionButtons = this.actualWindowButtons;
-    let captionButtonsWidth = this._prefsRightSide
-      ? window.windowUtils.getBoundsWithoutFlushing(captionButtons).width
-      : 0;
-    switch (AppConstants.platform) {
-      case "macosx":
-        return 163;
-      default:
-        return (this._prefsRightSide ? 117 : 152) + captionButtonsWidth;
+    if (AppConstants.platform === "macosx") {
+      return 163;
     }
+
+    if (this._prefsRightSide && this._prefsUseSingleToolbar) {
+      let captionButtons = this.actualWindowButtons;
+      let captionButtonsWidth =
+        window.windowUtils.getBoundsWithoutFlushing(captionButtons).width;
+      return 117 + captionButtonsWidth;
+    }
+
+    return 152;
   },
 
   // eslint-disable-next-line complexity

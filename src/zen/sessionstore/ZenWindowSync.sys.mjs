@@ -994,31 +994,7 @@ class nsZenWindowSync {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async resolve => {
       if (callback) {
-        const browserBlob =
-          await aOtherTab.documentGlobal.PageThumbs.captureToBlob(
-            aOtherTab.linkedBrowser,
-            {
-              fullScale: true,
-              fullViewport: true,
-              backgroundColor: "transparent",
-            }
-          );
-
-        let mySrc = await new Promise(r => {
-          const reader = new FileReader();
-          if (!browserBlob) {
-            r("");
-            return;
-          }
-          reader.readAsDataURL(browserBlob);
-          reader.onloadend = function () {
-            // result includes identifier 'data:image/png;base64,' plus the base64 data
-            r(reader.result);
-          };
-          reader.onerror = function () {
-            r("");
-          };
-        });
+        const mySrc = await this.#captureBrowserToURL(aOtherTab);
 
         await this.#createPseudoImageForBrowser(otherBrowser, mySrc);
         callback();
@@ -1035,6 +1011,34 @@ class nsZenWindowSync {
       this.#maybeRemovePseudoImageForBrowser(ourBrowser);
       resolve();
     });
+  }
+
+  /**
+   * Captures a tab's viewport as an object URL to stand in for its web
+   * contents while they live in another window.
+   *
+   * @param {object} aTab - The tab whose contents to capture.
+   * @returns {Promise<string>} The object URL, or "" if nothing was captured.
+   */
+  async #captureBrowserToURL(aTab) {
+    const win = aTab.documentGlobal;
+    const bitmap = await aTab.linkedBrowser.drawSnapshot(
+      0,
+      0,
+      0,
+      0,
+      win.devicePixelRatio || 1,
+      "transparent",
+      /* fullViewport */ true
+    );
+    if (!bitmap) {
+      return "";
+    }
+    const canvas = new win.OffscreenCanvas(bitmap.width, bitmap.height);
+    canvas.getContext("2d").drawImage(bitmap, 0, 0);
+    const blob = await canvas.convertToBlob({ type: "image/png" });
+    bitmap.close();
+    return win.URL.createObjectURL(blob);
   }
 
   /**
@@ -1064,7 +1068,12 @@ class nsZenWindowSync {
       ".zen-pseudo-browser-image"
     );
     if (elements) {
-      elements.forEach(element => element.remove());
+      elements.forEach(element => {
+        if (element.src?.startsWith("blob:")) {
+          aBrowser.documentGlobal?.URL.revokeObjectURL(element.src);
+        }
+        element.remove();
+      });
     }
   }
 

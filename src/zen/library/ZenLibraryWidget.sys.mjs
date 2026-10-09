@@ -5,6 +5,9 @@
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  blockedText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  confirmUnblock: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  isBlocked: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   DownloadsCommon:
     "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
@@ -66,12 +69,14 @@ class ZenLibraryDownloadStack {
     button.addEventListener("mouseleave", this);
     this.#list.addEventListener("mouseenter", this);
     this.#list.addEventListener("mouseleave", this);
+    this.#window.addEventListener("unload", this, { once: true });
 
     this.#data = lazy.DownloadsCommon.getData(this.#window, true);
     this.#data.addView(this);
   }
 
   destroy() {
+    this.#window.removeEventListener("unload", this);
     this.#data.removeView(this);
     this.#window.clearTimeout(this.#closeTimer);
     this.#list.remove();
@@ -105,6 +110,9 @@ class ZenLibraryDownloadStack {
         break;
       case "mouseleave":
         this.#scheduleClose();
+        break;
+      case "unload":
+        this.destroy();
         break;
     }
   }
@@ -271,6 +279,14 @@ class ZenLibraryDownloadStack {
   #openDownload(download) {
     if (!download.stopped) {
       this.#toggleOpenWhenDone(download);
+      return;
+    }
+    if (lazy.isBlocked(download)) {
+      lazy.confirmUnblock(
+        download,
+        this.#window,
+        this.#openDownload.bind(this)
+      );
       return;
     }
     if (download.succeeded) {
@@ -519,7 +535,7 @@ class ZenLibraryDownloadStack {
       return strings.stateBlockedParentalControls;
     }
     if (download.error?.becauseBlockedByReputationCheck) {
-      return strings.blockedMalware;
+      return lazy.blockedText(download);
     }
     return download.canceled ? strings.stateCanceled : strings.stateFailed;
   }

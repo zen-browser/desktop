@@ -326,7 +326,7 @@
       margin: auto 20px auto 8px;
 
       &[downloading] {
-        margin-right: 14px;
+        margin-right: 15px;
       }
 
       :root:not([zen-sidebar-expanded="true"]) & {

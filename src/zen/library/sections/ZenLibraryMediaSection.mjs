@@ -51,6 +51,19 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
   static id = "media";
   static label = "library-media-section-title";
 
+  /** @returns {object[]} What a right click on the media tab offers */
+  static get tabMenu() {
+    if (!Services.prefs.getBoolPref(ENABLED_PREF, false)) {
+      return [];
+    }
+    return [
+      {
+        l10nId: "library-media-turn-off",
+        command: () => Services.prefs.setBoolPref(ENABLED_PREF, false),
+      },
+    ];
+  }
+
   static properties = {
     items: { state: true },
     loading: { state: true },
@@ -107,8 +120,11 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     this.requestUpdate();
   }
 
+  #enabledObserver = { observe: () => this.#onEnabledChanged() };
+
   connectedCallback() {
     super.connectedCallback();
+    Services.prefs.addObserver(ENABLED_PREF, this.#enabledObserver);
     if (!this.#enabled) {
       this.loading = false;
       return;
@@ -125,18 +141,41 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
 
   #enable() {
     Services.prefs.setBoolPref(ENABLED_PREF, true);
-    this.loading = true;
-    this.requestUpdate();
-    this.#scan();
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  /**
+   * Looking through the folders was just agreed to, or taken back, which can
+   * happen from the tab's menu, from settings or from another window.
+   */
+  #onEnabledChanged() {
+    this.#stopScan();
+    if (this.#enabled) {
+      this.loading = true;
+      this.requestUpdate();
+      this.#scan();
+      return;
+    }
+    this.#preview?.destroy();
+    this.#preview = null;
+    this.items = [];
+    this.#scanned = [];
+    this.loading = false;
+    this.requestUpdate();
+  }
+
+  /** Forgets any scan under way, so that its results are dropped. */
+  #stopScan() {
     this.#scanId++;
     if (this.#scanHandle) {
       window.cancelIdleCallback(this.#scanHandle);
       this.#scanHandle = null;
     }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    Services.prefs.removeObserver(ENABLED_PREF, this.#enabledObserver);
+    this.#stopScan();
     this.#thumbObserver?.disconnect();
     this.#thumbObserver = null;
     this.#preview?.destroy();

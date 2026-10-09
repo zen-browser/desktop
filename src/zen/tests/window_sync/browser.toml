@@ -8,6 +8,10 @@ support-files = [
   "head.js",
 ]
 
+["browser_collect_tab_state.js"]
+
+["browser_move_unloaded_tabs.js"]
+
 ["browser_sync_tab_label.js"]
 
 ["browser_sync_tab_open.js"]

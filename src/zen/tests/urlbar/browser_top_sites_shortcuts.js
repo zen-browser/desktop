@@ -4,7 +4,9 @@
 "use strict";
 
 ChromeUtils.defineESModuleGetters(this, {
-  TopSitesForTest: "resource:///modules/topsites/TopSites.sys.mjs",
+  AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
+  sinon: "resource://testing-common/Sinon.sys.mjs",
+  TopSites: "resource:///modules/topsites/TopSites.sys.mjs",
   UrlbarProviderTopSites:
     "moz-src:///browser/components/urlbar/UrlbarProviderTopSites.sys.mjs",
 });
@@ -19,7 +21,7 @@ add_task(async function test_shortcut_preferences() {
     { url: "https://another.example/" },
   ];
   const testSandbox = sinon.createSandbox();
-  testSandbox.stub(TopSitesForTest, "getSites").resolves(fixtures);
+  testSandbox.stub(TopSites, "getSites").resolves(fixtures);
   testSandbox.stub(AboutNewTab, "getTopSites").returns(fixtures);
   try {
     for (const componentEnabled of [false, true]) {
@@ -52,12 +54,12 @@ add_task(async function test_shortcut_preferences() {
         const results = [];
         await new UrlbarProviderTopSites().startQuery(
           { isPrivate: false },
-          (_provider, result) => results.push(result.payload.url),
+          (_provider, result) => results.push(result.payload.url)
         );
         Assert.deepEqual(
           results,
-          expected.map((name) => `https://${name}.example/`),
-          `Top Sites backend ${componentEnabled}, pinned ${showPinned}, sponsored ${showSponsored}`,
+          expected.map(name => `https://${name}.example/`),
+          `Top Sites backend ${componentEnabled}, pinned ${showPinned}, sponsored ${showSponsored}`
         );
         await SpecialPowers.popPrefEnv();
       }

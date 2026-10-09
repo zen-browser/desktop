@@ -651,6 +651,64 @@ var gZenMarketplaceManager = {
 const kZenExtendedSidebar = "zen.view.sidebar-expanded";
 const kZenSingleToolbar = "zen.view.use-single-toolbar";
 
+const kZenGestures = ChromeUtils.importESModule(
+  "resource:///modules/zen/mousegestures/ZenMouseGestures.sys.mjs"
+);
+
+var gZenMouseGesturesSettings = {
+  init() {
+    const list = document.getElementById("zenMouseGesturesList");
+    for (const gesture of kZenGestures.GESTURES) {
+      list.appendChild(this._createRow(gesture));
+    }
+    document
+      .getElementById("zenMouseGesturesReset")
+      .addEventListener("command", () => this._resetAll());
+  },
+
+  _createRow(gesture) {
+    const row = document.createXULElement("hbox");
+    row.className = "zen-mouse-gesture-row";
+    row.setAttribute("align", "center");
+    row.setAttribute("data-gesture", gesture);
+
+    const icon = document.createElementNS("http://www.w3.org/1999/xhtml", "span");
+    icon.className = "zen-mouse-gesture-icon";
+    icon.appendChild(kZenGestures.createGestureIcon(document, gesture));
+    const name = document.createXULElement("label");
+    name.setAttribute("flex", "1");
+    name.setAttribute("data-l10n-id", `zen-mouse-gestures-name-${gesture}`);
+
+    const menulist = document.createXULElement("menulist");
+    const popup = document.createXULElement("menupopup");
+    for (const action of kZenGestures.ACTIONS) {
+      const item = document.createXULElement("menuitem");
+      item.setAttribute("value", action);
+      item.setAttribute("data-l10n-id", `zen-mouse-gestures-action-${action}`);
+      popup.appendChild(item);
+    }
+    menulist.appendChild(popup);
+    menulist.value = Services.prefs.getStringPref(kZenGestures.getGesturePref(gesture));
+    menulist.addEventListener("command", () => {
+      Services.prefs.setStringPref(kZenGestures.getGesturePref(gesture), menulist.value);
+    });
+
+    row.append(icon, name, menulist);
+    return row;
+  },
+
+  _resetAll() {
+    for (const gesture of kZenGestures.GESTURES) {
+      Services.prefs.clearUserPref(kZenGestures.getGesturePref(gesture));
+    }
+    for (const row of document.querySelectorAll(".zen-mouse-gesture-row")) {
+      row.querySelector("menulist").value = Services.prefs.getStringPref(
+        kZenGestures.getGesturePref(row.getAttribute("data-gesture"))
+      );
+    }
+  },
+};
+
 var gZenLooksAndFeel = {
   init() {
     if (this.__hasInitialized) {
@@ -658,6 +716,7 @@ var gZenLooksAndFeel = {
     }
     this.__hasInitialized = true;
     gZenMarketplaceManager.init();
+    gZenMouseGesturesSettings.init();
     for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
       Services.prefs.addObserver(pref, this);
     }
@@ -1192,6 +1251,26 @@ Preferences.addAll([
     id: "zen.view.drag-window-from-content",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.mouse-gestures.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.mouse-gestures.show-track",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.mouse-gestures.show-hint",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.mouse-gestures.min-distance",
+    type: "int",
+    default: 40,
   },
   {
     id: "zen.urlbar.behavior",

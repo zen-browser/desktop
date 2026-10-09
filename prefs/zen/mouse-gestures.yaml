@@ -1,0 +1,72 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.mouse-gestures.enabled
+  value: true
+
+# Draw the path of the mouse while a gesture is being made.
+- name: zen.mouse-gestures.show-track
+  value: true
+
+# Show what the gesture is going to do while it is being made.
+- name: zen.mouse-gestures.show-hint
+  value: true
+
+# How far the mouse has to move, in CSS pixels, to start a gesture and to
+# begin each following stroke.
+- name: zen.mouse-gestures.min-distance
+  value: 40
+
+# What each gesture does. One of: none, back, forward, reload, stop,
+# tab-prev, tab-next, new-tab, close-tab, restore-tab, scroll-up,
+# scroll-down, scroll-top, scroll-bottom. Two-stroke gestures are written
+# as "<first>-<second>".
+
+- name: zen.mouse-gestures.action.left
+  value: "back"
+
+- name: zen.mouse-gestures.action.right
+  value: "forward"
+
+- name: zen.mouse-gestures.action.up
+  value: "scroll-up"
+
+- name: zen.mouse-gestures.action.down
+  value: "scroll-down"
+
+- name: zen.mouse-gestures.action.down-right
+  value: "close-tab"
+
+- name: zen.mouse-gestures.action.left-up
+  value: "restore-tab"
+
+- name: zen.mouse-gestures.action.right-up
+  value: "new-tab"
+
+- name: zen.mouse-gestures.action.right-down
+  value: "reload"
+
+- name: zen.mouse-gestures.action.up-left
+  value: "tab-prev"
+
+- name: zen.mouse-gestures.action.up-right
+  value: "tab-next"
+
+- name: zen.mouse-gestures.action.down-left
+  value: "stop"
+
+- name: zen.mouse-gestures.action.left-down
+  value: "none"
+
+- name: zen.mouse-gestures.action.up-down
+  value: "scroll-bottom"
+
+- name: zen.mouse-gestures.action.down-up
+  value: "scroll-top"
+
+- name: zen.mouse-gestures.action.left-right
+  value: "close-tab"
+
+- name: zen.mouse-gestures.action.right-left
+  value: "restore-tab"

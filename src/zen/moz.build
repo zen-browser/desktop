@@ -15,6 +15,7 @@ DIRS += [
     "library",
     "live-folders",
     "mods",
+    "mouse-gestures",
     "tests",
     "urlbar",
     "toolkit",

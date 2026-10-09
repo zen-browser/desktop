@@ -58,6 +58,28 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.glance.enabled",
   },
+  ZenMouseGestures: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenMouseGesturesParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenMouseGesturesChild.sys.mjs",
+      events: {
+        mousedown: {
+          mozSystemGroup: true,
+        },
+        contextmenu: {
+          capture: true,
+          mozSystemGroup: true,
+        },
+      },
+    },
+    allFrames: true,
+    messageManagerGroups: ["browsers"],
+    remoteTypes: ["web", "file"],
+    safeForUntrustedWebProcess: true,
+    enablePreference: "zen.mouse-gestures.enabled",
+  },
   ZenWindowDrag: {
     parent: {
       esModuleURI: "resource:///actors/ZenWindowDragParent.sys.mjs",

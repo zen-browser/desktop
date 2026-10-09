@@ -124,3 +124,9 @@
 - name: browser.sessionstore.interval
   # Interval in milliseconds (40 seconds, firefox defaults to 15000, but we write twice for our stores)
   value: 40000
+
+# Zen mouse gestures use the right mouse button. On Linux and macOS the
+# context menu normally opens on mouse down, which would pop up in the middle
+# of every gesture. Open it on mouse up like Windows does (ignored there).
+- name: ui.context_menus.after_mouseup
+  value: true

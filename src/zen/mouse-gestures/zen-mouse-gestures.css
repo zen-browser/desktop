@@ -1,0 +1,103 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@keyframes zen-gesture-hint-in {
+  from {
+    scale: 0.8;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#zen-gesture-ui {
+  --zen-gesture-accent: var(--zen-primary-color, AccentColor);
+
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  font-family: system-ui;
+}
+
+#zen-gesture-trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+#zen-gesture-trail-line {
+  fill: none;
+  stroke: var(--zen-gesture-accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(
+    0 0 6px color-mix(in srgb, var(--zen-gesture-accent), transparent 50%)
+  );
+}
+
+#zen-gesture-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  min-width: 180px;
+  padding: 20px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--zen-gesture-accent),
+      light-dark(rgba(0, 0, 0, 0.8), white) 70%
+    );
+  color: light-dark(#1b1b1d, #f1f1f1);
+  background-color: color-mix(
+    in srgb,
+    var(--zen-gesture-accent) 18%,
+    light-dark(rgba(255, 255, 255, 0.82), rgba(24, 24, 27, 0.82))
+  );
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 20px #00000050;
+  text-align: center;
+  animation: zen-gesture-hint-in 0.3s cubic-bezier(0.14, 1.43, 0.56, 1.01);
+
+  @media (-moz-platform: macos) {
+    border-radius: 24px;
+  }
+}
+
+#zen-gesture-hint-icon svg {
+  display: block;
+  width: 56px;
+  height: 56px;
+  color: var(--zen-gesture-accent);
+  filter: brightness(1.4);
+}
+
+#zen-gesture-hint-label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #zen-gesture-hint {
+    animation: none;
+  }
+}

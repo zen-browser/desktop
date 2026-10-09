@@ -101,6 +101,45 @@
         </hbox>
 </groupbox>
 
+<hbox id="zenMouseGesturesCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="zen-mouse-gestures-title"/>
+</hbox>
+
+<groupbox id="zenMouseGesturesGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-mouse-gestures-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-mouse-gestures-description" />
+
+      <checkbox id="zenMouseGesturesEnabled"
+            data-l10n-id="zen-mouse-gestures-enabled"
+            preference="zen.mouse-gestures.enabled"/>
+      <checkbox id="zenMouseGesturesShowTrack"
+            data-l10n-id="zen-mouse-gestures-show-track"
+            preference="zen.mouse-gestures.show-track"/>
+      <checkbox id="zenMouseGesturesShowHint"
+            data-l10n-id="zen-mouse-gestures-show-hint"
+            preference="zen.mouse-gestures.show-hint"/>
+      <hbox align="center">
+            <label data-l10n-id="zen-mouse-gestures-distance-label"/>
+            <menulist id="zenMouseGesturesDistance" preference="zen.mouse-gestures.min-distance">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-mouse-gestures-distance-short" value="20"/>
+                        <menuitem data-l10n-id="zen-mouse-gestures-distance-medium" value="40"/>
+                        <menuitem data-l10n-id="zen-mouse-gestures-distance-long" value="60"/>
+                        <menuitem data-l10n-id="zen-mouse-gestures-distance-longer" value="100"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+
+      <hbox align="center">
+            <label flex="1"><html:h3 data-l10n-id="zen-mouse-gestures-list-header"/></label>
+            <button id="zenMouseGesturesReset" data-l10n-id="zen-mouse-gestures-reset"/>
+      </hbox>
+      <vbox id="zenMouseGesturesList" class="indent"/>
+</groupbox>
+
 <hbox id="zenUrlBarCategory"
       class="subcategory"
       hidden="true"

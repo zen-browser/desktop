@@ -11,6 +11,7 @@ BROWSER_CHROME_MANIFESTS += [
     "glance/browser.toml",
     "live-folders/browser.toml",
     "media/browser.toml",
+    "mouse_gestures/browser.toml",
     "pinned/browser.toml",
     "popover/browser.toml",
     "share/browser.toml",

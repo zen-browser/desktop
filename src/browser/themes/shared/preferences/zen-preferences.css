@@ -507,3 +507,20 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
     display: none !important;
   }
 }
+
+.zen-mouse-gesture-row {
+  gap: 8px;
+  min-height: 36px;
+
+  & .zen-mouse-gesture-icon {
+    display: flex;
+    justify-content: center;
+    min-width: 40px;
+    color: var(--zen-primary-color);
+
+    & svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}

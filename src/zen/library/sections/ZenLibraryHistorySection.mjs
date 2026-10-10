@@ -15,6 +15,7 @@ let lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
   PlacesQuery: "resource://gre/modules/PlacesQuery.sys.mjs",
+  PlacesUIUtils: "moz-src:///browser/components/places/PlacesUIUtils.sys.mjs",
   PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
   SessionStore:
     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
@@ -286,6 +287,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
       tabs.push({
         url: entry.url,
         title,
+        image: tab.image,
         date: new Date(tab.closedAt),
         lastAccessed: tab.state.lastAccessed ?? tab.closedAt,
         guid: `closed-${tab.closedId}`,
@@ -572,7 +574,11 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
       >
         <img
           class="zen-library-row-icon"
-          src="page-icon:${visit.url}"
+          src=${
+            visit.image
+              ? lazy.PlacesUIUtils.getImageURL(visit.image)
+              : `page-icon:${visit.url}`
+          }
           decoding="async"
           alt=""
         />

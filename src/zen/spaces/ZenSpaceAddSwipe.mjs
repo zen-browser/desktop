@@ -69,7 +69,8 @@ export class ZenSpaceAddSwipe {
     gZenWorkspaces._organizeWorkspaceStripLocations(
       currentWorkspace,
       true,
-      value * ZenSpaceAddSwipe.SPACES_TRANSLATION * rightSideFactor
+      value * ZenSpaceAddSwipe.SPACES_TRANSLATION * rightSideFactor,
+      { forEdgeAction: true }
     );
   }
 

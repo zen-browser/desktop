@@ -3,10 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [DEFAULT]
-prefs = ["zen.workspaces.separate-essentials=true"]
+prefs = [
+  "zen.workspaces.separate-essentials=true",
+  "zen.window-sync.enabled=false",
+  "zen.workspaces.swipe-actions=true",
+]
+support-files = ["swipe_test_utils.js"]
 
 ["browser_container_auto_switch.js"]
 
 ["browser_container_specific_essentials.js"]
+
+["browser_issue_15525.js"]
+
+["browser_issue_15525_navigation.js"]
+
+["browser_issue_15525_wrapping.js"]
+
+["browser_issue_15525_edge_actions.js"]
 
 ["browser_issue_15588.js"]

@@ -19,6 +19,8 @@
   flex-direction: column;
   min-width: 0;
   border-radius: var(--border-radius-medium);
+  outline: var(--zen-sidebar-notification-outline);
+  outline-offset: -1.5px;
   box-shadow: var(--zen-sidebar-notification-shadow);
   font-size: 12px;
 }
@@ -72,6 +74,18 @@
     fill: currentColor;
     width: 14px;
     pointer-events: none;
+  }
+}
+
+.zen-sidebar-notification-progress {
+  height: 1px;
+  overflow: hidden;
+  transform: translateY(-1px);
+
+  & .zen-sidebar-notification-progress-bar {
+    height: 100%;
+    background: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, transparent 10%, #6b6b6b));
+    transform-origin: left center;
   }
 }
 

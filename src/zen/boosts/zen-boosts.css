@@ -194,7 +194,8 @@ body {
   max-height: 40px;
   align-items: center;
   background-color: var(--zen-boosts-secondary-background);
-  border: solid 1px var(--zen-boosts-primary-border-color);
+  border: solid 1px transparent;
+  border-bottom-color: var(--zen-boosts-primary-border-color);
 
   @media (-moz-windows-mica) {
     background-color: var(--zen-boosts-mica-background);

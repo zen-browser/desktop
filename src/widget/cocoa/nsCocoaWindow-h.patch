@@ -1,0 +1,23 @@
+diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
+index 22a2a7ef3a5e9257c8bb00ba6a55e8d39d2abbd9..6d8353fd11921585f7101f5717bdb3dd8f2a5eae 100644
+--- a/widget/cocoa/nsCocoaWindow.h
++++ b/widget/cocoa/nsCocoaWindow.h
+@@ -461,6 +461,10 @@ class nsCocoaWindow final : public nsIWidget {
+   void SetHideTitlebarSeparator(bool) override;
+   bool IsMacTitlebarDirectionRTL() override;
+   void SetCustomTitlebar(bool) override;
++  void SetWindowClass(const nsAString& aXulWinType,
++                      const nsAString& aXulWinClass,
++                      const nsAString& aXulWinName) override;
++  void UpdateWindowMaterial();
+   void UpdateThemeGeometries(
+       const nsTArray<ThemeGeometry>& aThemeGeometries) override;
+   void LockAspectRatio(bool aShouldLock) override;
+@@ -674,6 +678,7 @@ class nsCocoaWindow final : public nsIWidget {
+   // show (e.g. a window created by detaching a tab from a fullscreen window).
+   bool mIsInitialFullscreenSuppressed = false;
+   bool mWasShown = false;
++  bool mIsBrowserWindow = false;
+ 
+   int32_t mNumModalDescendants = 0;
+ 

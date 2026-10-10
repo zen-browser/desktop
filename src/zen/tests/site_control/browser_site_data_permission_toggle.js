@@ -37,7 +37,7 @@ add_task(async function test_toggling_permission_flips_ui_and_store() {
     );
     EventUtils.synthesizeMouseAtCenter(label, {});
 
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => geoItem.getAttribute("state") === "block",
       "row flips to the block state after the click"
     );

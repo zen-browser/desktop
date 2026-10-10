@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = ブーストを削除
 zen-boost-size = サイズ
-zen-boost-case = Case
+zen-boost-case = 大文字、小文字
 zen-boost-zap = ザップ
 zen-boost-code = コード
 zen-boost-back = 戻る
@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] { $elementCount } elements zapped
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = ブーストをエキスポ―とする
 zen-boost-load = 
-    .label = Import Boost
+    .label = ブーストをインポートする
 zen-panel-ui-boosts-exported-message = ブーストがエクスポートされました！
 zen-site-data-boosts = ブースト
 zen-site-data-create-boost = 

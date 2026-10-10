@@ -606,9 +606,12 @@ class nsZenBoostsManager {
    * @param {Window} parentWindow - The parent browser window
    * @param {Boost} boost - The boost which will be edited
    * @param {nsIURI} domainUri - The boost which will be edited
+   * @param {object} [options]
+   * @param {Element} [options.browser] - Browser showing the site when it is
+   *   not the selected tab, e.g. a detached glance
    * @returns {Window|null} The instanced editor window
    */
-  openBoostWindow(parentWindow, boost, domainUri) {
+  openBoostWindow(parentWindow, boost, domainUri, { browser = null } = {}) {
     if (!this.canBoostSite(domainUri)) {
       console.error(
         "[ZenBoostsManager] Cannot open editor for boost with invalid domain."
@@ -648,26 +651,51 @@ class nsZenBoostsManager {
       null
     );
 
-    // Close the editor if the tab is switched
-    parentWindow.gBrowser.tabContainer.addEventListener(
-      "TabSelect",
-      editor.close.bind(editor),
-      {
-        once: true,
-      }
-    );
-
     const progressListener = {
+      QueryInterface: ChromeUtils.generateQI([
+        "nsIWebProgressListener",
+        "nsISupportsWeakReference",
+      ]),
       onLocationChange: webProgress => {
         if (webProgress.isTopLevel) {
           editor.close();
-          parentWindow.gBrowser.removeTabsProgressListener(progressListener);
         }
       },
     };
+    const onTabSelect = editor.close.bind(editor);
+    if (browser) {
+      browser.addProgressListener(progressListener);
+      editor.addEventListener(
+        "unload",
+        () => {
+          browser.removeProgressListener(progressListener);
+          editor.browser = null;
+        },
+        { once: true }
+      );
+    } else {
+      // Close the editor if the tab is switched or navigates.
+      parentWindow.gBrowser.tabContainer.addEventListener(
+        "TabSelect",
+        onTabSelect,
+        { once: true }
+      );
+      parentWindow.gBrowser.addProgressListener(progressListener);
+      editor.addEventListener(
+        "unload",
+        () => {
+          parentWindow.gBrowser.tabContainer.removeEventListener(
+            "TabSelect",
+            onTabSelect
+          );
+          parentWindow.gBrowser.removeProgressListener(progressListener);
+          editor.browser = null;
+        },
+        { once: true }
+      );
+    }
 
-    parentWindow.gBrowser.addProgressListener(progressListener);
-
+    editor.browser = browser;
     // Give the domain
     editor.domain = domain;
     editor.openerWindow = parentWindow;

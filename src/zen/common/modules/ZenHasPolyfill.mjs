@@ -10,7 +10,7 @@ class nsHasPolyfill {
 
   /**
    * @param {HTMLElement} element
-   * @param {Array<{selector: string, exists: boolean}>} descendantSelectors
+   * @param {Array<{selector: string}>} descendantSelectors
    * @param {string} stateAttribute
    * @param {Array<string>} attributeFilter
    */
@@ -21,21 +21,23 @@ class nsHasPolyfill {
     attributeFilter = []
   ) {
     const updateState = () => {
-      const exists = descendantSelectors.some(({ selector }) => {
-        let selected = element.querySelector(selector);
-        if (selected?.tagName?.toLowerCase() === "menu") {
-          return null;
+      let matched = null;
+      for (const { selector } of descendantSelectors) {
+        const selected = element.querySelector(selector);
+        if (!selected || selected.tagName?.toLowerCase() === "menu") {
+          continue;
         }
-        if (selected) {
+        matched = selector;
+        break;
+      }
+
+      if (matched) {
+        if (gZenCompactModeManager._canDebugLog) {
           gZenCompactModeManager.log(
-            `Selector "${selector}" exists for: `,
+            `Selector "${matched}" exists for: `,
             element
           );
         }
-        return selected;
-      });
-      const { exists: shouldExist = true } = descendantSelectors;
-      if (exists === shouldExist) {
         if (!element.hasAttribute(stateAttribute)) {
           gZenCompactModeManager._setElementExpandAttribute(
             element,

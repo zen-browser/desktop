@@ -1,0 +1,11 @@
+[DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=false",
+]
+
+["browser_gesture_navigation.js"]
+
+["browser_gesture_scroll.js"]
+skip-if = [
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 1988390
+]

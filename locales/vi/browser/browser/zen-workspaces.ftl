@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Hồ sơ
     .tooltiptext = Các hồ sơ sẽ không dùng chung dữ liệu giữa các không gian làm việc.
 zen-workspace-creation-header = Tạo không gian
 zen-workspace-creation-label = Không gian dùng để sắp xếp các thẻ và phiên làm việc của bạn.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Xóa không gian?
 zen-workspaces-delete-workspace-body = Bạn có chắc chắn muốn xóa { $name }? Thao tác này không thể hoàn tác.
 # Note that the html tag MUST not be changed or removed, as it is used to better

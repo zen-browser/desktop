@@ -10,10 +10,13 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenLiveFoldersManager:
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
-  SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
-  SessionStartup: "resource:///modules/sessionstore/SessionStartup.sys.mjs",
+  SessionStore:
+    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
+  SessionStartup:
+    "moz-src:///browser/components/sessionstore/SessionStartup.sys.mjs",
+  TabStateFlusher:
+    "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs",
   gWindowSyncEnabled: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   gSyncOnlyPinnedTabs: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
@@ -610,7 +613,9 @@ export class nsZenSessionManager {
       }
     );
     this.#collectWindowData(windows);
-    lazy.ZenSyncStore.notifyAboutChanges();
+    // Let interested consumers (e.g. Firefox Sync) know fresh sidebar data
+    // is available, without this module knowing anything about them.
+    Services.obs.notifyObservers(null, "zen-sidebar-data-collected");
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebarWithoutCloning;
     this.#file.data = sidebar;
@@ -670,7 +675,12 @@ export class nsZenSessionManager {
       // every few hours (configurable via gBackupHourSpan), so that we
       // can have multiple backups per day for recent days, but only
       // one backup per day for older days.
-      let dateToUse = today.toISOString().slice(0, 10); // YYYY-MM-DD
+      // Use the local date, since the hour below is local too. Otherwise the
+      // file names don't sort in the order the backups were made.
+      const pad = n => String(n).padStart(2, "0");
+      const year = today.getFullYear();
+      const month = pad(today.getMonth() + 1);
+      let dateToUse = `${year}-${month}-${pad(today.getDate())}`; // YYYY-MM-DD
       const hourSpan = Math.min(Math.max(1, lazy.gBackupHourSpan), 24);
       const backupHour = Math.floor(today.getHours() / hourSpan) * hourSpan;
       dateToUse += `-${String(backupHour).padStart(2, "0")}`;
@@ -748,6 +758,36 @@ export class nsZenSessionManager {
     return tabData && !(tabData.zenIsEmpty && !tabData.groupId);
   }
 
+  /**
+   * Whether a tab's data holds nothing.
+   *
+   * @param {object} aTabData - A tab's collected data
+   * @returns {boolean} Whether it is one of those stand-ins
+   */
+  #isBlankTabData(aTabData) {
+    const entries = aTabData.entries || [];
+    return (
+      !entries.length ||
+      (entries.length === 1 && entries[0].url === "about:blank")
+    );
+  }
+
+  /**
+   * Decides which of a tab's two copies to keep for the session.
+   *
+   * @param {object} aCandidate - The copy just come across
+   * @param {object} aKept - The copy held so far
+   * @returns {boolean} Whether the candidate should take its place
+   */
+  #isBetterTabData(aCandidate, aKept) {
+    // See gh-14004.
+    const candidateIsBlank = this.#isBlankTabData(aCandidate);
+    if (candidateIsBlank !== this.#isBlankTabData(aKept)) {
+      return !candidateIsBlank;
+    }
+    return !!aCandidate._zenIsActiveTab;
+  }
+
   #collectUsedTabsFromWindows(aStateWindows) {
     const tabIdRelationMap = new Map();
     for (const window of aStateWindows) {
@@ -759,10 +799,8 @@ export class nsZenSessionManager {
         if (!this.#shouldCollectTab(tabData)) {
           continue;
         }
-        if (
-          !tabIdRelationMap.has(tabData.zenSyncId) ||
-          tabData._zenIsActiveTab
-        ) {
+        const kept = tabIdRelationMap.get(tabData.zenSyncId);
+        if (!kept || this.#isBetterTabData(tabData, kept)) {
           tabIdRelationMap.set(tabData.zenSyncId, tabData);
         }
       }
@@ -914,6 +952,79 @@ export class nsZenSessionManager {
     aWindow.__isNewZenWindow = true;
     SessionStoreInternal._deferredInitialState = newState;
     SessionStoreInternal.initializeWindow(aWindow, newState);
+    this.#refreshRestoredTabsState(aWindow, SessionStoreInternal).catch(e =>
+      console.error("ZenSessionManager: Failed to refresh restored tabs", e)
+    );
+  }
+
+  /**
+   * The state we clone into a new window comes from the parent process
+   * cache, which may lag behind the content processes (e.g. for a tab that
+   * was opened or navigated right before opening the new window). After the
+   * new window has been restored, flush the previous window and update each
+   * counterpart tab that hasn't started loading yet.
+   *
+   * @param {Window} aWindow
+   *        The newly restored window.
+   * @param {object} SessionStoreInternal
+   *        The SessionStore module instance.
+   */
+  async #refreshRestoredTabsState(aWindow, SessionStoreInternal) {
+    // Wait until the tabs have actually been created in the new window.
+    await aWindow.gZenWorkspaces.promiseInitialized;
+    if (aWindow.closed) {
+      return;
+    }
+    // Only refresh from the most recently used window: any other window
+    // already reported its state when it lost focus, so the cloned data
+    // is up to date for it.
+    let previousWindow = null;
+    for (const win of SessionStoreInternal._browserWindows) {
+      if (win !== aWindow && !win.closed) {
+        previousWindow = win;
+        break;
+      }
+    }
+    if (!previousWindow) {
+      return;
+    }
+    for (const tab of previousWindow.gZenWorkspaces.allStoredTabs) {
+      const syncId = tab.getAttribute("id");
+      // A tab that has never loaded has no state in the content process,
+      // so there's nothing newer to flush out of it.
+      if (!syncId || tab.closing || !tab.linkedPanel) {
+        continue;
+      }
+      const targetTab = aWindow.document.getElementById(syncId);
+      // Only refresh a tab that hasn't started loading: setting the state
+      // of a loaded tab would reload it.
+      if (
+        !aWindow.gBrowser.isTab(targetTab) ||
+        targetTab.linkedPanel ||
+        targetTab.closing
+      ) {
+        continue;
+      }
+      lazy.TabStateFlusher.flush(tab.linkedBrowser)
+        .then(() => {
+          // Things may have changed while the flush was in flight.
+          if (
+            aWindow.closed ||
+            tab.closing ||
+            targetTab.linkedPanel ||
+            targetTab.closing
+          ) {
+            return;
+          }
+          lazy.SessionStore.setTabState(
+            targetTab,
+            lazy.SessionStore.getTabState(tab)
+          );
+        })
+        .catch(e =>
+          console.error("ZenSessionManager: Failed to refresh tab state", e)
+        );
+    }
   }
 
   /**
@@ -928,6 +1039,9 @@ export class nsZenSessionManager {
     aWindow.gZenWorkspaces.restoreWorkspacesFromSessionStore({
       spaces: this.#sidebarWithoutCloning.spaces || [],
     });
+    // There is no restore coming for this window, so nothing else is going to
+    // tell the spaces their tabs are in place.
+    aWindow.gZenWorkspaces.onWindowRestored();
   }
 
   /**

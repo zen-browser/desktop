@@ -24,14 +24,13 @@
   appearance: unset !important;
   height: fit-content;
   gap: 3px;
-
-  container-type: inline-size;
   width: 100%;
 
   & toolbarbutton {
     margin: 0;
-    max-width: 28px;
-    height: 28px;
+    max-width: 30px;
+    border-radius: var(--toolbarbutton-border-radius);
+    height: 30px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -42,23 +41,33 @@
     fill: currentColor;
     scroll-margin: 0 20px;
 
+    @media (-moz-platform: macos) {
+      height: 32px;
+      max-width: 32px;
+    }
+
     & .zen-workspace-icon {
       pointer-events: none;
       line-height: 0;
       position: absolute;
       font-size: 12px;
 
-      @media (-moz-platform: macos) {
-        font-size: 14px;
-      }
 
       &:is(img) {
         width: 14px;
       }
 
+      @media (-moz-platform: macos) {
+        font-size: 15px;
+
+        &:is(img) {
+          width: 16px;
+        }
+      }
+
       &[no-icon='true'] {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
         border-radius: 50%;
       }
@@ -205,7 +214,7 @@
     &:hover,
     &[open='true'] {
       &::before {
-        background: var(--tab-hover-background-color);
+        background: var(--tab-background-color-hover);
       }
     }
   }
@@ -321,11 +330,15 @@ zen-workspace {
   position: absolute;
   height: 100%;
   overflow: hidden;
-  color: color-mix(in srgb, var(--toolbox-textcolor) 95%, var(--zen-primary-color));
+  color: var(--toolbox-textcolor);
 
-  --tab-background-color-selected: color-mix(in srgb, light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18)) 95%, var(--zen-primary-color)) !important;
-  --tab-selected-shadow: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05)) !important;
-  --tab-selected-textcolor: color-mix(in srgb, var(--toolbox-textcolor) 95%, var(--zen-primary-color)) !important;
+  contain: size layout;
+
+  --tab-background-color-selected: light-dark(
+    color-mix(in srgb, rgba(255, 255, 255, 0.8) 98%, var(--zen-primary-color)),
+    color-mix(in srgb, rgba(255, 255, 255, 0.18) 95%, var(--zen-primary-color))
+  ) !important;
+  --tab-box-shadow-selected: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05)) !important;
 
   @media not (prefers-reduced-motion: reduce) {
     transition: padding-top 0.1s;
@@ -349,9 +362,11 @@ zen-workspace {
       scrollbar-width: auto;
       scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
       overflow-y: auto;
+      padding-block-end: calc((var(--tab-min-height) * 3) + (var(--tab-margin-block) * 4));
+      overscroll-behavior: auto;
     }
 
-    :root[swipe-gesture] &::part(scrollbox) {
+    &[swipe-gesture]::part(scrollbox) {
       scrollbar-width: none;
     }
 
@@ -399,7 +414,7 @@ zen-workspace {
     }
   }
 
-  :root:not(:is([animating-background], [swipe-gesture])) #navigator-toolbox:not([movingtab]) &:not([active]) {
+  #navigator-toolbox:not([movingtab], [animating-background]) &:not([swipe-gesture], [active]) {
     -moz-subtree-hidden-only-visually: 1;
   }
 }

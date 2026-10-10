@@ -1,5 +1,5 @@
 diff --git a/.stylelintrc.js b/.stylelintrc.js
-index 3c9fecf731126fdbf900d1bdcd3635dd31ed53ef..c3a210b8153e9699c6cbdc0d568bb72433976b2c 100644
+index 876f76417f800ce8889d398b6ab478cc089c4125..170b6e81dc1cec343d8678649e3248b89d115e39 100644
 --- a/.stylelintrc.js
 +++ b/.stylelintrc.js
 @@ -67,7 +67,7 @@ module.exports = {
@@ -11,12 +11,12 @@ index 3c9fecf731126fdbf900d1bdcd3635dd31ed53ef..c3a210b8153e9699c6cbdc0d568bb724
        {
          ignore: ["blockless-at-rules"],
        },
-@@ -274,7 +274,7 @@ module.exports = {
-     // Remove this line setting `csscontrols/use-logical` to null after implementing fixes
-     "csstools/use-logical": null,
+@@ -282,7 +282,7 @@ module.exports = {
+     "stylelint-plugin-mozilla/no-background-without-text-color": true,
      "stylelint-plugin-mozilla/no-base-design-tokens": true,
+     "stylelint-plugin-mozilla/no-has-selector": true,
 -    "stylelint-plugin-mozilla/use-design-tokens": true,
-+    "stylelint-plugin-mozilla/use-design-tokens": false,
++    "stylelint-plugin-mozilla/use-design-tokens": null,
+     "stylelint-plugin-mozilla/use-paired-color-tokens": true,
    },
  
-   overrides: [

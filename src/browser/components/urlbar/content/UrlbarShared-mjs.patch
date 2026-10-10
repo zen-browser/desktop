@@ -1,0 +1,81 @@
+diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
+index 0ac5330223c84fbb98880a5c2d83ae58a8f3079e..ff488cf5a2c8b7857a8e145e40aaf861cfa655ec 100644
+--- a/browser/components/urlbar/content/UrlbarShared.mjs
++++ b/browser/components/urlbar/content/UrlbarShared.mjs
+@@ -158,6 +158,7 @@ export const UrlbarShared = {
+     // `looksLikeOrigin()` returned `LOOKS_LIKE_ORIGIN.OTHER` for this token.
+     // It may or may not be an origin.
+     POSSIBLE_ORIGIN_BUT_SEARCH_ALLOWED: 12,
++    RESTRICT_WORKSPACE: 13,
+   }),
+ 
+   /**
+@@ -178,6 +179,7 @@ export const UrlbarShared = {
+     TITLE: "#",
+     URL: "$",
+     ACTION: ">",
++    WORKSPACE: "`",
+   }),
+ 
+   // Defines UrlbarResult types.
+@@ -223,6 +225,8 @@ export const UrlbarShared = {
+     OTHER_NETWORK: 6,
+     ADDON: 7,
+     ACTIONS: 8,
++    ZEN_ACTIONS: 9,
++    WORKSPACES: 10,
+   }),
+ 
+   // Results are categorized into groups to help the muxer compose them.  See
+@@ -258,6 +262,8 @@ export const UrlbarShared = {
+     SEMANTIC_HISTORY: "semanticHistory",
+     SUGGESTED_INDEX: "suggestedIndex",
+     TAIL_SUGGESTION: "tailSuggestion",
++    ZEN_ACTION: "zenAction",
++    ZEN_WORKSPACE: "zenWorkspace",
+   }),
+ 
+   // Defines provider types.
+@@ -443,6 +449,14 @@ export const UrlbarShared = {
+         telemetryLabel: "actions",
+         uiLabel: "urlbar-searchmode-actions3",
+       },
++      {
++        source: this.RESULT_SOURCE.WORKSPACES,
++        restrict: this.RESTRICT_TOKENS.WORKSPACE,
++        icon: "chrome://browser/skin/zen-icons/selectable/layers.svg",
++        pref: "shortcuts.workspaces",
++        telemetryLabel: "workspaces",
++        uiLabel: "urlbar-search-mode-workspaces",
++      },
+     ]);
+   },
+ 
+@@ -460,6 +474,7 @@ export const UrlbarShared = {
+     if (UrlbarPrefs.get("scotchBonnet.enableOverride")) {
+       keys.push(this.RESTRICT_TOKENS.ACTION);
+     }
++    keys.push(this.RESTRICT_TOKENS.WORKSPACE);
+     return new Set(keys);
+   },
+ 
+@@ -1032,6 +1047,11 @@ export const UrlbarShared = {
+           return UrlbarShared.RESULT_GROUP.HEURISTIC_FALLBACK;
+         case "UrlbarProviderHistoryUrlHeuristic":
+           return UrlbarShared.RESULT_GROUP.HEURISTIC_HISTORY_URL;
++        case "ZenUrlbarProviderGlobalActions":
++          if (result.source == UrlbarShared.RESULT_SOURCE.WORKSPACES) {
++            return UrlbarShared.RESULT_GROUP.ZEN_WORKSPACE;
++          }
++          return UrlbarShared.RESULT_GROUP.ZEN_ACTION;
+         case "UrlbarProviderOmnibox":
+           return UrlbarShared.RESULT_GROUP.HEURISTIC_OMNIBOX;
+         case "UrlbarProviderRestrictKeywordsAutofill":
+@@ -1060,6 +1080,7 @@ export const UrlbarShared = {
+       case "UrlbarProviderAboutPages":
+         return UrlbarShared.RESULT_GROUP.ABOUT_PAGES;
+       case "UrlbarProviderInputHistory":
++      case "ZenUrlbarProviderSidebar":
+         return UrlbarShared.RESULT_GROUP.INPUT_HISTORY;
+       case "UrlbarProviderQuickSuggest":
+         return UrlbarShared.RESULT_GROUP.GENERAL_PARENT;

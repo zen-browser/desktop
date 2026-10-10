@@ -17,15 +17,20 @@
 }
 
 .urlbar {
-  --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
-  --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
+  --urlbarview-separator-color: light-dark(rgb(233, 233, 233), rgb(46 46 47));
+  --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
-  height: var(--urlbar-height);
-  --urlbarView-results-padding: 10px !important;
+  --urlbarView-results-padding: 12px !important;
   --urlbar-container-height: 48px !important;
+  --urlbar-input-container-border: none;
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 4px;
+
+  --urlbar-icon-border-radius: 8px !important;
+  --urlbar-inner-border-radius: 8px !important;
+
+  --urlbarview-row-min-height: 45px;
 
   &[breakout-extend] {
     --urlbar-container-padding: 0px;
@@ -60,6 +65,9 @@
 .urlbar-background {
   background: var(--zen-toolbar-element-bg) !important;
   border-radius: var(--border-radius-medium);
+  :root:not([zen-single-toolbar="true"]) & {
+    border-radius: calc(var(--border-radius-medium) * var(--zen-squircle-value));
+  }
   outline: none !important;
 
   #urlbar:not([breakout-extend]) & {
@@ -136,8 +144,13 @@
 
   & #identity-box {
     margin-inline-end: 0 !important;
+
+    :root[zen-has-empty-tab="true"] &[pageproxystate="invalid"]:not(.chromeUI) {
+      margin-inline-end: -4px !important;
+    }
+
     &.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
-      border-radius: 10px !important;
+      border-radius: calc(10px * var(--zen-squircle-value)) !important;
     }
   }
 
@@ -156,22 +169,19 @@
     }
 
     #navigator-toolbox[zen-has-implicit-hover="true"] &,
-    &[open],
+    &:is([open], [showing]),
     #urlbar[has-popup-open="true"] &,
     :root[zen-has-empty-tab="true"] & {
       opacity: 1;
       visibility: visible;
+      transition: opacity 0.15s !important;
     }
   }
 }
 
 :root:not([zen-single-toolbar="true"]):not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) .urlbar-input-container {
-  padding: 2px 3px;
+  padding: 2px 5px;
   gap: 2px;
-
-  & .urlbar-page-action {
-    height: 100%;
-  }
 
   & #zen-copy-url-button {
     order: -1;
@@ -245,10 +255,6 @@
   order: 2 !important;
 }
 
-#urlbar[breakout] {
-  position: fixed;
-}
-
 #urlbar[breakout-extend] {
   z-index: 2;
 
@@ -269,29 +275,33 @@
   }
 
   & .urlbar-background {
-    --zen-urlbar-background-base: light-dark(#fbfbfb, color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%));
+    --zen-urlbar-background-base: light-dark(rgb(255, 255, 255), rgb(24 24 24));
     /* stylelint-disable-next-line media-query-no-invalid */
-    @media -moz-pref("zen.theme.acrylic-elements") and (not (prefers-reduced-transparency: reduce)) {
-      --zen-urlbar-background-transparent: light-dark(
-        color-mix(in srgb, white 80%, transparent),
-        color-mix(in srgb, var(--zen-urlbar-background-base) 65%, transparent)
-      );
+    @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce)) {
+      :root:not([zen-no-acrylic="true"]) &:not(:-moz-window-inactive) {
+        --zen-urlbar-background-transparent: light-dark(
+          rgba(255, 255, 255, .93),
+          rgba(20, 20, 20, .92)
+        );
+      }
     }
     background-color: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
     box-shadow: 0 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
     backdrop-filter: none !important;
-    outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
+    outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgb(75, 75, 75)) !important;
     outline-offset: var(--zen-urlbar-outline-offset) !important;
 
     /* stylelint-disable-next-line media-query-no-invalid */
-    @media -moz-pref("zen.theme.acrylic-elements") {
-      backdrop-filter: var(--zen-urlbar-filter) !important;
+    @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce))  {
+      :root:not([zen-no-acrylic="true"]) & {
+        backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
+      }
     }
   }
 
   &,
   .urlbar-background {
-    border-radius: 12px !important;
+    border-radius: 15px !important;
   }
 
   &[breakout-extend][animate-searchmode="true"]::before {
@@ -311,9 +321,6 @@
 }
 
 :root[zen-single-toolbar="true"] {
-  --urlbar-icon-border-radius: 8px !important;
-  --urlbar-inner-border-radius: 6px !important;
-
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
   }
@@ -326,6 +333,7 @@
     order: 2;
   }
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #notification-popup-box:not([open]):not(:has(> [showing="true"])) {
     margin-inline-start: calc(-10px - 2 * var(--urlbar-icon-padding));
     opacity: 0;
@@ -346,7 +354,7 @@
       padding: 4px !important;
 
       &:hover {
-        background: var(--toolbarbutton-hover-background);
+        background: var(--toolbarbutton-background-color-hover);
         border-radius: var(--toolbarbutton-border-radius);
         overflow: visible;
       }
@@ -405,7 +413,7 @@
 }
 
 #notification-popup-box {
-  border-radius: 10px !important;
+  border-radius: calc(10px * var(--zen-squircle-value)) !important;
 }
 
 /* Border radius on hover */
@@ -463,7 +471,7 @@
 
 :root[zen-single-toolbar="true"] {
   #urlbar[open] {
-    min-width: min(90%, 40rem);
+    width: min(90%, 40rem);
   }
 
   &[zen-right-side="true"] #urlbar[open]:not([zen-floating-urlbar="true"]) {
@@ -487,9 +495,10 @@
   translate: -50% 0%;
   left: 50% !important;
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #urlbar-container:has(&) {
     border-radius: var(--border-radius-medium);
-    background: var(--toolbarbutton-hover-background);
+    background: var(--toolbarbutton-background-color-hover);
     height: var(--urlbar-height) !important;
     margin-inline: 0.15rem !important;
     :root:not([zen-single-toolbar="true"]) & {
@@ -503,7 +512,7 @@
 #urlbar[open][zen-floating-urlbar="true"] #identity-icon-box,
 :root[zen-single-toolbar="true"] #urlbar[breakout-extend] #identity-icon-box {
   --urlbar-box-hover-bgcolor: transparent;
-  margin-inline: 2px 8px;
+  margin-inline: 2px 4px;
   transition: none;
 }
 
@@ -529,8 +538,8 @@
 .urlbarView-favicon {
   margin-left: 0 !important;
   margin-right: 12px !important;
-  padding: 6px !important;
-  border-radius: 3px !important;
+  padding: 4px !important;
+  border-radius: 4px !important;
 }
 
 .urlbarView-userContext {
@@ -552,22 +561,24 @@
 }
 
 .urlbarView-prettyName,
+.urlbarView-tabGroup,
 .urlbarView-shortcutContent {
-  border-radius: 4px;
+  border-radius: 4px !important;
   font-weight: 600;
-  margin-top: auto;
-  margin-bottom: auto;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
 }
 
-.urlbarView-prettyName {
-  padding: 4px 6px;
-  background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 90%);
-  margin-left: 6px;
+.urlbarView-prettyName,
+.urlbarView-tabGroup {
+  padding: 4px 6px !important;
+  background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 90%) !important;
+  margin-left: 6px !important;
   font-size: 12px;
   align-items: center;
   gap: 6px;
   display: flex;
-  color: color-mix(in srgb, var(--zen-primary-color), currentColor 95%);
+  color: color-mix(in srgb, var(--zen-primary-color), currentColor 95%) !important;
 
   & img {
     -moz-context-properties: fill;
@@ -633,6 +644,7 @@
 
 #urlbar-label-box,
 #urlbar-search-mode-indicator {
+  --urlbar-basic-component-size: auto;
   background-color: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white;
   padding: 4px 8px;
@@ -642,18 +654,20 @@
 
 .urlbarView-row {
   --urlbarView-row-padding-inline: 8px;
-  --urlbarView-row-padding-block: 10px;
+  --urlbarview-row-padding-block: 10px;
+  --urlbarView-row-gutter: 0px;
+
+  border-block: 2px solid transparent;
   color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) !important;
 
-  &:hover {
-    &,
-    & .urlbarView-favicon {
-      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse) 5%, transparent 95%) !important;
-    }
+  &:hover,
+  &:hover .urlbarView-favicon,
+  .urlbarView-action-favicon {
+    background-color: color-mix(in srgb, var(--zen-branding-bg-reverse) 5%, transparent 95%) !important;
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1)));
+    --zen-selected-bg: color-mix(in srgb, var(--zen-accent-button-background), transparent 40%);
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -677,18 +691,19 @@
       background-color: rgba(255, 255, 255, 0.9) !important;
     }
 
-    & .urlbarView-prettyName {
-      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 80%);
+    & .urlbarView-prettyName,
+    & .urlbarView-tabGroup {
+      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 80%) !important;
     }
   }
 }
 
 #urlbar-results {
-  max-height: 252px;
+  max-height: 244px;
   overflow-y: auto;
   scrollbar-width: none;
-  margin-block-start: calc(var(--urlbarView-results-padding) - 2px);
-  margin-block-end: var(--urlbarView-results-padding);
+  margin-block-start: calc(var(--urlbarView-results-padding) - 6px);
+  margin-block-end: calc(var(--urlbarView-results-padding) - 2px);
   padding-block: 0 !important;
 
   & .action-contextualidentity {
@@ -698,7 +713,7 @@
 
 :root:not([zen-single-toolbar="true"]) #urlbar[breakout-extend]:not([zen-floating-urlbar="true"]) {
   & .urlbar-background {
-    border-radius: 10px !important;
+    border-radius: calc(10px * var(--zen-squircle-value)) !important;
   }
 
   #urlbar-results {
@@ -712,9 +727,13 @@
 }
 
 /* Hide the results body when there are no results, to avoid showing an empty box */
-.urlbarView[noresults] > .urlbarView-body-outer > .urlbarView-body-inner,
+.urlbar[noresults] .urlbarView > .urlbarView-body-outer > .urlbarView-body-inner,
 #urlbar-search-mode-indicator-close {
   display: none;
+}
+
+.urlbarView {
+  overflow: visible;
 }
 
 #urlbar-search-mode-indicator-title {

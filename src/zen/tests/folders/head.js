@@ -32,3 +32,17 @@ async function addTabTo(
   await BrowserTestUtils.browserLoaded(browser);
   return tab;
 }
+
+async function clickWhenReady(button) {
+  await TestUtils.waitForCondition(() => {
+    const rect = button.getBoundingClientRect();
+    return (
+      rect.width &&
+      document.elementFromPoint(
+        rect.x + rect.width / 2,
+        rect.y + rect.height / 2
+      ) === button
+    );
+  }, "Button should be clickable");
+  EventUtils.synthesizeMouseAtCenter(button, {});
+}

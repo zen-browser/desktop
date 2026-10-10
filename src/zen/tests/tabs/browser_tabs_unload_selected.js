@@ -40,6 +40,48 @@ add_task(async function test_UnloadSelectedTabs_shortcut_registration() {
   is(shortcut.getKeyCode(), null, "Shortcut should have no default keycode");
 });
 
+add_task(function test_UnloadSelectedTabs_migration_from_v21() {
+  const versioner = gZenKeyboardShortcutsManager.versioner;
+  const migrated = versioner.migrate([], 21);
+  const shortcuts = migrated.filter(
+    item => item.getID() === "zen-unload-selected-tabs"
+  );
+
+  is(
+    shortcuts.length,
+    1,
+    "The v21 upgrade should add exactly one unload shortcut"
+  );
+  is(shortcuts[0].getKeyName(), "", "The migrated shortcut should be unbound");
+  is(
+    shortcuts[0].getAction(),
+    "cmd_zenUnloadSelectedTabs",
+    "The migrated shortcut should invoke the unload command"
+  );
+
+  const existing = shortcuts[0];
+  existing.setNewBinding("U");
+  const existingKey = existing.getKeyName();
+  const upgraded = versioner.migrate([existing], 20);
+  const retained = upgraded.filter(
+    item => item.getID() === "zen-unload-selected-tabs"
+  );
+  is(
+    retained.length,
+    1,
+    "An existing unload shortcut should not be duplicated"
+  );
+  is(
+    retained[0].getKeyName(),
+    existingKey,
+    "An existing binding should be preserved"
+  );
+  ok(
+    upgraded.some(item => item.getID() === "zen-library-toggle"),
+    "The existing library migration should still run"
+  );
+});
+
 add_task(async function test_UnloadSelectedTabs_current_tab() {
   const controlTab = await openLoadedTab("Unload Selected Tabs control");
   const targetTab = await openLoadedTab("Unload Selected Tabs target");

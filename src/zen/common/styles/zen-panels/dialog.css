@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 .dialogBox {
-  border-radius: 12px !important;
+  border-radius: calc(12px * var(--zen-squircle-value)) !important;
   border: 0.5px solid light-dark(rgba(0, 0, 0, 0.4), var(--zen-dialog-background)) !important;
   outline: 1px solid light-dark(transparent, rgba(168, 168, 169, 0.50)) !important;
   box-shadow: 0 10px 8px rgba(0, 0 , 0, 0.15) !important;

@@ -1,0 +1,32 @@
+[DEFAULT]
+support-files = [
+  "head.js",
+  "file_dom_notifications.html",
+]
+
+["browser_notification_close.js"]
+https_first_disabled = true
+skip-if = [
+  "os == 'win'", # Bug 1227785
+]
+
+["browser_notification_do_not_disturb.js"]
+https_first_disabled = true
+
+["browser_notification_open_settings.js"]
+https_first_disabled = true
+skip-if = [
+  "os == 'win'", # Bug 1411118
+]
+
+["browser_notification_remove_permission.js"]
+https_first_disabled = true
+skip-if = [
+  "os == 'win'", # Bug 1411118
+]
+
+["browser_notification_tab_switching.js"]
+https_first_disabled = true
+skip-if = [
+  "os == 'win'", # Bug 1243263
+]

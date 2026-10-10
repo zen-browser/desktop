@@ -1,49 +1,62 @@
 diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
-index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..979f93ddab0d661ac1a1d73e7a0ba27fa2c8f9b7 100644
+index 83b80a808261ce28e5c571dc802993556477f0c8..2796f97c89f370cd895177b0142847a118df73b8 100644
 --- a/widget/SwipeTracker.cpp
 +++ b/widget/SwipeTracker.cpp
-@@ -3,6 +3,7 @@
-  * You can obtain one at http://mozilla.org/MPL/2.0/. */
- 
- #include "SwipeTracker.h"
-+#include "mozilla/StaticPrefs_zen.h"
- 
- #include "InputData.h"
- #include "mozilla/FlushType.h"
-@@ -67,6 +68,9 @@ double SwipeTracker::SwipeSuccessTargetValue() const {
+@@ -66,7 +66,14 @@ double SwipeTracker::SwipeSuccessTargetValue() const {
+              : 1.0;
  }
  
++double SwipeTracker::SuccessThreshold() const {
++  return mConsumerThreshold.valueOr(kSwipeSuccessThreshold);
++}
++
  double SwipeTracker::ClampToAllowedRange(double aGestureAmount) const {
-+  if (StaticPrefs::zen_swipe_is_fast_swipe()) {
++  if (HasConsumerThreshold()) {
 +    return aGestureAmount;
 +  }
    // gestureAmount needs to stay between -1 and 0 when swiping right and
    // between 0 and 1 when swiping left.
    double min =
-@@ -84,13 +88,14 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
+@@ -84,14 +91,14 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
    // If the fingers were moving away from the target direction when they were
    // lifted from the touchpad, abort the swipe.
    if (mCurrentVelocity * targetValue <
 -      -StaticPrefs::widget_swipe_velocity_twitch_tolerance()) {
-+      -StaticPrefs::widget_swipe_velocity_twitch_tolerance()
-+    && !StaticPrefs::zen_swipe_is_fast_swipe()) {
++          -StaticPrefs::widget_swipe_velocity_twitch_tolerance() &&
++      !HasConsumerThreshold()) {
      return false;
    }
  
    return (mGestureAmount * targetValue +
-           mCurrentVelocity * targetValue *
+-          mCurrentVelocity * targetValue *
 -              StaticPrefs::widget_swipe_success_velocity_contribution()) >=
-+              (StaticPrefs::zen_swipe_is_fast_swipe() ? 0.5 : StaticPrefs::widget_swipe_success_velocity_contribution())) >=
-          kSwipeSuccessThreshold;
+-         kSwipeSuccessThreshold;
++          mCurrentVelocity * targetValue * SuccessVelocityContribution()) >=
++         SuccessThreshold();
  }
  
-@@ -141,7 +146,8 @@ nsEventStatus SwipeTracker::ProcessEvent(
+ nsEventStatus SwipeTracker::ProcessEvent(
+@@ -140,9 +147,11 @@ nsEventStatus SwipeTracker::ProcessEvent(
+   // moving slightly away from the target direction then we do not want to
    // display the UI as if we were at the success threshold as that would
    // give a false indication that navigation would happen.
-   if (!computedSwipeSuccess && (eventAmount >= kSwipeSuccessThreshold ||
+-  if (!computedSwipeSuccess && (eventAmount >= kSwipeSuccessThreshold ||
 -                                eventAmount <= -kSwipeSuccessThreshold)) {
-+                                eventAmount <= -kSwipeSuccessThreshold)
-+                              && !StaticPrefs::zen_swipe_is_fast_swipe()) {
-     eventAmount = 0.999 * kSwipeSuccessThreshold;
+-    eventAmount = 0.999 * kSwipeSuccessThreshold;
++  if (!computedSwipeSuccess &&
++      (eventAmount >= SuccessThreshold() ||
++       eventAmount <= -SuccessThreshold()) &&
++      !HasConsumerThreshold()) {
++    eventAmount = 0.999 * SuccessThreshold();
      if (mGestureAmount < 0.f) {
        eventAmount = -eventAmount;
+     }
+@@ -262,6 +271,8 @@ void SwipeTracker::SendSwipeEvent(EventMessage aMsg, uint32_t aDirection,
+   geckoEvent.mDelta = aDelta;
+   geckoEvent.mAllowedDirections = mAllowedDirections;
+   widget->DispatchWindowEvent(geckoEvent);
++
++  ReadConsumerSwipeConfig(geckoEvent);
+ }
+ 
+ // static

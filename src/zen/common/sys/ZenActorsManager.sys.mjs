@@ -29,6 +29,7 @@ let JSWINDOWACTORS = {
         DOMContentLoaded: {},
       },
     },
+    safeForUntrustedWebProcess: true,
     matches: [
       ...Services.prefs.getStringPref("zen.injections.match-urls").split(","),
       "about:preferences",
@@ -41,7 +42,6 @@ let JSWINDOWACTORS = {
     child: {
       esModuleURI: "resource:///actors/ZenGlanceChild.sys.mjs",
       events: {
-        DOMContentLoaded: {},
         mousedown: {
           capture: true,
         },
@@ -55,7 +55,25 @@ let JSWINDOWACTORS = {
     },
     allFrames: true,
     remoteTypes: ["web", "file"],
+    safeForUntrustedWebProcess: true,
     enablePreference: "zen.glance.enabled",
+  },
+  ZenWindowDrag: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenWindowDragParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenWindowDragChild.sys.mjs",
+      events: {
+        mousedown: {
+          mozSystemGroup: true,
+        },
+      },
+    },
+    messageManagerGroups: ["browsers"],
+    remoteTypes: ["web", "file"],
+    safeForUntrustedWebProcess: true,
+    enablePreference: "zen.view.drag-window-from-content",
   },
 };
 
@@ -67,11 +85,10 @@ if (!Services.appinfo.inSafeMode) {
     child: {
       esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
       events: {
-        // Needed to let the actor be created, please don't remove
-        // without checking if boosts still work without it, thanks <3
-        DOMWindowCreated: {},
+        DOMDocElementInserted: {},
       },
     },
+    safeForUntrustedWebProcess: true,
     allFrames: true,
     remoteTypes: ["web", "file"],
     enablePreference: "zen.boosts.enabled",

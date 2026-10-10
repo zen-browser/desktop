@@ -435,10 +435,6 @@
   list-style-image: url("arrow-left.svg") !important;
 }
 
-#appmenu-moreTools-button {
-  list-style-image: url("customize.svg") !important;
-}
-
 #zen-copy-current-url-button,
 #share-tab-button,
 #zen-site-data-header-share {
@@ -540,16 +536,41 @@
 @media not (prefers-reduced-motion: reduce) {
   #zen-site-data-icon-button[boosting] .zen-site-data-boost-animation {
     position: absolute;
-    display: flex;
-    width: 100%;
+    display: block;
+    top: 0;
+    left: calc(4px + 30%);
+    height: 100%;
+    aspect-ratio: 1;
+    translate: -50%;
+    overflow: clip;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #zen-site-data-icon-button[boosting] .zen-site-data-boost-strip {
+    flex: none;
+    width: calc(90 * 100%);
     height: 100%;
     color: var(--zen-sidebar-themed-icon-fill);
     -moz-context-properties: fill;
     fill: currentColor;
-    list-style-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
-    transform: translateX(-20%);
-    z-index: 0;
-    pointer-events: none;
+    background-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    animation: zen-boost-sprite 3s steps(90, jump-none) infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+}
+
+@keyframes zen-boost-sprite {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-89 / 90 * 100%));
   }
 }
 
@@ -812,65 +833,62 @@
 
 #toolbar-context-toggle-vertical-tabs,
 #toolbar-context-customize-sidebar,
-#sidebarRevampSeparator {
+#sidebarRevampSeparator,
+.fxa-menu-sign-in-promo-image {
   display: none !important;
 }
 
-#zen-media-playpause-button {
+.zen-media-playpause-button {
   list-style-image: url("media-play.svg");
 }
 
-#zen-media-controls-toolbar.playing #zen-media-playpause-button {
+.zen-media-card.playing .zen-media-playpause-button {
   list-style-image: url("media-pause.svg");
 }
 
-#zen-media-nexttrack-button {
+.zen-media-nexttrack-button {
   list-style-image: url("media-next.svg");
 }
 
-#zen-media-previoustrack-button {
+.zen-media-previoustrack-button {
   list-style-image: url("media-previous.svg");
 }
 
-#zen-media-controls-toolbar[muted] #zen-media-mute-button {
+.zen-media-card[muted] .zen-media-mute-button {
   list-style-image: url("media-mute.svg");
 }
 
-#zen-media-mute-button {
+.zen-media-mute-button {
   list-style-image: url("media-unmute.svg");
 }
 
-#zen-media-close-button {
+.zen-media-close-button {
   list-style-image: url("close.svg");
 }
 
-#zen-media-focus-button:hover {
+.zen-media-focus-button:hover {
   list-style-image: url("screen.svg");
 }
 
-#zen-media-close-button {
-  list-style-image: url("close.svg");
-}
-
-#zen-media-mute-mic-button {
+.zen-media-mute-mic-button {
   list-style-image: url("microphone-fill.svg");
 }
 
-#zen-media-controls-toolbar[mic-muted] #zen-media-mute-mic-button {
+.zen-media-card[mic-muted] .zen-media-mute-mic-button {
   list-style-image: url("microphone-blocked-fill.svg");
   fill: rgb(224, 41, 29);
 }
 
-#zen-media-mute-camera-button {
+.zen-media-mute-camera-button {
   list-style-image: url("video-fill.svg");
 }
 
-#zen-media-controls-toolbar[camera-muted] #zen-media-mute-camera-button {
+.zen-media-card[camera-muted] .zen-media-mute-camera-button {
   list-style-image: url("video-blocked-fill.svg");
   fill: rgb(224, 41, 29);
 }
 
-#zen-media-pip-button {
+.zen-media-pip-button {
   list-style-image: url("chrome://global/skin/media/picture-in-picture-open.svg");
 }
 
@@ -883,7 +901,7 @@
   border-radius: var(--tab-border-radius);
 
   &:hover {
-    background: var(--toolbarbutton-hover-background);
+    background: var(--toolbarbutton-background-color-hover);
   }
 
   & image {

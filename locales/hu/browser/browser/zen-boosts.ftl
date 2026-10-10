@@ -5,18 +5,18 @@
 zen-boost-edit-rename = 
     .label = Boost átnevezése
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Hangulat keverése
 zen-boost-edit-reset = 
     .label = Minden módosítás visszaállítása
 zen-boost-edit-delete = 
     .label = Boost törlése
 zen-boost-size = Méret
-zen-boost-case = Case
-zen-boost-zap = Zap
+zen-boost-case = Kis-/nagybetű
+zen-boost-zap = Eltüntet
 zen-boost-code = Kód
 zen-boost-back = Vissza
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Boost beállítások keverése
 zen-boost-invert = 
     .tooltiptext = Színek intelligens invertálása
 zen-boost-controls = 
@@ -24,28 +24,28 @@ zen-boost-controls =
 zen-boost-disable = 
     .tooltiptext = Színbeállítások letiltása
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Kis- és nagybetűk váltása
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Szelektor kiválasztása
 zen-boost-css-inspector = 
     .tooltiptext = Vizsgáló megnyitása
 zen-boost-color-contrast = Kontraszt
 zen-boost-color-brightness = Fényerő
 zen-boost-color-original-saturation = Eredeti szaturáció
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
+zen-add-zap-helper = Kattints az oldal elemeire, hogy <b>Eltüntet</b>sd őket
+zen-remove-zap-helper = ← Visszaállításhoz kattints
+zen-select-this = Szelektor beillesztése ehhez
+zen-select-related = Szelektor beillesztése a kapcsolódó elemhez
 zen-select-cancel = Mégse
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
+zen-zap-this = Tüntesd el ezt
+zen-zap-related = Összes kapcsolódó elem eltüntetése
 zen-zap-cancel = Mégse
 zen-zap-done = Kész
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Nincs eltüntetett elem
+        [1] { $elementCount } elem eltüntetve
+       *[other] { $elementCount } elem eltüntetve
     }
 zen-boost-save = 
     .label = Boost exportálása

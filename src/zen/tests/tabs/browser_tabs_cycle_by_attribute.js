@@ -39,7 +39,7 @@ add_setup(async () => {
   ]);
 
   gZenPinnedTabManager.addToEssentials(tabs.slice(0, 3));
-  await BrowserTestUtils.waitForCondition(
+  await TestUtils.waitForCondition(
     () => tabs.slice(0, 3).every(tab => tab.hasAttribute("zen-essential")),
     "all essentials ready"
   );

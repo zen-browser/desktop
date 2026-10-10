@@ -4,6 +4,50 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+@keyframes zen-swipe-add-icon-jump {
+  0% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.15;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes library-badge-download {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes zen-library-sprite-hover {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-35 / 36 * 100%));
+  }
+}
+
+@keyframes zen-library-sprite-unhover {
+  from {
+    transform: translateX(calc(-35 / 36 * 100%));
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
 @keyframes zen-back-and-forth-text {
   0%,
   10% {

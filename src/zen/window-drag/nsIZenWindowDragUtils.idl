@@ -1,0 +1,34 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+webidl Node;
+
+/**
+ * @brief Utilities for deciding when a content-area gesture may move
+ * the window.
+ */
+[scriptable, uuid(595ba6e8-abe2-4619-acad-cf492306f608)]
+interface nsIZenWindowDragUtils : nsISupports {
+  /**
+   * @brief Whether the node is content the page expects the user to
+   * interact with: interactive HTML content (links, form controls,
+   * etc.), editable content, or content that can be dragged
+   * (draggable attribute, links and loaded images).
+   * @param node The node to check.
+   */
+  boolean isInteractiveContent(in Node node);
+
+  /**
+   * @brief Whether the effective cursor for the given node signals
+   * interactive or draggable content (pointer, text, move, resize, ...).
+   * Unlike computed style, this resolves cursor: auto the same way the
+   * cursor actually shown to the user is chosen.
+   * @param node The deepest node hit by the event.
+   * @param clientX Viewport X coordinate of the event, in CSS pixels.
+   * @param clientY Viewport Y coordinate of the event, in CSS pixels.
+   */
+  boolean isInteractiveCursor(in Node node, in float clientX, in float clientY);
+};

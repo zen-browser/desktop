@@ -2,7 +2,7 @@ const PAGE = "data:text/html,page";
 
 async function test_on_browser(browser) {
   ok(!browser.audioMuted, "Audio should not be muted by default");
-  browser.mute();
+  browser.browsingContext.mediaController.mute();
   ok(browser.audioMuted, "Audio should be muted now");
 
   await BrowserTestUtils.withNewTab(
@@ -13,7 +13,7 @@ async function test_on_browser(browser) {
     test_on_browser2
   );
 
-  browser.unmute();
+  browser.browsingContext.mediaController.unmute();
   ok(!browser.audioMuted, "Audio should be unmuted now");
 }
 

@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = Delete Boost
 zen-boost-size = Size
-zen-boost-case = Case
+zen-boost-case = الحالة
 zen-boost-zap = Zap
 zen-boost-code = Code
 zen-boost-back = Back
@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] { $elementCount } elements zapped
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = تصدير التعزيز
 zen-boost-load = 
-    .label = Import Boost
+    .label = استيراد التعزيز
 zen-panel-ui-boosts-exported-message = Boost exported!
 zen-site-data-boosts = Boosts
 zen-site-data-create-boost = 

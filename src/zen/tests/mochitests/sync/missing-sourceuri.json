@@ -1,0 +1,20 @@
+{
+  "next": null,
+  "results": [
+    {
+      "name": "Restartless Test Extension",
+      "type": "extension",
+      "guid": "missing-sourceuri@tests.mozilla.org",
+      "current_version": {
+        "version": "1.0",
+        "files": [
+          {
+            "platform": "all",
+            "size": 485
+          }
+        ]
+      },
+      "last_updated": "2011-09-05T20:42:09Z"
+    }
+  ]
+}

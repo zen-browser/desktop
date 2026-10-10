@@ -19,7 +19,7 @@ add_task(async function test_Glance_Select_Parent() {
     );
     const tabToRemove = gBrowser.selectedTab;
     gBrowser.selectedTab = gZenGlanceManager.getTabOrGlanceParent(glanceTab);
-    await BrowserTestUtils.waitForCondition(() => {
+    await TestUtils.waitForCondition(() => {
       return glanceTab.selected;
     });
     ok(true, "The glance tab should be selected");

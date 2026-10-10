@@ -9,14 +9,14 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Collapse Pinned Tabs
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Udseende
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Hjemmesider vil bruge:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automatisk
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Lys
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Mørk
 zen-menubar-new-blank-window = 
-    .label = New Blank Window
+    .label = Nyt Tomt Vindue

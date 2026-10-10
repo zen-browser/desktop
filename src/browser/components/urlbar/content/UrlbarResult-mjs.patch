@@ -1,0 +1,15 @@
+diff --git a/browser/components/urlbar/content/UrlbarResult.mjs b/browser/components/urlbar/content/UrlbarResult.mjs
+index 30662cbb0551a5efe12926eb1524719ece24ee48..1ed598c8b8c0836759b5af10e6cc9f5e334744ef 100644
+--- a/browser/components/urlbar/content/UrlbarResult.mjs
++++ b/browser/components/urlbar/content/UrlbarResult.mjs
+@@ -184,6 +184,10 @@ export class UrlbarResult {
+     return this.#heuristic;
+   }
+ 
++  set heuristic(value) {
++    this.#heuristic = value;
++  }
++
+   get hideRowLabel() {
+     return this.#hideRowLabel;
+   }

@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = İkisini de gizle
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Klasöre taşı...
+    .label = Klasöre taşı
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Yeni klasör
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Kenar çubuğunu genişlet
 sidebar-zen-create-new = 
-    .label = Yeni oluştur...
+    .label = Yeni oluştur
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

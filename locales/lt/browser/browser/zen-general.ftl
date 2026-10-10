@@ -7,24 +7,30 @@ unified-extensions-description = Plėtiniai naudojami norint į „{ -brand-shor
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Atkurti butiniausią kortelę
+            [true] Atkurti būtiniausią kortelę
            *[false] Atkurti prisegtą kortelę
         }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Įtraukti į būtiniausius
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } užpildytų vietų
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Šalinti iš būtiniausių
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Keisti būtiniausią URL su dabartiniu
-           *[false] Keisti prisegtą URL su dabartiniu
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Keisti žymę...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Patvirtinti
 zen-pinned-tab-replaced = Prisegtos kortelės URL pakeistas dabartiniu URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Kortelė sėkmingai pervadinta.
 zen-background-tab-opened-toast = Nauja fonos kortelė atverta.
 zen-workspace-renamed-toast = Darbo sritis sėkmingai pervadintas.
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Jaustukai
 zen-icons-picker-svg = 
     .label = Piktogramos
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Veiksmai
 zen-site-data-settings = Nustatymai
 zen-generic-manage = Tvarkyti
@@ -116,6 +128,9 @@ zen-sidebar-notification-updated-heading = Naujinimas baigtas.
 zen-sidebar-notification-updated-label = Kas naujo naršyklėje „{ -brand-short-name }“
 zen-sidebar-notification-updated-tooltip = 
     .title = Peržiūrėti leidimo pastabas
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Kažkas neveikia?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Paleisti iš naujo saugioje režime

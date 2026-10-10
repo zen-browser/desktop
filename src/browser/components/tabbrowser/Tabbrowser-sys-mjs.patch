@@ -1,0 +1,1289 @@
+diff --git a/browser/components/tabbrowser/Tabbrowser.sys.mjs b/browser/components/tabbrowser/Tabbrowser.sys.mjs
+index e41d07a03d564b2c5960d5b70cd76f8e528e6532..1abe45f72d8a44a60263a5db056e618eb8787e79 100644
+--- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
++++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
+@@ -491,6 +491,7 @@ export class Tabbrowser {
+    * @type {MozBrowser[]}
+    */
+   get splitViewBrowsers() {
++    return this.documentGlobal.gZenViewSplitter.splitViewBrowsers;
+     const browsers = [];
+     if (this.#activeSplitView) {
+       for (const tab of this.#activeSplitView.tabs) {
+@@ -589,15 +590,86 @@ export class Tabbrowser {
+     return this.tabContainer.visibleTabs;
+   }
+ 
++  zenHandleTabMove(...args) {
++    return this.#handleTabMove(...args);
++  }
++
++  get zenTabProgressListener() { return TabProgressListener; }
++
++  zenGetTabProgressFilter(tab) {
++    return this.#tabFilters.get(tab);
++  }
++
++  zenGetTabProgressListener(tab) {
++    return this.#tabListeners.get(tab);
++  }
++
++  zenSetTabProgressListener(tab, listener) {
++    this.#tabListeners.set(tab, listener);
++  }
++
++  get TabStateFlusher() {
++    return lazy.TabStateFlusher;
++  }
++
++  get AsyncTabSwitcher() {
++    return lazy.AsyncTabSwitcher;
++  }
++
++  get _numVisiblePinTabsWithoutCollapsed() {
++    let i = 0;
++    for (let item of this.tabContainer.ariaFocusableItems) {
++      if (this.isTabGroupLabel(item) && item.group?.pinned) {
++        i += 1;
++        continue;
++      }
++      if (!item.pinned && !item.hasAttribute("zen-glance-tab")) {
++        break;
++      }
++      if (item.visible) {
++        i += !item.hasAttribute("zen-glance-tab");
++      }
++    }
++    return i;
++  }
++
++  ungroupTabsUntilNoActive(tab) {
++    if (!tab || !tab.group) return;
++    const activeGroups = tab.group.activeGroups;
++    if (activeGroups?.length) {
++      const lastActiveGroup = activeGroups[activeGroups.length - 1];
++      this.#handleTabMove(tab, () => {
++        lastActiveGroup.after(tab);
++      });
++    }
++  }
++
++  get _numZenEssentials() {
++    let i = 0;
++    for (let tab of this.tabs) {
++      if (!tab.hasAttribute("zen-essential") && !tab.hasAttribute("zen-glance-tab")) {
++        break;
++      }
++      i += !tab.hasAttribute("zen-glance-tab");
++    }
++    return i;
++  }
++
+   get pinnedTabCount() {
+-    for (var i = 0; i < this.tabs.length; i++) {
+-      if (!this.tabs[i].pinned) {
++    let i = 0;
++    for (let tab of this.tabs) {
++      if (!tab.pinned && !tab.hasAttribute("zen-glance-tab")) {
+         break;
+       }
++      i += !tab.hasAttribute("zen-glance-tab");
+     }
+     return i;
+   }
+ 
++  get tabsWithoutGlance() {
++    return this.tabs.filter(tab => !tab.hasAttribute("zen-glance-tab"));
++  }
++
+   setSelectedTab(val, metricsContext = null) {
+     if (this.selectedTab === val) {
+       return;
+@@ -610,6 +682,9 @@ export class Tabbrowser {
+     ) {
+       return;
+     }
++    if (this.documentGlobal.gZenWorkspaces.onBeforeTabSelect(val)) {
++      return;
++    }
+     // Update the tab
+     this.tabbox.selectedTab = val;
+ 
+@@ -695,6 +770,10 @@ export class Tabbrowser {
+       userContextId = parseInt(tabArgument.getAttribute("usercontextid"), 10);
+     }
+ 
++    if (typeof this.documentGlobal._zenStartupUnsyncedUserContextId == 'number') {
++      userContextId = this.documentGlobal._zenStartupUnsyncedUserContextId;
++    }
++
+     if (openWindowInfo) {
+       userContextId = openWindowInfo.originAttributes.userContextId;
+     }
+@@ -793,6 +872,8 @@ export class Tabbrowser {
+     this.tabpanels.appendChild(panel);
+ 
+     let tab = this.tabs[0];
++    this.documentGlobal.gZenWorkspaces.handleInitialTab(tab, (!remoteType || remoteType === lazy.E10SUtils.PRIVILEGEDABOUT_REMOTE_TYPE) && !this.documentGlobal.gZenUIManager.testingEnabled);
++    tab._zenContentsVisible = true;
+     tab.linkedPanel = uniqueId;
+     this.#selectedTab = tab;
+     this.#selectedBrowser = browser;
+@@ -1244,18 +1325,24 @@ export class Tabbrowser {
+    *   unknown context.
+    */
+   pinTab(aTab, { metricsContext = this.TabMetrics.UNKNOWN_CONTEXT } = {}) {
++    aTab = this.documentGlobal.gZenGlanceManager.getTabOrGlanceParent(aTab);
+     if (aTab.pinned || aTab == this.documentGlobal.FirefoxViewHandler.tab) {
+       return;
+     }
+ 
+     this.showTab(aTab);
++    const handled = this.documentGlobal.gZenFolders.handleTabPin(aTab);
++    if (!handled) {
++      this.ungroupTab(aTab);
+     this.#handleTabMove(aTab, () => {
+       let periphery = this.document.getElementById(
+         "pinned-tabs-container-periphery"
+       );
+       // If periphery is null, append to end
+-      this.pinnedTabsContainer.insertBefore(aTab, periphery);
++      this.tabContainer.tabDragAndDrop.handle_drop_transition(this.tabs[this.pinnedTabCount - 1], aTab, [aTab], false);
++      aTab.hasAttribute("zen-essential") ? this.documentGlobal.gZenWorkspaces.getEssentialsSection(aTab).appendChild(aTab) : this.pinnedTabsContainer.insertBefore(aTab, this.pinnedTabsContainer.lastChild)
+     });
++    }
+ 
+     aTab.setAttribute("pinned", "true");
+     this.#updateTabBarForPinnedTabs();
+@@ -1273,16 +1360,25 @@ export class Tabbrowser {
+    *   unknown context.
+    */
+   unpinTab(aTab, { metricsContext = this.TabMetrics.UNKNOWN_CONTEXT } = {}) {
++    aTab = this.documentGlobal.gZenGlanceManager.getTabOrGlanceParent(aTab);
+     if (!aTab.pinned) {
+       return;
+     }
+ 
+     this.#handleTabMove(aTab, () => {
++      const handled = this.documentGlobal.gZenFolders.handleTabUnpin(aTab);
++      if (!handled) {
++        this.tabContainer.tabDragAndDrop.handle_drop_transition(this.tabs[this.pinnedTabCount + 1 /* empty + extra */], aTab, [aTab], true);
++      }
++
+       // we remove this attribute first, so that allTabs represents
+       // the moving of a tab from the pinned tabs container
+       // and back into arrowscrollbox.
+       aTab.removeAttribute("pinned");
+-      this.tabContainer.arrowScrollbox.prepend(aTab);
++      aTab.removeAttribute("zen-essential");
++      if (!handled) {
++        this.documentGlobal.gZenWorkspaces.activeWorkspaceStrip.prepend(aTab);
++      }
+     });
+ 
+     aTab.style.marginInlineStart = "";
+@@ -1505,6 +1601,9 @@ export class Tabbrowser {
+ 
+     let LOCAL_PROTOCOLS = ["chrome:", "about:", "resource:", "data:"];
+ 
++    try {
++      aIconURL = aTab.zenStaticIcon || aIconURL;
++      this.documentGlobal.gZenPinnedTabManager.onTabIconChanged(aTab, aIconURL);
+     if (
+       aIconURL &&
+       !LOCAL_PROTOCOLS.some(protocol => aIconURL.startsWith(protocol))
+@@ -1514,6 +1613,9 @@ export class Tabbrowser {
+       );
+       return;
+     }
++    } catch (e) {
++      console.warn(e);
++    }
+ 
+     let browser = this.getBrowserForTab(aTab);
+     browser.mIconURL = aIconURL;
+@@ -1842,7 +1944,6 @@ export class Tabbrowser {
+ 
+     // Preview mode should not reset the owner
+     if (!this.#previewMode && !oldTab.selected) {
+-      oldTab.owner = null;
+     }
+ 
+     let lastRelatedTab = this.#lastRelatedTabMap.get(oldTab);
+@@ -1933,6 +2034,7 @@ export class Tabbrowser {
+     if (!this.#previewMode) {
+       newTab.recordTimeFromUnloadToReload();
+       newTab.updateLastAccessed();
++      newTab.removeAttribute("unread");
+       oldTab.updateLastAccessed();
+       // if this is the foreground window, update the last-seen timestamps.
+       if (this.documentGlobal == lazy.BrowserWindowTracker.getTopWindow()) {
+@@ -2147,6 +2249,9 @@ export class Tabbrowser {
+     }
+ 
+     let activeEl = this.document.activeElement;
++    if (this.documentGlobal.gURLBar._zenHandleUrlbarClose) {
++      this.documentGlobal.gURLBar._zenHandleUrlbarClose(true);
++    }
+     // If focus is on the old tab, move it to the new tab.
+     if (activeEl == oldTab) {
+       newTab.focus();
+@@ -2185,7 +2290,7 @@ export class Tabbrowser {
+     // Focus the location bar if it was previously focused for that tab.
+     // In full screen mode, only bother making the location bar visible
+     // if the tab is a blank one.
+-    if (this.documentGlobal.gURLBar.getBrowserState(newBrowser).urlbarFocused) {
++    if (this.documentGlobal.gURLBar.getBrowserState(newBrowser).urlbarFocused && (!this.documentGlobal.gZenVerticalTabsManager._hasSetSingleToolbar || this.documentGlobal.isBlankPageURL(newBrowser.currentURI?.spec))) {
+       let selectURL = () => {
+         if (this.#asyncTabSwitching) {
+           // Set _awaitingSetURI flag to suppress popup notification
+@@ -2514,6 +2619,10 @@ export class Tabbrowser {
+     return this.#setTabLabel(aTab, aLabel);
+   }
+ 
++  _setTabLabel(aTab, aLabel, aOptions) {
++    return this.#setTabLabel(aTab, aLabel, aOptions);
++  }
++
+   /**
+    * Sets a tab's label, shortened and clamped for display.
+    *
+@@ -2534,7 +2643,12 @@ export class Tabbrowser {
+    * @returns {boolean}
+    *   Whether the label changed.
+    */
+-  #setTabLabel(aTab, aLabel, { beforeTabOpen, isContentTitle, isURL } = {}) {
++  #setTabLabel(aTab, aLabel, { beforeTabOpen, isContentTitle, isURL, _zenChangeLabelFlag } = {}) {
++    if (!aTab._zenContentsVisible && !aTab._zenChangeLabelFlag && !aTab._labelIsInitialTitle && !this.documentGlobal.gZenWorkspaces.privateWindowOrDisabled && !_zenChangeLabelFlag) {
++      return false;
++    }
++    aLabel = (typeof aTab.zenStaticLabel === "string" && aTab.zenStaticLabel) ? aTab.zenStaticLabel : aLabel;
++    this.documentGlobal.gZenPinnedTabManager.onTabLabelChanged(aTab);
+     if (!aLabel || (isURL && /^about:reader\?url=/.test(aLabel))) {
+       return false;
+     }
+@@ -2693,7 +2807,7 @@ export class Tabbrowser {
+       newIndex = this.selectedTab.index + 1;
+     }
+ 
+-    if (replace) {
++    if (replace && !((targetTab || this.selectedTab)?.hasAttribute('zen-empty-tab'))) {
+       if (this.isTabGroupLabel(targetTab)) {
+         throw new Error(
+           "Replacing a tab group label with a tab is not supported"
+@@ -3026,6 +3140,7 @@ export class Tabbrowser {
+     uriIsAboutBlank,
+     userContextId,
+     skipLoad,
++    _forZenEmptyTab,
+   } = {}) {
+     let b = this.document.createXULElement("browser");
+     // Use the JSM global to create the permanentKey, so that if the
+@@ -3100,10 +3215,7 @@ export class Tabbrowser {
+       b.setAttribute("name", name);
+     }
+ 
+-    if (
+-      lazy.AIWindow.isAIWindowActive(this.documentGlobal) ||
+-      lazy.allowTransparentBrowser
+-    ) {
++    if (lazy.allowTransparentBrowser || _forZenEmptyTab) {
+       b.setAttribute("transparent", "true");
+     }
+ 
+@@ -3267,7 +3379,7 @@ export class Tabbrowser {
+ 
+     let panel = this.getPanel(browser);
+     let uniqueId = this.#generateUniquePanelID();
+-    panel.id = uniqueId;
++    if (!panel.id?.startsWith("zen-")) panel.id = uniqueId;
+     aTab.linkedPanel = uniqueId;
+ 
+     // Inject the <browser> into the DOM if necessary.
+@@ -3326,8 +3438,8 @@ export class Tabbrowser {
+     // If we transitioned from one browser to two browsers, we need to set
+     // hasSiblings=false on both the existing browser and the new browser.
+     if (this.tabs.length == 2) {
+-      this.tabs[0].linkedBrowser.browsingContext.hasSiblings = true;
+-      this.tabs[1].linkedBrowser.browsingContext.hasSiblings = true;
++      if (this.tabs[0].linkedBrowser.browsingContext) this.tabs[0].linkedBrowser.browsingContext.hasSiblings = true;
++      if (this.tabs[1].linkedBrowser.browsingContext) this.tabs[1].linkedBrowser.browsingContext.hasSiblings = true;
+     } else {
+       aTab.linkedBrowser.browsingContext.hasSiblings = this.tabs.length > 1;
+     }
+@@ -3515,7 +3627,6 @@ export class Tabbrowser {
+             {
+               tabIndex: tab.index + 1,
+               userContextId: tab.userContextId,
+-              tabGroup: tab.group,
+               focusUrlBar: true,
+             }
+           );
+@@ -3725,6 +3836,10 @@ export class Tabbrowser {
+       schemelessInput,
+       hasValidUserGestureActivation = false,
+       textDirectiveUserActivation = false,
++      _forZenEmptyTab,
++      essential,
++      zenWorkspaceId,
++      skipRoute = false,
+     }
+   ) {
+     // All callers of addTab need to pass a valid triggeringPrincipal.
+@@ -3734,6 +3849,23 @@ export class Tabbrowser {
+       );
+     }
+ 
++    const beforeRouteResult = this.documentGlobal.gZenSpaceRoutingManager.onBeforeAddTab(uriString, { skipRoute, pinned, tabGroup, fromExternal }, this.documentGlobal);
++    if (beforeRouteResult.shouldEarlyExit) {
++      return null;
++    }
++
++    const originallyInBackground = inBackground;
++    inBackground ||= this.documentGlobal.gZenSpaceRoutingManager.shouldDeferTabSelection(beforeRouteResult, this.documentGlobal);
++
++    let hasZenDefaultUserContextId = false;
++    let zenForcedWorkspaceId = undefined;
++    if (beforeRouteResult.isRouteFound && this.documentGlobal.gZenSpaceRoutingManager.shouldUseRouteContainer(userContextId, fromExternal, this.documentGlobal)) {
++      userContextId = beforeRouteResult.userContextId;
++      hasZenDefaultUserContextId = true;
++    } else if (typeof this.documentGlobal.gZenWorkspaces !== "undefined" && !_forZenEmptyTab) {
++      [userContextId, hasZenDefaultUserContextId, zenForcedWorkspaceId] = this.documentGlobal.gZenWorkspaces.getContextIdIfNeeded(userContextId, fromExternal, triggeringPrincipal);
++    }
++
+     if (!UserInteraction.running("browser.tabs.opening", this.documentGlobal)) {
+       UserInteraction.start(
+         "browser.tabs.opening",
+@@ -3742,6 +3874,7 @@ export class Tabbrowser {
+       );
+     }
+ 
++    if (!this.documentGlobal.gURLBar.hasAttribute("zen-newtab")) {
+     // If we're opening a foreground tab, set the owner by default.
+     ownerTab ??= inBackground ? null : this.selectedTab;
+ 
+@@ -3749,6 +3882,7 @@ export class Tabbrowser {
+     if (this.selectedTab.owner) {
+       this.selectedTab.owner = null;
+     }
++    }
+ 
+     // Find the tab that opened this one, if any. This is used for
+     // determining positioning, and inherited attributes such as the
+@@ -3801,6 +3935,22 @@ export class Tabbrowser {
+         noInitialLabel,
+         skipBackgroundNotify,
+       });
++      if (hasZenDefaultUserContextId) {
++        t.setAttribute("zenDefaultUserContextId", "true");
++      }
++      if (zenWorkspaceId) {
++        t.setAttribute("zen-workspace-id", zenWorkspaceId);
++        t.setAttribute("change-workspace", "")
++      } else if (zenForcedWorkspaceId !== undefined) {
++        t.setAttribute("zen-workspace-id", zenForcedWorkspaceId);
++        t.setAttribute("change-workspace", "")
++      }
++      if (_forZenEmptyTab) {
++        t.setAttribute("zen-empty-tab", "true");
++      }
++      if (essential) {
++        t.setAttribute("zen-essential", "true");
++      }
+       if (insertTab) {
+         // Insert the tab into the tab container in the correct position.
+         this.#insertTabAtIndex(t, {
+@@ -3809,6 +3959,7 @@ export class Tabbrowser {
+           ownerTab,
+           openerTab,
+           pinned,
++          essential,
+           bulkOrderedOpen,
+           tabGroup: tabGroup ?? openerTab?.group,
+         });
+@@ -3827,6 +3978,7 @@ export class Tabbrowser {
+         openWindowInfo,
+         skipLoad,
+         triggeringRemoteType,
++        _forZenEmptyTab,
+       }));
+ 
+       if (focusUrlBar) {
+@@ -3951,6 +4103,12 @@ export class Tabbrowser {
+       }
+     }
+ 
++    if (typeof this.documentGlobal.gZenVerticalTabsManager !== "undefined" && !skipAnimation) {
++      this.documentGlobal.gZenVerticalTabsManager.animateItemOpen(t);
++    }
++    if (typeof this.documentGlobal.gZenCompactModeManager !== "undefined" && !skipLoad && insertTab) {
++      this.documentGlobal.gZenCompactModeManager._onTabOpen(t, originallyInBackground, beforeRouteResult);
++    }
+     // Additionally send pinned tab events
+     if (pinned) {
+       this.#notifyPinnedStatus(t);
+@@ -3961,6 +4119,15 @@ export class Tabbrowser {
+     if (!inBackground) {
+       this.selectedTab = t;
+     }
++
++    this.documentGlobal.gZenSpaceRoutingManager.onAfterAddTab(
++      uriString,
++      t,
++      { skipRoute: skipRoute || _forZenEmptyTab, fromExternal, pinned, tabGroup, inBackground: originallyInBackground },
++      this.documentGlobal,
++      beforeRouteResult,
++    );
++
+     return t;
+   }
+ 
+@@ -4182,6 +4349,7 @@ export class Tabbrowser {
+       insertBefore = null,
+       isAdoptingGroup = false,
+       metricsContext = this.TabMetrics.UNKNOWN_CONTEXT,
++      forSplitView = false,
+     } = {}
+   ) {
+     if (
+@@ -4192,7 +4360,6 @@ export class Tabbrowser {
+           !this.isSplitViewWrapper(tabOrSplitView)
+       )
+     ) {
+-      throw new Error("Cannot create tab group with zero tabs or split views");
+     }
+ 
+     if (!color) {
+@@ -4207,7 +4374,15 @@ export class Tabbrowser {
+       id = `${Date.now()}-${Math.round(Math.random() * 100)}`;
+     }
+     let group = this.#createTabGroup(id, color, false, label, isAdoptingGroup);
+-    this.tabContainer.insertBefore(group, insertBefore?.group ?? insertBefore);
++    if (forSplitView) {
++      group.setAttribute('split-view-group', true);
++    }
++    group.essential = tabsAndSplitViews.some(tab => tab.hasAttribute("essential"));
++    group.pinned = group.essential || tabsAndSplitViews.some(tab => tab.pinned);
++    if (forSplitView && !insertBefore?.group?.isZenFolder) insertBefore = insertBefore?.group ?? insertBefore;
++    insertBefore.before(
++      group,
++    );
+     group.addTabs(tabsAndSplitViews, metricsContext);
+ 
+     // Bail out if the group is empty at this point. This can happen if all
+@@ -4310,7 +4485,7 @@ export class Tabbrowser {
+     }
+ 
+     this.#handleTabMove(tab, () =>
+-      this.tabContainer.insertBefore(tab, tab.group.nextElementSibling)
++      tab.group.after(tab)
+     );
+   }
+ 
+@@ -4394,6 +4569,7 @@ export class Tabbrowser {
+       color: group.color,
+       insertBefore: newTabs[0],
+       isAdoptingGroup: true,
++      forSplitView: group.hasAttribute('split-view-group'),
+     });
+   }
+ 
+@@ -4654,6 +4830,7 @@ export class Tabbrowser {
+       openWindowInfo,
+       skipLoad,
+       triggeringRemoteType,
++      _forZenEmptyTab
+     }
+   ) {
+     // If we don't have a preferred remote type (or it is `NOT_REMOTE`), and
+@@ -4717,6 +4894,7 @@ export class Tabbrowser {
+         openWindowInfo,
+         name,
+         skipLoad,
++        _forZenEmptyTab
+       });
+     }
+ 
+@@ -4946,6 +5124,16 @@ export class Tabbrowser {
+   ) {
+     let tabs = [];
+     let tabsFragment = this.document.createDocumentFragment();
++    let zenWorkspaces = this.documentGlobal.gZenWorkspaces;
++    let zenCollectsFragments =
++      !!zenWorkspaces?.canCollectSessionRestoreFragments;
++    if (zenCollectsFragments) {
++      zenWorkspaces.beginSessionRestoreFragments();
++    }
++    let zenFragmentFor = tabData =>
++      zenCollectsFragments
++        ? zenWorkspaces.getSessionRestoreFragment(tabData)
++        : tabsFragment;
+     let tabToSelect = null;
+     let hiddenTabs = new Map();
+     /** @type {Map<TabGroupId, TabGroupWorkingData>} */
+@@ -5000,8 +5188,9 @@ export class Tabbrowser {
+       }
+ 
+       // Add a new tab if needed.
+-      if (!tab) {
+-        let createLazyBrowser = restoreTabsLazily && !select && !tabData.pinned;
++      if (!tab || tab?._markedForReplacement) {
++        let createLazyBrowser =
++          restoreTabsLazily && !(tabData.pinned && !Services.prefs.getBoolPref("browser.sessionstore.restore_pinned_tabs_on_demand"));
+ 
+         let url = "about:blank";
+         if (tabData.entries?.length) {
+@@ -5034,8 +5223,10 @@ export class Tabbrowser {
+           insertTab: false,
+           skipLoad: true,
+           preferredRemoteType,
++          _forZenEmptyTab: tabData.zenIsEmpty,
+         });
+-
++        tab._originalUrl = url;
++        this.documentGlobal.gZenSessionStore.restoreInitialTabData(tab, tabData);
+         if (select) {
+           tabToSelect = tab;
+         }
+@@ -5057,7 +5248,8 @@ export class Tabbrowser {
+         this.pinTab(tab);
+         // Then ensure all the tab open/pinning information is sent.
+         this.#fireTabOpen(tab, {});
+-      } else if (tabData.groupId) {
++      }
++      if (tabData.groupId && tabGroupWorkingData.get(tabData.groupId)) {
+         let { groupId } = tabData;
+         const tabGroup = tabGroupWorkingData.get(groupId);
+         // if a tab refers to a tab group we don't know, skip any group
+@@ -5077,9 +5269,19 @@ export class Tabbrowser {
+               tabGroup.stateData.id,
+               tabGroup.stateData.color,
+               tabGroup.stateData.collapsed,
+-              tabGroup.stateData.name
++              tabGroup.stateData.name,
++              tabGroup.stateData.pinned,
++              tabGroup.stateData.essential,
++              tabGroup.stateData.splitView,
+             );
+-            tabsFragment.appendChild(tabGroup.node);
++            // A group lives in the space of the tabs it holds, but its own
++            // pinned and essential state is what decides its section.
++            zenFragmentFor({
++              zenWorkspace: tabData.zenWorkspace,
++              userContextId: tabData.userContextId,
++              pinned: tabGroup.stateData.pinned ?? tabData.pinned,
++              zenEssential: tabGroup.stateData.essential ?? tabData.zenEssential,
++            }).appendChild(tabGroup.node);
+           }
+         }
+       } else {
+@@ -5089,14 +5291,14 @@ export class Tabbrowser {
+         }
+ 
+         if (!splitView) {
+-          tabsFragment.appendChild(tab);
++          zenFragmentFor(tabData).appendChild(tab);
+         } else if (splitView?.node) {
+           // Treat split views as a unit for hiding purposes -- both tabs and
+           // the split view wrapper itself should be hidden.
+           if (splitView.tabs.some(t => t.hidden)) {
+             splitView.node.toggleAttribute("hidden", true);
+           }
+-          tabsFragment.appendChild(splitView.node);
++          zenFragmentFor(tabData).appendChild(splitView.node);
+         }
+ 
+         if (tabWasReused) {
+@@ -5108,7 +5310,17 @@ export class Tabbrowser {
+     }
+ 
+     // inject the top-level tab and tab group DOM nodes
+-    this.tabContainer.appendChild(tabsFragment);
++    if (zenCollectsFragments) {
++      zenWorkspaces.flushSessionRestoreFragments();
++      // allTabs only reaches the active space, so #updateTabsAfterInsert below
++      // would leave every tab restored into another space without a position.
++      // Session order is what SessionStore indexes these tabs by anyway.
++      for (let index = 0; index < tabs.length; index++) {
++        tabs[index]._index = index;
++      }
++    } else {
++      this.tabContainer.appendChild(tabsFragment);
++    }
+ 
+     // inject tab DOM nodes into the now-connected tab group and split view DOM nodes
+     for (const tabGroup of tabGroupWorkingData.values()) {
+@@ -5137,9 +5349,18 @@ export class Tabbrowser {
+     // to remove the old selected tab.
+     if (tabToSelect) {
+       let leftoverTab = this.selectedTab;
++      if (this._hasAlreadyInitializedZenSessionStore || !this.documentGlobal.gZenWorkspaces.workspaceEnabled) {
+       this.selectedTab = tabToSelect;
+       this.removeTab(leftoverTab);
++      } else {
++        this.documentGlobal.gZenWorkspaces._tabToRemoveForEmpty = leftoverTab;
++        if (this.documentGlobal.gZenWorkspaces._initialTab && !this.documentGlobal.gZenVerticalTabsManager._canReplaceNewTab) {
++          this.documentGlobal.gZenWorkspaces._initialTab._shouldRemove = true;
++        }
++      }
+     }
++    delete this.documentGlobal.__isNewZenWindow;
++    this._hasAlreadyInitializedZenSessionStore = true;
+ 
+     if (tabs.length > 1 || !tabs[0].selected) {
+       this.#updateTabsAfterInsert();
+@@ -5370,11 +5591,17 @@ export class Tabbrowser {
+     if (ownerTab) {
+       tab.owner = ownerTab;
+     }
++    if ((!tab.pinned && tabGroup?.isZenFolder && !Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder')) || (tabGroup && tabGroup.hasAttribute("split-view-group"))) {
++      tabGroup = null;
++    }
++    if (openerTab?.hasAttribute("zen-glance-tab")) {
++      openerTab = this.documentGlobal.gZenGlanceManager.getTabOrGlanceParent(openerTab);
++    }
+ 
+     // Ensure we have an index if one was not provided.
+     if (typeof elementIndex != "number" && typeof tabIndex != "number") {
+       // Move the new tab after another tab if needed, to the end otherwise.
+-      elementIndex = Infinity;
++      elementIndex = Services.prefs.getBoolPref("zen.view.show-newtab-button-top") ? this._numVisiblePinTabsWithoutCollapsed : Infinity;
+       let insertRelatedAfterCurrent = Services.prefs.getBoolPref(
+         "browser.tabs.insertRelatedAfterCurrent"
+       );
+@@ -5389,7 +5616,7 @@ export class Tabbrowser {
+           (insertRelatedAfterCurrent && lastRelatedTab) ||
+           openerTab ||
+           this.selectedTab;
+-        if (!tabGroup) {
++        if (!tabGroup && pinned === previousTab.group?.pinned) {
+           tabGroup = previousTab.group;
+         }
+         if (
+@@ -5405,7 +5632,7 @@ export class Tabbrowser {
+               previousTab.splitview
+             ) + 1;
+         } else if (previousTab.visible) {
+-          elementIndex = previousTab.elementIndex + 1;
++          elementIndex = (typeof previousTab.elementIndex === 'undefined') ? elementIndex : (previousTab.elementIndex + 1);
+         } else if (previousTab == this.documentGlobal.FirefoxViewHandler.tab) {
+           elementIndex = 0;
+         }
+@@ -5433,15 +5660,15 @@ export class Tabbrowser {
+     }
+     // Ensure index is within bounds.
+     if (tab.pinned) {
+-      index = Math.max(index, 0);
+-      index = Math.min(index, this.pinnedTabCount);
++      index = Math.max(index, tab.hasAttribute("zen-essential") ? 0 : this._numZenEssentials);
++      index = Math.min(index, tab.hasAttribute("zen-essential") ? this._numZenEssentials : this._numVisiblePinTabsWithoutCollapsed);
+     } else {
+-      index = Math.max(index, this.pinnedTabCount);
++      index = Math.max(index, typeof elementIndex == "number" ? this._numVisiblePinTabsWithoutCollapsed : this.pinnedTabCount);
+       index = Math.min(index, allItems.length);
+     }
+     let itemAfter =
+       /** @type {MozTabbrowserTab|MozTabSplitViewWrapper|MozTabbrowserTabGroupLabel|undefined} */ (
+-        allItems.at(index)
++        this.documentGlobal.gZenGlanceManager.getTabOrGlanceParent(allItems.at(index))
+       );
+ 
+     if (pinned && !itemAfter?.pinned) {
+@@ -5461,7 +5688,7 @@ export class Tabbrowser {
+ 
+     this.tabContainer._invalidateCachedTabs();
+ 
+-    if (tabGroup) {
++    if (tabGroup && !tabGroup.hasAttribute("split-view-group")) {
+       if (
+         (this.isTab(itemAfter) && itemAfter.group == tabGroup) ||
+         this.isSplitViewWrapper(itemAfter)
+@@ -5492,7 +5719,11 @@ export class Tabbrowser {
+       const tabContainer = pinned
+         ? this.tabContainer.pinnedTabsContainer
+         : this.tabContainer;
++      if (itemAfter) {
++        itemAfter.before(tab);
++      } else {
+       tabContainer.insertBefore(tab, itemAfter);
++      }
+     }
+ 
+     if (tab.group?.collapsed) {
+@@ -5507,6 +5738,7 @@ export class Tabbrowser {
+     if (pinned) {
+       this.#updateTabBarForPinnedTabs();
+     }
++    this.documentGlobal.gZenWorkspaces.fixTabInsertLocation(tab, itemAfter);
+ 
+     this.documentGlobal.TabBarVisibility.update();
+   }
+@@ -6098,6 +6330,7 @@ export class Tabbrowser {
+       metricsContext,
+     } = {}
+   ) {
++    tabs = tabs.filter(tab => !tab.hasAttribute("zen-empty-tab"));
+     // When 'closeWindowWithLastTab' pref is enabled, closing all tabs
+     // can be considered equivalent to closing the window.
+     if (
+@@ -6208,6 +6441,7 @@ export class Tabbrowser {
+           closedTabCount -= 1;
+         }
+       }
++      this.documentGlobal.gZenUIManager.onTabClose(undefined);
+ 
+       if (closedTabCount > 0) {
+         this.recordTabMetrics(
+@@ -6315,6 +6549,14 @@ export class Tabbrowser {
+       return;
+     }
+ 
++    if (this.documentGlobal.gZenWorkspaces.workspaceEnabled) {
++      let newTab = this.documentGlobal.gZenWorkspaces.handleTabBeforeClose(aTab, closeWindowWithLastTab);
++      if (newTab) {
++        this.selectedTab = newTab;
++      }
++    }
++    animate &&= !aTab.group?.hasAttribute("split-view-group");
++
+     let isVisibleTab = aTab.visible;
+     // We have to sample the tab width now, since #beginRemoveTab might
+     // end up modifying the DOM in such a way that aTab gets a new
+@@ -6323,6 +6565,9 @@ export class Tabbrowser {
+     let tabWidth =
+       this.documentGlobal.windowUtils.getBoundsWithoutFlushing(aTab).width;
+     let isLastTab = this.#isLastTabInWindow(aTab);
++    if (this.documentGlobal.gZenGlanceManager.manageTabClose(aTab)) {
++      return;
++    }
+     if (
+       !this.#beginRemoveTab(aTab, {
+         closeWindowFastpath: true,
+@@ -6333,13 +6578,14 @@ export class Tabbrowser {
+         metricsContext,
+       })
+     ) {
++      delete this.documentGlobal.gZenWorkspaces._isClosingWindow;
+       Glean.browserTabclose.timeAnim.cancel(aTab._closeTimeAnimTimerId);
+       aTab._closeTimeAnimTimerId = null;
+       Glean.browserTabclose.timeNoAnim.cancel(aTab._closeTimeNoAnimTimerId);
+       aTab._closeTimeNoAnimTimerId = null;
+       return;
+     }
+-
++    this.documentGlobal.gZenWorkspaces.handleTabBeforeRemove();
+     let lockTabSizing =
+       !this.tabContainer.verticalMode &&
+       !aTab.pinned &&
+@@ -6372,7 +6618,13 @@ export class Tabbrowser {
+       // We're not animating, so we can cancel the animation stopwatch.
+       Glean.browserTabclose.timeAnim.cancel(aTab._closeTimeAnimTimerId);
+       aTab._closeTimeAnimTimerId = null;
+-      this._endRemoveTab(aTab);
++      if (animate && !this.documentGlobal.gReduceMotion && !(this.documentGlobal.gZenUIManager.testingEnabled && !this.documentGlobal.gZenUIManager.profilingEnabled)) {
++        this.documentGlobal.gZenVerticalTabsManager.animateItemClose(aTab, (animate && !this.documentGlobal.gReduceMotion)).then(() => {
++          this._endRemoveTab(aTab);
++        });
++      } else {
++        this._endRemoveTab(aTab);
++      }
+       return;
+     }
+ 
+@@ -6412,7 +6664,9 @@ export class Tabbrowser {
+   get #shouldCloseWindowWithLastTab() {
+     return (
+       !this.documentGlobal.toolbar.visible ||
+-      Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab")
++      (Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab") &&
++        !this.documentGlobal.gZenWorkspaces._isClosingWindow &&
++        !this.documentGlobal.gZenWorkspaces._removedByStartupPage)
+     );
+   }
+ 
+@@ -6428,7 +6682,7 @@ export class Tabbrowser {
+    */
+   #isLastTabInWindow(tab) {
+     for (const otherTab of this.tabs) {
+-      if (otherTab != tab && otherTab.isOpen && !otherTab.hidden) {
++      if (otherTab != tab && otherTab.isOpen && !otherTab.hidden && !otherTab.hasAttribute("zen-empty-tab")) {
+         return false;
+       }
+     }
+@@ -6570,6 +6824,7 @@ export class Tabbrowser {
+ 
+       newTab = true;
+     }
++    this.documentGlobal.gZenWorkspaces._removedByStartupPage = false;
+     aTab._endRemoveArgs = [closeWindow, newTab];
+ 
+     // swapBrowsersAndCloseOther will take care of closing the window without animation.
+@@ -6624,13 +6879,7 @@ export class Tabbrowser {
+     }
+ 
+     if (newTab) {
+-      this.addTrustedTab(this.documentGlobal.BROWSER_NEW_TAB_URL, {
+-        skipAnimation: true,
+-        // In the event that insertAfterCurrent is set and the current tab is
+-        // inside a group that is being closed we want to avoid creating the
+-        // new tab inside that group.
+-        tabIndex: 0,
+-      });
++      this.documentGlobal.gZenWorkspaces.selectEmptyTab(this.documentGlobal.BROWSER_NEW_TAB_URL);
+     } else {
+       this.documentGlobal.TabBarVisibility.update();
+     }
+@@ -6783,6 +7032,7 @@ export class Tabbrowser {
+       this.tabs[i]._index = i;
+     }
+ 
++    this.documentGlobal.gZenWorkspaces.updateTabsContainers();
+     if (!this.#windowIsClosing) {
+       // update tab close buttons state
+       this.tabContainer._updateCloseButtons();
+@@ -6973,6 +7223,7 @@ export class Tabbrowser {
+       memory_after: await getTotalMemoryUsage(),
+       time_to_unload_in_ms: timeElapsed,
+     });
++    return true;
+   }
+ 
+   /**
+@@ -7019,11 +7270,12 @@ export class Tabbrowser {
+     }
+ 
+     let excludeTabs = new Set(aExcludeTabs);
++    this.documentGlobal.gZenWorkspaces.getTabsToExclude(aTab).forEach(tab => excludeTabs.add(tab));
+ 
+     // If this tab has a successor, it should be selectable, since
+     // hiding or closing a tab removes that tab as a successor.
+     if (aTab.successor && !excludeTabs.has(aTab.successor)) {
+-      return aTab.successor;
++      return this.documentGlobal.gZenWorkspaces.findTabToBlur(aTab.successor);
+     }
+ 
+     if (
+@@ -7031,13 +7283,13 @@ export class Tabbrowser {
+       !excludeTabs.has(aTab.owner) &&
+       Services.prefs.getBoolPref("browser.tabs.selectOwnerOnClose")
+     ) {
+-      return aTab.owner;
++      return this.documentGlobal.gZenWorkspaces.findTabToBlur(aTab.owner);
+     }
+ 
+     // Try to find a remaining tab that comes after the given tab
+     let remainingTabs = Array.prototype.filter.call(
+       this.visibleTabs,
+-      tab => !excludeTabs.has(tab)
++      tab => !excludeTabs.has(tab) && this.documentGlobal.gZenWorkspaces._shouldChangeToTab(tab) && tab !== aTab
+     );
+ 
+     if (Services.prefs.getBoolPref("browser.tabs.selectMRUOnClose", false)) {
+@@ -7052,6 +7304,13 @@ export class Tabbrowser {
+       }
+     }
+ 
++    if (remainingTabs.length > 0 && Services.prefs.getBoolPref("zen.tabs.select-recently-used-on-close")) {
++      let mostRecentTab = remainingTabs.reduce((a, b) =>
++        b.lastAccessed > a.lastAccessed ? b : a
++      );
++      return this.documentGlobal.gZenWorkspaces.findTabToBlur(mostRecentTab);
++    }
++
+     let tab = this.tabContainer.findNextTab(aTab, {
+       direction: 1,
+       filter: _tab => remainingTabs.includes(_tab),
+@@ -7065,7 +7324,7 @@ export class Tabbrowser {
+     }
+ 
+     if (tab) {
+-      return tab;
++      return this.documentGlobal.gZenWorkspaces.findTabToBlur(tab);
+     }
+ 
+     // If no qualifying visible tab was found, see if there is a tab in
+@@ -7086,7 +7345,7 @@ export class Tabbrowser {
+       });
+     }
+ 
+-    return tab;
++    return this.documentGlobal.gZenWorkspaces.findTabToBlur(tab);
+   }
+ 
+   #blurTab(aTab) {
+@@ -7103,7 +7362,7 @@ export class Tabbrowser {
+    * @returns {boolean}
+    *   False if swapping isn't permitted, true otherwise.
+    */
+-  swapBrowsersAndCloseOther(aOurTab, aOtherTab) {
++  swapBrowsersAndCloseOther(aOurTab, aOtherTab, zenCloseOther = true) {
+     // Do not allow transfering a private tab to a non-private window
+     // and vice versa.
+     if (
+@@ -7162,6 +7421,7 @@ export class Tabbrowser {
+     // fire the beforeunload event in the process.  Close the other
+     // window if this was its last tab.
+     if (
++      zenCloseOther &&
+       !remoteBrowser.#beginRemoveTab(aOtherTab, {
+         adoptedByTab: aOurTab,
+         closeWindowWithLastTab: true,
+@@ -7173,7 +7433,7 @@ export class Tabbrowser {
+     // If this is the last tab of the window, hide the window
+     // immediately without animation before the docshell swap, to avoid
+     // about:blank being painted.
+-    let [closeWindow] = aOtherTab._endRemoveArgs;
++    let [closeWindow] = !zenCloseOther ? [false] : aOtherTab._endRemoveArgs;
+     if (closeWindow) {
+       let win = aOtherTab.documentGlobal;
+       win.windowUtils.suppressAnimation(true);
+@@ -7309,11 +7569,13 @@ export class Tabbrowser {
+     }
+ 
+     // Finish tearing down the tab that's going away.
++    if (zenCloseOther) {
+     if (closeWindow) {
+       aOtherTab.documentGlobal.close();
+     } else {
+       remoteBrowser._endRemoveTab(aOtherTab);
+     }
++    }
+ 
+     this.setTabTitle(aOurTab);
+ 
+@@ -7562,10 +7824,10 @@ export class Tabbrowser {
+     }
+   }
+ 
+-  hideTab(aTab, aSource) {
++  hideTab(aTab, aSource, forZenWorkspaces = false) {
+     if (
+       aTab.hidden ||
+-      aTab.pinned ||
++      (aTab.pinned && !forZenWorkspaces) ||
+       aTab.selected ||
+       aTab.closing ||
+       // Tabs that are sharing the screen, microphone or camera cannot be hidden.
+@@ -7654,7 +7916,8 @@ export class Tabbrowser {
+    * @param {object} [options={}]
+    *   Key-value pairs that will be serialized into the features string.
+    */
+-  replaceTabWithWindow(aTab, options = {}) {
++  replaceTabWithWindow(aTab, options = {}, zenForceSync = false) {
++    if (!this.isTab(aTab)) return; // TODO: Handle tab groups
+     if (this.tabs.length == 1) {
+       return null;
+     }
+@@ -7671,7 +7934,7 @@ export class Tabbrowser {
+     // tell a new window to take the "dropped" tab
+     let args = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+     args.appendElement(/** @type {nsISupports} */ (aTab.splitview ?? aTab));
+-    return lazy.BrowserWindowTracker.openWindow({
++    let win = lazy.BrowserWindowTracker.openWindow({
+       private: lazy.PrivateBrowsingUtils.isWindowPrivate(this.documentGlobal),
+       features: Object.entries(options)
+         .map(([key, value]) => `${key}=${value}`)
+@@ -7679,6 +7942,8 @@ export class Tabbrowser {
+       openerWindow: this.documentGlobal,
+       args,
+     });
++    win._zenStartupSyncFlag = (zenForceSync || !Services.prefs.getBoolPref("zen.tabs.dnd-open-blank-window", true)) ? 'synced' : 'unsynced';
++    return win;
+   }
+ 
+   /**
+@@ -7812,7 +8077,7 @@ export class Tabbrowser {
+    * @returns {element is MozTabbrowserTabGroup}
+    */
+   isTabGroup(element) {
+-    return !!(element?.tagName == "tab-group");
++    return !!(element?.tagName == "tab-group" || element?.tagName == "zen-folder");
+   }
+ 
+   /**
+@@ -7885,8 +8150,8 @@ export class Tabbrowser {
+     }
+ 
+     // Don't allow mixing pinned and unpinned tabs.
+-    if (this.isTab(element) && element.pinned) {
+-      tabIndex = Math.min(tabIndex, this.pinnedTabCount - 1);
++    if (element.pinned) {
++      tabIndex = element.hasAttribute('zen-essential') ? Math.min(tabIndex, this._numZenEssentials - 1) : Math.min(Math.max(tabIndex, this._numZenEssentials), this.pinnedTabCount - 1);
+     } else {
+       tabIndex = Math.max(tabIndex, this.pinnedTabCount);
+     }
+@@ -7932,8 +8197,8 @@ export class Tabbrowser {
+     this.#handleTabMove(
+       element,
+       () => {
+-        let neighbor = this.tabs[tabIndex];
+-        if (forceUngrouped && neighbor?.group) {
++        let neighbor = this.documentGlobal.gZenGlanceManager.getTabOrGlanceParent(this.tabs[tabIndex]);
++        if ((forceUngrouped && neighbor?.group) || neighbor?.group?.hasAttribute("split-view-group")) {
+           neighbor = neighbor.group;
+         }
+         if (neighbor?.splitview) {
+@@ -7944,6 +8209,12 @@ export class Tabbrowser {
+             return;
+           }
+         }
++        if (element.group?.hasAttribute("split-view-group")) {
++          element = element.group;
++        }
++        if (element.group?.hasAttribute("split-view-group") && neighbor == element.group) {
++          return;
++        }
+ 
+         if (movingForwards && neighbor) {
+           neighbor.after(element);
+@@ -8017,23 +8288,31 @@ export class Tabbrowser {
+   ) {
+     if (this.isTabGroupLabel(targetElement)) {
+       targetElement = targetElement.group;
+-      if (!moveBefore && !targetElement.collapsed) {
++      if (!moveBefore && !targetElement.collapsed && !targetElement.hasAttribute("split-view-group")) {
+         // Right after the tab group label = before the first tab in the tab group
+         targetElement = targetElement.tabs[0];
+         moveBefore = true;
+       }
+     }
+-    if (this.isTabGroupLabel(element)) {
++    if (this.isTabGroupLabel(element) || element.group?.hasAttribute("split-view-group")) {
+       element = element.group;
+-      if (targetElement?.group) {
+-        targetElement = targetElement.group;
+-      }
+     }
+ 
+     // Don't allow mixing pinned and unpinned tabs.
++    targetElement = this.documentGlobal.gZenGlanceManager.getTabOrGlanceParent(targetElement);
++    if (targetElement?.classList.contains('tab-group-label-container')) {
++      targetElement = targetElement.parentElement;
++    }
++    if (element.hasAttribute('zen-essential') && !targetElement?.hasAttribute('zen-essential')) {
++      targetElement = this.tabsWithoutGlance[this._numZenEssentials - 1];
++    } else
+     if (element.pinned && !targetElement?.pinned) {
+-      targetElement = this.tabs[this.pinnedTabCount - 1];
++      targetElement = this.tabsWithoutGlance[this.pinnedTabCount - 1];
+       moveBefore = false;
++      if (!this.visibleTabs.includes(targetElement)) {
++        targetElement = this.documentGlobal.gZenWorkspaces.pinnedTabsContainer.querySelector('.pinned-tabs-container-separator')
++        moveBefore = true;
++      }
+     } else if (!element.pinned && targetElement && targetElement.pinned) {
+       // If the caller asks to move an unpinned element next to a pinned
+       // tab, move the unpinned element to be the first unpinned element
+@@ -8046,12 +8325,35 @@ export class Tabbrowser {
+       //    move the tab group right before the first unpinned tab.
+       // 4. Moving a tab group and the first unpinned tab is grouped:
+       //    move the tab group right before the first unpinned tab's tab group.
+-      targetElement = this.tabs[this.pinnedTabCount];
++      targetElement = this.tabsWithoutGlance[this.pinnedTabCount];
+       if (targetElement.group) {
+         targetElement = targetElement.group;
+       }
+       moveBefore = true;
+     }
++    if (!this.documentGlobal.gZenFolders.canDropElement(element, targetElement)) {
++      element = element.group;
++    }
++    if (!element.hasAttribute('zen-essential') && targetElement?.hasAttribute('zen-essential')) {
++      targetElement = null;
++      moveBefore = false;
++    }
++    // It is necessary to place the check below to avoid inserting an element
++    // inside when the split group is the last element.
++    if (targetElement?.group?.hasAttribute("split-view-group")) {
++      targetElement = targetElement.group;
++    }
++    if (targetElement?.hasAttribute("zen-empty-tab")) {
++      // When the folder is the last element in the pinned section,
++      // targetElement is a tab with the zen-empty-tab attribute.
++      // If the movement is from top to bottom, it must be redefined as a folder.
++      if (!moveBefore) {
++        targetElement = targetElement.group;
++      } else {
++        // Always insert an element after zen-empty-tab to avoid it moving from the first position
++        moveBefore = false;
++      }
++    }
+ 
+     // We want to include the splitview wrapper if it's the targetElement, but
+     // not in the case where we want to reverse tabs within the same splitview.
+@@ -8060,6 +8362,7 @@ export class Tabbrowser {
+     }
+ 
+     let getContainer = () =>
++      element.hasAttribute("zen-essential") ? this.documentGlobal.gZenWorkspaces.getEssentialsSection(element) :
+       element.pinned
+         ? this.tabContainer.pinnedTabsContainer
+         : this.tabContainer;
+@@ -8068,11 +8371,15 @@ export class Tabbrowser {
+       element,
+       () => {
+         if (moveBefore) {
+-          getContainer().insertBefore(element, targetElement);
++          targetElement.parentElement.insertBefore(element, targetElement);
+         } else if (targetElement) {
+           targetElement.after(element);
+         } else {
++          if (element.pinned) {
++            getContainer().prepend(element);
++          } else {
+           getContainer().appendChild(element);
++          }
+         }
+       },
+       { metricsContext }
+@@ -8148,11 +8455,15 @@ export class Tabbrowser {
+    *   The context for the operation for telemetry purposes.
+    */
+   moveTabToExistingGroup(aTab, aGroup, { metricsContext } = {}) {
+-    if (!this.isTab(aTab)) {
++    if (!this.isTab(aTab) && !aTab.hasAttribute('split-view-group')) {
+       throw new Error("Can only move a tab into a tab group");
+     }
+-    if (aTab.pinned) {
+-      return;
++    if (aTab.pinned != !!aGroup.pinned) {
++      if (aGroup.pinned) {
++        this.pinTab(aTab);
++      } else {
++        this.unpinTab(aTab);
++      }
+     }
+     if (aTab.group && aTab.group.id === aGroup.id) {
+       return;
+@@ -8231,6 +8542,7 @@ export class Tabbrowser {
+ 
+     let state = {
+       tabIndex: tab.index,
++      workspaceId: tab.getAttribute("zen-workspace-id")
+     };
+     if (tab.visible) {
+       state.elementIndex = tab.elementIndex;
+@@ -8268,7 +8580,7 @@ export class Tabbrowser {
+     let changedSplitView =
+       previousTabState.splitViewId != currentTabState.splitViewId;
+ 
+-    if (changedPosition || changedTabGroup || changedSplitView) {
++    if (changedPosition || changedTabGroup || changedSplitView || (previousTabState.workspaceId != currentTabState.workspaceId)) {
+       tab.dispatchEvent(
+         new this.documentGlobal.CustomEvent("TabMove", {
+           bubbles: true,
+@@ -8326,6 +8638,10 @@ export class Tabbrowser {
+ 
+     moveActionCallback();
+ 
++    this.documentGlobal.gZenWorkspaces.makeSureEmptyTabIsFirst();
++    this.documentGlobal.gZenViewSplitter._maybeRemoveFakeBrowser(false);
++    this.documentGlobal.gZenViewSplitter._canDrop = false;
++
+     // Clear tabs cache after moving nodes because the order of tabs may have
+     // changed.
+     this.tabContainer._invalidateCachedTabs();
+@@ -8385,7 +8701,25 @@ export class Tabbrowser {
+    * @returns {object}
+    *    The new tab in the current window, null if the tab couldn't be adopted.
+    */
+-  adoptTab(aTab, { elementIndex, tabIndex, selectTab = false } = {}) {
++  adoptTab(aTab, { elementIndex, tabIndex, selectTab = false, spaceId = null } = {}) {
++    if (this.documentGlobal.gZenWorkspaces.currentWindowIsSyncing && aTab.documentGlobal.gZenWorkspaces?.currentWindowIsSyncing) {
++      const tabId = aTab.id;
++      const thisTab = this.documentGlobal.gZenWindowSync.getItemFromWindow(this.documentGlobal, tabId);
++      if (thisTab) {
++        // The counterpart wears the space of the window it was synced from,
++        // so settle it into one this window has before placing it.
++        this.documentGlobal.gZenWorkspaces.adoptTabIntoSpace(thisTab, spaceId);
++        // Just move the tab to the index
++        this.moveTabTo(thisTab, { elementIndex, tabIndex });
++        if (spaceId) {
++          thisTab.setAttribute("zen-workspace-id", spaceId);
++        }
++        if (selectTab) {
++          this.selectedTab = thisTab;
++        }
++        return thisTab;
++      }
++    }
+     // Swap the dropped tab with a new one we create and then close
+     // it in the other window (making it seem to have moved between
+     // windows). We also ensure that the tab we create to swap into has
+@@ -8428,6 +8762,8 @@ export class Tabbrowser {
+     }
+     params.skipLoad = true;
+     let newTab = this.addWebTab("about:blank", params);
++    newTab._zenContentsVisible = true;
++    newTab.zenStaticLabel = aTab.zenStaticLabel;
+ 
+     aTab.container.tabDragAndDrop.finishAnimateTabMove();
+ 
+@@ -8437,6 +8773,10 @@ export class Tabbrowser {
+       return null;
+     }
+ 
++    // The swap brings the other window's space over with the tab, so settle
++    // it into one this window actually has.
++    this.documentGlobal.gZenWorkspaces?.adoptTabIntoSpace(newTab, spaceId);
++
+     if (selectTab) {
+       this.selectedTab = newTab;
+     }
+@@ -9249,7 +9589,7 @@ export class Tabbrowser {
+       // preventDefault(). It will still raise the window if appropriate.
+       return;
+     }
+-    this.selectedTab = tab;
++    this.documentGlobal.gZenWorkspaces.switchTabIfNeeded(tab);
+     this.documentGlobal.focus();
+     aEvent.preventDefault();
+   }
+@@ -9266,7 +9606,6 @@ export class Tabbrowser {
+ 
+   on_TabGroupCollapse(aEvent) {
+     aEvent.target.tabs.forEach(tab => {
+-      this.removeFromMultiSelectedTabs(tab);
+     });
+   }
+ 
+@@ -9614,7 +9953,9 @@ export class Tabbrowser {
+ 
+       let filter = this.#tabFilters.get(tab);
+       if (filter) {
++        try {
+         browser.webProgress.removeProgressListener(filter);
++        } catch {}
+ 
+         let listener = this.#tabListeners.get(tab);
+         if (listener) {
+@@ -10414,6 +10755,7 @@ class TabProgressListener {
+           aWebProgress.isTopLevel
+         ) {
+           this._tab.setAttribute("busy", "true");
++          if (!this._tab.selected) this._tab.setAttribute("unread", "true");
+           this.#tabbrowser._tabAttrModified(this._tab, ["busy"]);
+           this._tab._notselectedsinceload = !this._tab.selected;
+         }
+@@ -10494,6 +10836,7 @@ class TabProgressListener {
+       // known defaults. Note we use the original URL since about:newtab
+       // redirects to a prerendered page.
+       const shouldRemoveFavicon =
++        !this._tab.zenStaticIcon &&
+         !this._browser.mIconURL &&
+         !ignoreBlank &&
+         !(originalLocation.spec in FAVICON_DEFAULTS);
+@@ -10670,13 +11013,6 @@ class TabProgressListener {
+           this._browser.originalURI = aRequest.originalURI;
+         }
+ 
+-        if (!lazy.allowTransparentBrowser) {
+-          this._browser.toggleAttribute(
+-            "transparent",
+-            lazy.AIWindow.isAIWindowActive(this.#documentGlobal) &&
+-              lazy.AIWindow.isAIWindowContentPage(aLocation)
+-          );
+-        }
+       }
+ 
+       let userContextId = this._browser.getAttribute("usercontextid") || 0;

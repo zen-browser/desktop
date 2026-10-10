@@ -8,6 +8,9 @@ function fakeTab(workspaceId) {
     getAttribute(name) {
       return name === "zen-workspace-id" ? workspaceId : null;
     },
+    hasAttribute(name) {
+      return this.getAttribute(name) !== null;
+    },
   };
 }
 

@@ -7,11 +7,17 @@ support-files = [
   "head.js",
 ]
 
+["browser_space_routing_container.js"]
+
 ["browser_space_routing_crud.js"]
 
 ["browser_space_routing_dialog.js"]
 
+["browser_space_routing_external_window.js"]
+
 ["browser_space_routing_fuzz.js"]
+
+["browser_space_routing_lifecycle.js"]
 
 ["browser_space_routing_on_add_tab.js"]
 

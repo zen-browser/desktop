@@ -13,6 +13,18 @@
   const { AppConstants } = ChromeUtils.importESModule(
     "resource://gre/modules/AppConstants.sys.mjs"
   );
+  const { XPCOMUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/XPCOMUtils.sys.mjs"
+  );
+
+  const lazy = {};
+
+  XPCOMUtils.defineLazyPreferenceGetter(
+    lazy,
+    "elementSeparation",
+    "zen.theme.content-element-separation",
+    8
+  );
 
   const kZenThemePrefsList = [
     "zen.theme.accent-color",
@@ -109,7 +121,7 @@
         if (AppConstants.platform == "macosx") {
           const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)")
             .matches
-            ? 14
+            ? 11
             : 10;
           document.documentElement.style.setProperty(
             "--zen-border-radius",
@@ -125,7 +137,7 @@
           // Windows defaults to 8px
           document.documentElement.style.setProperty(
             "--zen-border-radius",
-            "8px"
+            "9px"
           );
         }
       } else {
@@ -183,10 +195,7 @@
     },
 
     get elementSeparation() {
-      return Math.min(
-        Services.prefs.getIntPref("zen.theme.content-element-separation"),
-        kZenMaxElementSeparation
-      );
+      return Math.min(lazy.elementSeparation, kZenMaxElementSeparation);
     },
 
     /**

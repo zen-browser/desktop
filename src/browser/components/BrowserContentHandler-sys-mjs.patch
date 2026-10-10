@@ -1,8 +1,17 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
+index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e94a81c28 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {
+@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   ShellService: "moz-src:///browser/components/shell/ShellService.sys.mjs",
+   SpecialMessageActions:
+     "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
++  gZenSpaceRoutingManager:
++    "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
+ });
+ 
+ /**
+@@ -672,6 +674,60 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -27,15 +36,59 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +      }
 +    }
 +
++    try {
++      let zenWorkspaceParam = cmdLine.handleFlagWithParam("space", false);
++      if (zenWorkspaceParam) {
++        let targetWin = lazy.BrowserWindowTracker.getTopWindow({
++          private: false,
++          allowPopups: false,
++        });
++        if (
++          targetWin?.gZenWorkspaces &&
++          !targetWin.gZenWorkspaces.privateWindowOrDisabled
++        ) {
++          targetWin.gZenWorkspaces
++            .changeWorkspaceFromCommandLine(zenWorkspaceParam)
++            .catch(console.error);
++          targetWin.focus();
++          if (!cmdLine.length) {
++            cmdLine.preventDefault = true;
++          }
++        } else {
++          // Cold start: stash the space so the first window that
++          // restores picks it up, and let normal startup open that window.
++          Services.prefs.setStringPref(
++            "zen.workspaces.cmdline-initial-workspace",
++            zenWorkspaceParam
++          );
++        }
++      }
++    } catch (e) {
++      if (e.result != Cr.NS_ERROR_INVALID_ARG) {
++        throw e;
++      }
++    }
 +
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -672,6 +694,7 @@ nsBrowserContentHandler.prototype = {
-       "  --new-window <url> Open <url> in a new window.\n" +
+@@ -742,6 +798,8 @@ nsBrowserContentHandler.prototype = {
        "  --new-tab <url>    Open <url> in a new tab.\n" +
+       "  --data <data-URL>  Open a data: URL.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
 +    info += "  --blank-window [<url>]  Open the new blank window.\n";
++    info += "  --space <space> [<url>]  Switch to the space with the given name or UUID, and open <url> in it if given.\n";
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
+@@ -1330,7 +1388,9 @@ function handURIToExistingBrowser(
+   });
+ 
+   if (navWin) {
+-    openInWindow(navWin);
++    openInWindow(
++      lazy.gZenSpaceRoutingManager.getWindowForExternalUri(uri, navWin)
++    );
+     return;
+   }
+ 

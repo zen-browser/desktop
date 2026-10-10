@@ -1,0 +1,27 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+FINAL_TARGET_FILES.actors += [
+    "actors/ZenWindowDragChild.sys.mjs",
+    "actors/ZenWindowDragParent.sys.mjs",
+]
+
+XPIDL_SOURCES += [
+    "nsIZenWindowDragUtils.idl",
+]
+
+EXPORTS.mozilla += [
+    "nsZenWindowDragUtils.h",
+]
+
+SOURCES += [
+    "nsZenWindowDragUtils.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen_window_drag"

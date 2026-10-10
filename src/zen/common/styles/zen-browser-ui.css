@@ -20,14 +20,11 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [chromehidden~="location"], [chromehidden~="toolbar"]) {
-  #navigator-toolbox,
-  #zen-sidebar-splitter {
-    visibility: collapse;
-  }
+:root:is([inDOMFullscreen="true"], [popup-window]) #navigator-toolbox {
+  visibility: collapse;
 }
 
-:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
 :root[zen-before-loaded="true"] #urlbar {
   opacity: 0 !important;
 }
@@ -45,7 +42,7 @@ body,
   overflow: clip;
 
   isolation: isolate;
-  contain: content;
+  contain: strict;
 
   &::after,
   &::before {
@@ -61,7 +58,7 @@ body,
     background: var(--zen-main-browser-background);
     opacity: var(--zen-background-opacity);
     transition: 0s;
-    background-blend-mode: screen;
+    background-blend-mode: lighten;
   }
 
   &:is(.zen-toolbar-background) {
@@ -74,7 +71,7 @@ body,
     background: var(--zen-main-browser-background-old);
     opacity: calc(1 - var(--zen-background-opacity));
     transition: 0s;
-    background-blend-mode: screen;
+    background-blend-mode: lighten;
   }
 
   &:is(.zen-toolbar-background) {
@@ -83,7 +80,7 @@ body,
     }
   }
 
-  :root:not([animating-background="true"]) &::before {
+  &:not([animating-background])::before {
     transition: background-color var(--inactive-window-transition);
   }
 
@@ -100,34 +97,16 @@ body,
     display: flex;
     opacity: var(--zen-grainy-background-opacity, 0);
 
-    :root:not([swipe-gesture="true"]) & {
+    &:not([swipe-gesture]) {
       /* note: Keep in sync with kGlobalAnimationDuration */
       transition: opacity 0.2s ease-in-out;
     }
   }
 }
 
-:root[swipe-gesture] #tabbrowser-arrowscrollbox {
+#tabbrowser-arrowscrollbox[swipe-gesture] {
   /* See gh-13703 for rationale. */
   pointer-events: none;
-}
-
-#zen-browser-background {
-  /* This is conceptually a background, but putting this on a pseudo-element
-    * avoids it from suppressing the chrome-content separator border, etc.
-    *
-    * See bugzilla's 1949528 and bug 1476281 (which would make this unnecessary). */
-  @media (-moz-platform: macos) {
-    -moz-default-appearance: -moz-sidebar;
-    appearance: auto;
-  }
-
-  /*
-   *  Important: We set the color to `AccentColor` so we can
-   *  Compute the stylings and get the native accent color.
-   *  Please, do not remove this.
-   */
-  color: AccentColor;
 }
 
 #sidebar-box {
@@ -161,7 +140,7 @@ body,
   }
 
   & > * {
-    z-index: 1;
+    z-index: var(--zen-main-app-child-z-index, 1);
   }
 
   /* stylelint-disable-next-line media-query-no-invalid */
@@ -179,7 +158,7 @@ body,
   min-width: 1px;
 }
 
-:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+:root:not([inDOMFullscreen="true"]):not([popup-window]) {
   & #zen-tabbox-wrapper {
     margin: var(--zen-element-separation);
     margin-top: 0;
@@ -264,6 +243,7 @@ body,
   border: none;
   cursor: ew-resize;
   z-index: 3;
+  -moz-window-dragging: no-drag;
 
   &:is(.zen-split-view-splitter[orient="vertical"]) {
     /* Bit of a hacky solution, but it works */
@@ -272,29 +252,13 @@ body,
     height: unset;
     cursor: ew-resize;
   }
-
-  &::before {
-    height: 50px;
-    width: 2px;
-    background: var(--button-background-color-primary);
-    border-radius: 2px;
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
-    pointer-events: none;
-  }
-
-  &:hover::before {
-    opacity: 1;
-  }
 }
+
 .zen-split-view-splitter[orient="horizontal"] {
   &::before {
     height: 2px;
     width: 50px;
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-background-without-text-color */
     background: var(--button-background-color-primary);
     border-radius: 2px;
     content: "";
@@ -327,16 +291,22 @@ body,
 }
 
 #zen-sidebar-splitter {
-  border-radius: 14px;
-  transition:
-    background 0.2s ease-in-out,
-    opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+  border-radius: 4px;
+  background: var(--zen-accent-button-background);
+  height: calc(100% - var(--zen-element-separation) * 2);
+  top: var(--zen-element-separation);
+  width: var(--zen-toolbox-padding);
+  position: absolute;
+  :root:not([zen-right-side="true"]) & {
+    right: 0;
+    left: unset;
+  }
 
-  &:hover {
-    background: var(--zen-primary-color);
-    transition: background 0.2s ease-in-out;
+  &:is(:hover, [zen-resizing="true"]) {
     transition-delay: 0.2s;
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 
@@ -352,4 +322,12 @@ body,
 
 :root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
+}
+
+/* See #14409: firefox 150's body paint containment prevents the right side compact
+ sidebar from remaining active at the screen edge in macOS fullscreen */
+@media (-moz-platform: macos) {
+  :root[macOSNativeFullscreen][zen-compact-mode][zen-right-side] body {
+    contain: none;
+  }
 }

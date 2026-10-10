@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<title>Test for bug 346337</title>
+
+<h3>Text Fields</h3>
+<input type="text" name="input">
+<input type="text" name="spaced 1">
+<input>
+
+<h3>Checkboxes and Radio buttons</h3>
+<input type="checkbox" name="check"> Check 1
+<input type="checkbox" name="uncheck" checked> Check 2
+<p>
+<input type="radio" name="group" value="1"> Radio 1
+<input type="radio" name="group" value="some"> Radio 2
+<input type="radio" name="group" checked> Radio 3
+
+<h3>Selects</h3>
+<select name="any">
+  <option value="1"> Select 1
+  <option value="some"> Select 2
+  <option>Select 3
+</select>
+<select multiple="multiple">
+  <option value=1> Multi-select 1
+  <option value=2> Multi-select 2
+  <option value=3> Multi-select 3
+  <option value=4> Multi-select 4
+</select>
+
+<h3>Text Areas</h3>
+<textarea name="testarea"></textarea>
+<textarea name="sized one" rows="5" cols="25"></textarea>
+<textarea></textarea>
+
+<h3>File Selector</h3>
+<input type="file">
+<input type="file" multiple>

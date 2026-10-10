@@ -5,23 +5,23 @@
  */
 .zen-download-box-animation {
   position: absolute;
-  width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--toolbar-color);
-  border-radius: var(--zen-border-radius);
-  box-shadow: var(--zen-big-shadow);
+  width: 42px;
+  height: 42px;
+  background-color: var(--zen-accent-button-background);
+  border-radius: 12px;
+  box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.1);
   pointer-events: none;
   z-index: 1100;
 }
 
 .zen-download-box-animation-icon {
-  width: 50%;
-  height: 50%;
-  background-color: var(--zen-primary-color);
-  mask: url("chrome://browser/content/zen-images/downloads/archive.svg") no-repeat center;
-  mask-size: contain;
-  display: block;
+  width: 24px;
+  height: 24px;
+  background: url("chrome://browser/skin/zen-icons/library/library.svg") no-repeat right;
+  fill: var(--toolbar-color);
+  -moz-context-properties: fill;
+  transform: scale(1.2) translate(3px, 3px);
 }

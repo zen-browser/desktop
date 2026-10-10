@@ -17,8 +17,8 @@ add_task(async function test_Glance_Basic_Open() {
       "There should be no zen-glance-tab attribute on any tab"
     );
     Assert.greater(
-      glanceTab._tPos,
-      selectedTab._tPos,
+      glanceTab.index,
+      selectedTab.index,
       "The glance tab should be on the right of the selected tab"
     );
     BrowserTestUtils.removeTab(glanceTab);
@@ -42,8 +42,8 @@ add_task(async function test_Glance_Open_Sibling() {
   await openGlanceOnTab(async glanceTab => {
     await gZenGlanceManager.fullyOpenGlance();
     Assert.equal(
-      glanceTab._tPos,
-      selectedTab._tPos + 1,
+      glanceTab._index,
+      selectedTab._index + 1,
       "The glance tab should be on the right of the selected tab"
     );
     BrowserTestUtils.removeTab(glanceTab);

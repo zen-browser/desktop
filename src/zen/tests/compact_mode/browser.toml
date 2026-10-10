@@ -4,4 +4,7 @@
 
 [DEFAULT]
 
+["browser_compact_mode_controls.js"]
+skip-if = ["os != 'mac'"]
+
 ["browser_compact_mode_width.js"]

@@ -378,8 +378,119 @@ window.gZenCompactModeManager = {
     }
   },
 
+  get _canAnimateSidebar() {
+    return (
+      lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR &&
+      !this.isSidebarPotentiallyOpen() &&
+      !this._preventAnimateCollapse &&
+      typeof this._wasInCompactMode === "undefined"
+    );
+  },
+
+  _prepareToolbarTransition() {
+    if (
+      AppConstants.platform !== "macosx" ||
+      document.documentElement.matches(":dir(rtl)") ||
+      gZenVerticalTabsManager._hasSetSingleToolbar ||
+      this.sidebarIsOnRight ||
+      !this.canHideSidebar ||
+      this.canHideToolbar ||
+      !this._canAnimateSidebar
+    ) {
+      return null;
+    }
+    // Keep controls in normal flow so toolbar overflow and sizing still work.
+    // Counter their parents' movement visually while the sidebar slides.
+    const controls = [
+      gZenVerticalTabsManager.actualWindowButtons,
+      document.getElementById("zen-sidebar-top-buttons-customization-target"),
+    ];
+    const titlebar = document.getElementById("titlebar");
+    const navbar = document.getElementById("nav-bar");
+    const navbarContents = document.getElementById(
+      "nav-bar-customization-target"
+    );
+    const styles = [
+      ...controls.map(element => [element, "transform"]),
+      [titlebar, "margin-top"],
+      [navbarContents, "margin-left"],
+    ].map(([element, property]) => ({
+      element,
+      property,
+      value: element.style.getPropertyValue(property),
+      priority: element.style.getPropertyPriority(property),
+    }));
+    const bounds = controls.map(element => element.getBoundingClientRect());
+    const hiding = !this.preference;
+    const initialNavbarX = navbarContents.getBoundingClientRect().x;
+    const sidebarExpanded = gZenVerticalTabsManager._prefsSidebarExpanded;
+    const animations = [];
+    // Moving the header to the toolbar must not pull the tab list upward.
+    titlebar.style.marginTop = `${
+      navbar.getBoundingClientRect().bottom -
+      document.getElementById("browser").getBoundingClientRect().y
+    }px`;
+    return {
+      start(width, options) {
+        const leadingSpace =
+          navbarContents.getBoundingClientRect().x -
+          navbar.getBoundingClientRect().x;
+        // Navigation ends immediately after the stationary header controls.
+        // Its compact inset can differ when the browser spacing is customized.
+        const compactMargin =
+          bounds[1].x +
+          controls[1].getBoundingClientRect().width -
+          navbarContents.getBoundingClientRect().x +
+          (hiding ? width : 0);
+        const margins = hiding
+          ? [
+              initialNavbarX - navbarContents.getBoundingClientRect().x,
+              compactMargin,
+            ]
+          : [
+              compactMargin,
+              sidebarExpanded ? -leadingSpace : compactMargin - width,
+            ];
+        navbarContents.style.marginLeft = `${margins[0]}px`;
+        animations.push(
+          gZenUIManager.motion.animate(
+            navbarContents,
+            { marginLeft: margins },
+            options
+          )
+        );
+        controls.forEach((element, index) => {
+          const current = element.getBoundingClientRect();
+          const x = bounds[index].x - current.x;
+          const y = bounds[index].y - current.y;
+          const from = `translate(${x}px, ${y}px)`;
+          const to = `translate(${x + (hiding ? width : -width)}px, ${y}px)`;
+          element.style.transform = from;
+          animations.push(
+            gZenUIManager.motion.animate(
+              element,
+              { transform: [from, to] },
+              options
+            )
+          );
+        });
+      },
+      restore() {
+        animations.forEach(animation => animation.stop());
+        for (const { element, property, value, priority } of styles) {
+          if (value) {
+            element.style.setProperty(property, value, priority);
+          } else {
+            element.style.removeProperty(property);
+          }
+        }
+      },
+    };
+  },
+
   async _updateEvent() {
     const value = !this.preference;
+    const toolbarTransition = this._prepareToolbarTransition();
     const setAttrs = () => {
       // We use this element in order to make it persis across restarts, by using the XULStore.
       // main-window can't store attributes other than window sizes, so we use this instead
@@ -393,17 +504,21 @@ window.gZenCompactModeManager = {
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
     gZenWorkspaces._processingResize = true;
-    if (!this.preference) {
-      setAttrs();
-      this.callAllEventListeners();
-      await this.animateCompactMode(value);
-    } else {
-      await this.animateCompactMode(value);
-      setAttrs();
-      this.callAllEventListeners();
+    try {
+      if (!this.preference) {
+        setAttrs();
+        this.callAllEventListeners();
+        await this.animateCompactMode(value, toolbarTransition);
+      } else {
+        await this.animateCompactMode(value, toolbarTransition);
+        setAttrs();
+        this.callAllEventListeners();
+      }
+    } finally {
+      toolbarTransition?.restore();
+      gZenWorkspaces._processingResize = false;
     }
     this.updateContextMenu();
-    gZenWorkspaces._processingResize = false;
     if (isUrlbarFocused) {
       gURLBar.focus();
     }
@@ -431,19 +546,13 @@ window.gZenCompactModeManager = {
     );
   },
 
-  animateCompactMode(isCompactMode) {
+  animateCompactMode(isCompactMode, toolbarTransition = null) {
     return new Promise(resolve => {
       document.documentElement.setAttribute("zen-compact-animating", "true");
       const canHideSidebar = this.canHideSidebar;
-      let canAnimate =
-        lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR &&
-        !this.isSidebarPotentiallyOpen() &&
-        !this._preventAnimateCollapse;
+      const canAnimate = this._canAnimateSidebar;
       delete this._preventAnimateCollapse;
-      if (typeof this._wasInCompactMode !== "undefined") {
-        canAnimate = false;
-        delete this._wasInCompactMode;
-      }
+      delete this._wasInCompactMode;
       // Do this so we can get the correct width ONCE compact mode styled have been applied
       if (canAnimate) {
         this.sidebar.setAttribute("animate", "true");
@@ -456,9 +565,11 @@ window.gZenCompactModeManager = {
       this.sidebar.style.removeProperty("margin-right");
       this.sidebar.style.removeProperty("margin-left");
       this.sidebar.style.removeProperty("transform");
-      let sidebarWidth = window.windowUtils.getBoundsWithoutFlushing(
-        this.sidebar
-      ).width;
+      // Toolbar compensation needs the new layout after reparenting the controls.
+      // Keep other layouts on their existing measurement path.
+      let sidebarWidth = toolbarTransition
+        ? this.sidebar.getBoundingClientRect().width
+        : window.windowUtils.getBoundsWithoutFlushing(this.sidebar).width;
       const elementSeparation = ZenThemeModifier.elementSeparation;
       if (!canAnimate) {
         this.sidebar.removeAttribute("animate");
@@ -472,8 +583,16 @@ window.gZenCompactModeManager = {
         resolve();
         return;
       }
-      sidebarWidth -= elementSeparation * (isCompactMode ? 1 : 3);
+      sidebarWidth -=
+        elementSeparation * (toolbarTransition || isCompactMode ? 1 : 3);
+      const animationOptions = {
+        ease: isCompactMode ? "easeIn" : "easeOut",
+        type: "spring",
+        bounce: 0,
+        duration: 0.1,
+      };
       if (canHideSidebar && isCompactMode) {
+        toolbarTransition?.start(sidebarWidth, animationOptions);
         this._setElementExpandAttribute(this.sidebar, false);
         gZenUIManager.motion
           .animate(
@@ -485,12 +604,7 @@ window.gZenCompactModeManager = {
               ],
               marginLeft: [0, this.sidebarIsOnRight ? 0 : `-${sidebarWidth}px`],
             },
-            {
-              ease: "easeIn",
-              type: "spring",
-              bounce: 0,
-              duration: 0.1,
-            }
+            animationOptions
           )
           .then(() => {
             this.sidebar.style.transition = "none";
@@ -524,6 +638,7 @@ window.gZenCompactModeManager = {
         } else {
           this.sidebar.style.marginLeft = `-${sidebarWidth}px`;
         }
+        toolbarTransition?.start(sidebarWidth, animationOptions);
         gZenUIManager.motion
           .animate(
             this.sidebar,
@@ -533,12 +648,7 @@ window.gZenCompactModeManager = {
                   transform: ["translateX(100%)", "translateX(0)"],
                 }
               : { marginLeft: [`-${sidebarWidth}px`, 0] },
-            {
-              ease: "easeOut",
-              type: "spring",
-              bounce: 0,
-              duration: 0.1,
-            }
+            animationOptions
           )
           .then(() => {
             this.sidebar.removeAttribute("animate");

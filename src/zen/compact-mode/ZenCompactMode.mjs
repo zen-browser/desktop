@@ -695,9 +695,9 @@ window.gZenCompactModeManager = {
           );
         } else {
           element.setAttribute("zen-has-implicit-hover", "true");
-        }
-        if (!lazy.COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER) {
-          return;
+          if (!lazy.COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER) {
+            return;
+          }
         }
       }
       element.setAttribute(attr, "true");

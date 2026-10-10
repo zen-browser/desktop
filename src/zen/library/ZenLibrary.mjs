@@ -467,6 +467,7 @@ export class ZenLibrary extends MozLitElement {
     const lib = this.getInstance();
 
     const settled =
+      target === lib.#target &&
       target === lib.openProgress &&
       lib.#isOpen === (target === 1) &&
       !lib.#springControls;

@@ -102,6 +102,18 @@ async function swipe(random) {
   }
 }
 
+add_task(async function test_close_right_after_open_closes() {
+  const Library = libraryClass();
+  if (Library.isLibraryOpen) {
+    Library.toggle("history");
+    await waitSettled("library starts closed");
+  }
+  Library.toggle("history");
+  Library.toggle("history");
+  await waitSettled("library settles after opening and closing at once");
+  ok(!Library.isLibraryOpen, "a close right after an open closes the library");
+});
+
 add_task(async function test_toggle_and_swipe_always_settle() {
   const Library = libraryClass();
   const random = makeRandom(7);

@@ -981,6 +981,14 @@ var gZenCKSSettings = {
       const groupElem = wrapper.querySelector(`[data-group="${ZEN_CKS_GROUP_PREFIX}-${group}"]`);
       groupElem.after(fragment);
     }
+
+    const unloadRow = wrapper
+      .querySelector('[data-id="zen-unload-selected-tabs"]')
+      .closest(`.${ZEN_CKS_CLASS_BASE}`);
+    const closeTabRow = wrapper
+      .querySelector('[data-id="key_close"]')
+      .closest(`.${ZEN_CKS_CLASS_BASE}`);
+    closeTabRow.after(unloadRow);
   },
 
   async _resetShortcut(input) {

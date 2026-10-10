@@ -5,142 +5,153 @@
  */
 
 @keyframes zen-swipe-add-icon-jump {
-  0% {
-    scale: 1;
-  }
-  50% {
-    scale: 1.15;
-  }
-  100% {
-    scale: 1;
-  }
+	0% {
+		scale: 1;
+	}
+	50% {
+		scale: 1.15;
+	}
+	100% {
+		scale: 1;
+	}
 }
 
 @keyframes library-badge-download {
-  0% {
-    transform: translateY(0);
-  }
-  20% {
-    transform: translateY(12px);
-  }
-  100% {
-    transform: translateY(0);
-  }
+	0% {
+		transform: translateY(0);
+	}
+	20% {
+		transform: translateY(12px);
+	}
+	100% {
+		transform: translateY(0);
+	}
 }
 
 @keyframes zen-library-sprite-hover {
-  from {
-    transform: translateX(0);
-  }
+	from {
+		transform: translateX(0);
+	}
 
-  to {
-    transform: translateX(calc(-35 / 36 * 100%));
-  }
+	to {
+		transform: translateX(calc(-35 / 36 * 100%));
+	}
 }
 
 @keyframes zen-library-sprite-unhover {
-  from {
-    transform: translateX(calc(-35 / 36 * 100%));
-  }
+	from {
+		transform: translateX(calc(-35 / 36 * 100%));
+	}
 
-  to {
-    transform: translateX(0);
-  }
+	to {
+		transform: translateX(0);
+	}
 }
 
 @keyframes zen-back-and-forth-text {
-  0%,
-  10% {
-    transform: translateX(0);
-    left: 0;
-  }
+	0%,
+	10% {
+		transform: translateX(0);
+		left: 0;
+	}
 
-  45%,
-  65% {
-    transform: translateX(calc(-100% - 5px));
-    left: 100%;
-  }
+	45%,
+	65% {
+		transform: translateX(calc(-100% - 5px));
+		left: 100%;
+	}
 
-  90%,
-  100% {
-    transform: translateX(0);
-    left: 0;
-  }
+	90%,
+	100% {
+		transform: translateX(0);
+		left: 0;
+	}
 }
 
 /* Mark: URL Bar */
 @keyframes zen-urlbar-searchmode {
-  0% {
-    box-shadow: 0 0 20px
-      color-mix(in srgb, color-mix(in srgb, var(--zen-primary-color), var(--toolbox-textcolor) 20%), light-dark(rgba(0, 0, 0, 0.3), transparent) 50%);
-  }
+	0% {
+		box-shadow: 0 0 20px
+			color-mix(
+				in srgb,
+				color-mix(
+					in srgb,
+					var(--zen-primary-color),
+					var(--toolbox-textcolor) 20%
+				),
+				light-dark(rgba(0, 0, 0, 0.3), transparent) 50%
+			);
+	}
 
-  100% {
-    box-shadow: 0 0 250px color-mix(in srgb, var(--zen-primary-color), transparent 100%);
-  }
+	100% {
+		box-shadow: 0 0 250px
+			color-mix(in srgb, var(--zen-primary-color), transparent 100%);
+	}
 }
 
 @keyframes zen-dialog-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes zen-dialog-fade-in-shifted {
-  from {
-    opacity: 0;
-    transform: translateY(calc(-10% - 10px));
-  }
+	from {
+		opacity: 0;
+		transform: translateY(calc(-10% - 10px));
+	}
 
-  to {
-    opacity: 1;
-    transform: translateY(-10%);
-  }
+	to {
+		opacity: 1;
+		transform: translateY(-10%);
+	}
 }
 
 @keyframes zen-text-gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: -400% 50%;
-  }
+	0% {
+		background-position: 0% 50%;
+	}
+	100% {
+		background-position: -400% 50%;
+	}
 }
 
 @keyframes zen-progress-bar-pulse {
-  from {
-    transform: scale(0.85) translate(-50%, -50%);
-    opacity: 0.6;
-  }
+	from {
+		transform: scale(0.85) translate(-50%, -50%);
+		opacity: 0.6;
+	}
 
-  to {
-    transform: scale(0.95) translate(-50%, -50%);
-    opacity: 1;
-  }
+	to {
+		transform: scale(0.95) translate(-50%, -50%);
+		opacity: 1;
+	}
 }
 
+/* transform (not left) keeps this compositor-safe. ±400%/3 of the ::before's
+   width (75% of the bar) equals ±100% of the bar, so keep in sync with width */
 @keyframes zen-progress-bar-long-load {
-  0% {
-    left: -100%;
-    opacity: 1;
-  }
+	0% {
+		transform: translateX(calc(-400% / 3));
+		opacity: 1;
+	}
 
-  100% {
-    left: 100%;
-    opacity: 1;
-  }
+	100% {
+		transform: translateX(calc(400% / 3));
+		opacity: 1;
+	}
 }
 
 @keyframes zen-progress-bar-settle {
-  to {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-    width: 10rem;
-  }
+	to {
+		transform: translate(-50%, -50%) scale(1);
+		opacity: 1;
+		width: 10rem;
+	}
 }

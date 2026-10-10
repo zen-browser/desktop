@@ -1,0 +1,24 @@
+diff --git a/widget/gtk/nsWindow.cpp b/widget/gtk/nsWindow.cpp
+index 71d1dd168c5f70ca404334e89d4eec44e44da415..9af889df52c36514b5ce16301b04937ffd1e8663 100644
+--- a/widget/gtk/nsWindow.cpp
++++ b/widget/gtk/nsWindow.cpp
+@@ -5062,15 +5062,16 @@ void nsWindow::UpdateOpaqueRegionInternal() {
+       LOG("nsWindow::UpdateOpaqueRegionInternal() window is transparent");
+     }
+     gdk_window_set_opaque_region(window, region);
+-    if (region) {
+-      cairo_region_destroy(region);
+-    }
+ 
+ #ifdef MOZ_WAYLAND
+     if (GdkIsWaylandDisplay()) {
++      AsWayland()->SetToplevelOpaqueRegion(region);
+       mSurface->SetOpaqueRegion(mOpaqueRegion.ToUnknownRegion());
+     }
+ #endif
++    if (region) {
++      cairo_region_destroy(region);
++    }
+   }
+ }
+ 

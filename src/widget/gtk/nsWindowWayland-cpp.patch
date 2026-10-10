@@ -1,0 +1,70 @@
+diff --git a/widget/gtk/nsWindowWayland.cpp b/widget/gtk/nsWindowWayland.cpp
+index ac18827d1e5189fb704e91e5f38c1173408bec22..e6033cae82429a689697794a1cc5f7052936fe74 100644
+--- a/widget/gtk/nsWindowWayland.cpp
++++ b/widget/gtk/nsWindowWayland.cpp
+@@ -2295,3 +2295,65 @@ bool nsWindowWayland::ApplyEnterLeaveMutterWorkaround() {
+ }
+ 
+ void nsWindowWayland::OnMapNative() { MaybeCreatePipResources(); }
++
++// Force commit to toplevel GdkWindow (mShell) to propagate
++// changes made to mContainer. There's only way how to force Gtk3 to
++// do the commit without actual painting (Bug 2070729) and that's child
++// subsurface position change.
++//
++// We create a temporary child window located outside of the window
++// origin without any content and move it to issue synced commit to toplevel
++// window.
++void nsWindowWayland::ForceToplevelCommit() {
++  if (!GetToplevelGdkWindow()) {
++    return;
++  }
++  if (!mCommitWindow) {
++    GdkWindowAttr attr = {};
++    attr.window_type = GDK_WINDOW_SUBSURFACE;
++    attr.wclass = GDK_INPUT_OUTPUT;
++    attr.width = attr.height = 1;
++    attr.x = attr.y = sCommitOrigin;
++    attr.event_mask = 0;
++    mCommitWindow =
++        gdk_window_new(GetToplevelGdkWindow(), &attr, GDK_WA_X | GDK_WA_Y);
++    cairo_region_t* empty = cairo_region_create();
++    gdk_window_input_shape_combine_region(mCommitWindow, empty, 0, 0);
++    cairo_region_destroy(empty);
++    gdk_window_set_transient_for(mCommitWindow, GetToplevelGdkWindow());
++    gdk_window_show(mCommitWindow);
++  }
++
++  // Alternate commit position around sCommitOrigin.
++  mCommitWindowPosition = mCommitWindowPosition == sCommitOrigin
++                              ? sCommitOrigin + 1
++                              : sCommitOrigin;
++  gdk_window_move(mCommitWindow, mCommitWindowPosition, mCommitWindowPosition);
++}
++
++// Gtk3 caches gdk_window_set_opaque_region() and applies it to the toplevel
++// wl_surface only when the GdkWindow is repainted, which rarely happens as we
++// paint into mContainer. Set it on the wl_surface directly and commit it
++// without a repaint, so the compositor never keeps a stale opaque area.
++void nsWindowWayland::SetToplevelOpaqueRegion(cairo_region_t* aRegion) {
++  GdkWindow* window = GetToplevelGdkWindow();
++  wl_surface* surface =
++      window ? gdk_wayland_window_get_wl_surface(window) : nullptr;
++  if (!surface) {
++    return;
++  }
++  wl_region* region = nullptr;
++  if (aRegion) {
++    region = wl_compositor_create_region(WaylandDisplayGet()->GetCompositor());
++    for (int i = 0; i < cairo_region_num_rectangles(aRegion); i++) {
++      cairo_rectangle_int_t rect;
++      cairo_region_get_rectangle(aRegion, i, &rect);
++      wl_region_add(region, rect.x, rect.y, rect.width, rect.height);
++    }
++  }
++  wl_surface_set_opaque_region(surface, region);
++  if (region) {
++    wl_region_destroy(region);
++  }
++  ForceToplevelCommit();
++}

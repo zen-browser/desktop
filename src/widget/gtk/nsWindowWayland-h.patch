@@ -1,0 +1,25 @@
+diff --git a/widget/gtk/nsWindowWayland.h b/widget/gtk/nsWindowWayland.h
+index e73bc5c1221eacad16203a3140c1e7360adba58d..482c5c0f78a5218a1ab6d51c6dba867d8f53b115 100644
+--- a/widget/gtk/nsWindowWayland.h
++++ b/widget/gtk/nsWindowWayland.h
+@@ -58,6 +58,9 @@ class nsWindowWayland final : public nsWindow {
+ 
+   bool ApplyEnterLeaveMutterWorkaround();
+ 
++  void ForceToplevelCommit();
++  void SetToplevelOpaqueRegion(cairo_region_t* aRegion);
++
+  protected:
+   virtual ~nsWindowWayland() = default;
+ 
+@@ -247,6 +250,10 @@ class nsWindowWayland final : public nsWindow {
+     struct xx_pip_v1* mPipSurface = nullptr;
+     LayoutDeviceIntSize mConfigureSize;
+   } mPipResources;
++
++  RefPtr<GdkWindow> mCommitWindow;
++  static constexpr int sCommitOrigin = -100;
++  int mCommitWindowPosition = sCommitOrigin;
+ };
+ 
+ }  // namespace mozilla::widget

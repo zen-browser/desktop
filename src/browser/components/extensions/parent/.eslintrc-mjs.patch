@@ -1,0 +1,12 @@
+diff --git a/browser/components/extensions/parent/.eslintrc.mjs b/browser/components/extensions/parent/.eslintrc.mjs
+index 763fe7b7341488f2875cbee4e15f91706d4add80...e27ca96854c7b8d94498a9821913a23aab309ef7 100644
+--- a/browser/components/extensions/parent/.eslintrc.mjs
++++ b/browser/components/extensions/parent/.eslintrc.mjs
+@@ -22,6 +22,7 @@ export default [
+         tabTracker: true,
+         waitForTabLoaded: true,
+         windowTracker: true,
++        zenGetNativeTabAtLogicalIndex: true,
+ 
+         // NOTE: Unlike ext-browser.js (and ext-toolkit.js, ext-tabs-base.js), the
+         // files mentioned below are not loaded unconditionally. In practice,

@@ -196,6 +196,9 @@
               }
               break;
             }
+            case "cmd_zenUnloadSelectedTabs":
+              void gBrowser.explicitUnloadTabs(gBrowser.selectedTabs);
+              break;
             case "cmd_zenToggleLibrary": {
               lazy.ZenLibrary.toggle();
               break;

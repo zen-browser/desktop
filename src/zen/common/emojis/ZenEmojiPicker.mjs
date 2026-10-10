@@ -240,7 +240,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.#lastSelectedEmoji = null;
 
     this.#anchor.removeAttribute("zen-emoji-open");
-    this.#anchor.parentElement.removeAttribute("zen-emoji-open");
+    this.#anchor.parentElement?.removeAttribute("zen-emoji-open");
     this.#anchor = null;
   }
 

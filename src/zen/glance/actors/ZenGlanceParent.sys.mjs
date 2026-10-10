@@ -9,9 +9,25 @@ export class ZenGlanceParent extends JSWindowActorParent {
     super();
   }
 
+  get isGlanceTab() {
+    const browser = this.browsingContext?.top?.embedderElement;
+    if (!browser) {
+      return false;
+    }
+    const win = this.browsingContext.topChromeWindow;
+    const tab = win?.gBrowser?.getTabForBrowser(browser);
+    return !!(
+      tab?.hasAttribute("zen-glance-tab") ||
+      browser.hasAttribute("zen-glance-selected")
+    );
+  }
+
   async receiveMessage(message) {
     switch (message.name) {
       case "ZenGlance:OpenGlance": {
+        if (this.isGlanceTab) {
+          return;
+        }
         this.openGlance(this.browsingContext.topChromeWindow, message.data);
         break;
       }

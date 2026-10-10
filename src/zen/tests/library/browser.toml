@@ -7,4 +7,6 @@ prefs = [
   "zen.library.enabled=true",
 ]
 
+["browser_library_closed_tab_icon.js"]
+
 ["browser_library_rapid_toggle.js"]

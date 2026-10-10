@@ -23,6 +23,13 @@
 - name: zen.urlbar.hide-one-offs
   value: true
 
+# Control Top Sites shortcuts in the URL bar independently of about:newtab.
+- name: zen.urlbar.show-sponsored
+  value: false
+
+- name: zen.urlbar.show-pinned
+  value: false
+
 - name: zen.urlbar.enable-overrides
   value: false
 

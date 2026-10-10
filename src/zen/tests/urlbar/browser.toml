@@ -13,6 +13,8 @@ support-files = [
 
 ["browser_issue_7385.js"]
 
+["browser_recent_history_provider.js"]
+
 ["browser_sidebar_provider.js"]
 
 ["browser_urlbar_close_token.js"]

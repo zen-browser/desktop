@@ -40,5 +40,11 @@
 - name: zen.urlbar.suggestions.quick-actions
   value: true
 
+- name: zen.urlbar.suggestions.recent-history
+  value: true
+
+- name: zen.urlbar.suggestions.recent-history.max-results
+  value: 5
+
 - name: browser.urlbar.shortcuts.workspaces
   value: true

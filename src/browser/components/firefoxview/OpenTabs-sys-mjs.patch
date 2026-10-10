@@ -1,0 +1,15 @@
+diff --git a/browser/components/firefoxview/OpenTabs.sys.mjs b/browser/components/firefoxview/OpenTabs.sys.mjs
+index f6e0c928c7b81edf0e8e7ddda4c12cd4cbe5d890..5403a3dc26d2c237e09a6cc5c7e35d6adb74cde2 100644
+--- a/browser/components/firefoxview/OpenTabs.sys.mjs
++++ b/browser/components/firefoxview/OpenTabs.sys.mjs
+@@ -354,7 +354,9 @@ class OpenTabsTarget extends EventTarget {
+    */
+   getTabsForWindow(win, sortByRecency = false) {
+     if (this.currentWindows.includes(win)) {
+-      const tabs = win.gBrowser.openTabs.filter(tab => !tab.hidden);
++      const tabs = win.gBrowser.openTabs.filter(
++        tab => !tab.hidden && !tab.hasAttribute("zen-empty-tab")
++      );
+       return sortByRecency ? tabs.toSorted(lastSeenActiveSort) : tabs;
+     }
+     return [];

@@ -8,6 +8,8 @@ support-files = [
   "head.js",
 ]
 
+["browser_closed_window_restore.js"]
+
 ["browser_collect_tab_state.js"]
 
 ["browser_move_unloaded_tabs.js"]

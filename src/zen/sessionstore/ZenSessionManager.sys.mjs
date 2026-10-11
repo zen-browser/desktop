@@ -717,17 +717,18 @@ export class nsZenSessionManager {
    * @param {boolean} isLastWindow - Whether this is the last saveable window.
    */
   maybeSaveClosedWindow(aWinData, isLastWindow) {
-    // We only want to save the *last* normal window that is closed.
-    // If its not the last window, we can still update the sidebar object
-    // based on other open windows.
-    if (
-      aWinData.isPopup ||
-      aWinData.isTaskbarTab ||
-      aWinData.isZenUnsynced ||
-      !isLastWindow
-    ) {
+    if (aWinData.isPopup || aWinData.isTaskbarTab || aWinData.isZenUnsynced) {
       return;
     }
+    if (!isLastWindow) {
+      if (lazy.gWindowSyncEnabled && !lazy.gSyncOnlyPinnedTabs) {
+        // Fully synced tabs survive in the remaining window. Keep this window
+        // available for undo, but don't reopen it as part of a series of closes.
+        delete aWinData._shouldRestore;
+      }
+      return;
+    }
+    // Preserve the last normal window and its shared sidebar on shutdown.
     this.log("Saving closed window session data into Zen session store");
     this.saveState({ windows: [aWinData] }, true);
   }

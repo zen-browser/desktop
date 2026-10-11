@@ -779,7 +779,10 @@
       content: "";
       position: absolute;
       top: 0;
-      height: 100%;
+      /* Physical anchor: keeps the transform-only sweep geometry identical to
+         the old `left` animation in RTL locales, where the static position
+         would otherwise anchor the bar to the right edge */
+      left: 0;
       width: 75%;
       opacity: 0;
       animation: zen-progress-bar-long-load 1s ease-in-out infinite;

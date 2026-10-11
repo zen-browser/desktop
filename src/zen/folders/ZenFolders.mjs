@@ -1782,10 +1782,20 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const itemsToHide = [];
 
     const tabsContainer = group.groupContainer;
+    const wasHidden = tabsContainer.hasAttribute("hidden");
     tabsContainer.removeAttribute("hidden");
     tabsContainer.style.overflowY = "hidden";
 
     const groupStart = group.groupStartElement;
+    if (wasHidden && !parseFloat(groupStart.style.marginTop)) {
+      // A folder built already collapsed, like the library's copy of one,
+      // never had its tabs shifted up, so they would pop in without sliding.
+      let height = tabsContainer.getBoundingClientRect().height;
+      if (tabsContainer.separatorElement) {
+        height -= tabsContainer.separatorElement.getBoundingClientRect().height;
+      }
+      groupStart.style.marginTop = `${-(height + 4)}px`;
+    }
     const itemsToShow = this.#normalizeGroupItems(group.childGroupsAndTabs);
     const activeFolders = group.childActiveGroups;
 

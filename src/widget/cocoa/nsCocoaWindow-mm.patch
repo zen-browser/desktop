@@ -1,8 +1,15 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df134a59781 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -87,6 +87,8 @@
+@@ -73,6 +73,7 @@
+ #include "qcms.h"
+
+ #include <algorithm>
++#include <cmath>
+ #include "mozilla/AutoRestore.h"
+ #include "mozilla/BasicEvents.h"
+ #include "mozilla/Maybe.h"
+@@ -87,6 +88,8 @@
  #include "mozilla/StaticPrefs_mozilla.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
@@ -11,10 +18,10 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
-@@ -1333,6 +1335,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1333,6 +1336,183 @@
  }
  @end
- 
+
 +@interface ZenWindowMaterialView : NSVisualEffectView
 +- (void)prefChanged;
 +@end
@@ -83,6 +90,8 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
 +void nsCocoaWindow::SetWindowClass(const nsAString& aXulWinType,
 +                                   const nsAString& aXulWinClass,
 +                                   const nsAString& aXulWinName) {
++  mIsPictureInPictureWindow =
++      aXulWinType.EqualsLiteral("Toolkit:PictureInPicture");
 +  if (mWindowType != WindowType::TopLevel || mIsBrowserWindow ||
 +      !aXulWinType.EqualsLiteral("navigator:browser")) {
 +    return;
@@ -92,6 +101,77 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
 +                                "zen.widget.macos.window-vibrancy", this);
 +  UpdateWindowMaterial();
 +}
++
++bool nsCocoaWindow::HandlePictureInPictureTrackpadGesture(NSEvent* aEvent) {
++  if (!mIsPictureInPictureWindow || mInFullScreenMode || !mWindow) {
++    return false;
++  }
++  bool isPan = aEvent.type == NSEventTypeScrollWheel;
++  if (isPan && (!aEvent.hasPreciseScrollingDeltas ||
++                (aEvent.phase == NSEventPhaseNone &&
++                 aEvent.momentumPhase == NSEventPhaseNone) ||
++                (aEvent.modifierFlags &
++                 (NSEventModifierFlagControl | NSEventModifierFlagOption |
++                  NSEventModifierFlagCommand | NSEventModifierFlagShift)))) {
++    return false;
++  }
++  if (isPan && (aEvent.momentumPhase != NSEventPhaseNone ||
++                !(aEvent.phase & (NSEventPhaseBegan | NSEventPhaseChanged)))) {
++    return true;
++  }
++  if (!isPan && !(aEvent.phase & (NSEventPhaseBegan | NSEventPhaseChanged))) {
++    return true;
++  }
++
++  NSRect frame = mWindow.frame;
++  NSRect originalFrame = frame;
++  NSRect available = mWindow.screen.visibleFrame;
++  if (isPan) {
++    frame.origin.x += aEvent.scrollingDeltaX;
++    frame.origin.y -= aEvent.scrollingDeltaY;
++  } else {
++    // Keep subpixel geometry instead of feeding AppKit's rounded frame back in.
++    if (NSEqualRects(frame, mPictureInPictureLastPinchFrame)) {
++      frame = mPictureInPicturePinchFrame;
++    }
++    originalFrame = frame;
++    CGFloat ratio = frame.size.width / frame.size.height;
++    CGFloat maxWidth =
++        std::min(available.size.width, available.size.height * ratio);
++    CGFloat minWidth = std::min(
++        maxWidth,
++        std::max(std::max(CGFloat(120), mWindow.minSize.width),
++                 std::max(CGFloat(80), mWindow.minSize.height) * ratio));
++    CGFloat width = std::clamp(
++        frame.size.width * std::exp(aEvent.magnification), minWidth, maxWidth);
++    frame.size = NSMakeSize(width, width / ratio);
++    frame.origin.x += (originalFrame.size.width - frame.size.width) / 2;
++    frame.origin.y += (originalFrame.size.height - frame.size.height) / 2;
++    mPictureInPicturePinchFrame = frame;
++  }
++  frame.origin.x = std::clamp(
++      frame.origin.x, NSMinX(available),
++      std::max(NSMinX(available), NSMaxX(available) - frame.size.width));
++  frame.origin.y = std::clamp(
++      frame.origin.y, NSMinY(available),
++      std::max(NSMinY(available), NSMaxY(available) - frame.size.height));
++  NSPoint cursor = NSEvent.mouseLocation;
++  [mWindow setFrame:frame display:NO];
++  if (!isPan) {
++    mPictureInPictureLastPinchFrame = mWindow.frame;
++  }
++  if (isPan) {
++    NSRect actualFrame = mWindow.frame;
++    cursor.x += actualFrame.origin.x - originalFrame.origin.x;
++    cursor.y += actualFrame.origin.y - originalFrame.origin.y;
++    // Quartz uses a top-left origin; AppKit uses the primary screen's
++    // bottom-left.
++    CGFloat screenTop = NSMaxY(NSScreen.screens.firstObject.frame);
++    CGWarpMouseCursorPosition(CGPointMake(cursor.x, screenTop - cursor.y));
++  }
++  return true;
++}
++
 +
 +void nsCocoaWindow::UpdateWindowMaterial() {
 +  NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
@@ -122,7 +202,31 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -3908,7 +4014,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+@@ -2059,6 +2239,11 @@
+ - (void)magnifyWithEvent:(NSEvent*)anEvent {
+   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+
++  if (mGeckoChild &&
++      mGeckoChild->HandlePictureInPictureTrackpadGesture(anEvent)) {
++    return;
++  }
++
+   if ([self maybeRollup:anEvent]) {
+     return;
+   }
+@@ -2747,6 +2932,11 @@
+   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+
+   nsAutoRetainCocoaObject kungFuDeathGrip(self);
++
++  if (mGeckoChild &&
++      mGeckoChild->HandlePictureInPictureTrackpadGesture(theEvent)) {
++    return;
++  }
+
+   ChildViewMouseTracker::MouseScrolled(theEvent);
+
+@@ -3908,7 +4098,9 @@
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -131,9 +235,9 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
 +  zen::PrepareDropLanding(sender);
 +  return operation;
  }
- 
+
  // NSDraggingDestination
-@@ -3924,6 +4032,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+@@ -3924,6 +4116,9 @@
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -143,10 +247,10 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -4978,6 +5089,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -4978,6 +5173,10 @@
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
- 
+
 +  if (mIsBrowserWindow) {
 +    Preferences::UnregisterCallback(ZenWindowVibrancyPrefChanged,
 +                                    "zen.widget.macos.window-vibrancy", this);

@@ -2,6 +2,14 @@
 subsuite = "integration"
 tags = "local os_integration"
 
+["test_automatic_startup_window_features_mismatch.py"]
+
+["test_automatic_with_taskbar_tab_window_features_mismatch.py"]
+
+["test_close_last_nonpopup_window.py"]
+
+["test_deferred_initial_state_window_features_mismatch.py"]
+
 ["test_log_files.py"]
 
 ["test_new_tab_on_restore.py"]
@@ -12,6 +20,8 @@ skip-if = [
 ["test_persist_closed_tabs_restore_manually.py"]
 
 ["test_restore_aiwindow.py"]
+
+["test_restore_last_session_window_mismatch.py"]
 
 ["test_restore_loading_tab.py"]
 
@@ -47,6 +57,8 @@ skip-if = [
   "os == 'win' && os_version == '11.26200' && arch == 'x86'", # Bug 1727691
   "os == 'win' && os_version == '11.26200' && arch == 'x86_64'", # Bug 1727691
 ]
+
+["test_set_browser_state_window_features_mismatch.py"]
 
 ["test_shutdown_flush_timeout.py"]
 

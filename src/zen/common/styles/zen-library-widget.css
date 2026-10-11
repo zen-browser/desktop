@@ -338,6 +338,11 @@
       display: none;
       margin: auto 4px auto 0;
 
+      & > .toolbarbutton-icon {
+        width: 28px;
+        height: 28px;
+      }
+
       :root:not([zen-sidebar-expanded="true"]) & {
         display: none !important;
       }
@@ -347,7 +352,15 @@
       list-style-image: url("chrome://browser/skin/zen-icons/close.svg");
     }
 
-    &[downloading]:hover .zen-library-download-action {
+    &[show-in-folder] .zen-library-download-action {
+      list-style-image: url("chrome://browser/skin/zen-icons/folder.svg");
+
+      @media (-moz-platform: macos) {
+        list-style-image: url("chrome://browser/skin/zen-icons/search-glass.svg");
+      }
+    }
+
+    &:is([downloading], [show-in-folder]):hover .zen-library-download-action {
       display: flex;
     }
   }

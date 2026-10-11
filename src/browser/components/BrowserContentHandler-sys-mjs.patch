@@ -11,7 +11,7 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e
  });
  
  /**
-@@ -672,6 +674,28 @@ nsBrowserContentHandler.prototype = {
+@@ -672,6 +674,60 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -36,19 +36,52 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e
 +      }
 +    }
 +
++    try {
++      let zenWorkspaceParam = cmdLine.handleFlagWithParam("space", false);
++      if (zenWorkspaceParam) {
++        let targetWin = lazy.BrowserWindowTracker.getTopWindow({
++          private: false,
++          allowPopups: false,
++        });
++        if (
++          targetWin?.gZenWorkspaces &&
++          !targetWin.gZenWorkspaces.privateWindowOrDisabled
++        ) {
++          targetWin.gZenWorkspaces
++            .changeWorkspaceFromCommandLine(zenWorkspaceParam)
++            .catch(console.error);
++          targetWin.focus();
++          if (!cmdLine.length) {
++            cmdLine.preventDefault = true;
++          }
++        } else {
++          // Cold start: stash the space so the first window that
++          // restores picks it up, and let normal startup open that window.
++          Services.prefs.setStringPref(
++            "zen.workspaces.cmdline-initial-workspace",
++            zenWorkspaceParam
++          );
++        }
++      }
++    } catch (e) {
++      if (e.result != Cr.NS_ERROR_INVALID_ARG) {
++        throw e;
++      }
++    }
 +
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -742,6 +766,7 @@ nsBrowserContentHandler.prototype = {
+@@ -742,6 +798,8 @@ nsBrowserContentHandler.prototype = {
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --data <data-URL>  Open a data: URL.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
 +    info += "  --blank-window [<url>]  Open the new blank window.\n";
++    info += "  --space <space> [<url>]  Switch to the space with the given name or UUID, and open <url> in it if given.\n";
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
-@@ -1330,7 +1355,9 @@ function handURIToExistingBrowser(
+@@ -1330,7 +1388,9 @@ function handURIToExistingBrowser(
    });
  
    if (navWin) {

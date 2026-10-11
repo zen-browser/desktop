@@ -17,6 +17,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
   gZenCookieConsent:
     "resource:///modules/zen/cookieconsent/ZenCookieConsentManager.sys.mjs",
+  webrtcUI: "resource:///modules/webrtcUI.sys.mjs",
 });
 
 export class nsZenSiteDataPanel {
@@ -125,6 +126,15 @@ export class nsZenSiteDataPanel {
         }
       },
     });
+    this.window.gBrowser.addEventListener(
+      "PermissionStateChange",
+      () => {
+        if (this.unifiedPanel?.state == "open") {
+          this.#refreshSitePermissions();
+        }
+      },
+      true
+    );
     this.window.addEventListener(
       "unload",
       () => {
@@ -802,6 +812,45 @@ export class nsZenSiteDataPanel {
     section.hidden = list.childElementCount < 2; // only the separator
   }
 
+  #refreshSitePermissions() {
+    const list = this.document.getElementById("zen-site-data-settings-list");
+    list.innerHTML = "";
+    this.#setSitePermissions();
+  }
+
+  #permissionStateL10n(permission) {
+    const { SitePermissions } = this.window;
+    if (
+      permission.state == SitePermissions.ALLOW &&
+      permission.scope == SitePermissions.SCOPE_TEMPORARY
+    ) {
+      if (!permission.expireTime) {
+        return { id: "zen-site-data-setting-allow-tab" };
+      }
+      let remainingMs = permission.expireTime - Date.now();
+      if (remainingMs < 60 * 1000) {
+        return { id: "zen-site-data-setting-allow-brief" };
+      }
+      return {
+        id: "zen-site-data-setting-allow-timed",
+        args: { minutes: Math.max(1, Math.round(remainingMs / 60000)) },
+      };
+    }
+    return { id: this.#getPermissionStateLabelId(permission) };
+  }
+
+  #applyPermissionStateLabel(stateLabel, permission) {
+    let { id, args } = this.#permissionStateL10n(permission);
+    if (!id) {
+      return;
+    }
+    if (args) {
+      this.document.l10n.setAttributes(stateLabel, id, args);
+    } else {
+      stateLabel.setAttribute("data-l10n-id", id);
+    }
+  }
+
   #getPermissionStateLabelId(permission) {
     const { SitePermissions } = this.window;
     switch (permission.state) {
@@ -887,10 +936,7 @@ export class nsZenSiteDataPanel {
       // The key should be the site for cross-site cookies.
       stateLabel.textContent = key;
     } else {
-      stateLabel.setAttribute(
-        "data-l10n-id",
-        this.#getPermissionStateLabelId(permission)
-      );
+      this.#applyPermissionStateLabel(stateLabel, permission);
     }
     labelContainer.appendChild(stateLabel);
 
@@ -973,6 +1019,24 @@ export class nsZenSiteDataPanel {
   #onPermissionClick(label) {
     const { SitePermissions, gBrowser } = this.window;
     const permission = label._permission;
+
+    if (permission.scope == SitePermissions.SCOPE_TEMPORARY) {
+      let browser = gBrowser.selectedBrowser;
+      let [id] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
+      if (
+        (id == "camera" || id == "microphone") &&
+        permission.id.indexOf(SitePermissions.PERM_KEY_DELIMITER) == -1
+      ) {
+        lazy.webrtcUI.stopExpiredDeviceGrant(browser, id);
+      }
+      SitePermissions.removeFromPrincipal(
+        gBrowser.contentPrincipal,
+        permission.id,
+        browser
+      );
+      this.#refreshSitePermissions();
+      return;
+    }
 
     let newState;
     switch (permission.state) {

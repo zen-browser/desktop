@@ -535,6 +535,22 @@
   }
 }
 
+.popup-notification-duration {
+  margin-top: 8px;
+  align-items: center;
+  gap: 8px;
+}
+
+.popup-notification-duration-label {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.popup-notification-duration-menulist {
+  flex: 1;
+  min-width: 12em;
+}
+
 .zen-permission-popup-permission-state-label,
 .zen-permission-popup-boost-state-label {
   opacity: 0.6;

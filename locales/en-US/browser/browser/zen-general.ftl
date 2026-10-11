@@ -108,6 +108,20 @@ zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Allowed
 zen-site-data-setting-block = Blocked
+# $minutes (Number) - whole minutes remaining on a temporary grant.
+zen-site-data-setting-allow-timed = Allowed for { $minutes } min
+zen-site-data-setting-allow-brief = Allowed for less than a minute
+zen-site-data-setting-allow-tab = Until this tab closes
+
+zen-permission-duration-label = Allow for
+zen-permission-duration-once =
+    .label = This time
+zen-permission-duration-timed =
+    .label = For 10 minutes
+zen-permission-duration-tab =
+    .label = Until this tab closes
+zen-permission-duration-always =
+    .label = Always
 zen-site-data-protections-enabled = Enabled
 zen-site-data-protections-disabled = Disabled
 zen-site-data-adblock = Ad blocking

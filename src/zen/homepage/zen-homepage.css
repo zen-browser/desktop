@@ -31,6 +31,9 @@
   --zen-home-tagline-start: #00fff2;
   --zen-home-tagline-end: #abb100;
   --zen-home-title-size: 20px;
+  --zen-home-card-title-size: 16px;
+  --zen-home-card-value-size: 40px;
+  --zen-home-card-min-height: 120px;
   --zen-home-value-size: 60px;
   --zen-home-welcome-size: 60px;
   --zen-home-date-size: 30px;
@@ -156,9 +159,9 @@
 
 .zen-homepage-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
   gap: 16px;
-  width: min(980px, 100%);
+  width: min(920px, 100%);
 }
 
 .zen-homepage-card,
@@ -176,8 +179,8 @@
   grid-template-rows: auto 1fr;
   align-items: start;
   justify-items: center;
-  min-height: 168px;
-  padding: 18px 16px 20px;
+  min-height: var(--zen-home-card-min-height);
+  padding: 14px 12px 16px;
 }
 
 .zen-homepage-card[hidden],
@@ -189,7 +192,7 @@
   font-family: "Zen Poppins", sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: var(--zen-home-title-size);
+  font-size: var(--zen-home-card-title-size);
   line-height: normal;
   letter-spacing: 0;
   text-align: center;
@@ -199,7 +202,8 @@
 
 .zen-homepage-card-value {
   align-self: center;
-  font-size: var(--zen-home-value-size);
+  font-size: var(--zen-home-card-value-size);
+  line-height: 1.1;
   color: var(--zen-home-text);
   max-width: 100%;
   overflow-wrap: anywhere;

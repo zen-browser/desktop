@@ -62,6 +62,63 @@ add_task(async function test_builtin_homepage_overlay_and_styles() {
       cardStyle.backgroundColor.includes("20%"),
     `Card fill is 20% white, got ${cardStyle.backgroundColor}`
   );
+
+  const clock = homepage.querySelector(".zen-homepage-clock");
+  is(
+    getComputedStyle(clock).fontSize,
+    "60px",
+    "Clock keeps the 60px Cal Sans size"
+  );
+
+  const cardValue = homepage.querySelector(
+    ".zen-homepage-card .zen-homepage-card-value"
+  );
+  is(
+    getComputedStyle(cardValue).fontSize,
+    "40px",
+    "Stat card values use the smaller 40px size"
+  );
+  ok(
+    parseFloat(getComputedStyle(cardValue).fontSize) <
+      parseFloat(getComputedStyle(clock).fontSize),
+    "Stat card values are smaller than the clock"
+  );
+  is(
+    cardStyle.minHeight,
+    "120px",
+    "Stat cards use the 120px minimum height"
+  );
+});
+
+add_task(async function test_homepage_live_data_updates() {
+  Services.prefs.setStringPref("zen.homepage.mode", "builtin");
+  gBrowser.selectedTab = gZenWorkspaces._emptyTab;
+  gZenHomepage.sync();
+
+  const homepage = document.getElementById("zen-homepage");
+  ok(!homepage.hidden, "Homepage is visible for live updates");
+
+  const clock = homepage.querySelector(".zen-homepage-clock");
+  ok(clock.textContent.length > 0, "Clock shows a time after sync");
+  ok(
+    /\d/.test(clock.textContent),
+    `Clock text looks like a time, got ${clock.textContent}`
+  );
+
+  const downloadsValue = homepage.querySelector(
+    '[data-card="downloads"] .zen-homepage-card-value'
+  );
+  downloadsValue.textContent = "stale-test-marker";
+  gZenHomepage.sync();
+  await TestUtils.waitForCondition(
+    () => downloadsValue.textContent !== "stale-test-marker",
+    "Downloads card value is refreshed after sync"
+  );
+
+  const timeSpent = homepage.querySelector(
+    '[data-card="time-spent"] .zen-homepage-card-value'
+  );
+  ok(timeSpent.textContent.length > 0, "Time spent card shows a duration");
 });
 
 add_task(async function test_card_pref_hides_card() {

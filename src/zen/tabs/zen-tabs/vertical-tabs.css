@@ -612,8 +612,8 @@ zen-library {
     & #tabbrowser-arrowscrollbox-periphery > toolbarbutton {
       width: 100% !important;
       border-radius: var(--border-radius-medium) !important;
-      padding-left: var(--tab-inline-padding) !important;
-      padding-right: var(--tab-inline-padding) !important;
+      padding-left: var(--tab-padding-inline) !important;
+      padding-right: var(--tab-padding-inline) !important;
 
       & label {
         display: flex;
@@ -645,7 +645,7 @@ zen-library {
   }
 
   & #tabbrowser-tabs {
-    --tab-inline-padding: 8px;
+    --tab-padding-inline: 8px;
     --tab-icon-end-margin: 8.5px;
 
     & .tabbrowser-tab {
@@ -702,7 +702,7 @@ zen-library {
 
       .tab-close-button {
         display: block;
-        --tab-inline-padding: 0;
+        --tab-padding-inline: 0;
         margin-inline-end: 0;
       }
 
@@ -785,7 +785,7 @@ zen-library {
       min-height: var(--tab-min-height);
       line-height: var(--tab-label-line-height);
       border-radius: var(--border-radius-medium);
-      padding: 0 calc(var(--tab-inline-padding) - var(--tab-inner-inline-margin));
+      padding: 0 calc(var(--tab-padding-inline) - var(--tab-inner-inline-margin));
 
       &.toolbarbutton-badge-stack {
         justify-content: center;
@@ -951,9 +951,9 @@ zen-library {
   display: flex;
   position: relative;
   height: calc(100% - var(--tab-margin-block) * 2);
-  margin-left: calc(-1 * var(--tab-inline-padding) + var(--tab-margin-block));
+  margin-left: calc(-1 * var(--tab-padding-inline) + var(--tab-margin-block));
   margin-right: 8px;
-  padding: 0 calc(var(--toolbarbutton-padding-inner) - 2px) 0 calc(var(--toolbarbutton-padding-inner) / 3 + var(--tab-inline-padding) - 2px);
+  padding: 0 calc(var(--toolbarbutton-padding-inner) - 2px) 0 calc(var(--toolbarbutton-padding-inner) / 3 + var(--tab-padding-inline) - 2px);
   border-radius: 0;
   border-top-left-radius: var(--border-radius-medium);
   width: unset;
@@ -1075,6 +1075,7 @@ zen-library {
 @media -moz-pref("zen.tabs.show-newtab-vertical") {
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
+    margin-inline: 0;
     display: flex !important;
     transition: scale 0.1s ease;
     #tabbrowser-tabs[movingtab] & {

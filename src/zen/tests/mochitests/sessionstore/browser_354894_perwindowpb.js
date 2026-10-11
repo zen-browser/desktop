@@ -459,6 +459,67 @@ add_task(async function test_open_close_restore_from_popup() {
 });
 
 /**
+ * Open and close a normal window with one pinned and one unpinned tab, then
+ * open and close a popup window. Opening a new normal window afterwards
+ * should still restore the closed normal window, but it should skip over the
+ * any more-recently-closed popup windows.
+ *
+ * What actually gets restored differs by platform:
+ * - on Mac, only pinned tabs are restored, leaving unpinned tabs behind in
+ *   the closed windows list
+ * - elsewhere it restores the whole window regardless of pinned state.
+ */
+add_task(async function test_open_close_skips_popups() {
+  await setupTest({}, async function (newWin) {
+    // We actually don't care about the initial window in this test.
+    await BrowserTestUtils.closeWindow(newWin);
+
+    let normalWin = await promiseNewWindowLoaded();
+    await injectTestTabs(normalWin);
+    // Pin the tab at TEST_URLS[0], leave the tab at TEST_URLS[1] unpinned.
+    normalWin.gBrowser.pinTab(normalWin.gBrowser.tabs[1]);
+
+    let closed = await closeWindowForRestoration(normalWin);
+    ok(closed, "Should be able to close the normal window");
+
+    let popupPromise = BrowserTestUtils.waitForNewWindow();
+    openDialog(location, "popup", POPUP_FEATURES, TEST_URLS[1]);
+    let popup = await popupPromise;
+
+    is(
+      popup.gBrowser.browsers.length,
+      1,
+      "Did not restore anything into the new popup window"
+    );
+
+    await BrowserTestUtils.closeWindow(popup);
+
+    newWin = await promiseNewWindowLoaded();
+    let restoredURLs = newWin.gBrowser.browsers.map(
+      browser => browser.currentURI.spec
+    );
+
+    Assert.ok(
+      restoredURLs.includes(TEST_URLS[0]),
+      "Restored the closed normal window's pinned tab"
+    );
+    if (IS_MAC) {
+      Assert.ok(
+        !restoredURLs.includes(TEST_URLS[1]),
+        "Did not restore the unpinned tab on Mac; only pinned tabs are restored there"
+      );
+    } else {
+      Assert.ok(
+        restoredURLs.includes(TEST_URLS[1]),
+        "Restored the unpinned tab too, since the whole window is restored on this platform"
+      );
+    }
+
+    await BrowserTestUtils.closeWindow(newWin);
+  });
+});
+
+/**
  * Test if closing can be denied on Mac.
  *
  * Note: Mac only

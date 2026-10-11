@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001dbfb76a468 100644
+index b7fbb8b9dcf595cf3e3176c4535023f0884b040a..fdcba3778857c602c85ef61488dbf7ba9f6a1fbe 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -132,6 +132,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
+@@ -131,6 +131,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -10,7 +10,7 @@ index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001db
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -471,6 +472,8 @@ const CONFIG_PANES = Object.freeze({
+@@ -469,6 +470,8 @@ const CONFIG_PANES = Object.freeze({
    tabsBrowsing: {
      l10nId: "tabs-browsing-section",
      groupIds: [
@@ -19,7 +19,7 @@ index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001db
        "browserLayout",
        "tabs",
        "pageNavigation",
-@@ -518,7 +521,7 @@ function register_module(categoryName, categoryObject) {
+@@ -522,7 +525,7 @@ function register_module(categoryName, categoryObject) {
        }
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
@@ -28,8 +28,8 @@ index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001db
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -562,6 +565,10 @@ function init_all() {
-   register_module("paneHome", gHomePane);
+@@ -565,6 +568,10 @@ function init_all() {
+   }
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
 +  register_module("paneZenLooks", gZenLooksAndFeel);

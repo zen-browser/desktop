@@ -162,10 +162,11 @@
     visibility: collapse;
     margin: 0 !important;
 
+    /* visibility flips after the fade via a 0s transition, so no per-frame main-thread work */
     :root:not([supress-primary-adjustment="true"]) & {
       transition:
         opacity 0.15s,
-        visibility 0.15s;
+        visibility 0s linear 0.15s;
     }
 
     #navigator-toolbox[zen-has-implicit-hover="true"] &,

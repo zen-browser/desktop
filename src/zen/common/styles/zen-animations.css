@@ -72,11 +72,20 @@
 @keyframes zen-urlbar-searchmode {
   0% {
     box-shadow: 0 0 20px
-      color-mix(in srgb, color-mix(in srgb, var(--zen-primary-color), var(--toolbox-textcolor) 20%), light-dark(rgba(0, 0, 0, 0.3), transparent) 50%);
+      color-mix(
+        in srgb,
+        color-mix(
+          in srgb,
+          var(--zen-primary-color),
+          var(--toolbox-textcolor) 20%
+        ),
+        light-dark(rgba(0, 0, 0, 0.3), transparent) 50%
+      );
   }
 
   100% {
-    box-shadow: 0 0 250px color-mix(in srgb, var(--zen-primary-color), transparent 100%);
+    box-shadow: 0 0 250px
+      color-mix(in srgb, var(--zen-primary-color), transparent 100%);
   }
 }
 
@@ -125,14 +134,16 @@
   }
 }
 
+/* transform (not left) keeps this compositor-safe. ±400%/3 of the ::before's
+   width (75% of the bar) equals ±100% of the bar, so keep in sync with width */
 @keyframes zen-progress-bar-long-load {
   0% {
-    left: -100%;
+    transform: translateX(calc(-400% / 3));
     opacity: 1;
   }
 
   100% {
-    left: 100%;
+    transform: translateX(calc(400% / 3));
     opacity: 1;
   }
 }

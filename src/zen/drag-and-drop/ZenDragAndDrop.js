@@ -870,20 +870,15 @@
       }
       indicator.setAttribute("orientation", "horizontal");
       const style = indicator.style;
-      const leftValue = `${left}px`;
-      const widthValue = `${width}px`;
-      const topValue = `${Math.round(top)}px`;
-      if (style.getPropertyValue("--indicator-left") !== leftValue) {
-        style.setProperty("--indicator-left", leftValue);
-      }
-      if (style.getPropertyValue("--indicator-width") !== widthValue) {
-        style.setProperty("--indicator-width", widthValue);
-      }
-      if (style.top !== topValue) {
-        style.top = topValue;
-      }
-      if (style.left) {
-        style.removeProperty("left");
+      const vars = {
+        "--indicator-left": `${left}px`,
+        "--indicator-width": `${width}px`,
+        "--indicator-top": `${Math.round(top)}px`,
+      };
+      for (const [name, value] of Object.entries(vars)) {
+        if (style.getPropertyValue(name) !== value) {
+          style.setProperty(name, value);
+        }
       }
       return indicator;
     }
@@ -1664,7 +1659,10 @@
         dropBefore =
           !showIndicatorUnderNewTabButton && this._dropsBefore(event, rect);
         const top = Math.round(dropBefore ? rect.top : rect.top + rect.height);
-        if (gZenPinnedTabManager.dragIndicator.style.top !== `${top}px`) {
+        const indicatorStyle = gZenPinnedTabManager.dragIndicator.style;
+        if (
+          indicatorStyle.getPropertyValue("--indicator-top") !== `${top}px`
+        ) {
           shouldPlayHapticFeedback = true;
         }
         this._placeDropIndicator({

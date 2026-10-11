@@ -244,7 +244,7 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
         continue;
       }
       found.push({
-        folder: this.#rootOf(file.path),
+        folder: file.root,
         path: file.path,
         name: fileName,
         extension: lazy.extensionOf(fileName),
@@ -283,16 +283,6 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
         resolve([]);
       }
     });
-  }
-
-  /**
-   * @param {string} path - A file the scan found
-   * @returns {string} The folder it was found under
-   */
-  #rootOf(path) {
-    return (
-      this.#scanned.find(root => path.startsWith(root)) ?? this.#scanned[0]
-    );
   }
 
   // Interaction

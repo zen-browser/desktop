@@ -30,6 +30,7 @@ namespace {
  */
 struct FoundFile {
   nsString mPath;
+  nsString mRoot;
   int64_t mLastModified = 0;
   int64_t mSize = 0;
   bool mCloudPlaceholder = false;
@@ -45,6 +46,7 @@ class ZenMediaFile final : public nsIZenMediaFile {
  public:
   explicit ZenMediaFile(const FoundFile& aFile)
       : mPath(aFile.mPath),
+        mRoot(aFile.mRoot),
         mLastModified(aFile.mLastModified),
         mSize(aFile.mSize),
         mCloudPlaceholder(aFile.mCloudPlaceholder) {}
@@ -53,6 +55,7 @@ class ZenMediaFile final : public nsIZenMediaFile {
   ~ZenMediaFile() = default;
 
   const nsString mPath;
+  const nsString mRoot;
   const int64_t mLastModified;
   const int64_t mSize;
   const bool mCloudPlaceholder;
@@ -63,6 +66,12 @@ NS_IMPL_ISUPPORTS(ZenMediaFile, nsIZenMediaFile)
 NS_IMETHODIMP
 ZenMediaFile::GetPath(nsAString& aPath) {
   aPath = mPath;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ZenMediaFile::GetRoot(nsAString& aRoot) {
+  aRoot = mRoot;
   return NS_OK;
 }
 
@@ -130,14 +139,16 @@ bool HasWantedExtension(const nsAString& aLeafName,
 /**
  * @brief Look through one folder, and then through the folders in it.
  * @param aFolder The folder to look through.
+ * @param aRoot The folder the scan started from, kept with what it finds.
  * @param aDepth How far below the root this folder is.
  * @param aMaxDepth How far below the root to go at all.
  * @param aFoldersLeft How many folders the scan may still open.
  * @param aExtensions The extensions a file must have to be kept.
  * @param aFound Collects what the walk keeps.
  */
-void WalkFolder(nsIFile* aFolder, uint32_t aDepth, uint32_t aMaxDepth,
-                uint32_t& aFoldersLeft, const nsTArray<nsString>& aExtensions,
+void WalkFolder(nsIFile* aFolder, const nsAString& aRoot, uint32_t aDepth,
+                uint32_t aMaxDepth, uint32_t& aFoldersLeft,
+                const nsTArray<nsString>& aExtensions,
                 nsTArray<FoundFile>& aFound) {
   if (aDepth > aMaxDepth || aFoldersLeft == 0) {
     return;
@@ -164,9 +175,11 @@ void WalkFolder(nsIFile* aFolder, uint32_t aDepth, uint32_t aMaxDepth,
     bool isDirectory = false;
     if (NS_SUCCEEDED(entry->IsDirectory(&isDirectory)) && isDirectory) {
       bool isSymlink = false;
-      // A link can point back up the tree, and no folder is worth going
-      // round in circles for.
-      if (NS_SUCCEEDED(entry->IsSymlink(&isSymlink)) && !isSymlink) {
+      // A folder with a suffix is a bundle on macOS, which holds the parts
+      // of one thing rather than files of its own. A link can point back up
+      // the tree, and no folder is worth going round in circles for.
+      if (leafName.RFindChar(u'.') <= 0 &&
+          NS_SUCCEEDED(entry->IsSymlink(&isSymlink)) && !isSymlink) {
         folders.AppendElement(entry);
       }
       continue;
@@ -178,6 +191,7 @@ void WalkFolder(nsIFile* aFolder, uint32_t aDepth, uint32_t aMaxDepth,
     if (NS_FAILED(entry->GetPath(found.mPath))) {
       continue;
     }
+    found.mRoot = aRoot;
     PRTime lastModified = 0;
     if (NS_SUCCEEDED(entry->GetLastModifiedTime(&lastModified))) {
       found.mLastModified = lastModified;
@@ -192,7 +206,7 @@ void WalkFolder(nsIFile* aFolder, uint32_t aDepth, uint32_t aMaxDepth,
   entries->Close();
 
   for (const nsCOMPtr<nsIFile>& folder : folders) {
-    WalkFolder(folder, aDepth + 1, aMaxDepth, aFoldersLeft, aExtensions,
+    WalkFolder(folder, aRoot, aDepth + 1, aMaxDepth, aFoldersLeft, aExtensions,
                aFound);
   }
 }
@@ -241,7 +255,8 @@ nsZenLibraryFiles::ScanMedia(const nsTArray<nsString>& aRoots,
                   !folder) {
                 continue;
               }
-              WalkFolder(folder, 0, aMaxDepth, foldersLeft, extensions, found);
+              WalkFolder(folder, root, 0, aMaxDepth, foldersLeft, extensions,
+                         found);
             }
             std::sort(found.begin(), found.end(),
                       [](const FoundFile& aLeft, const FoundFile& aRight) {

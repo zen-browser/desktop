@@ -14,6 +14,11 @@ interface nsIZenMediaFile : nsISupports {
    */
   readonly attribute AString path;
   /**
+   * @brief The folder the scan was looking through when it came across the
+   * file, as it was handed in.
+   */
+  readonly attribute AString root;
+  /**
    * @brief When the file was last written, in milliseconds since the epoch.
    */
   readonly attribute int64_t lastModified;

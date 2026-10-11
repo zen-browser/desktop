@@ -70,9 +70,7 @@ export const MEDIA_EXTENSIONS = [
   // Video
   ...`mp4 m4v mov webm mkv avi wmv flv mpg mpeg mpe
       3gp 3g2 ogv mts m2ts`.split(/\s+/),
-  // Sound
-  ...`mp3 m4a aac wav flac ogg oga opus wma aiff aif mid`.split(/\s+/),
-].filter(Boolean);
+];
 
 const NOT_DRAWN = new Set([
   "image/svg+xml",

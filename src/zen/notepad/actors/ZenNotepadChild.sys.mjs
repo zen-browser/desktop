@@ -47,6 +47,7 @@ export class ZenNotepadChild extends JSWindowActorChild {
         adoptURL: spec => this.#adoptURL(spec),
       };
       await attachNotepad(doc, bridge);
+      this.sendAsyncMessage("ZenNotepad:ShowTabIcon");
     } catch (error) {
       console.error("Notepad failed to start", error);
       if (doc.documentElement?.dataset.mintNotepad === "pending") {

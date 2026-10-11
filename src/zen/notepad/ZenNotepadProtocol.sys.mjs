@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { parseNoteURL } from "resource:///modules/zen/notepad/ZenNotepadMarkdown.mjs";
+import {
+  NOTEPAD_FAVICON_LINK,
+  NOTEPAD_TOOLBAR_ACTIONS,
+} from "resource:///modules/zen/notepad/ZenNotepadAssets.mjs";
 
 const PROTOCOL_FLAGS =
   Ci.nsIProtocolHandler.URI_DANGEROUS_TO_LOAD |
@@ -10,13 +14,35 @@ const PROTOCOL_FLAGS =
   Ci.nsIProtocolHandler.URI_IS_LOCAL_RESOURCE |
   Ci.nsIProtocolHandler.URI_IS_POTENTIALLY_TRUSTWORTHY;
 
-const PAGE_HTML = `<!DOCTYPE html>
+function buildNotePageHtml(css) {
+  return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <title>Notepad</title>
+${NOTEPAD_FAVICON_LINK}
 <style>
-:root {
+${css}</style>
+</head>
+<body>
+<div class="mint-note">
+  <header class="mint-note-toolbar">
+    <h1 class="mint-note-title">Notepad</h1>
+    <p class="mint-note-status" id="mint-note-status" data-state="idle"></p>
+${NOTEPAD_TOOLBAR_ACTIONS}
+  </header>
+  <div class="mint-note-scroll">
+    <div class="mint-note-gutter" id="mint-note-gutter" aria-hidden="true"><div class="mint-gutter-line">1</div></div>
+    <div id="mint-note-editor" class="mint-note-editor" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true" aria-label="Note"><div class="mint-line" data-type="paragraph"><br></div></div>
+  </div>
+  <div id="mint-note-menu" class="mint-note-menu" role="listbox" hidden></div>
+</div>
+</body>
+</html>
+`;
+}
+
+const NOTE_CSS = `:root {
   color-scheme: light dark;
   --mint-accent: var(--zen-primary-color, #14b8a6);
   --mint-ink: light-dark(#10211e, #e8f6f1);
@@ -26,6 +52,10 @@ const PAGE_HTML = `<!DOCTYPE html>
   --mint-line: light-dark(rgb(16 33 30 / 12%), rgb(232 246 241 / 14%));
   --mint-button: light-dark(#10211e, #e8f6f1);
   --mint-button-text: light-dark(#f7fbf8, #10211e);
+  --mint-frosted-fill: light-dark(rgb(255 255 255 / 72%), rgb(255 255 255 / 10%));
+  --mint-frosted-stroke: light-dark(rgb(0 0 0 / 12%), rgb(255 255 255 / 25%));
+  --mint-frosted-hover: light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 10%));
+  --mint-frosted-backdrop: blur(20px) saturate(1.35);
 }
 
 html,
@@ -75,33 +105,47 @@ body {
 
 .mint-note-actions {
   display: flex;
-  gap: 0.45rem;
+  gap: 0.35rem;
   margin-inline-start: auto;
 }
 
-.mint-note-button {
+.mint-icon-button {
   appearance: none;
-  border: 1px solid var(--mint-line);
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  padding: 0;
+  border: 1px solid var(--mint-frosted-stroke);
+  border-radius: 10px;
+  background: var(--mint-frosted-fill);
+  backdrop-filter: var(--mint-frosted-backdrop);
   color: var(--mint-ink);
-  border-radius: 8px;
-  padding: 0.4rem 0.9rem;
-  font: inherit;
   cursor: pointer;
+  box-shadow: 0 1px 2px color-mix(in srgb, black 6%, transparent);
 }
 
-.mint-note-button:hover {
-  background: color-mix(in srgb, var(--mint-ink) 8%, transparent);
+@media (prefers-reduced-transparency: reduce) {
+  .mint-icon-button {
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--mint-ink) 6%, var(--mint-paper));
+  }
 }
 
-.mint-note-button.primary {
-  background: var(--mint-accent);
-  border-color: transparent;
-  color: var(--mint-button-text);
+.mint-icon-button:hover {
+  background: color-mix(in srgb, var(--mint-frosted-fill) 55%, var(--mint-frosted-hover));
 }
 
-.mint-note-button.primary:hover {
-  background: color-mix(in srgb, var(--mint-accent) 82%, white);
+.mint-icon-button:active {
+  transform: scale(0.96);
+}
+
+.mint-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  display: block;
+  pointer-events: none;
 }
 
 .mint-note-scroll {
@@ -110,7 +154,7 @@ body {
   display: flex;
   overflow: auto;
   margin: 0 0.75rem 0.75rem;
-  padding: 1rem 1.2rem 2rem;
+  padding: 1rem 1.15rem 2rem 0.45rem;
   border-radius: 12px;
   background: var(--mint-paper);
   color: var(--mint-ink);
@@ -118,12 +162,12 @@ body {
 }
 
 .mint-note-gutter {
-  flex: 0 0 3rem;
+  flex: 0 0 2rem;
   position: sticky;
   inset-inline-start: 0;
   user-select: none;
   text-align: end;
-  padding-inline-end: 0.8rem;
+  padding-inline-end: 0.4rem;
   color: color-mix(in srgb, var(--mint-ink) 45%, transparent);
   font-family: ui-monospace, monospace;
   font-size: 0.85rem;
@@ -295,27 +339,9 @@ body {
   text-decoration: underline;
   text-decoration-color: var(--mint-accent);
 }
-</style>
-</head>
-<body>
-<div class="mint-note">
-  <header class="mint-note-toolbar">
-    <h1 class="mint-note-title">Notepad</h1>
-    <p class="mint-note-status" id="mint-note-status" data-state="idle"></p>
-    <div class="mint-note-actions">
-      <button type="button" class="mint-note-button" id="mint-note-save">Save</button>
-      <button type="button" class="mint-note-button primary" id="mint-note-export">Export</button>
-    </div>
-  </header>
-  <div class="mint-note-scroll">
-    <div class="mint-note-gutter" id="mint-note-gutter" aria-hidden="true"><div class="mint-gutter-line">1</div></div>
-    <div id="mint-note-editor" class="mint-note-editor" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true" aria-label="Note"><div class="mint-line" data-type="paragraph"><br></div></div>
-  </div>
-  <div id="mint-note-menu" class="mint-note-menu" role="listbox" hidden></div>
-</div>
-</body>
-</html>
 `;
+
+const PAGE_HTML = buildNotePageHtml(NOTE_CSS);
 
 export class MintProtocolHandler {
   scheme = "mint";

@@ -5,6 +5,7 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  TAB_ICON_CHROME: "resource:///modules/zen/notepad/ZenNotepadAssets.mjs",
   loadNote: "resource:///modules/zen/notepad/ZenNotepadStore.sys.mjs",
   saveNote: "resource:///modules/zen/notepad/ZenNotepadStore.sys.mjs",
   writePlainMarkdown: "resource:///modules/zen/notepad/ZenNotepadStore.sys.mjs",
@@ -48,8 +49,27 @@ function exportMarkdown(browsingContext, markdown, fileName) {
 }
 
 export class ZenNotepadParent extends JSWindowActorParent {
+  #syncTabIcon() {
+    try {
+      const browser = this.browsingContext?.top?.embedderElement;
+      const win = browser?.ownerGlobal;
+      if (!browser || !win?.gBrowser) {
+        return;
+      }
+      const tab = win.gBrowser.getTabForBrowser(browser);
+      if (tab) {
+        win.gBrowser.setIcon(tab, lazy.TAB_ICON_CHROME);
+      }
+    } catch (error) {
+      console.error("Notepad tab icon failed", error);
+    }
+  }
+
   async receiveMessage(message) {
     switch (message.name) {
+      case "ZenNotepad:ShowTabIcon":
+        this.#syncTabIcon();
+        return null;
       case "ZenNotepad:Load":
         return lazy.loadNote(message.data.id);
       case "ZenNotepad:Save":

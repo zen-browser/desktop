@@ -8,6 +8,7 @@
     <meta charset="utf-8"/>
     <title>Notepad</title>
     <link rel="localization" href="browser/zen-notepad.ftl"/>
+    <link rel="icon" type="image/svg+xml" href="chrome://browser/skin/zen-icons/tab.svg"/>
     <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-notepad.css"/>
     <script src="chrome://browser/content/zenThemeModifier.js"></script>
   </head>
@@ -17,8 +18,18 @@
         <h1 class="mint-note-title" data-l10n-id="zen-notepad-title">Notepad</h1>
         <p class="mint-note-status" id="mint-note-status" data-state="idle"></p>
         <div class="mint-note-actions">
-          <button type="button" class="mint-note-button" id="mint-note-save" data-l10n-id="zen-notepad-save">Save</button>
-          <button type="button" class="mint-note-button primary" id="mint-note-export" data-l10n-id="zen-notepad-export">Export</button>
+          <button type="button" class="mint-icon-button" id="mint-note-save" data-l10n-id="zen-notepad-save" data-l10n-attrs="title" title="Save" aria-label="Save">
+            <svg class="mint-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden="true">
+              <path fill="currentColor" d="M15.25 11a.75.75 0 0 1 .75.75v1.5A2.75 2.75 0 0 1 13.25 16h-8.5A2.75 2.75 0 0 1 2 13.25v-1.5a.75.75 0 0 1 1.5 0v1.5c0 .69.56 1.25 1.25 1.25h8.5c.69 0 1.25-.56 1.25-1.25v-1.5a.75.75 0 0 1 .75-.75"/>
+              <path fill="currentColor" d="M9 2a.75.75 0 0 1 .75.75v5.69l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.8.8 0 0 1-.244.162q-.048.02-.098.03l-.04.012-.016.003a.8.8 0 0 1-.265 0l-.016-.003-.04-.011q-.05-.012-.098-.03-.044-.02-.083-.045a.8.8 0 0 1-.16-.118l-3.5-3.5a.75.75 0 1 1 1.06-1.06l2.22 2.22V2.75A.75.75 0 0 1 9 2"/>
+            </svg>
+          </button>
+          <button type="button" class="mint-icon-button" id="mint-note-export" data-l10n-id="zen-notepad-export-title" data-l10n-attrs="title" title="Export" aria-label="Export">
+            <svg class="mint-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden="true">
+              <path fill="currentColor" d="M6 6.5A.75.75 0 0 1 6 8H4.25C3.56 8 3 8.56 3 9.25v4.5c0 .69.56 1.25 1.25 1.25h9.5c.69 0 1.25-.56 1.25-1.25v-4.5C15 8.56 14.44 8 13.75 8H12a.75.75 0 0 1 0-1.5h1.75a2.75 2.75 0 0 1 2.75 2.75v4.5a2.75 2.75 0 0 1-2.75 2.75h-9.5a2.75 2.75 0 0 1-2.75-2.75v-4.5A2.75 2.75 0 0 1 4.25 6.5z"/>
+              <path fill="currentColor" d="m9.026.501.019.001a1 1 0 0 1 .114.016q.038.009.074.022a.75.75 0 0 1 .297.18l3 3a.75.75 0 0 1-1.06 1.06L9.75 3.06v9.69a.75.75 0 0 1-1.5 0V3.06L6.53 4.78a.75.75 0 1 1-1.06-1.06l3-3 .056-.052q.016-.012.033-.022a.8.8 0 0 1 .255-.12q.04-.011.08-.018l.011-.002A1 1 0 0 1 9 .5z"/>
+            </svg>
+          </button>
         </div>
       </header>
       <div class="mint-note-scroll">

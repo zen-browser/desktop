@@ -49,6 +49,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         if (status === 404) {
           return "zen-live-folder-github-no-auth";
         }
+        // Don't decide the page format from an error response, try again on
+        // the next fetch instead.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
+        }
         try {
           JSON.parse(text);
           this.state.isJsonApi = true;
@@ -78,6 +83,13 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         // Assume no auth
         if (status === 404) {
           return "zen-live-folder-github-no-auth";
+        }
+
+        // Any other error (rate limit, server error) is a failed fetch, not an
+        // empty result. Otherwise every tab in the folder gets closed and the
+        // known repositories are cleared.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
         }
 
         if (items) {

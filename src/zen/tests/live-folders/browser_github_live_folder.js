@@ -244,6 +244,36 @@ add_task(async function test_404_returns_no_auth() {
   sandbox.restore();
 });
 
+add_task(async function test_server_error_returns_failed_fetch() {
+  info("should treat a rate limit or server error as a failed fetch");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    authorMe: true,
+  });
+  instance.state.repos = new Set(["zen-browser/desktop"]);
+
+  for (const status of [429, 500, 503]) {
+    instance.fetch.resolves({ status, text: "" });
+
+    const result = await instance.fetchItems();
+
+    Assert.equal(
+      result,
+      "zen-live-folder-failed-fetch",
+      `Should return a fetch error for status ${status}, not an empty list`
+    );
+    Assert.deepEqual(
+      [...instance.state.repos],
+      ["zen-browser/desktop"],
+      "Should keep the known repositories"
+    );
+  }
+
+  sandbox.restore();
+});
+
 add_task(async function test_repo_excludes_emit_negative_repo_filters() {
   info("should add -repo:<repo> clauses for each excluded repository");
 

@@ -59,6 +59,19 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.view.drag-window-from-content",
   },
+  ZenNotepad: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenNotepadParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenNotepadChild.sys.mjs",
+      events: {
+        DOMContentLoaded: {},
+      },
+    },
+    safeForUntrustedWebProcess: true,
+    allFrames: true,
+  },
 };
 
 if (!Services.appinfo.inSafeMode) {

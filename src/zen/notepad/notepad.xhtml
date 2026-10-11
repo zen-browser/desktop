@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Notepad</title>
+    <link rel="localization" href="browser/zen-notepad.ftl"/>
+    <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-notepad.css"/>
+    <script src="chrome://browser/content/zenThemeModifier.js"></script>
+  </head>
+  <body>
+    <div class="mint-note">
+      <header class="mint-note-toolbar">
+        <h1 class="mint-note-title" data-l10n-id="zen-notepad-title">Notepad</h1>
+        <p class="mint-note-status" id="mint-note-status" data-state="idle"></p>
+        <div class="mint-note-actions">
+          <button type="button" class="mint-note-button" id="mint-note-save" data-l10n-id="zen-notepad-save">Save</button>
+          <button type="button" class="mint-note-button primary" id="mint-note-export" data-l10n-id="zen-notepad-export">Export</button>
+        </div>
+      </header>
+      <div class="mint-note-scroll">
+        <div class="mint-note-gutter" id="mint-note-gutter" aria-hidden="true"><div class="mint-gutter-line">1</div></div>
+        <div id="mint-note-editor" class="mint-note-editor" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true" aria-label="Note"><div class="mint-line" data-type="paragraph"><br/></div></div>
+      </div>
+      <div id="mint-note-menu" class="mint-note-menu" role="listbox" hidden="hidden"></div>
+    </div>
+    <script type="module" src="chrome://browser/content/zen-components/ZenNotepadPage.mjs"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+EXTRA_JS_MODULES.zen.notepad += [
+    "ZenNotepadMarkdown.mjs",
+    "ZenNotepadPage.mjs",
+    "ZenNotepadProtocol.sys.mjs",
+    "ZenNotepadStore.sys.mjs",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+FINAL_TARGET_FILES.actors += [
+    "actors/ZenNotepadChild.sys.mjs",
+    "actors/ZenNotepadParent.sys.mjs",
+]

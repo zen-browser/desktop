@@ -19,4 +19,16 @@
       <vbox id="zenCKSOption-wrapper"></vbox>
 </groupbox>
 
+<groupbox id="zenNotepadShortcutGroup" data-category="paneZenCKS" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-settings-notepad-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-settings-notepad-description"/>
+      <hbox class="zenCKSOption">
+            <label data-l10n-id="zen-settings-notepad-autocomplete" control="zenNotepadShortcutInput"/>
+            <vbox flex="1">
+                  <html:input readonly="readonly" id="zenNotepadShortcutInput"/>
+            </vbox>
+            <button id="zenNotepadShortcutReset" data-l10n-id="zen-settings-notepad-reset" class="reset-button"/>
+      </hbox>
+</groupbox>
+
 </html:template>

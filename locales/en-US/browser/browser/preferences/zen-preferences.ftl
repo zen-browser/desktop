@@ -257,6 +257,12 @@ zen-settings-CKS-duplicate-shortcut =
 zen-settings-CKS-reset-shortcuts =
     .label = Reset to Default
 
+zen-settings-notepad-header = Notepad
+zen-settings-notepad-description = Choose the key that confirms a suggestion in the local notepad. Tab is the default, and it only applies while the suggestion menu is open.
+zen-settings-notepad-autocomplete = Confirm suggestion
+zen-settings-notepad-reset =
+    .label = Reset
+
 zenCKSOption-group-other = Other
 zenCKSOption-group-windowAndTabManagement = Window & Tab Management
 zenCKSOption-group-navigation = Navigation

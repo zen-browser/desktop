@@ -233,9 +233,50 @@ var gZenCKSSettings = {
     this.__hasInitialized = true;
     this._currentActionID = null;
     this._initializeEvents();
+    this._initializeNotepadShortcut();
     window.addEventListener("unload", () => {
       this.__hasInitialized = false;
       document.getElementById(ZEN_CKS_WRAPPER_ID).innerHTML = "";
+    });
+  },
+
+  _initializeNotepadShortcut() {
+    const input = document.getElementById("zenNotepadShortcutInput");
+    const reset = document.getElementById("zenNotepadShortcutReset");
+    if (!input || !reset || input.dataset.bound) {
+      return;
+    }
+    input.dataset.bound = "true";
+    const pref = "zen.notepad.autocomplete-key";
+    const { shortcutFromEvent } = ChromeUtils.importESModule(
+      "resource:///modules/zen/notepad/ZenNotepadMarkdown.mjs"
+    );
+    const show = () => {
+      input.value = Services.prefs.getStringPref(pref, "Tab");
+    };
+    show();
+    input.addEventListener("keydown", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.key === "Escape") {
+        input.blur();
+        return;
+      }
+      const spec = shortcutFromEvent(event);
+      if (!spec) {
+        return;
+      }
+      Services.prefs.setStringPref(pref, spec);
+      input.value = spec;
+      input.blur();
+    });
+    reset.addEventListener("command", () => {
+      Services.prefs.setStringPref(pref, "Tab");
+      show();
+    });
+    reset.addEventListener("click", () => {
+      Services.prefs.setStringPref(pref, "Tab");
+      show();
     });
   },
 
@@ -764,6 +805,11 @@ Preferences.addAll([
     id: "zen.homepage.cards.clock",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.notepad.autocomplete-key",
+    type: "string",
+    default: "Tab",
   },
 ]);
 

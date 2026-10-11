@@ -1683,9 +1683,7 @@
           !showIndicatorUnderNewTabButton && this._dropsBefore(event, rect);
         const top = Math.round(dropBefore ? rect.top : rect.top + rect.height);
         const indicatorStyle = gZenPinnedTabManager.dragIndicator.style;
-        if (
-          indicatorStyle.getPropertyValue("--indicator-top") !== `${top}px`
-        ) {
+        if (indicatorStyle.getPropertyValue("--indicator-top") !== `${top}px`) {
           shouldPlayHapticFeedback = true;
         }
         this._placeDropIndicator({

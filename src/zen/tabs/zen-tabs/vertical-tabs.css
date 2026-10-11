@@ -1284,7 +1284,7 @@ zen-library {
   &[orientation="horizontal"] {
     transform: translate(
       calc(var(--indicator-left, 0px) + 2 * var(--zen-drag-indicator-height) + 4px),
-      var(--indicator-top, 0px)
+      var(--indicator-top, 0)
     );
     width: calc(var(--indicator-width) - 2 * var(--zen-drag-indicator-height) - 4px);
     height: var(--zen-drag-indicator-height);

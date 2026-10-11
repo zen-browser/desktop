@@ -21,6 +21,6 @@ add_task(async function test_Private_Mode() {
     "Private window should start with a zen empty tab"
   );
 
-  await BrowserTestUtils.closeWindow(privateWindow);
+  await closeWindowAfterStartPage(privateWindow);
   await SpecialPowers.popPrefEnv();
 });

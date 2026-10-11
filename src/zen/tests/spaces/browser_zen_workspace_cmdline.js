@@ -147,7 +147,7 @@ add_task(async function test_initial_workspace_pref_consumed_on_restore() {
     "The pref should be consumed by the restored window."
   );
 
-  await BrowserTestUtils.closeWindow(newWindow);
+  await closeWindowAfterStartPage(newWindow);
   await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
   await gZenWorkspaces.removeWorkspace(target.uuid);
   await SpecialPowers.popPrefEnv();
@@ -179,7 +179,7 @@ add_task(async function test_initial_workspace_pref_survives_private_window() {
     "A private window should not consume the initial workspace pref."
   );
 
-  await BrowserTestUtils.closeWindow(privateWindow);
+  await closeWindowAfterStartPage(privateWindow);
   Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
   await SpecialPowers.popPrefEnv();
 });

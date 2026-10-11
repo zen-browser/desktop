@@ -770,3 +770,34 @@ var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
   }
   return guid;
 };
+
+/**
+ * Closes a browser window once Zen's start page handling has settled.
+ *
+ * With zen.testing.enabled off, selectStartPage() focuses the urlbar for the
+ * first tab from a timer, which starts a urlbar query. Closing the window
+ * while that query is still running makes the urlbar callbacks run against a
+ * torn down window, and the harness reports that as an uncaught rejection.
+ *
+ * @param {Window} win
+ */
+async function closeWindowAfterStartPage(win) {
+  if (!win.gZenUIManager.testingEnabled) {
+    try {
+      await BrowserTestUtils.waitForCondition(
+        () => win.gURLBar.hasAttribute("zen-newtab") || win.gURLBar.view.isOpen,
+        "The start page opened the urlbar",
+        50,
+        20
+      );
+    } catch (e) {
+      // The start page focused the content instead, nothing to wait for.
+    }
+    let promise;
+    do {
+      promise = win.gURLBar.lastQueryContextPromise;
+      await promise;
+    } while (win.gURLBar.lastQueryContextPromise !== promise);
+  }
+  await BrowserTestUtils.closeWindow(win);
+}

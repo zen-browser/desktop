@@ -239,8 +239,6 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     const found = [];
     for (const file of files) {
       const fileName = PathUtils.filename(file.path);
-      // The walk goes by a file's suffix; what it actually holds is still
-      // the content type's to say, and that has the last word here.
       const kind = kindFor(fileName);
       if (!kind) {
         continue;

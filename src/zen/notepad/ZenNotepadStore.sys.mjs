@@ -72,14 +72,37 @@ async function encryptionKey() {
   return cachedKey;
 }
 
-export async function saveNote(id, markdown) {
+function encodeNotePlaintext(markdown, title) {
+  if (title) {
+    return JSON.stringify({ markdown, title });
+  }
+  return markdown;
+}
+
+function decodeNotePlaintext(plain) {
+  const decoded = new TextDecoder().decode(plain);
+  try {
+    const parsed = JSON.parse(decoded);
+    if (parsed && typeof parsed.markdown === "string") {
+      return {
+        markdown: parsed.markdown,
+        title: typeof parsed.title === "string" ? parsed.title : null,
+      };
+    }
+  } catch {
+    // Older notes store raw markdown only.
+  }
+  return { markdown: decoded, title: null };
+}
+
+export async function saveNote(id, markdown, title = null) {
   const path = noteFilePath(id);
   const key = await encryptionKey();
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const cipher = await crypto.subtle.encrypt(
     { name: "AES-GCM", iv },
     key,
-    new TextEncoder().encode(markdown)
+    new TextEncoder().encode(encodeNotePlaintext(markdown, title))
   );
   const payload = JSON.stringify({
     v: 1,
@@ -101,7 +124,7 @@ export async function loadNote(id) {
     key,
     base64ToBytes(payload.data)
   );
-  return new TextDecoder().decode(plain);
+  return decodeNotePlaintext(plain);
 }
 
 export async function writePlainMarkdown(path, markdown) {

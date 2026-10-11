@@ -27,7 +27,7 @@ ${css}</style>
 <body>
 <div class="mint-note">
   <header class="mint-note-toolbar">
-    <h1 class="mint-note-title">Notepad</h1>
+    <h1 class="mint-note-title" id="mint-note-title" title="Double-click to rename">Notepad</h1>
     <p class="mint-note-status" id="mint-note-status" data-state="idle"></p>
 ${NOTEPAD_TOOLBAR_ACTIONS}
   </header>
@@ -89,6 +89,25 @@ body {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 650;
+  max-width: min(40vw, 16rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
+  border-radius: 0.35rem;
+  padding: 0.1rem 0.35rem;
+  margin-inline: -0.35rem;
+}
+
+.mint-note-title-editing {
+  cursor: text;
+  outline: 1px solid color-mix(in srgb, var(--mint-accent) 55%, transparent);
+  outline-offset: 1px;
+  background: color-mix(in srgb, var(--mint-paper) 88%, transparent);
+  text-overflow: clip;
+  overflow: visible;
+  white-space: nowrap;
+  max-width: min(60vw, 24rem);
 }
 
 .mint-note-status {

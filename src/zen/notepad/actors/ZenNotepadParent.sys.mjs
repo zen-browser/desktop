@@ -73,7 +73,11 @@ export class ZenNotepadParent extends JSWindowActorParent {
       case "ZenNotepad:Load":
         return lazy.loadNote(message.data.id);
       case "ZenNotepad:Save":
-        await lazy.saveNote(message.data.id, message.data.markdown);
+        await lazy.saveNote(
+          message.data.id,
+          message.data.markdown,
+          message.data.title
+        );
         return true;
       case "ZenNotepad:Export":
         return exportMarkdown(

@@ -17,6 +17,8 @@ import {
 } from "resource:///modules/zen/notepad/ZenNotepadMarkdown.mjs";
 const SHORTCUT_PREF = "zen.notepad.autocomplete-key";
 const AUTOSAVE_MS = 1000;
+const DEFAULT_TITLE_L10N = "zen-notepad-title";
+const RENAME_TITLE_TOOLTIP = "Double-click to rename";
 
 const COMMAND_LABELS = {
   h1: "Heading 1",
@@ -59,6 +61,7 @@ export async function attachNotepad(document_, bridge_) {
   const statusNode = doc.getElementById("mint-note-status");
   const saveButton = doc.getElementById("mint-note-save");
   const exportButton = doc.getElementById("mint-note-export");
+  const titleEl = doc.getElementById("mint-note-title");
   if (!editor || !saveButton || !menu) {
     return;
   }
@@ -72,6 +75,8 @@ export async function attachNotepad(document_, bridge_) {
     ready: false,
     menuItems: [],
     menuIndex: 0,
+    customTitle: null,
+    editingTitle: false,
   };
   const highlights = {};
   try {
@@ -435,11 +440,108 @@ export async function attachNotepad(document_, bridge_) {
     }
   }
 
+  function automaticTitle() {
+    return noteTitle(readLines());
+  }
+
+  function visibleTitle() {
+    return state.customTitle || automaticTitle();
+  }
+
+  function applyRenameTooltip() {
+    if (!titleEl) {
+      return;
+    }
+    let tip = RENAME_TITLE_TOOLTIP;
+    if (doc.l10n?.formatMessagesSync) {
+      try {
+        const [message] = doc.l10n.formatMessagesSync([{ id: DEFAULT_TITLE_L10N }]);
+        const localized = message?.attributes?.find(attr => attr.name === "title")?.value;
+        if (localized) {
+          tip = localized;
+        }
+      } catch (error) {
+        console.error("Notepad title tooltip localization failed", error);
+      }
+    }
+    titleEl.setAttribute("title", tip);
+  }
+
   function updateTitle() {
-    const title = noteTitle(readLines());
-    doc.title = title || "Notepad";
-    if (!title && doc.l10n) {
-      doc.l10n.setAttributes(doc.querySelector("title"), "zen-notepad-title");
+    if (!titleEl || state.editingTitle) {
+      return;
+    }
+    try {
+      const derived = visibleTitle();
+      const titleTag = doc.querySelector("title");
+      if (!derived) {
+        doc.title = "Notepad";
+        if (doc.l10n) {
+          titleEl.setAttribute("data-l10n-id", DEFAULT_TITLE_L10N);
+          titleEl.setAttribute("data-l10n-attrs", "title");
+          doc.l10n.setAttributes(titleEl, DEFAULT_TITLE_L10N);
+          if (titleTag) {
+            doc.l10n.setAttributes(titleTag, DEFAULT_TITLE_L10N);
+          }
+        } else {
+          titleEl.textContent = "Notepad";
+          if (titleTag) {
+            titleTag.textContent = "Notepad";
+          }
+          applyRenameTooltip();
+        }
+        return;
+      }
+      titleEl.removeAttribute("data-l10n-id");
+      titleEl.removeAttribute("data-l10n-attrs");
+      titleEl.textContent = derived;
+      doc.title = derived;
+      if (titleTag) {
+        titleTag.textContent = derived;
+      }
+      applyRenameTooltip();
+    } catch (error) {
+      console.error("Notepad title update failed", error);
+    }
+  }
+
+  function beginTitleEdit() {
+    if (!titleEl || state.editingTitle) {
+      return;
+    }
+    state.editingTitle = true;
+    titleEl.removeAttribute("data-l10n-id");
+    titleEl.textContent = state.customTitle ?? automaticTitle() ?? "";
+    titleEl.contentEditable = "true";
+    titleEl.classList.add("mint-note-title-editing");
+    titleEl.focus();
+    const selection = view.getSelection();
+    const range = doc.createRange();
+    range.selectNodeContents(titleEl);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  function commitTitleEdit(cancel = false) {
+    if (!titleEl || !state.editingTitle) {
+      return;
+    }
+    state.editingTitle = false;
+    titleEl.contentEditable = "false";
+    titleEl.classList.remove("mint-note-title-editing");
+    if (cancel) {
+      updateTitle();
+      return;
+    }
+    const next = titleEl.textContent.replace(/\s+/g, " ").trim();
+    const auto = automaticTitle();
+    state.customTitle = !next || next === auto ? null : next;
+    updateTitle();
+    state.dirty = true;
+    if (state.armed) {
+      scheduleAutosave();
+    } else {
+      setStatus("unsaved");
     }
   }
 
@@ -543,17 +645,17 @@ export async function attachNotepad(document_, bridge_) {
   }
 
   async function adoptURL(id) {
-    const next = noteURL(id);
+    const normalized = id.toLowerCase();
     const current = parseNoteURL(view.location.href) || parseNoteURL(doc.documentURI);
-    if (current?.id === id) {
+    if (current?.id === normalized) {
       return;
     }
-  try {
-    await bridge.adoptURL(next);
-  } catch (error) {
-    console.error("Notepad could not update its address", error);
+    try {
+      await bridge.adoptURL(noteURL(normalized));
+    } catch (error) {
+      console.error("Notepad could not update its address", error);
+    }
   }
-}
 
   async function persist({ auto = false } = {}) {
     const markdown = markdownNow();
@@ -561,11 +663,12 @@ export async function attachNotepad(document_, bridge_) {
     const wasArmed = state.armed;
     try {
       setStatus("saving");
-      await bridge.save(id, markdown);
-      state.id = id;
+      const savedId = id.toLowerCase();
+      await bridge.save(savedId, markdown, state.customTitle);
+      state.id = savedId;
       state.armed = true;
       state.dirty = false;
-      await adoptURL(id);
+      await adoptURL(savedId);
       setStatus("saved");
       return true;
     } catch (error) {
@@ -646,7 +749,10 @@ export async function attachNotepad(document_, bridge_) {
 
   async function exportNote() {
     const lines = readLines();
-    await bridge.exportNote(serializeMarkdown(lines), exportFileName(lines));
+    await bridge.exportNote(
+      serializeMarkdown(lines),
+      exportFileName(lines, state.customTitle)
+    );
   }
 
   function onEditorKeyDown(event) {
@@ -737,6 +843,40 @@ export async function attachNotepad(document_, bridge_) {
     afterEdit();
   });
 
+  if (titleEl) {
+    titleEl.addEventListener("dblclick", event => {
+      event.preventDefault();
+      beginTitleEdit();
+    });
+    titleEl.addEventListener("keydown", event => {
+      if (!state.editingTitle) {
+        return;
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        commitTitleEdit();
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        commitTitleEdit(true);
+      }
+    });
+    titleEl.addEventListener("blur", () => {
+      commitTitleEdit();
+    });
+    titleEl.addEventListener("input", () => {
+      if (!state.editingTitle) {
+        return;
+      }
+      const text = titleEl.textContent.replace(/\n/g, "");
+      if (titleEl.textContent !== text) {
+        titleEl.textContent = text;
+        placeCaret(titleEl, text.length);
+      }
+    });
+  }
+
   saveButton.addEventListener("click", () => {
     saveNow();
   });
@@ -754,7 +894,11 @@ export async function attachNotepad(document_, bridge_) {
       try {
         const stored = await bridge.load(parsed.id);
         if (stored != null) {
-          render(parseMarkdown(stored));
+          const markdown =
+            typeof stored === "string" ? stored : stored.markdown;
+          state.customTitle =
+            typeof stored === "object" && stored.title ? stored.title : null;
+          render(parseMarkdown(markdown));
           state.armed = true;
           setStatus("saved");
         }
@@ -787,6 +931,9 @@ export async function attachNotepad(document_, bridge_) {
         },
         armed() {
           return state.armed;
+        },
+        pageTitle() {
+          return visibleTitle() || "Notepad";
         },
       },
       scope,

@@ -41,7 +41,8 @@ export class ZenNotepadChild extends JSWindowActorChild {
       );
       const bridge = {
         load: id => this.sendQuery("ZenNotepad:Load", { id }),
-        save: (id, markdown) => this.sendQuery("ZenNotepad:Save", { id, markdown }),
+        save: (id, markdown, title) =>
+          this.sendQuery("ZenNotepad:Save", { id, markdown, title }),
         exportNote: (markdown, fileName) =>
           this.sendQuery("ZenNotepad:Export", { markdown, fileName }),
         adoptURL: spec => this.#adoptURL(spec),

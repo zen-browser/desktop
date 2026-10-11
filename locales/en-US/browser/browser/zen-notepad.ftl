@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-notepad-title = Notepad
+    .title = Double-click to rename
 zen-notepad-save = Save
 zen-notepad-export = Export
 zen-notepad-export-title = Export note

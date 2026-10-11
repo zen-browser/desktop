@@ -28,6 +28,7 @@ async function notepad(tab = gBrowser.selectedTab) {
       menuOpen: note.menuOpen(),
       selectedCommand: note.selectedCommand(),
       armed: note.armed(),
+      pageTitle: note.pageTitle(),
     };
   });
 }
@@ -198,7 +199,7 @@ add_task(async function test_save_is_encrypted_and_reloads() {
   ok(id, "save assigns a note address");
   const raw = await IOUtils.readUTF8(PathUtils.join(notesDirectory(), `${id}.note`));
   ok(!raw.includes("Secret note"), "saved file is not plaintext");
-  Assert.equal(await loadNote(id), "Secret note");
+  Assert.equal((await loadNote(id)).markdown, "Secret note");
 
   const reloaded = await openNote(`mint://note/${id}`);
   Assert.equal((await notepad(reloaded)).text, "Secret note");
@@ -226,9 +227,40 @@ add_task(async function test_autosave_waits_for_first_save_then_pauses() {
   const id = parseNoteURL(tab.linkedBrowser.currentURI.spec).id;
   await typeText(" two", tab, { append: true });
   await TestUtils.waitForCondition(
-    async () => (await loadNote(id)) === "one two",
+    async () => (await loadNote(id)).markdown === "one two",
     "autosave writes one second after typing pauses"
   );
+  BrowserTestUtils.removeTab(tab);
+});
+
+add_task(async function test_rename_title_persists() {
+  await clearNotes();
+  const tab = await openNote();
+  await typeText("Body text", tab);
+  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
+    const title = content.document.getElementById("mint-note-title");
+    title.dispatchEvent(
+      new content.MouseEvent("dblclick", { bubbles: true, cancelable: true })
+    );
+    title.focus();
+  });
+  for (const char of "My note") {
+    await BrowserTestUtils.synthesizeKey(char, {}, tab.linkedBrowser);
+  }
+  await BrowserTestUtils.synthesizeKey("KEY_Enter", {}, tab.linkedBrowser);
+  await TestUtils.waitForCondition(
+    async () => (await notepad(tab)).pageTitle === "My note",
+    "custom title is shown"
+  );
+  await clickNoteButton(tab, "mint-note-save");
+  await TestUtils.waitForCondition(async () => (await notepad(tab)).armed, "save armed autosave");
+  const id = parseNoteURL(tab.linkedBrowser.currentURI.spec).id;
+  Assert.equal((await loadNote(id)).title, "My note");
+
+  const reloaded = await openNote(`mint://note/${id}`);
+  Assert.equal((await notepad(reloaded)).pageTitle, "My note");
+  Assert.equal((await notepad(reloaded)).text, "Body text");
+  BrowserTestUtils.removeTab(reloaded);
   BrowserTestUtils.removeTab(tab);
 });
 

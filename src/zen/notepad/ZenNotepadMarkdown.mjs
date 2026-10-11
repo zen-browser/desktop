@@ -386,8 +386,8 @@ export function eventMatchesShortcut(event, spec) {
   return key === expected.key && mods.join("+") === expected.mods;
 }
 
-export function exportFileName(lines) {
-  const title = noteTitle(lines) || "note";
+export function exportFileName(lines, customTitle = null) {
+  const title = customTitle || noteTitle(lines) || "note";
   const cleaned = title
     .replace(/[\\/:*?"<>|]/g, "")
     .replace(/[\u0000-\u001f]/g, "")

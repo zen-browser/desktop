@@ -669,7 +669,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     document
       .getElementById("context_zen-edit-tab-title")
       .addEventListener("command", event => {
-        gZenVerticalTabsManager.renameTabStart(event);
+        gZenTabRenamer.start(event);
       });
     document
       .getElementById("context_zen-edit-tab-icon")

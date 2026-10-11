@@ -59,6 +59,19 @@ export const FILE_GROUPS = [
   ...Object.keys(GROUP_EXTENSIONS),
 ];
 
+/**
+ * The extensions the Media scan bothers to carry back out of a folder. What
+ * a file holds is still decided by its content type (see {@link mediaKindOf})
+ */
+export const MEDIA_EXTENSIONS = [
+  // Pictures
+  ...`jpg jpeg jpe png gif webp avif bmp ico icns svg
+      heic heif jxl tif tiff cr2 cr3 nef arw dng raf orf rw2`.split(/\s+/),
+  // Video
+  ...`mp4 m4v mov webm mkv avi wmv flv mpg mpeg mpe
+      3gp 3g2 ogv mts m2ts`.split(/\s+/),
+];
+
 const NOT_DRAWN = new Set([
   "image/svg+xml",
   "image/heic",

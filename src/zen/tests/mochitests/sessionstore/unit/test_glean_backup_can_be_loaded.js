@@ -3,8 +3,9 @@
 
 /*
  * Ensures that exactly one backupCanBeLoadedSessionFile event is recorded for
- * each session file we attempt to load, and that the recorded outcome matches
- * the reason the file was accepted or rejected.
+ * each session file we attempt to load, that the recorded outcome matches the
+ * reason the file was accepted or rejected, and that corrupt_file counts files
+ * we failed to load as corrupt.
  */
 
 "use strict";
@@ -27,6 +28,10 @@ const INCOMPATIBLE_SESSION = JSON.stringify({
 });
 
 const CORRUPT_SESSION = "{ this is not json";
+
+// Parses as valid JSON, but reading a property from it throws a TypeError,
+// which is not one of the errors _readInternal handles specifically.
+const NULL_SESSION = "null";
 
 /**
  * Writes the given session contents into the backup directory, removing any
@@ -55,6 +60,13 @@ function recordedOutcomes() {
   return events.map(event => event.extra);
 }
 
+function corruptFileCounts() {
+  return {
+    corrupt: Glean.sessionRestore.corruptFile.true.testGetValue(),
+    notCorrupt: Glean.sessionRestore.corruptFile.false.testGetValue(),
+  };
+}
+
 add_setup(function () {
   Services.fog.initializeFOG();
   // Keep the load order independent of whatever upgrade backup the profile
@@ -73,6 +85,11 @@ add_task(async function test_readable_file_recorded_once() {
     recordedOutcomes(),
     [{ can_load: "true", path_key: "clean", loadfail_reason: "N/A" }],
     "A readable session file records a single can_load=true outcome."
+  );
+  Assert.deepEqual(
+    corruptFileCounts(),
+    { corrupt: null, notCorrupt: 1 },
+    "The file that loaded is counted as not corrupt."
   );
 });
 
@@ -100,6 +117,11 @@ add_task(async function test_corrupt_file_recorded_once() {
     outcomes[1],
     { can_load: "true", path_key: "recovery", loadfail_reason: "N/A" },
     "The file we fell back to records a single can_load=true outcome."
+  );
+  Assert.deepEqual(
+    corruptFileCounts(),
+    { corrupt: 1, notCorrupt: 1 },
+    "The corrupt file is counted as corrupt, the file that loaded as not corrupt."
   );
 });
 
@@ -132,6 +154,11 @@ add_task(async function test_incompatible_file_recorded_once() {
     "true",
     "The file we fell back to can be loaded."
   );
+  Assert.deepEqual(
+    corruptFileCounts(),
+    { corrupt: 1, notCorrupt: 1 },
+    "An incompatible file is counted as corrupt, and only the file that loaded is counted as not corrupt."
+  );
 });
 
 add_task(async function test_missing_files_recorded_once_each() {
@@ -160,5 +187,31 @@ add_task(async function test_missing_files_recorded_once_each() {
     outcomes.slice(0, keys.length).map(outcome => outcome.path_key),
     keys,
     "The first read attempt covers each file in the load order once."
+  );
+  Assert.deepEqual(
+    corruptFileCounts(),
+    { corrupt: null, notCorrupt: null },
+    "Files that don't exist are not counted at all."
+  );
+});
+
+add_task(async function test_unhandled_error_counted_as_corrupt() {
+  await promise_reset_session({
+    clean: NULL_SESSION,
+    recovery: VALID_SESSION,
+  });
+
+  await SessionFile.read();
+
+  let outcomes = recordedOutcomes();
+  Assert.equal(outcomes[0].can_load, "false", "The null file can't be used.");
+  Assert.ok(
+    outcomes[0].loadfail_reason.includes("TypeError"),
+    "The failure reason names the unhandled error."
+  );
+  Assert.deepEqual(
+    corruptFileCounts(),
+    { corrupt: 1, notCorrupt: 1 },
+    "A file we couldn't use is counted as corrupt, and only the file that loaded is counted as not corrupt."
   );
 });

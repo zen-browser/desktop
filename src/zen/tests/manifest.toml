@@ -4,19 +4,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [alerts]
-source = "browser/base/content/test/alerts"
+source = "toolkit/components/alerts/test/browser"
 is_direct_path = true
 
 [backforward]
-source = "browser/base/content/test/backforward"
+source = "browser/base/content/test/browser-backforward"
 is_direct_path = true
 
 [caps]
-source = "browser/base/content/test/caps"
+source = "browser/base/content/test/browser-caps"
 is_direct_path = true
 
 [gesture]
-source = "browser/base/content/test/gesture"
+source = "browser/base/content/test/browser-gesture"
 is_direct_path = true
 
 [gesture.replace-manifest]
@@ -26,7 +26,7 @@ prefs = [
 ]'''
 
 [linkHandling]
-source = "browser/base/content/test/linkHandling"
+source = "browser/base/content/test/browser-linkHandling"
 is_direct_path = true
 disable = [
   # Glance opens with alt+click, firefox doesnt know that.
@@ -159,8 +159,8 @@ disable = [
 ]
 
 [zoom]
-source = "browser/base/content/test/zoom"
+source = "browser/base/content/test/browser-zoom"
 is_direct_path = true
 
 [zoom.replace-manifest]
-"../general/" = "../../../../browser/base/content/test/general/"
+"../browser-general/" = "../../../../browser/base/content/test/browser-general/"

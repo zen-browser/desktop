@@ -8,8 +8,12 @@ EXTRA_JS_MODULES += [
   "sys/ZenUIMigration.sys.mjs",
 ]
 
+EXTRA_JS_MODULES.zen += [
+  "modules/ZenToasts.mjs",
+  "modules/ZenVerticalTabsManager.mjs",
+]
+
 EXTRA_JS_MODULES.zen.ui += [
   "sys/ui/ZenProgressBar.sys.mjs",
-  "sys/ui/ZenSpaceRoutingNavigation.sys.mjs",
   "sys/ui/ZenUIComponent.sys.mjs",
 ]

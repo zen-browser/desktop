@@ -1,5 +1,5 @@
 diff --git a/widget/cocoa/nsDragService.mm b/widget/cocoa/nsDragService.mm
-index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339349ffc06 100644
+index 4918a19b2e1e1c1e13286339b088f57213413029..4c010e956410fdab16303d9cd68de5d1b3e61625 100644
 --- a/widget/cocoa/nsDragService.mm
 +++ b/widget/cocoa/nsDragService.mm
 @@ -10,6 +10,7 @@
@@ -10,7 +10,7 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
  #include "nsArrayUtils.h"
  #include "nsCOMPtr.h"
  #include "nsClipboard.h"
-@@ -145,6 +146,10 @@
+@@ -185,6 +186,10 @@
                                              bitsPerPixel:32];
  
    uint8_t* dest = [imageRep bitmapData];
@@ -21,7 +21,7 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
    for (uint32_t i = 0; i < height; ++i) {
      uint8_t* src = map.mData + i * map.mStride;
      for (uint32_t j = 0; j < width; ++j) {
-@@ -152,15 +157,15 @@
+@@ -192,15 +197,15 @@
        // is premultipled here. Also, Quartz likes RGBA, so do that translation
        // as well.
  #ifdef IS_BIG_ENDIAN
@@ -45,7 +45,7 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
  #endif
        src += 4;
        dest += 4;
-@@ -249,12 +254,44 @@
+@@ -289,12 +294,44 @@
        [[[NSDraggingItem alloc] initWithPasteboardWriter:pbItem] autorelease];
    [dragItem setDraggingFrame:localDragRect contents:image];
  
@@ -88,10 +88,10 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
 +  if (dragItems.count > 1) {
 +    mNSDraggingSession.draggingFormation = NSDraggingFormationStack;
 +  }
- 
-   mNSDraggingSession.animatesToStartingPositionsOnCancelOrFail =
-       !mDataTransfer || mDataTransfer->MozShowFailAnimation();
-@@ -455,29 +492,44 @@
+   if (!mNSDraggingSession) {
+     // The system refused to start a drag, for example because the mouse button
+     // was released before we got here. Fail, so that our caller ends this drag
+@@ -503,29 +540,44 @@
      }
  
      if (pc) {

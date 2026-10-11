@@ -26,8 +26,6 @@ support-files = [
 
 ["browser_issue_9900.js"]
 
-["browser_zen_workspace_cmdline.js"]
-
 ["browser_overflow_scrollbox.js"]
 
 ["browser_private_mode.js"]
@@ -41,3 +39,5 @@ support-files = [
 ["browser_unload_all_other_spaces.js"]
 
 ["browser_workspace_bookmarks.js"]
+
+["browser_zen_workspace_cmdline.js"]

@@ -766,29 +766,35 @@ export class ZenLibrary extends MozLitElement {
    */
   #onOpenInit() {
     this.#tellSection("onLibraryOpening");
-    if (this.#initialized) {
-      return;
+    if (!this.#initialized) {
+      this.#initialized = true;
+      this.isHidden = false;
+
+      gURLBar.view.close();
+
+      this.#cancelIdleCleanup();
+      if (!this.#contentMounted) {
+        this.#contentMounted = true;
+        this.requestUpdate();
+      }
+
+      this.setAttribute("open", "true");
+      document.addEventListener("keydown", this, true);
+      window.addEventListener("TabOpen", this);
+
+      this.#attachWrapperToSwipe();
+      window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(this);
+      this.#resizeObserver.observe(this);
+      ZenLibraryWidget.attachLibrary(this);
+      this.#refreshToolboxWidth();
     }
-    this.#initialized = true;
-    this.isHidden = false;
+    this.#focusActiveSection();
+  }
 
-    gURLBar.view.close();
-
-    this.#cancelIdleCleanup();
-    if (!this.#contentMounted) {
-      this.#contentMounted = true;
-      this.requestUpdate();
-    }
-
-    this.setAttribute("open", "true");
-    document.addEventListener("keydown", this, true);
-    window.addEventListener("TabOpen", this);
-
-    this.#attachWrapperToSwipe();
-    window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(this);
-    this.#resizeObserver.observe(this);
-    ZenLibraryWidget.attachLibrary(this);
-    this.#refreshToolboxWidth();
+  async #focusActiveSection() {
+    // On the first open the sections are only being mounted now.
+    await this.updateComplete;
+    this.#tellSection("onLibraryOpened");
   }
 
   /**

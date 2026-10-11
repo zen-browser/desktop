@@ -8,6 +8,30 @@ const { AppConstants } = ChromeUtils.importESModule(
 // Svc.PrefBranch.setStringPref("services.sync.log.appender.dump", "All");
 Svc.PrefBranch.setStringPref("registerEngines", "Tab,Bookmarks,Form,History");
 
+add_task(function test_perDeviceEngineChoices() {
+  const { Weave } = ChromeUtils.importESModule(
+    "resource://services-sync/main.sys.mjs"
+  );
+  const pref = "services.sync.perDeviceEngineChoices";
+  const serviceModule = "resource://services-sync/service.sys.mjs";
+
+  Assert.ok(!Cu.isESModuleLoaded(serviceModule));
+  Assert.ok(!Services.prefs.getBoolPref(pref), "Disabled by default.");
+  Assert.ok(!Weave.perDeviceEngineChoices);
+  try {
+    Services.prefs.setBoolPref(pref, true);
+    Assert.ok(Weave.perDeviceEngineChoices);
+    Services.prefs.setBoolPref(pref, false);
+    Assert.ok(!Weave.perDeviceEngineChoices);
+    Assert.ok(
+      !Cu.isESModuleLoaded(serviceModule),
+      "Reading the feature flag does not initialize Sync."
+    );
+  } finally {
+    Services.prefs.clearUserPref(pref);
+  }
+});
+
 add_task(async function run_test() {
   validate_all_future_pings();
   _("When imported, Service.onStartup is called");

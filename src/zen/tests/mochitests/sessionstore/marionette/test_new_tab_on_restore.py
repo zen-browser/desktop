@@ -75,6 +75,7 @@ class TestNewTabOnRestore(SessionStoreTestCase):
         )
 
     def _get_telemetry_events(self):
+        self.wait_for_fog()
         return self.marionette.execute_script(
             """
             return Glean.sessionRestore.startupSessionAutoRestored.testGetValue();
@@ -252,6 +253,7 @@ class TestNewTabOnRestoreNotSettingBased(SessionStoreTestCase):
             """
         )
 
+        self.wait_for_fog()
         events = self.marionette.execute_script(
             """
             return Glean.sessionRestore.startupSessionAutoRestored.testGetValue();
@@ -358,6 +360,7 @@ class TestNewTabOnRestoreAfterCrash(SessionStoreTestCase):
             "No new tab should be added after a crash restore",
         )
 
+        self.wait_for_fog()
         events = self.marionette.execute_script(
             """
             return Glean.sessionRestore.startupSessionAutoRestored.testGetValue();

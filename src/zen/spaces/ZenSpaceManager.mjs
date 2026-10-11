@@ -1313,6 +1313,9 @@ class nsZenWorkspaces {
     } else {
       openInContainerMenuItem.setAttribute("hidden", "true");
     }
+    // Spaces are managed from the library, so the entry needs it enabled.
+    document.getElementById("context_zenManageWorkspaces").hidden =
+      !Services.prefs.getBoolPref("zen.library.enabled");
     // Call parent node as on windows, the text can be double clicked
     let target;
     try {

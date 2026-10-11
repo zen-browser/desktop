@@ -169,8 +169,6 @@ skip-if = [
 
 ["browser_491577.js"]
 
-["browser_495495.js"]
-
 ["browser_500328.js"]
 
 ["browser_514751.js"]
@@ -226,8 +224,6 @@ skip-if = [
 ]
 
 ["browser_595601-restore_hidden.js"]
-
-["browser_597071.js"]
 
 ["browser_600545.js"]
 

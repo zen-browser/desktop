@@ -7,14 +7,24 @@ import checkForZenUpdates, {
   playWindowSweepAnimation,
 } from "chrome://browser/content/ZenUpdates.mjs";
 
+/**
+ * Drives the parts of Zen's per-window startup that have to happen in a fixed
+ * order relative to Firefox's own startup.
+ */
 class ZenStartup {
   #watermarkIgnoreElements = ["zen-toast-container", "zen-browser-background"];
   #hasInitializedLayout = false;
+  #initialized = Promise.withResolvers();
 
   isReady = false;
-  promiseInitialized = new Promise(resolve => {
-    this.promiseInitializedResolve = resolve;
-  });
+
+  /**
+   * Resolves once the window has been laid out, the session restored and
+   * every startup-ordered Zen feature initialized.
+   */
+  get promiseInitialized() {
+    return this.#initialized.promise;
+  }
 
   init() {
     this.openWatermark();
@@ -56,11 +66,10 @@ class ZenStartup {
 
       gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
-        this.#initUIComponents();
         this.#checkForWelcomePage();
       });
     } catch (e) {
-      console.error("ZenThemeModifier: Error initializing browser layout", e);
+      console.error("ZenStartup: Error initializing browser layout", e);
     }
     if (gBrowserInit.delayedStartupFinished) {
       this.delayedStartupFinished();
@@ -82,7 +91,6 @@ class ZenStartup {
     gZenWorkspaces.promiseInitialized.then(async () => {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;
-      delete gZenUIManager.promiseInitialized;
       gZenCompactModeManager.init();
       // Fix for https://github.com/zen-browser/desktop/issues/7605, specially in compact mode
       if (gURLBar.hasAttribute("breakout-extend")) {
@@ -96,8 +104,7 @@ class ZenStartup {
         .getElementById("tabbrowser-arrowscrollbox")
         .setAttribute("orient", "vertical");
       this.isReady = true;
-      this.promiseInitializedResolve();
-      delete this.promiseInitializedResolve;
+      this.#initialized.resolve();
 
       setTimeout(() => {
         // Wait for the natural PlacesToolbar rebuild before invalidating, so
@@ -155,16 +162,6 @@ class ZenStartup {
     window.requestAnimationFrame(() => {
       window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
     });
-  }
-
-  #initUIComponents() {
-    const kUIComponents = ["ZenProgressBar", "ZenSpaceRoutingNavigation"];
-    for (let component of kUIComponents) {
-      const module = ChromeUtils.importESModule(
-        "resource:///modules/zen/ui/" + component + ".sys.mjs"
-      );
-      new module[component](window);
-    }
   }
 
   #checkForWelcomePage() {

@@ -308,7 +308,7 @@ zen-folder[collapsed] > .tab-group-container {
   display: flex;
   align-items: center;
   direction: ltr;
-  padding: 0 var(--tab-inline-padding);
+  padding: 0 var(--tab-padding-inline);
   border-radius: 6px;
   margin: 4px 0;
 

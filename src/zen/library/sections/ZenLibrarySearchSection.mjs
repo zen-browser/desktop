@@ -234,6 +234,17 @@ export class ZenLibrarySearchSection extends MozLitElement {
       this.setAttribute("fade-in", "true");
     }
     await this.updateComplete;
+    this.focusSearch();
+  }
+
+  /** Called when the library opens on this section, already shown. */
+  async onLibraryOpened() {
+    await this.updateComplete;
+    this.focusSearch();
+  }
+
+  /** Puts the keyboard in the search field, which is what it is here for. */
+  focusSearch() {
     this.querySelector(".zen-library-search-box input")?.focus();
   }
 

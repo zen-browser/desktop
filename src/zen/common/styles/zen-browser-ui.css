@@ -42,7 +42,7 @@ body,
   overflow: clip;
 
   isolation: isolate;
-  contain: strict;
+  contain: size style;
 
   &::after,
   &::before {
@@ -258,7 +258,7 @@ body,
   &::before {
     height: 2px;
     width: 50px;
-    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-background-without-text-color */
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-paired-color-tokens */
     background: var(--button-background-color-primary);
     border-radius: 2px;
     content: "";

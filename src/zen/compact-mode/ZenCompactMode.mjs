@@ -69,7 +69,6 @@ ChromeUtils.defineESModuleGetters(
 
 window.gZenCompactModeManager = {
   _flashTimeouts: {},
-  _eventListeners: [],
   _removeHoverFrames: {},
 
   // Delay to avoid flickering when hovering over the sidebar
@@ -314,19 +313,19 @@ window.gZenCompactModeManager = {
   hideSidebar() {
     Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
     Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", false);
-    this.callAllEventListeners();
+    this._dispatchLayoutUpdate();
   },
 
   hideToolbar() {
     Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", true);
     Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", false);
-    this.callAllEventListeners();
+    this._dispatchLayoutUpdate();
   },
 
   hideBoth() {
     Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
     Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", true);
-    this.callAllEventListeners();
+    this._dispatchLayoutUpdate();
   },
 
   /**
@@ -357,25 +356,19 @@ window.gZenCompactModeManager = {
       // This state is illegal
       Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
       Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", false);
-      this.callAllEventListeners();
+      this._dispatchLayoutUpdate();
       return true;
     }
     return closelyIllegalState;
   },
 
-  callAllEventListeners() {
-    this._eventListeners.forEach(callback => callback());
-  },
-
-  addEventListener(callback) {
-    this._eventListeners.push(callback);
-  },
-
-  removeEventListener(callback) {
-    const index = this._eventListeners.indexOf(callback);
-    if (index !== -1) {
-      this._eventListeners.splice(index, 1);
-    }
+  /**
+   * Tells the rest of the window that the compact mode layout changed, either
+   * because compact mode was toggled or because which toolbars it hides
+   * changed.
+   */
+  _dispatchLayoutUpdate() {
+    window.dispatchEvent(new CustomEvent("ZenCompactMode:LayoutUpdate"));
   },
 
   async _updateEvent() {
@@ -395,12 +388,12 @@ window.gZenCompactModeManager = {
     gZenWorkspaces._processingResize = true;
     if (!this.preference) {
       setAttrs();
-      this.callAllEventListeners();
+      this._dispatchLayoutUpdate();
       await this.animateCompactMode(value);
     } else {
       await this.animateCompactMode(value);
       setAttrs();
-      this.callAllEventListeners();
+      this._dispatchLayoutUpdate();
     }
     this.updateContextMenu();
     gZenWorkspaces._processingResize = false;

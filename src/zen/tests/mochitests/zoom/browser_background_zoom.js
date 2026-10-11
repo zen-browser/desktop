@@ -1,9 +1,9 @@
 var gTestPage =
   // eslint-disable-next-line sdl/no-insecure-url
-  "http://example.org/browser/browser/base/content/test/zoom/zoom_test.html";
+  "http://example.org/browser/browser/base/content/test/browser-zoom/zoom_test.html";
 var gTestImage =
   // eslint-disable-next-line sdl/no-insecure-url
-  "http://example.org/browser/browser/base/content/test/general/moz.png";
+  "http://example.org/browser/browser/base/content/test/browser-general/moz.png";
 var gTab1, gTab2, gTab3;
 var gLevel;
 

@@ -16,3 +16,22 @@ MOZ_SRC_FILES += [
   "ZenLibraryUtils.sys.mjs",
   "ZenLibraryWidget.sys.mjs",
 ]
+
+XPIDL_SOURCES += [
+    "nsIZenLibraryFiles.idl",
+]
+
+EXPORTS.mozilla += [
+    "nsZenLibraryFiles.h",
+]
+
+SOURCES += [
+    "nsZenLibraryFiles.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen_library"

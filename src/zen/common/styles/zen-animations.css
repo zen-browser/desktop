@@ -127,12 +127,14 @@
 
 @keyframes zen-progress-bar-long-load {
   0% {
-    left: -100%;
+    /* 100% of the container ÷ this bar's 75% width: same fully-clipped
+       start/end positions `left` gave us, but compositor-friendly */
+    transform: translateX(calc(-100% / 0.75));
     opacity: 1;
   }
 
   100% {
-    left: 100%;
+    transform: translateX(calc(100% / 0.75));
     opacity: 1;
   }
 }

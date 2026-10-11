@@ -648,7 +648,7 @@
         dropBefore = true;
       }
       this._setDragOverGroupColor(colorCode);
-      this._tabbrowserTabs.toggleAttribute("movingtab-addToGroup", colorCode);
+      this._tabbrowserTabs.toggleAttribute("movingtab-addToGroup", !!colorCode);
       this._tabbrowserTabs.toggleAttribute("movingtab-ungroup", !colorCode);
 
       if (

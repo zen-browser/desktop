@@ -829,7 +829,10 @@ window.gZenCompactModeManager = {
             return;
           }
 
-          if (!target.hasAttribute("zen-has-hover")) {
+          if (
+            !target.hasAttribute("zen-has-implicit-hover") &&
+            !target.hasAttribute("zen-has-hover")
+          ) {
             return;
           }
 

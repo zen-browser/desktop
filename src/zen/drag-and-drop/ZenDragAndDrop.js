@@ -107,6 +107,12 @@
         "zen.tabs.dnd-switch-space-delay",
         1000
       );
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        "_prefsShowNewTabButtonTop",
+        "zen.view.show-newtab-button-top",
+        true
+      );
 
       ChromeUtils.defineESModuleGetters(
         this,
@@ -669,13 +675,30 @@
     }
 
     get #dragShiftableItems() {
+      // This getter is called from the dragover hot path (once per dragover
+      // event), so doing a querySelector + building a new array each time is
+      // wasteful. Cache the result, keyed on the values it was derived from so
+      // that it is invalidated when the active workspace changes mid-drag
+      // (e.g. when dragging a tab over the workspace switcher) or when the
+      // pref is toggled.
+      const workspace = gZenWorkspaces.activeWorkspace;
+      const showNewTabButtonTop = this._prefsShowNewTabButtonTop;
+      const cache = this._dragShiftableItemsCache;
+      if (
+        cache?.workspace === workspace &&
+        cache.showNewTabButtonTop === showNewTabButtonTop
+      ) {
+        return cache.items;
+      }
       const separator = gZenWorkspaces.pinnedTabsContainer.querySelector(
         ".pinned-tabs-container-separator"
       );
       // Make sure to always return the separator at the start of the array
-      return Services.prefs.getBoolPref("zen.view.show-newtab-button-top")
+      const items = showNewTabButtonTop
         ? [separator, gZenWorkspaces.activeWorkspaceElement.newTabButton]
         : [separator];
+      this._dragShiftableItemsCache = { workspace, showNewTabButtonTop, items };
+      return items;
     }
 
     handle_dragover(event) {
@@ -1568,7 +1591,7 @@
             (hoveringPeriphery ||
               (showIndicatorUnderNewTabButton &&
                 !(pinnedTabsCount - gBrowser._numZenEssentials))) &&
-            Services.prefs.getBoolPref("zen.view.show-newtab-button-top");
+            this._prefsShowNewTabButtonTop;
           dropElement =
             (useLastPinned
               ? this._tabbrowserTabs.ariaFocusableItems.at(pinnedTabsCount)

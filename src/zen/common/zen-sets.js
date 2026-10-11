@@ -87,7 +87,9 @@
               gZenPinnedTabManager.resetPinnedTab();
               break;
             case "cmd_zenToggleSidebar":
-              gZenVerticalTabsManager.toggleExpand();
+              if (!lazy.ZenLibrary.isLibrarySlightlyOpen) {
+                gZenVerticalTabsManager.toggleExpand();
+              }
               break;
             case "cmd_zenOpenZenThemePicker":
               gZenThemePicker.openThemePicker(event);

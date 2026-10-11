@@ -10,3 +10,5 @@ prefs = [
 ["browser_library_closed_tab_icon.js"]
 
 ["browser_library_rapid_toggle.js"]
+
+["browser_library_toggle_sidebar_width.js"]

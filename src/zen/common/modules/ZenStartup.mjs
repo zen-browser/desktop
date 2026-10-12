@@ -27,6 +27,13 @@ class ZenStartup {
   }
 
   init() {
+    try {
+      ChromeUtils.importESModule(
+        "resource:///modules/zen/ZenTabUnloader.sys.mjs"
+      ).ZenTabUnloader.start();
+    } catch (error) {
+      console.error("ZenTabUnloader failed to start", error);
+    }
     this.openWatermark();
     this.#zenInitBrowserLayout();
     try {

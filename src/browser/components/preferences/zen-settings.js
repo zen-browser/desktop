@@ -81,6 +81,22 @@ var gZenToolbarUrlbarSettings = {
   init() {},
 };
 
+var gZenPerformanceSettings = {
+  init() {
+    const input = document.getElementById("zenTabUnloaderMinutes");
+    if (!input) {
+      return;
+    }
+    const pref = "zen.tab-unloader.timeout-minutes";
+    input.value = Services.prefs.getIntPref(pref, 10);
+    input.addEventListener("change", () => {
+      const minutes = Math.max(0, Math.min(1440, Number(input.value) || 0));
+      input.value = minutes;
+      Services.prefs.setIntPref(pref, minutes);
+    });
+  },
+};
+
 var gZenWorkspacesSettings = {
   init() {
     const syncLink = document.getElementById("zenSpacesOpenSyncSettings");
@@ -762,6 +778,36 @@ Preferences.addAll([
   },
   {
     id: "zen.workspaces.hide-default-container-indicator",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.workspaces.switch-animation",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.downloads.download-animation",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.view.grey-out-inactive-windows",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.haptic-feedback.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.theme.essentials-favicon-bg",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.theme.glass",
     type: "bool",
     default: true,
   },

@@ -1265,7 +1265,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   onOpacityChange(event) {
     this.currentOpacity = parseFloat(event.target.value);
     // If we reached a whole number (e.g., 0.1, 0.2, etc.), send a haptic feedback.
-    if (Math.round(this.currentOpacity * 10) !== this._lastHapticFeedback) {
+    if (
+      Math.round(this.currentOpacity * 10) !== this._lastHapticFeedback &&
+      Services.prefs.getBoolPref("zen.haptic-feedback.enabled", true)
+    ) {
       Services.zen.playHapticFeedback();
       this._lastHapticFeedback = Math.round(this.currentOpacity * 10);
     }

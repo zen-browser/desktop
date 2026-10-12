@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.share.base-url
-  # Upstream Zen share service (no Peppermint-hosted equivalent yet).
-  value: "https://share.zen-browser.app"
+  # Empty until Peppermint hosts its own share service. The Zen host is not used.
+  value: ""
 
 - name: zen.share.secret-key
   value: ""

@@ -66,9 +66,14 @@
 - name: browser.tabs.closeWindowWithLastTab
   value: false
 
-# Switch to a new tab as soon as a link or media opens in it.
+# Switch to a new tab as soon as a link opens in it. Kept as a
+# foreground-tab behavior, not a performance default.
 - name: browser.tabs.loadInBackground
   value: false
+
+# Firefox leaves this off on Linux. Unload tabs under memory pressure everywhere.
+- name: browser.tabs.unloadOnLowMemory
+  value: true
 
 - name: browser.warnOnQuitShortcut
   value: false

@@ -130,11 +130,15 @@ export function canonicalJSON(value) {
 const textEncoder = new TextEncoder();
 
 export function recordDigest(kind, data) {
+  return digestCanonical(canonicalJSON({ kind, data }));
+}
+
+function digestCanonical(canonical) {
   const hasher = Cc["@mozilla.org/security/hash;1"].createInstance(
     Ci.nsICryptoHash
   );
   hasher.init(Ci.nsICryptoHash.SHA256);
-  const bytes = textEncoder.encode(canonicalJSON({ kind, data }));
+  const bytes = textEncoder.encode(canonical);
   hasher.update(bytes, bytes.length);
   return hasher.finish(/* base64 = */ true);
 }
@@ -715,11 +719,11 @@ class nsZenSpacesSyncModel {
   }
 
   #digestCache = null;
+  #recordDigests = new Map();
 
   /**
-   * Digests of all current projections. Change detection runs several times per
-   * sync cycle (tracker observe, changed-id computation, upload bookkeeping)
-   * and only needs to hash again after a fresh sidebar collection.
+   * Digests of all current projections. Unchanged records keep the digest
+   * from the previous collection instead of hashing the whole graph again.
    */
   #digestAll() {
     const map = this.projections();
@@ -727,9 +731,21 @@ class nsZenSpacesSyncModel {
       return this.#digestCache.digests;
     }
     const digests = new Map();
+    const next = new Map();
     for (const [id, projected] of map) {
-      digests.set(id, recordDigest(projected.kind, projected.data));
+      const canonical = canonicalJSON({
+        kind: projected.kind,
+        data: projected.data,
+      });
+      const prev = this.#recordDigests.get(id);
+      const digest =
+        prev?.canonical === canonical
+          ? prev.digest
+          : digestCanonical(canonical);
+      next.set(id, { canonical, digest });
+      digests.set(id, digest);
     }
+    this.#recordDigests = next;
     this.#digestCache = { map, digests };
     return digests;
   }

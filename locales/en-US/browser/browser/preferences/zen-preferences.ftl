@@ -22,6 +22,10 @@ pane-zen-adblock-title = Ad blocking
 category-zen-adblock =
     .tooltiptext = { pane-zen-adblock-title }
 
+pane-zen-performance-title = Performance and effects
+category-zen-performance =
+    .tooltiptext = { pane-zen-performance-title }
+
 pane-zen-shortcuts-title = Shortcuts
 category-zen-shortcuts =
     .tooltiptext = { pane-zen-shortcuts-title }
@@ -472,3 +476,19 @@ zen-url-snippets-shortcut-input =
     .placeholder = yt
 zen-url-snippets-url-input =
     .placeholder = https://youtube.com
+
+zen-performance-section-title = Performance and effects
+zen-performance-header = Performance and effects
+zen-performance-description = Turn off motion and effects you do not use. Idle tabs unload in the background after the time below. Use 0 to keep every tab loaded.
+zen-performance-space-switch =
+    .label = Animate switching spaces
+zen-performance-download-animation =
+    .label = Download animation
+zen-performance-grey-out-inactive =
+    .label = Grey out inactive windows
+zen-performance-haptics =
+    .label = Haptic feedback
+zen-performance-essentials-favicon =
+    .label = Background behind essential icons
+zen-tab-unloader-minutes-label = Unload idle tabs after
+zen-tab-unloader-minutes-description = Minutes. Pinned tabs, essentials, the tab you are viewing, and tabs playing sound stay loaded.

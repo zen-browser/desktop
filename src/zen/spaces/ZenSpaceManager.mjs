@@ -315,6 +315,10 @@ class nsZenWorkspaces {
     );
   }
 
+  get spaceSwitchAnimationEnabled() {
+    return Services.prefs.getBoolPref("zen.workspaces.switch-animation", true);
+  }
+
   get shouldAnimateEssentials() {
     return this.containerSpecificEssentials || !!this.creatingWorkspaceId;
   }
@@ -1930,7 +1934,10 @@ class nsZenWorkspaces {
   }
 
   _cancelSwipeAnimation() {
-    this.#animateTabs(this.getActiveWorkspaceFromCache(), true);
+    this.#animateTabs(
+      this.getActiveWorkspaceFromCache(),
+      this.spaceSwitchAnimationEnabled
+    );
   }
 
   async #performWorkspaceChange(
@@ -2656,7 +2663,9 @@ class nsZenWorkspaces {
     this.workspaceIcons.activeIndex = workspace.uuid;
     await this.#animateTabs(
       workspace,
-      !onInit && !this._animatingChange,
+      !onInit &&
+        !this._animatingChange &&
+        this.spaceSwitchAnimationEnabled,
       tabToSelect,
       {
         previousWorkspaceIndex,

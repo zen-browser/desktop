@@ -1,0 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<html:template id="template-paneZenPerformance">
+
+<hbox id="zenPerformanceCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenPerformance">
+<html:h1 data-l10n-id="zen-performance-section-title"/>
+</hbox>
+
+<groupbox id="zenPerformanceGroup" data-category="paneZenPerformance" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-performance-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-performance-description"/>
+
+      <checkbox data-l10n-id="zen-performance-space-switch"
+                preference="zen.workspaces.switch-animation"/>
+      <checkbox data-l10n-id="zen-performance-download-animation"
+                preference="zen.downloads.download-animation"/>
+      <checkbox data-l10n-id="zen-performance-grey-out-inactive"
+                preference="zen.view.grey-out-inactive-windows"/>
+      <checkbox data-l10n-id="zen-performance-haptics"
+                preference="zen.haptic-feedback.enabled"/>
+      <checkbox data-l10n-id="zen-performance-essentials-favicon"
+                preference="zen.theme.essentials-favicon-bg"/>
+      <checkbox data-l10n-id="zen-glance-enabled"
+                preference="zen.glance.enabled"/>
+
+      <hbox align="center">
+            <label data-l10n-id="zen-tab-unloader-minutes-label" control="zenTabUnloaderMinutes"/>
+            <html:input id="zenTabUnloaderMinutes" type="number" min="0" max="1440" style="width: 5em"/>
+      </hbox>
+      <description class="description-deemphasized" data-l10n-id="zen-tab-unloader-minutes-description"/>
+</groupbox>
+
+</html:template>

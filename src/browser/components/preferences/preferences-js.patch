@@ -28,7 +28,7 @@ index 35e044bd84..23503c5645 100644
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -568,6 +571,13 @@ function init_all() {
+@@ -568,6 +571,14 @@ function init_all() {
    register_module("paneHome", gHomePane);
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
@@ -39,6 +39,7 @@ index 35e044bd84..23503c5645 100644
 +  register_module("paneZenAdblock", gZenAdblockSettings);
 +  register_module("paneZenHomepage", gZenHomepageSettings);
 +  register_module("paneZenUrlSnippets", gZenUrlSnippetsSettings);
++  register_module("paneZenPerformance", gZenPerformanceSettings);
  
    // Restore the cached Firefox Labs nav button visibility so it shows
    // immediately when recipes are expected to be available, before

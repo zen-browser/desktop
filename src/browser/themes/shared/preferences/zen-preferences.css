@@ -159,6 +159,10 @@ groupbox h2 {
   list-style-image: url("chrome://browser/skin/zen-icons/tracking-protection-fill.svg");
 }
 
+#category-zen-performance > .category-icon {
+  list-style-image: url("chrome://browser/skin/preferences/category-general.svg");
+}
+
 /* Marketplace was removed; hide a leftover nav entry if chrome is stale. */
 #category-zen-marketplace,
 moz-page-nav-button[view="paneZenMarketplace"] {

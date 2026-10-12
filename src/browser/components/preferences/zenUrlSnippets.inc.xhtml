@@ -1,0 +1,27 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<html:template id="template-paneZenUrlSnippets">
+
+<hbox id="zenUrlSnippetsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenUrlSnippets">
+<html:h1 data-l10n-id="zen-url-snippets-section-title"/>
+</hbox>
+
+<groupbox id="zenUrlSnippetsGroup" data-category="paneZenUrlSnippets" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-url-snippets-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-url-snippets-description"/>
+      <hbox class="zenUrlSnippetColumns">
+            <label data-l10n-id="zen-url-snippets-shortcut-label"/>
+            <label data-l10n-id="zen-url-snippets-url-label"/>
+      </hbox>
+      <vbox id="zenUrlSnippetsList"></vbox>
+      <hbox>
+            <button id="zenUrlSnippetsAdd" data-l10n-id="zen-url-snippets-add"/>
+      </hbox>
+</groupbox>
+
+</html:template>

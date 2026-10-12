@@ -26,6 +26,10 @@ pane-zen-shortcuts-title = Shortcuts
 category-zen-shortcuts =
     .tooltiptext = { pane-zen-shortcuts-title }
 
+pane-zen-url-snippets-title = URL Snippets
+category-zen-url-snippets =
+    .tooltiptext = { pane-zen-url-snippets-title }
+
 zen-sidebar-layout-section-title = Sidebar & layout
 zen-tab-list-section-title = Tab list
 zen-compact-toolbar-section-title = Compact toolbar
@@ -452,3 +456,17 @@ zen-homepage-card-version-toggle =
     .label = Current Version
 zen-homepage-card-clock-toggle =
     .label = Clock
+
+zen-url-snippets-section-title = URL Snippets
+zen-url-snippets-header = URL Snippets
+zen-url-snippets-description = Type > followed by a shortcut in the address bar to open its URL. For example, >yt opens YouTube.
+zen-url-snippets-shortcut-label = Shortcut
+zen-url-snippets-url-label = URL
+zen-url-snippets-add =
+    .label = Add snippet
+zen-url-snippets-remove =
+    .label = Remove
+zen-url-snippets-shortcut-input =
+    .placeholder = yt
+zen-url-snippets-url-input =
+    .placeholder = https://youtube.com

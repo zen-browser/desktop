@@ -22,6 +22,7 @@ DIRS += [
     "notepad",
     "tests",
     "urlbar",
+    "url-snippets",
     "toolkit",
     "sessionstore",
     "share",

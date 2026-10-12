@@ -40,3 +40,17 @@ index e32b02941a6019703212cede4660a24b88845120..5cb363ed20d49c1ae8abedecc3b08540
          }
          return;
        }
+@@ -265,7 +269,12 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
+     let query = UrlbarUtils.substringAfter(
+       queryContext.searchString,
+       firstToken
+     );
+-    if (!lazy.UrlUtils.REGEXP_SPACES_START.test(query)) {
++    // Snippets mode is entered by a leading ">" with no required space, so
++    // ">yt" opens the matching shortcut.
++    if (
++      firstToken != lazy.UrlbarShared.RESTRICT_TOKENS.SNIPPET &&
++      !lazy.UrlUtils.REGEXP_SPACES_START.test(query)
++    ) {
+       return null;
+     }

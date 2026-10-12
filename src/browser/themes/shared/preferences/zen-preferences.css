@@ -378,6 +378,44 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
   min-width: 240px;
 }
 
+.zenUrlSnippetColumns,
+.zenUrlSnippetRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zenUrlSnippetColumns {
+  margin-top: 8px;
+}
+
+.zenUrlSnippetColumns > label:first-child,
+.zenUrlSnippetShortcut {
+  width: 8em;
+  flex: 0 0 8em;
+}
+
+.zenUrlSnippetColumns > label:last-child,
+.zenUrlSnippetUrl {
+  flex: 1;
+  min-width: 0;
+}
+
+.zenUrlSnippetRow {
+  margin-bottom: 8px;
+}
+
+.zenUrlSnippetRow input {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--zen-colors-border);
+  background: transparent;
+}
+
+.zenUrlSnippetInvalid {
+  border-color: red !important;
+}
+
 @media -moz-pref("zen.urlbar.replace-newtab") {
   #category-home {
     display: none !important;

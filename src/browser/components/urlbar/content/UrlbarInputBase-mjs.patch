@@ -213,6 +213,34 @@ index 3c1964335b25a3f23db29e78203784bc487c9917..0594e6b0aaa352ec96ad3873b390c435
      }
  
      if (isCanonized) {
+@@ -2485,15 +2485,23 @@
+   onFirstResult(queryContext) {
+     let firstResult = queryContext.results[0];
++    // The snippet keyword heuristic can sit under other groups. Still enter
++    // snippets mode from it.
++    let snippetKeywordResult = queryContext.results.find(
++      result =>
++        result.heuristic &&
++        result.payload?.keyword == UrlbarShared.RESTRICT_TOKENS.SNIPPET
++    );
++    let modeResult = snippetKeywordResult || firstResult;
+ 
+     // If the heuristic result has a keyword but isn't a keyword offer, we may
+     // need to enter search mode.
+     if (
+-      firstResult.heuristic &&
+-      firstResult.payload.keyword &&
+-      !this.#providesSearchMode(firstResult) &&
++      modeResult.heuristic &&
++      modeResult.payload.keyword &&
++      !this.#providesSearchMode(modeResult) &&
+       this.maybeConfirmSearchModeFromResult({
+-        result: firstResult,
++        result: modeResult,
+         entry: "typed",
+         checkValue: false,
+       })
+     ) {
 @@ -3152,35 +3237,153 @@ ${
      return state;
    }
@@ -703,3 +731,10 @@ index 3c1964335b25a3f23db29e78203784bc487c9917..0594e6b0aaa352ec96ad3873b390c435
          ? UrlbarPrefs.get("maxRichResults")
          : UNLIMITED_MAX_RESULTS;
      let options = {
+@@ -5768,5 +6143,6 @@
+       if (
+         this.searchMode.source &&
++        this.searchMode.source != UrlbarShared.RESULT_SOURCE.SNIPPETS &&
+         !UrlbarPrefs.get("unifiedSearchButton.historyInSearchMode")
+       ) {
+         options.sources = [this.searchMode.source];

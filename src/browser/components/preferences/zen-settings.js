@@ -613,6 +613,125 @@ var gZenHomepageSettings = {
   },
 };
 
+var gZenUrlSnippetsSettings = {
+  _manager: null,
+  _queue: Promise.resolve(),
+
+  init() {
+    if (this.__hasInitialized) {
+      return;
+    }
+    this.__hasInitialized = true;
+    const { gZenUrlSnippets, normalizeSnippetShortcut, normalizeSnippetURL } =
+      ChromeUtils.importESModule(
+        "resource:///modules/zen/urlsnippets/ZenUrlSnippetsManager.sys.mjs"
+      );
+    this._manager = gZenUrlSnippets;
+    this._normalizeShortcut = normalizeSnippetShortcut;
+    this._normalizeURL = normalizeSnippetURL;
+    document
+      .getElementById("zenUrlSnippetsAdd")
+      .addEventListener("command", () => this._addRow());
+    this._manager.ready().then(() => this._render());
+  },
+
+  _enqueue(task) {
+    this._queue = this._queue.then(task, task);
+    return this._queue;
+  },
+
+  _render() {
+    const list = document.getElementById("zenUrlSnippetsList");
+    list.replaceChildren();
+    for (const snippet of this._manager.getAll()) {
+      list.appendChild(this._createRow(snippet));
+    }
+  },
+
+  _addRow() {
+    const list = document.getElementById("zenUrlSnippetsList");
+    const row = this._createRow({ id: "", shortcut: "", url: "" });
+    list.appendChild(row);
+    row.querySelector(".zenUrlSnippetShortcut").focus();
+  },
+
+  _createRow(snippet) {
+    const fragment = window.MozXULElement.parseXULToFragment(`
+      <hbox class="zenUrlSnippetRow">
+        <html:input class="zenUrlSnippetShortcut" type="text"/>
+        <html:input class="zenUrlSnippetUrl" type="text"/>
+        <button class="zenUrlSnippetRemove"/>
+      </hbox>
+    `);
+    const row = fragment.querySelector(".zenUrlSnippetRow");
+    const shortcutInput = row.querySelector(".zenUrlSnippetShortcut");
+    const urlInput = row.querySelector(".zenUrlSnippetUrl");
+    const removeButton = row.querySelector(".zenUrlSnippetRemove");
+    row.dataset.id = snippet.id || "";
+    shortcutInput.value = snippet.shortcut || "";
+    urlInput.value = snippet.url || "";
+    document.l10n.setAttributes(
+      shortcutInput,
+      "zen-url-snippets-shortcut-input"
+    );
+    document.l10n.setAttributes(urlInput, "zen-url-snippets-url-input");
+    document.l10n.setAttributes(removeButton, "zen-url-snippets-remove");
+    shortcutInput.addEventListener("change", () => this._commitRow(row));
+    urlInput.addEventListener("change", () => this._commitRow(row));
+    removeButton.addEventListener("command", () => this._removeRow(row));
+    return row;
+  },
+
+  _commitRow(row) {
+    return this._enqueue(() => this._commitRowNow(row));
+  },
+
+  async _commitRowNow(row) {
+    if (!row.isConnected) {
+      return;
+    }
+    const shortcutInput = row.querySelector(".zenUrlSnippetShortcut");
+    const urlInput = row.querySelector(".zenUrlSnippetUrl");
+    const shortcut = this._normalizeShortcut(shortcutInput.value);
+    const url = this._normalizeURL(urlInput.value);
+    const duplicate =
+      shortcut && this._manager.isShortcutTaken(shortcut, row.dataset.id || "");
+    shortcutInput.classList.toggle(
+      "zenUrlSnippetInvalid",
+      !shortcut || duplicate
+    );
+    urlInput.classList.toggle("zenUrlSnippetInvalid", !url);
+    if (!shortcut || !url || duplicate) {
+      return;
+    }
+    shortcutInput.value = shortcut;
+    urlInput.value = url;
+    if (!row.dataset.id) {
+      const created = await this._manager.create(shortcut, url);
+      if (row.isConnected) {
+        row.dataset.id = created.id;
+      } else {
+        await this._manager.remove(created.id);
+      }
+      return;
+    }
+    await this._manager.update({
+      id: row.dataset.id,
+      shortcut,
+      url,
+    });
+  },
+
+  _removeRow(row) {
+    return this._enqueue(async () => {
+      if (row.dataset.id) {
+        await this._manager.remove(row.dataset.id);
+      }
+      row.remove();
+    });
+  },
+};
+
 var gZenAdblockSettings = {
   init() {
     const { gZenAdblock } = ChromeUtils.importESModule(

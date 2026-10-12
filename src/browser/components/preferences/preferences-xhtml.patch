@@ -11,7 +11,7 @@ index bb84d15bec4008ae48324a950a4d5ba7bec1d010..48b917a3ccdcbe3d368e3fd139ab5091
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -121,6 +123,36 @@
+@@ -121,6 +123,41 @@
          iconsrc="chrome://browser/skin/preferences/category-general.svg"
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
@@ -40,6 +40,11 @@ index bb84d15bec4008ae48324a950a4d5ba7bec1d010..48b917a3ccdcbe3d368e3fd139ab5091
 +        iconsrc="chrome://browser/skin/zen-icons/brackets-curly.svg"
 +        data-l10n-id="pane-zen-shortcuts-title">
 +      </html:moz-page-nav-button>
++      <html:moz-page-nav-button id="category-zen-url-snippets"
++        view="paneZenUrlSnippets"
++        iconsrc="chrome://browser/skin/zen-icons/link.svg"
++        data-l10n-id="pane-zen-url-snippets-title">
++      </html:moz-page-nav-button>
 +      <html:moz-page-nav-button id="category-zen-adblock"
 +        view="paneZenAdblock"
 +        iconsrc="chrome://browser/skin/zen-icons/tracking-protection-fill.svg"
@@ -48,7 +53,7 @@ index bb84d15bec4008ae48324a950a4d5ba7bec1d010..48b917a3ccdcbe3d368e3fd139ab5091
        <html:moz-page-nav-button id="category-sync"
          hidden="true"
          view="paneSync"
-@@ -258,6 +280,12 @@
+@@ -258,6 +286,13 @@
  #include privacy.inc.xhtml
  #include sync.inc.xhtml
  #include moreFromMozilla.inc.xhtml
@@ -58,6 +63,7 @@ index bb84d15bec4008ae48324a950a4d5ba7bec1d010..48b917a3ccdcbe3d368e3fd139ab5091
 +#include zenKeyboardShortcuts.inc.xhtml
 +#include zenAdblock.inc.xhtml
 +#include zenHomepage.inc.xhtml
++#include zenUrlSnippets.inc.xhtml
          </vbox>
        </vbox>
      </vbox>

@@ -39,6 +39,11 @@ function clearDownloads() {
     .catch(console.error);
 }
 
+const SHOW_IN_FOLDER_ICON =
+  AppConstants.platform === "macosx"
+    ? "chrome://browser/skin/zen-icons/search-glass.svg"
+    : "chrome://browser/skin/zen-icons/folder.svg";
+
 const FILE_MIME = "application/x-moz-file";
 const OPENING_FEEDBACK_MS = 1500;
 
@@ -678,6 +683,21 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     `;
   }
 
+  #renderShowButton(download) {
+    return html`
+      <toolbarbutton
+        class="toolbarbutton-1"
+        data-l10n-id="library-downloads-show-button"
+        @click=${event => {
+          event.stopPropagation();
+          this.#showInFolder(download);
+        }}
+      >
+        <img class="toolbarbutton-icon" src=${SHOW_IN_FOLDER_ICON} alt="" />
+      </toolbarbutton>
+    `;
+  }
+
   #renderRetryButton(download) {
     return html`
       <toolbarbutton
@@ -745,6 +765,9 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
           ${when(!download.stopped, () => this.#renderCancelButton(download))}
           ${when(this.#canRetry(download), () =>
             this.#renderRetryButton(download)
+          )}
+          ${when(this.#hasFile(download), () =>
+            this.#renderShowButton(download)
           )}
           <toolbarbutton
             class="toolbarbutton-1"

@@ -121,7 +121,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         return;
       }
       this.#lastFolderContextMenu = folder;
-      gZenLiveFoldersUI.buildContextMenu(folder);
+      // Created at delayed startup, so it may not exist for a very early menu.
+      window.gZenLiveFoldersUI?.buildContextMenu(folder);
 
       const newSubfolderItem = document.getElementById(
         "context_zenFolderNewSubfolder"
@@ -723,6 +724,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     tabs = [emptyTab, ...filteredTabs];
 
     const folder = this._createFolderNode(options);
+    emptyTab.setAttribute(
+      "zen-workspace-id",
+      folder.getAttribute("zen-workspace-id")
+    );
 
     if (options.insertAfter) {
       options.insertAfter.after(folder);

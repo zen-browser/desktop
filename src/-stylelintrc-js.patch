@@ -1,5 +1,5 @@
 diff --git a/.stylelintrc.js b/.stylelintrc.js
-index 876f76417f800ce8889d398b6ab478cc089c4125..170b6e81dc1cec343d8678649e3248b89d115e39 100644
+index 19c7310d7471d55c52dca24ca8095f798fb44d60..d76a027778ddd799fe3898730f48d9eebf452f65 100644
 --- a/.stylelintrc.js
 +++ b/.stylelintrc.js
 @@ -67,7 +67,7 @@ module.exports = {
@@ -11,8 +11,8 @@ index 876f76417f800ce8889d398b6ab478cc089c4125..170b6e81dc1cec343d8678649e3248b8
        {
          ignore: ["blockless-at-rules"],
        },
-@@ -282,7 +282,7 @@ module.exports = {
-     "stylelint-plugin-mozilla/no-background-without-text-color": true,
+@@ -281,7 +281,7 @@ module.exports = {
+     "stylelint-plugin-mozilla/media-query-no-invalid": true,
      "stylelint-plugin-mozilla/no-base-design-tokens": true,
      "stylelint-plugin-mozilla/no-has-selector": true,
 -    "stylelint-plugin-mozilla/use-design-tokens": true,

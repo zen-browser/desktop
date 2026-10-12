@@ -162,10 +162,11 @@
     visibility: collapse;
     margin: 0 !important;
 
+    /* visibility flips after the fade via a 0s transition, so no per-frame main-thread work */
     :root:not([supress-primary-adjustment="true"]) & {
       transition:
         opacity 0.15s,
-        visibility 0.15s;
+        visibility 0s linear 0.15s;
     }
 
     #navigator-toolbox[zen-has-implicit-hover="true"] &,
@@ -704,7 +705,7 @@
   scrollbar-width: none;
   margin-block-start: calc(var(--urlbarView-results-padding) - 6px);
   margin-block-end: calc(var(--urlbarView-results-padding) - 2px);
-  padding-block: 0 !important;
+  padding-block-end: 0 !important;
 
   & .action-contextualidentity {
     display: none;
@@ -727,7 +728,7 @@
 }
 
 /* Hide the results body when there are no results, to avoid showing an empty box */
-.urlbar[noresults] .urlbarView > .urlbarView-body-outer > .urlbarView-body-inner,
+.urlbar[noresults] #urlbar-results,
 #urlbar-search-mode-indicator-close {
   display: none;
 }

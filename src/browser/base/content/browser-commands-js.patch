@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index 757c5b16612c96f327798f9e47c83144668074f0..1a10a321ee05f2ec84f33f087d8c0e43035fc18b 100644
+index a56415fcca..0e5f115265 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
 @@ -13,6 +13,10 @@ var BrowserCommands = {
@@ -37,5 +37,16 @@ index 757c5b16612c96f327798f9e47c83144668074f0..1a10a321ee05f2ec84f33f087d8c0e43
 +    }
 +
      // Keyboard shortcuts that would close a tab that is pinned select the first
-     // visible unpinned tab instead.
+     // unpinned tab instead.
      if (
+@@ -381,8 +397,8 @@ var BrowserCommands = {
+       (event.ctrlKey || event.metaKey || event.altKey) &&
+       gBrowser.selectedTab.pinned
+     ) {
+-      if (gBrowser.visibleTabs.length > gBrowser.pinnedTabCount) {
+-        gBrowser.tabContainer.selectedIndex = gBrowser.pinnedTabCount;
++      if (gBrowser.visibleTabs.length > gBrowser._numVisiblePinTabs) {
++        gBrowser.tabContainer.selectedIndex = gBrowser._numVisiblePinTabs;
+       }
+       return;
+     }

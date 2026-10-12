@@ -1,9 +1,9 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df134a59781 100644
+index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75093546d3 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -87,6 +87,8 @@
- #include "mozilla/StaticPrefs_mozilla.h"
+@@ -86,6 +86,8 @@
+ #include "mozilla/StaticPrefs_gfx.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
 +#include "mozilla/StaticPrefs_zen.h"
@@ -11,7 +11,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
-@@ -1333,6 +1335,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1332,6 +1334,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
  }
  @end
  
@@ -122,7 +122,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -3908,7 +4014,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+@@ -3858,7 +3964,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -133,7 +133,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
  }
  
  // NSDraggingDestination
-@@ -3924,6 +4032,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+@@ -3874,6 +3982,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -143,7 +143,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -4978,6 +5089,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -4919,6 +5030,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
@@ -154,110 +154,3 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
    RemoveAllChildren();
    if (mWindow && mWindowMadeHere) {
      CancelAllTransitions();
-@@ -7436,8 +7551,11 @@ void nsCocoaWindow::SetColorScheme(const Maybe<ColorScheme>& aScheme) {
-   if (!mWindow) {
-     return;
-   }
--  NSAppearance* appearance =
--      aScheme ? NSAppearanceForColorScheme(*aScheme) : nil;
-+  // Popups stay in the light appearance so their glass is milky, not the
-+  // dark menu material.
-+  NSAppearance* appearance =
-+      mWindowType == WindowType::Popup
-+          ? [NSAppearance appearanceNamed:NSAppearanceNameAqua]
-+          : (aScheme ? NSAppearanceForColorScheme(*aScheme) : nil);
-   if (mWindow.appearance != appearance) {
-     mWindow.appearance = appearance;
-   }
-@@ -8243,47 +8358,71 @@ static NSVisualEffectView* CreateVibrancyView(NSRect aFrame,
- }
- 
- // Returns a retained view. The caller owns it.
-+// Light frosted glass. VibrantLight keeps the material milky even in dark mode.
-+static NSView* CreateFrostedGlassView(NSRect aFrame, CGFloat aCornerRadius) {
-+  if (@available(macOS 26.0, *)) {
-+    auto* glass = [[NSGlassEffectView alloc] initWithFrame:aFrame];
-+    glass.cornerRadius = aCornerRadius;
-+    // Clear glass is only a faint tint. Regular glass is the milky blur,
-+    // and Aqua keeps it light while the browser is in dark mode.
-+    glass.style = NSGlassEffectViewStyleRegular;
-+    glass.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
-+    glass.tintColor = [NSColor whiteColor];
-+    return glass;
-+  }
-+  auto* view = CreateVibrancyView(
-+      aFrame, NSVisualEffectMaterialUnderWindowBackground, aCornerRadius);
-+  view.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantLight];
-+  return view;
-+}
-+
- - (NSView*)newEffectViewWrapperForStyle:(WindowShadow)aStyle {
-   const NSRect frame = self.contentView.frame;
-   switch (aStyle) {
-     case WindowShadow::Menu:
--      if (@available(macOS 26.0, *)) {
--        // Menus use glass rather than vibrancy from macOS 26 on, and the glass
--        // view rounds its own corners.
--        auto* glass = [[NSGlassEffectView alloc] initWithFrame:frame];
--        glass.cornerRadius = GetMenuCornerRadius();
--        return glass;
--      }
--      return CreateVibrancyView(frame, NSVisualEffectMaterialMenu,
--                                GetMenuCornerRadius());
-+    case WindowShadow::Panel:
-+      return CreateFrostedGlassView(frame, GetMenuCornerRadius());
- 
-     case WindowShadow::Tooltip:
-       return CreateVibrancyView(frame, NSVisualEffectMaterialToolTip,
-                                 GetTooltipCornerRadius());
- 
-     case WindowShadow::None:
--    case WindowShadow::Panel:
-       return [[NSView alloc] initWithFrame:frame];
-   }
- }
- 
- // Add an effect view wrapper if needed so that the OS draws the appropriate
- // vibrancy effect and window border.
- - (void)setEffectViewWrapperForStyle:(WindowShadow)aStyle {
-+  if (aStyle == WindowShadow::Menu || aStyle == WindowShadow::Panel) {
-+    self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
-+  }
-   NSView* wrapper = [self newEffectViewWrapperForStyle:aStyle];
-   wrapper.wantsLayer = YES;
-   // Swap out our content view by the new view. Setting .contentView releases
-   // the old view.
-   NSView* childView = [self.mainChildView retain];
-   [childView removeFromSuperview];
--  [wrapper addSubview:childView];
-+  childView.frame = wrapper.bounds;
-+  childView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-+  if (@available(macOS 26.0, *)) {
-+    // Glass only blurs behind its contentView. A plain subview is painted
-+    // over the effect, which leaves the popup looking flat and translucent.
-+    if (NSGlassEffectView* glass = [wrapper isKindOfClass:[NSGlassEffectView class]]
-+                                       ? (NSGlassEffectView*)wrapper
-+                                       : nil) {
-+      glass.contentView = childView;
-+    } else {
-+      [wrapper addSubview:childView];
-+    }
-+    if (ChildView* child = [childView isKindOfClass:[ChildView class]]
-+                                ? (ChildView*)childView
-+                                : nil) {
-+      // Opaque layers hide the glass behind the popup contents.
-+      NSView* pixels = child.pixelHostingView;
-+      pixels.layer.opaque = NO;
-+      pixels.layer.backgroundColor = nil;
-+      for (CALayer* layer in pixels.layer.sublayers) {
-+        layer.opaque = NO;
-+        layer.backgroundColor = nil;
-+      }
-+    }
-+  } else {
-+    [wrapper addSubview:childView];
-+  }
-   [childView release];
-   super.contentView = wrapper;
-   [wrapper release];
- }

@@ -11,12 +11,17 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   ZenHomepage: "resource:///modules/zen/homepage/ZenHomepage.sys.mjs",
-  nsZenThemePicker: "resource:///modules/zen/ZenGradientGenerator.mjs",
 });
 
+// The theme picker closes over the browser window. Loading it from the shared
+// system module global throws "window is not defined" and aborts workspace
+// restore, which skips the homepage, last-tab handling, and sidebar colors.
 ChromeUtils.defineESModuleGetters(
   lazy,
-  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  {
+    ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs",
+    nsZenThemePicker: "resource:///modules/zen/ZenGradientGenerator.mjs",
+  },
   { global: "current" }
 );
 
@@ -2782,11 +2787,17 @@ class nsZenWorkspaces {
         icon = "chrome://browser/skin/zen-icons/private-window-small.svg";
       }
     }
+    let theme = null;
+    try {
+      theme = lazy.nsZenThemePicker.getTheme();
+    } catch (error) {
+      console.error("gZenWorkspaces: Error reading the default theme", error);
+    }
     let workspace = {
       uuid: gZenUIManager.generateUuidv4(),
       icon,
       name,
-      theme: lazy.nsZenThemePicker.getTheme(),
+      theme,
       containerTabId,
     };
     return workspace;

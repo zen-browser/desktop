@@ -1,0 +1,12 @@
+diff --git a/python/mozbuild/mozbuild/backend/fastermake.py b/python/mozbuild/mozbuild/backend/fastermake.py
+index 7a73e9d4f8..4c94d6ad09 100644
+--- a/python/mozbuild/mozbuild/backend/fastermake.py
++++ b/python/mozbuild/mozbuild/backend/fastermake.py
+@@ -178,6 +178,7 @@ class FasterMakeBackend(MakeBackend, PartialBackend):
+         for var in (
+             "PYTHON3",
+             "ACDEFINES",
++            "MOZ_APP_NAME",
+             "MOZ_BUILD_APP",
+             "MOZ_WIDGET_TOOLKIT",
+         ):

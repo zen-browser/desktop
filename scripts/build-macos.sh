@@ -195,18 +195,20 @@ if [[ -f "$ROOT/mozconfig" ]]; then
   fi
 fi
 
-# The packaged bundle lives in dist/zen. Other Peppermint.app copies are the
-# unpackaged build output, and their parent folder is not a disk-image stage.
+# The packaged bundle lives in dist/peppermint (older builds used dist/zen).
+# Other Peppermint.app copies are the unpackaged build output, and their
+# parent folder is not a disk-image stage.
 find_app() {
   local root candidate
   for root in "${obj_roots[@]}"; do
     [[ -d "$root" ]] || continue
     while IFS= read -r candidate; do
-      if [[ -d "$candidate" && "$(basename "$(dirname "$candidate")")" == "zen" ]]; then
+      parent="$(basename "$(dirname "$candidate")")"
+      if [[ -d "$candidate" && ( "$parent" == "peppermint" || "$parent" == "zen" ) ]]; then
         printf '%s\n' "$candidate"
         return 0
       fi
-    done < <(find "$root" -maxdepth 6 -type d -name 'Peppermint.app' -path '*/dist/zen/Peppermint.app' 2>/dev/null)
+    done < <(find "$root" -maxdepth 6 -type d -name 'Peppermint.app' \( -path '*/dist/peppermint/Peppermint.app' -o -path '*/dist/zen/Peppermint.app' \) 2>/dev/null)
   done
   return 1
 }

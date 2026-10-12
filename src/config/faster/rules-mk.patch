@@ -1,0 +1,23 @@
+diff --git a/config/faster/rules.mk b/config/faster/rules.mk
+index 0429edc9f4..c19ef94d9a 100644
+--- a/config/faster/rules.mk
++++ b/config/faster/rules.mk
+@@ -62,6 +62,18 @@ endif
+ # fallback
+ $(TOPOBJDIR)/faster/%: ;
+ 
++# The application binary is linked from $(MOZ_BUILD_APP)/app and written to
++# dist/bin/$(MOZ_APP_NAME). The generic fallback below would run
++# `make -C dist/bin $(MOZ_APP_NAME)`, and dist/bin has no makefile, so a
++# renamed binary (peppermint, while dist/bin/zen still exists) fails with
++# "No rule to make target". Build it where the link rule actually lives.
++# This must stay above the generic pattern: GNU Make <3.82 uses definition
++# order, not stem length.
++ifdef MOZ_APP_NAME
++$(TOPOBJDIR)/dist/bin/$(MOZ_APP_NAME): FORCE
++	$(MAKE) -C $(TOPOBJDIR)/$(MOZ_BUILD_APP)/app ../../dist/bin/$(MOZ_APP_NAME)
++endif
++
+ # Generic rule to fall back to the recursive make backend.
+ # This needs to stay after other $(TOPOBJDIR)/* rules because GNU Make
+ # <3.82 apply pattern rules in definition order, not stem length like

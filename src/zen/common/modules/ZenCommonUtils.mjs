@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-window.gZenOperatingSystemCommonUtils = {
+const gZenOperatingSystemCommonUtils = {
   kZenOSToSmallName: {
     WINNT: "windows",
     Darwin: "macos",
@@ -14,6 +14,11 @@ window.gZenOperatingSystemCommonUtils = {
     return this.kZenOSToSmallName[os];
   },
 };
+
+// This module is also imported from system scopes that have no window.
+if (typeof window !== "undefined") {
+  window.gZenOperatingSystemCommonUtils = gZenOperatingSystemCommonUtils;
+}
 
 export class nsZenMultiWindowFeature {
   constructor() {}

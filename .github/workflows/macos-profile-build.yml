@@ -89,7 +89,7 @@ jobs:
           set -ex
           export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
           export JARLOG_FILE=en-US.log
-          BINARY=$(find "$HOME/instrumented" -type f -path "*/Contents/MacOS/zen" | head -1)
+          BINARY=$(find "$HOME/instrumented" -type f \( -path "*/Contents/MacOS/peppermint" -o -path "*/Contents/MacOS/zen" \) | head -1)
           test -n "$BINARY"
           cd engine
           ./mach python ../scripts/download_pgo_extended_corpus.py

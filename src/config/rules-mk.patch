@@ -1,0 +1,18 @@
+diff --git a/config/rules.mk b/config/rules.mk
+index 082f1c7229..434f94624e 100644
+--- a/config/rules.mk
++++ b/config/rules.mk
+@@ -415,6 +415,13 @@ ifdef ENABLE_STRIP
+ endif
+ 	$(call BUILDSTATUS,END_Program $(@F))
+ 
++# `make $(MOZ_APP_NAME)` (peppermint) has no recipe of its own: the link rule
++# is $(DEPTH)/dist/bin/$(MOZ_APP_NAME). Accept the short name so a rename of
++# the binary does not leave the app directory with "No rule to make target".
++ifneq (,$(PROGRAM))
++$(notdir $(PROGRAM)): $(PROGRAM)
++endif
++
+ $(HOST_PROGRAM): $(HOST_PROGOBJS) $(HOST_LIBS) $(GLOBAL_DEPS) $(call mkdir_deps,$(DEPTH)/dist/host/bin)
+ 	$(REPORT_BUILD)
+ 	$(call BUILDSTATUS,START_Program $(@F))

@@ -109,14 +109,17 @@ find_browser() {
       roots+=("$obj")
     fi
   fi
-  for root in "${roots[@]}"; do
+    for root in "${roots[@]}"; do
     [[ -d "$root" ]] || continue
-    while IFS= read -r candidate; do
-      if [[ -n "$candidate" && -x "$candidate" ]]; then
-        printf '%s\n' "$candidate"
-        return 0
-      fi
-    done < <(find "$root" -maxdepth 6 -type f -name zen -path '*/MacOS/zen' 2>/dev/null)
+    local name
+    for name in peppermint zen; do
+      while IFS= read -r candidate; do
+        if [[ -n "$candidate" && -x "$candidate" ]]; then
+          printf '%s\n' "$candidate"
+          return 0
+        fi
+      done < <(find "$root" -maxdepth 6 -type f -name "$name" -path "*/MacOS/$name" 2>/dev/null)
+    done
   done
   return 1
 }

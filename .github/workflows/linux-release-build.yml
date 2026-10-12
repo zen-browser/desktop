@@ -185,7 +185,7 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv dist/zen-*.tar.xz "zen.linux-${{ matrix.arch }}.tar.xz"
+          mv dist/peppermint-*.tar.xz "zen.linux-${{ matrix.arch }}.tar.xz"
           mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
 
       - name: Upload build artifact (binary)

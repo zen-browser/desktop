@@ -1,8 +1,8 @@
 {
   "name": "Peppermint",
   "vendor": "MintFlow Technologies",
-  "appId": "zen",
-  "binaryName": "zen",
+  "appId": "peppermint",
+  "binaryName": "peppermint",
   "version": {
     "product": "firefox",
     "version": "157.0.1",

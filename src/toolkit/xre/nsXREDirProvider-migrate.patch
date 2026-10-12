@@ -1,0 +1,248 @@
+diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
+--- a/toolkit/xre/nsXREDirProvider.cpp	2026-10-12 12:58:50
++++ b/toolkit/xre/nsXREDirProvider.cpp	2026-10-12 12:58:50
+@@ -1232,42 +1232,7 @@
+   return rv;
+ }
+ #endif
+-
+-nsresult nsXREDirProvider::GetUserDataDirectory(nsIFile** aFile, bool aLocal) {
+-  nsCOMPtr<nsIFile> localDir;
+-  nsCOMPtr<nsIFile> customDir = mozilla::GetFileFromEnv("MOZ_APP_DATA");
+-  nsCOMPtr<nsIFile> customLocalDir =
+-      mozilla::GetFileFromEnv("MOZ_LOCAL_APP_DATA");
+-
+-  if (aLocal && gDataDirProfileLocal) {
+-    return gDataDirProfileLocal->Clone(aFile);
+-  }
+-  if (!aLocal && gDataDirProfile) {
+-    return gDataDirProfile->Clone(aFile);
+-  }
+-
+-  nsresult rv;
+-  if (aLocal && customLocalDir) {
+-    localDir = customLocalDir;
+-  } else if (!aLocal && customDir) {
+-    localDir = customDir;
+-  } else {
+-    rv = GetUserDataDirectoryHome(getter_AddRefs(localDir), aLocal);
+-    NS_ENSURE_SUCCESS(rv, rv);
+ 
+-    rv = AppendProfilePath(localDir, aLocal);
+-    NS_ENSURE_SUCCESS(rv, rv);
+-  }
+-
+-  rv = EnsureDirectoryExists(localDir);
+-  NS_ENSURE_SUCCESS(rv, rv);
+-
+-  nsXREDirProvider::SetUserDataProfileDirectory(localDir, aLocal);
+-
+-  localDir.forget(aFile);
+-  return NS_OK;
+-}
+-
+ nsresult nsXREDirProvider::EnsureDirectoryExists(nsIFile* aDirectory) {
+   nsresult rv = aDirectory->Create(nsIFile::DIRECTORY_TYPE, 0700);
+ 
+@@ -1542,7 +1507,201 @@
+   return NS_OK;
+ }
+ #endif  // defined(MOZ_WIDGET_GTK)
++
++static bool ReadNativeFile(nsIFile* aFile, nsCString& aOut) {
++  FILE* fp = nullptr;
++  if (NS_FAILED(aFile->OpenANSIFileDesc("r", &fp)) || !fp) {
++    return false;
++  }
++  char buf[4096];
++  size_t n = 0;
++  while ((n = fread(buf, 1, sizeof(buf), fp)) > 0) {
++    aOut.Append(buf, n);
++    if (aOut.Length() > 256 * 1024) {
++      break;
++    }
++  }
++  fclose(fp);
++  return true;
++}
++
++static bool TextLooksLikeZenInstall(const nsACString& aText) {
++  return aText.Find("Zen.app") != kNotFound ||
++         aText.Find("Zen Browser.app") != kNotFound ||
++         aText.Find("zen-browser.app") != kNotFound;
++}
+ 
++static bool TextLooksLikePeppermintInstall(const nsACString& aText) {
++  return aText.Find("Peppermint.app") != kNotFound ||
++         aText.Find("Peppermint.exe") != kNotFound;
++}
++
++// Move a profile root created by an older Peppermint build (Profile=zen)
++// into the Peppermint directory. A root that contains a Zen Browser install
++// is left untouched.
++static void MaybeMigratePeppermintProfile(nsIFile* aNewDir) {
++  static bool sChecked = false;
++  if (sChecked || !aNewDir) {
++    return;
++  }
++  sChecked = true;
++
++  nsCOMPtr<nsIFile> existingIni;
++  if (NS_FAILED(aNewDir->Clone(getter_AddRefs(existingIni)))) {
++    return;
++  }
++  existingIni->AppendNative("profiles.ini"_ns);
++  bool hasProfiles = false;
++  if (NS_SUCCEEDED(existingIni->Exists(&hasProfiles)) && hasProfiles) {
++    return;
++  }
++
++  nsCOMPtr<nsIFile> parent;
++  if (NS_FAILED(aNewDir->GetParent(getter_AddRefs(parent))) || !parent) {
++    return;
++  }
++  nsCOMPtr<nsIFile> oldDir;
++  if (NS_FAILED(parent->Clone(getter_AddRefs(oldDir)))) {
++    return;
++  }
++  nsAutoCString newLeaf;
++  aNewDir->GetNativeLeafName(newLeaf);
++#if defined(XP_UNIX) && !defined(XP_MACOSX)
++  if (newLeaf.Length() && newLeaf[0] == '.') {
++    oldDir->AppendNative(".zen"_ns);
++  } else {
++    oldDir->AppendNative("zen"_ns);
++  }
++#else
++  oldDir->AppendNative("zen"_ns);
++#endif
++
++  bool oldExists = false;
++  if (NS_FAILED(oldDir->Exists(&oldExists)) || !oldExists) {
++    return;
++  }
++
++  nsCOMPtr<nsIFile> oldIni;
++  if (NS_FAILED(oldDir->Clone(getter_AddRefs(oldIni)))) {
++    return;
++  }
++  oldIni->AppendNative("profiles.ini"_ns);
++  nsCString profiles;
++  if (!ReadNativeFile(oldIni, profiles)) {
++    return;
++  }
++
++  bool sawPeppermint = false;
++  bool sawZen = false;
++  int32_t cursor = 0;
++  while (true) {
++    int32_t pathAt = profiles.Find("Path=", cursor);
++    if (pathAt == kNotFound) {
++      break;
++    }
++    pathAt += 5;
++    int32_t lineEnd = profiles.FindChar('\n', pathAt);
++    if (lineEnd == kNotFound) {
++      lineEnd = profiles.Length();
++    }
++    nsAutoCString rel(Substring(profiles, pathAt, lineEnd - pathAt));
++    rel.Trim("\r\n\t ");
++    cursor = lineEnd;
++    if (rel.IsEmpty()) {
++      continue;
++    }
++
++    nsCOMPtr<nsIFile> profileDir;
++    if (rel.First() == '/' || rel.FindChar(':') != kNotFound) {
++      if (NS_FAILED(NS_NewNativeLocalFile(rel, getter_AddRefs(profileDir)))) {
++        continue;
++      }
++    } else if (NS_FAILED(oldDir->Clone(getter_AddRefs(profileDir))) ||
++               NS_FAILED(profileDir->AppendRelativeNativePath(rel))) {
++      continue;
++    }
++
++    nsCOMPtr<nsIFile> compat;
++    if (NS_FAILED(profileDir->Clone(getter_AddRefs(compat)))) {
++      continue;
++    }
++    compat->AppendNative("compatibility.ini"_ns);
++    nsCString compatText;
++    if (!ReadNativeFile(compat, compatText)) {
++      continue;
++    }
++    const bool peppermint = TextLooksLikePeppermintInstall(compatText);
++    if (TextLooksLikeZenInstall(compatText) && !peppermint) {
++      sawZen = true;
++    }
++    if (peppermint) {
++      sawPeppermint = true;
++    }
++  }
++
++  if (!sawPeppermint || sawZen) {
++    return;
++  }
++
++  bool newExists = false;
++  if (NS_FAILED(aNewDir->Exists(&newExists))) {
++    return;
++  }
++  if (!newExists) {
++    oldDir->MoveToNative(parent, newLeaf);
++    return;
++  }
++
++  nsCOMPtr<nsIDirectoryEnumerator> children;
++  if (NS_FAILED(oldDir->GetDirectoryEntries(getter_AddRefs(children)))) {
++    return;
++  }
++  nsCOMPtr<nsIFile> child;
++  while (NS_SUCCEEDED(children->GetNextFile(getter_AddRefs(child))) && child) {
++    child->MoveToNative(aNewDir, ""_ns);
++    child = nullptr;
++  }
++}
++
++nsresult nsXREDirProvider::GetUserDataDirectory(nsIFile** aFile, bool aLocal) {
++  nsCOMPtr<nsIFile> localDir;
++  nsCOMPtr<nsIFile> customDir = mozilla::GetFileFromEnv("MOZ_APP_DATA");
++  nsCOMPtr<nsIFile> customLocalDir =
++      mozilla::GetFileFromEnv("MOZ_LOCAL_APP_DATA");
++
++  if (aLocal && gDataDirProfileLocal) {
++    return gDataDirProfileLocal->Clone(aFile);
++  }
++  if (!aLocal && gDataDirProfile) {
++    return gDataDirProfile->Clone(aFile);
++  }
++
++  nsresult rv;
++  if (aLocal && customLocalDir) {
++    localDir = customLocalDir;
++  } else if (!aLocal && customDir) {
++    localDir = customDir;
++  } else {
++    rv = GetUserDataDirectoryHome(getter_AddRefs(localDir), aLocal);
++    NS_ENSURE_SUCCESS(rv, rv);
++
++    rv = AppendProfilePath(localDir, aLocal);
++    NS_ENSURE_SUCCESS(rv, rv);
++  }
++
++  if (!aLocal) {
++    MaybeMigratePeppermintProfile(localDir);
++  }
++
++  rv = EnsureDirectoryExists(localDir);
++  NS_ENSURE_SUCCESS(rv, rv);
++
++  nsXREDirProvider::SetUserDataProfileDirectory(localDir, aLocal);
++
++  localDir.forget(aFile);
++  return NS_OK;
++}
++
+ nsresult nsXREDirProvider::AppendProfilePath(nsIFile* aFile, bool aLocal) {
+   NS_ASSERTION(aFile, "Null pointer!");
+ 

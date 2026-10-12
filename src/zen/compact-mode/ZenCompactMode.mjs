@@ -846,6 +846,8 @@ window.gZenCompactModeManager = {
 
     for (let i = 0; i < this.hoverableElements.length; i++) {
       let target = this.hoverableElements[i].element;
+      let pendingEnter = null;
+      let isHovering = false;
 
       // Add the attribute on startup if the mouse is already over the element
       if (target.matches(":hover")) {
@@ -853,8 +855,17 @@ window.gZenCompactModeManager = {
       }
 
       const onEnter = event => {
-        setTimeout(() => {
-          if (event.type === "mouseenter" && !event.target.matches(":hover")) {
+        isHovering = true;
+        // already expanded, don't redo the hover check or restart the transition
+        if (target.hasAttribute("zen-has-hover")) {
+          return;
+        }
+        if (pendingEnter) {
+          clearTimeout(pendingEnter);
+        }
+        pendingEnter = setTimeout(() => {
+          pendingEnter = null;
+          if (event.type === "mouseenter" && !isHovering) {
             return;
           }
           if (event.target.closest("panel")) {
@@ -862,23 +873,22 @@ window.gZenCompactModeManager = {
           }
           // Dont register the hover if the urlbar is floating and we are hovering over it
           this.clearFlashTimeout("has-hover" + target.id);
-          window.requestAnimationFrame(() => {
-            if (
-              document.documentElement.getAttribute(
-                "supress-primary-adjustment"
-              ) === "true" ||
-              this._hasHoveredUrlbar ||
-              this._ignoreNextHover ||
-              target.hasAttribute("zen-has-hover")
-            ) {
-              return;
-            }
-            this._setElementExpandAttribute(target, true);
-          });
+          if (
+            document.documentElement.getAttribute(
+              "supress-primary-adjustment"
+            ) === "true" ||
+            this._hasHoveredUrlbar ||
+            this._ignoreNextHover ||
+            target.hasAttribute("zen-has-hover")
+          ) {
+            return;
+          }
+          this._setElementExpandAttribute(target, true);
         }, this.HOVER_HACK_DELAY);
       };
 
       const onLeave = event => {
+        isHovering = false;
         if (AppConstants.platform == "macosx") {
           const buttonRect = window.windowUtils.getBoundsWithoutFlushing(
             gZenVerticalTabsManager.actualWindowButtons
@@ -900,6 +910,11 @@ window.gZenCompactModeManager = {
         // This is because the mouse is left to be handled natively so firefox thinks the mouse left the window for a split second.
         setTimeout(() => {
           // Let's double check if the mouse is still hovering over the element, see the bug above.
+          if (pendingEnter) {
+            clearTimeout(pendingEnter);
+            pendingEnter = null;
+            return;
+          }
           if (event.target.matches(":hover")) {
             return;
           }
@@ -921,6 +936,13 @@ window.gZenCompactModeManager = {
           }
 
           if (this._isTabBeingDragged) {
+            return;
+          }
+
+          if (
+            !target.hasAttribute("zen-has-implicit-hover") &&
+            !target.hasAttribute("zen-has-hover")
+          ) {
             return;
           }
 

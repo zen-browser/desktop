@@ -104,6 +104,13 @@ export class nsZenWorkspace extends MozXULElement {
 
   constructor() {
     super();
+
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "_showNewTabButtonTop",
+      "zen.view.show-newtab-button-top",
+      false
+    );
   }
 
   connectedCallback() {
@@ -200,9 +207,7 @@ export class nsZenWorkspace extends MozXULElement {
         ...this.pinnedTabsContainer.children,
         ...this.tabsContainer.children,
       ];
-      if (
-        Services.prefs.getBoolPref("zen.view.show-newtab-button-top", false)
-      ) {
+      if (this._showNewTabButtonTop) {
         // Move the perifery to the first non-pinned tab
         const periphery = this.tabsContainer.querySelector(
           "#tabbrowser-arrowscrollbox-periphery"

@@ -34,6 +34,13 @@ export function normalizeUrlSnippetsData(data) {
   }
   if (!Array.isArray(data.snippets)) {
     data.snippets = [createDefaultSnippet()];
+  } else {
+    data.snippets = data.snippets.filter(
+      snippet =>
+        snippet &&
+        typeof snippet === "object" &&
+        (!snippet.url || normalizeSnippetURL(snippet.url))
+    );
   }
   return data;
 }
@@ -56,6 +63,8 @@ export function normalizeSnippetShortcut(value) {
  * @returns {string|null}
  *   An absolute URL. Values without a scheme are treated as https.
  */
+const ALLOWED_SNIPPET_PROTOCOLS = new Set(["http:", "https:", "mint:"]);
+
 export function normalizeSnippetURL(value) {
   const raw = String(value ?? "").trim();
   if (!raw || /\s/.test(raw)) {
@@ -63,10 +72,29 @@ export function normalizeSnippetURL(value) {
   }
   const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(raw) ? raw : `https://${raw}`;
   try {
-    return new URL(withScheme).href;
+    const url = new URL(withScheme);
+    if (!ALLOWED_SNIPPET_PROTOCOLS.has(url.protocol)) {
+      return null;
+    }
+    return url.href;
   } catch (ex) {
     return null;
   }
+}
+
+/**
+ * @param {string} url
+ * @returns {string}
+ *   The stored URL when it is empty or allowed. Rejects every other scheme.
+ */
+function assertAllowedSnippetURL(url) {
+  if (!url) {
+    return "";
+  }
+  if (!normalizeSnippetURL(url)) {
+    throw new Error("Unsupported snippet URL");
+  }
+  return url;
 }
 
 class nsZenUrlSnippetsManager {
@@ -162,7 +190,7 @@ class nsZenUrlSnippetsManager {
     const snippet = {
       id: crypto.randomUUID(),
       shortcut,
-      url,
+      url: assertAllowedSnippetURL(url),
     };
     this.#file.data.snippets.push(snippet);
     await this.#write();
@@ -179,7 +207,9 @@ class nsZenUrlSnippetsManager {
     if (idx === -1) {
       return;
     }
-    this.#file.data.snippets[idx] = structuredClone(snippet);
+    const next = structuredClone(snippet);
+    next.url = assertAllowedSnippetURL(next.url);
+    this.#file.data.snippets[idx] = next;
     await this.#write();
   }
 
@@ -231,8 +261,12 @@ class nsZenUrlSnippetsManager {
       path: this.#storePath,
       compression: "lz4",
       dataPostProcessor: data => {
-        needsPersist = !data || typeof data !== "object" || !Array.isArray(data.snippets);
-        return normalizeUrlSnippetsData(data);
+        const hadList =
+          !!data && typeof data === "object" && Array.isArray(data.snippets);
+        const before = hadList ? data.snippets.length : -1;
+        const normalized = normalizeUrlSnippetsData(data);
+        needsPersist = !hadList || before !== normalized.snippets.length;
+        return normalized;
       },
     });
     await this.#file.load();

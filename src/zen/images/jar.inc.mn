@@ -8,9 +8,6 @@
         content/browser/zen-images/grain-bg.png                                 (../../zen/images/grain-bg.png)
         content/browser/zen-images/note-indicator.svg                           (../../zen/images/note-indicator.svg)
 
-        content/browser/zen-images/branding/peppermint-full.png                 (../../zen/images/branding/peppermint-full.png)
-        content/browser/zen-images/branding/peppermint-icon.png                 (../../zen/images/branding/peppermint-icon.png)
-
         content/browser/zen-images/downloads/download.svg                       (../../zen/images/downloads/download.svg)
         content/browser/zen-images/downloads/archive.svg                        (../../zen/images/downloads/archive.svg)
 

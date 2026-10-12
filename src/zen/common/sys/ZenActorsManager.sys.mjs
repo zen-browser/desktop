@@ -59,18 +59,18 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.view.drag-window-from-content",
   },
+  // Created on demand for mint: documents. Match patterns cannot target
+  // mint://note/ because mint is not a host-locator scheme, so a parent
+  // progress listener calls getActor() instead of listening on every page.
   ZenNotepad: {
     parent: {
       esModuleURI: "resource:///actors/ZenNotepadParent.sys.mjs",
     },
     child: {
       esModuleURI: "resource:///actors/ZenNotepadChild.sys.mjs",
-      events: {
-        DOMContentLoaded: {},
-      },
     },
     safeForUntrustedWebProcess: true,
-    allFrames: true,
+    allFrames: false,
   },
 };
 
@@ -97,12 +97,12 @@ if (!Services.appinfo.inSafeMode) {
     child: {
       esModuleURI: "resource:///actors/ZenAdblockChild.sys.mjs",
       events: {
-        DOMWindowCreated: {},
         DOMDocElementInserted: {},
         DOMContentLoaded: {},
         pageshow: {},
       },
     },
+    matches: ["http://*/*", "https://*/*"],
     safeForUntrustedWebProcess: true,
     allFrames: true,
     remoteTypes: ["web", "file"],
@@ -119,6 +119,7 @@ if (!Services.appinfo.inSafeMode) {
         pageshow: {},
       },
     },
+    matches: ["http://*/*", "https://*/*"],
     safeForUntrustedWebProcess: true,
     allFrames: true,
     remoteTypes: ["web"],

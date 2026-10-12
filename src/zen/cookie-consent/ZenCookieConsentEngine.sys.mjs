@@ -139,6 +139,42 @@ const GENERIC_SELECTOR = [
 ].join(", ");
 
 const KNOWN_ROOT_SELECTOR = VENDORS.map(vendor => vendor.root).join(", ");
+
+/**
+ * Hosts that serve a consent dialog in a subframe. Matched as the hostname
+ * or a subdomain so a vendor's regional CDN still qualifies.
+ */
+const CONSENT_FRAME_HOSTS = [
+  "cdn.cookielaw.org",
+  "cookielaw.org",
+  "privacy-mgmt.com",
+  "sourcepoint.mgr.consensu.org",
+  "quantcast.mgr.consensu.org",
+  "cmp.quantcast.com",
+  "sdk.privacy-center.org",
+  "privacy-center.org",
+  "fundingchoicesmessages.google.com",
+  "cdn.consentmanager.net",
+  "consentmanager.net",
+  "consentcdn.cookiebot.com",
+  "cookiebot.com",
+  "app.usercentrics.eu",
+  "usercentrics.eu",
+];
+
+/**
+ * @param {string} hostname
+ * @returns {boolean}
+ */
+export function isConsentFrameHost(hostname) {
+  const host = String(hostname || "").toLowerCase().replace(/\.$/, "");
+  if (!host) {
+    return false;
+  }
+  return CONSENT_FRAME_HOSTS.some(
+    entry => host === entry || host.endsWith(`.${entry}`)
+  );
+}
 const TOP_SELECTOR = `${KNOWN_ROOT_SELECTOR}, ${DIALOG_SELECTOR}, ${GENERIC_SELECTOR}`;
 
 export const CONSENT_MATCH_SELECTOR = TOP_SELECTOR;

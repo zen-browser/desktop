@@ -3,12 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export class ZenNotepadChild extends JSWindowActorChild {
-  handleEvent(event) {
-    if (event.type !== "DOMContentLoaded") {
-      return;
+  receiveMessage(message) {
+    if (message.name === "ZenNotepad:Attach") {
+      this.#attachWhenReady();
     }
+  }
+
+  #attachWhenReady() {
     const doc = this.document;
     if (!doc?.documentURI?.startsWith("mint:")) {
+      return;
+    }
+    if (doc.readyState === "loading") {
+      doc.addEventListener("DOMContentLoaded", () => this.#attachWhenReady(), {
+        once: true,
+      });
       return;
     }
     const root = doc.documentElement;

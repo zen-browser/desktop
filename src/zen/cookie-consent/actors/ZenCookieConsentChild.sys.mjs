@@ -5,6 +5,7 @@
 import {
   hideConsent,
   inspectConsent,
+  isConsentFrameHost,
   markClicked,
   markManaged,
   nodeMayContainConsent,
@@ -75,6 +76,10 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
     this.#scans = 0;
     this.#sawCandidate = false;
     this.#queued = false;
+    if (!this.#frameShouldRun(doc)) {
+      this.#finish();
+      return;
+    }
     this.#armHardStop(win);
     const run = () => this.#scan();
     if (win.requestIdleCallback) {
@@ -121,6 +126,22 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
   #isTopFrame() {
     const context = this.browsingContext;
     return !!context && context.top === context;
+  }
+
+  /**
+   * Banners live in the top document. Subframes only run for hosts that
+   * embed a known consent manager, so ordinary ad and widget frames do not
+   * start the scanner.
+   */
+  #frameShouldRun(doc) {
+    if (this.#isTopFrame()) {
+      return true;
+    }
+    try {
+      return isConsentFrameHost(new URL(doc.documentURI).hostname);
+    } catch {
+      return false;
+    }
   }
 
   #watch(doc) {

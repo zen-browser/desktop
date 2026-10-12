@@ -41,7 +41,6 @@ export class ZenAdblockChild extends JSWindowActorChild {
 
   handleEvent(event) {
     if (
-      event.type === "DOMWindowCreated" ||
       event.type === "DOMDocElementInserted" ||
       event.type === "DOMContentLoaded" ||
       event.type === "pageshow"

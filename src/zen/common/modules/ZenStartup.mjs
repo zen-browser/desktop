@@ -31,6 +31,13 @@ class ZenStartup {
     this.#zenInitBrowserLayout();
     try {
       ChromeUtils.importESModule(
+        "resource:///actors/ZenNotepadParent.sys.mjs"
+      ).watchMintDocuments(window);
+    } catch (error) {
+      console.error("Notepad watcher failed to start", error);
+    }
+    try {
+      ChromeUtils.importESModule(
         "resource:///modules/zen/adblock/ZenAdblockManager.sys.mjs"
       ).gZenAdblock.init();
     } catch (error) {

@@ -77,13 +77,42 @@ add_task(async function test_match_order_and_heuristic() {
   );
 });
 
+add_task(async function test_create_rejects_disallowed_scheme() {
+  await gZenUrlSnippets.resetStore();
+  await Assert.rejects(
+    gZenUrlSnippets.create("js", "javascript:alert(1)"),
+    /Unsupported snippet URL/,
+    "javascript: snippets are rejected"
+  );
+  ok(
+    !gZenUrlSnippets.getAll().some(snippet => snippet.shortcut === "js"),
+    "A rejected snippet is not stored"
+  );
+});
+
 add_task(function test_normalize_helpers() {
   Assert.equal(normalizeSnippetShortcut(" yt "), "yt");
   Assert.equal(normalizeSnippetShortcut("y t"), null);
   Assert.equal(normalizeSnippetShortcut(""), null);
   Assert.equal(normalizeSnippetURL("youtube.com"), "https://youtube.com/");
   Assert.equal(normalizeSnippetURL("https://youtube.com"), "https://youtube.com/");
+  Assert.equal(normalizeSnippetURL("mint://note"), "mint://note");
   Assert.equal(normalizeSnippetURL("not a url"), null);
+  Assert.equal(normalizeSnippetURL("javascript:alert(1)"), null);
+  Assert.equal(normalizeSnippetURL("data:text/html,hi"), null);
+  Assert.equal(normalizeSnippetURL("file:///etc/passwd"), null);
+
+  const stored = normalizeUrlSnippetsData({
+    snippets: [
+      { id: "ok", shortcut: "ok", url: "https://example.com" },
+      { id: "bad", shortcut: "bad", url: "javascript:alert(1)" },
+    ],
+  });
+  Assert.deepEqual(
+    stored.snippets.map(snippet => snippet.id),
+    ["ok"],
+    "Stored snippets with a disallowed scheme are dropped"
+  );
 
   const seeded = normalizeUrlSnippetsData(undefined);
   Assert.equal(seeded.snippets[0].shortcut, "yt");

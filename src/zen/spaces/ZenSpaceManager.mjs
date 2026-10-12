@@ -347,6 +347,7 @@ class nsZenWorkspaces {
     if (markupTabs.length) {
       gBrowser.tabContainer._invalidateCachedTabs();
     }
+    this.invalidateStoredTabs();
     for (const workspace of workspaces) {
       this.workspaceElement(workspace.uuid)?.checkPinsExistence();
     }
@@ -896,9 +897,16 @@ class nsZenWorkspaces {
     this.#fixTabPositions();
     this.onWindowResize();
 
-    const tabUpdateListener = this.updateTabsContainers.bind(this);
+    const tabUpdateListener = event => {
+      this.invalidateStoredTabs();
+      this.updateTabsContainers(event);
+    };
+    const invalidateStoredTabs = () => this.invalidateStoredTabs();
     window.addEventListener("TabOpen", tabUpdateListener);
     window.addEventListener("TabClose", tabUpdateListener);
+    window.addEventListener("TabMove", invalidateStoredTabs);
+    window.addEventListener("TabGrouped", invalidateStoredTabs);
+    window.addEventListener("TabUngrouped", invalidateStoredTabs);
     window.addEventListener("TabAddedToEssentials", tabUpdateListener);
     window.addEventListener("TabRemovedFromEssentials", tabUpdateListener);
     window.addEventListener("TabPinned", tabUpdateListener);
@@ -1805,6 +1813,7 @@ class nsZenWorkspaces {
       }
     }
     gBrowser.tabContainer._invalidateCachedTabs();
+    this.invalidateStoredTabs();
     return true;
   }
 
@@ -3327,6 +3336,24 @@ class nsZenWorkspaces {
   }
 
   // Session restore functions
+
+  /**
+   * Drops the cached tab list now and again after the current turn, so a
+   * read during a move or close cannot keep the pre-mutation tree.
+   */
+  invalidateStoredTabs() {
+    this._allStoredTabs = null;
+    if (this.#storedTabsInvalidate) {
+      return;
+    }
+    this.#storedTabsInvalidate = window.requestAnimationFrame(() => {
+      this.#storedTabsInvalidate = 0;
+      this._allStoredTabs = null;
+    });
+  }
+
+  #storedTabsInvalidate = 0;
+
   get allStoredTabs() {
     if (this._allStoredTabs) {
       return this._allStoredTabs;
@@ -3601,6 +3628,7 @@ class nsZenWorkspaces {
         pinnedContainer.insertBefore(tab, pinnedContainer.lastChild);
       }
     }
+    this.invalidateStoredTabs();
   }
 
   updateOverflowingTabs() {

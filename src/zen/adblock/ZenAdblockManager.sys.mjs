@@ -64,6 +64,16 @@ function siteKeyFromUrl(url) {
   }
 }
 
+function frameMatchesSite(context, siteKey) {
+  let spec = "";
+  try {
+    spec = context.currentURI?.spec || "";
+  } catch {
+    return false;
+  }
+  return siteKeyFromUrl(spec) === siteKey;
+}
+
 function isHttpUrl(url) {
   return typeof url === "string" && (url.startsWith("http:") || url.startsWith("https:"));
 }
@@ -105,7 +115,7 @@ class ZenAdblockManager {
       if (!this.#uboActive && Services.prefs.getBoolPref(PREF_ENABLED, true)) {
         this.ensureEngine(this.getGlobalLevel());
       }
-      Services.obs.notifyObservers(null, TOPIC);
+      this.#notifyUpdated();
     });
   }
 
@@ -133,7 +143,7 @@ class ZenAdblockManager {
       this.#invalidateEngines();
     }
     if (topic === "nsPref:changed" && data === PREF_ENABLED) {
-      Services.obs.notifyObservers(null, TOPIC);
+      this.#notifyUpdated();
       if (Services.prefs.getBoolPref(PREF_ENABLED, true) && !this.#uboActive) {
         this.ensureEngine(this.getGlobalLevel());
       }
@@ -179,7 +189,7 @@ class ZenAdblockManager {
     IOUtils.writeJSON(path, this.#overrides).catch(error => {
       console.error("ZenAdblock failed to store overrides", error);
     });
-    Services.obs.notifyObservers(null, TOPIC);
+    this.#notifyUpdated(key);
     if (
       level === "light" ||
       level === "medium" ||
@@ -248,7 +258,7 @@ class ZenAdblockManager {
       .then(engine => {
         if (this.#generation[level] === generation) {
           this.#engines[level] = engine;
-          Services.obs.notifyObservers(null, TOPIC);
+          this.#notifyUpdated();
         }
         return this.#engines[level];
       })
@@ -328,12 +338,12 @@ class ZenAdblockManager {
       this.#uboActive = false;
       this.#uboKnown = true;
       this.ensureEngine(this.getGlobalLevel());
-      Services.obs.notifyObservers(null, TOPIC);
+      this.#notifyUpdated();
       return;
     }
     this.#refreshUblock().then(() => {
       this.#uboKnown = true;
-      Services.obs.notifyObservers(null, TOPIC);
+      this.#notifyUpdated();
     });
   }
 
@@ -343,6 +353,59 @@ class ZenAdblockManager {
       this.#uboActive = !!addon?.isActive;
     } catch {
       this.#uboActive = false;
+    }
+  }
+
+  /**
+   * Tells already-created content actors to recompute cosmetics. A site key
+   * limits the walk to that registrable domain; list and pref changes pass
+   * none and refresh every open actor.
+   *
+   * @param {string|null} [siteKey]
+   */
+  #notifyUpdated(siteKey = null) {
+    Services.obs.notifyObservers(null, TOPIC, siteKey || "");
+    this.#refreshContentActors(siteKey);
+  }
+
+  #refreshContentActors(siteKey) {
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      if (win.closed || !win.gBrowser) {
+        continue;
+      }
+      let browsers;
+      try {
+        browsers = win.gBrowser.browsers;
+      } catch {
+        continue;
+      }
+      for (const browser of browsers) {
+        let contexts;
+        try {
+          contexts = browser.browsingContext?.getAllBrowsingContextsInSubtree();
+        } catch {
+          continue;
+        }
+        if (!contexts) {
+          continue;
+        }
+        for (const context of contexts) {
+          if (siteKey && !frameMatchesSite(context, siteKey)) {
+            continue;
+          }
+          let actor;
+          try {
+            actor = context.currentWindowGlobal?.getExistingActor("ZenAdblock");
+          } catch {
+            continue;
+          }
+          try {
+            actor?.sendAsyncMessage("ZenAdblock:Refresh");
+          } catch {
+            // The frame can close between the lookup and the send.
+          }
+        }
+      }
     }
   }
 
@@ -392,7 +455,7 @@ class ZenAdblockManager {
             this.#fetchAndStore(level, hash, binPath, metaPath).then(fresh => {
               if (fresh && this.#generation[level] === generation) {
                 this.#engines[level] = fresh;
-                Services.obs.notifyObservers(null, TOPIC);
+                this.#notifyUpdated();
               }
             }).catch(error => {
               console.error("ZenAdblock list refresh failed", error);

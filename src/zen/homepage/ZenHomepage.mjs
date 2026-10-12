@@ -144,9 +144,13 @@ class ZenHomepageController {
       return;
     }
     try {
-      browser.loadURI(Services.io.newURI(target), {
-        triggeringPrincipal:
-          Services.scriptSecurityManager.getSystemPrincipal(),
+      const uri = Services.io.newURI(target);
+      const originAttributes = browser.contentPrincipal?.originAttributes || {};
+      browser.loadURI(uri, {
+        triggeringPrincipal: Services.scriptSecurityManager.createContentPrincipal(
+          uri,
+          originAttributes
+        ),
       });
       this.#appliedSpec = target;
     } catch (error) {

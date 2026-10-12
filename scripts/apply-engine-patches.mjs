@@ -23,7 +23,19 @@ const PATCH_CANDIDATES = [
   process.env.PATCH_EXE,
   "C:/mozilla-build/msys2/usr/bin/patch.exe",
   "C:/mozilla-build/bin/patch.exe",
+  "/opt/homebrew/bin/gpatch",
+  "/usr/local/bin/gpatch",
 ].filter(Boolean);
+
+function findOnPath(name) {
+  const locator = process.platform === "win32" ? "where" : "which";
+  const found = spawnSync(locator, [name], { encoding: "utf8" });
+  if (found.status !== 0) {
+    return null;
+  }
+  const line = found.stdout.split(/\r?\n/).find(Boolean);
+  return line && fs.existsSync(line.trim()) ? line.trim() : null;
+}
 
 function findPatchExe() {
   for (const candidate of PATCH_CANDIDATES) {
@@ -31,14 +43,9 @@ function findPatchExe() {
       return candidate;
     }
   }
-  const which = spawnSync("where", ["patch"], { encoding: "utf8", shell: true });
-  if (which.status === 0) {
-    const line = which.stdout.split(/\r?\n/).find(Boolean);
-    if (line && fs.existsSync(line.trim())) {
-      return line.trim();
-    }
-  }
-  return null;
+  // GNU patch is named gpatch on Homebrew. Windows `where` is not a
+  // command in /bin/sh, so Unix looks up `which` instead.
+  return findOnPath("gpatch") || findOnPath("patch");
 }
 
 function listPatchFiles(dir) {

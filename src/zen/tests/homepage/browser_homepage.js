@@ -160,6 +160,10 @@ add_task(async function test_custom_url_loads_in_empty_tab() {
     browser.currentURI.spec.startsWith("https://example.com"),
     `Empty tab loaded the custom URL, got ${browser.currentURI.spec}`
   );
+  const systemPrincipal = await SpecialPowers.spawn(browser, [], () => {
+    return content.document.nodePrincipal.isSystemPrincipal;
+  });
+  ok(!systemPrincipal, "Custom homepage loads without the system principal");
 
   ok(
     document.getElementById("zen-homepage").hidden,

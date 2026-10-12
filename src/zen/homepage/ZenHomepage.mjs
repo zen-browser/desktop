@@ -237,7 +237,6 @@ class ZenHomepageController {
 
   #build() {
     const root = htmlElement("div", { id: "zen-homepage", hidden: "true" });
-    root.appendChild(htmlElement("div", { class: "zen-homepage-glow" }));
     root.appendChild(htmlElement("div", { class: "zen-homepage-grain" }));
 
     const content = htmlElement("div", { class: "zen-homepage-content" });
@@ -275,14 +274,15 @@ class ZenHomepageController {
       );
       grid.appendChild(cardEl);
     }
-    content.appendChild(grid);
-
     const clockCard = htmlElement("div", {
       class: "zen-homepage-clock-card",
       "data-card": "clock",
     });
     clockCard.appendChild(htmlElement("div", { class: "zen-homepage-clock" }));
-    content.appendChild(clockCard);
+    const glass = htmlElement("div", { class: "zen-homepage-glass" });
+    glass.appendChild(grid);
+    glass.appendChild(clockCard);
+    content.appendChild(glass);
     root.appendChild(content);
 
     document.getElementById("zen-tabbox-wrapper").appendChild(root);

@@ -124,7 +124,8 @@ window.gZenVerticalTabsManager = {
     };
 
     try {
-      const itemSize = aItem.getBoundingClientRect().height;
+      const itemSize =
+        window.windowUtils.getBoundsWithoutFlushing(aItem).height;
       const transform = `-${itemSize}px`;
       const marginBottom = isLastItem() ? ["0px", "0px"] : [transform, "0px"];
       // Hold the collapsed start state now so the item doesn't take its space

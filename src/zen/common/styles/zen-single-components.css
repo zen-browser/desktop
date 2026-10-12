@@ -739,6 +739,10 @@
     /* Still works on firefox */
     -webkit-text-fill-color: transparent;
     animation: zen-text-gradient 5s linear infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
     font-size: initial;
   }
 
@@ -819,6 +823,7 @@
   contain: content;
 
   &[long-load="true"] {
+    width: 10rem;
     opacity: 1;
     animation: zen-progress-bar-settle .3s ease-out forwards;
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
@@ -845,6 +850,13 @@
 
   :root[inDOMFullscreen="true"] & {
     display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &::before {
+      animation: none;
+    }
   }
 }
 

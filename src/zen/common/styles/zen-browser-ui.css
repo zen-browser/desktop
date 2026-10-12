@@ -51,6 +51,10 @@ body,
     inset: 0;
     z-index: 0;
     pointer-events: none;
+  }
+
+  &[animating-background]::before,
+  &[animating-background]::after {
     will-change: background-color;
   }
 

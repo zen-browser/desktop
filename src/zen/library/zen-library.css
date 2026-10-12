@@ -74,7 +74,8 @@ zen-library[open] {
   -moz-window-dragging: drag;
 
   &:not([transitioning]) {
-    transition: width 0.3s cubic-bezier(.36,.06,0,.94);
+    /* Width is applied immediately. Animating it restyles the whole panel. */
+    transition: transform 0.3s cubic-bezier(.36,.06,0,.94);
   }
 }
 
@@ -355,6 +356,10 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
     mask-size: 150px auto;
     mask-repeat: round repeat;
     animation: zen-library-media-wait 1.8s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 
   &[behind] {
@@ -785,6 +790,10 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
 .zen-library-row[indeterminate] .zen-library-row-progress-arc {
   transition: none;
   animation: zen-library-ring-spin 1s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 @keyframes zen-library-ring-spin {

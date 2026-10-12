@@ -230,12 +230,32 @@ class ZenMediaCard {
   }
 
   updateLabelOverflows() {
-    for (const label of [this.titleEl, this.artistEl]) {
-      label.removeAttribute("overflow"); // So we can properly recalculate the overflow
-      if (label.scrollWidth > label.parentElement.clientWidth) {
-        label.setAttribute("overflow", "");
-      }
+    const labels = [this.titleEl, this.artistEl];
+    for (const label of labels) {
+      label.removeAttribute("overflow");
     }
+    const measure = () =>
+      labels.map(label => ({
+        label,
+        overflow:
+          !!label.parentElement &&
+          label.scrollWidth > label.parentElement.clientWidth,
+      }));
+    const apply = results => {
+      if (!results) {
+        return;
+      }
+      for (const { label, overflow } of results) {
+        if (overflow && label.isConnected) {
+          label.setAttribute("overflow", "");
+        }
+      }
+    };
+    if (window.promiseDocumentFlushed) {
+      window.promiseDocumentFlushed(measure).then(apply, () => {});
+      return;
+    }
+    apply(measure());
   }
 
   updateSupportedKeys() {
@@ -446,10 +466,9 @@ class ZenMediaCard {
       // Animate the card out instead of popping it away. It leaves the
       // flex flow immediately (so the remaining cards re-slot right away)
       // but stays anchored where it currently is while it sinks and fades.
-      const barBottom =
-        this.manager.mediaControlBar.getBoundingClientRect().bottom;
-      element.style.bottom =
-        barBottom - element.getBoundingClientRect().bottom + "px";
+      const bounds = window.windowUtils.getBoundsWithoutFlushing;
+      const barBottom = bounds(this.manager.mediaControlBar).bottom;
+      element.style.bottom = barBottom - bounds(element).bottom + "px";
       element.setAttribute("zen-removing", "true");
       // Resolves once the exit transitions finish or get cancelled, and
       // immediately if they never start (e.g. reduced motion).
@@ -707,17 +726,17 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
       card.element.style.zIndex = 100 - index;
     });
 
-    // Flush styles so the re-slotting lands instantly...
-    this.mediaControlBar.getBoundingClientRect();
-
-    // ...then animate only the peek level: demoted cards slide up from
-    // behind the front card instead of dropping in from above.
-    visibleCards.forEach((card, index) => {
-      card.element.removeAttribute("zen-reindexing");
-      card.element.style.setProperty(
-        "--zen-media-card-peek-level",
-        Math.min(index, MAX_PEEK_LEVELS)
-      );
+    window.promiseDocumentFlushed(() => true).then(() => {
+      if (!this.mediaControlBar?.isConnected) {
+        return;
+      }
+      visibleCards.forEach((card, index) => {
+        card.element.removeAttribute("zen-reindexing");
+        card.element.style.setProperty(
+          "--zen-media-card-peek-level",
+          Math.min(index, MAX_PEEK_LEVELS)
+        );
+      });
     });
 
     const stackedCount = Math.min(visibleCards.length, MAX_STACKED_CARDS);
@@ -778,7 +797,8 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
 
       this.mediaControlBar.style.setProperty(
         "--zen-media-collapsed-height",
-        front.element.getBoundingClientRect().height + "px"
+        window.windowUtils.getBoundsWithoutFlushing(front.element).height +
+          "px"
       );
       this.mediaControlBar.style.opacity = 0;
       gZenUIManager.updateTabsToolbar();

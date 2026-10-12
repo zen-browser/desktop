@@ -163,7 +163,7 @@ class nsZenWorkspaces {
       document.documentElement.setAttribute("zen-private-window", "true");
     }
 
-    window.addEventListener("resize", this.onWindowResize.bind(this));
+    window.addEventListener("resize", event => this.#onWindowResize(event));
     this.addPopupListeners();
 
     if (this.privateWindowOrDisabled) {
@@ -437,15 +437,28 @@ class nsZenWorkspaces {
     workspaceWrapper.checkPinsExistence();
   }
 
+  #resizeFrame = 0;
+
+  #onWindowResize(event) {
+    if (event?.target && event.target !== window) {
+      return;
+    }
+    if (this.#resizeFrame) {
+      return;
+    }
+    this.#resizeFrame = window.requestAnimationFrame(() => {
+      this.#resizeFrame = 0;
+      this.onWindowResize({ target: window });
+    });
+  }
+
   #organizeTabsToWorkspaceSections(workspace, spaceElement, tabs) {
-    let section = spaceElement.tabsContainer;
-    let pinnedSection = spaceElement.pinnedTabsContainer;
-    const workspaceTabs = Array.from(tabs).filter(
-      tab =>
-        tab.getAttribute("zen-workspace-id") === workspace.uuid &&
-        !tab.hasAttribute("zen-essential")
-    );
-    let folders = new Set();
+    const section = spaceElement.tabsContainer;
+    const pinnedSection = spaceElement.pinnedTabsContainer;
+    const removed = new Set();
+    const pinned = [];
+    const unpinned = [];
+    const folders = new Set();
     const getFolderRoot = tab => {
       let root = tab?.group;
       while (root?.group) {
@@ -453,31 +466,47 @@ class nsZenWorkspaces {
       }
       return root || tab;
     };
-    for (let i = workspaceTabs.length - 1; i >= 0; i--) {
-      let tab = workspaceTabs[i];
-      if (tab.hasAttribute("zen-essential")) {
+    for (const tab of tabs) {
+      if (
+        tab.getAttribute("zen-workspace-id") !== workspace.uuid ||
+        tab.hasAttribute("zen-essential")
+      ) {
         continue;
-      } // Ignore essentials as they need to be in their own section
-      // remove tab from list
-      tabs.splice(tabs.indexOf(tab), 1);
-      tab = tab.group ?? tab;
-
-      if (gBrowser.isTabGroup(tab)) {
-        let rootGroup = getFolderRoot(tab);
-
+      }
+      removed.add(tab);
+      let node = tab.group ?? tab;
+      if (gBrowser.isTabGroup(node)) {
+        const rootGroup = getFolderRoot(node);
         if (folders.has(rootGroup)) {
           continue;
         }
-
         folders.add(rootGroup);
-        tab = rootGroup;
+        node = rootGroup;
       }
-
-      if (tab.pinned) {
-        pinnedSection.insertBefore(tab, pinnedSection.firstChild);
+      if (node.pinned) {
+        pinned.push(node);
       } else {
-        section.insertBefore(tab, section.firstChild);
+        unpinned.push(node);
       }
+    }
+    if (removed.size) {
+      const kept = tabs.filter(tab => !removed.has(tab));
+      tabs.length = 0;
+      tabs.push(...kept);
+    }
+    if (pinned.length) {
+      const fragment = document.createDocumentFragment();
+      for (const node of pinned) {
+        fragment.appendChild(node);
+      }
+      pinnedSection.prepend(fragment);
+    }
+    if (unpinned.length) {
+      const fragment = document.createDocumentFragment();
+      for (const node of unpinned) {
+        fragment.appendChild(node);
+      }
+      section.prepend(fragment);
     }
   }
 
@@ -2890,13 +2919,20 @@ class nsZenWorkspaces {
 
   #allPinnedContainers() {
     const containers = [];
-    for (const workspace of this.getWorkspaces()) {
-      const container = this.workspaceElement(
-        workspace.uuid
-      )?.pinnedTabsContainer;
-      if (container) {
-        containers.push(container);
-      }
+    const active = this.workspaceElement(
+      this.activeWorkspace
+    )?.pinnedTabsContainer;
+    if (active) {
+      containers.push(active);
+    }
+    const containerId = this.containerSpecificEssentials
+      ? this.getCurrentSpaceContainerId()
+      : 0;
+    const essentials = document.querySelector(
+      `.zen-essentials-container[container="${containerId}"]`
+    );
+    if (essentials) {
+      containers.push(essentials);
     }
     return containers.length ? containers : [this.pinnedTabsContainer];
   }

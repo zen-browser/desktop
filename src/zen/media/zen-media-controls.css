@@ -87,6 +87,10 @@
 
     & .zen-media-info-vbox label[overflow] {
       animation: zen-back-and-forth-text 10s infinite ease-in-out;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
     }
 
     & .zen-media-card:not([zen-removing], [zen-hiding]) {
@@ -313,6 +317,7 @@
 }
 
 .zen-media-info-vbox {
+  container-type: inline-size;
   .zen-media-card:not([media-position-hidden]) & {
     transition-delay: 0.01s !important;
   }

@@ -203,6 +203,10 @@ body {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.mint-note-editor:focus-visible {
+  outline: 2px solid var(--zen-primary-color, #2dd4bf);
+  outline-offset: 2px;
+}
 
 .mint-line {
   position: relative;

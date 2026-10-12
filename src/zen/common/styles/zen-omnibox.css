@@ -344,9 +344,7 @@
   &[zen-floating-urlbar="true"] .urlbar-background {
     @media not (prefers-reduced-transparency: reduce) {
       :root:not([zen-no-acrylic="true"]) & {
-        box-shadow:
-          0 20px 60px rgba(0, 0, 0, 0.28),
-          0 0 0 100vmax rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28) !important;
       }
     }
   }
@@ -361,14 +359,35 @@
     border-radius: 24px !important;
   }
 
+  &[zen-floating-urlbar="true"]::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgb(0 0 0 / 40%);
+    pointer-events: none;
+    z-index: -1;
+
+    @media (prefers-reduced-transparency: reduce) {
+      display: none;
+    }
+
+    :root[zen-no-acrylic="true"] & {
+      display: none;
+    }
+  }
+
   &[breakout-extend][animate-searchmode="true"]::before {
     position: absolute;
     content: "";
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    inset: -20px;
     border-radius: inherit;
     pointer-events: none;
+    box-shadow: 0 0 40px
+      color-mix(
+        in srgb,
+        var(--zen-primary-color),
+        var(--toolbox-textcolor) 20%
+      );
     animation: zen-urlbar-searchmode ease-out 1s forwards;
   }
 
@@ -394,7 +413,9 @@
   #notification-popup-box:not([open]):not(:has(> [showing="true"])) {
     margin-inline-start: calc(-10px - 2 * var(--urlbar-icon-padding));
     opacity: 0;
-    transition: all 0.2s;
+    transition:
+      opacity 0.2s,
+      margin-inline-start 0.2s;
   }
 
   #notification-popup-box {

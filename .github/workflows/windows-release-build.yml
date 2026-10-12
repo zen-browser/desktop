@@ -273,7 +273,8 @@ jobs:
           export ZEN_RELEASE=1
           npm run package
           ls ./dist
-          mv ./dist/zen-$(npm run --silent surfer -- get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip
+          VERSION="$(npm run --silent surfer -- get version | tr -d '\r\n')"
+          mv ./dist/zen-${VERSION}.en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip
           ls .
 
       - name: Move package for PGO upload

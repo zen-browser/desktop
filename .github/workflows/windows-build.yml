@@ -114,7 +114,7 @@ jobs:
 
       - name: Load Surfer CI setup
         run: |
-          VERSION="$(npm run --silent surfer -- get version | xargs)"
+          VERSION="$(npm run --silent surfer -- get version | tr -d '\r\n')"
           npm run surfer -- ci --brand "$BRAND" --display-version "$VERSION"
 
       - name: Download Firefox and dependencies
@@ -227,7 +227,7 @@ jobs:
           if test "${{ matrix.arch }}" = "aarch64"; then
             ARCH_SUFFIX="-aarch64"
           fi
-          VERSION="$(npm run --silent surfer -- get version | xargs)"
+          VERSION="$(npm run --silent surfer -- get version | tr -d '\r\n')"
           ARCH_LABEL="${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}"
           INSTALLER_SUFFIX="${{ matrix.arch == 'aarch64' && '-arm64' || '' }}"
           mv "./dist/zen-${VERSION}.en-US.win64${ARCH_SUFFIX}.zip" \

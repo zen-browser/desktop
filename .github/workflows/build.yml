@@ -225,9 +225,10 @@ jobs:
       - name: Check version
         run: |
           echo "$(pwd)"
-          echo $(npm run --silent surfer -- get version | xargs)
-          echo "version=$(npm run --silent surfer -- get version | xargs)" >> $GITHUB_OUTPUT
-          if [[ $(npm run --silent surfer -- get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
+          VERSION="$(npm run --silent surfer -- get version | tr -d '\r\n')"
+          echo "$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [[ $VERSION == ${{ needs.build-data.outputs.version }} ]]; then
             echo ">>> Version matches"
           else
             echo ">>> Version mismatch"

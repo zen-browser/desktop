@@ -39,3 +39,5 @@ support-files = [
 ["browser_unload_all_other_spaces.js"]
 
 ["browser_workspace_bookmarks.js"]
+
+["browser_zen_workspace_cmdline.js"]

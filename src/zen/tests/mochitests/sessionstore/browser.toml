@@ -106,6 +106,8 @@ https_first_disabled = true
 
 ["browser_cleaner.js"]
 
+["browser_clear_container_closed_windows.js"]
+
 ["browser_closedId.js"]
 disabled="Disabled by import_external_tests.py"
 
@@ -482,6 +484,8 @@ disabled="Disabled by import_external_tests.py"
 
 ["browser_windowStateContainer.js"]
 disabled="Disabled by import_external_tests.py"
+
+["browser_window_features_mismatch_telemetry.js"]
 
 ["browser_window_position_precision.js"]
 skip-if = [

@@ -188,12 +188,14 @@ new file mode 100644
 diff --git a/browser/components/sessionstore/test/unit/xpcshell.toml b/browser/components/sessionstore/test/unit/xpcshell.toml
 --- a/browser/components/sessionstore/test/unit/xpcshell.toml
 +++ b/browser/components/sessionstore/test/unit/xpcshell.toml
-@@ -39,5 +39,10 @@
+@@ -39,7 +39,12 @@
  skip-if = [
    "condprof", # Bug 1769154
  ]
  
  ["test_startup_session_async.js"]
+ 
+ ["test_tab_group_state.js"]
 +
 +["test_write_json_length_hint.js"]
 +support-files = [

@@ -736,6 +736,24 @@ class nsZenWorkspaces {
     }
   }
 
+  resolveWorkspaceFromCLIString(value) {
+    if (!value) {
+      return null;
+    }
+    try {
+      const workspaces = this.getWorkspaces();
+      return (
+        workspaces.find(
+          workspace =>
+            workspace.uuid === value ||
+            workspace.name?.toLowerCase() === value.toLowerCase()
+        ) || null
+      );
+    } catch {
+      return null;
+    }
+  }
+
   getWorkspaces(lieToMe = false) {
     if (lieToMe) {
       const { ZenSessionStore } = ChromeUtils.importESModule(
@@ -805,6 +823,21 @@ class nsZenWorkspaces {
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     if (aWinData.selected) {
       this._sessionSelected = aWinData.selected;
+    }
+    const cmdLineWorkspace = this.privateWindowOrDisabled
+      ? ""
+      : Services.prefs.getStringPref(
+          "zen.workspaces.cmdline-initial-workspace",
+          ""
+        );
+    if (cmdLineWorkspace) {
+      // Set by the `--space` command line flag on a cold start
+      Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
+      const initialWorkspace =
+        this.resolveWorkspaceFromCLIString(cmdLineWorkspace);
+      if (initialWorkspace) {
+        this.activeWorkspace = initialWorkspace.uuid;
+      }
     }
     let promise = this.#initializeWorkspaces();
     for (const workspace of spacesFromStore) {
@@ -1159,6 +1192,12 @@ class nsZenWorkspaces {
       return null;
     }
 
+    // If the tab being closed is not selected, we don't need to select
+    // a new empty tab (as the active selection is already on a different tab).
+    if (!tab.selected) {
+      return null;
+    }
+
     let workspaceID = tab.getAttribute("zen-workspace-id");
     if (!workspaceID) {
       return null;
@@ -1274,6 +1313,9 @@ class nsZenWorkspaces {
     } else {
       openInContainerMenuItem.setAttribute("hidden", "true");
     }
+    // Spaces are managed from the library, so the entry needs it enabled.
+    document.getElementById("context_zenManageWorkspaces").hidden =
+      !Services.prefs.getBoolPref("zen.library.enabled");
     // Call parent node as on windows, the text can be double clicked
     let target;
     try {
@@ -1808,6 +1850,14 @@ class nsZenWorkspaces {
   async changeWorkspaceWithID(workspaceID, ...args) {
     const workspace = this.getWorkspaceFromId(workspaceID);
     return await this.changeWorkspace(workspace, ...args);
+  }
+
+  async changeWorkspaceFromCommandLine(workspaceMatch) {
+    await this.promiseInitialized;
+    const workspace = this.resolveWorkspaceFromCLIString(workspaceMatch);
+    if (workspace && workspace.uuid !== this.activeWorkspace) {
+      await this.changeWorkspaceWithID(workspace.uuid);
+    }
   }
 
   async changeWorkspace(workspace, ...args) {

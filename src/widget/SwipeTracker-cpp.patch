@@ -1,5 +1,5 @@
 diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
-index 83b80a808261ce28e5c571dc802993556477f0c8..2796f97c89f370cd895177b0142847a118df73b8 100644
+index 0899503d3c873e770fedd2e279fa0c36d2d11e87..4a8be20c1e1c22e885fd2a3fd0a3134ee94526eb 100644
 --- a/widget/SwipeTracker.cpp
 +++ b/widget/SwipeTracker.cpp
 @@ -66,7 +66,14 @@ double SwipeTracker::SwipeSuccessTargetValue() const {
@@ -36,7 +36,14 @@ index 83b80a808261ce28e5c571dc802993556477f0c8..2796f97c89f370cd895177b0142847a1
  }
  
  nsEventStatus SwipeTracker::ProcessEvent(
-@@ -140,9 +147,11 @@ nsEventStatus SwipeTracker::ProcessEvent(
+@@ -137,16 +144,17 @@ nsEventStatus SwipeTracker::ProcessEvent(
+   const bool computedSwipeSuccess = ComputeSwipeSuccess();
+   if (computedSwipeSuccess != mLastComputedSwipeSuccess) {
+     mLastComputedSwipeSuccess = computedSwipeSuccess;
+-    widget->PerformHapticFeedback(HapticFeedbackType::ThresholdCrossing);
+   }
+   double eventAmount = mGestureAmount;
+   // If ComputeSwipeSuccess returned false because the users fingers were
    // moving slightly away from the target direction then we do not want to
    // display the UI as if we were at the success threshold as that would
    // give a false indication that navigation would happen.
@@ -51,7 +58,7 @@ index 83b80a808261ce28e5c571dc802993556477f0c8..2796f97c89f370cd895177b0142847a1
      if (mGestureAmount < 0.f) {
        eventAmount = -eventAmount;
      }
-@@ -262,6 +271,8 @@ void SwipeTracker::SendSwipeEvent(EventMessage aMsg, uint32_t aDirection,
+@@ -266,6 +274,8 @@ void SwipeTracker::SendSwipeEvent(EventMessage aMsg, uint32_t aDirection,
    geckoEvent.mDelta = aDelta;
    geckoEvent.mAllowedDirections = mAllowedDirections;
    widget->DispatchWindowEvent(geckoEvent);

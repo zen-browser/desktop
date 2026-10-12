@@ -15,6 +15,7 @@ let lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
   PlacesQuery: "resource://gre/modules/PlacesQuery.sys.mjs",
+  PlacesUIUtils: "moz-src:///browser/components/places/PlacesUIUtils.sys.mjs",
   PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
   SessionStore:
     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
@@ -139,6 +140,9 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
   #limit = PAGE_SIZE;
   #fetchGeneration = 0;
   #exhausted = false;
+  #menu = null;
+  #menuVisit = null;
+  #menuRow = null;
 
   constructor() {
     super();
@@ -156,6 +160,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     this.#placesQuery = new lazy.PlacesQuery();
     this.#placesQuery.observeHistory(() => this.#fetch());
     Services.obs.addObserver(this.#closedObserver, CLOSED_OBJECTS_TOPIC);
+    this.#menu = this.#buildMenu();
     this.#fetch();
   }
 
@@ -164,6 +169,96 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     Services.obs.removeObserver(this.#closedObserver, CLOSED_OBJECTS_TOPIC);
     this.#placesQuery?.close();
     this.#placesQuery = null;
+    this.#menu?.hidePopup();
+    this.#menu?.remove();
+    this.#menu = null;
+    this.#menuVisit = null;
+    this.#menuRow = null;
+  }
+
+  #buildMenu() {
+    const menu = window.MozXULElement.parseXULToFragment(`
+      <menupopup class="zen-library-history-menu">
+        <menuitem data-action="open" data-l10n-id="library-history-menu-open"/>
+        <menuseparator/>
+        <menuitem data-action="forget" data-l10n-id="library-history-menu-forget"/>
+        <menuitem data-action="forget-site" data-l10n-id="places-forget-domain-data"/>
+      </menupopup>
+    `).firstElementChild;
+    menu.addEventListener("command", event => {
+      const visit = this.#menuVisit;
+      if (!visit) {
+        return;
+      }
+      switch (event.target.dataset.action) {
+        case "open":
+          this.#openVisit(visit, null);
+          break;
+        case "forget":
+          this.#forgetVisit(visit);
+          break;
+        case "forget-site":
+          this.#forgetSite(visit).catch(console.error);
+          break;
+      }
+    });
+    menu.addEventListener("popuphidden", () => {
+      this.#menuRow?.removeAttribute("menu-open");
+      this.#menuRow = null;
+      this.#menuVisit = null;
+    });
+    document.getElementById("mainPopupSet").appendChild(menu);
+    return menu;
+  }
+
+  #openMenu(visit, row, event) {
+    const forgetSite = this.#menu.querySelector('[data-action="forget-site"]');
+    forgetSite.hidden = this.#showingClosed;
+    forgetSite.disabled = !this.#hostOf(visit);
+    this.#menuRow?.removeAttribute("menu-open");
+    this.#menuRow = row;
+    this.#menuVisit = visit;
+    row.setAttribute("menu-open", "true");
+    this.#menu.openPopupAtScreen(event.screenX, event.screenY, true, event);
+  }
+
+  /**
+   * @param {object} visit - A row of the list
+   * @returns {string?} The host its page came from, if it came from one
+   */
+  #hostOf(visit) {
+    try {
+      return Services.io.newURI(visit.url).host || null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Offers to take everything a site left behind, the way the old library
+   * window and the Firefox View history do (see gh-15879).
+   *
+   * @param {object} visit - The row the menu was opened on
+   */
+  async #forgetSite(visit) {
+    const host = this.#hostOf(visit);
+    if (!host) {
+      return;
+    }
+    let baseDomain;
+    try {
+      baseDomain = Services.eTLD.getBaseDomainFromHost(host);
+    } catch {
+      // A host without a base domain, such as an IP address, stands for
+      // itself.
+    }
+    const params = { host, hostOrBaseDomain: baseDomain ?? host };
+    const dialog = "chrome://browser/content/places/clearDataForSite.xhtml";
+    if (window.gDialogBox) {
+      await window.gDialogBox.open(dialog, params);
+    } else {
+      await window.openDialog(dialog, null, "modal,centerscreen", params);
+    }
   }
 
   #closedObserver = {
@@ -286,6 +381,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
       tabs.push({
         url: entry.url,
         title,
+        image: tab.image,
         date: new Date(tab.closedAt),
         lastAccessed: tab.state.lastAccessed ?? tab.closedAt,
         guid: `closed-${tab.closedId}`,
@@ -569,10 +665,18 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
           }
         }}
         @dragstart=${event => this.#onDragStart(event, visit)}
+        @contextmenu=${event => {
+          event.preventDefault();
+          this.#openMenu(visit, event.currentTarget, event);
+        }}
       >
         <img
           class="zen-library-row-icon"
-          src="page-icon:${visit.url}"
+          src=${
+            visit.image
+              ? lazy.PlacesUIUtils.getImageURL(visit.image)
+              : `page-icon:${visit.url}`
+          }
           decoding="async"
           alt=""
         />

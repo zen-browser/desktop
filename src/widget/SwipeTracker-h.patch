@@ -1,16 +1,16 @@
 diff --git a/widget/SwipeTracker.h b/widget/SwipeTracker.h
-index 5c01323ee336313ff97e92b7fd4a86c1443c709f..1658c6a19f05c94c078ead1d38ea7527f798ec47 100644
+index 197a9a1e985a0a8ed0380ed82449bf80f1c69ae0..cc3939f1799ec6cea235368564232ecf017931d0 100644
 --- a/widget/SwipeTracker.h
 +++ b/widget/SwipeTracker.h
-@@ -7,6 +7,7 @@
- 
+@@ -8,6 +8,7 @@
  #include "EventForwards.h"
+ #include "InputData.h"
  #include "Units.h"
 +#include "mozilla/Maybe.h"
  #include "mozilla/RefPtr.h"
  #include "mozilla/TimeStamp.h"
  #include "mozilla/layers/AxisPhysicsMSDModel.h"
-@@ -75,6 +76,10 @@ class SwipeTracker final : public nsARefreshObserver {
+@@ -74,6 +75,10 @@ class SwipeTracker final : public nsARefreshObserver {
      return mAllowedDirections & mSwipeDirection;
    }
    double SwipeSuccessTargetValue() const;
@@ -21,7 +21,7 @@ index 5c01323ee336313ff97e92b7fd4a86c1443c709f..1658c6a19f05c94c078ead1d38ea7527
    double ClampToAllowedRange(double aGestureAmount) const;
    bool ComputeSwipeSuccess() const;
    void StartAnimating(double aStartValue, double aTargetValue);
-@@ -91,6 +96,8 @@ class SwipeTracker final : public nsARefreshObserver {
+@@ -90,6 +95,8 @@ class SwipeTracker final : public nsARefreshObserver {
    TimeStamp mLastAnimationFrameTime;
    const uint32_t mAllowedDirections;
    const uint32_t mSwipeDirection;

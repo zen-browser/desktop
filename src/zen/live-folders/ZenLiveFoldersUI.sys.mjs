@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { ZenUIComponent } from "resource:///modules/zen/ui/ZenUIComponent.sys.mjs";
+
 const lazy = {};
 
 ChromeUtils.defineLazyGetter(
@@ -18,26 +20,21 @@ ChromeUtils.defineESModuleGetters(lazy, {
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
 });
 
-class nsZenLiveFoldersUI {
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+
+/**
+ * Per-window UI for live folders.
+ */
+export class ZenLiveFoldersUI extends ZenUIComponent {
   init() {
-    const popup = window.document
-      .getElementById("context_zenLiveFolderOptions")
-      .querySelector("menupopup");
-
-    popup.addEventListener("command", event => {
-      const option = event.target;
-
-      const folderId = option.getAttribute("option-folder");
-      if (folderId) {
-        const folder = lazy.ZenLiveFoldersManager.getFolder(folderId);
-        if (folder && typeof folder.onOptionTrigger === "function") {
-          folder.onOptionTrigger(option);
-        }
-      }
-    });
+    this.window.gZenLiveFoldersUI = this;
+    this.#optionsElement
+      .querySelector("menupopup")
+      .addEventListener("command", this);
 
     Promise.all([
-      window.gZenWorkspaces.promiseInitialized,
+      this.window.gZenWorkspaces.promiseInitialized,
       lazy.ZenLiveFoldersManager.stateRestored.promise,
     ]).then(() => {
       for (const liveFolder of lazy.ZenLiveFoldersManager.liveFolders.values()) {
@@ -46,8 +43,24 @@ class nsZenLiveFoldersUI {
     });
   }
 
+  get #optionsElement() {
+    return this.document.getElementById("context_zenLiveFolderOptions");
+  }
+
+  on_command(event) {
+    const option = event.target;
+    const folderId = option.getAttribute("option-folder");
+    if (!folderId) {
+      return;
+    }
+    const folder = lazy.ZenLiveFoldersManager.getFolder(folderId);
+    if (folder && typeof folder.onOptionTrigger === "function") {
+      folder.onOptionTrigger(option);
+    }
+  }
+
   #restoreUIStateForLiveFolder(liveFolder) {
-    const folder = window.gZenWorkspaces.allTabGroups.find(
+    const folder = this.window.gZenWorkspaces.allTabGroups.find(
       x => x.id === liveFolder.id
     );
     if (!folder) {
@@ -67,7 +80,7 @@ class nsZenLiveFoldersUI {
         const tabLabel = tab.querySelector(".zen-tab-sublabel");
         tab.setAttribute("zen-show-sublabel", label);
 
-        window.document.l10n.setArgs(tabLabel, {
+        this.document.l10n.setArgs(tabLabel, {
           tabSubtitle: label,
         });
       }
@@ -111,15 +124,17 @@ class nsZenLiveFoldersUI {
   #appendOptions(parentPopup, options, folderId) {
     for (const option of options) {
       if (option.type === "separator") {
-        parentPopup.appendChild(document.createXULElement("menuseparator"));
+        parentPopup.appendChild(
+          this.document.createXULElement("menuseparator")
+        );
         continue;
       }
 
       if (option.options) {
-        const menu = document.createXULElement("menu");
+        const menu = this.document.createXULElement("menu");
         this.#applyMenuItemAttributes(menu, option, folderId);
 
-        const subPopup = document.createXULElement("menupopup");
+        const subPopup = this.document.createXULElement("menupopup");
         this.#appendOptions(subPopup, option.options, folderId);
 
         menu.appendChild(subPopup);
@@ -127,7 +142,7 @@ class nsZenLiveFoldersUI {
         continue;
       }
 
-      const menuItem = document.createXULElement("menuitem");
+      const menuItem = this.document.createXULElement("menuitem");
       this.#applyMenuItemAttributes(menuItem, option, folderId);
 
       if (option.value !== undefined) {
@@ -138,46 +153,48 @@ class nsZenLiveFoldersUI {
     }
   }
 
+  /**
+   * Builds the fetch interval choices offered in the context menu.
+   *
+   * @param {object} liveFolder - The live folder the menu is shown for.
+   * @returns {object[]} Radio menu item descriptions.
+   */
+  #intervalOptions(liveFolder) {
+    const intervals = [];
+    for (let mins = 15; mins <= 30; mins *= 2) {
+      intervals.push({ mins });
+    }
+    for (let hours = 1; hours <= 8; hours *= 2) {
+      intervals.push({ hours });
+    }
+
+    return intervals.map(entry => {
+      const ms =
+        "mins" in entry ? entry.mins * MINUTE_MS : entry.hours * HOUR_MS;
+
+      return {
+        l10nId:
+          "mins" in entry
+            ? "zen-live-folder-fetch-interval-mins"
+            : "zen-live-folder-fetch-interval-hours",
+        l10nArgs: entry,
+
+        type: "radio",
+        checked: liveFolder.state.interval === ms,
+
+        key: "setInterval",
+        value: ms,
+      };
+    });
+  }
+
   buildContextMenu(folder) {
-    const optionsElement = document.getElementById(
-      "context_zenLiveFolderOptions"
-    );
+    const optionsElement = this.#optionsElement;
 
     let hidden = true;
     if (folder.isLiveFolder) {
       const popup = optionsElement.querySelector("menupopup");
       const liveFolder = lazy.ZenLiveFoldersManager.getFolder(folder.id);
-
-      const MINUTE_MS = 60 * 1000;
-      const HOUR_MS = 60 * MINUTE_MS;
-
-      let intervals = [];
-      for (let mins = 15; mins <= 30; mins *= 2) {
-        intervals.push({ mins });
-      }
-
-      for (let hours = 1; hours <= 8; hours *= 2) {
-        intervals.push({ hours });
-      }
-
-      intervals = intervals.map(entry => {
-        const ms =
-          "mins" in entry ? entry.mins * MINUTE_MS : entry.hours * HOUR_MS;
-
-        return {
-          l10nId:
-            "mins" in entry
-              ? "zen-live-folder-fetch-interval-mins"
-              : "zen-live-folder-fetch-interval-hours",
-          l10nArgs: entry,
-
-          type: "radio",
-          checked: liveFolder.state.interval === ms,
-
-          key: "setInterval",
-          value: ms,
-        };
-      });
 
       const contextMenuItems = [
         {
@@ -190,7 +207,7 @@ class nsZenLiveFoldersUI {
         {
           key: "setInterval",
           l10nId: "zen-live-folder-option-fetch-interval",
-          options: intervals,
+          options: this.#intervalOptions(liveFolder),
         },
         {
           key: "refresh",
@@ -207,7 +224,7 @@ class nsZenLiveFoldersUI {
     }
 
     optionsElement.hidden = hidden;
-    document.getElementById("live-folder-separator").hidden = hidden;
+    this.document.getElementById("live-folder-separator").hidden = hidden;
   }
 
   #timeAgo(date) {
@@ -239,5 +256,3 @@ class nsZenLiveFoldersUI {
     return "-";
   }
 }
-
-window.gZenLiveFoldersUI = new nsZenLiveFoldersUI();

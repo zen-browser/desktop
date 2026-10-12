@@ -430,7 +430,7 @@ class nsZenSpaceRoutingManager {
         let unmodifiedReference = route.reference;
         try {
           // Use unmodified parameters for the regex test
-          const regex = new RegExp(unmodifiedReference);
+          const regex = new RegExp(unmodifiedReference, "i");
           if (regex.test(uriString)) {
             return true;
           }

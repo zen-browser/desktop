@@ -121,9 +121,19 @@
   box-shadow: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), transparent);
 }
 
+@media (-moz-platform: windows) {
+  .ctrlTab-canvas,
+  #ctrlTab-panel .ctrlTab-preview:focus .ctrlTab-canvas {
+    box-shadow: none;
+  }
+}
+
 .ctrlTab-label {
   grid-area: 2 / 2;
   margin: 0 0 0 4px;
-  font: 500 14px/20px -apple-system;
+  font:
+    500 14px/20px -apple-system,
+    system-ui,
+    sans-serif;
   text-align: start;
 }

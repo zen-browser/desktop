@@ -672,7 +672,12 @@ body {
   background: var(--zen-boosts-color-picker-background);
 
   background-position: -23px -23px;
-  backdrop-filter: saturate(2) blur(15px);
+
+  @media not (prefers-reduced-transparency: reduce) {
+    :root:not([zen-no-acrylic="true"]) & {
+      backdrop-filter: var(--zen-frosted-backdrop);
+    }
+  }
 
   background-size: 6px 6px;
   background-image: radial-gradient(var(--zen-boosts-color-picker-pattern-color), 1px, transparent 0);

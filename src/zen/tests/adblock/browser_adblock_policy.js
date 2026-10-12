@@ -3,9 +3,10 @@
 
 "use strict";
 
-const { decideNetworkRequest, parseFilterList } = ChromeUtils.importESModule(
-  "resource:///modules/zen/adblock/ZenAdblockPolicy.sys.mjs"
-);
+const { decideNetworkRequest, parseFilterList, shouldInspectNetworkRequest } =
+  ChromeUtils.importESModule(
+    "resource:///modules/zen/adblock/ZenAdblockPolicy.sys.mjs"
+  );
 const { isVideoAdRequest, rewriteVideoAdBody, shouldRewriteVideoAdResponse } =
   ChromeUtils.importESModule(
     "resource:///modules/zen/adblock/ZenAdblockVideo.sys.mjs"
@@ -195,5 +196,58 @@ add_task(function test_per_site_override_uses_base_domain() {
     gZenAdblock.getEffectiveLevel(url),
     gZenAdblock.getGlobalLevel(),
     "clearing the override falls back to the global level"
+  );
+});
+
+add_task(function test_network_hot_path_skips_cheap_requests() {
+  Assert.equal(
+    shouldInspectNetworkRequest({
+      type: "main_frame",
+      isSystem: false,
+      requestHost: "example.com",
+      sourceHost: "",
+    }),
+    false,
+    "top-level documents skip the filter engine"
+  );
+  Assert.equal(
+    shouldInspectNetworkRequest({
+      type: "image",
+      isSystem: true,
+      requestHost: "example.com",
+      sourceHost: "example.com",
+    }),
+    false,
+    "system-triggered loads skip the filter engine"
+  );
+  Assert.equal(
+    shouldInspectNetworkRequest({
+      type: "image",
+      isSystem: false,
+      requestHost: "news.example",
+      sourceHost: "news.example",
+    }),
+    false,
+    "first-party images skip the filter engine"
+  );
+  Assert.equal(
+    shouldInspectNetworkRequest({
+      type: "script",
+      isSystem: false,
+      requestHost: "news.example",
+      sourceHost: "news.example",
+    }),
+    true,
+    "first-party scripts are still inspected"
+  );
+  Assert.equal(
+    shouldInspectNetworkRequest({
+      type: "script",
+      isSystem: false,
+      requestHost: "ads.example",
+      sourceHost: "news.example",
+    }),
+    true,
+    "third-party scripts are inspected"
   );
 });

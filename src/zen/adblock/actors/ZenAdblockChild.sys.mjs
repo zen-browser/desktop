@@ -14,6 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const STYLE_ID = "zen-adblock-css";
 const SCAN_LIMIT = 2000;
+const QUIET_MS = 15000;
 const compiledScripts = new Map();
 
 function compilePageScript(code) {
@@ -34,10 +35,17 @@ export class ZenAdblockChild extends JSWindowActorChild {
   #style = null;
   #observer = null;
   #timer = 0;
+  #quietTimer = 0;
+  #idleId = 0;
   #injectedScripts = new Set();
+  #seenIds = new Set();
+  #seenClasses = new Set();
+  #seenHrefs = new Set();
+  #hostnameApplied = false;
   #destroyed = false;
   #applying = false;
   #pending = false;
+  #pendingNodes = [];
 
   handleEvent(event) {
     if (
@@ -45,13 +53,21 @@ export class ZenAdblockChild extends JSWindowActorChild {
       event.type === "DOMContentLoaded" ||
       event.type === "pageshow"
     ) {
-      this.#apply();
+      this.#apply({ hostnameOnly: !this.#hostnameApplied });
+      if (event.type !== "DOMDocElementInserted") {
+        this.#scheduleDomScan();
+      }
     }
   }
 
   receiveMessage(message) {
     if (message.name === "ZenAdblock:Refresh") {
-      this.#apply();
+      this.#seenIds.clear();
+      this.#seenClasses.clear();
+      this.#seenHrefs.clear();
+      this.#hostnameApplied = false;
+      this.#apply({ hostnameOnly: true });
+      this.#scheduleDomScan();
     }
   }
 
@@ -63,9 +79,23 @@ export class ZenAdblockChild extends JSWindowActorChild {
     if (win && this.#timer) {
       win.clearTimeout(this.#timer);
     }
+    if (win && this.#quietTimer) {
+      win.clearTimeout(this.#quietTimer);
+    }
+    if (win && this.#idleId) {
+      win.cancelIdleCallback?.(this.#idleId);
+    }
   }
 
-  #schedule() {
+  #isTopFrame() {
+    const context = this.browsingContext;
+    return !!context && context.top === context;
+  }
+
+  #scheduleDomScan(nodes) {
+    if (nodes?.length) {
+      this.#pendingNodes.push(...nodes);
+    }
     if (this.#destroyed) {
       return;
     }
@@ -73,13 +103,32 @@ export class ZenAdblockChild extends JSWindowActorChild {
     if (!win) {
       return;
     }
-    if (this.#timer) {
-      win.clearTimeout(this.#timer);
+    if (this.#idleId) {
+      return;
     }
-    this.#timer = win.setTimeout(() => {
-      this.#timer = 0;
-      this.#apply();
-    }, 50);
+    const run = () => {
+      this.#idleId = 0;
+      const batch = this.#pendingNodes;
+      this.#pendingNodes = [];
+      this.#apply({ nodes: batch.length ? batch : null });
+    };
+    if (win.requestIdleCallback) {
+      this.#idleId = win.requestIdleCallback(run, { timeout: 250 });
+    } else {
+      this.#timer = win.setTimeout(run, 50);
+    }
+    this.#armQuietStop(win);
+  }
+
+  #armQuietStop(win) {
+    if (this.#quietTimer) {
+      win.clearTimeout(this.#quietTimer);
+    }
+    this.#quietTimer = win.setTimeout(() => {
+      this.#quietTimer = 0;
+      this.#observer?.disconnect();
+      this.#observer = null;
+    }, QUIET_MS);
   }
 
   #watch() {
@@ -91,16 +140,27 @@ export class ZenAdblockChild extends JSWindowActorChild {
     if (!doc?.documentElement || !win?.MutationObserver) {
       return;
     }
-    this.#observer = new win.MutationObserver(() => this.#schedule());
+    this.#observer = new win.MutationObserver(records => {
+      const added = [];
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (node.nodeType === 1) {
+            added.push(node);
+          }
+        }
+      }
+      if (added.length) {
+        this.#scheduleDomScan(added);
+      }
+    });
     this.#observer.observe(doc.documentElement, {
       subtree: true,
       childList: true,
-      attributes: true,
-      attributeFilter: ["id", "class", "href"],
     });
+    this.#armQuietStop(win);
   }
 
-  async #apply() {
+  async #apply({ hostnameOnly = false, nodes = null } = {}) {
     if (this.#destroyed) {
       return;
     }
@@ -116,17 +176,41 @@ export class ZenAdblockChild extends JSWindowActorChild {
     if (!url.startsWith("http:") && !url.startsWith("https:")) {
       return;
     }
+    const collected = hostnameOnly
+      ? { ids: [], classes: [], hrefs: [] }
+      : this.#collect(nodes || [doc.documentElement]);
+    if (
+      !hostnameOnly &&
+      !collected.ids.length &&
+      !collected.classes.length &&
+      !collected.hrefs.length
+    ) {
+      return;
+    }
     this.#applying = true;
     try {
       const result = await this.sendQuery("ZenAdblock:GetCosmetics", {
         url,
-        ...this.#collect(doc),
+        hostnameOnly,
+        ...collected,
       });
+      if (hostnameOnly) {
+        this.#hostnameApplied = true;
+      }
       if (this.#destroyed || !result?.active) {
         if (result && !result.active) {
           this.#style?.remove();
           this.#style = null;
         }
+        return;
+      }
+      const hasRules =
+        !!result.styles ||
+        !!result.scripts?.length ||
+        !!result.extended?.length;
+      if (!this.#isTopFrame() && !hasRules) {
+        this.#observer?.disconnect();
+        this.#observer = null;
         return;
       }
       this.#applyStyles(result.styles);
@@ -148,43 +232,49 @@ export class ZenAdblockChild extends JSWindowActorChild {
       this.#applying = false;
       if (this.#pending && !this.#destroyed) {
         this.#pending = false;
-        this.#schedule();
+        this.#scheduleDomScan();
       }
     }
   }
 
-  #collect(doc) {
+  #collect(roots) {
     const ids = [];
     const classes = [];
     const hrefs = [];
-    const seenId = new Set();
-    const seenClass = new Set();
-    const seenHref = new Set();
-    let nodes;
-    try {
-      nodes = doc.querySelectorAll("[id],[class],[href]");
-    } catch {
-      return { ids, classes, hrefs };
-    }
-    const limit = Math.min(nodes.length, SCAN_LIMIT);
-    for (let i = 0; i < limit; i++) {
-      const el = nodes[i];
-      if (el.id && !seenId.has(el.id)) {
-        seenId.add(el.id);
+    let scanned = 0;
+    const visit = el => {
+      if (!el || el.nodeType !== 1 || scanned >= SCAN_LIMIT) {
+        return;
+      }
+      scanned++;
+      if (el.id && !this.#seenIds.has(el.id)) {
+        this.#seenIds.add(el.id);
         ids.push(el.id);
       }
       if (el.classList) {
         for (const name of el.classList) {
-          if (!seenClass.has(name)) {
-            seenClass.add(name);
+          if (!this.#seenClasses.has(name)) {
+            this.#seenClasses.add(name);
             classes.push(name);
           }
         }
       }
       const href = el.getAttribute?.("href");
-      if (href && !seenHref.has(href)) {
-        seenHref.add(href);
+      if (href && !this.#seenHrefs.has(href)) {
+        this.#seenHrefs.add(href);
         hrefs.push(href);
+      }
+      for (const child of el.children) {
+        visit(child);
+        if (scanned >= SCAN_LIMIT) {
+          return;
+        }
+      }
+    };
+    for (const root of roots) {
+      visit(root);
+      if (scanned >= SCAN_LIMIT) {
+        break;
       }
     }
     return { ids, classes, hrefs };

@@ -45,6 +45,9 @@ function ensureToday() {
   lastTick = 0;
   Services.prefs.setStringPref(PREF_ACTIVE_DAY, key);
   Services.prefs.setIntPref(PREF_ACTIVE_MS, 0);
+  if (anyWindowFocused()) {
+    lastTick = Date.now();
+  }
 }
 
 function flushActiveTime() {
@@ -57,6 +60,24 @@ function flushActiveTime() {
   pendingMs = 0;
 }
 
+function pauseActiveTime() {
+  if (!lastTick) {
+    return;
+  }
+  const elapsed = Date.now() - lastTick;
+  lastTick = 0;
+  if (elapsed > 0 && elapsed < 12 * 60 * 60 * 1000) {
+    pendingMs += elapsed;
+  }
+  flushActiveTime();
+}
+
+function resumeActiveTime() {
+  if (!lastTick && anyWindowFocused()) {
+    lastTick = Date.now();
+  }
+}
+
 function anyWindowFocused() {
   for (const win of Services.wm.getEnumerator("navigator:browser")) {
     if (!win.closed && win.document.hasFocus()) {
@@ -67,47 +88,44 @@ function anyWindowFocused() {
 }
 
 /**
- * Count focused browser time for the current local day. One process-wide
- * timer so multiple windows do not double-count.
+ * Count focused browser time for the current local day. Focus, blur, and
+ * sleep notifications replace the old one-second poll.
  */
 export function startActiveTimeTracking() {
   if (trackingStarted) {
     return;
   }
   trackingStarted = true;
-  Services.obs.addObserver(
-    {
-      observe() {
-        flushActiveTime();
-      },
-    },
-    "quit-application"
-  );
-  const timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-  timer.initWithCallback(
-    () => {
+  const onFocus = () => resumeActiveTime();
+  const onBlur = () => {
+    Services.tm.dispatchToMainThread(() => {
       if (!anyWindowFocused()) {
-        lastTick = 0;
-        flushActiveTime();
-        return;
+        pauseActiveTime();
       }
-      const now = Date.now();
-      if (lastTick) {
-        pendingMs += Math.min(now - lastTick, 2000);
-      }
-      lastTick = now;
-      if (pendingMs >= 5000) {
-        flushActiveTime();
-      }
-    },
-    1000,
-    Ci.nsITimer.TYPE_REPEATING_SLACK
-  );
+    });
+  };
+  const watch = win => {
+    if (!win || win.closed || win.__zenActiveTimeWatch) {
+      return;
+    }
+    win.__zenActiveTimeWatch = true;
+    win.addEventListener("focus", onFocus);
+    win.addEventListener("blur", onBlur);
+  };
+  for (const win of Services.wm.getEnumerator("navigator:browser")) {
+    watch(win);
+  }
+  Services.obs.addObserver(subject => watch(subject), "browser-delayed-startup-finished");
+  Services.obs.addObserver(() => pauseActiveTime(), "sleep_notification");
+  Services.obs.addObserver(() => resumeActiveTime(), "wake_notification");
+  Services.obs.addObserver(() => pauseActiveTime(), "quit-application");
+  resumeActiveTime();
 }
 
 export function getTodayActiveMs() {
   ensureToday();
-  return Services.prefs.getIntPref(PREF_ACTIVE_MS, 0) + pendingMs;
+  const live = lastTick ? Math.max(0, Date.now() - lastTick) : 0;
+  return Services.prefs.getIntPref(PREF_ACTIVE_MS, 0) + pendingMs + live;
 }
 
 export function formatDuration(ms) {

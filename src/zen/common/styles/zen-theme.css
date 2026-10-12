@@ -215,9 +215,9 @@
   /* XUL */
   --zen-main-browser-background: linear-gradient(
     -30deg,
-    #0f766e 0%,
-    #2dd4bf 52%,
-    #d1fae5 100%
+    #2dd4bf 0%,
+    #0f766e 48%,
+    #115e59 100%
   );
   --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
 

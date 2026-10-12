@@ -16,6 +16,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   parseFilterList: "resource:///modules/zen/adblock/ZenAdblockPolicy.sys.mjs",
   contentPolicyToRequestType:
     "resource:///modules/zen/adblock/ZenAdblockPolicy.sys.mjs",
+  shouldInspectNetworkRequest:
+    "resource:///modules/zen/adblock/ZenAdblockPolicy.sys.mjs",
   LIST_URLS: "resource:///modules/zen/adblock/ZenAdblockLists.sys.mjs",
   RESOURCES_URL: "resource:///modules/zen/adblock/ZenAdblockLists.sys.mjs",
   UPDATE_INTERVAL_MS: "resource:///modules/zen/adblock/ZenAdblockLists.sys.mjs",
@@ -87,6 +89,7 @@ class ZenAdblockManager {
   #overridesEpoch = 0;
   #counts = new WeakMap();
   #cnameCache = new Map();
+  #decisionCache = new Map();
   #uboActive = false;
   #uboKnown = false;
   #addonListener = null;
@@ -113,7 +116,7 @@ class ZenAdblockManager {
     this.#refreshUblock().finally(() => {
       this.#uboKnown = true;
       if (!this.#uboActive && Services.prefs.getBoolPref(PREF_ENABLED, true)) {
-        this.ensureEngine(this.getGlobalLevel());
+        this.#ensureEngineWhenIdle();
       }
       this.#notifyUpdated();
     });
@@ -297,6 +300,10 @@ class ZenAdblockManager {
         }
         return INACTIVE_COSMETICS;
       }
+      const cosmeticOptions = lazy.cosmeticQueryOptions(level);
+      if (data.hostnameOnly) {
+        cosmeticOptions.getRulesFromDOM = false;
+      }
       const result = engine.getCosmeticsFilters({
         url: data.url,
         hostname: hostnameOf(data.url),
@@ -304,7 +311,7 @@ class ZenAdblockManager {
         classes: data.classes || [],
         ids: data.ids || [],
         hrefs: data.hrefs || [],
-        ...lazy.cosmeticQueryOptions(level),
+        ...cosmeticOptions,
       });
       let extended = [];
       if (level === "heavy" && result.extended?.length) {
@@ -364,6 +371,7 @@ class ZenAdblockManager {
    * @param {string|null} [siteKey]
    */
   #notifyUpdated(siteKey = null) {
+    this.#decisionCache.clear();
     Services.obs.notifyObservers(null, TOPIC, siteKey || "");
     this.#refreshContentActors(siteKey);
   }
@@ -409,7 +417,30 @@ class ZenAdblockManager {
     }
   }
 
+  #ensureEngineWhenIdle() {
+    const start = () => {
+      ChromeUtils.idleDispatch(() => {
+        if (Services.startup.shuttingDown || this.#uboActive) {
+          return;
+        }
+        if (!Services.prefs.getBoolPref(PREF_ENABLED, true)) {
+          return;
+        }
+        this.ensureEngine(this.getGlobalLevel());
+      });
+    };
+    if (!Services.startup.startingUp) {
+      start();
+      return;
+    }
+    Services.obs.addObserver(function onDelayed() {
+      Services.obs.removeObserver(onDelayed, "browser-delayed-startup-finished");
+      start();
+    }, "browser-delayed-startup-finished");
+  }
+
   #invalidateEngines() {
+    this.#decisionCache.clear();
     this.#engines = { light: null, medium: null, heavy: null };
     if (Services.prefs.getBoolPref(PREF_ENABLED, true) && !this.#uboActive) {
       this.ensureEngine(this.getGlobalLevel(), { force: true });
@@ -489,15 +520,13 @@ class ZenAdblockManager {
     if (custom) {
       texts.push(custom);
     }
-    const engine = lazy.parseFilterList(texts.join("\n"), level);
+    let resources = "";
     try {
-      const resources = await this.#fetchText(lazy.RESOURCES_URL);
-      if (resources) {
-        engine.updateResources(resources, String(resources.length));
-      }
+      resources = (await this.#fetchText(lazy.RESOURCES_URL)) || "";
     } catch (error) {
       console.error("ZenAdblock resources failed", error);
     }
+    const engine = await this.#compileEngine(texts.join("\n"), level, resources);
     try {
       await IOUtils.makeDirectory(this.#cacheDir(), { ignoreExisting: true });
       await IOUtils.write(binPath, engine.serialize());
@@ -565,6 +594,70 @@ class ZenAdblockManager {
     new lazy.VideoAdStreamListener(channel);
   }
 
+  #compileEngine(text, level, resources) {
+    return new Promise(resolve => {
+      let worker;
+      try {
+        worker = new ChromeWorker(
+          "resource:///modules/zen/adblock/ZenAdblockCompiler.worker.mjs",
+          { type: "module" }
+        );
+      } catch (error) {
+        console.error("ZenAdblock compiler worker unavailable", error);
+        resolve(this.#compileOnMainThread(text, level, resources));
+        return;
+      }
+      const finish = () => {
+        try {
+          worker.terminate();
+        } catch {
+          // Already stopped.
+        }
+      };
+      worker.onmessage = event => {
+        finish();
+        if (!event.data?.ok || !event.data.bytes) {
+          resolve(this.#compileOnMainThread(text, level, resources));
+          return;
+        }
+        try {
+          resolve(lazy.deserializeEngine(event.data.bytes));
+        } catch (error) {
+          console.error("ZenAdblock deserialize failed", error);
+          resolve(this.#compileOnMainThread(text, level, resources));
+        }
+      };
+      worker.onerror = event => {
+        finish();
+        console.error("ZenAdblock compiler worker failed", event.message);
+        resolve(this.#compileOnMainThread(text, level, resources));
+      };
+      worker.postMessage({ text, level, resources });
+    });
+  }
+
+  #compileOnMainThread(text, level, resources) {
+    const engine = lazy.parseFilterList(text, level);
+    if (resources) {
+      try {
+        engine.updateResources(resources, String(resources.length));
+      } catch {
+        // Scriptlet resources are optional.
+      }
+    }
+    return engine;
+  }
+
+  #rememberDecision(key, decision) {
+    if (this.#decisionCache.size >= 512) {
+      const oldest = this.#decisionCache.keys().next().value;
+      this.#decisionCache.delete(oldest);
+    }
+    this.#decisionCache.delete(key);
+    this.#decisionCache.set(key, decision);
+    return decision;
+  }
+
   #onModifyRequest(channel) {
     if (!Services.prefs.getBoolPref(PREF_ENABLED, true) || this.#uboActive) {
       return;
@@ -582,6 +675,35 @@ class ZenAdblockManager {
       return;
     }
 
+    const type = lazy.contentPolicyToRequestType(
+      channel.loadInfo.externalContentPolicyType ??
+        channel.loadInfo.contentPolicyType
+    );
+    let isSystem = false;
+    let sourceHost = "";
+    try {
+      const principal = channel.loadInfo.triggeringPrincipal;
+      isSystem = !!principal?.isSystemPrincipal;
+      if (
+        principal?.URI &&
+        (principal.URI.schemeIs("http") || principal.URI.schemeIs("https"))
+      ) {
+        sourceHost = principal.URI.host;
+      }
+    } catch {
+      isSystem = false;
+    }
+    if (
+      !lazy.shouldInspectNetworkRequest({
+        type,
+        isSystem,
+        requestHost: uri.host,
+        sourceHost,
+      })
+    ) {
+      return;
+    }
+
     const pageUrl = this.#pageUrl(channel) || uri.spec;
     const level = this.getEffectiveLevel(pageUrl);
     if (level === "off") {
@@ -591,24 +713,31 @@ class ZenAdblockManager {
     if (!engine) {
       this.ensureEngine(level);
     }
-    const type = lazy.contentPolicyToRequestType(
-      channel.loadInfo.externalContentPolicyType ??
-        channel.loadInfo.contentPolicyType
-    );
     const sourceUrl = this.#sourceUrl(channel) || pageUrl;
-    const decision = lazy.decideNetworkRequest({
-      engine,
-      level,
-      url: uri.spec,
-      sourceUrl,
-      type,
-    });
+    const cacheKey = `${level}\n${type}\n${sourceHost}\n${uri.spec}`;
+    let decision = this.#decisionCache.get(cacheKey);
+    if (decision) {
+      this.#decisionCache.delete(cacheKey);
+      this.#decisionCache.set(cacheKey, decision);
+    } else {
+      decision = this.#rememberDecision(
+        cacheKey,
+        lazy.decideNetworkRequest({
+          engine,
+          level,
+          url: uri.spec,
+          sourceUrl,
+          type,
+        })
+      );
+    }
     if (decision.action === "cancel" || decision.action === "redirect") {
       this.#applyDecision(channel, decision);
       return;
     }
     if (
       decision.uncloak &&
+      level === "heavy" &&
       decision.hostname &&
       engine &&
       Services.prefs.getBoolPref(PREF_CNAME, true)

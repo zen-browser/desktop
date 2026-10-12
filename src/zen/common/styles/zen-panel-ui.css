@@ -39,7 +39,7 @@ panel[type="arrow"]:not(#feature-callout) {
       /* stylelint-disable-next-line property-no-unknown */
       corner-shape: round;
       border-radius: calc(var(--panel-border-radius) / var(--zen-squircle-value));
-      backdrop-filter: blur(32px) saturate(1.45);
+      backdrop-filter: var(--zen-frosted-backdrop-strong);
       background-color: var(--zen-popup-background, rgb(255 255 255 / 58%)) !important;
     }
 
@@ -50,6 +50,11 @@ panel[type="arrow"]:not(#feature-callout) {
         backdrop-filter: none;
         background-color: var(--zen-popup-background-solid, rgb(244, 244, 244)) !important;
       }
+    }
+
+    :root[zen-no-acrylic="true"] &::part(content) {
+      backdrop-filter: none;
+      background-color: var(--zen-popup-background-solid, rgb(244, 244, 244)) !important;
     }
   }
 
@@ -75,7 +80,7 @@ panel[type="arrow"]:not(#feature-callout) {
 
     &::part(content) {
       background-color: var(--zen-popup-background, rgb(255 255 255 / 42%)) !important;
-      backdrop-filter: blur(48px) saturate(1.8);
+      backdrop-filter: var(--zen-frosted-backdrop-strong);
       border-color: var(--panel-border-color);
     }
 
@@ -88,6 +93,11 @@ panel[type="arrow"]:not(#feature-callout) {
         background-color: var(--zen-popup-background-solid, rgb(244, 244, 246)) !important;
         backdrop-filter: none;
       }
+    }
+
+    :root[zen-no-acrylic="true"] &::part(content) {
+      backdrop-filter: none;
+      background-color: var(--zen-popup-background-solid, rgb(244, 244, 246)) !important;
     }
   }
 }

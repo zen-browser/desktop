@@ -108,6 +108,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   );
 
   #linePath = `M 51.373 27.395 L 367.037 27.395`;
+  #wavePathCache = new Map();
   #sinePath = `M 51.373 27.395 C 60.14 -8.503 68.906 -8.503 77.671 27.395 C 86.438 63.293 95.205 63.293 103.971 27.395 C 112.738 -8.503 121.504 -8.503 130.271 27.395 C 139.037 63.293 147.803 63.293 156.57 27.395 C 165.335 -8.503 174.101 -8.503 182.868 27.395 C 191.634 63.293 200.4 63.293 209.167 27.395 C 217.933 -8.503 226.7 -8.503 235.467 27.395 C 244.233 63.293 252.999 63.293 261.765 27.395 C 270.531 -8.503 279.297 -8.503 288.064 27.395 C 296.83 63.293 305.596 63.293 314.363 27.395 C 323.13 -8.503 331.896 -8.503 340.662 27.395 M 314.438 27.395 C 323.204 -8.503 331.97 -8.503 340.737 27.395 C 349.503 63.293 358.27 63.293 367.037 27.395`;
 
   #sinePoints = parseSinePath(this.#sinePath);
@@ -1379,8 +1380,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const rotation = -30; // TODO: Detect rotation based on the accent color
     if (themedColors.length === 0) {
       const mint = this.isDarkMode
-        ? ["#042f2e", "#0f766e", "#5eead4"]
-        : ["#0f766e", "#2dd4bf", "#d1fae5"];
+        ? ["#115e59", "#0f766e", "#042f2e"]
+        : ["#2dd4bf", "#0f766e", "#115e59"];
       return `linear-gradient(-30deg, ${mint[0]} 0%, ${mint[1]} 52%, ${mint[2]} 100%)`;
     } else if (themedColors.length === 1) {
       return this.#getSingleRGBColor(themedColors[0], forToolbar);
@@ -1601,13 +1602,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return;
       }
 
+      const panelState = browser.gZenThemePicker.panel?.state;
+      const syncPicker =
+        browser.gZenThemePicker.editingWorkspaceId === uuid ||
+        panelState === "open" ||
+        panelState === "showing";
+
       // get the theme from the window
       workspaceTheme = this.fixTheme(
         theme || (appliesToWindow ? windowWorkspace : workspace).theme
       );
       const docElement = browser.document.documentElement;
 
-      if (!skipUpdate) {
+      if (!skipUpdate && syncPicker) {
         for (const dot of browser.gZenThemePicker.panel.querySelectorAll(
           ".zen-theme-picker-dot"
         )) {
@@ -1652,7 +1659,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         delete browser.gZenThemePicker.previousBackgroundOpacity;
       }
 
-      browser.gZenThemePicker.resetCustomColorList();
+      if (syncPicker) {
+        browser.gZenThemePicker.resetCustomColorList();
+      }
 
       browser.gZenThemePicker.currentOpacity = workspaceTheme.opacity ?? 0.5;
       browser.gZenThemePicker.currentTexture = workspaceTheme.texture ?? 0;
@@ -1669,7 +1678,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         "PanelUI-zen-gradient-generator-opacity"
       );
 
-      {
+      if (syncPicker) {
         let opacity = browser.gZenThemePicker.currentOpacity;
         const svg = browser.gZenThemePicker.sliderWavePath;
         /* eslint-disable no-unused-vars */
@@ -1711,6 +1720,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             : "url(#PanelUI-zen-gradient-generator-slider-wave-gradient)";
       }
 
+      if (syncPicker) {
       for (const button of browser.document.querySelectorAll(
         "#PanelUI-zen-gradient-generator-color-actions button"
       )) {
@@ -1771,6 +1781,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           }
         }
       }
+      }
 
       const gradient = browser.gZenThemePicker.getGradient(
         workspaceTheme.gradientColors
@@ -1783,10 +1794,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         browser.gZenThemePicker.updateNoise(workspaceTheme.texture);
       }
 
-      browser.gZenThemePicker.customColorList.innerHTML = "";
-      for (const dot of workspaceTheme.gradientColors) {
-        if (dot.isCustom) {
-          browser.gZenThemePicker.addColorToCustomList(dot.c);
+      if (syncPicker) {
+        browser.gZenThemePicker.customColorList.innerHTML = "";
+        for (const dot of workspaceTheme.gradientColors) {
+          if (dot.isCustom) {
+            browser.gZenThemePicker.addColorToCustomList(dot.c);
+          }
         }
       }
 
@@ -1852,7 +1865,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      if (!skipUpdate) {
+      if (!skipUpdate && syncPicker) {
         browser.gZenThemePicker.dots = [];
         browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
       }
@@ -2068,12 +2081,28 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   handlePanelOpen() {
     this.initThemePicker();
+    const workspace =
+      this.workspaceBeingEdited || gZenWorkspaces.getActiveWorkspace();
+    if (workspace) {
+      this.onWorkspaceChange(workspace);
+    }
     setTimeout(() => {
       this.updateCurrentWorkspace();
     }, 200);
   }
 
   #interpolateWavePath(progress) {
+    const key = Math.round(progress * 1000);
+    const cached = this.#wavePathCache.get(key);
+    if (cached) {
+      return cached;
+    }
+    const path = this.#buildWavePath(progress);
+    this.#wavePathCache.set(key, path);
+    return path;
+  }
+
+  #buildWavePath(progress) {
     const linePath = this.#linePath;
     const sinePath = this.#sinePath;
     const referenceY = 27.3;

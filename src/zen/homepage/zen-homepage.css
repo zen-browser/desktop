@@ -171,7 +171,12 @@
   background-color: var(--zen-home-card-fill);
   border: 1px solid var(--zen-home-card-stroke);
   border-radius: var(--zen-home-card-radius);
-  backdrop-filter: blur(var(--zen-home-card-blur));
+
+  @media not (prefers-reduced-transparency: reduce) {
+    :root:not([zen-no-acrylic="true"]) & {
+      backdrop-filter: var(--zen-frosted-backdrop);
+    }
+  }
 }
 
 .zen-homepage-card {

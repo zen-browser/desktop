@@ -57,8 +57,6 @@ class ZenHomepageController {
     Services.prefs.addObserver("zen.homepage.", this);
     window.addEventListener("TabSelect", this);
     window.addEventListener("unload", this, { once: true });
-    this.#clockTimer = window.setInterval(() => this.#tickClock(), 1000);
-    this.#statsTimer = window.setInterval(() => this.#refreshStats(), 60000);
     this.sync();
   }
 
@@ -85,10 +83,27 @@ class ZenHomepageController {
     this.#applyEmptyTabDocument();
     const show = this.#shouldShowOverlay();
     this.#root.hidden = !show;
+    this.#syncTimers(show);
     if (show) {
       this.#tickClock();
       this.#refreshStats();
     }
+  }
+
+  #syncTimers(show) {
+    if (show) {
+      if (!this.#clockTimer) {
+        this.#clockTimer = window.setInterval(() => this.#tickClock(), 1000);
+      }
+      if (!this.#statsTimer) {
+        this.#statsTimer = window.setInterval(() => this.#refreshStats(), 60000);
+      }
+      return;
+    }
+    window.clearInterval(this.#clockTimer);
+    window.clearInterval(this.#statsTimer);
+    this.#clockTimer = 0;
+    this.#statsTimer = 0;
   }
 
   #shutdown() {

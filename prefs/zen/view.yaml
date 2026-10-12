@@ -10,7 +10,7 @@
   condition: "defined(XP_MACOSX)"
 
 - name: zen.widget.mac.mono-window-controls
-  value: true
+  value: false
   condition: "defined(XP_MACOSX)"
 
 - name: zen.view.use-single-toolbar

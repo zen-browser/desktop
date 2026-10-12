@@ -207,6 +207,8 @@ zen-compact-mode-styles-both = Hide Both
 zen-urlbar-title = Address bar
 zen-urlbar-header = Address bar
 zen-urlbar-description = Customize the URL bar to your liking
+zen-theme-glass-enabled =
+    .label = Frosted glass
 
 zen-urlbar-behavior-label = Behavior
 zen-urlbar-behavior-normal =

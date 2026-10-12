@@ -55,7 +55,7 @@ const NOTE_CSS = `:root {
   --mint-frosted-fill: light-dark(rgb(255 255 255 / 72%), rgb(255 255 255 / 10%));
   --mint-frosted-stroke: light-dark(rgb(0 0 0 / 12%), rgb(255 255 255 / 25%));
   --mint-frosted-hover: light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 10%));
-  --mint-frosted-backdrop: blur(20px) saturate(1.35);
+  --mint-frosted-backdrop: blur(24px) saturate(1.4);
 }
 
 html,

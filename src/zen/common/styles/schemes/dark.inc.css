@@ -12,6 +12,9 @@ color-scheme: dark;
 --zen-frosted-hover: rgb(255 255 255 / 8%);
 --zen-frosted-divider: rgb(255 255 255 / 15%);
 --zen-frosted-backdrop: blur(24px) saturate(1.4) brightness(0.6);
+--zen-frosted-backdrop-strong: blur(40px) saturate(1.6) brightness(0.6);
+/* The sidebar sits on the workspace gradient and uses light chrome text. */
+--zen-frosted-backdrop-sidebar: blur(42px) saturate(1.1) brightness(0.5);
 --zen-popup-background: color-mix(in oklch, var(--zen-primary-color) 46%, black);
 --zen-popup-background-solid: var(--zen-popup-background);
 --zen-popup-foreground: rgb(255 255 255 / 92%);

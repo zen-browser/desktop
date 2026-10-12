@@ -5,6 +5,9 @@
 - name: zen.theme.accent-color
   value: "#14B8A6"
 
+- name: zen.theme.glass
+  value: true
+
 - name: zen.theme.content-element-separation
   value: 8
 

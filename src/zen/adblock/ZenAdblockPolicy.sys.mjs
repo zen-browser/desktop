@@ -37,6 +37,51 @@ export function deserializeEngine(bytes) {
   return FiltersEngine.deserialize(bytes);
 }
 
+const FIRST_PARTY_FAST_TYPES = new Set([
+  "image",
+  "imageset",
+  "stylesheet",
+  "font",
+  "media",
+  "ping",
+  "csp_report",
+  "web_manifest",
+  "other",
+]);
+
+/**
+ * Whether a request is worth a filter-engine match. Top-level documents and
+ * system-triggered loads are skipped. First-party images, fonts, and similar
+ * types are skipped too; scripts and subframes still go through the engine
+ * because lists block those on the page's own host.
+ *
+ * @param {object} details
+ * @param {string} details.type
+ * @param {boolean} details.isSystem
+ * @param {string} details.requestHost
+ * @param {string} details.sourceHost
+ * @returns {boolean}
+ */
+export function shouldInspectNetworkRequest({
+  type,
+  isSystem,
+  requestHost,
+  sourceHost,
+}) {
+  if (isSystem || type === "main_frame") {
+    return false;
+  }
+  if (
+    requestHost &&
+    sourceHost &&
+    requestHost === sourceHost &&
+    FIRST_PARTY_FAST_TYPES.has(type || "other")
+  ) {
+    return false;
+  }
+  return true;
+}
+
 export function contentPolicyToRequestType(type) {
   const policy = Ci.nsIContentPolicy;
   switch (type) {

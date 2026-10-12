@@ -4,7 +4,6 @@
 
 /* eslint-disable no-shadow */
 
-import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
 import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 
 const lazy = {};
@@ -12,6 +11,7 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   ZenHomepage: "resource:///modules/zen/homepage/ZenHomepage.sys.mjs",
+  nsZenThemePicker: "resource:///modules/zen/ZenGradientGenerator.mjs",
 });
 
 ChromeUtils.defineESModuleGetters(
@@ -869,7 +869,7 @@ class nsZenWorkspaces {
     this.activeWorkspace = activeWorkspace?.uuid;
     try {
       if (activeWorkspace) {
-        window.gZenThemePicker = new nsZenThemePicker();
+        window.gZenThemePicker = new lazy.nsZenThemePicker();
         gZenThemePicker.onWorkspaceChange(activeWorkspace);
       }
     } catch (e) {
@@ -2786,7 +2786,7 @@ class nsZenWorkspaces {
       uuid: gZenUIManager.generateUuidv4(),
       icon,
       name,
-      theme: nsZenThemePicker.getTheme(),
+      theme: lazy.nsZenThemePicker.getTheme(),
       containerTabId,
     };
     return workspace;

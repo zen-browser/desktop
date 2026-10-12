@@ -277,7 +277,12 @@ moz-page-nav-button[view="paneZenMarketplace"] {
   border-radius: 10px;
   margin: 10px;
   background: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
-  backdrop-filter: blur(15px);
+
+  @media not (prefers-reduced-transparency: reduce) {
+    :root:not([zen-no-acrylic="true"]) & {
+      backdrop-filter: var(--zen-frosted-backdrop);
+    }
+  }
   border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
 }
 

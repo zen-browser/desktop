@@ -102,14 +102,13 @@ class nsZenUrlSnippetsManager {
   #saveFilename = "zen-url-snippets.jsonlz4";
   #readyPromise = null;
 
-  constructor() {
-    this.#readyPromise = this.#readFromDisk();
-  }
-
   /**
    * @returns {Promise<void>}
    */
   ready() {
+    if (!this.#readyPromise) {
+      this.#readyPromise = this.#readFromDisk();
+    }
     return this.#readyPromise;
   }
 

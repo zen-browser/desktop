@@ -1,55 +1,65 @@
 /* zen-highlight.css - Styles for the floating selection toolbar */
 #zen-highlight-container {
-  /* Default Theme Variables */
-  --sst-bg: rgba(43, 42, 51, 0.92);
-  --sst-text: #fbfbfe;
-  --sst-border: rgba(255, 255, 255, 0.08);
-  --sst-accent: #7c6aef;
-  --sst-hover: rgba(255, 255, 255, 0.1);
-  --sst-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --sst-radius: 10px;
+  /* Dynamic Zen Theme & Transparency Variables */
+  --sst-accent: #a799ff;
+  --sst-alpha: var(--zen-highlight-custom-alpha, 0.45);
+  --sst-bg: light-dark(
+    rgba(255, 255, 255, var(--sst-alpha)),
+    rgba(20, 20, 25, var(--sst-alpha))
+  );
+  --sst-text: light-dark(#15141a, #fbfbfe);
+  --sst-border: light-dark(
+    rgba(0, 0, 0, 0.12),
+    rgba(255, 255, 255, 0.16)
+  );
+  --sst-hover: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.15));
+  --sst-active: light-dark(rgba(0, 0, 0, 0.14), rgba(255, 255, 255, 0.24));
+  --sst-shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  --sst-radius: var(--zen-border-radius, 10px);
   --sst-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  position: fixed; /* Fixed to window instead of absolute */
+  position: fixed;
   z-index: 2147483647;
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   width: max-content !important;
   align-items: center;
-  background: var(--sst-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--sst-border);
-  border-radius: var(--sst-radius);
-  box-shadow: var(--sst-shadow);
+  background: var(--sst-bg) !important;
+  backdrop-filter: blur(30px) saturate(180%) contrast(95%) brightness(1.1) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(180%) contrast(95%) brightness(1.1) !important;
+  border: 1px solid var(--sst-border) !important;
+  border-radius: var(--sst-radius) !important;
+  box-shadow: var(--sst-shadow) !important;
   padding: 4px;
   gap: 2px;
   font-family: var(--sst-font);
   font-size: 13px;
   color: var(--sst-text);
-  pointer-events: auto;
+  pointer-events: none;
   user-select: none;
   
   /* Initial state for animation */
   opacity: 0;
-  transform: translateY(8px) scale(0.95);
-  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-color-scheme: light) {
-  #zen-highlight-container {
-    --sst-bg: rgba(255, 255, 255, 0.95);
-    --sst-text: #1e1e2e;
-    --sst-border: rgba(0, 0, 0, 0.1);
-    --sst-hover: rgba(0, 0, 0, 0.05);
-    --sst-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  }
+  transform: translateY(6px) scale(0.96);
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #zen-highlight-container[visible="true"] {
   opacity: 1;
   transform: translateY(0) scale(1);
+  pointer-events: auto !important;
+}
+
+/* Custom theme color active */
+#zen-highlight-container[has-custom-color="true"] {
+  --sst-accent: var(--zen-primary-color, #a799ff);
+  --sst-hover: color-mix(in srgb, var(--zen-primary-color, currentColor) 22%, transparent);
+  --sst-active: color-mix(in srgb, var(--zen-primary-color, currentColor) 32%, transparent);
+  --sst-bg: light-dark(
+    color-mix(in srgb, var(--zen-primary-color, white) 15%, rgba(255, 255, 255, var(--sst-alpha))),
+    color-mix(in srgb, var(--zen-primary-color, black) 20%, rgba(20, 20, 25, var(--sst-alpha)))
+  );
 }
 
 .zen-highlight-btn {
@@ -58,25 +68,37 @@
   align-items: center !important;
   gap: 6px !important;
   background: transparent;
-  color: white !important;
+  color: var(--sst-text) !important;
+  fill: currentColor !important;
   border: none;
-  border-radius: 6px;
+  border-radius: calc(var(--sst-radius) - 3px);
   padding: 6px 12px !important;
   font-size: 13px !important;
   font-family: inherit;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
   white-space: nowrap;
   appearance: none;
 }
 
 .zen-highlight-btn:hover {
-  background: var(--sst-hover);
+  background: var(--sst-hover) !important;
+  color: light-dark(var(--sst-accent), #ffffff) !important;
+}
+
+#zen-highlight-container[has-custom-color="true"] .zen-highlight-btn:hover {
+  color: var(--zen-primary-color, currentColor) !important;
+}
+
+.zen-highlight-btn:hover svg {
+  fill: currentColor !important;
 }
 
 .zen-highlight-btn:active {
   transform: scale(0.96);
+  background: var(--sst-active) !important;
 }
 
 .zen-highlight-divider {
@@ -96,14 +118,54 @@
   display: none !important;
 }
 
+/* Default / No custom color ("bez barvy") */
 .zen-highlight-currency-info {
   display: flex;
   align-items: center;
   padding: 6px 10px;
   font-weight: 600;
-  color: var(--sst-accent);
-  background: rgba(124, 106, 239, 0.1);
-  border-radius: 6px;
+  border-radius: calc(var(--sst-radius) - 3px);
   white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto !important;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  
+  /* In dark mode by default, use clear, readable soft violet accent #a799ff */
+  color: #a799ff !important;
+  background: rgba(167, 153, 255, 0.18) !important;
+  border: 1px solid rgba(167, 153, 255, 0.35);
 }
 
+.zen-highlight-currency-info:hover {
+  background: rgba(167, 153, 255, 0.28) !important;
+  border-color: rgba(167, 153, 255, 0.5);
+}
+
+/* Light mode without custom color */
+@media (prefers-color-scheme: light) {
+  #zen-highlight-container:not([has-custom-color="true"]) .zen-highlight-currency-info {
+    color: var(--zen-primary-color, #0284c7) !important;
+    background: color-mix(in srgb, var(--zen-primary-color, #0284c7) 16%, transparent) !important;
+    border: 1px solid color-mix(in srgb, var(--zen-primary-color, #0284c7) 32%, transparent);
+  }
+  #zen-highlight-container:not([has-custom-color="true"]) .zen-highlight-currency-info:hover {
+    background: color-mix(in srgb, var(--zen-primary-color, #0284c7) 26%, transparent) !important;
+    border-color: color-mix(in srgb, var(--zen-primary-color, #0284c7) 48%, transparent);
+  }
+}
+
+/* When custom theme color is active (e.g. coral, pink, teal), match it perfectly! */
+#zen-highlight-container[has-custom-color="true"] .zen-highlight-currency-info {
+  color: var(--zen-primary-color, #7c6aef) !important;
+  background: color-mix(in srgb, var(--zen-primary-color, #7c6aef) 20%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--zen-primary-color, #7c6aef) 32%, transparent);
+}
+
+#zen-highlight-container[has-custom-color="true"] .zen-highlight-currency-info:hover {
+  background: color-mix(in srgb, var(--zen-primary-color, #7c6aef) 30%, transparent) !important;
+  border-color: color-mix(in srgb, var(--zen-primary-color, #7c6aef) 48%, transparent);
+}
+
+.zen-highlight-currency-info:active {
+  transform: scale(0.96);
+}

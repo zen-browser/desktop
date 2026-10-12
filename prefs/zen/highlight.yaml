@@ -7,3 +7,6 @@
 
 - name: zen.highlight.default-currency
   value: "CZK"
+
+- name: zen.highlight.search-in-background
+  value: false

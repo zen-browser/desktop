@@ -369,6 +369,9 @@ zen-highlight-header = Highlight Toolbar
 zen-highlight-description = Show a floating toolbar with Search, Copy, and Currency Conversion when selecting text.
 zen-highlight-enabled =
     .label = Enable Highlight Toolbar
+
+zen-highlight-search-in-background =
+    .label = Open search results in the background
 zen-highlight-currency-label = Default Currency:
 
 zen-highlight-currency-czk =

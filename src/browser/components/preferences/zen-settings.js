@@ -1191,6 +1191,11 @@ Preferences.addAll([
     default: "CZK",
   },
   {
+    id: "zen.highlight.search-in-background",
+    type: "bool",
+    default: false,
+  },
+  {
     id: "zen.urlbar.behavior",
     type: "string",
     default: "float",

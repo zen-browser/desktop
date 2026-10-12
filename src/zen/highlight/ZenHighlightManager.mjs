@@ -1,5 +1,3 @@
-
-
 export class nsZenHighlightManager {
   debug(msg) { dump("ZEN_HIGHLIGHT_MANAGER: " + msg + "\n"); console.debug("ZenHighlightManager:", msg); }
   constructor() {
@@ -12,17 +10,49 @@ export class nsZenHighlightManager {
   }
 
   init() {
+    if (this._initialized) return;
+
     this.container = this.window.document.getElementById("zen-highlight-container");
     this.searchBtn = this.window.document.getElementById("zen-highlight-btn-search");
     this.copyBtn = this.window.document.getElementById("zen-highlight-btn-copy");
     this.currencyEl = this.window.document.getElementById("zen-highlight-currency");
     this.currencyText = this.window.document.getElementById("zen-highlight-currency-text");
 
+    if (!this.container) return; // Elements not yet in DOM
+    this._initialized = true;
+
+    if (this.container) {
+      this.container.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      this.container.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
     if (this.searchBtn) {
-      this.searchBtn.addEventListener("click", () => this.handleSearch());
+      this.searchBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.handleSearch();
+      });
     }
     if (this.copyBtn) {
-      this.copyBtn.addEventListener("click", () => this.handleCopy());
+      this.copyBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.handleCopy();
+      });
+    }
+    if (this.currencyEl) {
+      this.currencyEl.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.currencyText?.textContent) {
+          this.copyStringToClipboard(this.currencyText.textContent);
+          this.hide();
+        }
+      });
     }
     
     this.currentText = "";
@@ -44,23 +74,74 @@ export class nsZenHighlightManager {
     this._tabSelectRegistered = true;
   }
 
+  updateThemeState() {
+    let hasCustomColor = false;
+    let bgAlpha = null;
+    try {
+      let workspace = this.window.gZenWorkspaces?.getActiveWorkspace();
+      if (workspace?.theme?.colors && workspace.theme.colors.length > 0) {
+        hasCustomColor = true;
+      }
+      if (typeof workspace?.theme?.opacity === "number") {
+        let t = (workspace.theme.opacity - 0.25) / (0.9 - 0.25);
+        t = Math.max(0, Math.min(1, t));
+        bgAlpha = (0.70 - (t * 0.40)).toFixed(2);
+      }
+    } catch (e) {}
+
+    try {
+      let prefAccent = Services.prefs.getStringPref("zen.theme.accent-color", "AccentColor");
+      if (prefAccent && prefAccent !== "AccentColor" && prefAccent.toLowerCase() !== "accentcolor") {
+        hasCustomColor = true;
+      }
+    } catch (e) {}
+
+    if (hasCustomColor) {
+      this.container.setAttribute("has-custom-color", "true");
+    } else {
+      this.container.removeAttribute("has-custom-color");
+    }
+
+    if (bgAlpha) {
+      this.container.style.setProperty("--zen-highlight-custom-alpha", bgAlpha);
+    } else {
+      this.container.style.removeProperty("--zen-highlight-custom-alpha");
+    }
+  }
+
   show(text, rect, browser) {
     this.debug('show called, text: ' + text.substring(0, 10));
-    if (!this.container) this.debug('constructor -> init'); this.init(); // Fallback if init didn't catch elements
+    if (!this.container) {
+      this.debug('constructor -> init');
+      this.init();
+    }
     if (!this.container) return;
     
     this.currentText = text;
     this.container.hidden = false;
+    this.updateThemeState();
     this._ensureTabSelectListener(); // Lazy-register tab switch listener
     
     // Convert absolute screen coordinates to relative chrome window coordinates
     let win = this.window;
     
-    // Position above the selection
-    let top = rect.screenY - win.mozInnerScreenY - 40; 
-    let left = rect.screenX - win.mozInnerScreenX + (rect.width / 2) - (this.container.offsetWidth / 2);
+    let containerHeight = this.container.offsetHeight || 40;
+    let containerWidth = this.container.offsetWidth || 190;
     
-    this.debug(`Calculated pos: top=${top}, left=${left} | winScreen: ${win.mozInnerScreenY}, ${win.mozInnerScreenX} | rectScreen: ${rect.screenY}, ${rect.screenX} | offsetWidth: ${this.container.offsetWidth}`);
+    // Position comfortably above the selection with 12px gap
+    let top = rect.screenY - win.mozInnerScreenY - containerHeight - 12;
+    let left = rect.screenX - win.mozInnerScreenX + (rect.width / 2) - (containerWidth / 2);
+
+    // If selection is too close to top of window, show below the selection instead
+    if (top < 10) {
+      top = rect.screenY - win.mozInnerScreenY + rect.height + 12;
+    }
+
+    // Keep horizontally within window bounds
+    let maxLeft = win.innerWidth - containerWidth - 12;
+    left = Math.max(12, Math.min(left, maxLeft));
+    
+    this.debug(`Calculated pos: top=${top}, left=${left} | winScreen: ${win.mozInnerScreenY}, ${win.mozInnerScreenX} | rectScreen: ${rect.screenY}, ${rect.screenX} | offsetWidth: ${containerWidth}, offsetHeight: ${containerHeight}`);
 
     this.container.style.top = `${top}px`;
     this.container.style.left = `${left}px`;
@@ -87,18 +168,82 @@ export class nsZenHighlightManager {
     }, 150); // wait for transition
   }
 
-  handleSearch() {
+  async handleSearch() {
+    this.debug("handleSearch called, text: " + this.currentText);
     if (!this.currentText) return;
+    
     let url = "https://www.google.com/search?q=" + encodeURIComponent(this.currentText);
-    this.window.gBrowser.loadOneTab(url, { inBackground: false });
+    
+    try {
+      let engine;
+      if (Services.search && Services.search.getDefault) {
+        engine = await Services.search.getDefault();
+      } else {
+        const { SearchService } = ChromeUtils.importESModule("resource://gre/modules/SearchService.sys.mjs");
+        engine = await SearchService.getDefault();
+      }
+      
+      let submission = engine.getSubmission(this.currentText, null, "searchbar");
+      url = submission.uri.spec;
+    } catch(e) {
+      console.error("Zen Highlight Search Error (fallback to Google):", e);
+    }
+    
+    try {
+      let loadInBackground = false; // Default to switching to the new tab
+      try {
+        loadInBackground = Services.prefs.getBoolPref("zen.highlight.search-in-background", false);
+      } catch (e) {}
+
+      let newTab = this.window.gBrowser.addTab(url, { 
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+        inBackground: loadInBackground
+      });
+      if (!loadInBackground && newTab) {
+        this.window.gBrowser.selectedTab = newTab;
+      }
+    } catch (e) {
+      console.error("Zen Highlight: Failed to open tab:", e);
+    }
+    
     this.hide();
   }
 
+  copyStringToClipboard(str) {
+    if (!str) return;
+    try {
+      if (typeof Cc !== "undefined" && typeof Ci !== "undefined") {
+        Cc["@mozilla.org/widget/clipboardhelper;1"]
+          .getService(Ci.nsIClipboardHelper)
+          .copyString(str);
+        return;
+      }
+    } catch (e) {
+      console.warn("Cc clipboard helper failed:", e);
+    }
+    try {
+      const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+                              ?.getService(Components.interfaces.nsIClipboardHelper);
+      if (clipboardHelper) {
+        clipboardHelper.copyString(str);
+        return;
+      }
+    } catch (e) {
+      console.warn("Components clipboard helper failed:", e);
+    }
+    try {
+      if (this.window.navigator?.clipboard?.writeText) {
+        this.window.navigator.clipboard.writeText(str);
+      }
+    } catch (e) {
+      console.error("Zen Highlight Copy Error:", e);
+    }
+  }
+
   handleCopy() {
+    this.debug("handleCopy called, text: " + this.currentText);
     if (!this.currentText) return;
-    const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
-                            .getService(Components.interfaces.nsIClipboardHelper);
-    clipboardHelper.copyString(this.currentText);
+    this.copyStringToClipboard(this.currentText);
     this.hide();
   }
 
@@ -122,9 +267,6 @@ export class nsZenHighlightManager {
   }
 
   async checkCurrency(text, generation) {
-    let defaultCurrency = "CZK";
-    try {
-      defaultCurrency = Services.prefs.getStringPref("zen.highlight.default-currency", "CZK");
     // Only match patterns like "10$", "10.50 $", "$10", "10 USD", "10 €", "10 EUR"
     const match = text.match(/^(\$|€|£)?\s*(\d+[.,]?\d*)\s*(\$|€|£|USD|EUR|GBP|CZK)?$/i);
     if (!match) return;
@@ -171,4 +313,3 @@ export class nsZenHighlightManager {
 if (!window.gZenHighlightManager) {
   window.gZenHighlightManager = new nsZenHighlightManager();
 }
-

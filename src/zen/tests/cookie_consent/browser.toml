@@ -8,9 +8,16 @@ prefs = [
 ]
 support-files = [
   "head.js",
+  "fixtures/onetrust.html",
+  "fixtures/onetrust-settings.html",
+  "fixtures/sourcepoint.html",
+  "fixtures/didomi.html",
+  "fixtures/quantcast.html",
 ]
 
 ["browser_cookie_consent_engine.js"]
+
+["browser_cookie_consent_rules.js"]
 
 ["browser_cookie_consent_page.js"]
 

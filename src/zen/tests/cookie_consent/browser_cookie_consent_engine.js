@@ -48,7 +48,7 @@ add_task(function test_reject_button_is_chosen_over_accept() {
   Assert.equal(decision.control.id, "reject", "Accept all is not the target");
 });
 
-add_task(function test_accept_only_banner_is_hidden() {
+add_task(function test_accept_only_banner_is_left_alone() {
   const doc = page(`
     <div id="banner" role="dialog" aria-modal="true">
       <p>We use cookies on this site.</p>
@@ -56,7 +56,7 @@ add_task(function test_accept_only_banner_is_hidden() {
     </div>
   `);
   const decision = inspectConsent(doc);
-  Assert.equal(decision.action, "hide", "an accept-only banner is hidden");
+  Assert.equal(decision.action, "none", "an accept-only banner is not hidden");
   Assert.ok(!decision.control, "Accept all is never clicked");
 });
 

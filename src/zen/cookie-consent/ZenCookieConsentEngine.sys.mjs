@@ -4,6 +4,7 @@
 
 const HANDLED_ATTR = "data-zen-cookie-handled";
 const MANAGE_ATTR = "data-zen-cookie-manage";
+const STEP_ATTR = "data-zen-cookie-step";
 const MAX_CANDIDATES = 12;
 const MAX_WALK = 400;
 const MAX_DEPTH = 8;
@@ -112,6 +113,62 @@ const VENDORS = [
       ".wt-cli-reject-btn, #wt-cli-reject-btn, .cli-btn-reject, .cookie_action_close_header_reject, #cn-refuse-cookie",
   },
 ];
+
+/**
+ * Known consent managers, in the order a person would refuse them:
+ * click reject when it is already on screen, otherwise open preferences,
+ * then click reject. A step marked final means the refusal itself.
+ * Optional steps are skipped when that control is not in the dialog yet.
+ */
+const CMP_RULES = {
+  onetrust: [
+    {
+      click:
+        "#onetrust-reject-all-handler, .onetrust-reject-all-handler",
+      optional: true,
+      final: true,
+    },
+    {
+      click: "#onetrust-pc-btn-handler, button.ot-sdk-show-settings",
+      optional: true,
+    },
+    { click: ".ot-pc-refuse-all-handler", final: true },
+  ],
+  sourcepoint: [
+    {
+      click:
+        ".sp_choice_type_REJECT_ALL, button[title='Reject All' i], button[aria-label='Reject All' i]",
+      optional: true,
+      final: true,
+    },
+    {
+      click: "button[title*='option' i], button[title*='setting' i]",
+      optional: true,
+    },
+    { click: ".sp_choice_type_REJECT_ALL", final: true },
+  ],
+  usercentrics: [
+    { click: "[data-testid='uc-deny-all-button']", final: true },
+  ],
+  didomi: [
+    {
+      click:
+        "#didomi-notice-disagree-button, .didomi-disagree-button, button#btn-toggle-disagree",
+      optional: true,
+      final: true,
+    },
+    { click: "#didomi-notice-learn-more-button", optional: true },
+    {
+      click: ".didomi-components-button--color-secondary, button#btn-toggle-disagree",
+      final: true,
+    },
+  ],
+  quantcast: [
+    { click: "button[mode='reject']", optional: true, final: true },
+    { click: "button[mode='secondary']", optional: true },
+    { click: "button[mode='reject']", final: true },
+  ],
+};
 
 const DIALOG_SELECTOR = "[role='dialog'], [role='alertdialog'], [aria-modal='true']";
 
@@ -457,14 +514,29 @@ function isOverlay(element) {
   return position === "fixed" || position === "sticky";
 }
 
+function shadowRootOf(node) {
+  if (!node || node.nodeType !== 1) {
+    return null;
+  }
+  try {
+    if (node.openOrClosedShadowRoot) {
+      return node.openOrClosedShadowRoot;
+    }
+  } catch {
+    // The binding is only available to privileged callers.
+  }
+  return node.shadowRoot || null;
+}
+
 function walk(node, depth, state, visit) {
   if (!node || depth > MAX_DEPTH || state.seen > MAX_WALK) {
     return;
   }
   state.seen++;
   visit(node);
-  if (node.shadowRoot) {
-    walk(node.shadowRoot, depth + 1, state, visit);
+  const shadow = shadowRootOf(node);
+  if (shadow) {
+    walk(shadow, depth + 1, state, visit);
   }
   const children = node.childNodes;
   if (!children) {
@@ -652,18 +724,54 @@ function collectCandidates(doc, topFrame) {
   return picked;
 }
 
+function ruleDecision(element, vendor) {
+  const steps = CMP_RULES[vendor.id];
+  if (!steps) {
+    return null;
+  }
+  const stored = Number(element.getAttribute(STEP_ATTR) || 0);
+  let index = Number.isFinite(stored) && stored > 0 ? stored : 0;
+  while (index < steps.length) {
+    const step = steps[index];
+    const control = queryDeep(element, step.click);
+    if (control && isClickable(control)) {
+      return {
+        action: "click",
+        root: element,
+        control,
+        step: index + 1,
+        final: !!step.final,
+      };
+    }
+    if (step.optional) {
+      index++;
+      continue;
+    }
+    // A step already taken: wait for the next control instead of guessing.
+    return stored > 0 ? { pending: true } : null;
+  }
+  return null;
+}
+
 function decide(element) {
   if (hasPassword(element)) {
     return null;
   }
   if (element.getAttribute(HANDLED_ATTR) === "clicked") {
-    return { action: "hide", root: element };
+    return { action: "hide", root: element, rejected: true };
   }
   const vendor = vendorFor(element);
   if (vendor) {
+    const ruled = ruleDecision(element, vendor);
+    if (ruled?.pending) {
+      return null;
+    }
+    if (ruled) {
+      return ruled;
+    }
     const reject = queryDeep(element, vendor.reject);
     if (reject && isClickable(reject)) {
-      return { action: "click", root: element, control: reject };
+      return { action: "click", root: element, control: reject, final: true };
     }
   }
   const text = textOf(element);
@@ -695,16 +803,10 @@ function decide(element) {
     }
   }
   if (bestReject) {
-    return { action: "click", root: element, control: bestReject };
+    return { action: "click", root: element, control: bestReject, final: true };
   }
   if (manage && hasAccept) {
     return { action: "manage", root: element, control: manage };
-  }
-  if (hasAccept) {
-    return { action: "hide", root: element };
-  }
-  if (vendor && hasConsentLanguage(text)) {
-    return { action: "hide", root: element };
   }
   return null;
 }
@@ -803,9 +905,9 @@ function findLabeledReject(doc) {
     if (hostCount >= MAX_SHADOW_HOSTS) {
       break;
     }
-    if (host.shadowRoot) {
+    if (host.shadowRoot || shadowRootOf(host)) {
       hostCount++;
-      roots.push(host.shadowRoot);
+      roots.push(shadowRootOf(host));
     }
   }
   let best = null;

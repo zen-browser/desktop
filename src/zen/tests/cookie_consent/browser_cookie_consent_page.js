@@ -92,16 +92,16 @@ add_task(async function test_page_reject_is_clicked() {
   }
 });
 
-add_task(async function test_accept_only_banner_is_hidden_without_clicking() {
+add_task(async function test_accept_only_banner_stays_until_it_can_be_refused() {
   const tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
     `${base}/accept`
   );
   try {
-    await TestUtils.waitForCondition(async () => {
-      const state = await bannerState(tab.linkedBrowser);
-      return state.hidden && state.accept === 0;
-    }, "the banner is hidden and accept is not clicked");
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const state = await bannerState(tab.linkedBrowser);
+    Assert.equal(state.accept, 0, "accept is not clicked");
+    Assert.ok(!state.hidden, "the banner stays until a reject control exists");
   } finally {
     BrowserTestUtils.removeTab(tab);
   }

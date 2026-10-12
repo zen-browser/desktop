@@ -12,8 +12,10 @@ import {
 } from "resource:///modules/zen/cookieconsent/ZenCookieConsentEngine.sys.mjs";
 
 const MAX_SCANS = 6;
+const EXTENDED_SCANS = 16;
 const QUIET_MS = 7000;
 const HARD_STOP_MS = 8000;
+const EXTENDED_STOP_MS = 20000;
 const IDLE_TIMEOUT_MS = 300;
 
 export class ZenCookieConsentChild extends JSWindowActorChild {
@@ -27,6 +29,7 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
   #queued = false;
   #doc = null;
   #sawCandidate = false;
+  #extended = false;
 
   handleEvent(event) {
     if (event.type !== "DOMContentLoaded" && event.type !== "pageshow") {
@@ -75,6 +78,7 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
     this.#allowed = null;
     this.#scans = 0;
     this.#sawCandidate = false;
+    this.#extended = false;
     this.#queued = false;
     if (!this.#frameShouldRun(doc)) {
       this.#finish();
@@ -91,7 +95,21 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
   }
 
   #armHardStop(win) {
-    const timer = win.setTimeout(() => this.#finish(), HARD_STOP_MS);
+    const timer = win.setTimeout(() => {
+      if (this.#sawCandidate) {
+        return;
+      }
+      this.#finish();
+    }, HARD_STOP_MS);
+    this.#timers.push(() => win.clearTimeout(timer));
+  }
+
+  #extendWatch(win) {
+    if (this.#extended || !win) {
+      return;
+    }
+    this.#extended = true;
+    const timer = win.setTimeout(() => this.#finish(), EXTENDED_STOP_MS);
     this.#timers.push(() => win.clearTimeout(timer));
   }
 
@@ -153,7 +171,7 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
       return;
     }
     this.#observer = new win.MutationObserver(records => {
-      if (this.#done || this.#scans >= MAX_SCANS) {
+      if (this.#done || this.#scans >= EXTENDED_SCANS) {
         return;
       }
       for (const record of records) {
@@ -201,7 +219,8 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
   }
 
   async #scanOnce() {
-    if (this.#scans >= MAX_SCANS) {
+    const limit = this.#sawCandidate ? EXTENDED_SCANS : MAX_SCANS;
+    if (this.#scans >= limit) {
       this.#finish();
       return;
     }
@@ -233,8 +252,13 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
     const topFrame = this.#isTopFrame();
     const decision = inspectConsent(doc, { topFrame });
     if (decision.action === "none") {
-      if (this.#sawCandidate || !topFrame) {
+      if (!topFrame && !this.#sawCandidate) {
         this.#finish();
+        return;
+      }
+      if (this.#sawCandidate) {
+        this.#watch(doc);
+        this.#schedule(500);
         return;
       }
       this.#watch(doc);
@@ -242,28 +266,35 @@ export class ZenCookieConsentChild extends JSWindowActorChild {
       return;
     }
     this.#sawCandidate = true;
+    this.#extendWatch(this.contentWindow);
     if (topFrame) {
       this.#watch(doc);
     }
     if (decision.action === "click") {
+      if (decision.step != null) {
+        decision.root?.setAttribute("data-zen-cookie-step", String(decision.step));
+      }
       this.#activate(decision.control);
-      markClicked(decision.root);
-      this.#schedule(250);
+      if (decision.final) {
+        markClicked(decision.root);
+      }
+      this.#schedule(decision.final ? 250 : 450);
       return;
     }
     if (decision.action === "manage") {
       try {
         this.#activate(decision.control);
       } catch {
-        hideConsent(doc, decision.root);
-        this.#finish();
+        this.#schedule(400);
         return;
       }
       markManaged(decision.root);
       this.#schedule(400);
       return;
     }
-    hideConsent(doc, decision.root);
+    if (decision.rejected || decision.root?.getAttribute("data-zen-cookie-handled") === "clicked") {
+      hideConsent(doc, decision.root);
+    }
     this.#finish();
   }
 

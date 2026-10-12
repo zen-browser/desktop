@@ -235,14 +235,22 @@ async function queryTopSite() {
      FROM moz_places
      WHERE hidden = 0
        AND visit_count > 0
-       AND url NOT LIKE 'about:%'
-       AND url NOT LIKE 'chrome:%'
-       AND url NOT LIKE 'resource:%'
-       AND url NOT LIKE 'moz-extension:%'
-       AND url NOT LIKE 'blob:%'
-       AND url NOT LIKE 'data:%'
+       AND url NOT LIKE :about
+       AND url NOT LIKE :chrome
+       AND url NOT LIKE :resource
+       AND url NOT LIKE :extension
+       AND url NOT LIKE :blob
+       AND url NOT LIKE :data
      ORDER BY frecency DESC
-     LIMIT 1`
+     LIMIT 1`,
+    {
+      about: "about:%",
+      chrome: "chrome:%",
+      resource: "resource:%",
+      extension: "moz-extension:%",
+      blob: "blob:%",
+      data: "data:%",
+    }
   );
   if (!rows.length) {
     return "—";
@@ -267,9 +275,14 @@ async function queryVisitedOrigins() {
      WHERE hidden = 0
        AND visit_count > 0
        AND rev_host <> '.'
-       AND url NOT LIKE 'about:%'
-       AND url NOT LIKE 'chrome:%'
-       AND url NOT LIKE 'moz-extension:%'`
+       AND url NOT LIKE :about
+       AND url NOT LIKE :chrome
+       AND url NOT LIKE :extension`,
+    {
+      about: "about:%",
+      chrome: "chrome:%",
+      extension: "moz-extension:%",
+    }
   );
   return String(rows[0]?.getResultByName("count") || 0);
 }

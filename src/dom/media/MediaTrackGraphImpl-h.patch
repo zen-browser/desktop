@@ -1,0 +1,26 @@
+diff --git a/dom/media/MediaTrackGraphImpl.h b/dom/media/MediaTrackGraphImpl.h
+--- a/dom/media/MediaTrackGraphImpl.h
++++ b/dom/media/MediaTrackGraphImpl.h
+@@ -405,9 +405,19 @@
+       AudioContextOperationControlMessage* aMessage);
+ 
+   /**
+-   * Determine if we have any audio tracks, or are about to add any audiotracks.
+-   */
+-  bool AudioTrackPresent();
++   * Determine whether an active track requires an audio device. Also report
++   * destinations kept active only to advance an idle AudioContext clock.
++   */
++  bool AudioTrackPresent(bool& aHasIdleDestination);
++
++  // Keep the device briefly between short sounds. Dormant destinations keep
++  // advancing on the system clock after this grace period.
++  GraphTime mLastActiveAudioTrackTime = 0;
++  bool mAudioDriverWasIdle = false;
++  // Graph-thread-only, non-owning, just like mTracks/mSuspendedTracks. Removed
++  // in RemoveTrackGraphThread before a track can be destroyed. Each entry owns
++  // one suspend count while an idle audio device is being restarted.
++  nsTArray<MediaTrack*> mAudioDeviceResumeTracks;
+ 
+   /**
+    * Schedules a replacement GraphDriver in mNextDriver, if necessary.

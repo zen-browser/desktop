@@ -1,0 +1,100 @@
+diff --git a/dom/media/MediaTrackGraph.cpp b/dom/media/MediaTrackGraph.cpp
+--- a/dom/media/MediaTrackGraph.cpp
++++ b/dom/media/MediaTrackGraph.cpp
+@@ -231,6 +231,7 @@
+   SetTrackOrderDirty();
+ 
+   UnregisterAllAudioOutputs(aTrack);
++  mAudioDeviceResumeTracks.RemoveElement(aTrack);
+ 
+   if (aTrack->IsSuspended()) {
+     const bool removed = mSuspendedTracks.RemoveElement(aTrack);
+@@ -388,12 +389,17 @@
+ const uint32_t IN_MUTED_CYCLE = 1;
+ }  // namespace
+ 
+-bool MediaTrackGraphImpl::AudioTrackPresent() {
++bool MediaTrackGraphImpl::AudioTrackPresent(bool& aHasIdleDestination) {
+   MOZ_ASSERT(OnGraphThreadOrNotRunning());
+ 
++  aHasIdleDestination = false;
+   bool audioTrackPresent = false;
+   for (MediaTrack* track : mTracks) {
+-    if (track->AsAudioNodeTrack()) {
++    if (auto* nodeTrack = track->AsAudioNodeTrack()) {
++      if (nodeTrack->IsInactiveAudioContextDestination()) {
++        aHasIdleDestination = true;
++        continue;
++      }
+       audioTrackPresent = true;
+       break;
+     }
+@@ -423,23 +429,53 @@
+   AudioCallbackDriver* audioCallbackDriver =
+       CurrentDriver()->AsAudioCallbackDriver();
+   if (audioCallbackDriver && !audioCallbackDriver->OnFallback()) {
++    for (MediaTrack* track : mAudioDeviceResumeTracks) {
++      track->DecrementSuspendCount();
++    }
++    mAudioDeviceResumeTracks.Clear();
++    mAudioDriverWasIdle = false;
+     for (PendingResumeOperation& op : mPendingResumeOperations) {
+       op.Apply(this);
+     }
+     mPendingResumeOperations.Clear();
+   }
+ 
+-  // Note that this looks for any audio tracks, input or output, and switches
+-  // to a SystemClockDriver if there are none active or no resume operations
+-  // to make any active.
+-  bool needAudioCallbackDriver =
+-      !mPendingResumeOperations.IsEmpty() || AudioTrackPresent();
++  bool hasIdleDestination = false;
++  bool needAudioCallbackDriver = !mPendingResumeOperations.IsEmpty() ||
++                                 !mAudioDeviceResumeTracks.IsEmpty() ||
++                                 AudioTrackPresent(hasIdleDestination);
++  if (needAudioCallbackDriver) {
++    mLastActiveAudioTrackTime = mProcessedTime;
++  } else if (audioCallbackDriver && hasIdleDestination &&
++             mProcessedTime - mLastActiveAudioTrackTime < 5 * mSampleRate) {
++    // Avoid cycling the output device between short notification sounds.
++    needAudioCallbackDriver = true;
++  }
+   if (!needAudioCallbackDriver) {
+     if (audioCallbackDriver && audioCallbackDriver->IsStarted()) {
++      mAudioDriverWasIdle = hasIdleDestination;
+       SwitchAtNextIteration(
+           new SystemClockDriver(this, CurrentDriver(), mSampleRate));
+     }
+     return;
++  }
++
++  if (mAudioDriverWasIdle &&
++      (!audioCallbackDriver || audioCallbackDriver->OnFallback())) {
++    // Do not render the beginning of a new sound into a system-clock iteration
++    // or the fallback driver while the audio device is starting. Suspend the
++    // Web Audio timelines together, retaining their alignment. Capture the
++    // tracks first because IncrementSuspendCount mutates mTracks.
++    AutoTArray<MediaTrack*, 16> tracks;
++    for (MediaTrack* track : mTracks) {
++      if (track->AsAudioNodeTrack()) {
++        tracks.AppendElement(track);
++      }
++    }
++    for (MediaTrack* track : tracks) {
++      track->IncrementSuspendCount();
++      mAudioDeviceResumeTracks.AppendElement(track);
++    }
+   }
+ 
+   NativeInputTrack* native =
+@@ -1289,7 +1325,8 @@
+   UpdateTrackOrder();
+ 
+   // Always do another iteration if there are tracks waiting to resume.
+-  bool ensureNextIteration = !mPendingResumeOperations.IsEmpty();
++  bool ensureNextIteration = !mPendingResumeOperations.IsEmpty() ||
++                             !mAudioDeviceResumeTracks.IsEmpty();
+ 
+   for (MediaTrack* track : mTracks) {
+     if (SourceMediaTrack* is = track->AsSourceTrack()) {

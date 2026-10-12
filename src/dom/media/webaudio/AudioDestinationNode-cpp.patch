@@ -1,0 +1,13 @@
+diff --git a/dom/media/webaudio/AudioDestinationNode.cpp b/dom/media/webaudio/AudioDestinationNode.cpp
+--- a/dom/media/webaudio/AudioDestinationNode.cpp
++++ b/dom/media/webaudio/AudioDestinationNode.cpp
+@@ -443,7 +443,8 @@
+ 
+ const AudioNodeTrack::Flags kTrackFlags =
+     AudioNodeTrack::NEED_MAIN_THREAD_CURRENT_TIME |
+-    AudioNodeTrack::NEED_MAIN_THREAD_ENDED | AudioNodeTrack::EXTERNAL_OUTPUT;
++    AudioNodeTrack::NEED_MAIN_THREAD_ENDED | AudioNodeTrack::EXTERNAL_OUTPUT |
++    AudioNodeTrack::AUDIO_CONTEXT_DESTINATION;
+ 
+ AudioDestinationNode::AudioDestinationNode(AudioContext* aContext,
+                                            bool aIsOffline,

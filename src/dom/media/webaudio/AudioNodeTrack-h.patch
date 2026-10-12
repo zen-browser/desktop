@@ -1,0 +1,27 @@
+diff --git a/dom/media/webaudio/AudioNodeTrack.h b/dom/media/webaudio/AudioNodeTrack.h
+--- a/dom/media/webaudio/AudioNodeTrack.h
++++ b/dom/media/webaudio/AudioNodeTrack.h
+@@ -62,6 +62,10 @@
+     // AudioNode, whereas external AudioNodeTracks can pass their output
+     // to other ProcessedMediaTracks or hardware audio output.
+     EXTERNAL_OUTPUT = 1U << 2,
++    // An AudioContext destination stays active to advance currentTime even
++    // after its last source has stopped. It does not itself need an audio
++    // device when it has no active inputs.
++    AUDIO_CONTEXT_DESTINATION = 1U << 3,
+   };
+   /**
+    * Create a track that will process audio for an AudioNode.
+@@ -142,6 +146,12 @@
+    */
+   void ProduceOutputBeforeInput(GraphTime aFrom);
+   bool IsAudioParamTrack() const { return mAudioParamTrack; }
++
++  // Graph thread only. This deliberately tests activity, not sample amplitude:
++  // scheduled sources, worklets and effect tails must keep their audio driver.
++  bool IsInactiveAudioContextDestination() const {
++    return (mFlags & AUDIO_CONTEXT_DESTINATION) && mActiveInputCount == 0;
++  }
+ 
+   const OutputChunks& LastChunks() const { return mLastChunks; }
+   bool MainThreadNeedsUpdates() const override {

@@ -1,0 +1,146 @@
+diff --git a/dom/media/gtest/TestAudioTrackGraph.cpp b/dom/media/gtest/TestAudioTrackGraph.cpp
+--- a/dom/media/gtest/TestAudioTrackGraph.cpp
++++ b/dom/media/gtest/TestAudioTrackGraph.cpp
+@@ -2,6 +2,10 @@
+  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
++#include <algorithm>
++
++#include "AudioNodeEngine.h"
++#include "AudioNodeTrack.h"
+ #include "CrossGraphPort.h"
+ #include "DeviceInputTrack.h"
+ #include "MediaTrackGraphImpl.h"
+@@ -4634,6 +4638,131 @@
+   (void)WaitFor(destroyPromise).unwrap()[0];
+ }
+ 
++// A Web Audio destination remains active even without inputs so that its
++// AudioContext clock can keep advancing. That must not keep cubeb open.
++class IdleDestinationEngine final : public AudioNodeEngine {
++ public:
++  IdleDestinationEngine() : AudioNodeEngine(nullptr) {}
++  bool IsActive() const override { return true; }
++};
++
++class IdleDestinationTrack final : public AudioNodeTrack {
++ public:
++  explicit IdleDestinationTrack(TrackRate aRate)
++      : AudioNodeTrack(new IdleDestinationEngine(),
++                       EXTERNAL_OUTPUT | AUDIO_CONTEXT_DESTINATION, aRate) {}
++};
++
++// Produce a marker in the very first block, followed by silence. Losing the
++// first block during a driver transition would lose the entire marker.
++class FirstBlockEngine final : public AudioNodeEngine {
++ public:
++  FirstBlockEngine() : AudioNodeEngine(nullptr) {}
++  bool IsActive() const override { return true; }
++  void ProcessBlock(AudioNodeTrack*, GraphTime, const AudioBlock&,
++                    AudioBlock* aOutput, bool*) override {
++    if (mBlocks++ == 0) {
++      aOutput->AllocateChannels(1);
++      std::fill_n(aOutput->ChannelFloatsForWrite(0), WEBAUDIO_BLOCK_SIZE, 0.5f);
++    } else {
++      aOutput->SetNull(WEBAUDIO_BLOCK_SIZE);
++    }
++  }
++  uint32_t mBlocks = 0;  // Graph thread only.
++};
++
++class FirstBlockTrack final : public AudioNodeTrack {
++ public:
++  explicit FirstBlockTrack(TrackRate aRate)
++      : AudioNodeTrack(new FirstBlockEngine(), NO_TRACK_FLAGS, aRate) {}
++};
++
++TEST_WithTailDispatch(TestAudioTrackGraph,
++                      IdleWebAudioDestinationReleasesDevice) {
++  MockCubeb* cubeb = new MockCubeb();
++  CubebUtils::ForceSetCubebContext(cubeb->AsCubebContext());
++  MediaTrackGraphImpl* graph = MediaTrackGraphImpl::GetInstance(
++      MediaTrackGraph::AUDIO_THREAD_DRIVER, /* Window ID */ 1, 48000, nullptr,
++      AbstractThread::MainThread());
++
++  RefPtr<IdleDestinationTrack> destination;
++  DispatchFunction([&] {
++    destination = new IdleDestinationTrack(graph->GraphRate());
++    graph->AddTrack(destination);
++    destination->AddAudioOutput(nullptr, nullptr);
++  });
++  RefPtr<SmartMockCubebStream> stream = WaitFor(cubeb->StreamInitEvent());
++  (void)WaitForResolve(
++      InvokeAsync([&] { return graph->NotifyWhenDeviceStarted(nullptr); }));
++
++  DispatchFunction([&] { graph->AppendMessage(MakeUnique<GoFaster>(cubeb)); });
++  // Before the fix this never occurs while the destination is alive.
++  WaitFor(cubeb->StreamDestroyEvent());
++  cubeb->DontGoFaster();
++
++  // Restart with a deliberately slow backend. No Web Audio blocks may be
++  // consumed by the system-clock/fallback driver before hardware is ready.
++  cubeb->SetStreamStartFreezeEnabled(true);
++  RefPtr<FirstBlockTrack> source;
++  RefPtr<MediaInputPort> port;
++  auto started = InvokeAsync([&] {
++    source = new FirstBlockTrack(graph->GraphRate());
++    graph->AddTrack(source);
++    port = destination->AllocateInputPort(source);
++    return graph->NotifyWhenDeviceStarted(nullptr);
++  });
++  stream = WaitFor(cubeb->StreamInitEvent());
++  cubeb->SetStreamStartFreezeEnabled(false);
++  stream->SetOutputRecordingEnabled(true);
++  for (size_t i = 0; i < 3; ++i) {
++    auto frozen = InvokeAsync([&]() -> RefPtr<GenericPromise> {
++      auto promise = MakeRefPtr<GenericPromise::Private>(__func__);
++      graph->QueueControlMessageWithNoShutdown([&, promise] {
++        EXPECT_TRUE(destination->IsSuspended());
++        EXPECT_TRUE(source->IsSuspended());
++        EXPECT_EQ(static_cast<FirstBlockEngine*>(source->Engine())->mBlocks,
++                  0u);
++        promise->Resolve(true, __func__);
++      });
++      return promise;
++    });
++    (void)WaitForResolve(frozen);
++  }
++  stream->Thaw();
++  (void)WaitForResolve(started);
++  TrackTime processed = 0;
++  WaitUntil(stream->FramesProcessedEvent(), [&](uint32_t aFrames) {
++    processed += aFrames;
++    return processed >= graph->GraphRate() / 5;
++  });
++  auto checked = InvokeAsync([&]() -> RefPtr<GenericPromise> {
++    auto promise = MakeRefPtr<GenericPromise::Private>(__func__);
++    graph->QueueControlMessageWithNoShutdown([&, promise] {
++      EXPECT_FALSE(destination->IsSuspended());
++      auto* driver = graph->CurrentDriver()->AsAudioCallbackDriver();
++      EXPECT_TRUE(driver);
++      if (driver) {
++        EXPECT_FALSE(driver->OnFallback());
++      }
++      promise->Resolve(true, __func__);
++    });
++    return promise;
++  });
++  (void)WaitForResolve(checked);
++
++  DispatchFunction([&] {
++    port->Destroy();
++    source->Destroy();
++    destination->RemoveAudioOutput(nullptr);
++    destination->Destroy();
++  });
++  WaitFor(cubeb->StreamDestroyEvent());
++  auto output = stream->TakeRecordedOutput();
++  EXPECT_EQ(std::count_if(output.begin(), output.end(),
++                          [](float aSample) { return aSample > 0.25f; }),
++            WEBAUDIO_BLOCK_SIZE * stream->OutputChannels());
++}
++
+ #undef InvokeAsync
+ #undef TEST_WithTailDispatch
+ #undef DispatchFunction

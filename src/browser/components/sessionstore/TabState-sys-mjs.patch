@@ -1,8 +1,16 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..6b4b407e05e26faca69d9d7ac6f31510620898fe 100644
+index bb7bd8c7ca88f776188fce64e0c85beb5ceb27a5..bdec77ba26172fe1b41369b1d45d5a6f9d52ae25 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -99,10 +99,28 @@ class _TabState {
+@@ -10,6 +10,7 @@ const lazy = XPCOMUtils.declareLazy({
+     "moz-src:///browser/components/sessionstore/TabAttributes.sys.mjs",
+   TabStateCache:
+     "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
++  UrlbarShared: "chrome://browser/content/urlbar/UrlbarShared.mjs",
+   sessionStoreLogger:
+     "moz-src:///browser/components/sessionstore/SessionLogger.sys.mjs",
+ });
+@@ -106,10 +107,28 @@ class _TabState {
        }
      }
  
@@ -25,9 +33,20 @@ index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..6b4b407e05e26faca69d9d7ac6f31510
        browser,
        true
      );
-+    if (tabData.searchMode?.source === tab.documentGlobal.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS) {
++    if (tabData.searchMode?.source === lazy.UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS) {
 +      delete tabData.searchMode;
 +    }
  
      tabData.userContextId = tab.userContextId || 0;
  
+@@ -135,6 +154,10 @@ class _TabState {
+       tabData.image = tabbrowser.getIcon(tab);
+     }
+ 
++    if (tab.zenStaticIcon) {
++      tabData.image = tab.zenStaticIcon;
++    }
++
+     // If there is a userTypedValue set, then either the user has typed something
+     // in the URL bar, or a new tab was opened with a URI to load.
+     // If so, we also track whether we were still in the process of loading something.

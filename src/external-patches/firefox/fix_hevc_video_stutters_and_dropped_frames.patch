@@ -1,0 +1,274 @@
+diff --git a/dom/media/gtest/TestWebMDemuxer.cpp b/dom/media/gtest/TestWebMDemuxer.cpp
+--- a/dom/media/gtest/TestWebMDemuxer.cpp
++++ b/dom/media/gtest/TestWebMDemuxer.cpp
+@@ -240,5 +240,61 @@
+           });
+ 
+   taskQueue->AwaitShutdownAndIdle();
+   EXPECT_TRUE(ran);
+ }
++// output_hevc.mkv is a 1s 30fps HEVC-in-Matroska file encoded with B-frames
++// (has_b_frames=2), so decode order differs from presentation order:
++//   ffmpeg -f lavfi -i testsrc=size=320x240:rate=30 -t 1 -c:v libx265
++//     -pix_fmt yuv420p output_hevc.mkv
++// The file carries no BlockDuration, so samples must fall back to the
++// container default duration (33000 us). Peeking at decode-order packet
++// timestamps instead gives 0ms and 66-67ms outliers. A single GetSamples(3)
++// is enough to tell: the demuxed samples stray from the first frames
++// without the fix.
++TEST(MatroskaDemuxer, HEVCDurations)
++{
++  RefPtr<MockMediaResource> resource = new MockMediaResource("output_hevc.mkv");
++  ASSERT_EQ(NS_OK, resource->Open());
++
++  RefPtr<MatroskaDemuxer> demuxer = new MatroskaDemuxer(resource);
++  RefPtr<TaskQueue> taskQueue = TaskQueue::Create(
++      GetMediaThreadPool(MediaThreadType::SUPERVISOR), "TestMatroskaDemuxer");
++
++  bool ran = false;
++  InvokeAsync(taskQueue, __func__, [demuxer]() { return demuxer->Init(); })
++      ->Then(
++          taskQueue, __func__,
++          [demuxer, taskQueue, &ran]() {
++            EXPECT_EQ(demuxer->GetNumberTracks(TrackInfo::kVideoTrack), 1u);
++            RefPtr<MediaTrackDemuxer> videoTrack =
++                demuxer->GetTrackDemuxer(TrackInfo::kVideoTrack, 0);
++            // GetSamples(3) resolves once 3 samples are available. EXPECT
++            // (not ASSERT) throughout so a failure still reaches
++            // BeginShutdown below instead of hanging in
++            // AwaitShutdownAndIdle.
++            videoTrack->GetSamples(3)->Then(
++                taskQueue, __func__,
++                [taskQueue,
++                 &ran](RefPtr<MediaTrackDemuxer::SamplesHolder> aHolder) {
++                  EXPECT_EQ(aHolder->GetSamples().Length(), 3u);
++                  for (const auto& sample : aHolder->GetSamples()) {
++                    EXPECT_TRUE(sample->mDuration.IsValid());
++                    EXPECT_EQ(sample->mDuration,
++                              TimeUnit::FromMicroseconds(33000));
++                  }
++                  ran = true;
++                  taskQueue->BeginShutdown();
++                },
++                [taskQueue](const MediaResult&) {
++                  EXPECT_TRUE(false) << "GetSamples failed";
++                  taskQueue->BeginShutdown();
++                });
++          },
++          [taskQueue](const MediaResult&) {
++            EXPECT_TRUE(false) << "MatroskaDemuxer::Init() failed";
++            taskQueue->BeginShutdown();
++          });
++
++  taskQueue->AwaitShutdownAndIdle();
++  EXPECT_TRUE(ran);
++}
+diff --git a/dom/media/platforms/agnostic/bytestreams/H265.h b/dom/media/platforms/agnostic/bytestreams/H265.h
+--- a/dom/media/platforms/agnostic/bytestreams/H265.h
++++ b/dom/media/platforms/agnostic/bytestreams/H265.h
+@@ -400,10 +400,16 @@
+   // Return the value of sps_max_dec_pic_buffering_minus1[0] + 1 from a valid
+   // SPS in the extradata, otherwise return 0.
+   static uint32_t ComputeMaxRefFrames(
+       const mozilla::MediaByteBuffer* aExtraData);
+ 
++  // Return sps_max_num_reorder_pics at the highest sub-layer from a valid
++  // SPS in the extradata, otherwise return 0. A non-zero value means
++  // decode order can differ from presentation order (B-frames).
++  static uint32_t ComputeMaxReorderPics(
++      const mozilla::MediaByteBuffer* aExtraData);
++
+   // Create a dummy extradata, useful to create a decoder and test the
+   // capabilities of the decoder.
+   static already_AddRefed<mozilla::MediaByteBuffer> CreateFakeExtraData();
+ 
+   // Create new extradata with the essential information from the given
+diff --git a/dom/media/platforms/agnostic/bytestreams/H265.cpp b/dom/media/platforms/agnostic/bytestreams/H265.cpp
+--- a/dom/media/platforms/agnostic/bytestreams/H265.cpp
++++ b/dom/media/platforms/agnostic/bytestreams/H265.cpp
+@@ -1653,10 +1653,21 @@
+   }
+   return rv.unwrap().sps_max_dec_pic_buffering_minus1[0] + 1;
+ }
+ 
+ /* static */
++uint32_t H265::ComputeMaxReorderPics(
++    const mozilla::MediaByteBuffer* aExtraData) {
++  auto rv = DecodeSPSFromHVCCExtraData(aExtraData);
++  if (rv.isErr()) {
++    return 0;
++  }
++  const H265SPS& sps = rv.unwrap();
++  return sps.sps_max_num_reorder_pics[sps.sps_max_sub_layers_minus1];
++}
++
++/* static */
+ already_AddRefed<mozilla::MediaByteBuffer> H265::CreateFakeExtraData() {
+   // Create fake VPS, SPS, PPS and append them into HVCC box
+   static const uint8_t sFakeVPS[] = {
+       0x40, 0x01, 0x0C, 0x01, 0xFF, 0xFF, 0x01, 0x60, 0x00, 0x00, 0x03, 0x00,
+       0x90, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x3F, 0x95, 0x98, 0x09};
+diff --git a/dom/media/platforms/agnostic/bytestreams/gtest/TestByteStreams.cpp b/dom/media/platforms/agnostic/bytestreams/gtest/TestByteStreams.cpp
+--- a/dom/media/platforms/agnostic/bytestreams/gtest/TestByteStreams.cpp
++++ b/dom/media/platforms/agnostic/bytestreams/gtest/TestByteStreams.cpp
+@@ -1653,10 +1653,28 @@
+   auto hvcc2 = rv3.unwrap();
+   EXPECT_EQ(hvcc.mNALUs.Length(), hvcc2.mNALUs.Length());
+   EXPECT_EQ(hvcc.NumSPS(), hvcc2.NumSPS());
+ }
+ 
++TEST(H265, ComputeMaxReorderPics)
++{
++  // sSps carries sps_max_num_reorder_pics[0] == 2 (see
++  // DecodeSPSFromSPSNALU above), so the reorder count comes straight out of
++  // the SPS.
++  RefPtr<MediaRawData> rawData{GetHVCCSample(sSps, std::size(sSps))};
++  RefPtr<MediaByteBuffer> extradata = H265::ExtractHVCCExtraData(rawData);
++  ASSERT_TRUE(extradata);
++  EXPECT_EQ(H265::ComputeMaxReorderPics(extradata.get()), 2u);
++  // Unparseable extradata signals no reordering rather than guessing.
++  auto empty = MakeRefPtr<MediaByteBuffer>();
++  EXPECT_EQ(H265::ComputeMaxReorderPics(empty.get()), 0u);
++  static const uint8_t junk[] = {0x01, 0x02, 0x03, 0x04};
++  auto garbage = MakeRefPtr<MediaByteBuffer>();
++  garbage->AppendElements(junk, std::size(junk));
++  EXPECT_EQ(H265::ComputeMaxReorderPics(garbage.get()), 0u);
++}
++
+ TEST(H265, ConfWindowTest)
+ {
+   // This sps contains some cropping information, which will crop video from the
+   // resolution 3840x2176 to 3840x2160.
+   static const uint8_t sSpsConfWindow[] = {
+diff --git a/dom/media/webm/MatroskaDemuxer.cpp b/dom/media/webm/MatroskaDemuxer.cpp
+--- a/dom/media/webm/MatroskaDemuxer.cpp
++++ b/dom/media/webm/MatroskaDemuxer.cpp
+@@ -105,10 +105,23 @@
+       nsresult rv = SetCodecPrivateToVideoExtraData(aContext, aTrackId);
+       if (NS_FAILED(rv)) {
+         MKV_DEBUG("Failed to set extradata for hevc");
+         return rv;
+       }
++      // A non-zero reorder count means decode order can differ from
++      // presentation order (B-frames), in which case peeked packet
++      // timestamps must not feed endTime calculation. Stays true when the
++      // SPS cannot be parsed.
++      uint32_t reorderPics =
++          H265::ComputeMaxReorderPics(mInfo.mVideo.mExtraData.get());
++      if (reorderPics > 0) {
++        MKV_DEBUG(
++            "HEVC stream reorders ({} max reorder pics); decode order "
++            "differs from presentation order",
++            reorderPics);
++        mVideoDecodeOrderIsPresentationOrder = false;
++      }
+       break;
+     }
+     case NESTEGG_CODEC_VP8:
+       mInfo.mVideo.mMimeType = "video/vp8";
+       break;
+diff --git a/dom/media/webm/WebMDemuxer.h b/dom/media/webm/WebMDemuxer.h
+--- a/dom/media/webm/WebMDemuxer.h
++++ b/dom/media/webm/WebMDemuxer.h
+@@ -243,10 +243,17 @@
+   // Default durations of blocks for each track, in microseconds.
+   // -1 indicates the track has no DefaultDuration set.
+   int64_t mAudioDefaultDuration = -1;
+   int64_t mVideoDefaultDuration = -1;
+ 
++  // Whether video packets arrive in presentation order. False when the
++  // stream reorders (e.g. HEVC with B-frames): Matroska blocks carry
++  // presentation timestamps in decode order, so a peeked packet's timestamp
++  // must not be used as the current frame's end time. Defaults to true;
++  // only HEVC updates it from the SPS.
++  bool mVideoDecodeOrderIsPresentationOrder = true;
++
+   // Booleans to indicate if we have audio and/or video data
+   bool mHasVideo;
+   bool mHasAudio;
+   bool mNeedReIndex;
+ 
+diff --git a/dom/media/webm/WebMDemuxer.cpp b/dom/media/webm/WebMDemuxer.cpp
+--- a/dom/media/webm/WebMDemuxer.cpp
++++ b/dom/media/webm/WebMDemuxer.cpp
+@@ -781,30 +781,37 @@
+   RefPtr<NesteggPacketHolder> next_holder = result.unwrapOr(nullptr);
+ 
+   int64_t next_tstamp = INT64_MIN;
+   auto calculateNextTimestamp =
+       [&](auto pushPacket, Maybe<int64_t>* lastFrameTime,
+-          int64_t defaultDuration, int64_t trackEndTime) {
++          int64_t defaultDuration, int64_t trackEndTime, bool dtsMatchesPts) {
+         MOZ_ASSERT(lastFrameTime);
+-        if (next_holder) {
++        // Matroska blocks carry presentation timestamps in decode order. On
++        // tracks where decode order differs from presentation order (e.g.
++        // HEVC with B-frames) neither the peeked packet nor the previous
++        // packet is a presentation neighbour, so a peeked timestamp must not
++        // feed endTime calculation there. Fall through to the container
++        // duration instead.
++        RefPtr<NesteggPacketHolder> packet = next_holder;
++        if (dtsMatchesPts && next_holder) {
+           next_tstamp = next_holder->Timestamp();
+-          (this->*pushPacket)(next_holder);
+         } else if (duration >= 0) {
+           next_tstamp = tstamp + duration;
+         } else if (defaultDuration >= 0) {
+           next_tstamp = tstamp + defaultDuration;
+-        } else if (lastFrameTime->isSome()) {
+-          // This is a poor estimate, and overestimation overlaps the subsequent
+-          // block, which can cause cause removal of subsequent frames from
+-          // MediaSource buffers.
++        } else if (dtsMatchesPts && lastFrameTime->isSome()) {
++          // The delta to the previous block is a duration only in decoder
++          // order. This is a poor estimate, and overestimation overlaps the
++          // subsequent block, which can cause cause removal of subsequent
++          // frames from MediaSource buffers.
+           next_tstamp = tstamp + (tstamp - lastFrameTime->value());
+         } else if (mVideoFrameEndTimeBeforeReset) {
+           WEBM_DEBUG("Setting next timestamp to be {} us",
+                      mVideoFrameEndTimeBeforeReset->ToMicroseconds());
+           next_tstamp = mVideoFrameEndTimeBeforeReset->ToMicroseconds();
+         } else if (mIsMediaSource) {
+-          (this->*pushPacket)(holder);
++          packet = holder;
+         } else {
+           // If we can't get frame's duration, it means either we need to wait
+           // for more data for MSE case or this is the last frame for file
+           // resource case.
+           if (tstamp > trackEndTime) {
+@@ -816,23 +823,31 @@
+                 "Will use tstamp value.",
+                 tstamp, trackEndTime);
+           }
+           next_tstamp = std::max<int64_t>(tstamp, trackEndTime);
+         }
++        // The peeked packet was consumed from the queue above. Requeue it
++        // unless the MSE branch replaced it with the current packet above,
++        // or the frame would be dropped.
++        if (packet) {
++          (this->*pushPacket)(packet);
++        }
+         *lastFrameTime = Some(tstamp);
+       };
+ 
+   if (aType == TrackInfo::kAudioTrack) {
+     calculateNextTimestamp(&WebMDemuxer::PushAudioPacket, &mLastAudioFrameTime,
+                            mAudioDefaultDuration,
+-                           mInfo.mAudio.mDuration.ToMicroseconds());
++                           mInfo.mAudio.mDuration.ToMicroseconds(),
++                           /* dtsMatchesPts */ true);
+   } else {
+     WEBM_DEBUG("next_holder {} mLastVideoFrameTime {}", next_holder ? 'Y' : 'N',
+                mLastVideoFrameTime ? 'Y' : 'N');
+     calculateNextTimestamp(&WebMDemuxer::PushVideoPacket, &mLastVideoFrameTime,
+                            mVideoDefaultDuration,
+-                           mInfo.mVideo.mDuration.ToMicroseconds());
++                           mInfo.mVideo.mDuration.ToMicroseconds(),
++                           mVideoDecodeOrderIsPresentationOrder);
+   }
+ 
+   if (mIsMediaSource && next_tstamp == INT64_MIN) {
+     WEBM_DEBUG("WebM is a media source, and next timestamp computation filed.");
+     return result.unwrapErr();
+

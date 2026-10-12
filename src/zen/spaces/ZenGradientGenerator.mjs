@@ -78,10 +78,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   currentOpacity = 0.5;
   dots = [];
   useAlgo = "";
+  #lastNoiseTexture = null;
   #currentLightness = 50;
 
   #allowTransparencyOnSidebar = Services.prefs.getBoolPref(
-    "zen.theme.acrylic-elements",
+    "zen.theme.acrylic-sidebar",
     false
   );
 
@@ -92,9 +93,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   #colorPage = 0;
   #gradientsCache = new Map();
+  #nativeAccentColorCache = null;
 
   constructor() {
     super();
+    this.#initNativeAccentColorInvalidation();
     if (
       !gZenWorkspaces.shouldHaveWorkspaces ||
       gZenWorkspaces.privateWindowOrDisabled
@@ -176,6 +179,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   handleDarkModeChange() {
+    this.#nativeAccentColorCache = null;
     this.updateCurrentWorkspace();
     Services.obs.notifyObservers(null, "zen-theme-change");
   }
@@ -353,7 +357,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     // Add elements in a circular pattern, where the center is the center of the wrapper
     for (let i = 0; i < 16; i++) {
       const dot = document.createElement("div");
-      dot.classList.add("zen-theme-picker-texture-dot");
+      dot.classList.add("zen-theme-picker-texture-dot", "no-squircles");
       const position = (i / 16) * Math.PI * 2 + wrapperWidth;
       dot.style.left = `${Math.cos(position) * 50 + 50}%`;
       dot.style.top = `${Math.sin(position) * 50 + 50}%`;
@@ -361,6 +365,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     this._textureHandler = document.createElement("div");
     this._textureHandler.id = "PanelUI-zen-gradient-generator-texture-handler";
+    this._textureHandler.classList.add("no-squircles");
     this._textureHandler.addEventListener(
       "mousedown",
       this.onTextureHandlerMouseDown.bind(this)
@@ -542,22 +547,22 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     const radius = (rect.width - padding) / 2;
-    const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+    const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2) - 0.2;
     let angle = Math.atan2(y - centerY, x - centerX);
-    angle = (angle * 180) / Math.PI; // Convert to degrees
+    angle = (angle * 180) / Math.PI;
     if (angle < 0) {
-      angle += 360; // Normalize to [0, 360)
+      angle += 360;
     }
-    const normalizedDistance = 1 - Math.min(distance / radius, 1); // Normalize distance to [0, 1]
-    let hue = (angle / 360) * 360; // Normalize angle to [0, 360)
-    let saturation = normalizedDistance * 100; // stays high even in center
+    const normalizedDistance = 1 - Math.min(distance / radius, 1);
+    let hue = (angle / 360) * 360;
+    let saturation = normalizedDistance * 100;
     if (type !== EXPLICIT_LIGHTNESS_TYPE) {
       saturation = 90 + (1 - normalizedDistance) * 10;
       // Set the current lightness to how far we are from the center of the circle
       // For example, moving the dot outside will have higher lightness, while moving it inside will have lower lightness
       this.#currentLightness = Math.round((1 - normalizedDistance) * 100);
     }
-    let lightness = this.#currentLightness; // Fixed lightness for simplicity
+    let lightness = this.#currentLightness;
     if (type === EXPLICIT_BLACKWHITE_TYPE) {
       // We can only get grayscales from white to black
       saturation = 0;
@@ -598,7 +603,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         color.position || this.calculateInitialPosition([r, g, b]);
       const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
 
-      dot.classList.add("zen-theme-picker-dot");
+      dot.classList.add("zen-theme-picker-dot", "no-squircles");
 
       dot.style.left = `${x}px`;
       dot.style.top = `${y}px`;
@@ -720,7 +725,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     };
 
     const dot = document.createElement("div");
-    dot.classList.add("zen-theme-picker-dot");
+    dot.classList.add("zen-theme-picker-dot", "no-squircles");
 
     dot.style.left = `${dotData.x}px`;
     dot.style.top = `${dotData.y}px`;
@@ -1259,10 +1264,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let colorToBlendOpacity;
     if (this.isMica) {
       colorToBlend = this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
-      colorToBlendOpacity = 0.12;
+      colorToBlendOpacity = 0.3;
     } else if (AppConstants.platform === "macosx") {
       colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.18;
+      colorToBlendOpacity = 0.6;
     }
     if (colorToBlend) {
       const blendedAlpha = Math.min(
@@ -1336,7 +1341,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.useAlgo = themedColors[0]?.algorithm ?? "";
     this.#currentLightness = themedColors[0]?.lightness ?? 50;
 
-    const rotation = -45; // TODO: Detect rotation based on the accent color
+    const rotation = -30; // TODO: Detect rotation based on the accent color
     if (themedColors.length === 0) {
       const getBrowserBg = () => {
         if (this.canBeTransparent) {
@@ -1366,8 +1371,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (themedColors.length === 2) {
       if (!forToolbar) {
         return [
-          `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
-          `linear-gradient(${rotation + 180}deg, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 30%, transparent 120%)`,
+          `linear-gradient(${rotation + 180}deg, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 30%, transparent 120%)`,
         ]
           .reverse()
           .join(", ");
@@ -1439,6 +1444,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   updateNoise(texture) {
+    if (texture === this.#lastNoiseTexture) {
+      return;
+    }
+    this.#lastNoiseTexture = texture;
     [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
       element => {
         element.style.setProperty("--zen-grainy-background-opacity", texture);
@@ -1475,14 +1484,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * @returns {string} The primary color in hex format.
    */
   getAccentColorForUI(accentColor, isDarkMode) {
-    const [h, s, l] = this.rgbToHsl(...accentColor);
+    let [r, g, b] = accentColor;
     if (isDarkMode) {
-      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+      return `rgb(${r}, ${g}, ${b})`;
     }
+    // gh-15142: Special case for grayscale colors
+    if (r == g && g == b) {
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+    const [h, s, l] = this.rgbToHsl(...accentColor);
     const saturation = Math.min(1, s + 0.3);
     const targetLightness = this.isDarkMode ? 0.62 : 0.42;
     const lightness = l * 0.4 + targetLightness * 0.6;
-    const [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
+    [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
     return `rgb(${r}, ${g}, ${b})`;
   }
 
@@ -1495,9 +1509,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return color;
   }
 
-  getToolbarColor(isDarkMode = false) {
-    const opacity = 0.8;
+  getToolbarColor(isDarkMode = false, accentColor = undefined) {
+    const opacity = 0.9;
     let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    if (accentColor) {
+      // Blend a bit with the accent color to make it more visible
+      baseColor = this.blendColors(
+        accentColor,
+        baseColor.slice(0, 3),
+        this.canBeTransparent ? 20 : 5
+      ).concat(opacity);
+    }
     return baseColor;
   }
 
@@ -1524,18 +1546,25 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return;
       }
 
-      // Do not rebuild if the workspace is not the same as the current one
-      const windowWorkspace = browser.gZenWorkspaces.getActiveWorkspace();
-      if (windowWorkspace.uuid !== uuid) {
-        return;
-      }
-
       if (theme === null) {
         browser.gZenThemePicker.invalidateGradientCache(uuid);
       }
 
+      // Only rebuild for the workspace the window shows, or the one its
+      // picker is editing without showing it.
+      const windowWorkspace = browser.gZenWorkspaces.getActiveWorkspace();
+      const appliesToWindow = windowWorkspace.uuid === uuid;
+      if (
+        !appliesToWindow &&
+        browser.gZenThemePicker.editingWorkspaceId !== uuid
+      ) {
+        return;
+      }
+
       // get the theme from the window
-      workspaceTheme = this.fixTheme(theme || windowWorkspace.theme);
+      workspaceTheme = this.fixTheme(
+        theme || (appliesToWindow ? windowWorkspace : workspace).theme
+      );
       const docElement = browser.document.documentElement;
 
       if (!skipUpdate) {
@@ -1546,7 +1575,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      if (theme) {
+      if (theme && appliesToWindow) {
         const workspaceElement = browser.gZenWorkspaces.workspaceElement(
           windowWorkspace.uuid
         );
@@ -1555,7 +1584,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      if (!skipUpdate) {
+      if (!skipUpdate && appliesToWindow) {
         let backgroundElement =
           browser.gZenThemePicker.browserBackgroundElement;
         let toolbarElement = browser.gZenThemePicker.toolbarBackgroundElement;
@@ -1710,7 +1739,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         workspaceTheme.gradientColors,
         true
       );
-      browser.gZenThemePicker.updateNoise(workspaceTheme.texture);
+      if (appliesToWindow) {
+        browser.gZenThemePicker.updateNoise(workspaceTheme.texture);
+      }
 
       browser.gZenThemePicker.customColorList.innerHTML = "";
       for (const dot of workspaceTheme.gradientColors) {
@@ -1719,59 +1750,66 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      browser.gZenThemePicker.toolbarBackgroundElement.style.setProperty(
-        "--zen-main-browser-background-toolbar",
-        gradientToolbar
-      );
-      browser.gZenThemePicker.browserBackgroundElement.style.setProperty(
-        "--zen-main-browser-background",
-        gradient
-      );
-      const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
-      if (isDefaultTheme) {
-        docElement.setAttribute("zen-default-theme", "true");
-      } else {
-        docElement.removeAttribute("zen-default-theme");
-      }
-      if (dominantColor) {
-        // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
-        // so instead get the pref value directly.
-        browser.gZenThemePicker.isLegacyVersion =
-          Services.prefs.getIntPref("zen.theme.gradient-legacy-version", 1) ===
-          0;
-
-        let isDarkMode = isDarkModeWindow;
-        if (!isDefaultTheme && !this.isLegacyVersion) {
-          // Check for the primary color
-          isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
-          docElement.setAttribute("zen-should-be-dark-mode", isDarkMode);
-          browser.gZenThemePicker.panel.removeAttribute("invalidate-controls");
+      if (appliesToWindow) {
+        browser.gZenThemePicker.toolbarBackgroundElement.style.setProperty(
+          "--zen-main-browser-background-toolbar",
+          gradientToolbar
+        );
+        browser.gZenThemePicker.browserBackgroundElement.style.setProperty(
+          "--zen-main-browser-background",
+          gradient
+        );
+        const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
+        if (isDefaultTheme) {
+          docElement.setAttribute("zen-default-theme", "true");
         } else {
-          docElement.removeAttribute("zen-should-be-dark-mode");
-          if (!this.isLegacyVersion) {
-            browser.gZenThemePicker.panel.setAttribute(
-              "invalidate-controls",
-              "true"
-            );
-          }
+          docElement.removeAttribute("zen-default-theme");
         }
+        if (dominantColor) {
+          // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
+          // so instead get the pref value directly.
+          browser.gZenThemePicker.isLegacyVersion =
+            Services.prefs.getIntPref(
+              "zen.theme.gradient-legacy-version",
+              1
+            ) === 0;
 
-        const primaryColor = this.getAccentColorForUI(
-          dominantColor,
-          isDarkMode
-        );
-        docElement.style.setProperty("--zen-primary-color", primaryColor);
+          let isDarkMode = isDarkModeWindow;
+          if (!isDefaultTheme && !this.isLegacyVersion) {
+            // Check for the primary color
+            isDarkMode =
+              browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
+            docElement.setAttribute("zen-should-be-dark-mode", isDarkMode);
+            browser.gZenThemePicker.panel.removeAttribute(
+              "invalidate-controls"
+            );
+          } else {
+            docElement.removeAttribute("zen-should-be-dark-mode");
+            if (!this.isLegacyVersion) {
+              browser.gZenThemePicker.panel.setAttribute(
+                "invalidate-controls",
+                "true"
+              );
+            }
+          }
 
-        // Set `--toolbox-textcolor` to have a contrast with the primary color
-        let textColor = this.getToolbarColor(isDarkMode);
-        docElement.style.setProperty(
-          "--toolbox-textcolor",
-          `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
-        );
-        docElement.style.setProperty(
-          "--toolbar-color-scheme",
-          isDarkMode ? "dark" : "light"
-        );
+          const primaryColor = this.getAccentColorForUI(
+            dominantColor,
+            isDarkMode
+          );
+          docElement.style.setProperty("--zen-primary-color", primaryColor);
+
+          // Set `--toolbox-textcolor` to have a contrast with the primary color
+          let textColor = this.getToolbarColor(isDarkMode, dominantColor);
+          docElement.style.setProperty(
+            "--toolbox-textcolor",
+            `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
+          );
+          docElement.style.setProperty(
+            "--toolbar-color-scheme",
+            isDarkMode ? "dark" : "light"
+          );
+        }
       }
 
       if (!skipUpdate) {
@@ -1801,29 +1839,55 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return theme;
   }
 
+  #initNativeAccentColorInvalidation() {
+    const invalidate = () => {
+      this.#nativeAccentColorCache = null;
+    };
+    Services.obs.addObserver(invalidate, "look-and-feel-changed");
+    Services.prefs.addObserver("zen.theme.accent-color", invalidate);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.obs.removeObserver(invalidate, "look-and-feel-changed");
+        Services.prefs.removeObserver("zen.theme.accent-color", invalidate);
+      },
+      { once: true }
+    );
+  }
+
+  /**
+   * Resolves the raw `AccentColor` system color for this document.
+   */
+  #resolveSystemAccentColor() {
+    const rgba = InspectorUtils.colorToRGBA("AccentColor", document);
+    if (!rgba) {
+      return [0, 0, 0];
+    }
+    return [rgba.r, rgba.g, rgba.b];
+  }
+
   getNativeAccentColor() {
-    let accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
-    let rgb;
-    if (accentColor === "AccentColor") {
-      const rawRgb = window.getComputedStyle(
-        lazy.browserBackgroundElement
-      ).color;
-      rgb = rawRgb.match(/\d+/g).map(Number);
-      // Match our theme a bit more, since we can't always expect the OS
-      // to give us a color matching our theme scheme
-      rgb = this.blendColors(
-        rgb,
-        this.getToolbarModifiedBaseRaw().slice(0, 3),
-        this.isDarkMode ? 80 : 50
+    let rgb = this.#nativeAccentColorCache;
+    if (!rgb) {
+      const accentColor = Services.prefs.getStringPref(
+        "zen.theme.accent-color"
       );
-    } else {
-      rgb = this.hexToRgb(accentColor);
+      if (accentColor === "AccentColor") {
+        rgb = this.blendColors(
+          this.#resolveSystemAccentColor(),
+          this.getToolbarModifiedBaseRaw().slice(0, 3),
+          this.isDarkMode ? 80 : 50
+        );
+      } else {
+        rgb = this.hexToRgb(accentColor);
+      }
+      this.#nativeAccentColorCache = rgb;
     }
     if (this.isDarkMode) {
       // If the theme is dark, we want to use a lighter color
       return this.blendColors(rgb, [0, 0, 0], 40);
     }
-    return rgb;
+    return [...rgb];
   }
 
   resetCustomColorList() {
@@ -1864,6 +1928,36 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
   }
 
+  #editingWorkspaceId = null;
+
+  get editingWorkspaceId() {
+    return this.#editingWorkspaceId;
+  }
+
+  get workspaceBeingEdited() {
+    return (
+      gZenWorkspaces.getWorkspaceFromId(this.#editingWorkspaceId) ??
+      gZenWorkspaces.getActiveWorkspace()
+    );
+  }
+
+  /**
+   * Opens the picker for a space without switching to it.
+   *
+   * @param {object} workspace - The space to edit
+   * @param {Element} anchor - Element to anchor the panel to
+   * @param {Event} event - The triggering event
+   */
+  openThemePickerForWorkspace(workspace, anchor, event) {
+    this.#editingWorkspaceId = workspace.uuid;
+    this.onWorkspaceChange(workspace);
+    this.panel.removeAttribute("hidepopovertail");
+    PanelMultiView.openPopup(this.panel, anchor, {
+      position: "bottomleft topleft",
+      triggerEvent: event,
+    });
+  }
+
   updateCurrentWorkspace(skipSave = true) {
     this.updated = skipSave;
     const dots = this.panel.querySelectorAll(".zen-theme-picker-dot");
@@ -1902,7 +1996,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       this.currentOpacity,
       this.currentTexture
     );
-    let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
+    let currentWorkspace = this.workspaceBeingEdited;
 
     currentWorkspace.theme = gradient;
     if (!skipSave) {
@@ -1914,6 +2008,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       skipSave,
       skipSave ? gradient : null
     );
+    if (currentWorkspace.uuid !== gZenWorkspaces.activeWorkspace) {
+      this.invalidateGradientCache(currentWorkspace.uuid);
+      Services.obs.notifyObservers(null, "zen-space-gradient-update");
+    }
   }
 
   handlePanelClose() {
@@ -1921,6 +2019,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       this.updateCurrentWorkspace(false);
     }
     this.uninitThemePicker();
+    if (this.#editingWorkspaceId) {
+      this.#editingWorkspaceId = null;
+      this.panel.setAttribute("hidepopovertail", "true");
+      this.onWorkspaceChange(gZenWorkspaces.getActiveWorkspace());
+    }
   }
 
   handlePanelOpen() {
@@ -1969,9 +2072,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   invalidateGradientCache(uuid) {
     delete this.#gradientsCache[uuid];
-    window.dispatchEvent(
-      new Event("ZenGradientCacheChanged", { bubbles: true })
-    );
+    gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
   }
 
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {
@@ -1982,16 +2083,18 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     const previousOpacity = this.currentOpacity;
     const previousLightness = this.#currentLightness;
-    const theme = workspace.theme;
+    const previousAlgo = this.useAlgo;
+    const theme = workspace.theme ?? {};
+    const colors = theme.gradientColors ?? [];
     this.currentOpacity = theme.opacity ?? 0.5;
     this.#currentLightness = theme.lightness ?? 50;
     let gradient;
     let toolbarGradient;
     if (getGradient) {
-      gradient = this.getGradient(theme.gradientColors);
-      toolbarGradient = this.getGradient(theme.gradientColors, true);
+      gradient = this.getGradient(colors);
+      toolbarGradient = this.getGradient(colors, true);
     }
-    let dominantColor = this.getMostDominantColor(theme.gradientColors);
+    let dominantColor = this.getMostDominantColor(colors);
     const isDefaultTheme = !dominantColor;
     if (isDefaultTheme) {
       dominantColor = this.getNativeAccentColor();
@@ -2009,11 +2112,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       grain: theme.texture ?? 0,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode),
+      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
       primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;
+    this.useAlgo = previousAlgo;
     return this.#gradientsCache[uuid];
   }
 }

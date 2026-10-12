@@ -7,3 +7,4 @@
 
         # Windows
 *       content/browser/zen-components/windows/zen-space-routing.xhtml            (../../zen/space-routing/zen-space-routing.inc.xhtml)
+        content/browser/zen-components/windows/zen-space-routing.js              (../../zen/space-routing/zen-space-routing.js)

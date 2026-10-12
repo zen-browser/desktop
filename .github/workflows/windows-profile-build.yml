@@ -27,7 +27,6 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-
     runs-on: ${{ inputs.release-branch == 'release' && 'windows-latest' || 'windows-latest' }}
 
     steps:
@@ -61,7 +60,6 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' }}
         run: |
           cd C:\artifact
-          ls
           Expand-Archive -Path .\${{ inputs.profile-data-path-archive }} -DestinationPath C:\artifact
           ls
 

@@ -179,56 +179,11 @@ add_task(async function testSoundIndicatorWhenChangingMediaVolume() {
 /**
  * Following are helper functions
  */
-function initMediaPlaybackDocument(
-  tab,
-  fileName,
-  { preload, createVideo, muted = false, volume = 1.0 } = {}
-) {
-  return SpecialPowers.spawn(
-    tab.linkedBrowser,
-    [fileName, preload, createVideo, muted, volume],
-    // eslint-disable-next-line no-shadow
-    async (fileName, preload, createVideo, muted, volume) => {
-      if (createVideo) {
-        content.media = content.document.createElement("video");
-      } else {
-        content.media = content.document.createElement("audio");
-      }
-      if (preload) {
-        content.media.preload = preload;
-      }
-      content.media.muted = muted;
-      content.media.volume = volume;
-      content.media.src = fileName;
-    }
-  );
-}
-
 function initMediaStreamPlaybackDocument(tab) {
   return SpecialPowers.spawn(tab.linkedBrowser, [], async _ => {
     content.media = content.document.createElement("audio");
     content.media.srcObject =
       new content.AudioContext().createMediaStreamDestination().stream;
-  });
-}
-
-function playMedia(tab, { resolveOnTimeupdate } = {}) {
-  return SpecialPowers.spawn(
-    tab.linkedBrowser,
-    [resolveOnTimeupdate],
-    // eslint-disable-next-line no-shadow
-    async resolveOnTimeupdate => {
-      await content.media.play();
-      if (resolveOnTimeupdate) {
-        await new Promise(r => (content.media.ontimeupdate = r));
-      }
-    }
-  );
-}
-
-function pauseMedia(tab) {
-  return SpecialPowers.spawn(tab.linkedBrowser, [], async _ => {
-    content.media.pause();
   });
 }
 

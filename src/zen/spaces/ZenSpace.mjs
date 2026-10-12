@@ -52,7 +52,7 @@ export class nsZenWorkspace extends MozXULElement {
 
   static get markup() {
     return `
-        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator zen-drop-target" flex="1" context="zenWorkspaceMoreActions">
+        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator zen-squircle-before zen-drop-target" flex="1" context="zenWorkspaceMoreActions">
           <stack class="zen-current-workspace-indicator-stack">
             <image class="zen-current-workspace-indicator-chevron" />
             <hbox class="zen-current-workspace-indicator-icon" />
@@ -104,6 +104,13 @@ export class nsZenWorkspace extends MozXULElement {
 
   constructor() {
     super();
+
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "_showNewTabButtonTop",
+      "zen.view.show-newtab-button-top",
+      false
+    );
   }
 
   connectedCallback() {
@@ -200,9 +207,7 @@ export class nsZenWorkspace extends MozXULElement {
         ...this.pinnedTabsContainer.children,
         ...this.tabsContainer.children,
       ];
-      if (
-        Services.prefs.getBoolPref("zen.view.show-newtab-button-top", false)
-      ) {
+      if (this._showNewTabButtonTop) {
         // Move the perifery to the first non-pinned tab
         const periphery = this.tabsContainer.querySelector(
           "#tabbrowser-arrowscrollbox-periphery"
@@ -268,12 +273,6 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.#updateOverflow();
 
-    this.onGradientCacheChanged = this.#onGradientCacheChanged.bind(this);
-    window.addEventListener(
-      "ZenGradientCacheChanged",
-      this.onGradientCacheChanged
-    );
-
     this.pinnedTabsContainer.addEventListener("TabPinned", () => {
       // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
       if (this.collapsiblePins.collapsed) {
@@ -287,18 +286,17 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.addEventListener("TabPinned", tabPinCallback);
     this.addEventListener("TabUnpinned", tabPinCallback);
+    this.addEventListener("TabGroupRemovedFromDOM", () => {
+      // Wait for the group to be removed from the DOM.
+      setTimeout(() => {
+        tabPinCallback();
+      });
+    });
     this.addEventListener("TabClose", event => {
       if (event.target.pinned) {
         tabPinCallback();
       }
     });
-  }
-
-  disconnectedCallback() {
-    window.removeEventListener(
-      "ZenGradientCacheChanged",
-      this.onGradientCacheChanged
-    );
   }
 
   get active() {
@@ -389,7 +387,7 @@ export class nsZenWorkspace extends MozXULElement {
     return this.querySelector("#tabs-newtab-button");
   }
 
-  #onGradientCacheChanged() {
+  onGradientCacheChanged() {
     const { isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
       gZenThemePicker.getGradientForWorkspace(
         gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid),

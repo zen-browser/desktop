@@ -1,0 +1,13 @@
+diff --git a/layout/style/ServoCSSParser.cpp b/layout/style/ServoCSSParser.cpp
+index 7ec7188f4598ea40391af95a3d86e0f319832f69..8990daab487db2cbcf91a3032f60cdf301a77a46 100644
+--- a/layout/style/ServoCSSParser.cpp
++++ b/layout/style/ServoCSSParser.cpp
+@@ -34,7 +34,7 @@ bool ServoCSSParser::ComputeColor(const StylePerDocumentStyleData* aStyleData,
+   if (!absolute) {
+     return false;
+   }
+-  *aResultColor = absolute->ToColor();
++  *aResultColor = absolute->ToColor(nullptr);
+   return true;
+ }
+ 

@@ -1,0 +1,369 @@
+[DEFAULT]
+run-if = [
+  "os != 'android'",
+]
+head = "head_appinfo.js ../../../../services/common/tests/unit/head_helpers.js head_helpers.js head_http_server.js head_errorhandler_common.js"
+firefox-appdir = "browser"
+prefs = ["identity.fxaccounts.enabled=true", "browser.formfill.enable=true"]
+support-files = [
+  "addon1-search.json",
+  "bootstrap1-search.json",
+  "missing-sourceuri.json",
+  "missing-xpi-search.json",
+  "rewrite-search.json",
+  "systemaddon-search.json",
+  "!/services/common/tests/unit/head_helpers.js",
+  "!/toolkit/components/extensions/test/xpcshell/head_sync.js",
+  "../../../../services/../toolkit/mozapps/extensions/test/xpinstall/amosigned-sha1only.xpi",
+]
+
+# The manifest is roughly ordered from low-level to high-level. When making
+# systemic sweeping changes, this makes it easier to identify errors closer to
+# the source.
+
+# Ensure we can import everything.
+
+["test_412.js"]
+
+["test_addon_utils.js"]
+run-sequentially = ["true"] # Restarts server, can't change pref.
+tags = "addons"
+
+["test_addons_engine.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+tags = "addons"
+
+["test_addons_reconciler.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+tags = "addons"
+
+["test_addons_store.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+tags = "addons"
+
+["test_addons_tracker.js"]
+tags = "addons"
+
+["test_addons_validator.js"]
+tags = "addons"
+
+["test_bookmark_batch_fail.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bookmark_decline_undecline.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bookmark_engine.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bookmark_order.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bookmark_places_query_rewriting.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bookmark_record.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bookmark_store.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bookmark_tracker.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_bridged_engine.js"]
+
+["test_clients_engine.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+
+["test_clients_escape.js"]
+
+["test_collection_getBatched.js"]
+
+["test_collections_recovery.js"]
+
+["test_corrupt_keys.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_declined.js"]
+
+["test_disconnect_shutdown.js"]
+
+["test_engine.js"]
+
+["test_engine_abort.js"]
+
+["test_engine_changes_during_sync.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+# Rust logins backend lacks the legacy Sync metadata methods
+# (getSyncID/setSyncID/getLastSync) the JS PasswordEngine needs; keep on JSON.
+prefs = ["signon.storage.rust.enabled=false"]
+
+["test_enginemanager.js"]
+
+["test_errorhandler_1.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+skip-if = [
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64' && opt", # Bug 1864117
+]
+
+["test_errorhandler_2.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+
+["test_errorhandler_filelog.js"]
+
+["test_errorhandler_sync_checkServerError.js"]
+
+["test_extension_storage_engine.js"]
+run-sequentially = ["true"] # extension-storage migration happens only once, and must be tested first.
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_extension_storage_engine_kinto.js"]
+run-sequentially = ["true"] # extension-storage migration happens only once, and must be tested first.
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_extension_storage_tracker_kinto.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_form_validator.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_forms_store.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_forms_tracker.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_fxa_node_reassignment.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+
+["test_fxa_service_cluster.js"]
+# Finally, we test each engine.
+
+["test_glean.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_history_engine.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_history_store.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_history_tracker.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_hmac_error.js"]
+
+["test_httpd_sync_server.js"]
+# HTTP layers.
+
+["test_interval_triggers.js"]
+
+["test_keys.js"]
+
+["test_load_modules.js"]
+# util contains a bunch of functionality used throughout.
+
+["test_node_reassignment.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+
+# The password engine/store/tracker tests drive the JS PasswordEngine, which
+# needs the legacy Sync metadata methods (getSyncID/setSyncID/getLastSync) the
+# Rust logins backend lacks; keep them on the JSON backend.
+["test_password_engine.js"]
+prefs = ["signon.storage.rust.enabled=false"]
+
+["test_password_store.js"]
+prefs = ["signon.storage.rust.enabled=false"]
+
+["test_password_tracker.js"]
+prefs = ["signon.storage.rust.enabled=false"]
+
+["test_password_validator.js"]
+
+["test_postqueue.js"]
+# Synced tabs.
+
+["test_prefs_engine.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_prefs_store.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+support-files = ["prefs_test_prefs_store.js"]
+
+["test_prefs_tracker.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_records_crypto.js"]
+
+["test_records_wbo.js"]
+
+["test_resource.js"]
+
+["test_resource_header.js"]
+
+["test_resource_ua.js"]
+# Generic Sync types.
+
+["test_rust_password_engine_mp_locked.js"]
+
+["test_rust_password_engine_selection.js"]
+
+["test_rust_password_tracker.js"]
+
+["test_score_triggers.js"]
+
+["test_service_attributes.js"]
+# Bug 752243: Profile cleanup frequently fails
+
+["test_service_cluster.js"]
+
+["test_service_detect_upgrade.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_service_login.js"]
+# Service.sync() drives the JS PasswordEngine, which needs the legacy Sync
+# metadata methods the Rust logins backend lacks; keep on JSON.
+prefs = ["signon.storage.rust.enabled=false"]
+
+["test_service_startOver.js"]
+
+["test_service_startup.js"]
+
+["test_service_sync_401.js"]
+
+["test_service_sync_locked.js"]
+
+["test_service_sync_remoteSetup.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+
+["test_service_sync_specified.js"]
+
+["test_service_sync_updateEnabledEngines.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+
+["test_service_verifyLogin.js"]
+
+["test_service_wipeClient.js"]
+
+["test_service_wipeServer.js"]
+# Bug 752243: Profile cleanup frequently fails
+
+["test_status.js"]
+
+["test_status_checkSetup.js"]
+
+["test_sync_auth_manager.js"]
+# Engine APIs.
+
+["test_syncedtabs.js"]
+
+["test_syncengine.js"]
+
+["test_syncengine_sync.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+
+["test_syncscheduler.js"]
+run-sequentially = ["true"] # Frequent timeouts, bug 1395148
+# Firefox Accounts specific tests
+
+["test_tab_engine.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_tab_provider.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_tab_quickwrite.js"]
+run-if = [
+  "appname != 'thunderbird'",
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 1819545
+]
+
+["test_tab_tracker.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_telemetry.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_tracker_addChanged.js"]
+# Service semantics.
+
+["test_uistate.js"]
+
+["test_utils_catch.js"]
+
+["test_utils_deepEquals.js"]
+
+["test_utils_deferGetSet.js"]
+
+["test_utils_json.js"]
+
+["test_utils_keyEncoding.js"]
+
+["test_utils_lock.js"]
+
+["test_utils_makeGUID.js"]
+run-sequentially = ["true"] # Disproportionately slows down full test run, bug 1450316
+
+["test_utils_notify.js"]
+
+["test_utils_passphrase.js"]
+# We have a number of other libraries that are pretty much standalone.

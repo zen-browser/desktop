@@ -4,16 +4,27 @@
 
 import checkForZenUpdates, {
   createWindowUpdateAnimation,
+  playWindowSweepAnimation,
 } from "chrome://browser/content/ZenUpdates.mjs";
 
+/**
+ * Drives the parts of Zen's per-window startup that have to happen in a fixed
+ * order relative to Firefox's own startup.
+ */
 class ZenStartup {
-  #watermarkIgnoreElements = ["zen-toast-container"];
+  #watermarkIgnoreElements = ["zen-toast-container", "zen-browser-background"];
   #hasInitializedLayout = false;
+  #initialized = Promise.withResolvers();
 
   isReady = false;
-  promiseInitialized = new Promise(resolve => {
-    this.promiseInitializedResolve = resolve;
-  });
+
+  /**
+   * Resolves once the window has been laid out, the session restored and
+   * every startup-ordered Zen feature initialized.
+   */
+  get promiseInitialized() {
+    return this.#initialized.promise;
+  }
 
   init() {
     this.openWatermark();
@@ -53,14 +64,12 @@ class ZenStartup {
       // overlap and interaction issues with vertical tabs
       document.getElementById("browser").prepend(deckTemplate);
 
-      gZenWorkspaces.init();
-      setTimeout(() => {
+      gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
-        this.#initUIComponents();
         this.#checkForWelcomePage();
-      }, 0);
+      });
     } catch (e) {
-      console.error("ZenThemeModifier: Error initializing browser layout", e);
+      console.error("ZenStartup: Error initializing browser layout", e);
     }
     if (gBrowserInit.delayedStartupFinished) {
       this.delayedStartupFinished();
@@ -82,7 +91,6 @@ class ZenStartup {
     gZenWorkspaces.promiseInitialized.then(async () => {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;
-      delete gZenUIManager.promiseInitialized;
       gZenCompactModeManager.init();
       // Fix for https://github.com/zen-browser/desktop/issues/7605, specially in compact mode
       if (gURLBar.hasAttribute("breakout-extend")) {
@@ -96,8 +104,7 @@ class ZenStartup {
         .getElementById("tabbrowser-arrowscrollbox")
         .setAttribute("orient", "vertical");
       this.isReady = true;
-      this.promiseInitializedResolve();
-      delete this.promiseInitializedResolve;
+      this.#initialized.resolve();
 
       setTimeout(() => {
         // Wait for the natural PlacesToolbar rebuild before invalidating, so
@@ -119,7 +126,9 @@ class ZenStartup {
       document.documentElement.removeAttribute("zen-before-loaded");
       return;
     }
-    for (let elem of document.querySelectorAll("#browser > *, #urlbar")) {
+    for (let elem of document.querySelectorAll(
+      `#browser > *:not(${this.#watermarkIgnoreElements.map(id => "#" + id).join(", ")}), #urlbar`
+    )) {
       elem.style.opacity = 0;
     }
   }
@@ -155,16 +164,6 @@ class ZenStartup {
     });
   }
 
-  #initUIComponents() {
-    const kUIComponents = ["ZenProgressBar", "ZenSpaceRoutingNavigation"];
-    for (let component of kUIComponents) {
-      const module = ChromeUtils.importESModule(
-        "resource:///modules/zen/ui/" + component + ".sys.mjs"
-      );
-      new module[component](window);
-    }
-  }
-
   #checkForWelcomePage() {
     const kWelcomeScreenSeenPref = "zen.welcome-screen.seen";
     if (Services.env.get("MOZ_HEADLESS")) {
@@ -193,6 +192,14 @@ class ZenStartup {
   async #createUpdateAnimation() {
     checkForZenUpdates();
     return await createWindowUpdateAnimation();
+  }
+
+  /**
+   * Entry point for privileged modules (e.g. the sync applier) to play the
+   * update sweep animation in this window.
+   */
+  playWindowSweepAnimation() {
+    return playWindowSweepAnimation();
   }
 }
 

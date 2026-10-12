@@ -1,0 +1,162 @@
+diff --git a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
+--- a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
++++ b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
+@@ -39,10 +39,16 @@
+ const TOGGLE_POSITION_PREF =
+   "media.videocontrols.picture-in-picture.video-toggle.position";
+ const TOGGLE_POSITION_RIGHT = "right";
+ const TOGGLE_POSITION_LEFT = "left";
+ const RESIZE_MARGIN_PX = 16;
++// Close reasons that should suppress auto-toggle when the originating tab is backgrounded
++const DELIBERATE_CLOSE_REASONS = [
++  "CloseButton",
++  "ClosePlayerShortcut",
++  "Shortcut",
++];
+ 
+ XPCOMUtils.defineLazyPreferenceGetter(
+   lazy,
+   "PIP_ENABLED",
+   "media.videocontrols.picture-in-picture.enabled",
+@@ -119,10 +125,19 @@
+       }
+       case "PictureInPicture:VideoTabHidden": {
+         if (!lazy.PIP_ENABLED || !lazy.PIP_WHEN_SWITCHING_TABS) {
+           break;
+         }
++
++        // Suppress auto-toggle if the user deliberately closed this PiP window
++        if (
++          PictureInPicture.weakAutoPipBrowserClosedDeliberately.has(browser)
++        ) {
++          PictureInPicture.weakAutoPipBrowserClosedDeliberately.delete(browser);
++          break;
++        }
++
+         // If the tab is still selected, then we can ignore this event
+         if (browser.documentGlobal.gBrowser.selectedBrowser == browser) {
+           break;
+         }
+         let actor = browsingContext.currentWindowGlobal.getActor(
+@@ -261,10 +276,13 @@
+   maxConcurrentPlayerCount: 0,
+ 
+   // Maps auto pip browser to PictureInPictureParent actor
+   weakAutoPipBrowserToParent: new WeakMap(),
+ 
++  // Browsers with deliberately closed PiP windows; suppresses auto-toggle.
++  weakAutoPipBrowserClosedDeliberately: new WeakSet(),
++
+   /**
+    * Returns the player window if one exists and if it hasn't yet been closed.
+    *
+    * @param {PictureInPictureParent} pipActorRef
+    *   Reference to the calling PictureInPictureParent actor
+@@ -441,10 +459,20 @@
+   },
+ 
+   onPipSwappedBrowsers(event) {
+     let otherTab = event.detail;
+     if (otherTab) {
++      if (
++        this.weakAutoPipBrowserClosedDeliberately.has(
++          event.target.linkedBrowser
++        )
++      ) {
++        this.weakAutoPipBrowserClosedDeliberately.add(otherTab.linkedBrowser);
++        this.weakAutoPipBrowserClosedDeliberately.delete(
++          event.target.linkedBrowser
++        );
++      }
+       for (let win of Services.wm.getEnumerator(WINDOW_TYPE)) {
+         if (this.weakWinToBrowser.get(win) === event.target.linkedBrowser) {
+           this.weakWinToBrowser.set(win, otherTab.linkedBrowser);
+           this.removePiPBrowserFromWeakMap(event.target.linkedBrowser);
+           this.removeOriginatingWinFromWeakMap(event.target.linkedBrowser);
+@@ -899,10 +927,20 @@
+     const { reason, actorRef } = closeData;
+     const win = this.getWeakPipPlayer(actorRef);
+     if (!win) {
+       return;
+     }
++
++    const browser = this.weakWinToBrowser.get(win);
++
++    if (browser && DELIBERATE_CLOSE_REASONS.includes(reason)) {
++      const tabbrowser = browser.getTabBrowser();
++      if (tabbrowser && tabbrowser.selectedBrowser != browser) {
++        PictureInPicture.weakAutoPipBrowserClosedDeliberately.add(browser);
++      }
++    }
++
+     this.removePiPBrowserFromWeakMap(this.weakWinToBrowser.get(win));
+     this.weakAutoPipBrowserToParent.delete(this.weakWinToBrowser.get(win));
+ 
+     Glean.pictureinpicture["closedMethod" + reason].record();
+     await this.closePipWindow(win);
+diff --git a/toolkit/components/pictureinpicture/tests/browser_autotoggle.js b/toolkit/components/pictureinpicture/tests/browser_autotoggle.js
+--- a/toolkit/components/pictureinpicture/tests/browser_autotoggle.js
++++ b/toolkit/components/pictureinpicture/tests/browser_autotoggle.js
+@@ -297,5 +297,61 @@
+       await new Promise(resolve => setTimeout(resolve, 2000));
+       assertNoPiPWindowsOpen();
+     }
+   );
+ });
++
++/**
++ * Tests that closing a PiP window deliberately (via Shift+ESC) while the tab is backgrounded
++ * suppresses auto-toggle, but auto-toggle works normally on the next background.
++ */
++add_task(async function autopip_suppress_on_deliberate_close() {
++  await SpecialPowers.pushPrefEnv({
++    set: [[ALWAYS_SHOW_PREF, true]],
++  });
++
++  // Open a new window and save a handle for the first tab
++  let win1 = await BrowserTestUtils.openNewBrowserWindow();
++  let firstTab = win1.gBrowser.selectedTab;
++
++  // Open a new tab containing a video
++  let pipTab = await BrowserTestUtils.openNewForegroundTab(
++    win1.gBrowser,
++    TEST_PAGE
++  );
++  let browser = pipTab.linkedBrowser;
++
++  // Ensure the video is playing
++  let videoID = "with-controls";
++  await ensureVideosReady(browser);
++  await SpecialPowers.spawn(browser, [videoID], async videoID => {
++    await content.document.getElementById(videoID).play();
++  });
++
++  // Switch from the video tab to the first tab and check if the PiP window opened
++  let domWindowOpened = BrowserTestUtils.domWindowOpenedAndLoaded(null);
++  await BrowserTestUtils.switchTab(win1.gBrowser, firstTab);
++  let pipWin = await domWindowOpened;
++  ok(pipWin, "PiP window automatically opened.");
++
++  // Close the PiP window deliberately while the tab is backgrounded and check that it doesn't reopen
++  domWindowOpened = BrowserTestUtils.domWindowOpenedAndLoaded(null);
++  // A short delay is needed to make the test more robust
++  // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
++  await new Promise(resolve => setTimeout(resolve, 2000));
++  EventUtils.synthesizeKey("KEY_Escape", { shiftKey: true }, pipWin);
++  let reopened = await Promise.race([
++    domWindowOpened.then(() => true),
++    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
++    new Promise(resolve => setTimeout(() => resolve(false), 2000)),
++  ]);
++  ok(!reopened, "PiP window should not reopen after deliberate close");
++
++  // Switch to the video tab and back to the first tab, which should automatically open the PiP window
++  domWindowOpened = BrowserTestUtils.domWindowOpenedAndLoaded(null);
++  await BrowserTestUtils.switchTab(win1.gBrowser, pipTab);
++  await BrowserTestUtils.switchTab(win1.gBrowser, firstTab);
++  pipWin = await domWindowOpened;
++  ok(pipWin, "PiP window automatically opened.");
++
++  await BrowserTestUtils.closeWindow(win1);
++});
+

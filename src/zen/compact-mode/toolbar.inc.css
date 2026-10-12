@@ -29,10 +29,22 @@
     & .zen-toolbar-background {
       display: flex;
     }
-    transition: height var(--zen-hidden-toolbar-transition);
 
     height: var(--zen-element-separation);
+    transition: height 0s linear var(--zen-hidden-toolbar-transition-duration);
     overflow: clip;
+    contain: layout paint;
+
+    & #zen-appcontent-navbar-container {
+      transform: scaleY(0);
+      transform-origin: top center;
+      transition:
+        transform var(--zen-hidden-toolbar-transition),
+        opacity var(--zen-hidden-toolbar-transition);
+      will-change: transform, opacity;
+      opacity: 0;
+      pointer-events: none;
+    }
 
     & #urlbar:not([breakout-extend]) {
       /* Sometimes, "opacity: 1" is forced elsewhere */
@@ -42,11 +54,6 @@
     }
 
 %include windows-captions-fix-default.inc.css
-
-    & #zen-appcontent-navbar-container {
-      opacity: 0;
-      transition: opacity var(--zen-hidden-toolbar-transition);
-    }
   }
 
   & #zen-appcontent-navbar-wrapper:is(
@@ -55,6 +62,7 @@
     [zen-compact-mode-active]
   ) {
     height: var(--zen-toolbar-height-with-bookmarks);
+    transition: height 0s linear 0s;
     overflow: inherit;
 
 %include windows-captions-fix-active.inc.css
@@ -65,7 +73,9 @@
     }
 
     & #zen-appcontent-navbar-container {
+      transform: scaleY(1);
       opacity: 1;
+      pointer-events: auto;
     }
   }
 }

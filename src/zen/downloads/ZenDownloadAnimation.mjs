@@ -11,7 +11,7 @@ const CONFIG = Object.freeze({
   ANIMATION: {
     ARC_STEPS: 60,
     MAX_ARC_HEIGHT: 1200,
-    ARC_HEIGHT_RATIO: 0.8, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
+    ARC_HEIGHT_RATIO: 2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
     SCALE_END: 0.45, // Final scale at destination
   },
 });
@@ -148,9 +148,11 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #determineEndPosition() {
-    const downloadsButton = document.getElementById("downloads-button");
-    const isDownloadButtonVisible =
-      downloadsButton && this.#isElementVisible(downloadsButton);
+    const downloadsButton = [
+      document.getElementById("zen-library-button"),
+      document.getElementById("downloads-button"),
+    ].find(button => button && this.#isElementVisible(button));
+    const isDownloadButtonVisible = !!downloadsButton;
 
     let endPosition = { clientX: 0, clientY: 0 };
 

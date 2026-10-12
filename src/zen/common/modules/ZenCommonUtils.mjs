@@ -73,19 +73,38 @@ export class nsZenMultiWindowFeature {
   }
 }
 
+function scheduleLateInit(initBound, eventName, alreadyPassed) {
+  if (!alreadyPassed) {
+    document.addEventListener(eventName, initBound, { once: true });
+    return;
+  }
+  const features = window.gZenLazyFeatures;
+  if (features?.holdInit) {
+    features.takeInit(initBound);
+    return;
+  }
+  queueMicrotask(initBound);
+}
+
 export class nsZenDOMOperatedFeature {
   constructor() {
-    var initBound = this.init.bind(this);
-    document.addEventListener("DOMContentLoaded", initBound, { once: true });
+    // Private fields exist only after super() returns, so a late import
+    // cannot call init() from inside this constructor.
+    scheduleLateInit(
+      this.init.bind(this),
+      "DOMContentLoaded",
+      window.gZenLazyFeatures?.pastContent
+    );
   }
 }
 
 export class nsZenPreloadedFeature {
   constructor() {
-    var initBound = this.init.bind(this);
-    document.addEventListener("MozBeforeInitialXULLayout", initBound, {
-      once: true,
-    });
+    scheduleLateInit(
+      this.init.bind(this),
+      "MozBeforeInitialXULLayout",
+      window.gZenLazyFeatures?.pastLayout
+    );
   }
 }
 

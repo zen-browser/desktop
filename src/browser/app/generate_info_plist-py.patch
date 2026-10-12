@@ -1,0 +1,38 @@
+diff --git a/browser/app/generate_info_plist.py b/browser/app/generate_info_plist.py
+index a2d9083aca5ff9bd7b4ef5720a507afecce79ac3..9c840dcd5c328b387cf0f6440d56e93c4854ddff 100644
+--- a/browser/app/generate_info_plist.py
++++ b/browser/app/generate_info_plist.py
+@@ -2,6 +2,7 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
++import os
+ import re
+ 
+ import buildconfig
+@@ -24,6 +25,16 @@ def _mac_bundle_version():
+     return f"{majorVersion}{twodigityear}.{month}.{day}"
+ 
+ 
++def _developer_repo_path():
++    # Development builds symlink engine/ files to ../src, and the content
++    # sandbox only reads below this path, so it must cover both. The packager
++    # strips the key from shipped builds.
++    parent = os.path.dirname(buildconfig.topsrcdir)
++    if os.path.isdir(os.path.join(parent, "src")):
++        return parent
++    return buildconfig.topsrcdir
++
++
+ def main(output, input_path, mac_app_name):
+     substs = buildconfig.substs
+     requirements = substs.get("MOZ_SMPRIVILEGEDEXECUTABLES_REQUIREMENTS") or ""
+@@ -39,7 +50,7 @@ def main(output, input_path, mac_app_name):
+             f"-DMOZ_MACBUNDLE_ID={substs['MOZ_MACBUNDLE_ID']}",
+             f"-DMAC_BUNDLE_VERSION={_mac_bundle_version()}",
+             f"-DMOZ_SMPRIVILEGEDEXECUTABLES_REQUIREMENTS={requirements}",
+-            f"-DMOZ_DEVELOPER_REPO_PATH={buildconfig.topsrcdir}",
++            f"-DMOZ_DEVELOPER_REPO_PATH={_developer_repo_path()}",
+             f"-DMOZ_DEVELOPER_OBJ_PATH={buildconfig.topobjdir}",
+             input_path,
+         ],

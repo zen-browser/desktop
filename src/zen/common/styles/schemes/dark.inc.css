@@ -12,6 +12,10 @@ color-scheme: dark;
 --zen-frosted-hover: rgb(255 255 255 / 8%);
 --zen-frosted-divider: rgb(255 255 255 / 15%);
 --zen-frosted-backdrop: blur(24px) saturate(1.4) brightness(0.6);
+/* Brightness range the URL bar glass keeps over a page, and its minimum white. */
+--zen-frosted-luma-min: 0.16;
+--zen-frosted-luma-max: 0.32;
+--zen-frosted-sheen: 0.08;
 --zen-frosted-backdrop-strong: blur(40px) saturate(1.6) brightness(0.6);
 /* The sidebar sits on the workspace gradient and uses light chrome text. */
 --zen-frosted-backdrop-sidebar: blur(42px) saturate(1.1) brightness(0.5);

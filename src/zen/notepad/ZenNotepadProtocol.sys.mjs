@@ -10,7 +10,6 @@ import {
 
 const PROTOCOL_FLAGS =
   Ci.nsIProtocolHandler.URI_DANGEROUS_TO_LOAD |
-  Ci.nsIProtocolHandler.URI_IS_UI_RESOURCE |
   Ci.nsIProtocolHandler.URI_IS_LOCAL_RESOURCE |
   Ci.nsIProtocolHandler.URI_IS_POTENTIALLY_TRUSTWORTHY;
 
@@ -202,10 +201,6 @@ body {
   outline: none;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-}
-.mint-note-editor:focus-visible {
-  outline: 2px solid var(--zen-primary-color, #2dd4bf);
-  outline-offset: 2px;
 }
 
 .mint-line {

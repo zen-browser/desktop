@@ -4,6 +4,7 @@
 
         content/browser/zenThemeModifier.js                                     (../../zen/common/zenThemeModifier.js)
         content/browser/ZenPreloadedScripts.js                                  (../../zen/common/ZenPreloadedScripts.js)
+        content/browser/ZenLazyFeatures.mjs                                     (../../zen/common/ZenLazyFeatures.mjs)
         content/browser/zen-sets.js                                             (../../zen/common/zen-sets.js)
 
         content/browser/ZenStartup.mjs                                          (../../zen/common/modules/ZenStartup.mjs)

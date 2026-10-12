@@ -116,6 +116,20 @@ registerCleanupFunction(async () => {
   await clearNotes();
 });
 
+add_task(function test_mint_sets_one_security_flag() {
+  const handler = Ci.nsIProtocolHandler;
+  const flags = Services.io.getProtocolFlags("mint");
+  const set = [
+    handler.URI_LOADABLE_BY_ANYONE,
+    handler.URI_DANGEROUS_TO_LOAD,
+    handler.URI_IS_UI_RESOURCE,
+    handler.URI_IS_LOCAL_FILE,
+    handler.URI_LOADABLE_BY_SUBSUMERS,
+    handler.URI_IS_WEBEXTENSION_RESOURCE,
+  ].filter(flag => flags & flag);
+  Assert.equal(set.length, 1, "Gecko blocks loads of schemes with several security flags");
+});
+
 add_task(async function test_markdown_model() {
   Assert.equal(commitOnSpace({ type: "paragraph", text: "##" }).type, "h2");
   Assert.equal(commitOnSpace({ type: "paragraph", text: "hello" }), null);

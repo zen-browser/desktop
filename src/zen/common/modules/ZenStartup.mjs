@@ -95,7 +95,7 @@ class ZenStartup {
       gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
         try {
-          gZenHomepage?.init();
+          gZenLazyFeatures.load("homepage");
         } catch (error) {
           console.error("Zen homepage failed to start", error);
         }
@@ -213,6 +213,7 @@ class ZenStartup {
         "zen.updates.last-version",
         Services.appinfo.version
       );
+      gZenLazyFeatures.style("welcome");
       Services.scriptloader.loadSubScript(
         "chrome://browser/content/zen-components/ZenWelcome.mjs",
         window

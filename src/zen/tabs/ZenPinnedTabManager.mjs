@@ -748,7 +748,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     document.getElementById("context_closeTab").hidden =
       contextTab.hasAttribute("zen-essential");
     document.getElementById("context_zen-close-essential").hidden =
-      !isEssential;
+      !isEssential || !contextTab.selected;
     document.getElementById("context_zen-remove-essential").hidden =
       !isEssential;
     document.getElementById("context_unpinTab").hidden =

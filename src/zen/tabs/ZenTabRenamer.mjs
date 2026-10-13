@@ -98,7 +98,7 @@ class nsZenTabRenamer extends nsZenDOMOperatedFeature {
   async #onKeydown(event) {
     event.stopPropagation();
     if (event.key === "Escape") {
-      event.target.blur();
+      this.#cancel();
       return;
     }
     if (event.key !== "Enter") {
@@ -145,14 +145,22 @@ class nsZenTabRenamer extends nsZenDOMOperatedFeature {
     if (document.activeElement === event.target || !this.#edited) {
       return;
     }
+    this.#cancel();
+  }
+
+  /** Tears the editor down without applying a new name. */
+  #cancel() {
+    if (!this.#edited) {
+      return;
+    }
     document.documentElement.removeAttribute("zen-renaming-tab");
-    this.#input.remove();
+    this.#input?.remove();
     this.#edited.querySelector(".tab-editor-container")?.remove();
     const isTab = !!this.#edited.closest(".tabbrowser-tab");
     const label = isTab
       ? this.#edited.querySelector(".tab-label-container-editing")
       : this.#edited;
-    label.classList.remove("tab-label-container-editing");
+    label?.classList.remove("tab-label-container-editing");
     this.#edited = null;
   }
 }

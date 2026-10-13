@@ -1,0 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+BROWSER_CHROME_MANIFESTS += [
+    "browser.toml",
+    "browserNova.toml",
+    "hidpi/browser.toml",
+    "io/browser.toml",
+    "lowdpi/browser.toml",
+]
+
+TESTING_JS_MODULES += [
+    "PerfTestHelpers.sys.mjs",
+]

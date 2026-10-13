@@ -107,7 +107,10 @@ add_task(async function test_unknown_workspace_does_not_switch() {
 
 add_task(async function test_initial_workspace_pref_consumed_on_restore() {
   await SpecialPowers.pushPrefEnv({
-    set: [["zen.testing.enabled", false]],
+    set: [
+      ["zen.testing.enabled", false],
+      ["zen.urlbar.open-on-startup", false],
+    ],
   });
   const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   await gZenWorkspaces.createAndSaveWorkspace("Cmdline Cold Start");
@@ -155,7 +158,10 @@ add_task(async function test_initial_workspace_pref_consumed_on_restore() {
 
 add_task(async function test_initial_workspace_pref_survives_private_window() {
   await SpecialPowers.pushPrefEnv({
-    set: [["zen.testing.enabled", false]],
+    set: [
+      ["zen.testing.enabled", false],
+      ["zen.urlbar.open-on-startup", false],
+    ],
   });
   Services.prefs.setStringPref(
     "zen.workspaces.cmdline-initial-workspace",

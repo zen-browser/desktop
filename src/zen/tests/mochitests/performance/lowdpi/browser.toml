@@ -1,0 +1,10 @@
+[DEFAULT]
+prefs = [
+  "browser.startup.recordImages=true",
+  "layout.css.devPixelsPerPx='1'",
+]
+
+["../browser_startup_images.js"]
+run-if = [
+  "debug",
+]

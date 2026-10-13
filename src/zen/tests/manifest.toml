@@ -33,6 +33,30 @@ disable = [
   "browser_javascript_links.js",
 ]
 
+[performance]
+source = "browser/base/content/test/browser-performance"
+is_direct_path = true
+disable = [
+  # These three measure how a horizontal tab strip redistributes width.
+  "browser_tabclose_grow.js",
+  "browser_tabopen_squeeze.js",
+  "browser_tabstrip_overflow_underflow.js",
+  # Zen replaces tab drag and drop.
+  "browser_tabdetach.js",
+  # This one types into the urlbar with synthesized keys. Zen hands focus back
+  # to the content area after a window settles, so the keys never reach the
+  # input and no search ever starts.
+  "browser_urlbar_keyed_search.js",
+]
+
+[performance.replace-manifest]
+'  "browser.migration.version=9999999",' = '''  "browser.migration.version=9999999",
+  "zen.ui.migration.version=9999999",'''
+'  "browser.startup.record=true",' = '''
+  "zen.window-sync.enabled=false",
+  "zen.urlbar.show-domain-only-in-sidebar=false",
+  "browser.startup.record=true",'''
+
 [readermode]
 source = "toolkit/components/reader/tests/browser"
 is_direct_path = true
@@ -105,6 +129,10 @@ disable = [
   "browser_tab_groups_restore_closed_in_open_window.js",
   "browser_tab_groups_restore_closed_many_tabs.js",
   "browser_tab_groups_closed.js",
+  "browser_tab_groups_closed_groups_in_closed_windows.js",
+  "browser_tab_groups_empty.js",
+  "browser_tab_groups_restore_to_group.js",
+  "browser_tab_groups_saved.js",
   "browser_tab_groups_restore_multiple.js",
   "browser_tab_groups_restore_saved.js",
   "browser_tab_groups_restore_simple.js",
@@ -119,6 +147,9 @@ disable = [
   "browser_urlbarSearchMode.js",
   "browser_windowStateContainer.js",
   "browser_wireframe_basic.js",
+  "browser_cleaner.js",
+  # window, so such a window can't exist here and the record rightly stays.
+  "browser_clear_container_closed_windows.js",
 ]
 
 [sessionstore.replace-manifest]

@@ -166,7 +166,10 @@ add_task(async function test_html_parsing_logic() {
   Assert.equal(items[0].title, "Fix the login bug");
   Assert.equal(items[0].subtitle, "UserA");
   Assert.equal(items[0].id, "zen-browser/desktop#101");
-  Assert.equal(items[0].url, "https://github.com/zen-browser/desktop/issues/101");
+  Assert.equal(
+    items[0].url,
+    "https://github.com/zen-browser/desktop/issues/101"
+  );
 
   Assert.equal(items[1].title, "Add dark mode");
   Assert.equal(items[1].subtitle, "UserB");

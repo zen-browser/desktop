@@ -38,7 +38,6 @@ add_task(function test_essentials_section_accepts_any_container_shape() {
 add_task(async function test_essential_tab_with_string_context_id() {
   const tab = BrowserTestUtils.addTab(gBrowser, "about:blank", {
     skipAnimation: true,
-    userContextId: 1,
   });
   gZenPinnedTabManager.addToEssentials(tab);
   const section = tab.parentNode;

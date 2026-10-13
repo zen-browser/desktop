@@ -1,0 +1,136 @@
+[DEFAULT]
+# to avoid overhead when running the browser normally, StartupRecorder.sys.mjs will
+# do almost nothing unless browser.startup.record is true.
+# gfx.canvas.willReadFrequently.enable is just an optimization, but needs to be
+# set during early startup to have an impact as a canvas will be used by
+# StartupRecorder.sys.mjs
+prefs = [
+  # Skip migration work in BG__migrateUI for browser_startup.js since it isn't
+  # representative of common startup.
+  "browser.migration.version=9999999",
+  # Zen decides "is this a new profile?" from browser.migration.version, so
+  # pinning it above makes gZenUIMigration run every migration step. One of
+  # them opens a modal dialog that blocks the whole suite, so skip Zen's
+  # migrations as well.
+  "zen.ui.migration.version=9999999",
+  # Several tests here open and close extra browser windows; window sync
+  # mirrors tabs back into the original one and trips the harness' unexpected
+  # tab check at the end of the test.
+  "zen.window-sync.enabled=false",
+  # Zen's fast path at the top of UrlbarValueFormatter.#ensureFormattedHostVisible
+  # reads inputField.scrollLeftMax, which flushes layout. It only runs once the
+  # single-toolbar layout has been applied, and that races window startup, so
+  # browser_windowopen.js and browser_window_resize.js see the reflow on some
+  # runs and not others -- and the harness fails on both "unexpected" and
+  # "unused expected". Pin the gate off so the suite is deterministic. The
+  # flushing read is a real bug; drop this pref once it is fixed.
+  "zen.urlbar.show-domain-only-in-sidebar=false",
+  "browser.startup.record=true",
+  "gfx.canvas.willReadFrequently.enable=true",
+  # The form autofill framescript is only used in certain locales if this
+  # pref is set to 'detect', which is the default value on non-Nightly.
+  "extensions.formautofill.addresses.available='on'",
+  # For perfomance tests do not enable the remote control cue, which gets set
+  # when Marionette is enabled, but users normally don't see.
+  "browser.chrome.disableRemoteControlCueForTests=true",
+]
+support-files = ["head.js"]
+
+["browser_appmenu.js"]
+skip-if = [
+  "asan",
+  "debug",
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && tsan", # Bug 1969231
+  "os == 'mac' && os_version == '10.15' && arch == 'x86_64' && opt", # Bug 1969231
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 1969231
+  "os == 'win'", # Bug 1775626
+]
+
+["browser_hidden_browser_vsync.js"]
+
+["browser_hiddenwindow_existence.js"]
+
+["browser_opaque_region.js"]
+
+["browser_panel_vsync.js"]
+support-files = ["!/browser/components/downloads/test/browser/head.js"]
+
+["browser_preferences_usage.js"]
+https_first_disabled = true
+run-if = [
+  "debug",
+]
+skip-if = [
+  "socketprocess_networking",
+  "os == 'win' && standalone", # Bug 2029498
+]
+
+["browser_startup.js"]
+# This test should be treated more like a test suite than like an individual test.
+# If a specific failure needs to be disabled, there are exception lists inside
+# the test that can be adjusted.
+
+["browser_startup_content.js"]
+support-files = ["file_empty.html"]
+
+["browser_startup_content_subframe.js"]
+run-if = [
+  "fission",
+]
+support-files = [
+  "file_empty.html",
+  "StartupContentSubframe.sys.mjs",
+]
+
+["browser_startup_flicker.js"]
+run-if = [
+  "debug",
+  "nightly_build", # Requires StartupRecorder.sys.mjs, which isn't shipped everywhere by default
+]
+skip-if = [
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64' && opt", # Bug 1889278
+]
+
+["browser_tabclose.js"]
+skip-if = [
+  "os == 'mac' && os_version == '10.15' && arch == 'x86_64'", # Bug 1531417
+  "os == 'win'", # Bug 1488537, Bug 1497713
+]
+
+["browser_tabclose_grow.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tabdetach.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tabopen.js"]
+skip-if = [
+  "os == 'mac' && os_version == '10.15' && arch == 'x86_64'", # Bug 1705492
+  "os == 'mac' && os_version == '14.70' && arch == 'x86_64' && opt", # Bug 1870476
+]
+
+["browser_tabopen_squeeze.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tabstrip_overflow_underflow.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tabswitch.js"]
+skip-if = [
+  "os == 'win'", # Bug 1455054
+]
+
+["browser_toolbariconcolor_restyles.js"]
+
+["browser_urlbar_keyed_search.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_urlbar_search.js"]
+
+["browser_vsync_accessibility.js"]
+
+["browser_window_resize.js"]
+
+["browser_windowclose.js"]
+
+["browser_windowopen.js"]

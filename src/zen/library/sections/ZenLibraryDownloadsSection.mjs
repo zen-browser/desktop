@@ -81,7 +81,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     super.connectedCallback();
     this.#data = lazy.DownloadsCommon.getData(window, true);
     this.#data.addView(this);
-    this.#menu = this.#buildMenu();
   }
 
   /** The view of the old library window this section stands in for. */
@@ -197,6 +196,12 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         download.refresh().catch(console.error);
       }
     }
+  }
+
+  onShown() {
+    super.onShown();
+    this.#refreshed = new WeakSet();
+    this.requestUpdate();
   }
 
   // Helpers
@@ -349,7 +354,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   #statusText(download) {
     const strings = lazy.DownloadsCommon.strings;
     if (!download.stopped) {
-      return lazy.transferText(download);
+      return lazy.transferText(download, { speed: true });
     }
     if (download.deleted) {
       return strings.fileDeleted;
@@ -576,15 +581,18 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       }
     });
     menu.addEventListener("popuphidden", () => {
+      menu.hidden = true;
       this.#menuRow?.removeAttribute("menu-open");
       this.#menuRow = null;
       this.#menuDownload = null;
     });
+    menu.hidden = true;
     document.getElementById("mainPopupSet").appendChild(menu);
     return menu;
   }
 
   #openMenu(download, row, anchor, event) {
+    this.#menu ??= this.#buildMenu();
     const fileName = this.#fileName(download);
     for (const item of this.#menu.querySelectorAll("menuitem")) {
       const { action } = item.dataset;
@@ -601,6 +609,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       }
       item.disabled = !enabled;
     }
+    this.#menu.hidden = false;
     this.#menuRow?.removeAttribute("menu-open");
     this.#menuRow = row;
     this.#menuDownload = download;

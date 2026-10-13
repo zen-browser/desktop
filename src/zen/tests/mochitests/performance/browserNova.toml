@@ -1,0 +1,27 @@
+[DEFAULT]
+dupe-manifest = true
+tags = "nova"
+# to avoid overhead when running the browser normally, StartupRecorder.sys.mjs will
+# do almost nothing unless browser.startup.record is true.
+# gfx.canvas.willReadFrequently.enable is just an optimization, but needs to be
+# set during early startup to have an impact as a canvas will be used by
+# StartupRecorder.sys.mjs
+prefs = [
+  # Skip migration work in BG__migrateUI for browser_startup.js since it isn't
+  # representative of common startup.
+  "browser.migration.version=9999999",
+  "browser.startup.record=true",
+  "gfx.canvas.willReadFrequently.enable=true",
+  # The form autofill framescript is only used in certain locales if this
+  # pref is set to 'detect', which is the default value on non-Nightly.
+  "extensions.formautofill.addresses.available='on'",
+  # For perfomance tests do not enable the remote control cue, which gets set
+  # when Marionette is enabled, but users normally don't see.
+  "browser.chrome.disableRemoteControlCueForTests=true",
+  "browser.nova.enabled=true",
+]
+support-files = ["head.js"]
+
+["browser_urlbar_keyed_search.js"]
+
+["browser_urlbar_search.js"]

@@ -15,6 +15,6 @@ support-files = [
 
 ["browser_sidebar_provider.js"]
 
-["browser_urlbar_close_token.js"]
-
 ["browser_top_sites_shortcuts.js"]
+
+["browser_urlbar_close_token.js"]

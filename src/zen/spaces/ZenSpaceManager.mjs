@@ -354,11 +354,19 @@ class nsZenWorkspaces {
     this._fixIndicatorsNames(workspaces);
   }
 
+  /**
+   * The essentials section for a container.
+   *
+   * @param {number|string|Element} [container] - A userContextId, as a number
+   *   or a numeric string (session data saved by older versions may hold
+   *   strings), or an element carrying a `usercontextid` attribute.
+   * @returns {Element}
+   */
   getEssentialsSection(container = 0) {
-    if (typeof container !== "number") {
-      container = container?.getAttribute("usercontextid");
+    if (container && typeof container === "object") {
+      container = container.getAttribute("usercontextid");
     }
-    container ??= 0;
+    container = parseInt(container, 10) || 0;
     if (!this.containerSpecificEssentials) {
       container = 0;
     }

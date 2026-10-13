@@ -1,0 +1,70 @@
+{
+  "triagers": {
+    "Gijs": {
+      "bzmail": "gijskruitbosch+bugs@gmail.com"
+    },
+    "Mike Conley": {
+      "bzmail": "mconley@mozilla.com"
+    },
+    "Florian Quèze": {
+      "bzmail": "florian@mozilla.com"
+    },
+    "Alex Thayer": {
+      "bzmail": "dothayer@mozilla.com"
+    }
+  },
+  "duty-start-dates": {
+    "2023-12-07": "Mike Conley",
+    "2023-12-14": "Florian Quèze",
+    "2023-12-21": "Alex Thayer",
+    "2023-12-28": "Gijs Kruitbosch",
+    "2024-01-04": "Mike Conley",
+    "2024-01-11": "Florian Quèze",
+    "2024-01-18": "Alex Thayer",
+    "2024-01-25": "Gijs Kruitbosch",
+    "2024-02-01": "Mike Conley",
+    "2024-02-08": "Florian Quèze",
+    "2024-02-15": "Alex Thayer",
+    "2024-02-22": "Gijs Kruitbosch",
+    "2024-02-29": "Mike Conley",
+    "2024-03-07": "Florian Quèze",
+    "2024-03-14": "Alex Thayer",
+    "2024-03-21": "Gijs Kruitbosch",
+    "2024-03-28": "Mike Conley",
+    "2024-04-04": "Florian Quèze",
+    "2024-04-11": "Alex Thayer",
+    "2024-04-18": "Gijs Kruitbosch",
+    "2024-04-25": "Mike Conley",
+    "2024-05-02": "Florian Quèze",
+    "2024-05-09": "Alex Thayer",
+    "2024-05-16": "Gijs Kruitbosch",
+    "2024-05-23": "Mike Conley",
+    "2024-05-30": "Florian Quèze",
+    "2024-06-06": "Alex Thayer",
+    "2024-06-13": "Gijs Kruitbosch",
+    "2024-06-20": "Mike Conley",
+    "2024-06-27": "Florian Quèze",
+    "2024-07-04": "Alex Thayer",
+    "2024-07-11": "Gijs Kruitbosch",
+    "2024-07-18": "Mike Conley",
+    "2024-07-25": "Florian Quèze",
+    "2024-08-01": "Alex Thayer",
+    "2024-08-08": "Gijs Kruitbosch",
+    "2024-08-15": "Mike Conley",
+    "2024-08-22": "Florian Quèze",
+    "2024-08-29": "Alex Thayer",
+    "2024-09-05": "Gijs Kruitbosch",
+    "2024-09-12": "Mike Conley",
+    "2024-09-19": "Florian Quèze",
+    "2024-09-26": "Alex Thayer",
+    "2024-10-03": "Gijs Kruitbosch",
+    "2024-10-10": "Mike Conley",
+    "2024-10-17": "Florian Quèze",
+    "2024-10-24": "Alex Thayer",
+    "2024-10-31": "Gijs Kruitbosch",
+    "2024-11-07": "Mike Conley",
+    "2024-11-14": "Florian Quèze",
+    "2024-11-21": "Gijs Kruitbosch",
+    "2024-11-28": "Alex Thayer"
+  }
+}

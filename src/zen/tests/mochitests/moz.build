@@ -13,6 +13,7 @@ BROWSER_CHROME_MANIFESTS += [
 	"caps/browser.toml",
 	"gesture/browser.toml",
 	"linkHandling/browser.toml",
+	"performance/browser.toml",
 	"readermode/browser.toml",
 	"safebrowsing/browser.toml",
 	"sessionstore/browser.toml",

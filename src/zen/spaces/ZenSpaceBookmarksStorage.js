@@ -13,9 +13,40 @@ window.ZenWorkspaceBookmarksStorage = {
     this.promiseInitialized = new Promise(resolve => {
       this._resolveInitialized = resolve;
     });
-    await this._ensureTable();
-    this._resolveInitialized();
-    delete this._resolveInitialized;
+    try {
+      // Every browser window runs this. In steady state the schema is already
+      // current, so answer that from the shared read-only connection first.
+      if (!Services.startup.shuttingDown) {
+        const readOnly = await this.lazy.PlacesUtils.promiseDBConnection();
+        if (
+          !(await this._isSchemaCurrent(readOnly)) &&
+          !Services.startup.shuttingDown
+        ) {
+          await this._ensureTable();
+        }
+      }
+    } finally {
+      this._resolveInitialized();
+      delete this._resolveInitialized;
+    }
+  },
+
+  /**
+   * Whether the tables are already on the current schema.
+   *
+   * @param {object} db - A Places connection, read-only is fine.
+   * @returns {Promise<boolean>}
+   */
+  async _isSchemaCurrent(db) {
+    const rows = await db.execute(`
+      SELECT value FROM moz_meta
+      WHERE key = 'zen_bookmarks_workspaces_schema_version'
+    `);
+    return (
+      rows[0]?.getResultByName("value") >= 1 &&
+      (await db.tableExists("zen_bookmarks_workspaces")) &&
+      (await db.tableExists("zen_bookmarks_workspaces_changes"))
+    );
   },
 
   /**

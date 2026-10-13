@@ -1,0 +1,213 @@
+--- a/intl/locale/rust/locale_service_glue/src/lib.rs
++++ b/intl/locale/rust/locale_service_glue/src/lib.rs
+@@ -59,180 +59,46 @@
+ 
+ /// A comma-separated list of valid BCP 47 language tags.
+ ///
+-/// The default value is either
++/// Peppermint: the default is derived from the app (UI) locale and nothing
++/// else, so websites are asked for the language the browser is shown in, not
++/// for a guess based on the OS locale or the geographic region. Mozilla's
++/// per-language table of regional and related languages (and the trailing
++/// "en-US, en") is intentionally not used. The value is either
+ ///
+-///     $lang, en-US, en
++///     $lang
+ ///
+ /// or
+ ///
+-///     $lang-$region, $lang, en-US, en
++///     $lang-$region, $lang
+ ///
+-/// if the current locale includes a region subtag.
++/// if the app locale includes a region (or `valencia`) subtag.
+ ///
+-/// If customizing this, begin with the language tag of your locale.
+-/// Next, include language tags for other languages that you expect most users of your locale to be able to speak,
+-/// so that their browsing experience degrades gracefully if content is not available in their primary language.
+-///
+-/// By default, "en-US, en" is appended to the end of the list, providing locales of last resort.
+-/// If you know that users of your locale would prefer a different variety of English,
+-/// or if they are not likely to understand English at all,
+-/// you may opt to include a different English language tag,
+-/// or to exclude English altogether.
++/// This is only the default: a user (or locked) `intl.accept_languages` value
++/// always wins, see `LocaleService::GetAcceptLanguages`.
+ #[no_mangle]
+ pub extern "C" fn locale_service_default_accept_languages(name: &nsACString, out: &mut nsACString) {
+-    let mut add_en_us = true;
+-    let lang;
+-    let fmt;
+-    let langs = match langid_for_mozilla(name) {
+-        Ok(langid) => {
+-            lang = langid.language;
+-            match lang.as_str() {
+-                "ace" => "ace, id",
+-                "ach" => "ach, en-GB",
+-                "af" => "af, en-ZA, en-GB",
+-                "ak" => "ak, ak-GH",
+-                "an" => "an, es-ES, es, ca",
+-                "ast" => "ast, es-ES, es",
+-                "az" => "az-AZ, az",
+-                "bo" => "bo-CN, bo-IN, bo",
+-                "br" => "br, fr-FR, fr",
+-                "brx" => "brx, as",
+-                "bs" => "bs-BA, bs",
+-                "ca" if langid.variants.get(0) == Some(&variant!("valencia")) => "ca-valencia, ca",
+-                "cak" => "cak, kaq, es",
+-                "crh" => "tr-TR, tr",
+-                "cs" => "cs, sk",
+-                "csb" => "csb, csb-PL, pl",
+-                "cy" => "cy-GB, cy",
+-                "dsb" => "dsb, hsb, de",
+-                "el" => "el-GR, el",
+-                "en" => {
+-                    add_en_us = false;
+-                    match langid.region {
+-                        Some(region) => match region.as_str() {
+-                            "CA" => "en-CA, en-US, en",
+-                            "GB" => "en-GB, en",
+-                            "ZA" => "en-ZA, en-GB, en-US, en",
+-                            _ => "en-US, en",
+-                        },
+-                        _ => "en-US, en",
+-                    }
+-                }
+-                "et" => "et, et-EE",
+-                "fa" => "fa-IR, fa",
+-                "ff" => "ff, fr-FR, fr, en-GB",
+-                "fi" => "fi-FI, fi",
+-                "fr" => "fr, fr-FR",
+-                "frp" => "frp, fr-FR, fr",
+-                "fur" => "fur-IT, fur, it-IT, it",
+-                "fy" => "fy-NL, fy, nl",
+-                "ga" => "ga-IE, ga, en-IE, en-GB",
+-                "gd" => "gd-GB, gd, en-GB",
+-                "gl" => "gl-ES, gl",
+-                "gn" => "gn, es",
+-                "gv" => "gv, en-GB",
+-                "he" => "he, he-IL",
+-                "hr" => "hr, hr-HR",
+-                "hsb" => "hsb, dsb, de",
+-                "hto" => "es-MX, es-ES, es, es-AR, es-CL",
+-                "hu" => "hu-HU, hu",
+-                "hye" => "hye, hy",
+-                "ilo" => "ilo-PH, ilo",
+-                "it" => "it-IT, it",
+-                "ixl" => "ixl, es-MX, es",
+-                "ja" => "ja", // Also catches ja-JP-mac
+-                "ka" => "ka-GE, ka",
+-                "kab" => "kab-DZ, kab, fr-FR, fr",
+-                "kk" => "kk, ru, ru-RU",
+-                "kn" => "kn-IN, kn",
+-                "ko" => "ko-KR, ko",
+-                "lb" => "lb, de-DE, de",
+-                "lg" => "lg, en-GB",
+-                "lij" => "lij, it",
+-                "lt" => {
+-                    add_en_us = false;
+-                    "lt, en-US, en, ru, pl"
+-                }
+-                "ltg" => "ltg, lv",
+-                "mai" => "mai, hi-IN, en",
+-                "meh" => "meh, es-MX, es",
+-                "mix" => "mix, es-MX, es",
+-                "mk" => "mk-MK, mk",
+-                "ml" => "ml-IN, ml",
+-                "mr" => "mr-IN, mr",
+-                "my" => {
+-                    add_en_us = false;
+-                    "my, en-GB, en"
+-                }
+-                "nb" => "nb-NO, nb, no-NO, no, nn-NO, nn",
+-                "nn" => "nn-NO, nn, no-NO, no, nb-NO, nb",
+-                "nr" => "nr-ZA, nr, en-ZA, en-GB",
+-                "nso" => "nso-ZA, nso, en-ZA, en-GB",
+-                "oc" => "oc, ca, fr, es, it",
+-                "pa" => "pa, pa-IN",
+-                "ppl" => "ppl, es-MX, es",
+-                "rm" => "rm, rm-CH, de-CH, de",
+-                "ro" => {
+-                    add_en_us = false;
+-                    "ro-RO, ro-GB, en"
+-                }
+-                "ru" => "ru-RU, ru",
+-                "sah" => "sah, ru-RU, ru",
+-                "sc" => "sc, it-IT, it",
+-                "scn" => "scn, it-IT, it",
+-                "sco" => {
+-                    add_en_us = false;
+-                    "sco, en-GB, en"
+-                }
+-                "si" => "si-LK, si",
+-                "sk" => "sk, cs",
+-                "sl" => {
+-                    add_en_us = false;
+-                    "sl, en-GB, en"
+-                }
+-                "son" => "son, son-ML, fr",
+-                "sq" => "sq, sq-AL",
+-                "sr" => "sr-RS, sr",
+-                "st" => "st-ZA, st, en-ZA, en-GB",
+-                "szl" => {
+-                    add_en_us = false;
+-                    "szl, pl-PL, pl, en, de"
+-                }
+-                "ta" => "ta-IN, ta",
+-                "te" => "te-IN, te",
+-                "tl" => "tl-PH, tl",
+-                "tr" => "tr-TR, tr",
+-                "trs" => "trs, es-MX, es",
+-                "ts" => "ts-ZA, ts, en-ZA, en-GB",
+-                "uk" => "uk-UA, uk",
+-                "ur" => "ur-PK, ur",
+-                "uz" => "uz, ru",
+-                "ve" => "ve-ZA, ve, en-ZA, en-GB",
+-                "vi" => "vi-VN, vi",
+-                "xcl" => "xcl, hy",
+-                "xh" => "xh-ZA, xh",
+-                "zam" => "zam, es-MX, es",
+-                "zh" if langid.region == Some(region!("CN")) => "zh-CN, zh, zh-TW, zh-HK",
+-                _ => {
+-                    if langid.region.is_some() {
+-                        let region = langid.region.unwrap();
+-                        fmt = format!("{lang}-{region}, {lang}");
+-                        fmt.as_str()
+-                    } else {
+-                        lang.as_str()
+-                    }
+-                }
+-            }
+-        }
+-        Err(_) => {
+-            add_en_us = false;
+-            "en-US, en"
+-        }
++    let Ok(langid) = langid_for_mozilla(name) else {
++        out.assign("en-US, en");
++        return;
+     };
+-    if add_en_us {
+-        out.assign(format!("{langs}, en-US, en").as_str())
++    let lang = langid.language.as_str();
++    if lang == "und" {
++        out.assign("en-US, en");
++        return;
++    }
++
++    // Internal variants such as the "mac" of "ja-JP-mac" are not part of the
++    // language the UI is shown in (and are not valid on the wire); `valencia`
++    // is the only variant websites understand.
++    let mut tag = langid.clone();
++    if tag.variants.get(0) != Some(&variant!("valencia")) {
++        let _ = tag.variants.clear();
++    }
++    let tag = tag.to_string();
++    if tag == lang {
++        out.assign(lang);
+     } else {
+-        out.assign(langs)
++        out.assign(format!("{tag}, {lang}").as_str());
+     }
+ }
+ 

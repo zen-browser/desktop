@@ -1,0 +1,55 @@
+--- a/intl/locale/tests/unit/test_localeService.js
++++ b/intl/locale/tests/unit/test_localeService.js
+@@ -262,32 +262,44 @@
+ 
+   localeService.availableLocales = ["ca-valencia", "en-US"];
+   localeService.requestedLocales = ["ca-valencia"];
+-  Assert.equal(localeService.acceptLanguages, "ca-valencia, ca, en-US, en");
++  Assert.equal(localeService.acceptLanguages, "ca-valencia, ca");
+ 
+   localeService.availableLocales = ["hi-IN", "en-US"];
+   localeService.requestedLocales = ["hi-IN"];
+-  Assert.equal(localeService.acceptLanguages, "hi-IN, hi, en-US, en");
++  Assert.equal(localeService.acceptLanguages, "hi-IN, hi");
++
++  // No regional or related-language guesses, only the UI language.
++  localeService.availableLocales = ["ru", "en-US"];
++  localeService.requestedLocales = ["ru"];
++  Assert.equal(localeService.acceptLanguages, "ru");
++
++  localeService.availableLocales = ["de", "en-US"];
++  localeService.requestedLocales = ["de"];
++  Assert.equal(localeService.acceptLanguages, "de");
++
++  // A user value always wins over the default.
++  Services.prefs.setCharPref("intl.accept_languages", "fr-CA, fr");
++  Assert.equal(localeService.acceptLanguages, "fr-CA, fr");
++  Services.prefs.clearUserPref("intl.accept_languages");
++  Assert.equal(localeService.acceptLanguages, "de");
+ 
+   localeService.availableLocales = ["ja-JP-mac", "en-US"];
+   localeService.requestedLocales = ["ja-JP-mac"];
+-  Assert.equal(localeService.acceptLanguages, "ja, en-US, en");
++  Assert.equal(localeService.acceptLanguages, "ja-JP, ja");
+   Assert.equal(localeService.ellipsis, "...");
+   Assert.equal(localeService.alwaysAppendAccesskeys, true);
+   Assert.equal(localeService.insertSeparatorBeforeAccesskeys, false);
+ 
+   localeService.availableLocales = ["zh-CN", "en-US"];
+   localeService.requestedLocales = ["zh-CN"];
+-  Assert.equal(
+-    localeService.acceptLanguages,
+-    "zh-CN, zh, zh-TW, zh-HK, en-US, en"
+-  );
++  Assert.equal(localeService.acceptLanguages, "zh-CN, zh");
+   Assert.equal(localeService.ellipsis, "…");
+   Assert.equal(localeService.alwaysAppendAccesskeys, false);
+   Assert.equal(localeService.insertSeparatorBeforeAccesskeys, false);
+ 
+   localeService.availableLocales = ["zh-TW", "en-US"];
+   localeService.requestedLocales = ["zh-TW"];
+-  Assert.equal(localeService.acceptLanguages, "zh-TW, zh, en-US, en");
++  Assert.equal(localeService.acceptLanguages, "zh-TW, zh");
+   Assert.equal(localeService.ellipsis, "…");
+   Assert.equal(localeService.alwaysAppendAccesskeys, true);
+   Assert.equal(localeService.insertSeparatorBeforeAccesskeys, true);

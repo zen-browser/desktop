@@ -8,7 +8,7 @@
 
 # 🌿 Peppermint
 
-**A calm, productive Firefox-based browser — built for focus, not noise.**
+**A calm, productive Firefox-based browser. Built for focus, not noise.**
 
 [![License: MPL-2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Firefox Version](https://img.shields.io/badge/Firefox-157.0.1-orange.svg)](https://www.mozilla.org/firefox/)
@@ -23,7 +23,7 @@
 
 ## ✨ Why Peppermint?
 
-Modern browsers are cluttered — endless toolbars, telemetry, sponsored shortcuts, and UI that fights for your attention. **Peppermint strips it all away.**
+Modern browsers are cluttered; Endless toolbars, telemetry, sponsored shortcuts, and UI that fights for your attention. **Peppermint strips it all away.**
 
 |       🎯 **Focus First**        |      🛡️ **Privacy by Default**      |  ⚡ **Performance Tuned**  |
 | :-----------------------------: | :---------------------------------: | :------------------------: |
@@ -145,7 +145,7 @@ peppermint/
 
 ### Vertical Tab Bar (Native)
 
-Not a sidebar extension — a **native C++ implementation** integrated into the browser chrome. Smooth animations, collapsible groups, and keyboard-first navigation.
+Not a sidebar extension, but a **native C++ implementation** integrated into the browser chrome. Smooth animations, collapsible groups, and keyboard-first navigation.
 
 ### Command Palette (`Ctrl/Cmd + K`)
 
@@ -161,17 +161,17 @@ Fuzzy-search everything: tabs, history, bookmarks, settings, and custom actions.
 ### Hardened Preferences (`prefs/`)
 
 ```javascript
-// Telemetry & studies — disabled
+// Telemetry & studies (disabled)
 "datareporting.healthreport.uploadEnabled": false,
 "toolkit.telemetry.enabled": false,
 "app.shield.studies.enabled": false,
 
-// Privacy — strengthened
+// Privacy (strengthened)
 "network.cookie.cookieBehavior": 4,        // Total cookie protection
 "privacy.trackingprotection.enabled": true,
 "dom.security.https_only_mode": true,
 
-// Performance — tuned
+// Performance
 "browser.sessionstore.interval": 120000,   // Less frequent session saves
 "config.trim_on_minimize": true,           // Release memory when minimized
 ```
@@ -287,7 +287,7 @@ Configure `updateHostname` in `surfer.json` and deploy MAR files to your server.
 
 ## 📄 License
 
-**Mozilla Public License 2.0** — see [LICENSE](LICENSE) or [MPL-2.0](https://www.mozilla.org/MPL/2.0/).
+**Mozilla Public License 2.0**; see [LICENSE](LICENSE) or [MPL-2.0](https://www.mozilla.org/MPL/2.0/).
 
 > This project incorporates code from:
 >

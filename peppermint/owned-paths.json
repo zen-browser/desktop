@@ -5,6 +5,7 @@
     ".github/workflows/build.yml",
     ".github/workflows/linux-release-build.yml",
     ".github/workflows/macos-profile-build.yml",
+    ".github/workflows/pr-test.yml",
     ".github/workflows/windows-release-build.yml",
     ".gitignore",
     ".husky/pre-commit",
@@ -30,6 +31,11 @@
     "configs/branding/"
   ],
   "deleted": [
+    ".github/workflows/check-candidate-release.yml",
+    ".github/workflows/issue-metrics.yml",
+    ".github/workflows/sync-external-patches.yml",
+    ".github/workflows/sync-upstream.yml",
+    ".github/workflows/twilight-release-schedule.yml",
     "src/browser/components/tabbrowser/content/tabs-mjs.patch",
     "src/external-patches/firefox/issue_14710.patch",
     "src/external-patches/firefox/issue_14990.patch"

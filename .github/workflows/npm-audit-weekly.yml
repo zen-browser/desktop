@@ -80,6 +80,6 @@ jobs:
           branch: "chore/npm-audit-${{ github.run_id }}"
           title: "chore: weekly safe npm audit fixes"
           body-path: npm-audit-pr-body.md
-          base: dev
+          base: mine
           git-token: ${{ secrets.DEPLOY_KEY }}
           delete-branch: true

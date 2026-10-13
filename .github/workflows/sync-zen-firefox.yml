@@ -1,7 +1,7 @@
 name: Merge upstream Zen
 
-# GitHub runs scheduled workflows from the repository's default branch, so
-# this file has to exist there. The job itself checks out and updates `mine`.
+# Scheduled workflows run from the default branch, which is `mine`. The job
+# merges zen-browser/desktop into a sync branch and opens a PR back into `mine`.
 on:
   schedule:
     - cron: "17 6 * * *"

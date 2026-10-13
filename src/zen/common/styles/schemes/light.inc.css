@@ -12,10 +12,10 @@ color-scheme: light;
 --zen-frosted-hover: rgb(0 0 0 / 5%);
 --zen-frosted-divider: rgb(0 0 0 / 15%);
 --zen-frosted-backdrop: blur(24px) saturate(1.4);
-/* Brightness range the URL bar glass keeps over a page, and its minimum white. */
---zen-frosted-luma-min: 0.82;
---zen-frosted-luma-max: 0.94;
---zen-frosted-sheen: 0.3;
+/* The URL bar blurs whatever page is under it; with this tint, black text
+   stays readable even over a black page. */
+--zen-frosted-urlbar-fill: rgb(250 250 252 / 60%);
+--zen-frosted-urlbar-backdrop: blur(30px) saturate(1.8) brightness(1.05);
 --zen-frosted-backdrop-strong: blur(40px) saturate(1.6);
 /* The sidebar sits on the workspace gradient and uses light chrome text. */
 --zen-frosted-backdrop-sidebar: blur(42px) saturate(1.1) brightness(0.5);

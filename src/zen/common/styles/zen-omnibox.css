@@ -330,38 +330,13 @@
     outline-offset: var(--zen-urlbar-outline-offset) !important;
 
     @media not (prefers-reduced-transparency: reduce) {
+      /* Blurs the page itself; zen.theme.acrylic-urlbar lets WebRender read it. */
       :root:not([zen-no-acrylic="true"]) & {
-        background-color: var(--zen-frosted-fill) !important;
+        background-color: var(--zen-frosted-urlbar-fill) !important;
         outline: 1px solid var(--zen-frosted-stroke) !important;
         outline-offset: -1px !important;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28) !important;
-        backdrop-filter: var(--zen-frosted-backdrop) !important;
-      }
-    }
-  }
-
-  /* Over a page the backdrop filter does nothing, so the fill is darkened or
-   * lightened from the page brightness until the composite stays between the
-   * scheme's luma bounds. --zen-backdrop-luma comes from ZenUrlbarController. */
-  &[zen-adaptive-backdrop] .urlbar-background {
-    @media not (prefers-reduced-transparency: reduce) {
-      :root:not([zen-no-acrylic="true"]) & {
-        --zen-backdrop-luma-safe: clamp(0.001, var(--zen-backdrop-luma), 0.999);
-        --zen-backdrop-darken: clamp(
-          0,
-          (var(--zen-backdrop-luma-safe) - var(--zen-frosted-luma-max)) / var(--zen-backdrop-luma-safe),
-          0.85
-        );
-        --zen-backdrop-lighten: clamp(
-          var(--zen-frosted-sheen),
-          (var(--zen-frosted-luma-min) - var(--zen-backdrop-luma-safe)) / (1 - var(--zen-backdrop-luma-safe)),
-          0.9
-        );
-        background-color: rgb(255 255 255 / var(--zen-backdrop-lighten)) !important;
-        background-image: linear-gradient(
-          rgb(0 0 0 / var(--zen-backdrop-darken)),
-          rgb(0 0 0 / var(--zen-backdrop-darken))
-        ) !important;
+        backdrop-filter: var(--zen-frosted-urlbar-backdrop) !important;
       }
     }
   }

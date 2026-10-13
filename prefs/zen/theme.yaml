@@ -20,8 +20,10 @@
 - name: zen.theme.essentials-favicon-bg
   value: true
 
+# Lets backdrop filters in the chrome read the web content beneath them, so the
+# URL bar glass blurs the page. Read once, when WebRender starts.
 - name: zen.theme.acrylic-urlbar
-  value: "@IS_TWILIGHT@"
+  value: true
   cpptype: bool
   mirror: once
   type: static

@@ -5,8 +5,6 @@
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 
 const SEARCH_MODE_ANIMATION_RESET_MS = 1000;
-// Width of the page snapshot used to pick the URL bar tint, in device pixels.
-const BACKDROP_SAMPLE_WIDTH = 48;
 
 /**
  * Zen's behaviour on top of Firefox's URL bar.
@@ -23,10 +21,6 @@ export class nsZenUrlbarController {
   // Search mode animation.
   #animatingSearchMode = false;
   #animatingSearchModeTimeout = null;
-
-  // Backdrop tone.
-  #backdropSample = 0;
-  #backdropLuma = new WeakMap();
 
   constructor() {
     XPCOMUtils.defineLazyPreferenceGetter(
@@ -298,7 +292,6 @@ export class nsZenUrlbarController {
       gURLBar.setPageProxyState("invalid", false);
       gURLBar.setAttribute("had-proxystate", hadValid);
     }, 0);
-    this.#sampleBackdrop();
   }
 
   onUrlbarClose() {
@@ -306,109 +299,6 @@ export class nsZenUrlbarController {
       gURLBar.setPageProxyState("valid", false);
     }
     gURLBar.removeAttribute("had-proxystate");
-    this.#backdropSample++;
-    this.#applyBackdropLuma(null);
-  }
-
-  // Section: backdrop tone
-
-  // Gecko does not run backdrop filters over web content, so the open URL bar
-  // reads the page brightness behind it and the CSS darkens or lightens the
-  // glass to keep its text readable.
-
-  #applyBackdropLuma(luma) {
-    if (luma == null) {
-      gURLBar.removeAttribute("zen-adaptive-backdrop");
-      gURLBar.style.removeProperty("--zen-backdrop-luma");
-      return;
-    }
-    gURLBar.style.setProperty("--zen-backdrop-luma", luma.toFixed(3));
-    gURLBar.setAttribute("zen-adaptive-backdrop", "true");
-  }
-
-  async #sampleBackdrop() {
-    const sample = ++this.#backdropSample;
-    const browser = gBrowser.selectedBrowser;
-    if (!browser) {
-      return;
-    }
-    // The last reading for this tab applies at once, so the bar does not
-    // flash the wrong tint while the new snapshot is drawn.
-    this.#applyBackdropLuma(this.#backdropLuma.get(browser) ?? null);
-    await new Promise(resolve => requestAnimationFrame(resolve));
-    if (sample !== this.#backdropSample) {
-      return;
-    }
-    let luma = null;
-    try {
-      luma = await this.#measureBackdrop(browser);
-    } catch {
-      // The page navigated or closed while it was being drawn.
-    }
-    if (sample !== this.#backdropSample) {
-      return;
-    }
-    if (luma == null) {
-      this.#backdropLuma.delete(browser);
-    } else {
-      this.#backdropLuma.set(browser, luma);
-    }
-    this.#applyBackdropLuma(luma);
-  }
-
-  /**
-   * Average brightness, from 0 to 1, of the page area behind the URL bar.
-   *
-   * @param {MozBrowser} browser
-   * @returns {Promise<number|null>} null when the bar is not over the page.
-   */
-  async #measureBackdrop(browser) {
-    const windowGlobal = browser.browsingContext?.currentWindowGlobal;
-    if (!windowGlobal) {
-      return null;
-    }
-    const bar = window.windowUtils.getBoundsWithoutFlushing(gURLBar);
-    const view = window.windowUtils.getBoundsWithoutFlushing(browser);
-    const left = Math.max(bar.left, view.left);
-    const top = Math.max(bar.top, view.top);
-    const width = Math.min(bar.right, view.right) - left;
-    const height = Math.min(bar.bottom, view.bottom) - top;
-    if (
-      width <= 0 ||
-      height <= 0 ||
-      view.width <= 0 ||
-      width * height < bar.width * bar.height * 0.3
-    ) {
-      return null;
-    }
-    const scale = Math.min(1, BACKDROP_SAMPLE_WIDTH / view.width);
-    const bitmap = await windowGlobal.drawSnapshot(null, scale, "white");
-    try {
-      const canvas = document.createElementNS(
-        "http://www.w3.org/1999/xhtml",
-        "canvas"
-      );
-      canvas.width = bitmap.width;
-      canvas.height = bitmap.height;
-      const context = canvas.getContext("2d", { willReadFrequently: true });
-      context.drawImage(bitmap, 0, 0);
-      const ratio = bitmap.width / view.width;
-      const x = Math.min(bitmap.width - 1, Math.floor((left - view.left) * ratio));
-      const y = Math.min(bitmap.height - 1, Math.floor((top - view.top) * ratio));
-      const { data } = context.getImageData(
-        x,
-        y,
-        Math.max(1, Math.min(bitmap.width - x, Math.ceil(width * ratio))),
-        Math.max(1, Math.min(bitmap.height - y, Math.ceil(height * ratio)))
-      );
-      let total = 0;
-      for (let i = 0; i < data.length; i += 4) {
-        total += 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
-      }
-      return total / (data.length / 4) / 255;
-    } finally {
-      bitmap.close();
-    }
   }
 
   // Section: search mode

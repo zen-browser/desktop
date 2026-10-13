@@ -7,6 +7,7 @@ BROWSER_CHROME_MANIFESTS += [
     "adblock/browser.toml",
     "cookie_consent/browser.toml",
     "homepage/browser.toml",
+    "new_tab/browser.toml",
     "notepad/browser.toml",
     "underpowered/browser.toml",
 ]

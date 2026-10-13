@@ -1,6 +1,20 @@
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
-@@ -397,8 +397,8 @@
+@@ -256,7 +256,12 @@
+       }
+     }
+ 
+-    if (gZenUIManager.handleNewTab(werePassedURL, searchClipboard, where)) {
++    // Zen's URL bar only exists in browser windows; this also runs in the
++    // macOS hidden window and auxiliary windows (Library, About), where the
++    // new tab is redirected to a browser window by openTrustedLinkIn below.
++    if (
++      window.gZenUIManager?.handleNewTab(werePassedURL, searchClipboard, where)
++    ) {
+       return;
+     }
+ 
+@@ -397,8 +402,8 @@
        (event.ctrlKey || event.metaKey || event.altKey) &&
        gBrowser.selectedTab.pinned
      ) {

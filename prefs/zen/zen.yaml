@@ -32,6 +32,9 @@
 - name: zen.ctrlTab.show-pending-tabs
   value: false
 
+- name: zen.ctrlTab.include-all-spaces
+  value: false
+
 - name: zen.mediacontrols.enabled
   value: true
 

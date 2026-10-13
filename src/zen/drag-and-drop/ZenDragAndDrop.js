@@ -916,6 +916,12 @@
       }
 
       const dt = event.dataTransfer;
+      // A dragover can carry something other than a tab, or nothing at all,
+      // and mozGetDataAt throws IndexSizeError for those rather than returning
+      // null. This is the same guard handle_spaceIconDragOver uses.
+      if (!dt.mozItemCount || dt.mozTypesAt(0)[0] !== TAB_DROP_TYPE) {
+        return;
+      }
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (!isTab(draggedTab)) {
         return;
@@ -1229,6 +1235,21 @@
         }
       }
       this._landingElements = landing;
+      // handle_dragend shows these again, but dragend is not guaranteed to
+      // arrive (see gh-8643 in handle_drop), and a synthesized drop has no
+      // drag session to end at all. Whatever happens, a dropped tab must not
+      // stay invisible; any real landing animation is long over by then.
+      if (landing.length) {
+        setTimeout(() => {
+          if (this._landingElements !== landing) {
+            return;
+          }
+          for (const element of landing) {
+            element.style.visibility = "";
+          }
+          delete this._landingElements;
+        }, 1000);
+      }
     }
 
     #handle_dropSwitchSpace(event) {

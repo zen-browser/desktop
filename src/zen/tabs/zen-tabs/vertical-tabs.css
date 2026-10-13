@@ -539,6 +539,7 @@ zen-library {
   & .tab-label-container .zen-tab-sublabel {
     max-height: 10px;
     opacity: 0.5;
+    line-height: 1.2;
   }
 }
 
@@ -684,6 +685,7 @@ zen-library {
         & ~ .tab-label-container .zen-tab-sublabel {
           max-height: 10px;
           opacity: 0.6;
+          line-height: 1.2;
         }
 
         & ~ .tab-icon-stack .tab-icon-image {
@@ -827,7 +829,7 @@ zen-library {
       margin-right: auto !important;
 
       & image {
-        width: 100%;
+        background: transparent !important;
       }
     }
 

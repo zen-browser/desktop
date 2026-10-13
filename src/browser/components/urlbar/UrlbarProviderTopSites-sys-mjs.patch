@@ -1,7 +1,7 @@
 diff --git a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
 --- a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
-@@ -153,7 +153,22 @@
+@@ -153,7 +153,21 @@
        lazy.UrlbarPrefs.get("maxRichResults"),
        lazy.TOP_SITES_MAX_SITES_PER_ROW * UrlbarProviderTopSites.topSitesRows
      );
@@ -14,7 +14,6 @@ diff --git a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs b/browser/
 +      "zen.urlbar.show-sponsored",
 +      false
 +    );
-+    // Filter before limiting results so hidden shortcuts do not leave gaps.
 +    sites = sites
 +      .filter(
 +        site =>

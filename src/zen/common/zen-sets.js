@@ -85,6 +85,11 @@
     cmd_contextZenAddToEssentials: () => gZenPinnedTabManager.addToEssentials(),
     cmd_contextZenRemoveFromEssentials: () =>
       gZenPinnedTabManager.removeEssentials(),
+    cmd_contextZenCloseEssential: event =>
+      gZenPinnedTabManager.onCloseTabShortcut(
+        event,
+        TabContextMenu.contextTab
+      ),
     cmd_zenTogglePinTab: () => {
       const currentTab = gZenGlanceManager.getTabOrGlanceParent(
         gBrowser.selectedTab

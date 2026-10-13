@@ -19,6 +19,9 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential =
     .label = Remove from Essentials
     .accesskey = R
+tab-context-zen-close-essential =
+    .label = Close Tab
+    .accesskey = C
 tab-context-zen-edit-pinned-page =
     .label =
         { $isEssential ->

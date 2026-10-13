@@ -666,6 +666,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         `);
 
     document.getElementById("context_pinTab")?.before(element);
+
+    const closeEssential = window.MozXULElement.parseXULToFragment(`
+            <menuitem id="context_zen-close-essential"
+                      data-lazy-l10n-id="tab-context-zen-close-essential"
+                      hidden="true"
+                      command="cmd_contextZenCloseEssential"/>
+        `);
+    document.getElementById("context_reloadTab")?.before(closeEssential);
     document
       .getElementById("context_zen-edit-tab-title")
       .addEventListener("command", event => {
@@ -739,6 +747,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       .toggleAttribute("disabled", !this.canEssentialBeAdded(contextTab));
     document.getElementById("context_closeTab").hidden =
       contextTab.hasAttribute("zen-essential");
+    document.getElementById("context_zen-close-essential").hidden =
+      !isEssential;
     document.getElementById("context_zen-remove-essential").hidden =
       !isEssential;
     document.getElementById("context_unpinTab").hidden =

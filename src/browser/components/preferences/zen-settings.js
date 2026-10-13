@@ -246,58 +246,21 @@ var gZenMarketplaceManager = {
     successBox.hidden = true;
     errorBox.hidden = true;
 
-    let temporalAnchor, temporalUrl;
+    let temporalAnchor;
     try {
       const mods = await gZenMods.getMods();
       const modsJson = JSON.stringify(mods, null, 2);
-      const blob = new Blob([modsJson], { type: "application/json" });
-
-      temporalUrl = URL.createObjectURL(blob);
-
-      const { Downloads } = ChromeUtils.importESModule(
-        "resource://gre/modules/Downloads.sys.mjs"
-      );
-      const list = await Downloads.getList(Downloads.ALL);
-
-      const cleanup = () => {
-        if (temporalUrl) {
-          URL.revokeObjectURL(temporalUrl);
-          temporalUrl = null;
-        }
-        window.removeEventListener("unload", cleanup);
-        list.removeView(view);
-      };
-
-      const view = {
-        onDownloadAdded(download) {
-          if (download.source?.url === temporalUrl && download.stopped) {
-            cleanup();
-          }
-        },
-        onDownloadChanged(download) {
-          if (download.source?.url === temporalUrl && download.stopped) {
-            cleanup();
-          }
-        },
-      };
-
-      await list.addView(view);
-      window.addEventListener("unload", cleanup, { once: true });
 
       // Creating a link to download the JSON file
       temporalAnchor = document.createElement("a");
-      temporalAnchor.href = temporalUrl;
+      temporalAnchor.href = `data:application/json;charset=utf-8,${encodeURIComponent(modsJson)}`;
       temporalAnchor.download = "zen-mods-export.json";
 
       document.body.appendChild(temporalAnchor);
       temporalAnchor.click();
-      temporalAnchor.remove();
 
       successBox.hidden = false;
     } catch (error) {
-      if (temporalUrl) {
-        URL.revokeObjectURL(temporalUrl);
-      }
       console.error("[ZenSettings:ZenMods]: Error while exporting mods:", error);
       errorBox.hidden = false;
     } finally {

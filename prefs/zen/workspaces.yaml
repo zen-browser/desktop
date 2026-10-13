@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.workspaces.continue-where-left-off
-  value: true
+  value: false
 
 - name: zen.workspaces.hide-default-container-indicator
   value: true
@@ -25,10 +25,6 @@
 
 - name: zen.workspaces.switch-animation-duration
   value: 250
-
-# When false, space changes apply immediately instead of sliding.
-- name: zen.workspaces.switch-animation
-  value: true
 
 - name: zen.workspaces.wrap-around-navigation
   value: true

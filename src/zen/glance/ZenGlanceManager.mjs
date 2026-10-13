@@ -377,7 +377,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
 
     currentTab.querySelector(".tab-content").appendChild(newTab);
-    gZenWorkspaces?.invalidateStoredTabs();
     newTab.setAttribute("zen-glance-tab", true);
     newTab.setAttribute("glance-id", glanceId);
     currentTab.setAttribute("glance-id", glanceId);

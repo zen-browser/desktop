@@ -1,0 +1,76 @@
+--- a/zen/tests/site_control/browser_site_data_permission_toggle.js
++++ b/zen/tests/site_control/browser_site_data_permission_toggle.js
+@@ -57,3 +57,73 @@
+     BrowserTestUtils.removeTab(tab);
+   }
+ });
++
++add_task(async function test_temporary_permission_labels_and_revoke() {
++  const tab = BrowserTestUtils.addTab(gBrowser, HTTPS_PAGE, {
++    skipAnimation: true,
++  });
++  await BrowserTestUtils.switchTab(gBrowser, tab);
++  await new Promise(r => setTimeout(r, 500));
++
++  const browser = gBrowser.selectedBrowser;
++  const principal = browser.contentPrincipal;
++  SitePermissions.setForPrincipal(
++    principal,
++    "geo",
++    SitePermissions.ALLOW,
++    SitePermissions.SCOPE_TEMPORARY,
++    browser,
++    0
++  );
++  SitePermissions.setForPrincipal(
++    principal,
++    "xr",
++    SitePermissions.ALLOW,
++    SitePermissions.SCOPE_TEMPORARY,
++    browser,
++    SitePermissions.TEMPORARY_GRANT_TIMED_MS
++  );
++
++  try {
++    await openSiteDataPanel();
++
++    const geoState = document.querySelector(
++      ".permission-popup-permission-item-geo .zen-permission-popup-permission-state-label"
++    );
++    Assert.equal(
++      geoState.getAttribute("data-l10n-id"),
++      "zen-site-data-setting-allow-tab",
++      "tab-lifetime grant is labeled until this tab closes"
++    );
++
++    const xrState = document.querySelector(
++      ".permission-popup-permission-item-xr .zen-permission-popup-permission-state-label"
++    );
++    Assert.equal(
++      xrState.getAttribute("data-l10n-id"),
++      "zen-site-data-setting-allow-timed",
++      "timed grant shows the remaining minutes"
++    );
++
++    const geoLabel = document.querySelector(
++      ".permission-popup-permission-item-geo .permission-popup-permission-label-container"
++    );
++    EventUtils.synthesizeMouseAtCenter(geoLabel, {});
++
++    await TestUtils.waitForCondition(
++      () =>
++        !document.querySelector(".permission-popup-permission-item-geo"),
++      "temporary geo row is removed"
++    );
++    Assert.equal(
++      SitePermissions.getForPrincipal(principal, "geo", browser).state,
++      SitePermissions.UNKNOWN,
++      "clicking a temporary row clears the grant"
++    );
++  } finally {
++    SitePermissions.removeFromPrincipal(principal, "geo", browser);
++    SitePermissions.removeFromPrincipal(principal, "xr", browser);
++    await closeSiteDataPanel();
++    BrowserTestUtils.removeTab(tab);
++  }
++});

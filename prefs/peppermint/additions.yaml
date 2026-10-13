@@ -1,0 +1,98 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Prefs that only exist in Peppermint, or extend a Zen file.
+
+# --- firefox/browser.yaml
+
+# Switch to a new tab as soon as a link opens in it. Kept as a
+# foreground-tab behavior, not a performance default.
+- name: browser.tabs.loadInBackground
+  value: false
+
+# Firefox leaves this off on Linux. Unload tabs under memory pressure everywhere.
+- name: browser.tabs.unloadOnLowMemory
+  value: true
+
+- name: browser.warnOnQuitShortcut
+  value: false
+
+
+# --- firefox/urlbar.yaml
+
+# Keep history ahead of search suggestions in the address bar.
+- name: browser.urlbar.showSearchSuggestionsFirst
+  value: false
+
+
+# --- zen/library.yaml
+
+- name: zen.library.default-section
+  value: "downloads"
+
+
+# --- zen/split-view.yaml
+
+- name: zen.splitView.show-tab-split-button
+  value: true
+
+
+# --- zen/sync.yaml
+
+# Homepage
+- name: services.sync.prefs.sync.zen.homepage.mode
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.url
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.cards.time-spent
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.cards.top-site
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.cards.network-speed
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.cards.downloads
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.cards.visited-sites
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.cards.version
+  value: true
+
+- name: services.sync.prefs.sync.zen.homepage.cards.clock
+  value: true
+
+
+# --- zen/theme.yaml
+
+- name: zen.theme.glass
+  value: true
+
+
+# --- zen/windows.yaml
+
+# Default browser layout is "Sidebar and top toolbar" on Windows (see view.yaml for other platforms).
+- name: zen.view.use-single-toolbar
+  value: false
+  condition: "defined(XP_WIN)"
+
+
+# --- zen/workspaces.yaml
+
+# When false, space changes apply immediately instead of sliding.
+- name: zen.workspaces.switch-animation
+  value: true
+
+
+# --- zen/zen.yaml
+
+# Unload background tabs that have been idle this many minutes.
+# 0 turns the timer off. Pinned tabs, essentials, and playing media stay loaded.
+- name: zen.tab-unloader.timeout-minutes
+  value: 10

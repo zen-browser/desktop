@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Cuma agus Mothú
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = D’fhéadfadh sé a bheith níos fusa do shuíomhanna gréasáin tú a rianú má athraíonn tú an teanga réamhshocraithe.
 zen-vertical-tabs-layout-header = Leagan Amach Brabhsálaí
 zen-vertical-tabs-layout-description = Roghnaigh an leagan amach is fearr a oireann duit
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Tarraingt fuinneoige
 zen-look-and-feel-window-drag-description = Bog an fhuinneog trí spás folamh a tharraingt ag barr na suíomhanna gréasáin, díreach cosúil leis an mbarra teidil.
 zen-window-drag-enabled = 
     .label = Ceadaigh an fhuinneog a tharraingt ó leathanaigh ghréasáin
+pane-zen-tabs-title = Bainistíocht Cluaisíní
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Spásanna Oibre Eile
 zen-tabs-select-recently-used-on-close = 
     .label = Agus cluaisín á dhúnadh, aistrigh go dtí an cluaisín is déanaí a úsáideadh in ionad an chéad chluaisín eile
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Ná Leathnaigh na Cluaisíní de
 zen-vertical-tabs-expand-tabs-on-hover = Leathnaigh na Cluaisíní ar an Luamhán (Ní oibreoidh sé ar mhodh dlúth)
 zen-vertical-tabs-expand-tabs-header = Conas cluaisíní a leathnú
 zen-vertical-tabs-expand-tabs-description = Roghnaigh conas cluaisíní a leathnú sa bharra taoibh
-zen-theme-marketplace-header = Modhanna Peppermint
+zen-theme-marketplace-header = Modhanna Zen
 zen-theme-disable-all-enabled = 
     .title = Díchumasaigh gach modhanna
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Dada
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Clóscríobh rud éigin...
-pane-zen-marketplace-title = Modhanna Peppermint
+pane-zen-marketplace-title = Modhanna Zen
 zen-themes-auto-update = 
     .label = Nuashonraigh mods suiteáilte go huathoibríoch ag am tosaithe
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Téama Dorcha Ildaite
 zen-compact-mode-styles-left = Folaigh barra na gCluaisíní
 zen-compact-mode-styles-top = Folaigh an barra barra
 zen-compact-mode-styles-both = Folaigh an dá cheann
-zen-urlbar-title = Barra URL Peppermint
+zen-urlbar-title = Barra URL Zen
 zen-urlbar-header = Socruithe ginearálta don bharra URL
 zen-urlbar-description = Saincheap an barra URL de réir mar is mian leat
 zen-urlbar-behavior-label = Iompraíocht
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Aicearraí Méarchláir { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Modanna Peppermint
+    .tooltiptext = Modanna Zen
 zen-settings-CKS-header = Saincheap do aicearraí méarchláir
 zen-settings-CKS-description = Athraigh na haicearraí méarchláir réamhshocraithe de réir mar is mian leat agus feabhsaigh do thaithí brabhsála
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Stair agus Leabharmharcanna
 zenCKSOption-group-mediaAndDisplay = Meáin & Taispeántas
 zenCKSOption-group-zen-compact-mode = Mód Dlúth
 zenCKSOption-group-zen-workspace = Spásanna Oibre Eile
-zenCKSOption-group-zen-other = Gnéithe Peppermint Eile
+zenCKSOption-group-zen-other = Gnéithe Zen Eile
 zenCKSOption-group-zen-split-view = Radharc Scoilte
 zenCKSOption-group-devTools = Uirlisí Forbróra
 zen-key-quick-restart = Atosú Tapa

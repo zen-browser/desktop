@@ -123,7 +123,7 @@ zen-open-link-in-glance =
     .accesskey = G
 zen-sidebar-notification-updated-heading = Oppdatering fullført!
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Hva er nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
@@ -135,7 +135,7 @@ zen-sidebar-notification-restart-safe-mode-label = Er noe ødelagt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Start på nytt i sikker modus
 zen-window-sync-migration-dialog-title = Hold vinduene dine synkronisert
-zen-window-sync-migration-dialog-message = Peppermint synkroniserer nå vinduer på samme enhet, så endringer i ett vindu blir reflekterte på tvers de andre med en gang.
+zen-window-sync-migration-dialog-message = Zen synkroniserer nå vinduer på samme enhet, så endringer i ett vindu blir reflekterte på tvers de andre med en gang.
 zen-window-sync-migration-dialog-learn-more = Lær mer
 zen-window-sync-migration-dialog-accept = Skjønner
 zen-appmenu-new-blank-window = 

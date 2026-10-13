@@ -1,0 +1,55 @@
+--- a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
++++ b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
+@@ -482,7 +482,10 @@
+       queryContext.restrictToken = restrictToken;
+       // If the restriction token has an equivalent source, then set it as
+       // restrictSource.
+-      if (lazy.UrlbarShared.SEARCH_MODE_RESTRICT.has(restrictToken.value)) {
++      if (
++        lazy.UrlbarShared.SEARCH_MODE_RESTRICT.has(restrictToken.value) &&
++        restrictToken.value != lazy.UrlbarShared.RESTRICT_TOKENS.SNIPPET
++      ) {
+         queryContext.restrictSource = queryContext.sources[0];
+       }
+     }
+@@ -933,6 +936,7 @@
+       result.heuristic &&
+       this.context.searchMode &&
+       !(this.context.searchMode.source === lazy.UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS && result.payload?.zenAction) &&
++      !(this.context.searchMode.source === lazy.UrlbarShared.RESULT_SOURCE.SNIPPETS && result.source === lazy.UrlbarShared.RESULT_SOURCE.SNIPPETS) &&
+       (!this.context.trimmedSearchString ||
+         (!this.context.searchMode.engineName && !result.autofill))
+     ) {
+@@ -1086,6 +1090,7 @@
+             lazy.UrlbarShared.TOKEN_TYPE.RESTRICT_URL,
+             lazy.UrlbarShared.TOKEN_TYPE.RESTRICT_ACTION,
+             lazy.UrlbarShared.TOKEN_TYPE.RESTRICT_WORKSPACE,
++            lazy.UrlbarShared.TOKEN_TYPE.RESTRICT_SNIPPET,
+           ].includes(t.type)
+         );
+ 
+@@ -1096,6 +1101,12 @@
+     restrictToken.type != lazy.UrlbarShared.TOKEN_TYPE.RESTRICT_URL
+       ? restrictToken.type
+       : undefined;
++  // Snippets mode ranks snippet rows first and still shows the usual results.
++  const snippetRestrict =
++    restrictTokenType === lazy.UrlbarShared.TOKEN_TYPE.RESTRICT_SNIPPET;
++  if (snippetRestrict) {
++    restrictTokenType = undefined;
++  }
+ 
+   for (let source of Object.values(lazy.UrlbarShared.RESULT_SOURCE)) {
+     // Check prefs and restriction tokens.
+@@ -1153,6 +1164,11 @@
+           acceptedSources.push(source);
+         }
+         break;
++      case lazy.UrlbarShared.RESULT_SOURCE.SNIPPETS:
++        if (snippetRestrict || !restrictTokenType) {
++          acceptedSources.push(source);
++        }
++        break;
+       case lazy.UrlbarShared.RESULT_SOURCE.OTHER_LOCAL:
+       case lazy.UrlbarShared.RESULT_SOURCE.ADDON:
+       default:

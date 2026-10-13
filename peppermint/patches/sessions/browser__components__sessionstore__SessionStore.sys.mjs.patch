@@ -1,0 +1,10 @@
+--- a/browser/components/sessionstore/SessionStore.sys.mjs
++++ b/browser/components/sessionstore/SessionStore.sys.mjs
+@@ -6733,7 +6733,6 @@
+         aWindow.gURLBar.readOnly = false;
+       }
+     }
+-
+     if (aWinData.isZenUnsynced) {
+       this.#windows[aWindow.__SSi].isZenUnsynced = true;
+     }

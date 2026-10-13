@@ -1,0 +1,18 @@
+--- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
++++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
+@@ -508,6 +508,7 @@
+   ["shortcuts.history", true],
+   ["shortcuts.actions", true],
+   ["shortcuts.workspaces", true],
++  ["shortcuts.snippets", true],
+ 
+   // Boolean to determine if the providers defined in `exposureResults`
+   // should be displayed in search results. This can be set by a
+@@ -883,6 +884,7 @@
+    */
+   let rootGroup = {
+     children: [
++      { children: [{ group: lazy.UrlbarShared.RESULT_GROUP.ZEN_SNIPPET }] },
+       { children: [{ group: lazy.UrlbarShared.RESULT_GROUP.ZEN_ACTION }] },
+       { children: [{ group: lazy.UrlbarShared.RESULT_GROUP.ZEN_WORKSPACE }] },
+       // heuristic

@@ -10,15 +10,26 @@
       "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
   });
 
-  // These run before the first layout. Secondary features are window getters
-  // installed by ZenLazyFeatures and load on the event that needs them.
+  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenSpaceBookmarksStorage.js", this);
+
   let scripts = [
     "chrome://browser/content/ZenStartup.mjs",
     "resource:///modules/zen/ZenSpaceManager.mjs",
     "chrome://browser/content/zen-components/ZenCompactMode.mjs",
     "chrome://browser/content/ZenUIManager.mjs",
     "resource:///modules/zen/ZenVerticalTabsManager.mjs",
-    "chrome://browser/content/ZenLazyFeatures.mjs",
+    "chrome://browser/content/zen-components/ZenMods.mjs",
+    "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
+    "chrome://browser/content/zen-components/ZenSessionStore.mjs",
+    "chrome://browser/content/zen-components/ZenMediaController.mjs",
+    "chrome://browser/content/zen-components/ZenGlanceManager.mjs",
+    "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",
+    "resource:///modules/zen/ZenTabRenamer.mjs",
+    "chrome://browser/content/zen-components/ZenViewSplitter.mjs",
+    "chrome://browser/content/zen-components/ZenFolders.mjs",
+    "chrome://browser/content/zen-components/ZenEmojiPicker.mjs",
+    "chrome://browser/content/zen-components/ZenDownloadAnimation.mjs",
+    "resource:///modules/zen/share/ZenShareManager.mjs",
   ];
 
   for (let script of scripts) {
@@ -50,6 +61,5 @@
     { once: true }
   );
 
-  // The tab strip constructs this class while browser.xhtml is parsing.
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenDragAndDrop.js", this);
 }

@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Внешний вид
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Изменение языка по умолчанию может упростить сайтам слежку за вами.
 zen-vertical-tabs-layout-header = Макет браузера
 zen-vertical-tabs-layout-description = Выберите макет, который подходит именно вам
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Перетаскивание окна
 zen-look-and-feel-window-drag-description = Перемещайте окно, перетаскивая пустое место в верхней части веб-сайтов, так же как и в заголовке.
 zen-window-drag-enabled = 
     .label = Разрешить перетаскивание окна с веб-страниц
+pane-zen-tabs-title = Управление вкладками
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Рабочие пространства
 zen-tabs-select-recently-used-on-close = 
     .label = При закрытии вкладки переключиться на последнюю используемую вкладку вместо следующей вкладки
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Не раскрывать вкл
 zen-vertical-tabs-expand-tabs-on-hover = Раскрывать вкладки при наведении (не работает в компактном виде)
 zen-vertical-tabs-expand-tabs-header = Способы раскрытия вкладок
 zen-vertical-tabs-expand-tabs-description = Выберите, как именно раскрывать вкладки на боковой панели
-zen-theme-marketplace-header = Моды для Peppermint
+zen-theme-marketplace-header = Моды для Zen
 zen-theme-disable-all-enabled = 
     .title = Отключить все моды
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Нет
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Напишите что-нибудь…
-pane-zen-marketplace-title = Моды для Peppermint
+pane-zen-marketplace-title = Моды для Zen
 zen-themes-auto-update = 
     .label = Автоматически обновлять установленные моды при запуске
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Красочная тёмная тема
 zen-compact-mode-styles-left = Скрыть панель вкладок
 zen-compact-mode-styles-top = Скрыть верхнюю панель
 zen-compact-mode-styles-both = Скрыть обе панели
-zen-urlbar-title = Поле адреса Peppermint
+zen-urlbar-title = Поле адреса Zen
 zen-urlbar-header = Общие настройки поля адреса
 zen-urlbar-description = Настройте поле адреса на свой лад
 zen-urlbar-behavior-label = Поведение
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Горячие клавиши { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Моды для Peppermint
+    .tooltiptext = Моды для Zen
 zen-settings-CKS-header = Настроить сочетания клавиш
 zen-settings-CKS-description = Измените комбинации клавиш по умолчанию по своему вкусу и улучшите качество работы в браузере.
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = История и закладки
 zenCKSOption-group-mediaAndDisplay = Медиа и дисплей
 zenCKSOption-group-zen-compact-mode = Компактный вид
 zenCKSOption-group-zen-workspace = Рабочие пространства
-zenCKSOption-group-zen-other = Другие функции Peppermint
+zenCKSOption-group-zen-other = Другие функции Zen
 zenCKSOption-group-zen-split-view = Разделённый вид
 zenCKSOption-group-devTools = Инструменты разработчика
 zen-key-quick-restart = Быстрый перезапуск

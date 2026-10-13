@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Ilme
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Vaikimisi keele muutmine võib teha teid veebisaitidel kergemini jälgitavaks.
 zen-vertical-tabs-layout-header = Brauseri paigutus
 zen-vertical-tabs-layout-description = Vali paigutus, mis sobib sulle kõige paremini
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Kaartide haldamine
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Tööruumid
 zen-tabs-select-recently-used-on-close = 
     .label = When closing a tab, switch to the most recently used tab instead of the next tab
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Ära laienda kaarte vaikimisi
 zen-vertical-tabs-expand-tabs-on-hover = Laienda kaardid kursorit peal hoides (ei tööta kompaktses režiimis)
 zen-vertical-tabs-expand-tabs-header = Kuidas kaarte laiendatakse
 zen-vertical-tabs-expand-tabs-description = Vali kuidas laiendatakse kaarte külgribal
-zen-theme-marketplace-header = Peppermint Mods
+zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
     .title = Keela kõik mods-id
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Puudub
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Sisesta midagi...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = Uuenda paigaldatud mods-e brauseri avamisel automaatselt
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Värviline tume teema
 zen-compact-mode-styles-left = Peida kaartide riba
 zen-compact-mode-styles-top = Peida ülemine riba
 zen-compact-mode-styles-both = Peida mõlemad
-zen-urlbar-title = Peppermint-i asukohariba
+zen-urlbar-title = Zen-i asukohariba
 zen-urlbar-header = Üldised asukohariba sätted
 zen-urlbar-description = Kohanda asukohariba endale meelepäraseks
 zen-urlbar-behavior-label = Käitumine
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name }i klaviatuuri otseteed
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = Kohanda oma klaviatuuri otseteid
 zen-settings-CKS-description = Muuda vaikimisi klaviatuuri otseteid oma eelistustele ning paranda veebisirvimise kogemust
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Ajalugu ja järjehoidjad
 zenCKSOption-group-mediaAndDisplay = Meedia ja kuva
 zenCKSOption-group-zen-compact-mode = Kompaktne režiim
 zenCKSOption-group-zen-workspace = Tööruumid
-zenCKSOption-group-zen-other = Muud Pepperminti funktsioonid
+zenCKSOption-group-zen-other = Muud Zeni funktsioonid
 zenCKSOption-group-zen-split-view = Jaotatud vaade
 zenCKSOption-group-devTools = Arendaja tööriistad
 zen-key-quick-restart = Kiirtaaskävitus

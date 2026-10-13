@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = מראה ותחושה
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = שינוי שפת ברירת המחדל עשוי לעזור לאתרים לעקוב אחריך.
 zen-vertical-tabs-layout-header = פריסת דפדפן
 zen-vertical-tabs-layout-description = אפשר לבחור את הפריסה שהכי מתאימה לך
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = ניהול לשוניות
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = מרחבי עבודה
 zen-tabs-select-recently-used-on-close = 
     .label = When closing a tab, switch to the most recently used tab instead of the next tab
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = ביטול הרחבת לשוני
 zen-vertical-tabs-expand-tabs-on-hover = הרחבת לשוניות בעת מעבר של הסמן על פניהן (לא עובדת במצב חסכוני)
 zen-vertical-tabs-expand-tabs-header = איך להרחיב לשוניות
 zen-vertical-tabs-expand-tabs-description = נא לבחור איך להרחיב לשוניות בסרגל הצד
-zen-theme-marketplace-header = שפצורים של Peppermint
+zen-theme-marketplace-header = שפצורים של Zen
 zen-theme-disable-all-enabled = 
     .title = כיבוי כל השפצורים
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = כלום
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = אפשר להקליד כאן...
-pane-zen-marketplace-title = שפצורים של Peppermint
+pane-zen-marketplace-title = שפצורים של Zen
 zen-themes-auto-update = 
     .label = עדכון אוטומטי של שפצורים מותקנים בעת ההפעלה
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = עיצוב כהה צבעוני
 zen-compact-mode-styles-left = הסתרת סרגל הלשוניות
 zen-compact-mode-styles-top = הסתרת הסרגל העליון
 zen-compact-mode-styles-both = הסתרת שני הסרגלים
-zen-urlbar-title = סרגל כתובת של Peppermint
+zen-urlbar-title = סרגל כתובת של Zen
 zen-urlbar-header = הגדרות כלליות לסרגל הכתובת החדש
 zen-urlbar-description = אפשר לשנות את סרגל הכתובת לטעמך
 zen-urlbar-behavior-label = התנהגות
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = קיצורי מקלדת של { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = שפצורים של Peppermint
+    .tooltiptext = שפצורים של Zen
 zen-settings-CKS-header = התאמה אישית של קיצורי מקלדת
 zen-settings-CKS-description = אפשר לשנות קיצורי מקלדת ברירת מחדל לטעמך כדי לשפר את חווית הגלישה שלך
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = היסטוריה וסימניות
 zenCKSOption-group-mediaAndDisplay = מידה ותצוגה
 zenCKSOption-group-zen-compact-mode = מצב חסכוני
 zenCKSOption-group-zen-workspace = מרחבי עבודה
-zenCKSOption-group-zen-other = תכונות אחרות של Peppermint
+zenCKSOption-group-zen-other = תכונות אחרות של Zen
 zenCKSOption-group-zen-split-view = תצוגה מפוצלת
 zenCKSOption-group-devTools = כלי פיתוח
 zen-key-quick-restart = הפעלה מחדש קצרה

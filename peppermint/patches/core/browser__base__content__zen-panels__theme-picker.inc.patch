@@ -1,0 +1,14 @@
+--- a/browser/base/content/zen-panels/theme-picker.inc
++++ b/browser/base/content/zen-panels/theme-picker.inc
+@@ -157,6 +157,11 @@
+         <vbox id="PanelUI-zen-gradient-generator-custom-list">
+         </vbox>
+       </vbox>
++      <hbox id="PanelUI-zen-gradient-generator-reset" pack="center">
++        <button id="PanelUI-zen-gradient-generator-reset-default"
++                class="zen-theme-picker-reset"
++                data-l10n-id="zen-theme-picker-reset-default"/>
++      </hbox>
+     </panelview>
+   </panelmultiview>
+ </panel>

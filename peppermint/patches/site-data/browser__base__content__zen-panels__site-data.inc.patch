@@ -1,0 +1,60 @@
+--- a/browser/base/content/zen-panels/site-data.inc
++++ b/browser/base/content/zen-panels/site-data.inc
+@@ -87,6 +87,57 @@
+           <!-- settings will be inserted here -->
+         </vbox>
+       </vbox>
++      <vbox id="zen-site-data-adblock-section" class="zen-site-data-section">
++        <hbox class="zen-site-data-section-header">
++          <label flex="1">
++            <html:span data-l10n-id="zen-site-data-adblock"></html:span>
++            <html:span id="zen-site-data-adblock-count"></html:span>
++          </label>
++          <label id="zen-site-data-adblock-reset"
++                 data-l10n-id="zen-site-data-adblock-reset"
++                 hidden="true" />
++        </hbox>
++        <menulist id="zen-site-data-adblock-level"
++                  class="zen-site-data-adblock-level"
++                  closemenu="none">
++          <menupopup>
++            <menuitem data-l10n-id="zen-site-data-adblock-light" value="light" />
++            <menuitem data-l10n-id="zen-site-data-adblock-medium" value="medium" />
++            <menuitem data-l10n-id="zen-site-data-adblock-heavy" value="heavy" />
++          </menupopup>
++        </menulist>
++        <hbox id="zen-site-data-adblock-pause"
++              class="permission-popup-permission-item"
++              align="center"
++              role="group">
++          <toolbarbutton class="permission-popup-permission-icon zen-site-data-permission-icon zen-permission-shield-icon"
++                         closemenu="none" />
++          <vbox flex="1" class="permission-popup-permission-label-container" align="start">
++            <label class="permission-popup-permission-label"
++                   data-l10n-id="zen-site-data-adblock-pause" />
++            <label id="zen-site-data-adblock-pause-state"
++                   class="zen-permission-popup-permission-state-label" />
++          </vbox>
++        </hbox>
++      </vbox>
++      <vbox id="zen-site-data-cookie-consent-section" class="zen-site-data-section">
++        <hbox class="zen-site-data-section-header">
++          <label data-l10n-id="zen-site-data-cookie-consent" flex="1" />
++        </hbox>
++        <hbox id="zen-site-data-cookie-consent-pause"
++              class="permission-popup-permission-item"
++              align="center"
++              role="group">
++          <toolbarbutton class="permission-popup-permission-icon zen-site-data-permission-icon zen-permission-shield-icon"
++                         closemenu="none" />
++          <vbox flex="1" class="permission-popup-permission-label-container" align="start">
++            <label class="permission-popup-permission-label"
++                   data-l10n-id="zen-site-data-cookie-consent-pause" />
++            <label id="zen-site-data-cookie-consent-pause-state"
++                   class="zen-permission-popup-permission-state-label" />
++          </vbox>
++        </hbox>
++      </vbox>
+       <vbox class="zen-site-data-section">
+         <hbox class="zen-site-data-section-header">
+           <label data-l10n-id="zen-site-data-settings" flex="1" />

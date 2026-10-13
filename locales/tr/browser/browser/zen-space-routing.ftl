@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Alan yönlendirme ayarları
-zen-space-routing-rulepanel-placeholder = Yönlendirmeler, belirli sitelerin Peppermint içinde nerede açılacağını seçmenizi sağlar. Örneğin, YouTube bağlantılarının her zaman Kişisel alanınızda açılmasını sağlayabilirsiniz.
+zen-space-routing-rulepanel-placeholder = Yönlendirmeler, belirli sitelerin Zen içinde nerede açılacağını seçmenizi sağlar. Örneğin, YouTube bağlantılarının her zaman Kişisel alanınızda açılmasını sağlayabilirsiniz.
 zen-space-routing-dialog-title = Alan Yönlendirme Ayarları
 zen-space-routing-external-default = Harici bağlantılar için varsayılan yönlendirme
 zen-space-routing-new-route = Yeni yönlendirme

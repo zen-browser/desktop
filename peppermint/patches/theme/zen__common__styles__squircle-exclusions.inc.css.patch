@@ -1,0 +1,10 @@
+--- a/zen/common/styles/squircle-exclusions.inc.css
++++ b/zen/common/styles/squircle-exclusions.inc.css
+@@ -14,6 +14,7 @@
+ .tab-preview-container-indicator,
+ .tab-preview-thumbnail-container > canvas,
+ #tabbrowser-tabs[orient='vertical']:not([expanded]) .tab-close-button,
++#tabbrowser-tabs[orient='vertical']:not([expanded]) .tab-split-button,
+ .all-tabs-item > toolbarbutton.all-tabs-container-indicator::before,
+ .urlbarView-button,
+ .downloadButton,

@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Udseende
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Ændring af standardsproget kan gøre det lettere for hjemmesider at spore dig.
 zen-vertical-tabs-layout-header = Browserlayout
 zen-vertical-tabs-layout-description = Vælg det layout, der passer dig bedst
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Fanehåndtering
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Arbejdsområder
 zen-tabs-select-recently-used-on-close = 
     .label = Når en fane lukkes, skift til den senest bruge fane i stedet for den næste fane
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Udvid ikke faner som standard
 zen-vertical-tabs-expand-tabs-on-hover = Udvid faner ved at holde musen over (virker ikke i kompakt tilstand)
 zen-vertical-tabs-expand-tabs-header = Sådan udvider du faneblade
 zen-vertical-tabs-expand-tabs-description = Vælg hvordan du udvider faner i sidepanelet
-zen-theme-marketplace-header = Peppermint-temaer
+zen-theme-marketplace-header = Zen-temaer
 zen-theme-disable-all-enabled = 
     .title = Deaktivér alle temaer
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Ingen
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skriv noget...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = Opdater automatisk installerede mods ved opstart
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Farverigt Mørkt Tema
 zen-compact-mode-styles-left = Skjul fanelinje
 zen-compact-mode-styles-top = Skjul øverste bjælke
 zen-compact-mode-styles-both = Skjul Begge
-zen-urlbar-title = Peppermint URL-linje
+zen-urlbar-title = Zen URL-linje
 zen-urlbar-header = Generelle indstillinger for URL-linjen
 zen-urlbar-description = Tilpas URL-linjen til din smag
 zen-urlbar-behavior-label = Adfærd
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Tastaturgenveje
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = Tilpas dine tastaturgenveje
 zen-settings-CKS-description = Skift standardtastaturgenveje efter din smag, og forbedr din browseroplevelse
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Historik & Bogmærker
 zenCKSOption-group-mediaAndDisplay = Medie & Visning
 zenCKSOption-group-zen-compact-mode = Kompakt Tilstand
 zenCKSOption-group-zen-workspace = Arbejdsområder
-zenCKSOption-group-zen-other = Andre Peppermint-funktioner
+zenCKSOption-group-zen-other = Andre Zen-funktioner
 zenCKSOption-group-zen-split-view = Delt Visning
 zenCKSOption-group-devTools = Udviklerværktøjer
 zen-key-quick-restart = Hurtig Genstart

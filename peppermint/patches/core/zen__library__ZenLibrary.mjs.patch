@@ -1,0 +1,75 @@
+--- a/zen/library/ZenLibrary.mjs
++++ b/zen/library/ZenLibrary.mjs
+@@ -32,7 +32,8 @@
+   { global: "current" }
+ );
+ 
+-const LAST_TAB_PREF = "zen.library.last-tab";
++const DEFAULT_SECTION_PREF = "zen.library.default-section";
++const DEFAULT_SECTION_FALLBACK = "downloads";
+ const CLEANUP_DELAY_MS = 30000;
+ const IDLE_CLEANUP_TIMEOUT_MS = 2000;
+ 
+@@ -105,9 +106,22 @@
+         : {}),
+       history: lazy.ZenLibraryHistorySection,
+     };
+-    const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
+-    this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
++    this.activeTab = this.#resolveDefaultSection();
+     this.#mounted.add(this.activeTab);
++  }
++
++  #resolveDefaultSection() {
++    const section = Services.prefs.getStringPref(
++      DEFAULT_SECTION_PREF,
++      DEFAULT_SECTION_FALLBACK
++    );
++    if (section in this.zenLibrarySections) {
++      return section;
++    }
++    if (DEFAULT_SECTION_FALLBACK in this.zenLibrarySections) {
++      return DEFAULT_SECTION_FALLBACK;
++    }
++    return "history";
+   }
+ 
+   static get isLibraryOpen() {
+@@ -145,7 +159,6 @@
+ 
+     this._activeTab = value;
+     this.#mounted.add(value);
+-    Services.prefs.setStringPref(LAST_TAB_PREF, value);
+   }
+ 
+   get activeTab() {
+@@ -452,6 +465,9 @@
+         this.animateProgress(1);
+       }
+       return;
++    }
++    if (!opening) {
++      lib.activeTab = lib.#resolveDefaultSection();
+     }
+     this.animateProgress(opening ? 0 : 1);
+   }
+@@ -587,6 +603,10 @@
+     lib.#cancelIdleCleanup();
+     lib.#canSwipe = true;
+     lib.#beforeSwipeState = this.isLibraryOpen ? 1 : 0;
++
++    if (!this.isLibraryOpen) {
++      lib.activeTab = lib.#resolveDefaultSection();
++    }
+ 
+     await lib.#whenStylesLoaded();
+     await window.promiseDocumentFlushed(() => {});
+@@ -918,7 +938,7 @@
+         image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
+         l10nId: "library-footer-donate-button",
+         command: () => {
+-          window.openTrustedLinkIn("https://www.zen-browser.app/donate", "tab");
++          window.openTrustedLinkIn("https://github.com/AstroDevCompany/desktop", "tab");
+           ZenLibrary.animateProgress(0);
+         },
+       },

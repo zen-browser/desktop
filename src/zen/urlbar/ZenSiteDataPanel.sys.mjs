@@ -13,16 +13,10 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
-  gZenAdblock: "resource:///modules/zen/adblock/ZenAdblockManager.sys.mjs",
   gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
-  gZenCookieConsent:
-    "resource:///modules/zen/cookieconsent/ZenCookieConsentManager.sys.mjs",
-  webrtcUI: "resource:///modules/webrtcUI.sys.mjs",
 });
 
 export class nsZenSiteDataPanel {
-  #syncingAdblockLevelMenu = false;
-
   #iconMap = {
     install: "extension",
     "site-protection": "shield",
@@ -88,18 +82,6 @@ export class nsZenSiteDataPanel {
     this.document
       .getElementById("zen-site-data-settings-more")
       .addEventListener("click", this);
-    this.document
-      .getElementById("zen-site-data-adblock-level")
-      .addEventListener("command", this);
-    this.document
-      .getElementById("zen-site-data-adblock-pause")
-      .addEventListener("click", this);
-    this.document
-      .getElementById("zen-site-data-cookie-consent-pause")
-      .addEventListener("click", this);
-    this.document
-      .getElementById("zen-site-data-adblock-reset")
-      .addEventListener("click", this);
     this.anchor.addEventListener("click", this);
     const kCommandIDs = [
       "zen-site-data-header-share",
@@ -126,15 +108,6 @@ export class nsZenSiteDataPanel {
         }
       },
     });
-    this.window.gBrowser.addEventListener(
-      "PermissionStateChange",
-      () => {
-        if (this.unifiedPanel?.state == "open") {
-          this.#refreshSitePermissions();
-        }
-      },
-      true
-    );
     this.window.addEventListener(
       "unload",
       () => {
@@ -261,146 +234,10 @@ export class nsZenSiteDataPanel {
   #preparePanel() {
     this.#resetSiteOptionsList();
     this.#setSiteBoost();
-    this.#setAdblock();
-    this.#setCookieConsent();
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
     this.#setAddonsOverflow();
-  }
-
-  #setAdblock() {
-    const section = this.document.getElementById("zen-site-data-adblock-section");
-    const uri = this.window.gBrowser.currentURI;
-    const http = uri.schemeIs("http") || uri.schemeIs("https");
-    section.hidden = !http;
-    if (!http) {
-      return;
-    }
-
-    const { gZenAdblock } = lazy;
-    const spec = uri.spec;
-    const override = gZenAdblock.getOverride(spec);
-    const effective = gZenAdblock.getEffectiveLevel(spec);
-    const globalLevel = gZenAdblock.getGlobalLevel();
-    const levelMenu = this.document.getElementById("zen-site-data-adblock-level");
-    const displayLevel =
-      effective === "light" || effective === "medium" || effective === "heavy"
-        ? effective
-        : globalLevel;
-    this.#syncingAdblockLevelMenu = true;
-    try {
-      if (levelMenu.value !== displayLevel) {
-        levelMenu.value = displayLevel;
-      }
-      levelMenu.disabled =
-        gZenAdblock.isUblockActive() || effective === "off";
-    } finally {
-      this.#syncingAdblockLevelMenu = false;
-    }
-
-    const reset = this.document.getElementById("zen-site-data-adblock-reset");
-    reset.hidden = !override;
-
-    const count = this.document.getElementById("zen-site-data-adblock-count");
-    if (gZenAdblock.isUblockActive()) {
-      this.document.l10n.setAttributes(count, "zen-site-data-adblock-ubo");
-    } else {
-      this.document.l10n.setAttributes(count, "zen-site-data-adblock-count", {
-        count: gZenAdblock.getBlockedCount(this.window.gBrowser.selectedBrowser),
-      });
-    }
-
-    const pause = this.document.getElementById("zen-site-data-adblock-pause");
-    const paused = effective === "off";
-    pause.setAttribute("state", paused ? "block" : "allow");
-    this.document.l10n.setAttributes(
-      this.document.getElementById("zen-site-data-adblock-pause-state"),
-      paused ? "zen-site-data-adblock-paused" : "zen-site-data-adblock-on"
-    );
-  }
-
-  #onAdblockLevel(level) {
-    if (level !== "light" && level !== "medium" && level !== "heavy") {
-      return;
-    }
-    const { gBrowser } = this.window;
-    const spec = gBrowser.currentURI.spec;
-    const { gZenAdblock } = lazy;
-    const globalLevel = gZenAdblock.getGlobalLevel();
-    const override = gZenAdblock.getOverride(spec);
-    if (level === globalLevel) {
-      if (!override) {
-        return;
-      }
-      gZenAdblock.setOverride(spec, null);
-    } else if (override === level) {
-      return;
-    } else {
-      gZenAdblock.setOverride(spec, level);
-    }
-    this.#setAdblock();
-    this.#reloadCurrentPage();
-  }
-
-  #onAdblockPause() {
-    const spec = this.window.gBrowser.currentURI.spec;
-    const { gZenAdblock } = lazy;
-    const override = gZenAdblock.getOverride(spec);
-    gZenAdblock.setOverride(spec, override === "off" ? null : "off");
-    this.#setAdblock();
-    this.#reloadCurrentPage();
-  }
-
-  #onAdblockReset() {
-    const spec = this.window.gBrowser.currentURI.spec;
-    const { gZenAdblock } = lazy;
-    if (!gZenAdblock.getOverride(spec)) {
-      return;
-    }
-    gZenAdblock.setOverride(spec, null);
-    this.#setAdblock();
-    this.#reloadCurrentPage();
-  }
-
-  #setCookieConsent() {
-    const section = this.document.getElementById(
-      "zen-site-data-cookie-consent-section"
-    );
-    const uri = this.window.gBrowser.currentURI;
-    const http = uri.schemeIs("http") || uri.schemeIs("https");
-    const { gZenCookieConsent } = lazy;
-    section.hidden = !http || !gZenCookieConsent.isEnabled();
-    if (section.hidden) {
-      return;
-    }
-    const paused = gZenCookieConsent.isPaused(uri.spec);
-    const pause = this.document.getElementById(
-      "zen-site-data-cookie-consent-pause"
-    );
-    pause.setAttribute("state", paused ? "block" : "allow");
-    this.document.l10n.setAttributes(
-      this.document.getElementById("zen-site-data-cookie-consent-pause-state"),
-      paused
-        ? "zen-site-data-cookie-consent-paused"
-        : "zen-site-data-cookie-consent-on"
-    );
-  }
-
-  #onCookieConsentPause() {
-    const spec = this.window.gBrowser.currentURI.spec;
-    const { gZenCookieConsent } = lazy;
-    gZenCookieConsent.setPaused(spec, !gZenCookieConsent.isPaused(spec));
-    this.#setCookieConsent();
-    this.#reloadCurrentPage();
-  }
-
-  #reloadCurrentPage() {
-    try {
-      this.window.gBrowser.selectedBrowser.reload();
-    } catch {
-      // The current page may not be reloadable.
-    }
   }
 
   #setSiteBoost() {
@@ -812,45 +649,6 @@ export class nsZenSiteDataPanel {
     section.hidden = list.childElementCount < 2; // only the separator
   }
 
-  #refreshSitePermissions() {
-    const list = this.document.getElementById("zen-site-data-settings-list");
-    list.innerHTML = "";
-    this.#setSitePermissions();
-  }
-
-  #permissionStateL10n(permission) {
-    const { SitePermissions } = this.window;
-    if (
-      permission.state == SitePermissions.ALLOW &&
-      permission.scope == SitePermissions.SCOPE_TEMPORARY
-    ) {
-      if (!permission.expireTime) {
-        return { id: "zen-site-data-setting-allow-tab" };
-      }
-      let remainingMs = permission.expireTime - Date.now();
-      if (remainingMs < 60 * 1000) {
-        return { id: "zen-site-data-setting-allow-brief" };
-      }
-      return {
-        id: "zen-site-data-setting-allow-timed",
-        args: { minutes: Math.max(1, Math.round(remainingMs / 60000)) },
-      };
-    }
-    return { id: this.#getPermissionStateLabelId(permission) };
-  }
-
-  #applyPermissionStateLabel(stateLabel, permission) {
-    let { id, args } = this.#permissionStateL10n(permission);
-    if (!id) {
-      return;
-    }
-    if (args) {
-      this.document.l10n.setAttributes(stateLabel, id, args);
-    } else {
-      stateLabel.setAttribute("data-l10n-id", id);
-    }
-  }
-
   #getPermissionStateLabelId(permission) {
     const { SitePermissions } = this.window;
     switch (permission.state) {
@@ -936,7 +734,10 @@ export class nsZenSiteDataPanel {
       // The key should be the site for cross-site cookies.
       stateLabel.textContent = key;
     } else {
-      this.#applyPermissionStateLabel(stateLabel, permission);
+      stateLabel.setAttribute(
+        "data-l10n-id",
+        this.#getPermissionStateLabelId(permission)
+      );
     }
     labelContainer.appendChild(stateLabel);
 
@@ -1020,24 +821,6 @@ export class nsZenSiteDataPanel {
     const { SitePermissions, gBrowser } = this.window;
     const permission = label._permission;
 
-    if (permission.scope == SitePermissions.SCOPE_TEMPORARY) {
-      let browser = gBrowser.selectedBrowser;
-      let [id] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
-      if (
-        (id == "camera" || id == "microphone") &&
-        permission.id.indexOf(SitePermissions.PERM_KEY_DELIMITER) == -1
-      ) {
-        lazy.webrtcUI.stopExpiredDeviceGrant(browser, id);
-      }
-      SitePermissions.removeFromPrincipal(
-        gBrowser.contentPrincipal,
-        permission.id,
-        browser
-      );
-      this.#refreshSitePermissions();
-      return;
-    }
-
     let newState;
     switch (permission.state) {
       case SitePermissions.ALLOW:
@@ -1114,24 +897,12 @@ export class nsZenSiteDataPanel {
   }
 
   #onClickEvent(event) {
-    if (event.target.closest?.("#zen-site-data-adblock-pause")) {
-      this.#onAdblockPause();
-      return;
-    }
-    if (event.target.closest?.("#zen-site-data-cookie-consent-pause")) {
-      this.#onCookieConsentPause();
-      return;
-    }
     const id = event.target.id;
     switch (id) {
       case "zen-site-data-manage-addons": {
         const { BrowserAddonUI } = this.window;
         BrowserAddonUI.openAddonsMgr("addons://list/extension");
         this.unifiedPanel.hidePopup();
-        break;
-      }
-      case "zen-site-data-adblock-reset": {
-        this.#onAdblockReset();
         break;
       }
       case "zen-site-data-settings-more": {
@@ -1172,12 +943,6 @@ export class nsZenSiteDataPanel {
         this.#onClickEvent(event);
         break;
       case "command":
-        if (event.target?.id === "zen-site-data-adblock-level") {
-          if (!this.#syncingAdblockLevelMenu) {
-            this.#onAdblockLevel(event.target.value);
-          }
-          break;
-        }
         this.#onCommandEvent(event);
         break;
       case "popupshowing":

@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Wygląd i działanie
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Zmiana domyślnego języka może ułatwić stronom internetowym śledzenie Twojej aktywności.
 zen-vertical-tabs-layout-header = Układ przeglądarki
 zen-vertical-tabs-layout-description = Wybierz układ, który najbardziej Ci odpowiada
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Przesuwanie okna
 zen-look-and-feel-window-drag-description = Przesuwaj okno, przeciągając pustą przestrzeń u góry stron internetowych, tak samo jak na pasku tytułu.
 zen-window-drag-enabled = 
     .label = Zezwalaj na przeciąganie okna z poziomu stron internetowych
+pane-zen-tabs-title = Zarządzanie kartami
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Obszary robocze
 zen-tabs-select-recently-used-on-close = 
     .label = Podczas zamykania karty, przełącz na ostatnio używaną kartę zamiast na następną kartę
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Nie rozwijaj domyślnie kart
 zen-vertical-tabs-expand-tabs-on-hover = Rozwiń karty po najechaniu kursorem (nie działa w trybie kompaktowym)
 zen-vertical-tabs-expand-tabs-header = Jak rozwinąć karty
 zen-vertical-tabs-expand-tabs-description = Wybierz sposób rozwijania kart na pasku bocznym
-zen-theme-marketplace-header = Modyfikacje Peppermint
+zen-theme-marketplace-header = Modyfikacje Zen
 zen-theme-disable-all-enabled = 
     .title = Wyłącz wszystkie modyfikacje
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Brak
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Wpisz coś...
-pane-zen-marketplace-title = Modyfikacje Peppermint
+pane-zen-marketplace-title = Modyfikacje Zen
 zen-themes-auto-update = 
     .label = Automatycznie aktualizuj zainstalowane modyfikacje podczas startu przeglądarki
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Kolorowy ciemny motyw
 zen-compact-mode-styles-left = Ukryj pasek kart
 zen-compact-mode-styles-top = Ukryj górny pasek
 zen-compact-mode-styles-both = Ukryj oba
-zen-urlbar-title = Pasek adresu Peppermint
+zen-urlbar-title = Pasek adresu Zen
 zen-urlbar-header = Ogólne ustawienia dla paska adresu
 zen-urlbar-description = Dostosuj pasek adresu URL do swoich potrzeb
 zen-urlbar-behavior-label = Zachowanie
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Skróty klawiaturowe { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Modyfikacje Peppermint
+    .tooltiptext = Modyfikacje Zen
 zen-settings-CKS-header = Dostosuj skróty klawiaturowe
 zen-settings-CKS-description = Zmień domyślne skróty klawiaturowe zgodnie z własnymi preferencjami i popraw komfort przeglądania stron internetowych
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Historia i zakładki
 zenCKSOption-group-mediaAndDisplay = Media i wyświetlanie
 zenCKSOption-group-zen-compact-mode = Tryb kompaktowy
 zenCKSOption-group-zen-workspace = Obszary robocze
-zenCKSOption-group-zen-other = Inne funkcje Peppermint
+zenCKSOption-group-zen-other = Inne funkcje Zen
 zenCKSOption-group-zen-split-view = Podziel widok
 zenCKSOption-group-devTools = Narzędzia deweloperskie
 zen-key-quick-restart = Szybkie ponowne uruchomienie

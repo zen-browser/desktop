@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Utseende och känsla
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Att ändra standardspråk kan göra det lättare för webbplatser att spåra dig.
 zen-vertical-tabs-layout-header = Webbläsarlayout
 zen-vertical-tabs-layout-description = Välj vilken layout som passar dig bäst
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Fönsterdragning
 zen-look-and-feel-window-drag-description = Flytta fönstret genom att dra tomt utrymme högst upp på webbplatser, precis som titelfältet.
 zen-window-drag-enabled = 
     .label = Tillåt att dra i fönstret från webbsidor
+pane-zen-tabs-title = Flikhantering
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Arbetsytor
 zen-tabs-select-recently-used-on-close = 
     .label = När du stänger en flik, växla till den senast använda fliken istället för nästa flik
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Expandera inte flikar som standa
 zen-vertical-tabs-expand-tabs-on-hover = Expandera flikar på Hover (fungerar inte i kompakt läge)
 zen-vertical-tabs-expand-tabs-header = Hur man expanderar flikar
 zen-vertical-tabs-expand-tabs-description = Välj hur du vill utöka flikarna i sidofältet
-zen-theme-marketplace-header = Peppermint Mods
+zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
     .title = Inaktivera alla teman
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Ingen
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skriv något...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = Uppdatera installerade moddar automatiskt vid uppstart
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Färgglada mörkt tema
 zen-compact-mode-styles-left = Dölj flik-fält
 zen-compact-mode-styles-top = Dölj översta fältet
 zen-compact-mode-styles-both = Dölj båda
-zen-urlbar-title = Peppermint adressfält
+zen-urlbar-title = Zen adressfält
 zen-urlbar-header = Allmänna inställningar för adressfältet
 zen-urlbar-description = Anpassa adressfältet som du vill ha det
 zen-urlbar-behavior-label = Beteende
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Tangentbordsgenvägar
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = Anpassa dina kortkommandon
 zen-settings-CKS-description = Ändra standard kortkommandon till ditt tycke och förbättra din webbupplevelse
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Historik & Bokmärken
 zenCKSOption-group-mediaAndDisplay = Media & visning
 zenCKSOption-group-zen-compact-mode = Kompakt läge
 zenCKSOption-group-zen-workspace = Arbetsytor
-zenCKSOption-group-zen-other = Andra Peppermint funktioner
+zenCKSOption-group-zen-other = Andra Zen funktioner
 zenCKSOption-group-zen-split-view = Delad vy
 zenCKSOption-group-devTools = Utvecklarverktyg
 zen-key-quick-restart = Snabb omstart

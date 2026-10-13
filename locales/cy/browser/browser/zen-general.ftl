@@ -123,7 +123,7 @@ zen-open-link-in-glance =
     .accesskey = C
 zen-sidebar-notification-updated-heading = Diweddariad Wedi'i Gwblhau!
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Beth sy'n newydd yn { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
@@ -135,7 +135,7 @@ zen-sidebar-notification-restart-safe-mode-label = Rhywbeth wedi torri?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Ailgychwyn yn y Modd Diogel
 zen-window-sync-migration-dialog-title = Cadw Eich Ffenestr Wedi'u Cydweddu
-zen-window-sync-migration-dialog-message = Mae Peppermint bellach yn cydweddu ffenestri ar yr un ddyfais, felly mae newidiadau mewn un ffenestr yn cael eu dangos ar y lleill yn syth.
+zen-window-sync-migration-dialog-message = Mae Zen bellach yn cydweddu ffenestri ar yr un ddyfais, felly mae newidiadau mewn un ffenestr yn cael eu dangos ar y lleill yn syth.
 zen-window-sync-migration-dialog-learn-more = Dysgu Rhagor
 zen-window-sync-migration-dialog-accept = Iawn
 zen-appmenu-new-blank-window = 

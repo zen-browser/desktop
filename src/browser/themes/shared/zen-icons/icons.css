@@ -64,10 +64,6 @@
   list-style-image: url("unpin.svg") !important;
 }
 
-.tab-split-button {
-  list-style-image: url("split.svg");
-}
-
 .tab-reset-button {
   list-style-image: url("unpin.svg");
 

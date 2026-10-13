@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Socruithe Ródaithe Spáis
-zen-space-routing-rulepanel-placeholder = Le bealaí is féidir leat a roghnú cá n-osclaítear suíomhanna sonracha laistigh de Peppermint. Mar shampla, is féidir leat naisc YouTube a threorú chun go n-osclófar iad i gcónaí laistigh de do Spás Pearsanta.
+zen-space-routing-rulepanel-placeholder = Le bealaí is féidir leat a roghnú cá n-osclaítear suíomhanna sonracha laistigh de Zen. Mar shampla, is féidir leat naisc YouTube a threorú chun go n-osclófar iad i gcónaí laistigh de do Spás Pearsanta.
 zen-space-routing-dialog-title = Socruithe Ródaithe Spáis
 zen-space-routing-external-default = Bealach réamhshocraithe le haghaidh naisc sheachtracha
 zen-space-routing-new-route = Bealach Nua

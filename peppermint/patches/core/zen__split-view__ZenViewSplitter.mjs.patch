@@ -1,0 +1,15 @@
+--- a/zen/split-view/ZenViewSplitter.mjs
++++ b/zen/split-view/ZenViewSplitter.mjs
+@@ -1275,10 +1275,10 @@
+    *
+    * @param {Tab|null} otherTabHint - An optional hint for another tab to split with (used for glance tabs).
+    */
+-  contextSplitTabs(otherTabHint = null) {
++  contextSplitTabs(otherTabHint = null, contextTabOverride = null) {
+     let tabs;
+     let currentTab = gZenGlanceManager.getTabOrGlanceParent(
+-      TabContextMenu.contextTab || gBrowser.selectedTab
++      contextTabOverride || TabContextMenu.contextTab || gBrowser.selectedTab
+     );
+     if (currentTab.multiselected) {
+       tabs = gBrowser.selectedTabs;

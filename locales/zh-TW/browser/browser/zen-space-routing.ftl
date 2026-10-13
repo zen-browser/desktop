@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = 網址導向設定
-zen-space-routing-rulepanel-placeholder = 讓您能選擇要將特定網站開啟在 Peppermint 的某個工作區。舉例來說，您可以設定將YouTube連結一律開啟在Personal工作區內。
+zen-space-routing-rulepanel-placeholder = 讓您能選擇要將特定網站開啟在 Zen 的某個工作區。舉例來說，您可以設定將YouTube連結一律開啟在Personal工作區內。
 zen-space-routing-dialog-title = 網址導向設定
 zen-space-routing-external-default = 外部傳入網址的預設導向
 zen-space-routing-new-route = 新導向

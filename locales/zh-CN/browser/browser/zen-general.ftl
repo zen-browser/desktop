@@ -121,7 +121,7 @@ zen-open-link-in-glance =
     .accesskey = G
 zen-sidebar-notification-updated-heading = 更新完成！
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = 了解 { -brand-short-name } 的新版变化
 zen-sidebar-notification-updated-tooltip = 
@@ -133,7 +133,7 @@ zen-sidebar-notification-restart-safe-mode-label = 出了什么问题吗？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 在排障模式下重启
 zen-window-sync-migration-dialog-title = 保持您的窗口同步
-zen-window-sync-migration-dialog-message = Peppermint 现已支持同一设备上的窗口同步，一个窗口的更改将即时同步到其他窗口。
+zen-window-sync-migration-dialog-message = Zen 现已支持同一设备上的窗口同步，一个窗口的更改将即时同步到其他窗口。
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 知道了
 zen-appmenu-new-blank-window = 

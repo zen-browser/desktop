@@ -1,0 +1,35 @@
+{
+  "replacements": [
+    {
+      "from": "Zen",
+      "to": "Peppermint"
+    }
+  ],
+  "exact": [
+    {
+      "key": "zen-action-open-private-window",
+      "from": "Open Private Window",
+      "to": "Open Ghost Window"
+    },
+    {
+      "key": "zen-private-browsing-shortcut",
+      "from": "Private Browsing",
+      "to": "Ghost Mode"
+    },
+    {
+      "key": "zenCKSOption-group-zen-split-view",
+      "from": "Zen-split-view-modifier-header",
+      "to": "Split View"
+    },
+    {
+      "key": "zen-split-view-modifier-header",
+      "from": "Zen-split-view-modifier-header",
+      "to": "Split View"
+    },
+    {
+      "key": "zen-quit-app-shortcut",
+      "from": "Sair do Zen Browser",
+      "to": "Sair do Peppermint"
+    }
+  ]
+}

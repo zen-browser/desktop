@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Începe acum!
 zen-welcome-default-search-title = Motorul Tău de Căutare Principal
 zen-welcome-default-search-description = Alege-ți motorul tău de căutare principal. Îl poți schimba oricând mai târziu!
 zen-welcome-skip-button = Treci peste
-zen-welcome-finished = Peppermint-ul tău a fost configurat corect!
+zen-welcome-finished = Zen-ul tău a fost configurat corect!

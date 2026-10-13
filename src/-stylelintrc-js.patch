@@ -1,8 +1,6 @@
-diff --git a/.stylelintrc.js b/.stylelintrc.js
-index 876f76417f..170b6e81dc 100644
 --- a/.stylelintrc.js
 +++ b/.stylelintrc.js
-@@ -67,7 +67,7 @@ module.exports = {
+@@ -67,7 +67,7 @@
      ],
  
      "max-nesting-depth": [
@@ -11,7 +9,7 @@ index 876f76417f..170b6e81dc 100644
        {
          ignore: ["blockless-at-rules"],
        },
-@@ -282,7 +282,7 @@ module.exports = {
+@@ -282,7 +282,7 @@
      "stylelint-plugin-mozilla/no-background-without-text-color": true,
      "stylelint-plugin-mozilla/no-base-design-tokens": true,
      "stylelint-plugin-mozilla/no-has-selector": true,

@@ -1,8 +1,6 @@
-diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
-index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98751b6993 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
-@@ -822,7 +822,7 @@ export class UrlbarView {
+@@ -818,7 +818,7 @@
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -11,7 +9,7 @@ index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -963,10 +963,6 @@ export class UrlbarView {
+@@ -962,10 +962,6 @@
      }
  
      // If search mode isn't active, close the view.
@@ -22,7 +20,7 @@ index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98
  
      // Search mode is active.  If the one-offs should be shown, make sure they
      // are enabled and show the view.
-@@ -3306,6 +3302,8 @@ export class UrlbarView {
+@@ -3290,6 +3286,8 @@
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -31,7 +29,7 @@ index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3972,7 +3970,7 @@ export class UrlbarView {
+@@ -3956,7 +3954,7 @@
    }
  
    #enableOrDisableRowWrap() {
@@ -40,7 +38,7 @@ index 9a2c787cfa4d70bd587d49e017075f905c90f626..1c3b341e5d520ec9541c4021aaedce98
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
-@@ -4387,6 +4385,12 @@ export class UrlbarView {
+@@ -4450,6 +4448,12 @@
    }
  
    on_blur() {

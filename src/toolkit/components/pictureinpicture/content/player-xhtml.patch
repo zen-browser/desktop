@@ -1,5 +1,3 @@
-diff --git a/toolkit/components/pictureinpicture/content/player.xhtml b/toolkit/components/pictureinpicture/content/player.xhtml
-index 09c9c5000de96fcd4a9d26328408996540c2cbda..b6d93850bbfe63a4e21756c97415a6c1908dae25 100644
 --- a/toolkit/components/pictureinpicture/content/player.xhtml
 +++ b/toolkit/components/pictureinpicture/content/player.xhtml
 @@ -18,6 +18,7 @@
@@ -10,28 +8,3 @@ index 09c9c5000de96fcd4a9d26328408996540c2cbda..b6d93850bbfe63a4e21756c97415a6c1
    </head>
  
    <body>
-@@ -53,13 +54,22 @@
-       tabindex="10"
- #endif
-       />
--      <button id="unpip"
--      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-unpip-btn" data-l10n-attrs="tooltip"
-+      <button id="minimize"
-+      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-minimize-btn" data-l10n-attrs="tooltip"
- #ifdef XP_MACOSX
-       mac="true"
-       tabindex="10"
- #else
-       tabindex="9"
-+#endif
-+      />
-+      <button id="unpip"
-+      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-unpip-btn" data-l10n-attrs="tooltip"
-+#ifdef XP_MACOSX
-+      mac="true"
-+      tabindex="11"
-+#else
-+      tabindex="10"
- #endif
-       />
-     <div id="controls-bottom-gradient" class="control-item"></div>

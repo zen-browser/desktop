@@ -1,0 +1,14 @@
+--- a/browser/components/preferences/main.js
++++ b/browser/components/preferences/main.js
+@@ -523,11 +523,6 @@
+         ],
+       },
+       {
+-        id: "zenWorkspaceContinueWhereLeftOff",
+-        l10nId: "zen-workspace-continue-where-left-off",
+-        control: "moz-checkbox",
+-      },
+-      {
+         id: "windowsLaunchOnLogin",
+         l10nId: "windows-launch-on-login",
+       },

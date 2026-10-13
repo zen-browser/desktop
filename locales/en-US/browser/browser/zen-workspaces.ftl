@@ -41,9 +41,6 @@ zen-workspaces-panel-unload-others =
 zen-workspaces-change-theme =
     .label = Edit Theme…
 
-zen-theme-picker-reset-default =
-    .label = Reset to default
-
 zen-workspaces-panel-context-open =
     .label = Open Workspace
     .accesskey = O

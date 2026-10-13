@@ -1,8 +1,6 @@
-diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 35e044bd84..23503c5645 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -132,6 +132,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
+@@ -132,6 +132,7 @@
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -10,7 +8,7 @@ index 35e044bd84..23503c5645 100644
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -471,6 +472,8 @@ const CONFIG_PANES = Object.freeze({
+@@ -471,6 +472,8 @@
    tabsBrowsing: {
      l10nId: "tabs-browsing-section",
      groupIds: [
@@ -19,7 +17,7 @@ index 35e044bd84..23503c5645 100644
        "browserLayout",
        "tabs",
        "pageNavigation",
-@@ -524,7 +527,7 @@ function register_module(categoryName, categoryObject) {
+@@ -524,7 +527,7 @@
        }
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
@@ -28,18 +26,14 @@ index 35e044bd84..23503c5645 100644
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -568,6 +571,14 @@ function init_all() {
+@@ -568,6 +571,10 @@
    register_module("paneHome", gHomePane);
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
-+  register_module("paneZenSidebarLayout", gZenLooksAndFeel);
-+  register_module("paneZenToolbarUrlbar", gZenToolbarUrlbarSettings);
-+  register_module("paneZenSpacesTabs", gZenWorkspacesSettings);
++  register_module("paneZenLooks", gZenLooksAndFeel);
++  register_module("paneZenTabManagement", gZenWorkspacesSettings);
 +  register_module("paneZenCKS", gZenCKSSettings);
-+  register_module("paneZenAdblock", gZenAdblockSettings);
-+  register_module("paneZenHomepage", gZenHomepageSettings);
-+  register_module("paneZenUrlSnippets", gZenUrlSnippetsSettings);
-+  register_module("paneZenPerformance", gZenPerformanceSettings);
++  register_module("paneZenMarketplace", gZenMarketplaceManager);
  
    // Restore the cached Firefox Labs nav button visibility so it shows
    // immediately when recipes are expected to be available, before

@@ -1,0 +1,11 @@
+--- a/browser/installer/windows/nsis/uninstaller.nsi
++++ b/browser/installer/windows/nsis/uninstaller.nsi
+@@ -150,7 +150,7 @@
+ !endif
+ ShowUnInstDetails nevershow
+ 
+-!define URLUninstallSurvey "https://links.zen-browser.app/uninstall-feedback?osversion="
++!define URLUninstallSurvey "https://github.com/AstroDevCompany/desktop/issues?osversion="
+ 
+ ; Support for the profile refresh feature
+ !define URLProfileRefreshHelp "https://support.mozilla.org/kb/refresh-firefox-reset-add-ons-and-settings"

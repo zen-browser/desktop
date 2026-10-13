@@ -1,0 +1,11 @@
+--- a/build/moz.build
++++ b/build/moz.build
+@@ -92,7 +92,7 @@
+         if CONFIG[var]:
+             appini_defines[var] = True
+ 
+-    appini_defines["MOZ_APPUPDATE_HOST"] = "updates.zen-browser.app"
++    appini_defines["MOZ_APPUPDATE_HOST"] = "updates.peppermint.invalid"
+     if CONFIG["MOZ_APPUPDATE_HOST"]:
+         appini_defines["MOZ_APPUPDATE_HOST"] = CONFIG["MOZ_APPUPDATE_HOST"]
+ 

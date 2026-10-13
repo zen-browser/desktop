@@ -1,47 +1,40 @@
-diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
-index 0ac5330223c84fbb98880a5c2d83ae58a8f3079e..ff488cf5a2c8b7857a8e145e40aaf861cfa655ec 100644
 --- a/browser/components/urlbar/content/UrlbarShared.mjs
 +++ b/browser/components/urlbar/content/UrlbarShared.mjs
-@@ -158,6 +158,8 @@ export const UrlbarShared = {
+@@ -177,6 +177,7 @@
      // `looksLikeOrigin()` returned `LOOKS_LIKE_ORIGIN.OTHER` for this token.
      // It may or may not be an origin.
      POSSIBLE_ORIGIN_BUT_SEARCH_ALLOWED: 12,
 +    RESTRICT_WORKSPACE: 13,
-+    RESTRICT_SNIPPET: 14,
    }),
  
    /**
-@@ -178,6 +179,8 @@ export const UrlbarShared = {
+@@ -197,6 +198,7 @@
      TITLE: "#",
      URL: "$",
--    ACTION: ">",
-+    ACTION: "§",
-+    SNIPPET: ">",
+     ACTION: ">",
 +    WORKSPACE: "`",
    }),
  
    // Defines UrlbarResult types.
-@@ -223,6 +225,9 @@ export const UrlbarShared = {
+@@ -242,6 +244,8 @@
      OTHER_NETWORK: 6,
      ADDON: 7,
      ACTIONS: 8,
 +    ZEN_ACTIONS: 9,
 +    WORKSPACES: 10,
-+    SNIPPETS: 11,
    }),
  
    // Results are categorized into groups to help the muxer compose them.  See
-@@ -258,6 +262,9 @@ export const UrlbarShared = {
+@@ -277,6 +281,8 @@
      SEMANTIC_HISTORY: "semanticHistory",
      SUGGESTED_INDEX: "suggestedIndex",
      TAIL_SUGGESTION: "tailSuggestion",
 +    ZEN_ACTION: "zenAction",
 +    ZEN_WORKSPACE: "zenWorkspace",
-+    ZEN_SNIPPET: "zenSnippet",
    }),
  
    // Defines provider types.
-@@ -443,6 +449,22 @@ export const UrlbarShared = {
+@@ -462,6 +468,14 @@
          telemetryLabel: "actions",
          uiLabel: "urlbar-searchmode-actions3",
        },
@@ -53,27 +46,18 @@ index 0ac5330223c84fbb98880a5c2d83ae58a8f3079e..ff488cf5a2c8b7857a8e145e40aaf861
 +        telemetryLabel: "workspaces",
 +        uiLabel: "urlbar-search-mode-workspaces",
 +      },
-+      {
-+        source: this.RESULT_SOURCE.SNIPPETS,
-+        restrict: this.RESTRICT_TOKENS.SNIPPET,
-+        icon: "chrome://browser/skin/zen-icons/link.svg",
-+        pref: "shortcuts.snippets",
-+        telemetryLabel: "snippets",
-+        uiLabel: "urlbar-search-mode-snippets",
-+      },
      ]);
    },
  
-@@ -460,6 +474,8 @@ export const UrlbarShared = {
+@@ -479,6 +493,7 @@
      if (UrlbarPrefs.get("scotchBonnet.enableOverride")) {
        keys.push(this.RESTRICT_TOKENS.ACTION);
      }
 +    keys.push(this.RESTRICT_TOKENS.WORKSPACE);
-+    keys.push(this.RESTRICT_TOKENS.SNIPPET);
      return new Set(keys);
    },
  
-@@ -1032,6 +1047,13 @@ export const UrlbarShared = {
+@@ -1069,6 +1084,11 @@
            return UrlbarShared.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return UrlbarShared.RESULT_GROUP.HEURISTIC_HISTORY_URL;
@@ -82,14 +66,10 @@ index 0ac5330223c84fbb98880a5c2d83ae58a8f3079e..ff488cf5a2c8b7857a8e145e40aaf861
 +            return UrlbarShared.RESULT_GROUP.ZEN_WORKSPACE;
 +          }
 +          return UrlbarShared.RESULT_GROUP.ZEN_ACTION;
-+        case "ZenUrlbarProviderSnippets":
-+          return UrlbarShared.RESULT_GROUP.ZEN_SNIPPET;
          case "UrlbarProviderOmnibox":
            return UrlbarShared.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":
-@@ -1060,6 +1080,9 @@ export const UrlbarShared = {
-+      case "ZenUrlbarProviderSnippets":
-+        return UrlbarShared.RESULT_GROUP.ZEN_SNIPPET;
+@@ -1097,6 +1117,7 @@
        case "UrlbarProviderAboutPages":
          return UrlbarShared.RESULT_GROUP.ABOUT_PAGES;
        case "UrlbarProviderInputHistory":

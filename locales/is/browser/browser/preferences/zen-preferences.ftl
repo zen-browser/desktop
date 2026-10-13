@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Útlit og viðmót
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Það að breyta sjálfgefnu tungumáli gæti gert vefsvæðum auðveldara að fylgjast með ferðum þínum.
 zen-vertical-tabs-layout-header = Framsetning vafra
 zen-vertical-tabs-layout-description = Veldu framsetninguna sem hentar þér best
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Gluggadráttur
 zen-look-and-feel-window-drag-description = Færðu gluggann með því að draga autt svæði efst á vefsíðum, rétt eins og titilstikuna.
 zen-window-drag-enabled = 
     .label = Leyfa að draga gluggann af vefsíðum
+pane-zen-tabs-title = Umsýsla flipa
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Vinnusvæði
 zen-tabs-select-recently-used-on-close = 
     .label = Þegar flipa er lokað skal skipta á þann flipa sem síðast var notaður, í stað þess að fara á næsta flipa
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Ekki fletta sjálfgefið út fli
 zen-vertical-tabs-expand-tabs-on-hover = Fletta flipum út við yfirsvif (mun ekki virka í þjöppuðu viðmóti)
 zen-vertical-tabs-expand-tabs-header = Hvernig á að fletta út flipum
 zen-vertical-tabs-expand-tabs-description = Veldu hvernig á að fletta út flipum í hliðarstikunni
-zen-theme-marketplace-header = Viðbrigðasnið Peppermint
+zen-theme-marketplace-header = Viðbrigðasnið Zen
 zen-theme-disable-all-enabled = 
     .title = Gera öll viðbrigðasnið óvirk
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Ekkert
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skrifaðu eitthvað...
-pane-zen-marketplace-title = Viðbrigðasnið Peppermint
+pane-zen-marketplace-title = Viðbrigðasnið Zen
 zen-themes-auto-update = 
     .label = Uppfæra uppsett viðbrigðasnið sjálfkrafa við ræsingu
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Litríkt dökkt þema
 zen-compact-mode-styles-left = Fela flipastiku
 zen-compact-mode-styles-top = Fela stiku efst
 zen-compact-mode-styles-both = Fela bæði
-zen-urlbar-title = Peppermint-staðsetningastikan
+zen-urlbar-title = Zen-staðsetningastikan
 zen-urlbar-header = Almennar stillingar fyrir staðsetningastikuna
 zen-urlbar-description = Sérsníddu staðsetningastikuna eins og þér líkar best
 zen-urlbar-behavior-label = Hegðun
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Flýtilyklar í { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Viðbrigðasnið Peppermint
+    .tooltiptext = Viðbrigðasnið Zen
 zen-settings-CKS-header = Sérsníddu þínar eigin flýtileiðir á lyklaborði
 zen-settings-CKS-description = Breyttu sjálfgefnu lyklaborði í það sem þér líkar og bættu þannig vafursupplifunina þína
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Ferill og bókamerki
 zenCKSOption-group-mediaAndDisplay = Myndefni og birting
 zenCKSOption-group-zen-compact-mode = Þjappað viðmót
 zenCKSOption-group-zen-workspace = Vinnusvæði
-zenCKSOption-group-zen-other = Aðrir eiginleikar Peppermint
+zenCKSOption-group-zen-other = Aðrir eiginleikar Zen
 zenCKSOption-group-zen-split-view = Klofið yfirlit
 zenCKSOption-group-devTools = Forritunarverkfæri
 zen-key-quick-restart = Fljótleg endurræsing

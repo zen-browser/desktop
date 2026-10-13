@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = 外觀與樣式
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = 更改預設的語言可能會讓網站更容易的追蹤你。
 zen-vertical-tabs-layout-header = 瀏覽器版面配置
 zen-vertical-tabs-layout-description = 選擇最適合您的版面
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = 分頁管理
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = 工作區
 zen-tabs-select-recently-used-on-close = 
     .label = 關閉分頁後，切換至最近造訪的分頁而非下一個相鄰分頁
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = 預設不展開分頁
 zen-vertical-tabs-expand-tabs-on-hover = 懸停時擴展分頁 (無法在緊湊模式下使用)
 zen-vertical-tabs-expand-tabs-header = 如何擴展分頁
 zen-vertical-tabs-expand-tabs-description = 選擇要如何擴展側邊欄中的分頁
-zen-theme-marketplace-header = Peppermint 模組
+zen-theme-marketplace-header = Zen 模組
 zen-theme-disable-all-enabled = 
     .title = 啟用所有模組
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = 無
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = 請輸入...
-pane-zen-marketplace-title = Peppermint 模組
+pane-zen-marketplace-title = Zen 模組
 zen-themes-auto-update = 
     .label = 啟動時自動更新已安裝模組
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = 有趣的深色主題
 zen-compact-mode-styles-left = 隱藏分頁欄
 zen-compact-mode-styles-top = 隱藏頂端列
 zen-compact-mode-styles-both = 隱藏兩者
-zen-urlbar-title = Peppermint 網址列
+zen-urlbar-title = Zen 網址列
 zen-urlbar-header = 網址列一般設定
 zen-urlbar-description = 自訂義您喜歡的網址列
 zen-urlbar-behavior-label = 行為
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } 快捷鍵
 category-zen-marketplace = 
-    .tooltiptext = Peppermint 模組
+    .tooltiptext = Zen 模組
 zen-settings-CKS-header = 自定義您的快捷鍵
 zen-settings-CKS-description = 依您喜好來更改預設的快捷鍵以進一步改善瀏覽體驗
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = 瀏覽紀錄與書籤
 zenCKSOption-group-mediaAndDisplay = 媒體與顯示
 zenCKSOption-group-zen-compact-mode = 緊湊模式
 zenCKSOption-group-zen-workspace = 工作區
-zenCKSOption-group-zen-other = 其它 Peppermint 功能
+zenCKSOption-group-zen-other = 其它 Zen 功能
 zenCKSOption-group-zen-split-view = 分割畫面
 zenCKSOption-group-devTools = 開發人員工具
 zen-key-quick-restart = 快速重啟

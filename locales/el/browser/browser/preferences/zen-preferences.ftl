@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Εμφάνιση και Αίσθηση
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Η αλλαγή της προεπιλεγμένης γλώσσας θα μπορούσε να διευκολύνει τις ιστοσελίδες να σας παρακολουθούν.
 zen-vertical-tabs-layout-header = Διάταξη Περιηγητή
 zen-vertical-tabs-layout-description = Επιλέξτε τη διάταξη που σας ταιριάζει καλύτερα
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Διαχείριση Καρτελών
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Χώροι Εργασίας
 zen-tabs-select-recently-used-on-close = 
     .label = Στο κλείσιμο καρτέλας, αλλαγή στην πιο πρόσφατα χρησιμοποιημένη καρτέλα αντί για την επόμενη καρτέλα
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Να μην Επεκτείνον
 zen-vertical-tabs-expand-tabs-on-hover = Επέκταση Καρτελών κατά την Αιώρηση (δε δουλεύει σε συμπαγή λειτουργία)
 zen-vertical-tabs-expand-tabs-header = Πώς να επεκτείνετε τις καρτέλες
 zen-vertical-tabs-expand-tabs-description = Επιλέξτε πώς να επεκτείνετε τις καρτέλες στην πλευρική γραμμή
-zen-theme-marketplace-header = Peppermint Mods
+zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
     .title = Απενεργοποίηση όλων των mods
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Κανένα
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Πληκτρολογήστε κάτι...
-pane-zen-marketplace-title = Επεκτάσεις Peppermint
+pane-zen-marketplace-title = Επεκτάσεις Zen
 zen-themes-auto-update = 
     .label = Αυτόματη ενημέρωση εγκατεστημένων mods κατά την εκκίνηση
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Πολύχρωμο Σκοτεινό Θέμα
 zen-compact-mode-styles-left = Απόκρυψη γραμμής Καρτέλας
 zen-compact-mode-styles-top = Απόκρυψη Επάνω γραμμής
 zen-compact-mode-styles-both = Απόκρυψη Όλων
-zen-urlbar-title = Γραμμή Peppermint URL
+zen-urlbar-title = Γραμμή Zen URL
 zen-urlbar-header = Γενικές ρυθμίσεις για τη γραμμή URL
 zen-urlbar-description = Προσαρμόστε τη γραμμή URL σύμφωνα με τις προτιμήσεις σας
 zen-urlbar-behavior-label = Συμπεριφορά
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Συντομεύσεις Πληκτρολογίου { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Επεκτάσεις Peppermint
+    .tooltiptext = Επεκτάσεις Zen
 zen-settings-CKS-header = Προσαρμόστε τις συντομεύσεις πληκτρολογίου
 zen-settings-CKS-description = Προσαρμόστε τις προεπιλεγμένες συντομεύσεις πληκτρολογίου στις προτιμήσεις σας και βελτιώστε την εμπειρία περιήγησής σας
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Ιστορικό & Σελιδοδείκ
 zenCKSOption-group-mediaAndDisplay = Πολυμέσα & Προβολή
 zenCKSOption-group-zen-compact-mode = Συμπαγής Λειτουργία
 zenCKSOption-group-zen-workspace = Χώροι Εργασίας
-zenCKSOption-group-zen-other = Άλλες Λειτουργίες του Peppermint
+zenCKSOption-group-zen-other = Άλλες Λειτουργίες του Zen
 zenCKSOption-group-zen-split-view = Διαιρεμένη Προβολή
 zenCKSOption-group-devTools = Εργαλεία Προγραμματιστή
 zen-key-quick-restart = Γρήγορη Επανεκκίνηση

@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Tampilan dan Nuansa
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Mengubah bahasa bawaan dapat mempermudah situs web untuk melacak Anda.
 zen-vertical-tabs-layout-header = Tata Letak Browser
 zen-vertical-tabs-layout-description = Pilih tata letak yang paling cocok untuk Anda
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Pengelolaan Tab
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Ruang Kerja
 zen-tabs-select-recently-used-on-close = 
     .label = Saat menutup tab, beralih ke tab yang terakhir digunakan alih-alih tab berikutnya
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Jangan Perluas Tab Secara Defaul
 zen-vertical-tabs-expand-tabs-on-hover = Perluas semua tab saat mengarahkan kursor (Tidak akan berfungsi pada mode ringkas)
 zen-vertical-tabs-expand-tabs-header = Cara memperluas tab
 zen-vertical-tabs-expand-tabs-description = Pilih cara memperluas tab di sidebar
-zen-theme-marketplace-header = Peppermint Mods
+zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
     .title = Disable all themes
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Tak ada
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Ketik sesuatu...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = Otomatis perbarui mod yang terinstal saat startup
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Tema Gelap Berwarna
 zen-compact-mode-styles-left = Sembunyikan Bilah Tab
 zen-compact-mode-styles-top = Sembunyikan Bilah Atas
 zen-compact-mode-styles-both = Sembunyikan Keduanya
-zen-urlbar-title = Bilah URL Peppermint
+zen-urlbar-title = Bilah URL Zen
 zen-urlbar-header = Pengaturan umum untuk bilah URL
 zen-urlbar-description = Sesuaikan bilah URL sesuai keinginan Anda
 zen-urlbar-behavior-label = Perilaku
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Pintasan Keyboard { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = Sesuaikan pintasan keyboard Anda
 zen-settings-CKS-description = Ubah pintasan keyboard default sesuai keinginan Anda dan tingkatkan pengalaman browsing Anda
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Riwayat & Markah
 zenCKSOption-group-mediaAndDisplay = Media & Tampilan
 zenCKSOption-group-zen-compact-mode = Mode Ringkas
 zenCKSOption-group-zen-workspace = Ruang Kerja
-zenCKSOption-group-zen-other = Fitur Peppermint Lainnya
+zenCKSOption-group-zen-other = Fitur Zen Lainnya
 zenCKSOption-group-zen-split-view = Tampilan Belah
 zenCKSOption-group-devTools = Perangkat Pengembang
 zen-key-quick-restart = Mulai Ulang Cepat

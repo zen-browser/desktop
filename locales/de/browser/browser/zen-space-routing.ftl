@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Einstellungen für Arbeitsbereich-Routing
-zen-space-routing-rulepanel-placeholder = Mit Routen legst du fest, wo bestimmte Websites in Peppermint geöffnet werden. Du kannst zum Beispiel YouTube-Links immer in deinem privaten Arbeitsbereich öffnen lassen.
+zen-space-routing-rulepanel-placeholder = Mit Routen legst du fest, wo bestimmte Websites in Zen geöffnet werden. Du kannst zum Beispiel YouTube-Links immer in deinem privaten Arbeitsbereich öffnen lassen.
 zen-space-routing-dialog-title = Einstellungen für Arbeitsbereich-Routing
 zen-space-routing-external-default = Standardroute für externe Links
 zen-space-routing-new-route = Neue Route

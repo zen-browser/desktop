@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = 스페이스 경로 설정
-zen-space-routing-rulepanel-placeholder = 경로는 특정 사이트가 Peppermint의 어떤 곳으로 열릴지 설정할 수 있도록 합니다. 예를 들어, 유튜브 링크를 항상 "개인" 스페이스로 열리도록 할 수 있습니다.
+zen-space-routing-rulepanel-placeholder = 경로는 특정 사이트가 Zen의 어떤 곳으로 열릴지 설정할 수 있도록 합니다. 예를 들어, 유튜브 링크를 항상 "개인" 스페이스로 열리도록 할 수 있습니다.
 zen-space-routing-dialog-title = 스페이스 경로 설정
 zen-space-routing-external-default = 외부 링크의 기본 경로
 zen-space-routing-new-route = 새로운 경로

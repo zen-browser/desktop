@@ -5,12 +5,10 @@
 EXTRA_JS_MODULES += [
   "ZenSiteDataPanel.sys.mjs",
   "ZenUBActionsProvider.sys.mjs",
-    "ZenUBGlobalActions.sys.mjs",
-    "ZenUBNotepadProvider.sys.mjs",
-    "ZenUBProvider.sys.mjs",
+  "ZenUBGlobalActions.sys.mjs",
+  "ZenUBProvider.sys.mjs",
   "ZenUBResultsLearner.sys.mjs",
   "ZenUBSidebarProvider.sys.mjs",
-  "ZenUrlbarProviderSnippets.sys.mjs",
 ]
 
 EXTRA_JS_MODULES.zen.urlbar += [

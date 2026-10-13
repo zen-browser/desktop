@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Giao diện
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Thay đổi ngôn ngữ mặc định có thể khiến bạn dễ bị theo dõi hơn.
 zen-vertical-tabs-layout-header = Giao diện trình duyệt
 zen-vertical-tabs-layout-description = Chọn giao diện phù hợp với bạn nhất
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Quản lí thẻ
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Không gian làm việc
 zen-tabs-select-recently-used-on-close = 
     .label = Khi đóng thẻ, chuyển sang thẻ sử dụng gần nhất thay vì thẻ tiếp theo
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Không mở rộng các thẻ th
 zen-vertical-tabs-expand-tabs-on-hover = Mở rộng khi rê chuột qua (Không hoạt động trong chế độ tinh gọn)
 zen-vertical-tabs-expand-tabs-header = Cách mở rộng thẻ
 zen-vertical-tabs-expand-tabs-description = Chọn cách mở rộng thẻ trong thanh bên
-zen-theme-marketplace-header = Bản mod Peppermint
+zen-theme-marketplace-header = Bản mod Zen
 zen-theme-disable-all-enabled = 
     .title = Tắt tất cả các mod
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Không có
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Gõ gì đó đi...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = Tự động cập nhật các tùy chỉnh khi mở trình duyệt
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Chủ đề tối rực rỡ
 zen-compact-mode-styles-left = Ẩn thanh tab
 zen-compact-mode-styles-top = Ẩn thanh trên cùng
 zen-compact-mode-styles-both = Ẩn cả hai
-zen-urlbar-title = Thanh địa chỉ Peppermint
+zen-urlbar-title = Thanh địa chỉ Zen
 zen-urlbar-header = Cài đặt chung cho thanh địa chỉ
 zen-urlbar-description = Tùy chỉnh thanh địa chỉ theo sở thích
 zen-urlbar-behavior-label = Hành vi thanh địa chỉ
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Phím tắt
 category-zen-marketplace = 
-    .tooltiptext = Bản mod Peppermint
+    .tooltiptext = Bản mod Zen
 zen-settings-CKS-header = Tùy chỉnh phím tắt
 zen-settings-CKS-description = Thay đổi các phím tắt mặc định theo sở thích và cải thiện trải nghiệm duyệt web của bạn
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Lịch sử & Dấu trang
 zenCKSOption-group-mediaAndDisplay = Phương tiện và hiển thị
 zenCKSOption-group-zen-compact-mode = Chế độ thu gọn
 zenCKSOption-group-zen-workspace = Không gian làm việc
-zenCKSOption-group-zen-other = Các tính năng khác của Peppermint
+zenCKSOption-group-zen-other = Các tính năng khác của Zen
 zenCKSOption-group-zen-split-view = Chế độ chia khung
 zenCKSOption-group-devTools = Công cụ nhà phát triển
 zen-key-quick-restart = Khởi động lại nhanh

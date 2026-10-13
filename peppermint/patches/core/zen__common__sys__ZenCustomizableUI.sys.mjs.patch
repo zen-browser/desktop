@@ -1,0 +1,30 @@
+--- a/zen/common/sys/ZenCustomizableUI.sys.mjs
++++ b/zen/common/sys/ZenCustomizableUI.sys.mjs
+@@ -6,7 +6,10 @@
+ 
+ const lazy = {};
+ ChromeUtils.defineESModuleGetters(lazy, {
++  ZenGhostModeWidget: "moz-src:///peppermint/ghost-mode/ZenGhostModeWidget.sys.mjs",
+   ZenLibraryWidget: "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
++  ZenUnderpoweredWidget:
++    "moz-src:///peppermint/underpowered/ZenUnderpoweredWidget.sys.mjs",
+ });
+ 
+ const kCollapseSidebarWidth = 60;
+@@ -21,12 +24,16 @@
+     Services.prefs.getBoolPref("zen.library.enabled")
+       ? "zen-library-button"
+       : "downloads-button",
++    "zen-ghost-mode-button",
++    "zen-underpowered-button",
+     "zen-workspaces-button",
+     "zen-create-new-button",
+   ];
+ 
+   startup(CustomizableUIInternal) {
+     CustomizableUIInternal.createBuiltinWidget(lazy.ZenLibraryWidget);
++    CustomizableUIInternal.createBuiltinWidget(lazy.ZenGhostModeWidget);
++    CustomizableUIInternal.createBuiltinWidget(lazy.ZenUnderpoweredWidget);
+     CustomizableUIInternal.registerArea(
+       "zen-sidebar-top-buttons",
+       {

@@ -19,6 +19,22 @@ let JSPROCESSACTORS = {};
  * available at https://firefox-source-docs.mozilla.org/dom/ipc/jsactors.html
  */
 let JSWINDOWACTORS = {
+  ZenModsMarketplace: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenModsMarketplaceParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenModsMarketplaceChild.sys.mjs",
+      events: {
+        DOMContentLoaded: {},
+      },
+    },
+    safeForUntrustedWebProcess: true,
+    matches: [
+      ...Services.prefs.getStringPref("zen.injections.match-urls").split(","),
+      "about:preferences",
+    ],
+  },
   ZenGlance: {
     parent: {
       esModuleURI: "resource:///actors/ZenGlanceParent.sys.mjs",
@@ -59,19 +75,6 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.view.drag-window-from-content",
   },
-  // Created on demand for mint: documents. Match patterns cannot target
-  // mint://note/ because mint is not a host-locator scheme, so a parent
-  // progress listener calls getActor() instead of listening on every page.
-  ZenNotepad: {
-    parent: {
-      esModuleURI: "resource:///actors/ZenNotepadParent.sys.mjs",
-    },
-    child: {
-      esModuleURI: "resource:///actors/ZenNotepadChild.sys.mjs",
-    },
-    safeForUntrustedWebProcess: true,
-    allFrames: false,
-  },
 };
 
 if (!Services.appinfo.inSafeMode) {
@@ -89,41 +92,6 @@ if (!Services.appinfo.inSafeMode) {
     allFrames: true,
     remoteTypes: ["web", "file"],
     enablePreference: "zen.boosts.enabled",
-  };
-  JSWINDOWACTORS.ZenAdblock = {
-    parent: {
-      esModuleURI: "resource:///actors/ZenAdblockParent.sys.mjs",
-    },
-    child: {
-      esModuleURI: "resource:///actors/ZenAdblockChild.sys.mjs",
-      events: {
-        DOMDocElementInserted: {},
-        DOMContentLoaded: {},
-        pageshow: {},
-      },
-    },
-    matches: ["http://*/*", "https://*/*"],
-    safeForUntrustedWebProcess: true,
-    allFrames: true,
-    remoteTypes: ["web", "file"],
-    enablePreference: "zen.adblock.enabled",
-  };
-  JSWINDOWACTORS.ZenCookieConsent = {
-    parent: {
-      esModuleURI: "resource:///actors/ZenCookieConsentParent.sys.mjs",
-    },
-    child: {
-      esModuleURI: "resource:///actors/ZenCookieConsentChild.sys.mjs",
-      events: {
-        DOMContentLoaded: {},
-        pageshow: {},
-      },
-    },
-    matches: ["http://*/*", "https://*/*"],
-    safeForUntrustedWebProcess: true,
-    allFrames: true,
-    remoteTypes: ["web"],
-    enablePreference: "zen.cookie-consent.enabled",
   };
 }
 

@@ -1,0 +1,11 @@
+--- a/zen/common/modules/ZenUpdates.mjs
++++ b/zen/common/modules/ZenUpdates.mjs
+@@ -37,7 +37,7 @@
+         icon: "chrome://browser/skin/zen-icons/sparkles.svg",
+       },
+       {
+-        url: "https://www.zen-browser.app/donate",
++        url: "https://github.com/AstroDevCompany/desktop",
+         l10nId: "zen-sidebar-notification-donate",
+         icon: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
+       },

@@ -1,0 +1,68 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Peppermint defaults. Each entry replaces Zen's pref with the same name and condition (see tools/ffprefs).
+
+# --- firefox/pip.yaml
+
+- name: media.videocontrols.picture-in-picture.enable-when-switching-tabs.enabled
+  value: true
+
+
+# --- firefox/urlbar.yaml
+
+- name: browser.search.suggest.enabled
+  value: true
+
+- name: browser.search.suggest.enabled.private
+  value: true
+
+
+# --- zen/mods.yaml
+
+# === Mark: Site Injection ===
+- name: zen.injections.match-urls
+  value: "https://example.com/*"
+  locked: true
+  condition: "defined(MOZILLA_OFFICIAL)"
+
+
+# --- zen/session-store.yaml
+
+- name: zen.session-store.log
+  value: false
+
+
+# --- zen/share.yaml
+
+- name: zen.share.base-url
+  # Empty until Peppermint hosts its own share service. The Zen host is not used.
+  value: ""
+
+
+# --- zen/theme.yaml
+
+- name: zen.theme.accent-color
+  value: "#14B8A6"
+
+# Lets backdrop filters in the chrome read the web content beneath them, so the
+# URL bar glass blurs the page. Read once, when WebRender starts.
+- name: zen.theme.acrylic-urlbar
+  value: true
+  cpptype: bool
+  mirror: once
+  type: static
+
+
+# --- zen/view.yaml
+
+- name: zen.widget.mac.mono-window-controls
+  value: false
+  condition: "defined(XP_MACOSX)"
+
+
+# --- zen/workspaces.yaml
+
+- name: zen.workspaces.continue-where-left-off
+  value: true

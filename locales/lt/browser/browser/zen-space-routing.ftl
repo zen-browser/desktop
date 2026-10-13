@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Erdvės nukreipimo nustatymai
-zen-space-routing-rulepanel-placeholder = Nukreipimai leidžia pasirinkti, kur konkrečios svetainės atveriamos naršyklėje „Peppermint“. Pavyzdžiui, galite nukreipti „YouTube“ nuorodas taip, kad jos visada būtų atveriamos jūsų asmeninėje erdvėje.
+zen-space-routing-rulepanel-placeholder = Nukreipimai leidžia pasirinkti, kur konkrečios svetainės atveriamos naršyklėje „Zen“. Pavyzdžiui, galite nukreipti „YouTube“ nuorodas taip, kad jos visada būtų atveriamos jūsų asmeninėje erdvėje.
 zen-space-routing-dialog-title = Erdvės nukreipimo nustatymai
 zen-space-routing-external-default = Numatytasis nukreipimas išorės nuorodoms
 zen-space-routing-new-route = Naujas nukreipimas

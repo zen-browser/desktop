@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Görünüm ve Hissiyat
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Varsayılan dili değiştirmek, Websitesinin sizi izlemesini kolaylaştırabilir.
 zen-vertical-tabs-layout-header = Tarayıcı Düzeni
 zen-vertical-tabs-layout-description = Size en uygun düzeni seçin
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Pencere sürükleme
 zen-look-and-feel-window-drag-description = Web sitelerinin üst kısmındaki boş alanı tıpkı başlık çubuğu gibi sürükleyerek pencereyi taşıyın.
 zen-window-drag-enabled = 
     .label = Pencerenin web sayfalarından sürüklenmesine izin ver
+pane-zen-tabs-title = Sekme Yönetimi
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Çalışma Alanları
 zen-tabs-select-recently-used-on-close = 
     .label = Sekme kapatıldığında sıradaki yerine en son kullanılan sekmeyi seç
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Varsayılan olarak sekmeler geni
 zen-vertical-tabs-expand-tabs-on-hover = Üzerine gelindiğinde sekmeleri genişlet (Dar görünümde çalışmaz)
 zen-vertical-tabs-expand-tabs-header = Sekmeler nasıl genişletilir
 zen-vertical-tabs-expand-tabs-description = Kenar çubuğunda sekmelerin nasıl genişletileceğini seç
-zen-theme-marketplace-header = Peppermint Modları
+zen-theme-marketplace-header = Zen Modları
 zen-theme-disable-all-enabled = 
     .title = Tüm Temaları Kapat
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Hiçbiri
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Bir şey yazın...
-pane-zen-marketplace-title = Peppermint Modları
+pane-zen-marketplace-title = Zen Modları
 zen-themes-auto-update = 
     .label = Yüklü modları başlangıçta otomatik olarak güncelle
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Renkli koyu tema
 zen-compact-mode-styles-left = Sekme çubuğu gizle
 zen-compact-mode-styles-top = Üst çubuğu gizle
 zen-compact-mode-styles-both = Her ikisini de gizle
-zen-urlbar-title = Peppermint URL Çubuğu
+zen-urlbar-title = Zen URL Çubuğu
 zen-urlbar-header = URL Çubuğu Genel Ayarları
 zen-urlbar-description = URL çubuğunu kendinize göre özelleştirin
 zen-urlbar-behavior-label = Davranış
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Klavye Kısayolları
 category-zen-marketplace = 
-    .tooltiptext = Peppermint modları
+    .tooltiptext = Zen modları
 zen-settings-CKS-header = Klavye kısayollarını kişiselleştir
 zen-settings-CKS-description = Varsayılan klavye kısayollarını kendi zevkine göre değiştir ve göz atma deneyimini geliştir
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Geçmiş ve Yer İmleri
 zenCKSOption-group-mediaAndDisplay = Medya ve Görüntü
 zenCKSOption-group-zen-compact-mode = Kompakt Mod
 zenCKSOption-group-zen-workspace = Çalışma Alanları
-zenCKSOption-group-zen-other = Diğer Peppermint Özellikleri
+zenCKSOption-group-zen-other = Diğer Zen Özellikleri
 zenCKSOption-group-zen-split-view = Bölünmüş Görünüm
 zenCKSOption-group-devTools = Geliştirici Araçları
 zen-key-quick-restart = Hızlı yeniden başlat

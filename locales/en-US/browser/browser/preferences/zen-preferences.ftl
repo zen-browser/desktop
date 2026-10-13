@@ -2,52 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-homepage-title = Homepage
-category-zen-homepage =
-    .tooltiptext = { pane-zen-homepage-title }
-
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-adblock-title = Ad blocking
-category-zen-adblock =
-    .tooltiptext = { pane-zen-adblock-title }
-
-pane-zen-performance-title = Performance and effects
-category-zen-performance =
-    .tooltiptext = { pane-zen-performance-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-pane-zen-url-snippets-title = URL Snippets
-category-zen-url-snippets =
-    .tooltiptext = { pane-zen-url-snippets-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-zen-split-view-settings-section-title = Split view
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
+pane-zen-looks-title = Look and Feel
+category-zen-looks =
+    .tooltiptext = { pane-zen-looks-title }
 
 zen-warning-language = Changing the default language could make it easier for Websites to track you.
 
@@ -64,23 +21,8 @@ sync-engine-workspaces =
     .tooltiptext = Sync your workspaces across devices
     .accesskey = W
 
-zen-library-settings-title = Library
-zen-library-settings-header = General settings for the library
-zen-library-settings-description = Choose which section opens when you use the library button in the sidebar.
-zen-library-default-section-label = Default section
-zen-library-default-section-downloads =
-    .label = Downloads
-zen-library-default-section-history =
-    .label = History
-zen-library-default-section-boosts =
-    .label = Boosts
-zen-library-default-section-spaces =
-    .label = Spaces
-zen-library-default-section-media =
-    .label = Media
-
 zen-glance-title = Glance
-zen-glance-header = Glance
+zen-glance-header = General settings for glance
 zen-glance-description = Get a quick overview of your links without opening them in a new tab
 zen-glance-trigger-label = Trigger method
 zen-glance-enabled =
@@ -94,11 +36,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Click
 zen-glance-trigger-meta-click =
     .label = Meta (Command) + Click
-
-zen-split-view-settings-header = Split view
-zen-split-view-settings-description = Control how split view appears in the tab strip.
-zen-split-view-show-tab-split-button =
-    .label = Show split view button on tabs
 
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!
@@ -116,6 +53,10 @@ zen-look-and-feel-window-drag-description = Move the window by dragging empty sp
 zen-window-drag-enabled =
     .label = Allow dragging the window from web pages
 
+pane-zen-tabs-title = Tab Management
+category-zen-workspaces =
+    .tooltiptext = { pane-zen-tabs-title }
+pane-settings-workspaces-title = Workspaces
 
 zen-tabs-select-recently-used-on-close =
     .label = When closing a tab, switch to the most recently used tab instead of the next tab
@@ -146,7 +87,8 @@ zen-look-and-feel-compact-toolbar-themed =
 zen-workspace-continue-where-left-off =
     .label = Continue where you left off
 
-zen-pinned-tab-manager-header = Pinned tabs
+pane-zen-pinned-tab-manager-title = Pinned Tabs
+zen-pinned-tab-manager-header = General settings for pinned tabs
 zen-pinned-tab-manager-description = Manage additional behavior of pinned tabs
 zen-pinned-tab-manager-restore-pinned-tabs-to-pinned-url =
     .label = Restore pinned tabs to their originally pinned URL on startup
@@ -167,7 +109,7 @@ zen-pinned-tab-manager-close-close-shortcut-option =
     .label = Close tab
 
 pane-zen-workspaces-header = Workspaces
-zen-settings-workspaces-header = Spaces
+zen-settings-workspaces-header = General settings for workspaces
 zen-settings-workspaces-description = With workspaces, you can have multiple browsing sessions at once!
 zen-settings-workspaces-enabled =
     .label = Enable Workspaces
@@ -177,8 +119,10 @@ zen-settings-workspaces-hide-default-container-indicator =
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
 zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 
-zen-vertical-tabs-title = Tab list
-zen-vertical-tabs-header = Tab list options
+pane-zen-theme-title = Theme Settings
+
+zen-vertical-tabs-title = Sidebar and tabs layout
+zen-vertical-tabs-header = Vertical Tabs
 zen-vertical-tabs-description = Manage your tabs in a vertical layout
 zen-vertical-tabs-show-expand-button =
     .label = Show Expand Button
@@ -194,8 +138,46 @@ zen-vertical-tabs-expand-tabs-on-hover = Expand Tabs on Hover (Won't work on com
 zen-vertical-tabs-expand-tabs-header = How to expand tabs
 zen-vertical-tabs-expand-tabs-description = Choose how to expand tabs in the sidebar
 
+zen-theme-marketplace-header = Zen Mods
+zen-theme-disable-all-enabled =
+    .title = Disable all mods
+zen-theme-disable-all-disabled =
+    .title = Enable all mods
+zen-theme-marketplace-description = Find and install mods from the store.
+zen-theme-marketplace-remove-button =
+    .label = Remove mod
+zen-theme-marketplace-check-for-updates-button =
+    .label = Check for Updates
+zen-theme-marketplace-import-button=
+    .label = Import mods
+zen-theme-marketplace-export-button =
+    .label = Export Mods
+zen-theme-marketplace-import-success = Mods imported successfully
+zen-theme-marketplace-import-failure = There was an error importing the mods
+zen-theme-marketplace-export-success = Mods exported successfully
+zen-theme-marketplace-export-failure = There was an error exporting the mods
+zen-theme-marketplace-updates-success = Mods updated successfully
+zen-theme-marketplace-updates-failure = Couldn't find any updates!
+zen-theme-marketplace-toggle-enabled-button =
+    .title = Disable mod
+zen-theme-marketplace-toggle-disabled-button =
+    .title = Enable mod
+zen-theme-marketplace-remove-confirmation = Are you sure you want to remove this mod?
+zen-theme-marketplace-close-modal = Close
+zen-theme-marketplace-theme-header-title =
+    .title = CSS Selector: { $name }
+zen-theme-marketplace-dropdown-default-label =
+    .label = None
+zen-theme-marketplace-input-default-placeholder =
+    .placeholder = Type something...
+pane-zen-marketplace-title = Zen Mods
+zen-themes-auto-update =
+   .label = Automatically update installed mods on startup
+
 zen-settings-workspaces-force-container-tabs-to-workspace =
     .label = Switch to workspace where container is set as default when opening container tabs
+
+zen-theme-marketplace-link = Visit Store
 
 zen-dark-theme-styles-header = Dark Theme Styles
 zen-dark-theme-styles-description = Customize the dark theme to your liking
@@ -208,11 +190,9 @@ zen-compact-mode-styles-left = Hide Tab bar
 zen-compact-mode-styles-top = Hide Top bar
 zen-compact-mode-styles-both = Hide Both
 
-zen-urlbar-title = Address bar
-zen-urlbar-header = Address bar
+zen-urlbar-title = Zen URL Bar
+zen-urlbar-header = General settings for the URL bar
 zen-urlbar-description = Customize the URL bar to your liking
-zen-theme-glass-enabled =
-    .label = Frosted glass
 
 zen-urlbar-behavior-label = Behavior
 zen-urlbar-behavior-normal =
@@ -222,38 +202,13 @@ zen-urlbar-behavior-floating-on-type =
 zen-urlbar-behavior-float =
     .label = Always floating
 
-zen-adblock-section-title = Ad blocking
-zen-adblock-header = Ad blocking
-zen-adblock-description = Choose how aggressively { -brand-short-name } blocks ads and trackers. Medium is the default. You can override it for a single site from the site panel.
-zen-adblock-enabled =
-    .label = Block ads and trackers
-zen-adblock-level-label = Blocking level
-zen-adblock-level-light =
-    .label = Light
-zen-adblock-level-medium =
-    .label = Medium
-zen-adblock-level-heavy =
-    .label = Heavy
-zen-adblock-level-light-description = Light blocks classic ad networks and hides obvious ad slots, and leaves the rest of the page alone.
-zen-adblock-level-medium-description = Medium adds tracker lists, cosmetic filters, and scriptlets. Third-party scripts stay allowed unless a filter blocks them.
-zen-adblock-level-heavy-description = Heavy also hides cookie notices and social widgets, and blocks third-party scripts and frames unless a filter explicitly allows them.
-zen-adblock-ubo-note = uBlock Origin is enabled, so the built-in blocker stays idle. Disable that extension to use these levels.
-zen-adblock-custom-header = Custom filters
-zen-adblock-custom-description = Extra filter rules, one per line, applied on top of the selected level.
-zen-adblock-save-custom =
-    .label = Save filters
-zen-adblock-update-lists =
-    .label = Update lists now
-
-zen-cookie-consent-header = Cookie popups
-zen-cookie-consent-description = Refuse cookie popups on every site and hide any that stay on screen. This stays on even if ad blocking is off, and you can pause it for one site from the site panel.
-zen-cookie-consent-enabled =
-    .label = Automatically refuse cookie popups
-
-pane-zen-CKS-title = Shortcuts
+pane-zen-CKS-title = Keyboard Shortcuts
 category-zen-CKS =
-    .tooltiptext = { pane-zen-shortcuts-title }
-pane-settings-CKS-title = { -brand-short-name } shortcuts
+    .tooltiptext = { pane-zen-CKS-title }
+pane-settings-CKS-title = { -brand-short-name } Keyboard Shortcuts
+
+category-zen-marketplace =
+    .tooltiptext = Zen Mods
 
 zen-settings-CKS-header = Customize your keyboard shortcuts
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience
@@ -267,12 +222,6 @@ zen-settings-CKS-duplicate-shortcut =
 zen-settings-CKS-reset-shortcuts =
     .label = Reset to Default
 
-zen-settings-notepad-header = Notepad
-zen-settings-notepad-description = Choose the key that confirms a suggestion in the local notepad. Tab is the default, and it only applies while the suggestion menu is open.
-zen-settings-notepad-autocomplete = Confirm suggestion
-zen-settings-notepad-reset =
-    .label = Reset
-
 zenCKSOption-group-other = Other
 zenCKSOption-group-windowAndTabManagement = Window & Tab Management
 zenCKSOption-group-navigation = Navigation
@@ -282,7 +231,7 @@ zenCKSOption-group-historyAndBookmarks = History & Bookmarks
 zenCKSOption-group-mediaAndDisplay = Media & Display
 zenCKSOption-group-zen-compact-mode = Compact Mode
 zenCKSOption-group-zen-workspace = Workspaces
-zenCKSOption-group-zen-other = Other Peppermint Features
+zenCKSOption-group-zen-other = Other Zen Features
 zenCKSOption-group-zen-split-view = Split View
 zenCKSOption-group-devTools = Developer Tools
 
@@ -360,7 +309,7 @@ zen-full-zoom-enlarge-shortcut-alt = Zoom In (Alt)
 zen-full-zoom-enlarge-shortcut-alt2 = Zoom In (Alt 2)
 
 zen-bidi-switch-direction-shortcut = Switch Text Direction
-zen-private-browsing-shortcut = Ghost Mode
+zen-private-browsing-shortcut = Private Browsing
 zen-screenshot-shortcut = Take Screenshot
 zen-key-sanitize = Clear Browsing Data
 zen-quit-app-shortcut = Quit Application
@@ -426,69 +375,3 @@ zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-new-unsynced-window-shortcut = New Blank Window
 zen-duplicate-tab-shortcut = Duplicate Tab
 zen-key-find-selection = Find Selection
-
-# Keyboard navigation: Tab either switches tabs or moves focus in the page.
-tab-key-behavior =
-    .label = Tab key
-tab-key-behavior-tabs =
-    .label = Use the tab key without CTRL to move between tabs
-tab-key-behavior-focus =
-    .label = Use the tab key to move focus between form controls and links
-
-zen-homepage-section-title = Homepage
-zen-homepage-header = Homepage
-zen-homepage-description = Choose what appears when you open a new tab.
-zen-homepage-mode-builtin =
-    .label = Built-in homepage
-zen-homepage-mode-blank =
-    .label = Nothing
-zen-homepage-mode-custom =
-    .label = Custom URL
-zen-homepage-url-label = Homepage URL
-zen-homepage-url-invalid = Enter a valid http or https URL.
-zen-homepage-cards-header = Cards
-zen-homepage-cards-description = Choose which cards appear on the built-in homepage.
-zen-homepage-card-time-spent-toggle =
-    .label = Time spent browsing
-zen-homepage-card-top-site-toggle =
-    .label = Most used website
-zen-homepage-card-network-speed-toggle =
-    .label = Avg. Network Speed
-zen-homepage-card-downloads-toggle =
-    .label = Nº Downloads
-zen-homepage-card-visited-sites-toggle =
-    .label = Nº Visited websites
-zen-homepage-card-version-toggle =
-    .label = Current Version
-zen-homepage-card-clock-toggle =
-    .label = Clock
-
-zen-url-snippets-section-title = URL Snippets
-zen-url-snippets-header = URL Snippets
-zen-url-snippets-description = Type > followed by a shortcut in the address bar to open its URL. For example, >yt opens YouTube.
-zen-url-snippets-shortcut-label = Shortcut
-zen-url-snippets-url-label = URL
-zen-url-snippets-add =
-    .label = Add snippet
-zen-url-snippets-remove =
-    .label = Remove
-zen-url-snippets-shortcut-input =
-    .placeholder = yt
-zen-url-snippets-url-input =
-    .placeholder = https://youtube.com
-
-zen-performance-section-title = Performance and effects
-zen-performance-header = Performance and effects
-zen-performance-description = Turn off motion and effects you do not use. Idle tabs unload in the background after the time below. Use 0 to keep every tab loaded.
-zen-performance-space-switch =
-    .label = Animate switching spaces
-zen-performance-download-animation =
-    .label = Download animation
-zen-performance-grey-out-inactive =
-    .label = Grey out inactive windows
-zen-performance-haptics =
-    .label = Haptic feedback
-zen-performance-essentials-favicon =
-    .label = Background behind essential icons
-zen-tab-unloader-minutes-label = Unload idle tabs after
-zen-tab-unloader-minutes-description = Minutes. Pinned tabs, essentials, the tab you are viewing, and tabs playing sound stay loaded.

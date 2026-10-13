@@ -1369,16 +1369,12 @@ window.gZenKeyboardShortcutsManager = {
   async init() {
     if (this.inBrowserView) {
       const loadedShortcuts = await this._loadSaved();
-      const shouldPersist =
-        !loadedShortcuts || this.versioner.isVersionOutdated();
 
       this._currentShortcutList =
         this.versioner.fixedKeyboardShortcuts(loadedShortcuts);
       this._applyShortcuts();
 
-      if (shouldPersist) {
-        await this._saveShortcuts();
-      }
+      await this._saveShortcuts();
       window.dispatchEvent(
         new Event("ZenKeyboardShortcutsReady", { bubbles: true })
       );

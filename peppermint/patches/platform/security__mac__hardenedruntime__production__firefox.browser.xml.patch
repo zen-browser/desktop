@@ -1,0 +1,11 @@
+--- a/security/mac/hardenedruntime/production/firefox.browser.xml
++++ b/security/mac/hardenedruntime/production/firefox.browser.xml
+@@ -29,7 +29,7 @@
+ 
+     <!-- Required for com.apple.developer.web-browser.public-key-credential -->
+     <key>com.apple.application-identifier</key>
+-    <string>9V5K9TP787.app.zen-browser.zen</string>
++    <string>com.mintflow.peppermint</string>
+ 
+     <!-- For platform passkey (webauthn) support -->
+     <key>com.apple.developer.web-browser.public-key-credential</key><true/>

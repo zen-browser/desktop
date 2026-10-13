@@ -1,0 +1,38 @@
+--- a/toolkit/moz.configure
++++ b/toolkit/moz.configure
+@@ -20,7 +20,7 @@
+ 
+ project_flag(
+     env="MOZ_APP_VENDOR",
+-    default="Zen Team",
++    default="MintFlow Technologies",
+     nargs=1,
+     help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
+ )
+@@ -34,7 +34,7 @@
+ 
+ project_flag(
+     "MOZ_APP_PROFILE",
+-    default="zen",
++    default="Peppermint",
+     nargs=1,
+     help='Used for application.ini\'s "Profile" field, which controls profile location',
+ )
+@@ -92,7 +92,7 @@
+ option(
+     "--with-distribution-id",
+     nargs=1,
+-    default="app.zen-browser",
++    default="com.mintflow",
+     help="Set distribution-specific id",
+ )
+ set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))
+@@ -4175,7 +4175,7 @@
+             return "Mozilla"
+         elif target.os == "Android":
+             return ".mozilla"
+-        return "zen"
++        return "peppermint"
+ 
+     option(
+         "--with-user-appdir",

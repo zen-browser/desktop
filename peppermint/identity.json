@@ -1,0 +1,23 @@
+{
+  "name": "Peppermint",
+  "vendor": "MintFlow Technologies",
+  "appId": "peppermint",
+  "binaryName": "peppermint",
+  "updateHostname": "updates.peppermint.invalid",
+  "repository": "AstroDevCompany/desktop",
+  "npmName": "peppermint-desktop",
+  "brands": {
+    "release": {
+      "backgroundColor": "#12352F",
+      "brandShorterName": "Peppermint",
+      "brandShortName": "Peppermint",
+      "brandFullName": "Peppermint"
+    },
+    "twilight": {
+      "backgroundColor": "#12352F",
+      "brandShorterName": "Peppermint",
+      "brandShortName": "Peppermint",
+      "brandFullName": "Peppermint"
+    }
+  }
+}

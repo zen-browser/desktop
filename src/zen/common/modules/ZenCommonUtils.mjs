@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const gZenOperatingSystemCommonUtils = {
+window.gZenOperatingSystemCommonUtils = {
   kZenOSToSmallName: {
     WINNT: "windows",
     Darwin: "macos",
@@ -14,11 +14,6 @@ const gZenOperatingSystemCommonUtils = {
     return this.kZenOSToSmallName[os];
   },
 };
-
-// This module is also imported from system scopes that have no window.
-if (typeof window !== "undefined") {
-  window.gZenOperatingSystemCommonUtils = gZenOperatingSystemCommonUtils;
-}
 
 export class nsZenMultiWindowFeature {
   constructor() {}
@@ -73,38 +68,19 @@ export class nsZenMultiWindowFeature {
   }
 }
 
-function scheduleLateInit(initBound, eventName, alreadyPassed) {
-  if (!alreadyPassed) {
-    document.addEventListener(eventName, initBound, { once: true });
-    return;
-  }
-  const features = window.gZenLazyFeatures;
-  if (features?.holdInit) {
-    features.takeInit(initBound);
-    return;
-  }
-  queueMicrotask(initBound);
-}
-
 export class nsZenDOMOperatedFeature {
   constructor() {
-    // Private fields exist only after super() returns, so a late import
-    // cannot call init() from inside this constructor.
-    scheduleLateInit(
-      this.init.bind(this),
-      "DOMContentLoaded",
-      window.gZenLazyFeatures?.pastContent
-    );
+    var initBound = this.init.bind(this);
+    document.addEventListener("DOMContentLoaded", initBound, { once: true });
   }
 }
 
 export class nsZenPreloadedFeature {
   constructor() {
-    scheduleLateInit(
-      this.init.bind(this),
-      "MozBeforeInitialXULLayout",
-      window.gZenLazyFeatures?.pastLayout
-    );
+    var initBound = this.init.bind(this);
+    document.addEventListener("MozBeforeInitialXULLayout", initBound, {
+      once: true,
+    });
   }
 }
 

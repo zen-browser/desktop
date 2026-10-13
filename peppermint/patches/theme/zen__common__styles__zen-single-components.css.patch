@@ -1,0 +1,167 @@
+--- a/zen/common/styles/zen-single-components.css
++++ b/zen/common/styles/zen-single-components.css
+@@ -400,8 +400,24 @@
+       opacity: 0.5;
+     }
+   }
++}
++
++#zen-site-data-adblock-level {
++  width: 100%;
++  margin-block: 2px 4px;
+ }
+ 
++#zen-site-data-adblock-count {
++  margin-inline-start: 6px;
++  font-weight: 500;
++  font-size: smaller;
++  opacity: 0.7;
++}
++
++#zen-site-data-adblock-reset:not([hidden]) {
++  opacity: 0.8;
++}
++
+ #zen-site-data-new-addon-button .toolbarbutton-text {
+   display: none;
+ }
+@@ -517,8 +533,24 @@
+   .permission-popup-boost-item[state="enabled"] &::before {
+     opacity: 1;
+   }
++}
++
++.popup-notification-duration {
++  margin-top: 8px;
++  align-items: center;
++  gap: 8px;
+ }
+ 
++.popup-notification-duration-label {
++  margin: 0;
++  opacity: 0.8;
++}
++
++.popup-notification-duration-menulist {
++  flex: 1;
++  min-width: 12em;
++}
++
+ .zen-permission-popup-permission-state-label,
+ .zen-permission-popup-boost-state-label {
+   opacity: 0.6;
+@@ -572,12 +604,16 @@
+     flex-direction: row-reverse;
+   }
+ 
+-  & toolbarbutton {
++    & toolbarbutton {
+     margin: 0;
+     appearance: none;
+-    -moz-context-properties: fill;
+-    fill: currentColor;
+-    color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
++    -moz-context-properties: fill, fill-opacity;
++    --zen-site-data-header-icon-fill: light-dark(
++      var(--zen-primary-color),
++      #fff
++    );
++    fill: var(--zen-site-data-header-icon-fill) !important;
++    color: var(--zen-site-data-header-icon-fill) !important;
+     width: var(--size-item-xlarge);
+     height: var(--size-item-large);
+     position: relative;
+@@ -591,10 +627,14 @@
+       display: none;
+     }
+ 
+-    & image {
++    & image,
++    & .toolbarbutton-icon {
+       width: 18px;
+       pointer-events: none;
+       z-index: 1;
++      -moz-context-properties: fill, fill-opacity;
++      fill: var(--zen-site-data-header-icon-fill) !important;
++      color: var(--zen-site-data-header-icon-fill) !important;
+     }
+ 
+     &::before {
+@@ -605,14 +645,17 @@
+       will-change: transform;
+ 
+       @media (-moz-platform: macos) {
+-        background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
++        background: linear-gradient(
++          to bottom,
++          var(--zen-raised-button-background, rgb(255, 255, 255)),
++          var(--zen-raised-button-background-bottom, rgb(246, 246, 246))
++        );
+ 
+         box-shadow:
+           0 1px 2px rgba(0, 0, 0, 0.1),
+-          inset 0 1px 0 light-dark(transparent, rgba(255, 255, 255, 0.15));
++          inset 0 1px 0 var(--zen-raised-button-inset, transparent);
+         border-radius: 6px;
+-        --base-border-color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
+-        border: 0.5px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
++        border: 0.5px solid var(--zen-raised-button-border, rgba(0, 0, 0, 0.3));
+       }
+ 
+       @media not (-moz-platform: macos) {
+@@ -696,6 +739,10 @@
+     /* Still works on firefox */
+     -webkit-text-fill-color: transparent;
+     animation: zen-text-gradient 5s linear infinite;
++
++    @media (prefers-reduced-motion: reduce) {
++      animation: none;
++    }
+     font-size: initial;
+   }
+ 
+@@ -730,7 +777,12 @@
+ 
+     & notification-message {
+       background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent 30%);
+-      backdrop-filter: blur(10px);
++
++      @media not (prefers-reduced-transparency: reduce) {
++        :root:not([zen-no-acrylic="true"]) & {
++          backdrop-filter: var(--zen-frosted-backdrop);
++        }
++      }
+       border: 1px solid var(--arrowpanel-border-color);
+       border-radius: var(--zen-border-radius);
+ 
+@@ -771,6 +823,7 @@
+   contain: content;
+ 
+   &[long-load="true"] {
++    width: 10rem;
+     opacity: 1;
+     animation: zen-progress-bar-settle .3s ease-out forwards;
+     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+@@ -798,6 +851,13 @@
+   :root[inDOMFullscreen="true"] & {
+     display: none;
+   }
++
++  @media (prefers-reduced-motion: reduce) {
++    &,
++    &::before {
++      animation: none;
++    }
++  }
+ }
+ 
+ #TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
+@@ -824,6 +884,8 @@
+ }
+ 
+ %include zen-library-widget.css
++%include zen-ghost-mode-widget.css
++%include zen-underpowered-widget.css
+ %include zen-library-media-preview.css
+ 
+ .zen-swipe-add-space-container {

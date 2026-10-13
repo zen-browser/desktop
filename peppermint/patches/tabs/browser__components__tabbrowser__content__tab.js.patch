@@ -1,0 +1,59 @@
+--- a/browser/components/tabbrowser/content/tab.js
++++ b/browser/components/tabbrowser/content/tab.js
+@@ -40,6 +40,7 @@
+             <label class="zen-tab-sublabel" data-l10n-id="zen-tab-sublabel" data-l10n-args='{"tabSubtitle": "zen-default-pinned"}' role="presentation"/>
+           </vbox>
+           <image class="tab-note-icon" role="presentation"/>
++          <image class="tab-split-button split-icon" role="button" data-l10n-id="tab-zen-split-tabs" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
+           <image class="tab-close-button close-icon" role="button" data-l10n-id="tabbrowser-close-tabs-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
+           <image class="tab-reset-button reset-icon" role="button" data-l10n-id="tabbrowser-unload-tab-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
+         </hbox>
+@@ -557,6 +558,7 @@
+         this.style.MozUserFocus = "";
+       } else if (
+         event.target.classList?.contains("tab-reset-button") ||
++        event.target.classList?.contains("tab-split-button") ||
+         event.target.classList?.contains("tab-close-button") ||
+         gSharedTabWarning.willShowSharedTabWarning(this)
+       ) {
+@@ -580,6 +582,7 @@
+         this.style.MozUserFocus = "ignore";
+       } else if (
+         event.target.classList.contains("tab-close-button") ||
++        event.target.classList.contains("tab-split-button") ||
+         event.target.classList.contains("tab-reset-button") ||
+         event.target.classList.contains("tab-reset-pin-button") ||
+         event.target.classList.contains("tab-icon-overlay") ||
+@@ -682,6 +685,7 @@
+         }
+         if (
+           !event.target.classList.contains("tab-close-button") &&
++          !event.target.classList.contains("tab-split-button") &&
+           !event.target.classList.contains("tab-icon-overlay") &&
+           !event.target.classList.contains("tab-audio-button") &&
+           Services.prefs.getBoolPref("zen.splitView.enable-tab-click-split", false)
+@@ -707,6 +711,7 @@
+         !event.getModifierState("Accel") &&
+         gBrowser.multiSelectedTabsCount > 0 &&
+         !event.target.classList.contains("tab-close-button") &&
++        !event.target.classList.contains("tab-split-button") &&
+         !event.target.classList.contains("tab-icon-overlay") &&
+         !event.target.classList.contains("tab-audio-button")
+       ) {
+@@ -736,6 +741,16 @@
+         return;
+       }
+ 
++      if (
++        !event.getModifierState("Accel") &&
++        event.target.classList.contains("tab-split-button") &&
++        Services.prefs.getBoolPref("zen.splitView.show-tab-split-button", true)
++      ) {
++        gZenViewSplitter.contextSplitTabs(null, this);
++        gBrowser.tabContainer._blockDblClick = true;
++        return;
++      }
++
+       if (!event.getModifierState("Accel") && event.target.classList.contains("tab-close-button")) {
+         if (this.multiselected) {
+           gBrowser.removeMultiSelectedTabs({

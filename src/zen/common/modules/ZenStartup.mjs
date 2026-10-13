@@ -27,43 +27,8 @@ class ZenStartup {
   }
 
   init() {
-    try {
-      ChromeUtils.importESModule(
-        "resource:///modules/zen/ZenTabUnloader.sys.mjs"
-      ).ZenTabUnloader.start();
-    } catch (error) {
-      console.error("ZenTabUnloader failed to start", error);
-    }
     this.openWatermark();
     this.#zenInitBrowserLayout();
-    try {
-      ChromeUtils.importESModule(
-        "resource:///actors/ZenNotepadParent.sys.mjs"
-      ).watchMintDocuments(window);
-    } catch (error) {
-      console.error("Notepad watcher failed to start", error);
-    }
-    try {
-      ChromeUtils.importESModule(
-        "resource:///modules/zen/adblock/ZenAdblockManager.sys.mjs"
-      ).gZenAdblock.init();
-    } catch (error) {
-      console.error("ZenAdblock failed to start", error);
-    }
-    try {
-      ChromeUtils.importESModule(
-        "resource:///modules/zen/cookieconsent/ZenCookieConsentManager.sys.mjs"
-      ).gZenCookieConsent.init();
-    } catch (error) {
-      console.error("ZenCookieConsent failed to start", error);
-    }
-    try {
-      ChromeUtils.importESModule(
-        "moz-src:///zen/underpowered/ZenUnderpowered.sys.mjs"
-      ).ZenUnderpowered.init();
-    } catch (error) {
-      console.error("ZenUnderpowered failed to start", error);
-    }
   }
 
   get #shouldUseWatermark() {
@@ -101,11 +66,6 @@ class ZenStartup {
 
       gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
-        try {
-          gZenLazyFeatures.load("homepage");
-        } catch (error) {
-          console.error("Zen homepage failed to start", error);
-        }
         this.#checkForWelcomePage();
       });
     } catch (e) {
@@ -220,7 +180,6 @@ class ZenStartup {
         "zen.updates.last-version",
         Services.appinfo.version
       );
-      gZenLazyFeatures.style("welcome");
       Services.scriptloader.loadSubScript(
         "chrome://browser/content/zen-components/ZenWelcome.mjs",
         window

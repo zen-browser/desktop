@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Look and Feel
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Changing the default language could make it easier for Websites to track you.
 zen-vertical-tabs-layout-header = Browser Layout
 zen-vertical-tabs-layout-description = Choose the layout that suits you best
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Tab Management
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = فضاهای کاری
 zen-tabs-select-recently-used-on-close = 
     .label = When closing a tab, switch to the most recently used tab instead of the next tab
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Colorful Dark Theme
 zen-compact-mode-styles-left = Hide Tab bar
 zen-compact-mode-styles-top = Hide Top bar
 zen-compact-mode-styles-both = Hide Both
-zen-urlbar-title = Peppermint URL Bar
+zen-urlbar-title = Zen URL Bar
 zen-urlbar-header = General settings for the URL bar
 zen-urlbar-description = Customize the URL bar to your liking
 zen-urlbar-behavior-label = Behavior
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Keyboard Shortcuts
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = Customize your keyboard shortcuts
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = History & Bookmarks
 zenCKSOption-group-mediaAndDisplay = Media & Display
 zenCKSOption-group-zen-compact-mode = Compact Mode
 zenCKSOption-group-zen-workspace = دیگر فضاهای کاری
-zenCKSOption-group-zen-other = Other Peppermint Features
+zenCKSOption-group-zen-other = Other Zen Features
 zenCKSOption-group-zen-split-view = Split View
 zenCKSOption-group-devTools = Developer Tools
 zen-key-quick-restart = Quick Restart
@@ -284,7 +260,7 @@ zen-full-zoom-reset-shortcut-alt = Reset Zoom (Alt)
 zen-full-zoom-enlarge-shortcut-alt = Zoom In (Alt)
 zen-full-zoom-enlarge-shortcut-alt2 = Zoom In (Alt 2)
 zen-bidi-switch-direction-shortcut = Switch Text Direction
-zen-private-browsing-shortcut = Ghost Mode
+zen-private-browsing-shortcut = Private Browsing
 zen-screenshot-shortcut = Take Screenshot
 zen-key-sanitize = Clear Browsing Data
 zen-quit-app-shortcut = Quit Application

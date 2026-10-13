@@ -289,6 +289,40 @@ class nsZenMods extends nsZenPreloadedFeature {
     await IOUtils.write(this.#styleSheetPath, buffer);
   }
 
+  #compareVersions(version1, version2) {
+    let result = false;
+
+    if (typeof version1 !== "object") {
+      version1 = version1.toString().split(".");
+    }
+
+    if (typeof version2 !== "object") {
+      version2 = version2.toString().split(".");
+    }
+
+    for (let i = 0; i < Math.max(version1.length, version2.length); i++) {
+      if (version1[i] == undefined) {
+        version1[i] = 0;
+      }
+      if (version2[i] == undefined) {
+        version2[i] = 0;
+      }
+      if (Number(version1[i]) < Number(version2[i])) {
+        result = true;
+        break;
+      }
+      if (version1[i] != version2[i]) {
+        break;
+      }
+    }
+    return result;
+  }
+
+  #composeModApiUrl(modId) {
+    // keeping theme here as it would require changes to CI to change the name
+    return `https://zen-browser.github.io/theme-store/themes/${modId}/theme.json`;
+  }
+
   async #downloadUrlToFile(url, path, maxRetries = 3, retryDelayMs = 500) {
     // Mod assets must come over HTTPS. Without a signing/hash scheme this
     // is the minimum guard against MITM or a store-hosted HTTP redirect
@@ -480,6 +514,18 @@ class nsZenMods extends nsZenPreloadedFeature {
       await this.#insertStylesheet();
 
       this.#setNewMilestoneIfNeeded();
+      if (this.#shouldAutoUpdate()) {
+        requestIdleCallback(
+          () => {
+            if (!window.closed) {
+              requestAnimationFrame(() => {
+                this.checkForModsUpdates();
+              });
+            }
+          },
+          { timeout: 1000 }
+        );
+      }
     } catch (e) {
       console.error("[ZenMods]: Error loading Zen Mods:", e);
     }
@@ -513,6 +559,75 @@ class nsZenMods extends nsZenPreloadedFeature {
       );
       Services.prefs.clearUserPref("zen.mods.last-update");
     }
+  }
+
+  #shouldAutoUpdate() {
+    const daysBeforeUpdate = Services.prefs.getIntPref(
+      "zen.mods.auto-update-days"
+    );
+    const lastUpdatedSec = Services.prefs.getIntPref(
+      "zen.mods.last-update",
+      -1
+    );
+    const nowSec = Math.floor(Date.now() / 1000);
+    const daysSinceUpdate = (nowSec - lastUpdatedSec) / (60 * 60 * 24);
+
+    return (
+      (Services.prefs.getBoolPref("zen.mods.auto-update", true) &&
+        daysSinceUpdate >= daysBeforeUpdate) ||
+      lastUpdatedSec < 0
+    );
+  }
+
+  async checkForModsUpdates() {
+    const mods = await this.getMods();
+
+    const updates = await Promise.all(
+      Object.values(mods).map(async currentMod => {
+        try {
+          const possibleNewModVersion = await this.requestMod(currentMod.id);
+
+          if (!possibleNewModVersion) {
+            return null;
+          }
+
+          if (
+            !this.#compareVersions(
+              possibleNewModVersion.version,
+              currentMod.version ?? "0.0.0"
+            ) &&
+            possibleNewModVersion.version != currentMod.version
+          ) {
+            console.warn(
+              `[ZenMods]: Mod update found for mod ${currentMod.name} (${currentMod.id}), current: ${currentMod.version}, new: ${possibleNewModVersion.version}`
+            );
+
+            possibleNewModVersion.enabled = currentMod.enabled;
+
+            await this.removeMod(currentMod.id, false);
+
+            mods[currentMod.id] = possibleNewModVersion;
+
+            return possibleNewModVersion;
+          }
+
+          return null;
+        } catch (e) {
+          console.error("[ZenMods]: Error checking for mod updates", e);
+
+          return null;
+        }
+      })
+    );
+
+    await this.updateMods(mods);
+    Services.prefs.setIntPref(
+      "zen.mods.last-update",
+      Math.floor(Date.now() / 1000)
+    );
+    return updates.filter(update => {
+      return update !== null;
+    });
   }
 
   async removeMod(modId, triggerUpdate = true) {
@@ -614,6 +729,33 @@ class nsZenMods extends nsZenPreloadedFeature {
     }
 
     this.triggerModsUpdate();
+  }
+
+  async requestMod(modId) {
+    const url = this.#composeModApiUrl(modId);
+
+    console.warn(`[ZenMods]: Fetching mod ${modId} info from ${url}`);
+
+    const data = await fetch(url, {
+      mode: "no-cors",
+    });
+
+    if (data.ok) {
+      try {
+        const obj = await data.json();
+
+        return obj;
+      } catch (e) {
+        console.error(`[ZenMods]: Error parsing mod ${modId} info:`, e);
+      }
+    } else {
+      console.error(
+        `[ZenMods]: Error fetching mod ${modId} info:`,
+        data.status
+      );
+    }
+
+    return null;
   }
 
   async isModInstalled(modId) {

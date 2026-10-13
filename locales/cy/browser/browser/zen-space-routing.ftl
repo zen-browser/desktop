@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Gosodiadau Llwybro Gofod
-zen-space-routing-rulepanel-placeholder = Mae Llwybrau yn gadael i chi ddewis lle mae wefannau penodol yn agor o fewn Peppermint. Er enghraifft, gallwch lywio dolenni YouTube i agor bob tro o fewn eich gofod Personol.
+zen-space-routing-rulepanel-placeholder = Mae Llwybrau yn gadael i chi ddewis lle mae wefannau penodol yn agor o fewn Zen. Er enghraifft, gallwch lywio dolenni YouTube i agor bob tro o fewn eich gofod Personol.
 zen-space-routing-dialog-title = Gosodiadau Llwybro Gofod
 zen-space-routing-external-default = Llwybr rhagosodedig ar gyfer dolenni allanol
 zen-space-routing-new-route = Llwybr Newydd

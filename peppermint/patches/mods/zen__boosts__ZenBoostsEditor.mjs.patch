@@ -1,0 +1,20 @@
+--- a/zen/boosts/ZenBoostsEditor.mjs
++++ b/zen/boosts/ZenBoostsEditor.mjs
+@@ -839,11 +839,13 @@
+     this.currentBoostData.secondaryDotPos.y = relativeYSec / rect.height;
+ 
+     dot.setAttribute("animated", animate ? "true" : "false");
+-    dot.style.left = `${relativeX}px`;
+-    dot.style.top = `${relativeY}px`;
++    dot.style.left = "0";
++    dot.style.top = "0";
++    dot.style.transform = `translate(${relativeX}px, ${relativeY}px) translate(-50%, -50%)`;
+     dotSec.setAttribute("animated", animate ? "true" : "false");
+-    dotSec.style.left = `${relativeXSec}px`;
+-    dotSec.style.top = `${relativeYSec}px`;
++    dotSec.style.left = "0";
++    dotSec.style.top = "0";
++    dotSec.style.transform = `translate(${relativeXSec}px, ${relativeYSec}px) translate(-50%, -50%)`;
+ 
+     this.updateButtonToggleVisuals();
+     this.updateDot();

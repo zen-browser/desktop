@@ -6,6 +6,10 @@ import os
 import shutil
 import sys
 
+# Peppermint: rebrand and merge Peppermint strings (peppermint/scripts).
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "peppermint", "scripts"))
+import peppermint_l10n
+
 # Define the path for browser locales
 BROWSER_LOCALES = "engine/browser/locales"
 
@@ -52,6 +56,7 @@ def copy_browser_locales(lang_id: str):
     # Copy files from the source directory
     source_path = "./locales/en-US/browser/"
     copy_files(source_path, lang_path)
+    peppermint_l10n.finalize(lang_path, lang_id)
     return
 
   # For other languages, delete the existing directory and copy files anew
@@ -60,6 +65,7 @@ def copy_browser_locales(lang_id: str):
 
   source_path = f"./locales/{lang_id}/"
   copy_files(source_path, lang_path)
+  peppermint_l10n.finalize(lang_path, lang_id)
 
 
 def copy_files(source: str, destination: str):

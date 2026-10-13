@@ -121,7 +121,7 @@ zen-open-link-in-glance =
     .accesskey = G
 zen-sidebar-notification-updated-heading = Uppfærslu lokið!
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Nýtt á döfinni í { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
@@ -133,7 +133,7 @@ zen-sidebar-notification-restart-safe-mode-label = Bilaði eitthvað?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Endurræsa í öruggum ham
 zen-window-sync-migration-dialog-title = Samstilltu gluggana þína
-zen-window-sync-migration-dialog-message = Peppermint samstillir núna glugga á sama tæki, þannig að breytingar í einum glugga endurspeglast samstundis í hinum.
+zen-window-sync-migration-dialog-message = Zen samstillir núna glugga á sama tæki, þannig að breytingar í einum glugga endurspeglast samstundis í hinum.
 zen-window-sync-migration-dialog-learn-more = Frekari upplýsingar
 zen-window-sync-migration-dialog-accept = Skilið
 zen-appmenu-new-blank-window = 

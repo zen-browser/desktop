@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = 모양
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = 기본 언어를 변경하면 웹사이트에서 사용자를 추적하기 더 쉬워질 수 있습니다.
 zen-vertical-tabs-layout-header = 브라우저 레이아웃
 zen-vertical-tabs-layout-description = 가장 잘 맞는 레이아웃을 고르세요
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = 창 드래그
 zen-look-and-feel-window-drag-description = 타이틀바처럼, 웹사이트 위의 빈 공간을 드래그해 창을 움직이세요.
 zen-window-drag-enabled = 
     .label = 웹 페이지에서 창 드래그 허용
+pane-zen-tabs-title = 탭 관리
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = 워크스페이스
 zen-tabs-select-recently-used-on-close = 
     .label = 탭을 닫을 때 다음 탭 대신 가장 최근에 쓰인 탭으로 변경
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = 기본값으로 탭을 확장하
 zen-vertical-tabs-expand-tabs-on-hover = 커서를 올려 탭 확장 (사이드바 축소 모드에서는 작동하지 않음)
 zen-vertical-tabs-expand-tabs-header = 탭 확장 방식
 zen-vertical-tabs-expand-tabs-description = 사이드바 탭이 어떻게 확장될지 선택하세요
-zen-theme-marketplace-header = Peppermint 모드
+zen-theme-marketplace-header = Zen 모드
 zen-theme-disable-all-enabled = 
     .title = 모든 모드 비활성화
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = 없음
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = 입력...
-pane-zen-marketplace-title = Peppermint 모드
+pane-zen-marketplace-title = Zen 모드
 zen-themes-auto-update = 
     .label = 시작 시 설치된 모드 자동 업데이트
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = 화려한 어두운 테마
 zen-compact-mode-styles-left = 탭 바 숨기기
 zen-compact-mode-styles-top = 상단 바 숨기기
 zen-compact-mode-styles-both = 둘 다 숨기기
-zen-urlbar-title = Peppermint 주소 표시줄
+zen-urlbar-title = Zen 주소 표시줄
 zen-urlbar-header = 주소 표시줄 일반 설정
 zen-urlbar-description = 주소 표시줄을 취향껏 커스터마이징하세요
 zen-urlbar-behavior-label = 작동
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } 키보드 단축키
 category-zen-marketplace = 
-    .tooltiptext = Peppermint 모드
+    .tooltiptext = Zen 모드
 zen-settings-CKS-header = 단축키를 커스터마이징하세요
 zen-settings-CKS-description = 기본 키보드 단축키를 입맛대로 바꾸고 브라우징 경험을 개선하세요
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = 방문기록 & 북마크
 zenCKSOption-group-mediaAndDisplay = 미디어 & 화면
 zenCKSOption-group-zen-compact-mode = 사이드바 축소 모드
 zenCKSOption-group-zen-workspace = 워크스페이스
-zenCKSOption-group-zen-other = 다른 Peppermint 기능들
+zenCKSOption-group-zen-other = 다른 Zen 기능들
 zenCKSOption-group-zen-split-view = 나눠서 보기
 zenCKSOption-group-devTools = 개발자 도구
 zen-key-quick-restart = 빠른 재시작

@@ -1,8 +1,6 @@
-diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75093546d3 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -86,6 +86,8 @@
+@@ -87,6 +87,8 @@
  #include "mozilla/StaticPrefs_gfx.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
@@ -11,10 +9,11 @@ index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
-@@ -1332,6 +1334,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1332,7 +1334,111 @@
+   return self.bounds;
  }
  @end
- 
++
 +@interface ZenWindowMaterialView : NSVisualEffectView
 +- (void)prefChanged;
 +@end
@@ -47,7 +46,7 @@ index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75
 +      return NSVisualEffectMaterialUnderWindowBackground;
 +  }
 +}
-+
+ 
 +@implementation ZenWindowMaterialView
 +- (instancetype)initWithFrame:(NSRect)aRect {
 +  self = [super initWithFrame:aRect];
@@ -122,7 +121,7 @@ index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -3858,7 +3964,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+@@ -3878,7 +3984,9 @@
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -133,7 +132,7 @@ index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75
  }
  
  // NSDraggingDestination
-@@ -3874,6 +3982,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+@@ -3894,6 +4002,9 @@
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -143,7 +142,7 @@ index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -4919,6 +5030,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -4939,6 +5050,10 @@
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  

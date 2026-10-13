@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Išvaizda ir turinys
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Pakeitus numatytąją kalbą, svetainėms gali būti lengviau jus sekti.
 zen-vertical-tabs-layout-header = Naršyklės išdėstymas
 zen-vertical-tabs-layout-description = Pasirinkite jums tinkamiausią išdėstymą.
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Kortelių tvarkymas
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Darbo sritys
 zen-tabs-select-recently-used-on-close = 
     .label = Užveriant kortelę, perjungti į neseniai naudotą kortelę vietoj kitos kortelės
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Neišskleisti kortelių pagal nu
 zen-vertical-tabs-expand-tabs-on-hover = Išskleisti korteles užvedus (neveikia kompaktiniame režime)
 zen-vertical-tabs-expand-tabs-header = Kaip išskleisti korteles
 zen-vertical-tabs-expand-tabs-description = Pasirinkite, kaip išskleisti kortelės šoninėje juostoje.
-zen-theme-marketplace-header = „Peppermint“ modifikacijos
+zen-theme-marketplace-header = „Zen“ modifikacijos
 zen-theme-disable-all-enabled = 
     .title = Išjungti visus modifikacijas
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Nėra
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Įrašykite kažką...
-pane-zen-marketplace-title = „Peppermint“ modifikacijos
+pane-zen-marketplace-title = „Zen“ modifikacijos
 zen-themes-auto-update = 
     .label = Automatiškai atnaujinti įdiegtas modifikacijas paleidimo metu
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Spalvinga tamsi tema
 zen-compact-mode-styles-left = Slėpti kortelių juostą
 zen-compact-mode-styles-top = Slėpti viršutinę juostą
 zen-compact-mode-styles-both = Slėpti abiejus
-zen-urlbar-title = „Peppermint“ URL juosta
+zen-urlbar-title = „Zen“ URL juosta
 zen-urlbar-header = Bendrieji URL juostos nustatymai
 zen-urlbar-description = Tinkinkite URL juostą pagal savo poreikius.
 zen-urlbar-behavior-label = Elgsena
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = „{ -brand-short-name }“ klaviatūros spartieji klavišai
 category-zen-marketplace = 
-    .tooltiptext = „Peppermint“ modifikacijos
+    .tooltiptext = „Zen“ modifikacijos
 zen-settings-CKS-header = Tinkinkite klaviatūros sparčiuosius klavišus
 zen-settings-CKS-description = Keiskite numatytąsias klaviatūros sparčiąsias klavišus pagal savo pageidavimus ir patobulinkite naršymo patirtį.
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Istorija ir adresynas
 zenCKSOption-group-mediaAndDisplay = Medija ir ekranas
 zenCKSOption-group-zen-compact-mode = Kompaktinis režimas
 zenCKSOption-group-zen-workspace = Darbo sritys
-zenCKSOption-group-zen-other = Kitos „Peppermint“ funkcijos
+zenCKSOption-group-zen-other = Kitos „Zen“ funkcijos
 zenCKSOption-group-zen-split-view = Skaidyti rodinį
 zenCKSOption-group-devTools = Kūrėjo įrankiai
 zen-key-quick-restart = Sparčiai paleisti iš naujo

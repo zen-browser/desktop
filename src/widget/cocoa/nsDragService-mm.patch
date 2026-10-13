@@ -1,5 +1,3 @@
-diff --git a/widget/cocoa/nsDragService.mm b/widget/cocoa/nsDragService.mm
-index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339349ffc06 100644
 --- a/widget/cocoa/nsDragService.mm
 +++ b/widget/cocoa/nsDragService.mm
 @@ -10,6 +10,7 @@
@@ -45,10 +43,11 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
  #endif
        src += 4;
        dest += 4;
-@@ -249,12 +254,44 @@
+@@ -248,13 +253,45 @@
+   NSDraggingItem* dragItem =
        [[[NSDraggingItem alloc] initWithPasteboardWriter:pbItem] autorelease];
    [dragItem setDraggingFrame:localDragRect contents:image];
- 
++
 +  NSMutableArray* dragItems = [NSMutableArray arrayWithObject:dragItem];
 +  auto zenDragAndDrop = zen::nsZenDragAndDrop::GetZenDragAndDropInstance();
 +  const nsTArray<nsCOMPtr<nsINode>> noExtraImages;
@@ -77,7 +76,7 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
 +  } @catch (NSException* e) {
 +    dragItems = [NSMutableArray arrayWithObject:dragItem];
 +  }
-+
+ 
    OpenDragPopup();
  
    mNSDraggingSession = [mNativeDragView
@@ -95,18 +94,36 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
      }
  
      if (pc) {
+-      void (^changeImageBlock)(NSDraggingItem*, NSInteger, BOOL*) = ^(
+-          NSDraggingItem* draggingItem, NSInteger idx, BOOL* stop) {
+-        // We never add more than one item right now, but check just in case.
+-        if (idx > 0) {
+-          return;
+-        }
 +      nsPoint pt = LayoutDevicePixel::ToAppUnits(
 +          devPoint, pc->DeviceContext()->AppUnitsPerDevPixel());
 +      CSSIntPoint screenPoint =
 +          CSSIntPoint(nsPresContext::AppUnitsToIntCSSPixels(pt.x),
 +                      nsPresContext::AppUnitsToIntCSSPixels(pt.y));
-+
+ 
+-        nsPoint pt = LayoutDevicePixel::ToAppUnits(
+-            devPoint, pc->DeviceContext()->AppUnitsPerDevPixel());
+-        CSSIntPoint screenPoint =
+-            CSSIntPoint(nsPresContext::AppUnitsToIntCSSPixels(pt.x),
+-                        nsPresContext::AppUnitsToIntCSSPixels(pt.y));
+-
+-        // Create a new image; if one isn't returned don't change the current
+-        // one.
 +      NSMutableArray* images = [NSMutableArray array];
 +      NSMutableArray* rects = [NSMutableArray array];
 +      auto render = [&]() {
-+        LayoutDeviceIntRect newRect;
-+        NSImage* image =
-+            ConstructDragImage(mSourceNode, Nothing(), screenPoint, &newRect);
+         LayoutDeviceIntRect newRect;
+         NSImage* image =
+             ConstructDragImage(mSourceNode, Nothing(), screenPoint, &newRect);
+-        if (image) {
+-          NSRect draggingRect =
+-              nsCocoaUtils::GeckoRectToCocoaRectDevPix(newRect, scaleFactor);
+-          [draggingItem setDraggingFrame:draggingRect contents:image];
 +        [images addObject:image ? (id)image : (id)[NSNull null]];
 +        [rects addObject:[NSValue valueWithRect:
 +                                      image ? nsCocoaUtils::GeckoRectToCocoaRectDevPix(
@@ -120,36 +137,18 @@ index 340a9ad81c5cb23bb7e5f927d11d5cffdde7ce70..ba597ba4373ba3ace7455ce0859f2339
 +          mImage = extraImageNode;
 +          render();
 +          mImage = std::move(mainImage);
-+        }
+         }
 +      }
 +
-       void (^changeImageBlock)(NSDraggingItem*, NSInteger, BOOL*) = ^(
-           NSDraggingItem* draggingItem, NSInteger idx, BOOL* stop) {
--        // We never add more than one item right now, but check just in case.
--        if (idx > 0) {
++      void (^changeImageBlock)(NSDraggingItem*, NSInteger, BOOL*) = ^(
++          NSDraggingItem* draggingItem, NSInteger idx, BOOL* stop) {
 +        if ((NSUInteger)idx >= images.count || images[idx] == [NSNull null]) {
-           return;
-         }
--
--        nsPoint pt = LayoutDevicePixel::ToAppUnits(
--            devPoint, pc->DeviceContext()->AppUnitsPerDevPixel());
--        CSSIntPoint screenPoint =
--            CSSIntPoint(nsPresContext::AppUnitsToIntCSSPixels(pt.x),
--                        nsPresContext::AppUnitsToIntCSSPixels(pt.y));
--
--        // Create a new image; if one isn't returned don't change the current
--        // one.
--        LayoutDeviceIntRect newRect;
--        NSImage* image =
--            ConstructDragImage(mSourceNode, Nothing(), screenPoint, &newRect);
--        if (image) {
--          NSRect draggingRect =
--              nsCocoaUtils::GeckoRectToCocoaRectDevPix(newRect, scaleFactor);
--          [draggingItem setDraggingFrame:draggingRect contents:image];
++          return;
++        }
 +        NSRect frame = [rects[idx] rectValue];
 +        if (idx > 0) {
 +          frame.origin = draggingItem.draggingFrame.origin;
-         }
++        }
 +        [draggingItem setDraggingFrame:frame contents:images[idx]];
        };
  

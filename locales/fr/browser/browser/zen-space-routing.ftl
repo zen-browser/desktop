@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Paramètres de routage des espaces
-zen-space-routing-rulepanel-placeholder = Les routes vous permettent de choisir où s'ouvrent certains sites dans Peppermint. Par exemple, vous pouvez configurer les liens YouTube pour qu'ils s'ouvrent toujours dans votre espace personnel.
+zen-space-routing-rulepanel-placeholder = Les routes vous permettent de choisir où s'ouvrent certains sites dans Zen. Par exemple, vous pouvez configurer les liens YouTube pour qu'ils s'ouvrent toujours dans votre espace personnel.
 zen-space-routing-dialog-title = Paramètres du routage des espaces
 zen-space-routing-external-default = Route par défaut pour les liens externes
 zen-space-routing-new-route = Nouvelle route

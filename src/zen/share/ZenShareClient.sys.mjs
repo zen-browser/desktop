@@ -157,9 +157,6 @@ class nsZenShareClient {
    */
   async createShare(doc, { name } = {}) {
     const base = this.#baseUrl;
-    if (!base) {
-      throw new ZenShareError("network", "Sharing is turned off");
-    }
     const headers = this.#authHeaders();
     await this.#assertValidDocument(doc);
     const body = JSON.stringify(doc);
@@ -231,9 +228,6 @@ class nsZenShareClient {
    * @param {string} id
    */
   async getShare(id) {
-    if (!this.#baseUrl) {
-      throw new ZenShareError("network", "Sharing is turned off");
-    }
     const response = await this.#request(`${this.#baseUrl}/api/shares/${id}`, {
       headers: this.#authHeaders(),
     });

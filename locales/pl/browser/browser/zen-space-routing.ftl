@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Ustawienia przekierowywania przestrzeni
-zen-space-routing-rulepanel-placeholder = Reguły pozwalają wybrać, gdzie konkretne strony będą otwierane w przeglądarce Peppermint. Na przykład możesz przekierować linki do YouTube, aby zawsze otwierały się w Twojej prywatnej przestrzeni.
+zen-space-routing-rulepanel-placeholder = Reguły pozwalają wybrać, gdzie konkretne strony będą otwierane w przeglądarce Zen. Na przykład możesz przekierować linki do YouTube, aby zawsze otwierały się w Twojej prywatnej przestrzeni.
 zen-space-routing-dialog-title = Ustawienia przekierowywania przestrzeni
 zen-space-routing-external-default = Domyślne przekierowanie dla linków zewnętrznych
 zen-space-routing-new-route = Nowe przekierowanie

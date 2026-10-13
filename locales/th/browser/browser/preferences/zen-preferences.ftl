@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = รูปแบบการแสดงผล
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = การเปลี่ยนภาษาเริ่มต้นอาจส่งผลให้เว็บไซต์ติดตามคุณได้ง่ายขึ้น
 zen-vertical-tabs-layout-header = รูปแบบของเบราว์เซอร์
 zen-vertical-tabs-layout-description = เลือกรูปแบบที่เหมาะสมกับคุณ
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = การจัดการแท็บ
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = พื้นที่ทำงาน
 zen-tabs-select-recently-used-on-close = 
     .label = When closing a tab, switch to the most recently used tab instead of the next tab
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Don't Expand Tabs by Default
 zen-vertical-tabs-expand-tabs-on-hover = Expand Tabs on Hover (Won't work on compact mode)
 zen-vertical-tabs-expand-tabs-header = How to expand tabs
 zen-vertical-tabs-expand-tabs-description = Choose how to expand tabs in the sidebar
-zen-theme-marketplace-header = Peppermint Mods
+zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
     .title = Disable all themes
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = None
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = พิมพ์อะไรบางอย่าง...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = Automatically update installed mods on startup
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Colorful Dark Theme
 zen-compact-mode-styles-left = Hide Tab bar
 zen-compact-mode-styles-top = Hide Top bar
 zen-compact-mode-styles-both = Hide Both
-zen-urlbar-title = Peppermint URL Bar
+zen-urlbar-title = Zen URL Bar
 zen-urlbar-header = การตั้งค่าทั่วไปของแถบ URL
 zen-urlbar-description = Customize the URL bar to your liking
 zen-urlbar-behavior-label = พฤติกรรม
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = ปุ่มลัดแป้นพิมพ์ { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = ปรับแต่งปุ่มลัดแป้นพิมพ์ของคุณ
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = ประวัติและบุ๊
 zenCKSOption-group-mediaAndDisplay = Media & Display
 zenCKSOption-group-zen-compact-mode = โหมดกะทัดรัด
 zenCKSOption-group-zen-workspace = Other Workspaces
-zenCKSOption-group-zen-other = Other Peppermint Features
+zenCKSOption-group-zen-other = Other Zen Features
 zenCKSOption-group-zen-split-view = Split View
 zenCKSOption-group-devTools = เครื่องมือสำหรับผู้พัฒนา
 zen-key-quick-restart = Quick Restart

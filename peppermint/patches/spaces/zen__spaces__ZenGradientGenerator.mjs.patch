@@ -1,0 +1,234 @@
+--- a/zen/spaces/ZenGradientGenerator.mjs
++++ b/zen/spaces/ZenGradientGenerator.mjs
+@@ -66,6 +66,27 @@
+ });
+ 
+ const EXPLICIT_LIGHTNESS_TYPE = "explicit-lightness";
++
++const DEFAULT_MINT_COLORS = [
++  {
++    c: [15, 118, 110],
++    isCustom: false,
++    isPrimary: true,
++    algorithm: "analogous",
++    lightness: "32",
++    position: { x: 48, y: 210 },
++    type: EXPLICIT_LIGHTNESS_TYPE,
++  },
++  {
++    c: [153, 246, 228],
++    isCustom: false,
++    isPrimary: false,
++    algorithm: "analogous",
++    lightness: "78",
++    position: { x: 250, y: 70 },
++    type: EXPLICIT_LIGHTNESS_TYPE,
++  },
++];
+ const EXPLICIT_BLACKWHITE_TYPE = "explicit-black-white";
+ 
+ /**
+@@ -87,6 +108,7 @@
+   );
+ 
+   #linePath = `M 51.373 27.395 L 367.037 27.395`;
++  #wavePathCache = new Map();
+   #sinePath = `M 51.373 27.395 C 60.14 -8.503 68.906 -8.503 77.671 27.395 C 86.438 63.293 95.205 63.293 103.971 27.395 C 112.738 -8.503 121.504 -8.503 130.271 27.395 C 139.037 63.293 147.803 63.293 156.57 27.395 C 165.335 -8.503 174.101 -8.503 182.868 27.395 C 191.634 63.293 200.4 63.293 209.167 27.395 C 217.933 -8.503 226.7 -8.503 235.467 27.395 C 244.233 63.293 252.999 63.293 261.765 27.395 C 270.531 -8.503 279.297 -8.503 288.064 27.395 C 296.83 63.293 305.596 63.293 314.363 27.395 C 323.13 -8.503 331.896 -8.503 340.662 27.395 M 314.438 27.395 C 323.204 -8.503 331.97 -8.503 340.737 27.395 C 349.503 63.293 358.27 63.293 367.037 27.395`;
+ 
+   #sinePoints = parseSinePath(this.#sinePath);
+@@ -706,7 +728,7 @@
+   }
+ 
+   handlePanelCommand(event) {
+-    const target = event.target.closest("toolbarbutton");
++    const target = event.target.closest("toolbarbutton, button");
+     if (!target) {
+       return;
+     }
+@@ -714,9 +736,23 @@
+       case "PanelUI-zen-gradient-generator-color-custom-add":
+         this.addCustomColor();
+         break;
++      case "PanelUI-zen-gradient-generator-reset-default":
++        this.resetToDefaultTheme();
++        break;
+     }
+   }
+ 
++  resetToDefaultTheme() {
++    const workspace = this.workspaceBeingEdited;
++    if (!workspace) {
++      return;
++    }
++    workspace.theme = nsZenThemePicker.getTheme();
++    this.useAlgo = "analogous";
++    gZenWorkspaces.saveWorkspace(workspace);
++    this.onWorkspaceChange(workspace);
++  }
++
+   spawnDot(dotData, primary = false) {
+     const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
+     const relativePosition = {
+@@ -1229,7 +1265,10 @@
+   onOpacityChange(event) {
+     this.currentOpacity = parseFloat(event.target.value);
+     // If we reached a whole number (e.g., 0.1, 0.2, etc.), send a haptic feedback.
+-    if (Math.round(this.currentOpacity * 10) !== this._lastHapticFeedback) {
++    if (
++      Math.round(this.currentOpacity * 10) !== this._lastHapticFeedback &&
++      Services.prefs.getBoolPref("zen.haptic-feedback.enabled", true)
++    ) {
+       Services.zen.playHapticFeedback();
+       this._lastHapticFeedback = Math.round(this.currentOpacity * 10);
+     }
+@@ -1343,13 +1382,10 @@
+ 
+     const rotation = -30; // TODO: Detect rotation based on the accent color
+     if (themedColors.length === 0) {
+-      const getBrowserBg = () => {
+-        if (this.canBeTransparent) {
+-          return this.isDarkMode ? "rgba(0, 0, 0, 0.4)" : "transparent";
+-        }
+-        return this.isDarkMode ? "#131313" : "#e9e9e9";
+-      };
+-      return forToolbar ? this.getToolbarModifiedBase() : getBrowserBg();
++      const mint = this.isDarkMode
++        ? ["#115e59", "#0f766e", "#042f2e"]
++        : ["#2dd4bf", "#0f766e", "#115e59"];
++      return `linear-gradient(-30deg, ${mint[0]} 0%, ${mint[1]} 52%, ${mint[2]} 100%)`;
+     } else if (themedColors.length === 1) {
+       return this.#getSingleRGBColor(themedColors[0], forToolbar);
+     }
+@@ -1434,10 +1470,18 @@
+     return darkContrast > lightContrast;
+   }
+ 
+-  static getTheme(colors = [], opacity = 0.5, texture = 0) {
++  static getTheme(colors = undefined, opacity = 0.5, texture = 0) {
++    const resolved =
++      colors === undefined
++        ? DEFAULT_MINT_COLORS.map(color => ({
++            ...color,
++            c: [...color.c],
++            position: { ...color.position },
++          }))
++        : colors;
+     return {
+       type: "gradient",
+-      gradientColors: colors ? colors.filter(color => color) : [], // remove undefined
++      gradientColors: resolved ? resolved.filter(color => color) : [], // remove undefined
+       opacity,
+       texture,
+     };
+@@ -1561,13 +1605,19 @@
+         return;
+       }
+ 
++      const panelState = browser.gZenThemePicker.panel?.state;
++      const syncPicker =
++        browser.gZenThemePicker.editingWorkspaceId === uuid ||
++        panelState === "open" ||
++        panelState === "showing";
++
+       // get the theme from the window
+       workspaceTheme = this.fixTheme(
+         theme || (appliesToWindow ? windowWorkspace : workspace).theme
+       );
+       const docElement = browser.document.documentElement;
+ 
+-      if (!skipUpdate) {
++      if (!skipUpdate && syncPicker) {
+         for (const dot of browser.gZenThemePicker.panel.querySelectorAll(
+           ".zen-theme-picker-dot"
+         )) {
+@@ -1612,7 +1662,9 @@
+         delete browser.gZenThemePicker.previousBackgroundOpacity;
+       }
+ 
+-      browser.gZenThemePicker.resetCustomColorList();
++      if (syncPicker) {
++        browser.gZenThemePicker.resetCustomColorList();
++      }
+ 
+       browser.gZenThemePicker.currentOpacity = workspaceTheme.opacity ?? 0.5;
+       browser.gZenThemePicker.currentTexture = workspaceTheme.texture ?? 0;
+@@ -1629,7 +1681,7 @@
+         "PanelUI-zen-gradient-generator-opacity"
+       );
+ 
+-      {
++      if (syncPicker) {
+         let opacity = browser.gZenThemePicker.currentOpacity;
+         const svg = browser.gZenThemePicker.sliderWavePath;
+         /* eslint-disable no-unused-vars */
+@@ -1671,6 +1723,7 @@
+             : "url(#PanelUI-zen-gradient-generator-slider-wave-gradient)";
+       }
+ 
++      if (syncPicker) {
+       for (const button of browser.document.querySelectorAll(
+         "#PanelUI-zen-gradient-generator-color-actions button"
+       )) {
+@@ -1731,6 +1784,7 @@
+           }
+         }
+       }
++      }
+ 
+       const gradient = browser.gZenThemePicker.getGradient(
+         workspaceTheme.gradientColors
+@@ -1743,10 +1797,12 @@
+         browser.gZenThemePicker.updateNoise(workspaceTheme.texture);
+       }
+ 
+-      browser.gZenThemePicker.customColorList.innerHTML = "";
+-      for (const dot of workspaceTheme.gradientColors) {
+-        if (dot.isCustom) {
+-          browser.gZenThemePicker.addColorToCustomList(dot.c);
++      if (syncPicker) {
++        browser.gZenThemePicker.customColorList.innerHTML = "";
++        for (const dot of workspaceTheme.gradientColors) {
++          if (dot.isCustom) {
++            browser.gZenThemePicker.addColorToCustomList(dot.c);
++          }
+         }
+       }
+ 
+@@ -1812,7 +1868,7 @@
+         }
+       }
+ 
+-      if (!skipUpdate) {
++      if (!skipUpdate && syncPicker) {
+         browser.gZenThemePicker.dots = [];
+         browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
+       }
+@@ -2028,12 +2084,28 @@
+ 
+   handlePanelOpen() {
+     this.initThemePicker();
++    const workspace =
++      this.workspaceBeingEdited || gZenWorkspaces.getActiveWorkspace();
++    if (workspace) {
++      this.onWorkspaceChange(workspace);
++    }
+     setTimeout(() => {
+       this.updateCurrentWorkspace();
+     }, 200);
+   }
+ 
+   #interpolateWavePath(progress) {
++    const key = Math.round(progress * 1000);
++    const cached = this.#wavePathCache.get(key);
++    if (cached) {
++      return cached;
++    }
++    const path = this.#buildWavePath(progress);
++    this.#wavePathCache.set(key, path);
++    return path;
++  }
++
++  #buildWavePath(progress) {
+     const linePath = this.#linePath;
+     const sinePath = this.#sinePath;
+     const referenceY = 27.3;

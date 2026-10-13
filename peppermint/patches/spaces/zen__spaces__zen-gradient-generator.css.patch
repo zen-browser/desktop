@@ -1,0 +1,33 @@
+--- a/zen/spaces/zen-gradient-generator.css
++++ b/zen/spaces/zen-gradient-generator.css
+@@ -139,6 +139,30 @@
+         }
+       }
+     }
++  }
++}
++
++#PanelUI-zen-gradient-generator-reset {
++  width: 100%;
++  justify-content: center;
++  margin-top: 4px;
++  padding-bottom: 10px;
++}
++
++#PanelUI-zen-gradient-generator-reset-default {
++  appearance: none;
++  margin-inline: auto;
++  border: none;
++  border-radius: 8px;
++  background: transparent;
++  color: light-dark(rgba(0, 0, 0, 0.72), rgba(255, 255, 255, 0.9));
++  font-size: 13px;
++  font-weight: 600;
++  padding: 6px 14px;
++  cursor: pointer;
++
++  &:hover {
++    background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.12));
+   }
+ }
+ 

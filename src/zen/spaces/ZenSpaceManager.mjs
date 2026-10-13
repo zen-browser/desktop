@@ -4,24 +4,18 @@
 
 /* eslint-disable no-shadow */
 
+import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
 import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-  ZenHomepage: "resource:///modules/zen/homepage/ZenHomepage.sys.mjs",
 });
 
-// The theme picker closes over the browser window. Loading it from the shared
-// system module global throws "window is not defined" and aborts workspace
-// restore, which skips the homepage, last-tab handling, and sidebar colors.
 ChromeUtils.defineESModuleGetters(
   lazy,
-  {
-    ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs",
-    nsZenThemePicker: "resource:///modules/zen/ZenGradientGenerator.mjs",
-  },
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
   { global: "current" }
 );
 
@@ -163,7 +157,7 @@ class nsZenWorkspaces {
       document.documentElement.setAttribute("zen-private-window", "true");
     }
 
-    window.addEventListener("resize", event => this.#onWindowResize(event));
+    window.addEventListener("resize", this.onWindowResize.bind(this));
     this.addPopupListeners();
 
     if (this.privateWindowOrDisabled) {
@@ -244,10 +238,11 @@ class nsZenWorkspaces {
         return this._emptyTab;
       }
 
-      // Fall back to creating a new tab. Built-in and blank stay on
-      // about:blank; custom uses the validated homepage URL.
+      // Fall back to creating a new tab
+      // The homepage pref can hold several URLs separated by "|".
       const newTabUrl =
-        newTabTarget || lazy.ZenHomepage.getEmptyTabFallbackURL();
+        newTabTarget ||
+        Services.prefs.getStringPref("browser.startup.homepage").split("|")[0];
       let tab = gZenUIManager.openAndChangeToTab(newTabUrl);
 
       // Set workspace ID if available
@@ -315,10 +310,6 @@ class nsZenWorkspaces {
     );
   }
 
-  get spaceSwitchAnimationEnabled() {
-    return Services.prefs.getBoolPref("zen.workspaces.switch-animation", true);
-  }
-
   get shouldAnimateEssentials() {
     return this.containerSpecificEssentials || !!this.creatingWorkspaceId;
   }
@@ -356,7 +347,6 @@ class nsZenWorkspaces {
     if (markupTabs.length) {
       gBrowser.tabContainer._invalidateCachedTabs();
     }
-    this.invalidateStoredTabs();
     for (const workspace of workspaces) {
       this.workspaceElement(workspace.uuid)?.checkPinsExistence();
     }
@@ -441,28 +431,15 @@ class nsZenWorkspaces {
     workspaceWrapper.checkPinsExistence();
   }
 
-  #resizeFrame = 0;
-
-  #onWindowResize(event) {
-    if (event?.target && event.target !== window) {
-      return;
-    }
-    if (this.#resizeFrame) {
-      return;
-    }
-    this.#resizeFrame = window.requestAnimationFrame(() => {
-      this.#resizeFrame = 0;
-      this.onWindowResize({ target: window });
-    });
-  }
-
   #organizeTabsToWorkspaceSections(workspace, spaceElement, tabs) {
-    const section = spaceElement.tabsContainer;
-    const pinnedSection = spaceElement.pinnedTabsContainer;
-    const removed = new Set();
-    const pinned = [];
-    const unpinned = [];
-    const folders = new Set();
+    let section = spaceElement.tabsContainer;
+    let pinnedSection = spaceElement.pinnedTabsContainer;
+    const workspaceTabs = Array.from(tabs).filter(
+      tab =>
+        tab.getAttribute("zen-workspace-id") === workspace.uuid &&
+        !tab.hasAttribute("zen-essential")
+    );
+    let folders = new Set();
     const getFolderRoot = tab => {
       let root = tab?.group;
       while (root?.group) {
@@ -470,47 +447,31 @@ class nsZenWorkspaces {
       }
       return root || tab;
     };
-    for (const tab of tabs) {
-      if (
-        tab.getAttribute("zen-workspace-id") !== workspace.uuid ||
-        tab.hasAttribute("zen-essential")
-      ) {
+    for (let i = workspaceTabs.length - 1; i >= 0; i--) {
+      let tab = workspaceTabs[i];
+      if (tab.hasAttribute("zen-essential")) {
         continue;
-      }
-      removed.add(tab);
-      let node = tab.group ?? tab;
-      if (gBrowser.isTabGroup(node)) {
-        const rootGroup = getFolderRoot(node);
+      } // Ignore essentials as they need to be in their own section
+      // remove tab from list
+      tabs.splice(tabs.indexOf(tab), 1);
+      tab = tab.group ?? tab;
+
+      if (gBrowser.isTabGroup(tab)) {
+        let rootGroup = getFolderRoot(tab);
+
         if (folders.has(rootGroup)) {
           continue;
         }
+
         folders.add(rootGroup);
-        node = rootGroup;
+        tab = rootGroup;
       }
-      if (node.pinned) {
-        pinned.push(node);
+
+      if (tab.pinned) {
+        pinnedSection.insertBefore(tab, pinnedSection.firstChild);
       } else {
-        unpinned.push(node);
+        section.insertBefore(tab, section.firstChild);
       }
-    }
-    if (removed.size) {
-      const kept = tabs.filter(tab => !removed.has(tab));
-      tabs.length = 0;
-      tabs.push(...kept);
-    }
-    if (pinned.length) {
-      const fragment = document.createDocumentFragment();
-      for (const node of pinned) {
-        fragment.appendChild(node);
-      }
-      pinnedSection.prepend(fragment);
-    }
-    if (unpinned.length) {
-      const fragment = document.createDocumentFragment();
-      for (const node of unpinned) {
-        fragment.appendChild(node);
-      }
-      section.prepend(fragment);
     }
   }
 
@@ -907,7 +868,7 @@ class nsZenWorkspaces {
     this.activeWorkspace = activeWorkspace?.uuid;
     try {
       if (activeWorkspace) {
-        window.gZenThemePicker = new lazy.nsZenThemePicker();
+        window.gZenThemePicker = new nsZenThemePicker();
         gZenThemePicker.onWorkspaceChange(activeWorkspace);
       }
     } catch (e) {
@@ -935,16 +896,9 @@ class nsZenWorkspaces {
     this.#fixTabPositions();
     this.onWindowResize();
 
-    const tabUpdateListener = event => {
-      this.invalidateStoredTabs();
-      this.updateTabsContainers(event);
-    };
-    const invalidateStoredTabs = () => this.invalidateStoredTabs();
+    const tabUpdateListener = this.updateTabsContainers.bind(this);
     window.addEventListener("TabOpen", tabUpdateListener);
     window.addEventListener("TabClose", tabUpdateListener);
-    window.addEventListener("TabMove", invalidateStoredTabs);
-    window.addEventListener("TabGrouped", invalidateStoredTabs);
-    window.addEventListener("TabUngrouped", invalidateStoredTabs);
     window.addEventListener("TabAddedToEssentials", tabUpdateListener);
     window.addEventListener("TabRemovedFromEssentials", tabUpdateListener);
     window.addEventListener("TabPinned", tabUpdateListener);
@@ -1851,7 +1805,6 @@ class nsZenWorkspaces {
       }
     }
     gBrowser.tabContainer._invalidateCachedTabs();
-    this.invalidateStoredTabs();
     return true;
   }
 
@@ -1934,10 +1887,7 @@ class nsZenWorkspaces {
   }
 
   _cancelSwipeAnimation() {
-    this.#animateTabs(
-      this.getActiveWorkspaceFromCache(),
-      this.spaceSwitchAnimationEnabled
-    );
+    this.#animateTabs(this.getActiveWorkspaceFromCache(), true);
   }
 
   async #performWorkspaceChange(
@@ -2663,9 +2613,7 @@ class nsZenWorkspaces {
     this.workspaceIcons.activeIndex = workspace.uuid;
     await this.#animateTabs(
       workspace,
-      !onInit &&
-        !this._animatingChange &&
-        this.spaceSwitchAnimationEnabled,
+      !onInit && !this._animatingChange,
       tabToSelect,
       {
         previousWorkspaceIndex,
@@ -2820,22 +2768,16 @@ class nsZenWorkspaces {
       let label =
         ContextualIdentityService.getUserContextLabel(containerTabId) ||
         "Default";
-      name = this.isPrivateWindow ? "Ghost Mode" : label;
+      name = this.isPrivateWindow ? "Incognito" : label;
       if (this.isPrivateWindow) {
         icon = "chrome://browser/skin/zen-icons/private-window-small.svg";
       }
-    }
-    let theme = null;
-    try {
-      theme = lazy.nsZenThemePicker.getTheme();
-    } catch (error) {
-      console.error("gZenWorkspaces: Error reading the default theme", error);
     }
     let workspace = {
       uuid: gZenUIManager.generateUuidv4(),
       icon,
       name,
-      theme,
+      theme: nsZenThemePicker.getTheme([]),
       containerTabId,
     };
     return workspace;
@@ -2928,20 +2870,13 @@ class nsZenWorkspaces {
 
   #allPinnedContainers() {
     const containers = [];
-    const active = this.workspaceElement(
-      this.activeWorkspace
-    )?.pinnedTabsContainer;
-    if (active) {
-      containers.push(active);
-    }
-    const containerId = this.containerSpecificEssentials
-      ? this.getCurrentSpaceContainerId()
-      : 0;
-    const essentials = document.querySelector(
-      `.zen-essentials-container[container="${containerId}"]`
-    );
-    if (essentials) {
-      containers.push(essentials);
+    for (const workspace of this.getWorkspaces()) {
+      const container = this.workspaceElement(
+        workspace.uuid
+      )?.pinnedTabsContainer;
+      if (container) {
+        containers.push(container);
+      }
     }
     return containers.length ? containers : [this.pinnedTabsContainer];
   }
@@ -3118,7 +3053,6 @@ class nsZenWorkspaces {
       isEmpty
     );
     document.documentElement.setAttribute("zen-has-empty-tab", isEmpty);
-    gZenHomepage?.sync();
   }
 
   async onLocationChange(event) {
@@ -3392,24 +3326,6 @@ class nsZenWorkspaces {
   }
 
   // Session restore functions
-
-  /**
-   * Drops the cached tab list now and again after the current turn, so a
-   * read during a move or close cannot keep the pre-mutation tree.
-   */
-  invalidateStoredTabs() {
-    this._allStoredTabs = null;
-    if (this.#storedTabsInvalidate) {
-      return;
-    }
-    this.#storedTabsInvalidate = window.requestAnimationFrame(() => {
-      this.#storedTabsInvalidate = 0;
-      this._allStoredTabs = null;
-    });
-  }
-
-  #storedTabsInvalidate = 0;
-
   get allStoredTabs() {
     if (this._allStoredTabs) {
       return this._allStoredTabs;
@@ -3684,7 +3600,6 @@ class nsZenWorkspaces {
         pinnedContainer.insertBefore(tab, pinnedContainer.lastChild);
       }
     }
-    this.invalidateStoredTabs();
   }
 
   updateOverflowingTabs() {

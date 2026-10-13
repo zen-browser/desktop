@@ -123,7 +123,7 @@ zen-open-link-in-glance =
     .accesskey = G
 zen-sidebar-notification-updated-heading = Η Ενημέρωση Ολοκληρώθηκε!
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Τι νέο υπάρχει στο { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
@@ -135,7 +135,7 @@ zen-sidebar-notification-restart-safe-mode-label = Χάλασε κάτι;
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Επανεκκίνηση σε Ασφαλή Λειτουργία
 zen-window-sync-migration-dialog-title = Κρατήστε τα παράθυρα σας συγχρονισμένα
-zen-window-sync-migration-dialog-message = Το Peppermint άρα στην ίδια συσκευή, άρα αλλαγές σε ένα παράθυρο τώρα αντικατροπτίζονται στα άλλα άμεσα.
+zen-window-sync-migration-dialog-message = Το Zen άρα στην ίδια συσκευή, άρα αλλαγές σε ένα παράθυρο τώρα αντικατροπτίζονται στα άλλα άμεσα.
 zen-window-sync-migration-dialog-learn-more = Περισσότερα
 zen-window-sync-migration-dialog-accept = Κατάλαβα
 zen-appmenu-new-blank-window = 

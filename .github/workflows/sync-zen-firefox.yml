@@ -1,23 +1,28 @@
-name: Follow Zen Firefox and security updates
+name: Merge upstream Zen
 
-# GitHub runs scheduled workflows from the repository's default branch.
-# This file stays on `dev` so the schedule runs, and the job updates `mine`.
+# GitHub runs scheduled workflows from the repository's default branch, so
+# this file has to exist there. The job itself checks out and updates `mine`.
 on:
   schedule:
     - cron: "17 6 * * *"
   workflow_dispatch:
+    inputs:
+      check_import:
+        description: "Download Firefox and run npm run import to prove the overlay patches still apply"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: zen-firefox-sync
+  group: zen-upstream-sync
   cancel-in-progress: false
 
 jobs:
   sync:
-    name: Update mine from Zen
+    name: Merge zen-browser/desktop into mine
     runs-on: ubuntu-latest
     steps:
       - name: Check out mine
@@ -26,9 +31,28 @@ jobs:
           ref: mine
           fetch-depth: 0
 
-      - name: Apply Firefox and security updates
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Download Firefox for the import check
+        if: ${{ github.event_name == 'schedule' || inputs.check_import }}
+        run: npm run download
+
+      - name: Merge upstream and open a pull request
         env:
           GH_TOKEN: ${{ github.token }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
           GIT_COMMITTER_NAME: github-actions[bot]
           GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-        run: python3 scripts/sync_zen_firefox_updates.py --push
+        run: |
+          flags="--base mine --push --pr"
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.check_import }}" = "true" ]; then
+            flags="$flags --check-import"
+          fi
+          node peppermint/scripts/sync-upstream.mjs $flags

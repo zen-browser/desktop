@@ -2,21 +2,12 @@ diff --git a/browser/locales/en-US/installer/custom.properties b/browser/locales
 index 8c33192e589de1d819cbb21c31cec0480ed4c85e..9db296363303c153dc05ad9e85493f1197bb1efd 100644
 --- a/browser/locales/en-US/installer/custom.properties
 +++ b/browser/locales/en-US/installer/custom.properties
-@@ -23,7 +23,7 @@ BRIEF_APP_DESC=Fast and private web browsing
- # LOCALIZATION NOTE:
- # The non-variable portion of this MUST match the translation of
- # "private-browsing-shortcut-text-2" in browser.ftl
--PRIVATE_BROWSING_SHORTCUT_TITLE=$BrandShortName Private Browsing
-+PRIVATE_BROWSING_SHORTCUT_TITLE=$BrandShortName Ghost Mode
- CONTEXT_OPTIONS=$BrandShortName &Options
- CONTEXT_SAFE_MODE=$BrandShortName &Safe Mode
- OPTIONS_PAGE_TITLE=Setup Type
 @@ -73,7 +73,7 @@ STATUS_INSTALL_APP=Installing $BrandShortName…
  STATUS_UNINSTALL_MAIN=Uninstalling $BrandShortName…
  STATUS_CLEANUP=A Little Housekeeping…
  
 -UN_SURVEY_CHECKBOX_LABEL=Tell Mozilla why you uninstalled $BrandShortName
-+UN_SURVEY_CHECKBOX_LABEL=Tell MintFlow why you uninstalled $BrandShortName
++UN_SURVEY_CHECKBOX_LABEL=Tell Zen´s Team why you uninstalled $BrandShortName
  
  # _DESC strings support approximately 65 characters per line.
  # One line

@@ -20,5 +20,3 @@ support-files = [
 ["browser_toasts.js"]
 
 ["browser_zen_commands.js"]
-
-["browser_lazy_features.js"]

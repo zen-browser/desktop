@@ -4,8 +4,6 @@
 
 zen-panel-ui-current-profile-text = current profile
 
-urlbar-search-mode-snippets = Snippets
-
 unified-extensions-description = Extensions are used to bring more extra functionality into { -brand-short-name }.
 tab-context-zen-reset-pinned-tab =
     .label =
@@ -73,16 +71,6 @@ zen-workspace-renamed-toast = Workspace has been successfully renamed!
 zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 
-zen-ghost-mode-button =
-    .label = Ghost Mode
-    .tooltiptext = Open a new Ghost Window
-
-zen-underpowered-button =
-    .label = Underpowered Mode
-    .tooltiptext = Freeze background tabs and limit resource use
-zen-underpowered-enabled-toast = Underpowered Mode on
-zen-underpowered-enabled-toast-description = Background tabs are frozen to save power
-
 zen-toggle-compact-mode-button =
     .label = Compact Mode
     .tooltiptext = Toggle Compact Mode
@@ -116,39 +104,8 @@ zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Allowed
 zen-site-data-setting-block = Blocked
-# $minutes (Number) - whole minutes remaining on a temporary grant.
-zen-site-data-setting-allow-timed = Allowed for { $minutes } min
-zen-site-data-setting-allow-brief = Allowed for less than a minute
-zen-site-data-setting-allow-tab = Until this tab closes
-
-zen-permission-duration-label = Allow for
-zen-permission-duration-once =
-    .label = This time
-zen-permission-duration-timed =
-    .label = For 10 minutes
-zen-permission-duration-tab =
-    .label = Until this tab closes
-zen-permission-duration-always =
-    .label = Always
 zen-site-data-protections-enabled = Enabled
 zen-site-data-protections-disabled = Disabled
-zen-site-data-adblock = Ad blocking
-zen-site-data-adblock-light =
-    .label = Light
-zen-site-data-adblock-medium =
-    .label = Medium
-zen-site-data-adblock-heavy =
-    .label = Heavy
-zen-site-data-adblock-pause = This site
-zen-site-data-adblock-on = On
-zen-site-data-adblock-paused = Paused
-zen-site-data-adblock-reset = Reset
-zen-site-data-adblock-count = { $count } blocked
-zen-site-data-adblock-ubo = uBlock Origin is active
-zen-site-data-cookie-consent = Cookie popups
-zen-site-data-cookie-consent-pause = This site
-zen-site-data-cookie-consent-on = Refusing
-zen-site-data-cookie-consent-paused = Paused
 zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension =
     .label = Extension
@@ -190,7 +147,7 @@ zen-open-link-in-glance =
 
 zen-sidebar-notification-updated-heading = Update Complete!
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip =
@@ -203,20 +160,10 @@ zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Restart in Safe Mode
 
 zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Peppermint now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Learn More
 zen-window-sync-migration-dialog-accept = Got It
 
 zen-appmenu-new-blank-window =
     .label = New Blank Window
-
-zen-homepage-welcome = Welcome back, { $name }.
-zen-homepage-today = Today is { $date }.
-zen-homepage-tagline = Have a <span data-l10n-name="fresh">fresh</span> browsing experience!
-zen-homepage-card-time-spent = Time spent browsing
-zen-homepage-card-top-site = Most used website
-zen-homepage-card-network-speed = Avg. Network Speed
-zen-homepage-card-downloads = Nº Downloads
-zen-homepage-card-visited-sites = Nº Visited websites
-zen-homepage-card-version = Current Version
 

@@ -16,6 +16,8 @@ IGNORE_PREFS_FILE_OUT = os.path.join(
 )
 
 MOCHITEST_NAME = "mochitests"
+# Peppermint's own suites live next to Zen's, under peppermint/tests.
+PEPPERMINT_TESTS = Path("peppermint/tests")
 
 
 def copy_ignore_prefs():
@@ -64,9 +66,13 @@ def main():
     test_dirs = [p for p in Path("zen/tests").iterdir() if p.is_dir() and p.name != MOCHITEST_NAME]
     mochitest_dirs = [p for p in Path(f"zen/tests/{MOCHITEST_NAME}").iterdir() if p.is_dir()]
     test_dirs.extend(mochitest_dirs)
+    if PEPPERMINT_TESTS.is_dir():
+      test_dirs.extend(p for p in PEPPERMINT_TESTS.iterdir() if p.is_dir())
     test_paths = [str(p) for p in test_dirs]
     run_mach_with_paths(test_paths)
   else:
+    if (PEPPERMINT_TESTS / path).is_dir():
+      run_mach_with_paths([f"peppermint/tests/{path}"])
     run_mach_with_paths([f"zen/tests/{path}"])
 
   # Return to original directory

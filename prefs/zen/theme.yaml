@@ -3,10 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.theme.accent-color
-  value: "#14B8A6"
-
-- name: zen.theme.glass
-  value: true
+  value: "AccentColor"
 
 - name: zen.theme.content-element-separation
   value: 8
@@ -20,10 +17,8 @@
 - name: zen.theme.essentials-favicon-bg
   value: true
 
-# Lets backdrop filters in the chrome read the web content beneath them, so the
-# URL bar glass blurs the page. Read once, when WebRender starts.
 - name: zen.theme.acrylic-urlbar
-  value: true
+  value: "@IS_TWILIGHT@"
   cpptype: bool
   mirror: once
   type: static

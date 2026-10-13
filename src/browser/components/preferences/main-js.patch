@@ -1,8 +1,20 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index a8de1153312f9b524f47a526fbac00ef6403d71d..c5d93b27dcbe3823fedbf8abfc75727e3807aa8a 100644
+index 5a56d348146c1c37c088ced60327fffebcf8fac0..abd65594d365fbc0a74af3953c71f410301898ad 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -569,7 +569,7 @@ function createStartupConfig(hidden = false) {
+@@ -529,6 +529,11 @@ function createStartupConfig(hidden = false) {
+           },
+         ],
+       },
++      {
++        id: "zenWorkspaceContinueWhereLeftOff",
++        l10nId: "zen-workspace-continue-where-left-off",
++        control: "moz-checkbox",
++      },
+       {
+         id: "windowsLaunchOnLogin",
+         l10nId: "windows-launch-on-login",
+@@ -576,7 +581,7 @@ function createStartupConfig(hidden = false) {
  SettingGroupManager.registerGroups({
    defaultBrowser: createDefaultBrowserConfig(),
    startup: createStartupConfig(
@@ -11,7 +23,7 @@ index a8de1153312f9b524f47a526fbac00ef6403d71d..c5d93b27dcbe3823fedbf8abfc75727e
    ),
  });
  
-@@ -629,7 +629,7 @@ function getBundleForLocales(newLocales) {
+@@ -636,7 +641,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(

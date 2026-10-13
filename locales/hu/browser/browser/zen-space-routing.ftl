@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Környezet útválasztási beállítások
-zen-space-routing-rulepanel-placeholder = Az útvonalakkal meghatározhatja, hogy az egyes webhelyek hol nyíljanak meg a Peppermint-ben. Beállíthatod például, hogy a YouTube-linkek mindig a Személyes környezetben nyíljanak meg.
+zen-space-routing-rulepanel-placeholder = Az útvonalakkal meghatározhatja, hogy az egyes webhelyek hol nyíljanak meg a Zen-ben. Beállíthatod például, hogy a YouTube-linkek mindig a Személyes környezetben nyíljanak meg.
 zen-space-routing-dialog-title = Környezet útválasztási beállítások
 zen-space-routing-external-default = Külső hivatkozások alapértelmezett útvonala
 zen-space-routing-new-route = Új útvonal

@@ -1,0 +1,13 @@
+--- a/zen/tests/urlbar/browser.toml
++++ b/zen/tests/urlbar/browser.toml
+@@ -11,6 +11,10 @@
+ 
+ ["browser_floating_urlbar.js"]
+ 
++["browser_url_snippets.js"]
++
++["browser_url_snippets_storage.js"]
++
+ ["browser_issue_7385.js"]
+ 
+ ["browser_sidebar_provider.js"]

@@ -9,3 +9,14 @@
 - Never blindly replace local files with the upstream without explicit per-file consent.
 - After every change, tell the user if a full rebuild, a UI-rebuilt or none are needed to apply the changes.
 - Never use "—"; Prefer ";", "," or parenthesis.
+
+Fork layout (keeps merges from Zen conflict free):
+- Never edit a file that exists in zen-browser/desktop. New Peppermint code goes in `src/peppermint/` (symlinked to `engine/peppermint/`), prefs in `prefs/peppermint/`, English strings in `peppermint/locales/en-US/`.
+- To change a Zen or Firefox file, edit it under `engine/` (or in `src/` for Zen's own files), then run `npm run pm:record -- <engine path> <feature>`. This stores the change as `peppermint/patches/<feature>/...patch` (or `peppermint/files/` for binaries) and restores Zen's copy. `npm run import` re-applies every overlay patch.
+- Overriding a Zen pref: add the same name (and condition) to `prefs/peppermint/overrides.yaml`.
+- Overriding a Zen string: add the message to the matching file under `peppermint/locales/en-US/browser/`; user-visible "Zen" text is rebranded by `peppermint/l10n-rebrand.json`. Never edit `locales/`.
+- Hook new features into startup through `src/peppermint/common/PeppermintStartup.mjs`, not through `ZenStartup.mjs`.
+- Do not rename internal `gZen*`, `zen.*` or `nsZen*` names; only user-visible brand text changes.
+- Patches listed in `peppermint/compat-patches.txt` are Zen patches that `npm run import` adapts to the pinned Firefox. After a merge, take Zen's copy and let the import regenerate them.
+- The only allowed in-place edits to Zen files are listed in `peppermint/owned-paths.json`; the pre-commit hook (`peppermint/scripts/check-owned.mjs`) enforces it and rejects file mode changes.
+- Merge Zen with `node peppermint/scripts/sync-upstream.mjs --check-import` (the scheduled workflow does the same). Prove an import is unchanged with `npm run pm:verify`.

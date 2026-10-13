@@ -424,7 +424,6 @@ zen-library {
 
       & label,
       & .tab-close-button,
-      & .tab-split-button,
       & .tab-reset-button,
       & .tab-reset-pin-button {
         display: none !important;
@@ -697,20 +696,17 @@ zen-library {
       }
 
       .tab-close-button,
-      .tab-split-button,
       .tab-reset-button {
         visibility: collapse;
       }
 
-      .tab-close-button,
-      .tab-split-button {
+      .tab-close-button {
         display: block;
         --tab-padding-inline: 0;
         margin-inline-end: 0;
       }
 
       &:is(:hover, [multiselected][selected]) .tab-close-button,
-      &:is(:hover, [multiselected][selected]) .tab-split-button,
       &:hover .tab-reset-button {
         visibility: visible;
       }
@@ -910,13 +906,7 @@ zen-library {
 
 #tabbrowser-tabs {
   & .tabbrowser-tab {
-    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-close-button,
-    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-split-button {
-      display: none !important;
-    }
-
-    &[zen-empty-tab] .tab-split-button,
-    &[zen-glance-tab] .tab-split-button {
+    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-close-button {
       display: none !important;
     }
 
@@ -943,16 +933,8 @@ zen-library {
   }
 }
 
-@media not -moz-pref("zen.splitView.show-tab-split-button", true) {
-  .tab-split-button {
-    display: none !important;
-    visibility: collapse !important;
-  }
-}
-
 .tab-reset-button,
 .tab-reset-pin-button,
-.tab-split-button,
 .tab-close-button {
   display: none;
   -moz-context-properties: fill, fill-opacity;
@@ -1012,14 +994,12 @@ zen-library {
 
 @media not (forced-colors) {
   .tab-reset-button:hover,
-  .tab-split-button:hover,
   .tab-close-button:hover,
   .tab-reset-pin-button:hover {
     background-color: color-mix(in srgb, currentColor 10%, transparent);
   }
 
   .tab-reset-button:hover:active,
-  .tab-split-button:hover:active,
   .tab-close-button:hover:active,
   .tab-reset-pin-button:hover:active {
     background-color: color-mix(in srgb, currentColor 20%, transparent);
@@ -1209,8 +1189,7 @@ zen-library {
   }
 
   & .tab-label-container,
-  & .tab-close-button,
-  & .tab-split-button {
+  & .tab-close-button {
     display: none !important;
   }
 

@@ -1,0 +1,7 @@
+--- a/browser/base/moz.build
++++ b/browser/base/moz.build
+@@ -84,3 +84,4 @@
+ JAR_MANIFESTS += ["jar.mn"]
+ 
+ DIRS += ["../../zen"]
++DIRS += ["../../peppermint"]

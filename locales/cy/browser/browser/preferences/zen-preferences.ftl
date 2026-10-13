@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Edrych a Theimlo
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Gall newid yr iaith rhagosodedig ei gwneud hi'n haws i Wefannau eich tracio.
 zen-vertical-tabs-layout-header = Cynllun Porwr
 zen-vertical-tabs-layout-description = Dewiswch y cynllun sy orau i chi
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Rheoli Tabiau
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Gofodau Gwaith
 zen-tabs-select-recently-used-on-close = 
     .label = Wrth gau tab, newidiwch i'r tab defnyddiwyd diweddaraf yn lle'r tab nesaf
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Peidiwch ag Ehangu Tabiau yn Rag
 zen-vertical-tabs-expand-tabs-on-hover = Yn Ehangu Tabiau wrth Hofran (Ond nid yn y modd cryno)
 zen-vertical-tabs-expand-tabs-header = Sut i ehangu tabiau
 zen-vertical-tabs-expand-tabs-description = Dewiswch sut i ehangu tabiau yn y bar ochr
-zen-theme-marketplace-header = Addasiadau Peppermint
+zen-theme-marketplace-header = Addasiadau Zen
 zen-theme-disable-all-enabled = 
     .title = Analluogi pob addasiad
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Dim
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Teipiwch rywbeth...
-pane-zen-marketplace-title = Addasiadau Peppermint
+pane-zen-marketplace-title = Addasiadau Zen
 zen-themes-auto-update = 
     .label = Diweddaru addasiadau wedi'u gosod yn awtomatig wrth gychwyn
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Thema Dywyll Lliwgar
 zen-compact-mode-styles-left = Cuddio Bar Tab
 zen-compact-mode-styles-top = Cuddio Bar Uchaf
 zen-compact-mode-styles-both = Cuddio'r Ddau
-zen-urlbar-title = Bar URL Peppermint
+zen-urlbar-title = Bar URL Zen
 zen-urlbar-header = Gosodiadau cyffredinol ar gyfer y bar URL
 zen-urlbar-description = Addaswch y bar URL i'r hyn rydych yn ei hoffi
 zen-urlbar-behavior-label = Ymddygiad
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Llwybrau Byr Bysellfwrdd { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Addasiadau Peppermint
+    .tooltiptext = Addasiadau Zen
 zen-settings-CKS-header = Cyfaddasu eich llwybrau byr bysellfwrdd
 zen-settings-CKS-description = Newidiwch y llwybrau byr bysellfwrdd arferol i'r hyn rydych yn ei hoffi a gwella'ch profiad pori
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Hanes a Nodau Tudalen
 zenCKSOption-group-mediaAndDisplay = Cyfryngau a Dangos
 zenCKSOption-group-zen-compact-mode = Modd Cryno
 zenCKSOption-group-zen-workspace = Gofodau Gwaith
-zenCKSOption-group-zen-other = Nodweddion Peppermint Eraill
+zenCKSOption-group-zen-other = Nodweddion Zen Eraill
 zenCKSOption-group-zen-split-view = Golwg Hollt
 zenCKSOption-group-devTools = Offer Datblygwyr
 zen-key-quick-restart = Ailgychwyn Cyflym

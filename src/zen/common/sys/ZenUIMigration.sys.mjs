@@ -26,8 +26,6 @@ class nsZenUIMigration {
       }
     }
     this.#migrateLibraryButton();
-    this.#migrateGhostModeButton();
-    this.#migrateUnderpoweredButton();
     this.clearVariables();
     if (this.shouldRestart) {
       Services.startup.quit(
@@ -87,59 +85,6 @@ class nsZenUIMigration {
         if (standsIn) {
           lazy.CustomizableUI.removeWidgetFromArea("downloads-button");
         }
-      },
-    };
-    lazy.CustomizableUI.addListener(listener);
-  }
-
-  #migrateGhostModeButton() {
-    this.#addFootButtonAfter(
-      "zen-ghost-mode-button",
-      "zen.ghost-mode.migrated-button",
-      ["zen-library-button", "downloads-button"]
-    );
-  }
-
-  #migrateUnderpoweredButton() {
-    this.#addFootButtonAfter(
-      "zen-underpowered-button",
-      "zen.underpowered.migrated-button",
-      ["zen-ghost-mode-button", "zen-library-button", "downloads-button"]
-    );
-  }
-
-  /**
-   * Places a sidebar button that saved placements predate right after the
-   * first of `anchors` the sidebar has. Done once, so removing it sticks.
-   *
-   * @param {string} widgetId
-   * @param {string} donePref
-   * @param {string[]} anchors - Widget ids, most preferred first
-   */
-  #addFootButtonAfter(widgetId, donePref, anchors) {
-    if (Services.prefs.getBoolPref(donePref, false)) {
-      return;
-    }
-    // A toolbar's saved placements are only there once a window has it.
-    const footButtons = "zen-sidebar-foot-buttons";
-    const listener = {
-      onAreaNodeRegistered: area => {
-        if (area !== footButtons) {
-          return;
-        }
-        lazy.CustomizableUI.removeListener(listener);
-        Services.prefs.setBoolPref(donePref, true);
-        if (lazy.CustomizableUI.getPlacementOfWidget(widgetId)) {
-          return;
-        }
-        const anchor = anchors
-          .map(id => lazy.CustomizableUI.getPlacementOfWidget(id))
-          .find(placement => placement?.area === footButtons);
-        lazy.CustomizableUI.addWidgetToArea(
-          widgetId,
-          footButtons,
-          anchor ? anchor.position + 1 : 1
-        );
       },
     };
     lazy.CustomizableUI.addListener(listener);
@@ -238,7 +183,7 @@ class nsZenUIMigration {
         // User has clicked on "Learn More"
         if (buttonPressed === 0) {
           win.openTrustedLinkIn(
-            "https://github.com/AstroDevCompany/desktop",
+            "https://docs.zen-browser.app/user-manual/window-sync",
             "tab"
           );
         }

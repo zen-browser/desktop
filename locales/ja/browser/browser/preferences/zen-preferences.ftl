@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = 外観
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }{ pane-zen-looks-title }
 zen-warning-language = デフォルト言語を変更すると、ウェブサイトにトラッキングされやすくなります。
 zen-vertical-tabs-layout-header = ブラウザーのレイアウト
 zen-vertical-tabs-layout-description = 自分に合ったレイアウトを選んでください
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = タブ管理
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = ワークスペース
 zen-tabs-select-recently-used-on-close = 
     .label = タブを閉じるときに、次のタブではなく最後に使用したタブに切り替える
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = デフォルトでタブを展�
 zen-vertical-tabs-expand-tabs-on-hover = ホバーでタブを展開 (コンパクトモードでは動作しません)
 zen-vertical-tabs-expand-tabs-header = タブを展開する方法
 zen-vertical-tabs-expand-tabs-description = サイドバーのタブを展開する方法を選択します
-zen-theme-marketplace-header = Peppermint Mods
+zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
     .title = すべてのModを無効化
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = なし
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = ここに入力...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = 起動時にインストール済みの Mod を自動的に更新する
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = カラフルなダークテーマ
 zen-compact-mode-styles-left = タブバーを隠す
 zen-compact-mode-styles-top = 上部バーを非表示
 zen-compact-mode-styles-both = 両方を隠す
-zen-urlbar-title = Peppermint URL Bar
+zen-urlbar-title = Zen URL Bar
 zen-urlbar-header = URLバーの一般設定
 zen-urlbar-description = 好みに合わせてURLバーをカスタマイズ
 zen-urlbar-behavior-label = 動作
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } キーボードショートカット
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = キーボードショートカットをカスタマイズする
 zen-settings-CKS-description = デフォルトのキーボードショートカットを好みに変更し、ブラウジング体験を向上させましょう
 zen-settings-CKS-disable-firefox = 

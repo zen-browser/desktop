@@ -9,6 +9,9 @@ from pathlib import Path
 from copy_language_pack import copy_browser_locales
 
 SOURCE = Path("locales/en-US/browser")
+OVERRIDES = Path("peppermint/locales/en-US/browser")
+# Finished strings (Zen + Peppermint layer + rebranding) live in the engine.
+ENGINE_PACK = Path("engine/browser/locales/en-US")
 
 
 def objdir():
@@ -28,13 +31,21 @@ def sync_into(destination_root: Path):
   if not destination_root.is_dir():
     return
   copied = 0
-  for root, _, files in os.walk(SOURCE):
-    relative = Path(root).relative_to(SOURCE)
-    target_dir = destination_root / relative
-    target_dir.mkdir(parents=True, exist_ok=True)
-    for file in files:
-      shutil.copy2(Path(root) / file, target_dir / file)
-      copied += 1
+  names = set()
+  for base in (SOURCE, OVERRIDES):
+    for root, _, files in os.walk(base):
+      for file in files:
+        names.add((Path(root) / file).relative_to(base))
+  for relative in sorted(names):
+    finished = ENGINE_PACK / relative
+    if not finished.is_file():
+      continue
+    target = destination_root / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    # Built trees often link straight back to the engine copy.
+    if not (target.exists() and os.path.samefile(finished, target)):
+      shutil.copy2(finished, target)
+    copied += 1
   print(f"Synced {copied} locale files to {destination_root}")
 
 

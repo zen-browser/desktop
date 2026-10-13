@@ -6,6 +6,10 @@
   let lazy = {};
 
   ChromeUtils.defineESModuleGetters(lazy, {
+    AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
+    CustomizableUI:
+      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
+    AddonRepository: "resource://gre/modules/addons/AddonRepository.sys.mjs",
     SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
   });
 
@@ -26,11 +30,32 @@
     { url: "https://figma.com", icon: "figma", color: "#f24e1e" },
   ];
 
+  const kAdBlockerId = "uBlock0@raymondhill.net";
+
   const gChoices = {
     setDefaultBrowser: false,
     essentials: new Set(),
-    adblockLevel: "medium",
+    blockAds: true,
   };
+
+  let _adBlocker;
+
+  async function fetchAdBlocker() {
+    if (_adBlocker !== undefined) {
+      return _adBlocker;
+    }
+    try {
+      const [found, installed] = await Promise.all([
+        lazy.AddonRepository.getAddonsByIDs([kAdBlockerId]),
+        lazy.AddonManager.getAddonsByIDs([kAdBlockerId]),
+      ]);
+      _adBlocker = installed[0] || !found[0]?.sourceURI ? null : found[0];
+    } catch (ex) {
+      console.error(ex);
+      _adBlocker = null;
+    }
+    return _adBlocker;
+  }
 
   function clearBrowserElements() {
     for (const element of document.getElementById("browser").children) {
@@ -130,6 +155,44 @@
     }
     label.appendChild(labelText);
     return label;
+  }
+
+  const _startedInstalls = new Set();
+
+  function unpinInstalledAddon(addon) {
+    const widgetId =
+      addon.id.toLowerCase().replace(/[^a-z0-9_-]/g, "_") + "-browser-action";
+    try {
+      if (lazy.CustomizableUI.getPlacementOfWidget(widgetId)) {
+        lazy.CustomizableUI.addWidgetToArea(
+          widgetId,
+          lazy.CustomizableUI.AREA_ADDONS
+        );
+      }
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+
+  function installAddons(addons) {
+    for (const addon of addons) {
+      if (_startedInstalls.has(addon.id)) {
+        continue;
+      }
+      _startedInstalls.add(addon.id);
+      (async () => {
+        try {
+          const install = await lazy.AddonManager.getInstallForURL(
+            addon.sourceURI.spec,
+            { name: addon.name, icons: addon.icons }
+          );
+          await install.install();
+          unpinInstalledAddon(addon);
+        } catch (ex) {
+          console.error(`Failed to install ${addon.id}`, ex);
+        }
+      })();
+    }
   }
 
   function removeVideoBackground() {
@@ -316,7 +379,6 @@
       _iconToData = undefined; // Unload icon data
       document.getElementById("zen-welcome").remove();
       document.documentElement.removeAttribute("zen-welcome-stage");
-      gZenHomepage?.sync();
       unlockWindowSize();
       for (const element of document.getElementById("browser").children) {
         if (kZenElementsToIgnore.includes(element.id)) {
@@ -332,6 +394,8 @@
       await animate(`#browser > *:not(${elementsToIgnore})`, {
         opacity: [0, 1],
       });
+      _adBlocker = undefined;
+      _startedInstalls.clear();
     }
 
     async #applyChoices() {
@@ -571,35 +635,38 @@
         title: "zen-welcome-block-ads-title",
         descriptions: ["zen-welcome-block-ads-description"],
         buttons: [kNextButton],
-        render(content) {
-          for (const option of [
-            ["light", "zen-welcome-block-ads-light"],
-            ["medium", "zen-welcome-block-ads-medium"],
-            ["heavy", "zen-welcome-block-ads-heavy"],
-            ["off", "zen-welcome-block-ads-off"],
-          ]) {
-            const [value, l10n] = option;
-            const row = createOption({
-              id: "zen-welcome-block-ads-" + value,
+        // Nothing to offer once we know the add-on can't be installed.
+        skip() {
+          return _adBlocker === null;
+        },
+        async render(content, pages) {
+          content.appendChild(
+            createOption({
+              id: "zen-welcome-block-ads-yes",
               group: "zen-welcome-block-ads",
-              l10n,
-              checked: gChoices.adblockLevel === value,
-            });
-            row.querySelector("input").value = value;
-            content.appendChild(row);
+              l10n: "zen-welcome-block-ads-yes",
+              checked: gChoices.blockAds,
+            })
+          );
+          content.appendChild(
+            createOption({
+              id: "zen-welcome-block-ads-no",
+              group: "zen-welcome-block-ads",
+              l10n: "zen-welcome-block-ads-no",
+              checked: !gChoices.blockAds,
+            })
+          );
+          // The lookup is warmed at startup, so this usually settled long ago.
+          if ((await fetchAdBlocker()) === null && content.isConnected) {
+            pages.next();
           }
         },
         commit(content) {
-          const selected = content.querySelector(
-            'input[name="zen-welcome-block-ads"]:checked'
-          );
-          const value = selected?.value || "medium";
-          gChoices.adblockLevel = value;
-          if (value === "off") {
-            Services.prefs.setBoolPref("zen.adblock.enabled", false);
-          } else {
-            Services.prefs.setBoolPref("zen.adblock.enabled", true);
-            Services.prefs.setStringPref("zen.adblock.level", value);
+          gChoices.blockAds = content.querySelector(
+            "#zen-welcome-block-ads-yes"
+          ).checked;
+          if (gChoices.blockAds && _adBlocker) {
+            installAddons([_adBlocker]);
           }
         },
       },
@@ -813,6 +880,7 @@
   }
 
   function startZenWelcome() {
+    fetchAdBlocker();
     clearBrowserElements();
     centerWindowOnScreen();
     initializeZenWelcome();

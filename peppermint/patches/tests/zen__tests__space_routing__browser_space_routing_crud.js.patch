@@ -1,0 +1,18 @@
+--- a/zen/tests/space_routing/browser_space_routing_crud.js
++++ b/zen/tests/space_routing/browser_space_routing_crud.js
+@@ -43,13 +43,13 @@
+     "createNewRoute() appends one route"
+   );
+ 
+-  created.reference = "zen-browser.app";
++  created.reference = "example.com";
+   created.openIn = "ws-42";
+   created.matchType = "equal-to";
+   gZenSpaceRoutingManager.updateRoute(created);
+ 
+   const fetched = gZenSpaceRoutingManager.getRoute(created.id);
+-  Assert.equal(fetched.reference, "zen-browser.app", "reference persisted");
++  Assert.equal(fetched.reference, "example.com", "reference persisted");
+   Assert.equal(fetched.openIn, "ws-42", "openIn persisted");
+   Assert.equal(fetched.matchType, "equal-to", "matchType persisted");
+ 

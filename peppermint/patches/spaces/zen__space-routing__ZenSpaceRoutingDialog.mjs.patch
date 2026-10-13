@@ -1,0 +1,15 @@
+--- a/zen/space-routing/ZenSpaceRoutingDialog.mjs
++++ b/zen/space-routing/ZenSpaceRoutingDialog.mjs
+@@ -308,10 +308,10 @@
+   updateInputPlaceholder(matchType, input) {
+     switch (matchType) {
+       case "regex":
+-        input.placeholder = "zen-browser\\.app";
++        input.placeholder = "example\\.com";
+         break;
+       default:
+-        input.placeholder = "zen-browser.app";
++        input.placeholder = "example.com";
+         break;
+     }
+   }

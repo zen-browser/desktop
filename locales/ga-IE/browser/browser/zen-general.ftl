@@ -123,7 +123,7 @@ zen-open-link-in-glance =
     .accesskey = G
 zen-sidebar-notification-updated-heading = Nuashonrú críochnaithe!
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Cad atá nua i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
@@ -135,7 +135,7 @@ zen-sidebar-notification-restart-safe-mode-label = Bhris rud éigin?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Atosaigh i Mód Sábháilte
 zen-window-sync-migration-dialog-title = Coinnigh Do Windows Sioncrónaithe
-zen-window-sync-migration-dialog-message = Déanann Peppermint sioncrónú ar fhuinneoga ar an ngléas céanna anois, mar sin léirítear athruithe i bhfuinneog amháin sna fuinneoga eile láithreach.
+zen-window-sync-migration-dialog-message = Déanann Zen sioncrónú ar fhuinneoga ar an ngléas céanna anois, mar sin léirítear athruithe i bhfuinneog amháin sna fuinneoga eile láithreach.
 zen-window-sync-migration-dialog-learn-more = Foghlaim Tuilleadh
 zen-window-sync-migration-dialog-accept = Tuigim é
 zen-appmenu-new-blank-window = 

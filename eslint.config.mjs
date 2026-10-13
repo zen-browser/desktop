@@ -41,7 +41,10 @@ globals.browser = {
   }, {}),
 };
 
-testPaths.browser = testPaths.browser.concat("src/zen/tests/");
+testPaths.browser = testPaths.browser.concat([
+  "src/zen/tests/",
+  "src/peppermint/tests/",
+]);
 
 /**
  * Takes each path in the paths array, and expands it with the list of extensions
@@ -100,7 +103,7 @@ let config = [
     ignores: [
       ...globalIgnores,
       "src/zen/vendor/*",
-      "src/zen/adblock/vendor/**",
+      "src/peppermint/adblock/vendor/**",
     ],
   },
   {
@@ -456,7 +459,7 @@ let config = [
     },
   },
   ...wrapPathsInConfig(rollouts),
-  globalIgnoresPath(["src/zen/tests/"]),
+  globalIgnoresPath(["src/zen/tests/", "src/peppermint/tests/"]),
 ];
 
 // The various places we get our globals from use true/false rather than

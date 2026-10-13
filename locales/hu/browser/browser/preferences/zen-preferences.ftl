@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Megjelenés és hangulat
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Az alapértelmezett nyelv átállításával a weboldalak könnyebben nyomon tudnak követni.
 zen-vertical-tabs-layout-header = Böngésző elrendezés
 zen-vertical-tabs-layout-description = Válassza ki az önnek legmegfelelőbb elrendezést
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Window dragging
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
+pane-zen-tabs-title = Lap kezelés
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Munkakörnyezetek
 zen-tabs-select-recently-used-on-close = 
     .label = Lap bezárásakor a következő lap helyett a legutóbb használt lapra váltson
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = A lapok alapértelmezetten ne le
 zen-vertical-tabs-expand-tabs-on-hover = Lapok kibontása fölémozgatással (Nem fog működni kompakt módban)
 zen-vertical-tabs-expand-tabs-header = Hogyan legyenek a lapok nagyobbítva
 zen-vertical-tabs-expand-tabs-description = Válassz, hogyan legyenek a lapok nagyobbítva az oldalsó sávon
-zen-theme-marketplace-header = Peppermint modok
+zen-theme-marketplace-header = Zen modok
 zen-theme-disable-all-enabled = 
     .title = Minden mod kikapcsolása
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Nincs
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Írj valamit...
-pane-zen-marketplace-title = Peppermint modok
+pane-zen-marketplace-title = Zen modok
 zen-themes-auto-update = 
     .label = Modok automatikus frissítése indításkor
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Színes sötét téma
 zen-compact-mode-styles-left = Lapsáv elrejtése
 zen-compact-mode-styles-top = Felső sáv elrejtése
 zen-compact-mode-styles-both = Mindkettő elrejtése
-zen-urlbar-title = Peppermint URL sáv
+zen-urlbar-title = Zen URL sáv
 zen-urlbar-header = URL sáv általános beállításai
 zen-urlbar-description = Az URL sáv testreszabása a saját ízlése szerint
 zen-urlbar-behavior-label = Viselkedés
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } gyorsgombok
 category-zen-marketplace = 
-    .tooltiptext = Peppermint modok
+    .tooltiptext = Zen modok
 zen-settings-CKS-header = Gyorsgombok személyre szabása
 zen-settings-CKS-description = Állítsd be kedvedre az alapértelmezett gyorsgombokat, hogy növeld a böngészési élményedet
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Előzmények és könyvjelzők
 zenCKSOption-group-mediaAndDisplay = Média és megjelenítés
 zenCKSOption-group-zen-compact-mode = Kompakt mód
 zenCKSOption-group-zen-workspace = Munkakörnyezetek
-zenCKSOption-group-zen-other = Egyéb Peppermint funkciók
+zenCKSOption-group-zen-other = Egyéb Zen funkciók
 zenCKSOption-group-zen-split-view = Osztott nézet
 zenCKSOption-group-devTools = Fejlesztői eszközök
 zen-key-quick-restart = Gyors újraindítás

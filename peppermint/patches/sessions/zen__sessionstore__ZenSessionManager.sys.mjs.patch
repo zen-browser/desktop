@@ -1,0 +1,97 @@
+--- a/zen/sessionstore/ZenSessionManager.sys.mjs
++++ b/zen/sessionstore/ZenSessionManager.sys.mjs
+@@ -97,6 +97,59 @@
+    * A deferred task to create backups of the session file.
+    */
+   #deferredBackupTask = null;
++  #lastSidebarFingerprint = "";
++  #cleanBackupCopied = false;
++
++  /**
++   * Forces the next save to rewrite the sidebar file. Mutations that are not
++   * yet visible on the SessionSaver snapshot should call this.
++   */
++  markSidebarDirty() {
++    this.#lastSidebarFingerprint = "";
++  }
++
++  #sidebarFingerprint(windows) {
++    const parts = [];
++    for (const win of windows) {
++      parts.push(
++        (win.spaces || [])
++          .map(space =>
++            [
++              space.uuid,
++              space.name,
++              space.icon,
++              space.containerTabId,
++              space.theme?.type,
++            ].join(":")
++          )
++          .join(",")
++      );
++      parts.push(
++        (win.folders || [])
++          .map(folder => [folder.id, folder.name, folder.workspaceId].join(":"))
++          .join(",")
++      );
++      parts.push(
++        (win.groups || []).map(group => group.id || "").join(","),
++        (win.splitViewData || [])
++          .map(split => split.groupId || split.id || "")
++          .join(",")
++      );
++      for (const tab of win.tabs || []) {
++        const entry = tab.entries?.[Math.max(0, (tab.index || 1) - 1)];
++        parts.push(
++          [
++            tab.zenSyncId,
++            tab.pinned ? 1 : 0,
++            tab.zenEssential ? 1 : 0,
++            tab._zenIsActiveTab ? 1 : 0,
++            entry?.url || "",
++          ].join(":")
++        );
++      }
++    }
++    return parts.join("\n");
++  }
+ 
+   init() {
+     this.log("Initializing session manager");
+@@ -605,13 +658,19 @@
+       // browsing mode. We also don't want to save if there are no windows.
+       return;
+     }
+-    const cleanPath = PathUtils.join(this.#backupFolderPath, "clean.jsonlz4");
+-    IOUtils.copy(this.#storeFilePath, cleanPath, { recursive: true }).catch(
+-      () => {
+-        /* ignore errors creating clean backup, as it is not critical and
+-         * we want to save the session even if we fail to create it */
+-      }
+-    );
++    const fingerprint = this.#sidebarFingerprint(windows);
++    if (fingerprint === this.#lastSidebarFingerprint) {
++      return;
++    }
++    if (!this.#cleanBackupCopied) {
++      this.#cleanBackupCopied = true;
++      const cleanPath = PathUtils.join(this.#backupFolderPath, "clean.jsonlz4");
++      IOUtils.copy(this.#storeFilePath, cleanPath, { recursive: true }).catch(
++        () => {
++          this.#cleanBackupCopied = false;
++        }
++      );
++    }
+     this.#collectWindowData(windows);
+     // Let interested consumers (e.g. Firefox Sync) know fresh sidebar data
+     // is available, without this module knowing anything about them.
+@@ -626,6 +685,7 @@
+     }
+     lazy.ZenLiveFoldersManager.saveState(soon);
+     this.#debounceRegeneration();
++    this.#lastSidebarFingerprint = fingerprint;
+     this.log(`Saving Zen session data with ${sidebar.tabs?.length || 0} tabs`);
+   }
+ 

@@ -1,0 +1,92 @@
+--- a/zen/tabs/zen-tabs/vertical-tabs.css
++++ b/zen/tabs/zen-tabs/vertical-tabs.css
+@@ -424,6 +424,7 @@
+ 
+       & label,
+       & .tab-close-button,
++      & .tab-split-button,
+       & .tab-reset-button,
+       & .tab-reset-pin-button {
+         display: none !important;
+@@ -696,17 +697,20 @@
+       }
+ 
+       .tab-close-button,
++      .tab-split-button,
+       .tab-reset-button {
+         visibility: collapse;
+       }
+ 
+-      .tab-close-button {
++      .tab-close-button,
++      .tab-split-button {
+         display: block;
+         --tab-padding-inline: 0;
+         margin-inline-end: 0;
+       }
+ 
+       &:is(:hover, [multiselected][selected]) .tab-close-button,
++      &:is(:hover, [multiselected][selected]) .tab-split-button,
+       &:hover .tab-reset-button {
+         visibility: visible;
+       }
+@@ -906,10 +910,16 @@
+ 
+ #tabbrowser-tabs {
+   & .tabbrowser-tab {
+-    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-close-button {
++    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-close-button,
++    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-split-button {
+       display: none !important;
+     }
+ 
++    &[zen-empty-tab] .tab-split-button,
++    &[zen-glance-tab] .tab-split-button {
++      display: none !important;
++    }
++
+     &[pinned]:is(:not([pending="true"]), [folder-active="true"]):not([zen-essential]) .tab-reset-button {
+       display: block;
+     }
+@@ -933,8 +943,16 @@
+   }
+ }
+ 
++@media not -moz-pref("zen.splitView.show-tab-split-button", true) {
++  .tab-split-button {
++    display: none !important;
++    visibility: collapse !important;
++  }
++}
++
+ .tab-reset-button,
+ .tab-reset-pin-button,
++.tab-split-button,
+ .tab-close-button {
+   display: none;
+   -moz-context-properties: fill, fill-opacity;
+@@ -994,12 +1012,14 @@
+ 
+ @media not (forced-colors) {
+   .tab-reset-button:hover,
++  .tab-split-button:hover,
+   .tab-close-button:hover,
+   .tab-reset-pin-button:hover {
+     background-color: color-mix(in srgb, currentColor 10%, transparent);
+   }
+ 
+   .tab-reset-button:hover:active,
++  .tab-split-button:hover:active,
+   .tab-close-button:hover:active,
+   .tab-reset-pin-button:hover:active {
+     background-color: color-mix(in srgb, currentColor 20%, transparent);
+@@ -1189,7 +1209,8 @@
+   }
+ 
+   & .tab-label-container,
+-  & .tab-close-button {
++  & .tab-close-button,
++  & .tab-split-button {
+     display: none !important;
+   }
+ 

@@ -1720,10 +1720,7 @@
         this.#firstHapticFeedbackPlayed = true;
         shouldPlayHapticFeedback = false;
       }
-      if (
-        shouldPlayHapticFeedback &&
-        Services.prefs.getBoolPref("zen.haptic-feedback.enabled", true)
-      ) {
+      if (shouldPlayHapticFeedback) {
         // eslint-disable-next-line mozilla/valid-services
         Services.zen.playHapticFeedback();
       }

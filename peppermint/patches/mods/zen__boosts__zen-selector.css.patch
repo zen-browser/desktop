@@ -1,0 +1,10 @@
+--- a/zen/boosts/zen-selector.css
++++ b/zen/boosts/zen-selector.css
+@@ -217,6 +217,5 @@
+ 
+   background-color: #c2b72046;
+ 
+-  transition: 0.1s all ease-out;
+-  will-change: left, top, width, height;
++  transition: background-color 0.1s ease-out, outline-color 0.1s ease-out;
+ }

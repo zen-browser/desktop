@@ -121,7 +121,7 @@ zen-open-link-in-glance =
     .accesskey = G
 zen-sidebar-notification-updated-heading = Cập nhật hoàn tất!
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Có gì mới trong { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
@@ -133,7 +133,7 @@ zen-sidebar-notification-restart-safe-mode-label = Có lỗi xảy ra?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Khởi động lại ở Chế độ an toàn
 zen-window-sync-migration-dialog-title = Luôn đồng bộ các cửa sổ
-zen-window-sync-migration-dialog-message = Peppermint hiện đã đồng bộ hóa các cửa sổ trên cùng một thiết bị, mọi thay đổi sẽ được cập nhật tức thì trên toàn bộ cửa sổ còn lại.
+zen-window-sync-migration-dialog-message = Zen hiện đã đồng bộ hóa các cửa sổ trên cùng một thiết bị, mọi thay đổi sẽ được cập nhật tức thì trên toàn bộ cửa sổ còn lại.
 zen-window-sync-migration-dialog-learn-more = Tìm hiểu thêm
 zen-window-sync-migration-dialog-accept = Đã hiểu
 zen-appmenu-new-blank-window = 

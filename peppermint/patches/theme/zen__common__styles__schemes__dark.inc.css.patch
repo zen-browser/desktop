@@ -1,0 +1,34 @@
+--- a/zen/common/styles/schemes/dark.inc.css
++++ b/zen/common/styles/schemes/dark.inc.css
+@@ -5,3 +5,31 @@
+ color-scheme: dark;
+ --zen-backdrop-underlay: url("chrome://browser/content/zen-styles/zen-backdrop-filters.svg#underlay-dark");
+ --zen-urlbar-outline-offset: -1px;
++--zen-frosted-fill: rgb(255 255 255 / 10%);
++--zen-frosted-stroke: rgb(255 255 255 / 25%);
++--zen-frosted-fg: rgb(255 255 255);
++--zen-frosted-muted: rgb(255 255 255 / 55%);
++--zen-frosted-hover: rgb(255 255 255 / 8%);
++--zen-frosted-divider: rgb(255 255 255 / 15%);
++--zen-frosted-backdrop: blur(24px) saturate(1.4) brightness(0.6);
++/* The URL bar blurs whatever page is under it; with this tint, white text
++   stays readable even over a white page. */
++--zen-frosted-urlbar-fill: rgb(18 18 20 / 45%);
++--zen-frosted-urlbar-backdrop: blur(30px) saturate(1.8) brightness(0.55);
++--zen-frosted-backdrop-strong: blur(40px) saturate(1.6) brightness(0.6);
++/* The sidebar sits on the workspace gradient and uses light chrome text. */
++--zen-frosted-backdrop-sidebar: blur(42px) saturate(1.1) brightness(0.5);
++--zen-popup-background: color-mix(in oklch, var(--zen-primary-color) 46%, black);
++--zen-popup-background-solid: var(--zen-popup-background);
++--zen-popup-foreground: rgb(255 255 255 / 92%);
++--zen-popup-hover: rgb(255 255 255 / 10%);
++--zen-popup-active: rgb(255 255 255 / 16%);
++--zen-tooltip-background: color-mix(in srgb, var(--zen-primary-color) 34%, #0c1f1c);
++--zen-tooltip-foreground: color-mix(in srgb, var(--zen-primary-color) 28%, white);
++--zen-tooltip-border: color-mix(in srgb, var(--zen-primary-color) 45%, transparent);
++--zen-raised-button-background: color-mix(in srgb, var(--zen-primary-color) 28%, #12352f);
++--zen-raised-button-background-bottom: color-mix(in srgb, var(--zen-primary-color) 18%, #0c1f1c);
++--zen-raised-button-foreground: var(--zen-primary-color);
++--zen-raised-button-border: rgb(255 255 255 / 16%);
++--zen-raised-button-inset: rgb(255 255 255 / 14%);
++--zen-low-power-color: rgb(250 204 21);

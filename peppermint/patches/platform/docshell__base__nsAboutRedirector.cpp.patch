@@ -1,0 +1,11 @@
+--- a/docshell/base/nsAboutRedirector.cpp
++++ b/docshell/base/nsAboutRedirector.cpp
+@@ -115,7 +115,7 @@
+     {"crashes", "chrome://global/content/crashes.html",
+      nsIAboutModule::IS_SECURE_CHROME_UI},
+ #endif
+-    {"credits", "https://zen-browser.app/about/",
++    {"credits", "about:credits",
+      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+          nsIAboutModule::URI_MUST_LOAD_IN_CHILD},
+     {"fingerprintingprotection",

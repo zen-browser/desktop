@@ -1,0 +1,38 @@
+{
+  "_comment": "Every Zen-owned file that Peppermint is allowed to touch in place. Anything else must go through an overlay patch (npm run pm:record) or live under src/peppermint/, peppermint/ or prefs/peppermint/. Used by the pre-commit guard and the upstream sync.",
+  "edited": [
+    ".gitattributes",
+    ".github/workflows/build.yml",
+    ".github/workflows/linux-release-build.yml",
+    ".github/workflows/macos-profile-build.yml",
+    ".github/workflows/windows-release-build.yml",
+    ".gitignore",
+    ".husky/pre-commit",
+    "CODE_OF_CONDUCT.md",
+    "README.md",
+    "configs/common/mozconfig",
+    "configs/dumps/search-config-v2.json",
+    "docs/contribute.md",
+    "docs/live-folders-specs.md",
+    "eslint.config.mjs",
+    "package.json",
+    "prefs/README.md",
+    "scripts/copy_language_pack.py",
+    "scripts/run_tests.py",
+    "scripts/update_en_US_packs.py",
+    "tools/ffprefs/src/main.rs"
+  ],
+  "regenerated": [
+    "package-lock.json",
+    "surfer.json"
+  ],
+  "ours": [
+    "configs/branding/"
+  ],
+  "deleted": [
+    "src/browser/components/tabbrowser/content/tabs-mjs.patch",
+    "src/external-patches/firefox/issue_14710.patch",
+    "src/external-patches/firefox/issue_14990.patch"
+  ],
+  "compatList": "peppermint/compat-patches.txt"
+}

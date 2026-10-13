@@ -1,0 +1,45 @@
+--- a/zen/common/modules/ZenStartup.mjs
++++ b/zen/common/modules/ZenStartup.mjs
+@@ -27,8 +27,22 @@
+   }
+ 
+   init() {
++    try {
++      ChromeUtils.importESModule(
++        "moz-src:///peppermint/common/PeppermintStartup.mjs"
++      ).PeppermintStartup.early();
++    } catch (error) {
++      console.error("PeppermintStartup.early failed", error);
++    }
+     this.openWatermark();
+     this.#zenInitBrowserLayout();
++    try {
++      ChromeUtils.importESModule(
++        "moz-src:///peppermint/common/PeppermintStartup.mjs"
++      ).PeppermintStartup.late(window);
++    } catch (error) {
++      console.error("PeppermintStartup.late failed", error);
++    }
+   }
+ 
+   get #shouldUseWatermark() {
+@@ -66,6 +80,11 @@
+ 
+       gZenWorkspaces.init().then(() => {
+         gZenUIManager.init();
++        try {
++          gZenLazyFeatures.load("homepage");
++        } catch (error) {
++          console.error("Zen homepage failed to start", error);
++        }
+         this.#checkForWelcomePage();
+       });
+     } catch (e) {
+@@ -180,6 +199,7 @@
+         "zen.updates.last-version",
+         Services.appinfo.version
+       );
++      gZenLazyFeatures.style("welcome");
+       Services.scriptloader.loadSubScript(
+         "chrome://browser/content/zen-components/ZenWelcome.mjs",
+         window

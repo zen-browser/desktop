@@ -1,0 +1,77 @@
+--- a/browser/components/urlbar/content/UrlbarShared.mjs
++++ b/browser/components/urlbar/content/UrlbarShared.mjs
+@@ -178,6 +178,7 @@
+     // It may or may not be an origin.
+     POSSIBLE_ORIGIN_BUT_SEARCH_ALLOWED: 12,
+     RESTRICT_WORKSPACE: 13,
++    RESTRICT_SNIPPET: 14,
+   }),
+ 
+   /**
+@@ -197,7 +198,8 @@
+     SEARCH: "?",
+     TITLE: "#",
+     URL: "$",
+-    ACTION: ">",
++    ACTION: "§",
++    SNIPPET: ">",
+     WORKSPACE: "`",
+   }),
+ 
+@@ -246,6 +248,7 @@
+     ACTIONS: 8,
+     ZEN_ACTIONS: 9,
+     WORKSPACES: 10,
++    SNIPPETS: 11,
+   }),
+ 
+   // Results are categorized into groups to help the muxer compose them.  See
+@@ -283,6 +286,7 @@
+     TAIL_SUGGESTION: "tailSuggestion",
+     ZEN_ACTION: "zenAction",
+     ZEN_WORKSPACE: "zenWorkspace",
++    ZEN_SNIPPET: "zenSnippet",
+   }),
+ 
+   // Defines provider types.
+@@ -476,6 +480,14 @@
+         telemetryLabel: "workspaces",
+         uiLabel: "urlbar-search-mode-workspaces",
+       },
++      {
++        source: this.RESULT_SOURCE.SNIPPETS,
++        restrict: this.RESTRICT_TOKENS.SNIPPET,
++        icon: "chrome://browser/skin/zen-icons/link.svg",
++        pref: "shortcuts.snippets",
++        telemetryLabel: "snippets",
++        uiLabel: "urlbar-search-mode-snippets",
++      },
+     ]);
+   },
+ 
+@@ -494,6 +506,7 @@
+       keys.push(this.RESTRICT_TOKENS.ACTION);
+     }
+     keys.push(this.RESTRICT_TOKENS.WORKSPACE);
++    keys.push(this.RESTRICT_TOKENS.SNIPPET);
+     return new Set(keys);
+   },
+ 
+@@ -1089,6 +1102,8 @@
+             return UrlbarShared.RESULT_GROUP.ZEN_WORKSPACE;
+           }
+           return UrlbarShared.RESULT_GROUP.ZEN_ACTION;
++        case "ZenUrlbarProviderSnippets":
++          return UrlbarShared.RESULT_GROUP.ZEN_SNIPPET;
+         case "UrlbarProviderOmnibox":
+           return UrlbarShared.RESULT_GROUP.HEURISTIC_OMNIBOX;
+         case "UrlbarProviderRestrictKeywordsAutofill":
+@@ -1114,6 +1129,8 @@
+     }
+ 
+     switch (result.providerName) {
++      case "ZenUrlbarProviderSnippets":
++        return UrlbarShared.RESULT_GROUP.ZEN_SNIPPET;
+       case "UrlbarProviderAboutPages":
+         return UrlbarShared.RESULT_GROUP.ABOUT_PAGES;
+       case "UrlbarProviderInputHistory":

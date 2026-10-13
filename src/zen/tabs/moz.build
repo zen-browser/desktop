@@ -4,5 +4,4 @@
 
 EXTRA_JS_MODULES.zen += [
     "ZenTabRenamer.mjs",
-    "ZenTabUnloader.sys.mjs",
 ]

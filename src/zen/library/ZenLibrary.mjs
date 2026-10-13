@@ -32,8 +32,7 @@ ChromeUtils.defineESModuleGetters(
   { global: "current" }
 );
 
-const DEFAULT_SECTION_PREF = "zen.library.default-section";
-const DEFAULT_SECTION_FALLBACK = "downloads";
+const LAST_TAB_PREF = "zen.library.last-tab";
 const CLEANUP_DELAY_MS = 30000;
 const IDLE_CLEANUP_TIMEOUT_MS = 2000;
 
@@ -106,22 +105,9 @@ export class ZenLibrary extends MozLitElement {
         : {}),
       history: lazy.ZenLibraryHistorySection,
     };
-    this.activeTab = this.#resolveDefaultSection();
+    const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
+    this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
     this.#mounted.add(this.activeTab);
-  }
-
-  #resolveDefaultSection() {
-    const section = Services.prefs.getStringPref(
-      DEFAULT_SECTION_PREF,
-      DEFAULT_SECTION_FALLBACK
-    );
-    if (section in this.zenLibrarySections) {
-      return section;
-    }
-    if (DEFAULT_SECTION_FALLBACK in this.zenLibrarySections) {
-      return DEFAULT_SECTION_FALLBACK;
-    }
-    return "history";
   }
 
   static get isLibraryOpen() {
@@ -159,6 +145,7 @@ export class ZenLibrary extends MozLitElement {
 
     this._activeTab = value;
     this.#mounted.add(value);
+    Services.prefs.setStringPref(LAST_TAB_PREF, value);
   }
 
   get activeTab() {
@@ -466,9 +453,6 @@ export class ZenLibrary extends MozLitElement {
       }
       return;
     }
-    if (!opening) {
-      lib.activeTab = lib.#resolveDefaultSection();
-    }
     this.animateProgress(opening ? 0 : 1);
   }
 
@@ -603,10 +587,6 @@ export class ZenLibrary extends MozLitElement {
     lib.#cancelIdleCleanup();
     lib.#canSwipe = true;
     lib.#beforeSwipeState = this.isLibraryOpen ? 1 : 0;
-
-    if (!this.isLibraryOpen) {
-      lib.activeTab = lib.#resolveDefaultSection();
-    }
 
     await lib.#whenStylesLoaded();
     await window.promiseDocumentFlushed(() => {});
@@ -938,7 +918,7 @@ export class ZenLibrary extends MozLitElement {
         image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
         l10nId: "library-footer-donate-button",
         command: () => {
-          window.openTrustedLinkIn("https://github.com/AstroDevCompany/desktop", "tab");
+          window.openTrustedLinkIn("https://www.zen-browser.app/donate", "tab");
           ZenLibrary.animateProgress(0);
         },
       },

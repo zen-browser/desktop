@@ -1,0 +1,10 @@
+--- a/zen/glance/ZenGlanceManager.mjs
++++ b/zen/glance/ZenGlanceManager.mjs
+@@ -377,6 +377,7 @@
+     }
+ 
+     currentTab.querySelector(".tab-content").appendChild(newTab);
++    gZenWorkspaces?.invalidateStoredTabs();
+     newTab.setAttribute("zen-glance-tab", true);
+     newTab.setAttribute("glance-id", glanceId);
+     currentTab.setAttribute("glance-id", glanceId);

@@ -8,13 +8,13 @@
 :root {
   /* Default values */
   --zen-border-radius: 7px;
-  --zen-primary-color: #14b8a6;
+  --zen-primary-color: AccentColor;
 
   --zen-background-opacity: 1;
 
   /* Branding */
-  --zen-branding-dark: #0c1f1c;
-  --zen-branding-paper: #e7f6f1;
+  --zen-branding-dark: #101010;
+  --zen-branding-paper: #e2e2e2;
 
   --zen-branding-bg: light-dark(var(--zen-branding-paper), var(--zen-branding-dark));
   --zen-branding-bg-reverse: light-dark(var(--zen-branding-dark), var(--zen-branding-paper));
@@ -55,16 +55,7 @@
     color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-branding-bg) 99%)
   );
 
-  /* In-content panels stay on the theme hue and sit darker than the browser chrome. */
-  --zen-panel-background: light-dark(
-    color-mix(in oklch, var(--zen-primary-color) 62%, black),
-    color-mix(in oklch, var(--zen-primary-color) 46%, black)
-  );
-  --zen-panel-raised-background: light-dark(
-    color-mix(in oklch, var(--zen-primary-color) 74%, black),
-    color-mix(in oklch, var(--zen-primary-color) 58%, black)
-  );
-  --zen-dialog-background: var(--zen-panel-background);
+  --zen-dialog-background: light-dark(#fafbff, #1c1c1c);
   --zen-urlbar-background: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 3%, #f4f4f4 97%),
     color-mix(in srgb, var(--zen-primary-color) 4%, rgb(24, 24, 24) 96%)
@@ -141,9 +132,11 @@
     transparent 20%
   ) !important;
 
-  --in-content-page-background: var(--zen-panel-background) !important;
-  --background-color-canvas: var(--zen-panel-background);
-  --zen-in-content-dialog-background: var(--zen-panel-background);
+  --in-content-page-background: var(--zen-colors-tertiary) !important;
+  --zen-in-content-dialog-background: light-dark(
+    var(--zen-colors-tertiary),
+    var(--zen-branding-bg)
+  );
 
   --zen-button-padding: 0.6rem 1.2rem;
 
@@ -213,12 +206,7 @@
   --zen-hidden-toolbar-transition: var(--zen-hidden-toolbar-transition-duration) ease-in-out;
 
   /* XUL */
-  --zen-main-browser-background: linear-gradient(
-    -30deg,
-    #2dd4bf 0%,
-    #0f766e 48%,
-    #115e59 100%
-  );
+  --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);
   --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
 
   --browser-area-z-index-toolbox: 2 !important;
@@ -363,24 +351,6 @@
   &[zen-should-be-dark-mode='false'] #browser {
 %include schemes/light.inc.css
   }
-}
-
-html:root,
-:root[dialogroot] {
-  color-scheme: dark;
-  --background-color-canvas: var(--zen-panel-background) !important;
-  --background-color-box: var(--zen-panel-raised-background) !important;
-  --background-color-box-info: var(--zen-panel-raised-background) !important;
-}
-
-tooltip {
-  appearance: none;
-  -moz-default-appearance: none;
-  background-color: var(--zen-tooltip-background, light-dark(rgb(244, 244, 246), rgb(28, 28, 30))) !important;
-  color: var(--zen-tooltip-foreground, light-dark(rgb(28, 28, 30), rgb(244, 244, 246))) !important;
-  border: 1px solid var(--zen-tooltip-border, light-dark(rgb(0 0 0 / 12%), rgb(255 255 255 / 16%))) !important;
-  border-radius: 6px;
-  padding: 4px 8px;
 }
 
 %include zen-buttons.css

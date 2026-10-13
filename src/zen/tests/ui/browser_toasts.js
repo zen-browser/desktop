@@ -60,17 +60,6 @@ add_task(async function test_description() {
   await waitForToastsGone();
 });
 
-add_task(async function test_frosted() {
-  await gZenUIManager.showToast(TITLE_ID, { timeout: 200, frosted: true });
-  const [toast] = toasts();
-  ok(toast.hasAttribute("frosted"), "A frosted toast is marked frosted");
-
-  await gZenUIManager.showToast(TITLE_ID, { timeout: 100 });
-  is(toasts()[0], toast, "The same toast is reused");
-  ok(!toast.hasAttribute("frosted"), "Showing it plain drops the glass");
-  await waitForToastsGone();
-});
-
 add_task(async function test_same_message_reuses_toast() {
   await gZenUIManager.showToast(TITLE_ID, { timeout: 200 });
   const [first] = toasts();

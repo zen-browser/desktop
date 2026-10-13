@@ -56,34 +56,6 @@
 - name: services.sync.prefs.sync.zen.glance.open-essential-external-links
   value: true
 
-# Homepage
-- name: services.sync.prefs.sync.zen.homepage.mode
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.url
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.cards.time-spent
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.cards.top-site
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.cards.network-speed
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.cards.downloads
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.cards.visited-sites
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.cards.version
-  value: true
-
-- name: services.sync.prefs.sync.zen.homepage.cards.clock
-  value: true
-
 # Browser view
 
 - name: services.sync.prefs.sync.zen.view.show-newtab-button-top

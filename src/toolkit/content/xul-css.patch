@@ -2,38 +2,7 @@ diff --git a/toolkit/content/xul.css b/toolkit/content/xul.css
 index db311601fb2c814139a66316e06707a56b7ac5cc..3a4cefcefe029d0054de0252fe8dead6dc248f59 100644
 --- a/toolkit/content/xul.css
 +++ b/toolkit/content/xul.css
-@@ -349,15 +349,17 @@ menupopup,
- }
- 
- tooltip {
--  appearance: auto;
--  -moz-default-appearance: tooltip;
-+  appearance: none;
-+  -moz-default-appearance: none;
- 
-   white-space: pre-wrap;
- 
--  background-color: InfoBackground;
--  color: InfoText;
-+  background-color: var(--zen-tooltip-background, light-dark(#f4f4f6, #12352f));
-+  color: var(--zen-tooltip-foreground, light-dark(#14302c, #d7f5ee));
-+  border: 1px solid var(--zen-tooltip-border, light-dark(rgb(0 0 0 / 12%), rgb(20 184 166 / 45%)));
-+  border-radius: 6px;
-   font: message-box;
--  padding: 2px 3px;
-+  padding: 4px 8px;
-   max-width: 40em;
-   overflow: clip;
-   pointer-events: none;
-@@ -372,6 +374,7 @@ tooltip {
-     /* We must specify a min-width, otherwise word-wrap:break-word doesn't work.
-      * See Bug 630864. */
-     min-width: 1px;
-+    color: inherit;
-   }
- 
-   @media (-moz-platform: linux) {
-@@ -463,7 +466,8 @@ deck > *|*:not(:-moz-native-anonymous) {
+@@ -463,7 +463,8 @@ deck > *|*:not(:-moz-native-anonymous) {
  tabpanels > .deck-selected,
  tabpanels > .split-view-panel-active,
  tabpanels > .split-view-splitter,

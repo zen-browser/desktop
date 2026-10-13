@@ -1,0 +1,33 @@
+--- a/toolkit/content/xul.css
++++ b/toolkit/content/xul.css
+@@ -349,15 +349,17 @@
+ }
+ 
+ tooltip {
+-  appearance: auto;
+-  -moz-default-appearance: tooltip;
++  appearance: none;
++  -moz-default-appearance: none;
+ 
+   white-space: pre-wrap;
+ 
+-  background-color: InfoBackground;
+-  color: InfoText;
++  background-color: var(--zen-tooltip-background, light-dark(#f4f4f6, #12352f));
++  color: var(--zen-tooltip-foreground, light-dark(#14302c, #d7f5ee));
++  border: 1px solid var(--zen-tooltip-border, light-dark(rgb(0 0 0 / 12%), rgb(20 184 166 / 45%)));
++  border-radius: 6px;
+   font: message-box;
+-  padding: 2px 3px;
++  padding: 4px 8px;
+   max-width: 40em;
+   overflow: clip;
+   pointer-events: none;
+@@ -372,6 +374,7 @@
+     /* We must specify a min-width, otherwise word-wrap:break-word doesn't work.
+      * See Bug 630864. */
+     min-width: 1px;
++    color: inherit;
+   }
+ 
+   @media (-moz-platform: linux) {

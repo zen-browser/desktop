@@ -7,14 +7,14 @@
   },
   "type": "module",
   "scripts": {
-    "postinstall": "node scripts/patch-async-icns.mjs",
+    "postinstall": "node scripts/patch-async-icns.mjs && node peppermint/scripts/setup-git.mjs",
     "build": "surfer build",
     "prebuild": "node scripts/run-python.mjs scripts/update_en_US_packs.py",
     "build:ui": "surfer build --ui",
     "prebuild:ui": "node scripts/run-python.mjs scripts/update_en_US_packs.py",
     "start": "cd engine && node ../scripts/run-python.mjs ./mach run --noprofile",
     "start:bloat": "XPCOM_MEM_BLOAT_LOG=1 npm start",
-    "import": "npm run ffprefs && npm run import:dumps && node scripts/reset-preferences-before-import.mjs && surfer import && node scripts/apply-engine-patches.mjs && node scripts/ensure-jar-manifest-patches.mjs && node scripts/run-python.mjs scripts/update_en_US_packs.py",
+    "import": "npm run ffprefs && npm run import:dumps && node peppermint/scripts/apply-overlay.mjs revert && node scripts/reset-preferences-before-import.mjs && node peppermint/scripts/surfer-import.mjs && node peppermint/scripts/prune-engine-links.mjs && node scripts/apply-engine-patches.mjs && node scripts/ensure-jar-manifest-patches.mjs && node peppermint/scripts/apply-overlay.mjs apply && node scripts/run-python.mjs scripts/update_en_US_packs.py",
     "import:dumps": "node scripts/run-python.mjs scripts/update_service_dumps.py",
     "export": "surfer export",
     "init": "npm run download && npm run import && npm run bootstrap",
@@ -25,7 +25,7 @@
     "sync:raw": "surfer update",
     "sync:rc": "node scripts/run-python.mjs scripts/update_ff.py --rc",
     "sync:l10n": "node scripts/run-python.mjs scripts/update_ff.py --just-l10n",
-    "lint": "cd engine && ./mach lint zen",
+    "lint": "cd engine && ./mach lint zen peppermint",
     "lint:fix": "npm run lint -- --fix",
     "reset-ff": "surfer reset",
     "surfer": "surfer",
@@ -37,7 +37,9 @@
     "lc:fix": "surfer license-check --fix",
     "use-moz-src": "cd engine && ./mach use-moz-src",
     "ci": "surfer ci --brand release --display-version",
-    "audit:fix-safe": "node scripts/npm-audit-safe-fix.mjs"
+    "audit:fix-safe": "node scripts/npm-audit-safe-fix.mjs",
+    "pm:record": "node peppermint/scripts/record-patch.mjs",
+    "pm:verify": "node peppermint/scripts/verify.mjs compare peppermint/baseline/engine-snapshot.json --moves peppermint/baseline/moves.json --allow peppermint/baseline/allow.json"
   },
   "repository": {
     "type": "git",

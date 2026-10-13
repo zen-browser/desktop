@@ -43,13 +43,13 @@ add_task(async function test_create_get_update_remove_lifecycle() {
     "createNewRoute() appends one route"
   );
 
-  created.reference = "example.com";
+  created.reference = "zen-browser.app";
   created.openIn = "ws-42";
   created.matchType = "equal-to";
   gZenSpaceRoutingManager.updateRoute(created);
 
   const fetched = gZenSpaceRoutingManager.getRoute(created.id);
-  Assert.equal(fetched.reference, "example.com", "reference persisted");
+  Assert.equal(fetched.reference, "zen-browser.app", "reference persisted");
   Assert.equal(fetched.openIn, "ws-42", "openIn persisted");
   Assert.equal(fetched.matchType, "equal-to", "matchType persisted");
 

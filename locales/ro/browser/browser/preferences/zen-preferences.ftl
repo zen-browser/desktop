@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Aspect și Atmosferă
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Schimbarea limbii implicite poate face ca Website-urile să te urmărească mai ușor.
 zen-vertical-tabs-layout-header = Aspect Browser
 zen-vertical-tabs-layout-description = Alege aspectul care ți se potrivește cel mai bine
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Tragerea ferestrei
 zen-look-and-feel-window-drag-description = Mută fereastra trăgând de spațiul liber din partea de sus a site-urilor, la fel cum tragi de bara de titlu.
 zen-window-drag-enabled = 
     .label = Permite tragerea ferestrei de pe pagini web
+pane-zen-tabs-title = Gestionare File
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Spații de Lucru
 zen-tabs-select-recently-used-on-close = 
     .label = La închiderea unei file, comută la cea mai recent folosită filă în loc de fila următoare
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Nu extinde filele în mod implic
 zen-vertical-tabs-expand-tabs-on-hover = Extinde filele la Survolare (Nu funcționează în Modul Compact)
 zen-vertical-tabs-expand-tabs-header = Cum se extind filele
 zen-vertical-tabs-expand-tabs-description = Alege cum să extinzi filele in bara laterală
-zen-theme-marketplace-header = Mod-uri Peppermint
+zen-theme-marketplace-header = Mod-uri Zen
 zen-theme-disable-all-enabled = 
     .title = Dezactivează toate Mod-urile
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Nimic
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Scrie ceva...
-pane-zen-marketplace-title = Mod-uri Peppermint
+pane-zen-marketplace-title = Mod-uri Zen
 zen-themes-auto-update = 
     .label = Actualizează automat Mod-urile instalate la pornire
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Tema Întunecată Colorată
 zen-compact-mode-styles-left = Ascunde Bara de File
 zen-compact-mode-styles-top = Ascunde Bara de Sus
 zen-compact-mode-styles-both = Ascunde Ambele
-zen-urlbar-title = Bara URL Peppermint
+zen-urlbar-title = Bara URL Zen
 zen-urlbar-header = Setări generale pentru bara URL
 zen-urlbar-description = Personalizează bara URL după gustul tău
 zen-urlbar-behavior-label = Comportament
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Scurtături de Tastatură { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Mod-uri Peppermint
+    .tooltiptext = Mod-uri Zen
 zen-settings-CKS-header = Personalizează-ți scurtăturile de tastatură
 zen-settings-CKS-description = Schimbă scurtăturile de tastatură implicite după gustul tău și îmbunătățește experiența de navigare
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Istoric și Marcaje
 zenCKSOption-group-mediaAndDisplay = Media și Afișare
 zenCKSOption-group-zen-compact-mode = Modul Compact
 zenCKSOption-group-zen-workspace = Spații de Lucru
-zenCKSOption-group-zen-other = Alte Funcții Peppermint
+zenCKSOption-group-zen-other = Alte Funcții Zen
 zenCKSOption-group-zen-split-view = Vizualizare Împărțită
 zenCKSOption-group-devTools = Unelte pentru Dezvoltatori
 zen-key-quick-restart = Repornire Rapidă

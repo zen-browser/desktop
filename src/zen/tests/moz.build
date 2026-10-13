@@ -3,19 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 BROWSER_CHROME_MANIFESTS += [
-    "adblock/browser.toml",
     "boosts/browser.toml",
     "compact_mode/browser.toml",
     "container_essentials/browser.toml",
-    "cookie_consent/browser.toml",
     "device_sync/browser.toml",
     "folders/browser.toml",
     "glance/browser.toml",
-    "homepage/browser.toml",
     "library/browser.toml",
     "live-folders/browser.toml",
     "media/browser.toml",
-    "notepad/browser.toml",
     "pinned/browser.toml",
     "popover/browser.toml",
     "share/browser.toml",
@@ -26,7 +22,6 @@ BROWSER_CHROME_MANIFESTS += [
     "tabs/browser.toml",
     "ub-actions/browser.toml",
     "ui/browser.toml",
-    "underpowered/browser.toml",
     "urlbar/browser.toml",
     "welcome/browser.toml",
     "window_drag/browser.toml",

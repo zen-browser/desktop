@@ -31,44 +31,25 @@ panel[type="arrow"]:not(#feature-callout) {
   }
 
   @media (-moz-platform: linux) or ((-moz-platform: windows) and (not (-moz-windows-mica-popups))) {
-    --panel-background-color: var(--zen-popup-background, rgb(255 255 255 / 58%)) !important;
-    color: var(--zen-popup-foreground, rgb(28, 28, 30));
-    --panel-text-color: var(--zen-popup-foreground, rgb(28, 28, 30));
-
     &::part(content) {
       /* stylelint-disable-next-line property-no-unknown */
-      corner-shape: round;
+      corner-shape: round; 
       border-radius: calc(var(--panel-border-radius) / var(--zen-squircle-value));
-      backdrop-filter: var(--zen-frosted-backdrop-strong);
-      background-color: var(--zen-popup-background, rgb(255 255 255 / 58%)) !important;
-    }
-
-    @media (prefers-reduced-transparency: reduce) {
-      --panel-background-color: var(--zen-popup-background-solid, rgb(244, 244, 244)) !important;
-
-      &::part(content) {
-        backdrop-filter: none;
-        background-color: var(--zen-popup-background-solid, rgb(244, 244, 244)) !important;
-      }
-    }
-
-    :root[zen-no-acrylic="true"] &::part(content) {
-      backdrop-filter: none;
-      background-color: var(--zen-popup-background-solid, rgb(244, 244, 244)) !important;
     }
   }
 
   @media (-moz-platform: macos) {
-    appearance: auto !important;
-    -moz-default-appearance: menupopup;
-    background-color: transparent !important;
-    color: var(--zen-popup-foreground, rgb(28, 28, 30));
-    --panel-text-color: var(--zen-popup-foreground, rgb(28, 28, 30));
-    --panel-item-hover-bgcolor: var(--zen-popup-hover, rgb(0 0 0 / 8%));
-    --panel-item-active-bgcolor: var(--zen-popup-active, rgb(0 0 0 / 14%));
+    &:is([nonnative], :not([type="arrow"])) {
+      appearance: auto !important;
+      -moz-default-appearance: menupopup;
+      /* We set the default background here, rather than on ::part(content),
+       * because otherwise it'd interfere with the native look. Non-native-looking
+       * popups should get their background via --panel-background */
+      background-color: Menu !important;
+    }
 
     --panel-box-shadow-margin: 0px !important;
-    --panel-background-color: var(--zen-popup-background, rgb(255 255 255 / 42%)) !important;
+    --panel-background-color: transparent !important;
     --panel-border-color: transparent;
 
     /* Remove the shadow for the native panels, as macos already
@@ -79,36 +60,8 @@ panel[type="arrow"]:not(#feature-callout) {
     --panel-box-shadow: none;
 
     &::part(content) {
-      background-color: var(--zen-popup-background, rgb(255 255 255 / 42%)) !important;
-      backdrop-filter: var(--zen-frosted-backdrop-strong);
-      border-color: var(--panel-border-color);
-    }
-
-    @media (prefers-reduced-transparency: reduce) {
-      background-color: var(--zen-popup-background-solid, rgb(244, 244, 246)) !important;
-      --panel-background-color: var(--zen-popup-background-solid, rgb(244, 244, 246)) !important;
-      --panel-border-color: transparent;
-
-      &::part(content) {
-        background-color: var(--zen-popup-background-solid, rgb(244, 244, 246)) !important;
-        backdrop-filter: none;
-      }
-    }
-
-    :root[zen-no-acrylic="true"] &::part(content) {
-      backdrop-filter: none;
-      background-color: var(--zen-popup-background-solid, rgb(244, 244, 246)) !important;
+      /* This shoudn't really be needed, but just in case */
+      background-color: transparent !important;
     }
   }
-}
-
-/* Native macOS tooltips stay light while dark-mode text is white. Paint them ourselves. */
-tooltip {
-  appearance: none;
-  -moz-default-appearance: none;
-  background-color: var(--zen-tooltip-background, light-dark(rgb(244, 244, 246), rgb(28, 28, 30))) !important;
-  color: var(--zen-tooltip-foreground, light-dark(rgb(28, 28, 30), rgb(244, 244, 246))) !important;
-  border: 1px solid var(--zen-tooltip-border, light-dark(rgb(0 0 0 / 12%), rgb(255 255 255 / 16%))) !important;
-  border-radius: 6px;
-  padding: 4px 8px;
 }

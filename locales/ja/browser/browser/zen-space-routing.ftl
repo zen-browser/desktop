@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = スペースルーティングの設定
-zen-space-routing-rulepanel-placeholder = ルートを使用すると、特定のサイトが「Peppermint」内でどこに開かれるかを選択できます。たとえば、YouTubeのリンクをあなたの個人的なスペース内に常に開くようにルーティングできます。
+zen-space-routing-rulepanel-placeholder = ルートを使用すると、特定のサイトが「Zen」内でどこに開かれるかを選択できます。たとえば、YouTubeのリンクをあなたの個人的なスペース内に常に開くようにルーティングできます。
 zen-space-routing-dialog-title = スペースルーティングの設定
 zen-space-routing-external-default = 外部リンクのデフォルトルート
 zen-space-routing-new-route = 新しいルート

@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Stillingar beininga á svæði
-zen-space-routing-rulepanel-placeholder = Beiningar gera þér kleift að velja hvar ákveðin vefsvæði opnast inni í Peppermint. Til dæmis geturðu stillt það þannig að YouTube-tenglar opnist alltaf í persónulega svæðinu þínu.
+zen-space-routing-rulepanel-placeholder = Beiningar gera þér kleift að velja hvar ákveðin vefsvæði opnast inni í Zen. Til dæmis geturðu stillt það þannig að YouTube-tenglar opnist alltaf í persónulega svæðinu þínu.
 zen-space-routing-dialog-title = Stillingar beininga á svæði
 zen-space-routing-external-default = Sjálfgefin beining fyrir utanaðkomandi tengla
 zen-space-routing-new-route = Ný beining

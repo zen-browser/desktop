@@ -1,0 +1,17 @@
+--- a/widget/SwipeTracker.cpp
++++ b/widget/SwipeTracker.cpp
+@@ -147,9 +147,11 @@
+   // moving slightly away from the target direction then we do not want to
+   // display the UI as if we were at the success threshold as that would
+   // give a false indication that navigation would happen.
+-  if (!computedSwipeSuccess && (eventAmount >= kSwipeSuccessThreshold ||
+-                                eventAmount <= -kSwipeSuccessThreshold)) {
+-    eventAmount = 0.999 * kSwipeSuccessThreshold;
++  if (!computedSwipeSuccess &&
++      (eventAmount >= SuccessThreshold() ||
++       eventAmount <= -SuccessThreshold()) &&
++      !HasConsumerThreshold()) {
++    eventAmount = 0.999 * SuccessThreshold();
+     if (mGestureAmount < 0.f) {
+       eventAmount = -eventAmount;
+     }

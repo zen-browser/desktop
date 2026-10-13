@@ -1,0 +1,55 @@
+--- a/browser/components/urlbar/content/UrlbarInputBase.mjs
++++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
+@@ -2569,15 +2569,23 @@
+    */
+   onFirstResult(queryContext) {
+     let firstResult = queryContext.results[0];
++    // The snippet keyword heuristic can sit under other groups. Still enter
++    // snippets mode from it.
++    let snippetKeywordResult = queryContext.results.find(
++      result =>
++        result.heuristic &&
++        result.payload?.keyword == UrlbarShared.RESTRICT_TOKENS.SNIPPET
++    );
++    let modeResult = snippetKeywordResult || firstResult;
+ 
+     // If the heuristic result has a keyword but isn't a keyword offer, we may
+     // need to enter search mode.
+     if (
+-      firstResult.heuristic &&
+-      firstResult.payload.keyword &&
+-      !this.#providesSearchMode(firstResult) &&
++      modeResult.heuristic &&
++      modeResult.payload.keyword &&
++      !this.#providesSearchMode(modeResult) &&
+       this.maybeConfirmSearchModeFromResult({
+-        result: firstResult,
++        result: modeResult,
+         entry: "typed",
+         checkValue: false,
+       })
+@@ -3314,6 +3322,16 @@
+       this.removeAttribute("zen-floating-urlbar");
+     }
+     this.#updateTextboxPosition();
++
++    // Enable the animation only after the first extend call to ensure it
++    // doesn't run when opening a new window.
++    if (!this.hasAttribute("popover-animate")) {
++      promiseLayoutFlushed(this.window).then(() => {
++        this.window.requestAnimationFrame(() => {
++          this.toggleAttribute("popover-animate", true);
++        });
++      });
++    }
+   }
+ 
+   #closePopover() {
+@@ -6130,6 +6148,7 @@
+       options.searchMode = this.searchMode;
+       if (
+         this.searchMode.source &&
++        this.searchMode.source != UrlbarShared.RESULT_SOURCE.SNIPPETS &&
+         !UrlbarPrefs.get("unifiedSearchButton.historyInSearchMode")
+       ) {
+         options.sources = [this.searchMode.source];

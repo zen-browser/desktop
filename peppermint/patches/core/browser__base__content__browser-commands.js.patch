@@ -1,0 +1,13 @@
+--- a/browser/base/content/browser-commands.js
++++ b/browser/base/content/browser-commands.js
+@@ -397,8 +397,8 @@
+       (event.ctrlKey || event.metaKey || event.altKey) &&
+       gBrowser.selectedTab.pinned
+     ) {
+-      if (gBrowser.visibleTabs.length > gBrowser.pinnedTabCount) {
+-        gBrowser.tabContainer.selectedIndex = gBrowser.pinnedTabCount;
++      if (gBrowser.visibleTabs.length > gBrowser._numVisiblePinTabs) {
++        gBrowser.tabContainer.selectedIndex = gBrowser._numVisiblePinTabs;
+       }
+       return;
+     }

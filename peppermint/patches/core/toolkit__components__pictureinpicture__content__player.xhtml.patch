@@ -1,0 +1,29 @@
+--- a/toolkit/components/pictureinpicture/content/player.xhtml
++++ b/toolkit/components/pictureinpicture/content/player.xhtml
+@@ -54,8 +54,8 @@
+       tabindex="10"
+ #endif
+       />
+-      <button id="unpip"
+-      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-unpip-btn" data-l10n-attrs="tooltip"
++      <button id="minimize"
++      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-minimize-btn" data-l10n-attrs="tooltip"
+ #ifdef XP_MACOSX
+       mac="true"
+       tabindex="10"
+@@ -63,6 +63,15 @@
+       tabindex="9"
+ #endif
+       />
++      <button id="unpip"
++      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-unpip-btn" data-l10n-attrs="tooltip"
++#ifdef XP_MACOSX
++      mac="true"
++      tabindex="11"
++#else
++      tabindex="10"
++#endif
++      />
+     <div id="controls-bottom-gradient" class="control-item"></div>
+     <div id="controls-bottom">
+       <div class="controls-bottom-upper">

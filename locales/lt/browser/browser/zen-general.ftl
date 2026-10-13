@@ -123,7 +123,7 @@ zen-open-link-in-glance =
     .accesskey = G
 zen-sidebar-notification-updated-heading = Naujinimas baigtas.
 
-# See PeppermintSidebarNotification.mjs to see how these would be used
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Kas naujo naršyklėje „{ -brand-short-name }“
 zen-sidebar-notification-updated-tooltip = 
@@ -135,7 +135,7 @@ zen-sidebar-notification-restart-safe-mode-label = Kažkas neveikia?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Paleisti iš naujo saugioje režime
 zen-window-sync-migration-dialog-title = Išlaikykite savo langus sinchronizuotus
-zen-window-sync-migration-dialog-message = „Peppermint“ dabar sinchronizuoja langus tame pačiame įrenginyje, todėl viename lange atlikti pakeitimai iš karto atsispindi ir kituose.
+zen-window-sync-migration-dialog-message = „Zen“ dabar sinchronizuoja langus tame pačiame įrenginyje, todėl viename lange atlikti pakeitimai iš karto atsispindi ir kituose.
 zen-window-sync-migration-dialog-learn-more = Sužinoti daugiau
 zen-window-sync-migration-dialog-accept = Supratau
 zen-appmenu-new-blank-window = 

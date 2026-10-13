@@ -6,3 +6,9 @@
 *.d.ts linguist-language=TypeScript
 
 src/zen/tests/** linguist-language=C++
+
+# Peppermint merge policy. The drivers are registered by
+# peppermint/scripts/setup-git.mjs (runs on npm install).
+configs/branding/** merge=ours
+surfer.json merge=peppermint-surfer
+package-lock.json merge=peppermint-lockfile

@@ -8,9 +8,6 @@
 - name: zen.library.last-tab
   value: "history"
 
-- name: zen.library.default-section
-  value: "downloads"
-
 - name: zen.library.history.closed-tabs
   value: false
 

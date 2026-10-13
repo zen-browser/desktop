@@ -1275,10 +1275,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *
    * @param {Tab|null} otherTabHint - An optional hint for another tab to split with (used for glance tabs).
    */
-  contextSplitTabs(otherTabHint = null, contextTabOverride = null) {
+  contextSplitTabs(otherTabHint = null) {
     let tabs;
     let currentTab = gZenGlanceManager.getTabOrGlanceParent(
-      contextTabOverride || TabContextMenu.contextTab || gBrowser.selectedTab
+      TabContextMenu.contextTab || gBrowser.selectedTab
     );
     if (currentTab.multiselected) {
       tabs = gBrowser.selectedTabs;

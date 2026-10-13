@@ -38,11 +38,6 @@
 - name: zen.haptic-feedback.enabled
   value: true
 
-# Unload background tabs that have been idle this many minutes.
-# 0 turns the timer off. Pinned tabs, essentials, and playing media stay loaded.
-- name: zen.tab-unloader.timeout-minutes
-  value: 10
-
 - name: zen.startup.smooth-scroll-in-tabs
   value: true
 

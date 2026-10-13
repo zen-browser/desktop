@@ -1,0 +1,20 @@
+--- a/zen/tests/space_routing/browser_space_routing_route_matching.js
++++ b/zen/tests/space_routing/browser_space_routing_route_matching.js
+@@ -43,7 +43,7 @@
+ 
+ add_task(async function test_regex_match_is_case_sensitive_on_raw_uri() {
+   ok(
+-    gZenSpaceRoutingManager.isRouteMatching("https://zen-browser.app", {
++    gZenSpaceRoutingManager.isRouteMatching("https://example.com", {
+       reference: "^https://.*\\.app$",
+       matchType: "regex",
+     }),
+@@ -64,7 +64,7 @@
+   let result;
+   try {
+     result = gZenSpaceRoutingManager.isRouteMatching(
+-      "https://zen-browser.app",
++      "https://example.com",
+       {
+         reference: "([",
+         matchType: "regex",

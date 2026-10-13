@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Vzhled a dojem
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Změna výchozího jazyka usnadní webovým stránkám vás sledovat.
 zen-vertical-tabs-layout-header = Uspořádání prohlížeče
 zen-vertical-tabs-layout-description = Vyberte si uspořádání které vám sedí nejlépe
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Táhnutí okna
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Povolit přetahování okna z webových stránek
+pane-zen-tabs-title = Správa karet
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Pracoviště
 zen-tabs-select-recently-used-on-close = 
     .label = Při zavření panelu přepnout na naposledy použitý panel namísto dalšího panelu
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = Nerozšiřovat záložky ve výc
 zen-vertical-tabs-expand-tabs-on-hover = Rozbalit panely při přejetí myší (nefunguje v kompaktním režimu)
 zen-vertical-tabs-expand-tabs-header = Jak rozbalit panely
 zen-vertical-tabs-expand-tabs-description = Vyberte si jak rozbalit panely v postranním panelu
-zen-theme-marketplace-header = Peppermint Módy
+zen-theme-marketplace-header = Zen Módy
 zen-theme-disable-all-enabled = 
     .title = Zakázat všechny módy
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Žádný
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Napište něco...
-pane-zen-marketplace-title = Peppermint Módy
+pane-zen-marketplace-title = Zen Módy
 zen-themes-auto-update = 
     .label = Automaticky aktualizovat nainstalované mody při spuštění
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Barevný tmavý motiv
 zen-compact-mode-styles-left = Skrýt panel karet
 zen-compact-mode-styles-top = Skrýt horní lištu
 zen-compact-mode-styles-both = Skrýt obojí
-zen-urlbar-title = Peppermint adresní řádek
+zen-urlbar-title = Zen adresní řádek
 zen-urlbar-header = Obecné nastavení adresního řádku
 zen-urlbar-description = Přizpůsobte si adresní řádek podle svých představ
 zen-urlbar-behavior-label = Chování
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Klávesové zkratky { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Módy
+    .tooltiptext = Zen Módy
 zen-settings-CKS-header = Přizpůsobte si klávesové zkratky
 zen-settings-CKS-description = Změňte výchozí klávesové zkratky podle vašich přání a zlepšete svůj zážitek z prohlížení
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Historie a záložky
 zenCKSOption-group-mediaAndDisplay = Média a zobrazení
 zenCKSOption-group-zen-compact-mode = Kompaktní režim
 zenCKSOption-group-zen-workspace = Pracovní prostory
-zenCKSOption-group-zen-other = Ostatní funkce Peppermintu
+zenCKSOption-group-zen-other = Ostatní funkce Zenu
 zenCKSOption-group-zen-split-view = Rozdělit zobrazení
 zenCKSOption-group-devTools = Vývojářské nástroje
 zen-key-quick-restart = Rychlý restart

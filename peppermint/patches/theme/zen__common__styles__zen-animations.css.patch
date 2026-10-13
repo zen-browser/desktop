@@ -1,0 +1,68 @@
+--- a/zen/common/styles/zen-animations.css
++++ b/zen/common/styles/zen-animations.css
+@@ -48,44 +48,32 @@
+   }
+ }
+ 
++/* 100cqi is the clipping box; 100% is the label. Transform only. */
+ @keyframes zen-back-and-forth-text {
+   0%,
+   10% {
+     transform: translateX(0);
+-    left: 0;
+   }
+ 
+   45%,
+   65% {
+-    transform: translateX(calc(-100% - 5px));
+-    left: 100%;
++    transform: translateX(calc(100cqi - 100% - 5px));
+   }
+ 
+   90%,
+   100% {
+     transform: translateX(0);
+-    left: 0;
+   }
+ }
+ 
+ /* Mark: URL Bar */
+ @keyframes zen-urlbar-searchmode {
+   0% {
+-    box-shadow: 0 0 20px
+-      color-mix(
+-        in srgb,
+-        color-mix(
+-          in srgb,
+-          var(--zen-primary-color),
+-          var(--toolbox-textcolor) 20%
+-        ),
+-        light-dark(rgba(0, 0, 0, 0.3), transparent) 50%
+-      );
++    opacity: 0.85;
+   }
+ 
+   100% {
+-    box-shadow: 0 0 250px
+-      color-mix(in srgb, var(--zen-primary-color), transparent 100%);
++    opacity: 0;
+   }
+ }
+ 
+@@ -152,6 +140,15 @@
+   to {
+     transform: translate(-50%, -50%) scale(1);
+     opacity: 1;
+-    width: 10rem;
+   }
+ }
++
++/* Mark: Underpowered mode */
++/* 1ms rather than none, so the end events chrome code waits for still fire. */
++:root[zen-underpowered] :is(*, ::before, ::after) {
++  animation-delay: 0s !important;
++  animation-duration: 1ms !important;
++  animation-iteration-count: 1 !important;
++  transition-delay: 0s !important;
++  transition-duration: 1ms !important;
++}

@@ -1,8 +1,6 @@
-diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
-index 83b80a808261ce28e5c571dc802993556477f0c8..2796f97c89f370cd895177b0142847a118df73b8 100644
 --- a/widget/SwipeTracker.cpp
 +++ b/widget/SwipeTracker.cpp
-@@ -66,7 +66,14 @@ double SwipeTracker::SwipeSuccessTargetValue() const {
+@@ -66,7 +66,14 @@
               : 1.0;
  }
  
@@ -17,7 +15,7 @@ index 83b80a808261ce28e5c571dc802993556477f0c8..2796f97c89f370cd895177b0142847a1
    // gestureAmount needs to stay between -1 and 0 when swiping right and
    // between 0 and 1 when swiping left.
    double min =
-@@ -84,14 +91,14 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
+@@ -84,14 +91,14 @@
    // If the fingers were moving away from the target direction when they were
    // lifted from the touchpad, abort the swipe.
    if (mCurrentVelocity * targetValue <
@@ -36,22 +34,7 @@ index 83b80a808261ce28e5c571dc802993556477f0c8..2796f97c89f370cd895177b0142847a1
  }
  
  nsEventStatus SwipeTracker::ProcessEvent(
-@@ -140,9 +147,11 @@ nsEventStatus SwipeTracker::ProcessEvent(
-   // moving slightly away from the target direction then we do not want to
-   // display the UI as if we were at the success threshold as that would
-   // give a false indication that navigation would happen.
--  if (!computedSwipeSuccess && (eventAmount >= kSwipeSuccessThreshold ||
--                                eventAmount <= -kSwipeSuccessThreshold)) {
--    eventAmount = 0.999 * kSwipeSuccessThreshold;
-+  if (!computedSwipeSuccess &&
-+      (eventAmount >= SuccessThreshold() ||
-+       eventAmount <= -SuccessThreshold()) &&
-+      !HasConsumerThreshold()) {
-+    eventAmount = 0.999 * SuccessThreshold();
-     if (mGestureAmount < 0.f) {
-       eventAmount = -eventAmount;
-     }
-@@ -262,6 +271,8 @@ void SwipeTracker::SendSwipeEvent(EventMessage aMsg, uint32_t aDirection,
+@@ -262,6 +269,8 @@
    geckoEvent.mDelta = aDelta;
    geckoEvent.mAllowedDirections = mAllowedDirections;
    widget->DispatchWindowEvent(geckoEvent);

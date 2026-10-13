@@ -2,36 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-sidebar-layout-title = Sidebar & layout
-category-zen-sidebar-layout =
-    .tooltiptext = { pane-zen-sidebar-layout-title }
-
-pane-zen-toolbar-urlbar-title = Toolbar & address bar
-category-zen-toolbar-urlbar =
-    .tooltiptext = { pane-zen-toolbar-urlbar-title }
-
-pane-zen-spaces-tabs-title = Spaces & tabs
-category-zen-spaces-tabs =
-    .tooltiptext = { pane-zen-spaces-tabs-title }
-
-pane-zen-shortcuts-title = Shortcuts
-category-zen-shortcuts =
-    .tooltiptext = { pane-zen-shortcuts-title }
-
-zen-sidebar-layout-section-title = Sidebar & layout
-zen-tab-list-section-title = Tab list
-zen-compact-toolbar-section-title = Compact toolbar
-zen-address-bar-section-title = Address bar
-zen-tab-switching-section-title = Tab switching
-zen-tab-switching-header = Tab switching behavior
-zen-tab-switching-description = Control how tabs are selected when you close tabs or cycle with Ctrl+Tab.
-zen-pinned-essentials-section-title = Pinned tabs & essentials
-zen-glance-section-title = Link preview
-
-zen-settings-spaces-sync-footer =
-    Workspace sync is managed in your Mozilla account settings.
-    <a data-l10n-name="sync-link">Open Sync settings</a>
-
+pane-zen-looks-title = Aspecte i comportament
+category-zen-looks = 
+    .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Canviar l'idioma per defecte podria facilitar que els llocs web us facin seguiment.
 zen-vertical-tabs-layout-header = Disposició del navegador
 zen-vertical-tabs-layout-description = Trieu la disposició que més us convingui
@@ -69,6 +42,9 @@ zen-look-and-feel-window-drag-header = Arrossegueu la finestra
 zen-look-and-feel-window-drag-description = Mou la finestra arrossegant l'espai buit a la part superior dels llocs web, igual que la barra de títol.
 zen-window-drag-enabled = 
     .label = Permet arrossegar la finestra des de les pàgines web
+pane-zen-tabs-title = Gestió de pestanyes
+category-zen-workspaces = 
+    .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Espais de treball
 zen-tabs-select-recently-used-on-close = 
     .label = En tancar una pestanya, canvia a la pestanya utilitzada més recentment en lloc de la següent
@@ -129,7 +105,7 @@ zen-vertical-tabs-dont-expand-tabs-by-default = No expandeixis les pestanyes per
 zen-vertical-tabs-expand-tabs-on-hover = Expandeix les pestanyes en passar el cursor (no funcionarà en el mode compacte)
 zen-vertical-tabs-expand-tabs-header = Com expandir les pestanyes?
 zen-vertical-tabs-expand-tabs-description = Trieu com expandir les pestanyes a la barra lateral
-zen-theme-marketplace-header = Peppermint Mods
+zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
     .title = Deshabilita totes les modificacions
 zen-theme-disable-all-disabled = 
@@ -161,7 +137,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = Cap
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Escriviu alguna cosa...
-pane-zen-marketplace-title = Peppermint Mods
+pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update = 
     .label = Actualitza automàticament les modificacions instal·lades a l'inici
 zen-settings-workspaces-force-container-tabs-to-workspace = 
@@ -175,7 +151,7 @@ zen-dark-theme-styles-colorful = Tema fosc colorit
 zen-compact-mode-styles-left = Amaga la barra de pestanyes
 zen-compact-mode-styles-top = Amaga la barra superior
 zen-compact-mode-styles-both = Amaga les dues
-zen-urlbar-title = Barra d'URL del Peppermint
+zen-urlbar-title = Barra d'URL del Zen
 zen-urlbar-header = Configuració general de la barra d'URL
 zen-urlbar-description = Personalitzeu la barra d'URL al vostre gust
 zen-urlbar-behavior-label = Comportament
@@ -190,7 +166,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = Dreceres de teclat de { -brand-short-name }
 category-zen-marketplace = 
-    .tooltiptext = Peppermint Mods
+    .tooltiptext = Zen Mods
 zen-settings-CKS-header = Personalitzeu les vostres dreceres de teclat
 zen-settings-CKS-description = Canvieu les dreceres de teclat per defecte al vostre gust i milloreu la vostra experiència de navegació
 zen-settings-CKS-disable-firefox = 
@@ -208,7 +184,7 @@ zenCKSOption-group-historyAndBookmarks = Historial i marcadors
 zenCKSOption-group-mediaAndDisplay = Multimèdia i visualització
 zenCKSOption-group-zen-compact-mode = Mode compacte
 zenCKSOption-group-zen-workspace = Other Workspaces
-zenCKSOption-group-zen-other = Altres característiques del Peppermint
+zenCKSOption-group-zen-other = Altres característiques del Zen
 zenCKSOption-group-zen-split-view = Vista dividida
 zenCKSOption-group-devTools = Eines per a desenvolupadors
 zen-key-quick-restart = Reinici ràpid

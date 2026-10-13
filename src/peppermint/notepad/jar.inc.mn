@@ -1,0 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        content/browser/zen-notepad/notepad.xhtml                            (../../peppermint/notepad/notepad.xhtml)
+        content/browser/zen-components/ZenNotepadPage.mjs                     (../../peppermint/notepad/ZenNotepadPage.mjs)
+        content/browser/zen-styles/zen-notepad.css                            (../../peppermint/notepad/zen-notepad.css)

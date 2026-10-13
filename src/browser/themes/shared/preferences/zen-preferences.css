@@ -36,7 +36,7 @@ html|dialog {
 
 .navigation {
   padding: 4%;
-  background: color-mix(in oklch, var(--zen-panel-background) 82%, black);
+  background: var(--zen-colors-tertiary);
 }
 
 groupbox button {
@@ -45,7 +45,7 @@ groupbox button {
 
 groupbox button,
 groupbox menulist {
-  background-color: var(--zen-panel-raised-background);
+  background-color: light-dark(#f1f1f1, #363636);
   color: light-dark(black, white);
 }
 
@@ -81,16 +81,8 @@ groupbox h2 {
   margin-bottom: 15px;
 }
 
-#category-zen-sidebar-layout > .category-icon {
+#category-zen-looks > .category-icon {
   list-style-image: url("chrome://browser/skin/customize.svg");
-}
-
-#category-zen-toolbar-urlbar > .category-icon {
-  list-style-image: url("chrome://browser/skin/preferences/category-search.svg");
-}
-
-#category-zen-spaces-tabs > .category-icon {
-  list-style-image: url("chrome://browser/skin/window.svg");
 }
 
 #zenLooksAndFeelGroup > html|div:last-of-type {
@@ -103,7 +95,7 @@ groupbox h2 {
   display: flex;
   border-radius: 10px;
   border: 1px solid var(--zen-colors-border);
-  background: var(--zen-panel-raised-background);
+  background: var(--zen-colors-tertiary);
   position: relative;
   --zen-compact-mode-styles-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
 
@@ -140,6 +132,12 @@ groupbox h2 {
   }
 }
 
+/* Workspace */
+
+#category-zen-tabs-management > .category-icon {
+  list-style-image: url("chrome://browser/skin/window.svg");
+}
+
 #zenTabsUnloadDelayContainer {
   display: flex;
   align-items: center;
@@ -152,21 +150,7 @@ groupbox h2 {
 /* CKS */
 
 #category-zen-CKS > .category-icon {
-  list-style-image: url("chrome://browser/skin/zen-icons/brackets-curly.svg");
-}
-
-#category-zen-adblock > .category-icon {
-  list-style-image: url("chrome://browser/skin/zen-icons/tracking-protection-fill.svg");
-}
-
-#category-zen-performance > .category-icon {
-  list-style-image: url("chrome://browser/skin/preferences/category-general.svg");
-}
-
-/* Marketplace was removed; hide a leftover nav entry if chrome is stale. */
-#category-zen-marketplace,
-moz-page-nav-button[view="paneZenMarketplace"] {
-  display: none !important;
+  list-style-image: url("chrome://browser/skin/quickactions.svg");
 }
 
 .zenCKSOption-input {
@@ -253,7 +237,7 @@ moz-page-nav-button[view="paneZenMarketplace"] {
   flex-direction: column;
   justify-content: center;
   padding: 15px;
-  background: var(--zen-panel-raised-background);
+  background: var(--zen-colors-tertiary);
   border-radius: 10px;
   margin-bottom: 10px;
 }
@@ -281,12 +265,7 @@ moz-page-nav-button[view="paneZenMarketplace"] {
   border-radius: 10px;
   margin: 10px;
   background: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
-
-  @media not (prefers-reduced-transparency: reduce) {
-    :root:not([zen-no-acrylic="true"]) & {
-      backdrop-filter: var(--zen-frosted-backdrop);
-    }
-  }
+  backdrop-filter: blur(15px);
   border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
 }
 
@@ -300,6 +279,165 @@ moz-page-nav-button[view="paneZenMarketplace"] {
   border-radius: 50px;
   background: var(--zen-primary-color);
   transform: translate(-50%, -50%);
+}
+
+/* THemes marketplace */
+
+#category-zen-marketplace > .category-icon {
+  list-style-image: url("chrome://mozapps/skin/extensions/category-themes.svg");
+}
+
+.zenThemeMarketplaceItem {
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 5px;
+  padding: var(--space-medium);
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zenThemeMarketplaceItemHomepageButton {
+  width: 30px;
+  min-width: 0;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    background-image: url("chrome://browser/skin/home.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    fill: currentColor;
+    -moz-context-properties: fill, fill-opacity;
+  }
+}
+
+.zenThemeMarketplaceItemConfigureButton {
+  width: 30px;
+  min-width: 0;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background-image: url("chrome://global/skin/icons/settings.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+
+.zenThemeMarketplaceItemPreferenceCheckbox {
+  margin-right: 10px;
+}
+
+.zenThemeMarketplaceItemPreference:first-of-type {
+  margin-top: 10px;
+}
+
+.zenThemeMarketplaceItemPreference:not(:last-of-type) {
+  margin-bottom: 10px;
+}
+
+.zenThemeMarketplaceItemPreferenceData > * {
+  margin: 0;
+}
+
+.zenThemeMarketplaceItemContent {
+  max-width: 100%;
+  width: 100%;
+}
+
+.zenThemeMarketplaceItemTitle,
+.zenThemeMarketplaceItemDescription {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.zenThemeMarketplaceItemActions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-small);
+  justify-content: space-between;
+}
+
+#zenThemeMarketplaceList {
+  display: grid;
+  gap: var(--space-medium);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+#zenThemeMarketplaceList:has(> *) {
+  margin: 15px 0;
+}
+
+.zenThemeMarketplaceItemUninstallButton,
+#zenThemeMarketplaceImport {
+  margin-left: auto;
+  cursor: pointer;
+}
+
+#zenThemeMarketplaceExport,
+#zenThemeMarketplaceCheckForUpdates {
+  cursor: pointer;
+}
+
+.zenThemeMarketplaceItemPreferenceDialog {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  min-width: 650px;
+}
+
+.zenThemeMarketplaceItemPreferenceDialogTopBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.zenThemeMarketplaceItemPreferenceDialogContent {
+  display: flex;
+  flex-direction: row;
+}
+
+#zenMarketplaceHeader {
+  display: flex;
+  justify-content: space-between;
+
+  & h2 {
+    margin: 0;
+  }
+}
+
+.zenThemeMarketplaceDisableAllToggle {
+  align-self: center;
+}
+
+#zenThemeMarketplaceItemContentHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  & moz-toggle {
+    margin-left: 10px;
+  }
 }
 
 #zenLayoutList {
@@ -340,8 +478,8 @@ moz-page-nav-button[view="paneZenMarketplace"] {
 /* Disable mozilla's settings */
 
 #dataCollectionCategory,
+#dataCollectionGroup,
 #websiteAdvertisingCategory,
-setting-group[groupid="dataCollection"],
 #websiteAdvertisingGroup,
 #helpButton,
 #support-firefox,
@@ -362,67 +500,6 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
   html|div[data-l10n-id="preferences-web-appearance-footer"] {
     display: none;
   }
-}
-
-.tab-key-behavior-chooser {
-  width: 100%;
-}
-
-.tab-key-behavior-item {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.tab-key-behavior-chooser {
-  width: 100%;
-}
-
-.tab-key-behavior-item {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-#zenHomepageURL {
-  flex: 1;
-  min-width: 240px;
-}
-
-.zenUrlSnippetColumns,
-.zenUrlSnippetRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.zenUrlSnippetColumns {
-  margin-top: 8px;
-}
-
-.zenUrlSnippetColumns > label:first-child,
-.zenUrlSnippetShortcut {
-  width: 8em;
-  flex: 0 0 8em;
-}
-
-.zenUrlSnippetColumns > label:last-child,
-.zenUrlSnippetUrl {
-  flex: 1;
-  min-width: 0;
-}
-
-.zenUrlSnippetRow {
-  margin-bottom: 8px;
-}
-
-.zenUrlSnippetRow input {
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid var(--zen-colors-border);
-  background: transparent;
-}
-
-.zenUrlSnippetInvalid {
-  border-color: red !important;
 }
 
 @media -moz-pref("zen.urlbar.replace-newtab") {

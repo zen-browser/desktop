@@ -97,9 +97,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   get #spaceSwitchDuration() {
-    if (!Services.prefs.getBoolPref("zen.workspaces.switch-animation", true)) {
-      return 0;
-    }
     return (
       Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
       1000

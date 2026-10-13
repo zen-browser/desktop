@@ -15,8 +15,6 @@ support-files = [
 
 ["browser_site_data_panel_opens.js"]
 
-["browser_site_data_adblock.js"]
-
 ["browser_site_data_permission_toggle.js"]
 
 ["browser_site_data_security_scheme.js"]

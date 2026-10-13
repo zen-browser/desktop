@@ -1,0 +1,20 @@
+--- a/zen/tests/space_routing/browser_space_routing_dialog.js
++++ b/zen/tests/space_routing/browser_space_routing_dialog.js
+@@ -95,7 +95,7 @@
+ 
+     Assert.equal(
+       input.placeholder,
+-      "zen-browser.app",
++      "example.com",
+       "The 'contains' placeholder is the plain domain"
+     );
+ 
+@@ -104,7 +104,7 @@
+ 
+     Assert.equal(
+       input.placeholder,
+-      "zen-browser\\.app",
++      "example\\.com",
+       "Switching to 'regex' updates the placeholder to an escaped pattern"
+     );
+     Assert.equal(

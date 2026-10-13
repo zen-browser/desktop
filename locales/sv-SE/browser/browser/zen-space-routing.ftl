@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Inställningar för ruttning av utrymme
-zen-space-routing-rulepanel-placeholder = Med rutter kan du välja var specifika webbplatser öppnas i Peppermint. Du kan till exempel dirigera YouTube-länkar så att de alltid öppnas i ditt personliga utrymme.
+zen-space-routing-rulepanel-placeholder = Med rutter kan du välja var specifika webbplatser öppnas i Zen. Du kan till exempel dirigera YouTube-länkar så att de alltid öppnas i ditt personliga utrymme.
 zen-space-routing-dialog-title = Inställningar för ruttning av utrymme
 zen-space-routing-external-default = Standardrutt för externa länkar
 zen-space-routing-new-route = Ny rutt

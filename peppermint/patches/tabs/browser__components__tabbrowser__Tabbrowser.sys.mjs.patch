@@ -1,0 +1,33 @@
+--- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
++++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
+@@ -7916,7 +7916,8 @@
+    * @param {object} [options={}]
+    *   Key-value pairs that will be serialized into the features string.
+    */
+-  replaceTabWithWindow(aTab, options = {}) {
++  replaceTabWithWindow(aTab, options = {}, zenForceSync = false) {
++    if (!this.isTab(aTab)) return; // TODO: Handle tab groups
+     if (this.tabs.length == 1) {
+       return null;
+     }
+@@ -8705,9 +8706,6 @@
+       const tabId = aTab.id;
+       const thisTab = this.documentGlobal.gZenWindowSync.getItemFromWindow(this.documentGlobal, tabId);
+       if (thisTab) {
+-        // The counterpart wears the space of the window it was synced from,
+-        // so settle it into one this window has before placing it.
+-        this.documentGlobal.gZenWorkspaces.adoptTabIntoSpace(thisTab, spaceId);
+         // Just move the tab to the index
+         this.moveTabTo(thisTab, { elementIndex, tabIndex });
+         if (spaceId) {
+@@ -8771,10 +8769,6 @@
+       this.removeTab(newTab);
+       return null;
+     }
+-
+-    // The swap brings the other window's space over with the tab, so settle
+-    // it into one this window actually has.
+-    this.documentGlobal.gZenWorkspaces?.adoptTabIntoSpace(newTab, spaceId);
+ 
+     if (selectTab) {
+       this.selectedTab = newTab;

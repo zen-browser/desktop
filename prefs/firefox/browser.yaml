@@ -66,18 +66,6 @@
 - name: browser.tabs.closeWindowWithLastTab
   value: false
 
-# Switch to a new tab as soon as a link opens in it. Kept as a
-# foreground-tab behavior, not a performance default.
-- name: browser.tabs.loadInBackground
-  value: false
-
-# Firefox leaves this off on Linux. Unload tabs under memory pressure everywhere.
-- name: browser.tabs.unloadOnLowMemory
-  value: true
-
-- name: browser.warnOnQuitShortcut
-  value: false
-
 - name: browser.tabs.dragDrop.multiselectStacking
   value: false
   locked: true
@@ -111,7 +99,7 @@
   value: true
 
 # Disabled from https://searchfox.org/firefox-main/rev/d6bfff43852356ca98af848b4705d37f8d41856f/modules/libpref/init/StaticPrefList.yaml#2008
-# Only enabled for windows, doesn't really fit inside Peppermint.
+# Only enabled for windows, doesn't really fit inside Zen.
 - name: browser.startup.preXulSkeletonUI
   value: false
 

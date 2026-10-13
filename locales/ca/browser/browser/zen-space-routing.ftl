@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Configuració de l'encaminament d'espais
-zen-space-routing-rulepanel-placeholder = Les rutes us permeten triar on s'obren llocs específics dins del Peppermint. Per exemple, podeu encaminar els enllaços del YouTube perquè sempre s'obrin dins del vostre espai personal.
+zen-space-routing-rulepanel-placeholder = Les rutes us permeten triar on s'obren llocs específics dins del Zen. Per exemple, podeu encaminar els enllaços del YouTube perquè sempre s'obrin dins del vostre espai personal.
 zen-space-routing-dialog-title = Configuració de l'encaminament d'espais
 zen-space-routing-external-default = Ruta per defecte per a enllaços externs
 zen-space-routing-new-route = Nova ruta

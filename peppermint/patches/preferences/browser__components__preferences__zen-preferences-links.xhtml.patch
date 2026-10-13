@@ -1,0 +1,11 @@
+--- a/browser/components/preferences/zen-preferences-links.xhtml
++++ b/browser/components/preferences/zen-preferences-links.xhtml
+@@ -7,5 +7,4 @@
+   rel="stylesheet"
+   href="chrome://browser/skin/preferences/zen-preferences.css"
+ />
+-<script src="chrome://browser/content/zenThemeModifier.js"/>
+-<link rel="localization" href="browser/preferences/zen-preferences.ftl"/>
+\ No newline at end of file
++<script src="chrome://browser/content/zenThemeModifier.js"/>
+\ No newline at end of file

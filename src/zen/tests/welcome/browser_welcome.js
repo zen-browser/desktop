@@ -96,32 +96,10 @@ add_task(async function test_Welcome_Steps() {
   ok(true, "Welcome Search Step Test Finished");
 
   await TestUtils.waitForCondition(
-    () => currentPageContent()?.getAttribute("page") === "block-ads",
-    "the ad blocking page is shown"
-  );
-  const medium = document.getElementById("zen-welcome-block-ads-medium");
-  ok(medium?.checked, "Medium blocking is selected by default");
-  Assert.equal(
-    currentPageContent().querySelectorAll(".zen-welcome-option").length,
-    4,
-    "ad blocking page offers light, medium, heavy, and off"
-  );
-  await goNextWelcomePage("zen-generic-next");
-  Assert.equal(
-    Services.prefs.getStringPref("zen.adblock.level"),
-    "medium",
-    "leaving the page on Medium keeps the default level"
-  );
-  Assert.ok(
-    Services.prefs.getBoolPref("zen.adblock.enabled"),
-    "built-in ad blocking stays enabled"
+    () => currentPageContent()?.getAttribute("page") === "essentials",
+    "the ad blocking page to be skipped when uBlock is unavailable"
   );
   ok(true, "Welcome Block Ads Step Test Finished");
-
-  await TestUtils.waitForCondition(
-    () => currentPageContent()?.getAttribute("page") === "essentials",
-    "essentials follows ad blocking"
-  );
 
   const essentials = currentPageContent().querySelectorAll(
     "#zen-welcome-essentials .zen-welcome-essential"

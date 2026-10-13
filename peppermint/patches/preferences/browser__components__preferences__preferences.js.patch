@@ -1,0 +1,20 @@
+--- a/browser/components/preferences/preferences.js
++++ b/browser/components/preferences/preferences.js
+@@ -571,10 +571,14 @@
+   register_module("paneHome", gHomePane);
+   register_module("paneSearch", gSearchPane);
+   register_module("panePrivacy", gPrivacyPane);
+-  register_module("paneZenLooks", gZenLooksAndFeel);
+-  register_module("paneZenTabManagement", gZenWorkspacesSettings);
++  register_module("paneZenSidebarLayout", gZenLooksAndFeel);
++  register_module("paneZenToolbarUrlbar", gZenToolbarUrlbarSettings);
++  register_module("paneZenSpacesTabs", gZenWorkspacesSettings);
+   register_module("paneZenCKS", gZenCKSSettings);
+-  register_module("paneZenMarketplace", gZenMarketplaceManager);
++  register_module("paneZenAdblock", gZenAdblockSettings);
++  register_module("paneZenHomepage", gZenHomepageSettings);
++  register_module("paneZenUrlSnippets", gZenUrlSnippetsSettings);
++  register_module("paneZenPerformance", gZenPerformanceSettings);
+ 
+   // Restore the cached Firefox Labs nav button visibility so it shows
+   // immediately when recipes are expected to be available, before

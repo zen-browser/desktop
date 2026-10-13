@@ -1,0 +1,8 @@
+--- a/zen/tests/ui/browser.toml
++++ b/zen/tests/ui/browser.toml
+@@ -20,3 +20,5 @@
+ ["browser_toasts.js"]
+ 
+ ["browser_zen_commands.js"]
++
++["browser_lazy_features.js"]

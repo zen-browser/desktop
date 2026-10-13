@@ -27,13 +27,9 @@
   locked: true
 
 - name: browser.search.suggest.enabled
-  value: true
+  value: false
 
 - name: browser.search.suggest.enabled.private
-  value: true
-
-# Keep history ahead of search suggestions in the address bar.
-- name: browser.urlbar.showSearchSuggestionsFirst
   value: false
 
 - name: browser.urlbar.quicksuggest.enabled

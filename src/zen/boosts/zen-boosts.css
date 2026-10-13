@@ -672,12 +672,7 @@ body {
   background: var(--zen-boosts-color-picker-background);
 
   background-position: -23px -23px;
-
-  @media not (prefers-reduced-transparency: reduce) {
-    :root:not([zen-no-acrylic="true"]) & {
-      backdrop-filter: var(--zen-frosted-backdrop);
-    }
-  }
+  backdrop-filter: saturate(2) blur(15px);
 
   background-size: 6px 6px;
   background-image: radial-gradient(var(--zen-boosts-color-picker-pattern-color), 1px, transparent 0);
@@ -726,9 +721,7 @@ body {
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
   & [animated="true"] {
-    transition:
-      transform 0.4s cubic-bezier(0.14, 1.43, 0.56, 1.01),
-      opacity 0.4s ease !important;
+    transition: all 0.4s cubic-bezier(0.14, 1.43, 0.56, 1.01) !important;
   }
 
   & .zen-boost-color-picker-circle {

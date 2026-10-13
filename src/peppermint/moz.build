@@ -1,0 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Everything Peppermint adds on top of Zen lives below this directory. The only
+# hook into the rest of the tree is one DIRS line in browser/base/moz.build
+# (see peppermint/patches/build) and one #include in zen-assets.jar.inc.mn.
+
+DIRS += [
+    "adblock",
+    "common",
+    "cookie-consent",
+    "ghost-mode",
+    "homepage",
+    "notepad",
+    "tab-unloader",
+    "tests",
+    "underpowered",
+    "url-snippets",
+    "urlbar",
+]

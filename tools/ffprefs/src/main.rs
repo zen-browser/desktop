@@ -158,12 +158,25 @@ fn load_preferences() -> Vec<Preference> {
     let config_path = get_config_path();
     let mut pref_files = Vec::new();
     get_prefs_files_recursively(&config_path, &mut pref_files);
+    // Peppermint: prefs/peppermint/overrides.yaml replaces Zen's pref with the
+    // same name and condition, so Zen's own files never have to change.
+    let mut overrides: Vec<Preference> = Vec::new();
     for file_path in pref_files {
         let content = fs::read_to_string(&file_path).expect("Failed to read file");
         let mut parsed_prefs: Vec<Preference> =
             serde_yaml::from_str(&content).expect("Failed to parse YAML");
-        prefs.append(&mut parsed_prefs);
+        let is_override = file_path.starts_with(config_path.join("peppermint"))
+            && file_path.file_name().map_or(false, |n| n == "overrides.yaml");
+        if is_override {
+            overrides.append(&mut parsed_prefs);
+        } else {
+            prefs.append(&mut parsed_prefs);
+        }
     }
+    for replacement in &overrides {
+        prefs.retain(|p| !(p.name == replacement.name && p.condition == replacement.condition));
+    }
+    prefs.append(&mut overrides);
     ordered_prefs(prefs)
 }
 

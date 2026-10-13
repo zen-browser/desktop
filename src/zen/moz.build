@@ -7,22 +7,16 @@ EXTRA_PP_COMPONENTS += [
 ]
 
 DIRS += [
-    "adblock",
     "boosts",
-    "cookie-consent",
     "common",
     "compact-mode",
     "drag-and-drop",
     "glance",
-    "ghost-mode",
-    "homepage",
     "library",
     "live-folders",
     "mods",
-    "notepad",
     "tests",
     "urlbar",
-    "url-snippets",
     "toolkit",
     "sessionstore",
     "share",
@@ -30,6 +24,5 @@ DIRS += [
     "space-routing",
     "sync",
     "tabs",
-    "underpowered",
     "window-drag",
 ]

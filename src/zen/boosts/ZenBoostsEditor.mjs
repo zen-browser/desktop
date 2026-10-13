@@ -839,13 +839,11 @@ ${cssSelector} {
     this.currentBoostData.secondaryDotPos.y = relativeYSec / rect.height;
 
     dot.setAttribute("animated", animate ? "true" : "false");
-    dot.style.left = "0";
-    dot.style.top = "0";
-    dot.style.transform = `translate(${relativeX}px, ${relativeY}px) translate(-50%, -50%)`;
+    dot.style.left = `${relativeX}px`;
+    dot.style.top = `${relativeY}px`;
     dotSec.setAttribute("animated", animate ? "true" : "false");
-    dotSec.style.left = "0";
-    dotSec.style.top = "0";
-    dotSec.style.transform = `translate(${relativeXSec}px, ${relativeYSec}px) translate(-50%, -50%)`;
+    dotSec.style.left = `${relativeXSec}px`;
+    dotSec.style.top = `${relativeYSec}px`;
 
     this.updateButtonToggleVisuals();
     this.updateDot();

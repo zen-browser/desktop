@@ -15,7 +15,7 @@
 # === Mark: Site Injection ===
 
 - name: zen.injections.match-urls
-  value: "https://example.com/*"
+  value: "https://zen-browser.app/*"
   locked: true
   condition: "defined(MOZILLA_OFFICIAL)"
 

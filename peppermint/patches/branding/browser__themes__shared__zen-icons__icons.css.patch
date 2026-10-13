@@ -1,0 +1,13 @@
+--- a/browser/themes/shared/zen-icons/icons.css
++++ b/browser/themes/shared/zen-icons/icons.css
+@@ -62,6 +62,10 @@
+ 
+ #PanelUI-zen-gradient-generator-color-remove {
+   list-style-image: url("unpin.svg") !important;
++}
++
++.tab-split-button {
++  list-style-image: url("split.svg");
+ }
+ 
+ .tab-reset-button {

@@ -199,6 +199,12 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     }
   }
 
+  onShown() {
+    super.onShown();
+    this.#refreshed = new WeakSet();
+    this.requestUpdate();
+  }
+
   // Helpers
 
   #fileName(download) {

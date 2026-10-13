@@ -651,49 +651,55 @@ class nsZenBoostsManager {
       null
     );
 
-    const progressListener = {
-      QueryInterface: ChromeUtils.generateQI([
-        "nsIWebProgressListener",
-        "nsISupportsWeakReference",
-      ]),
-      onLocationChange: webProgress => {
-        if (webProgress.isTopLevel) {
-          editor.close();
+    editor.addEventListener(
+      "load",
+      () => {
+        const progressListener = {
+          QueryInterface: ChromeUtils.generateQI([
+            "nsIWebProgressListener",
+            "nsISupportsWeakReference",
+          ]),
+          onLocationChange: webProgress => {
+            if (webProgress.isTopLevel) {
+              editor.close();
+            }
+          },
+        };
+        const onTabSelect = editor.close.bind(editor);
+        if (browser) {
+          browser.addProgressListener(progressListener);
+          editor.addEventListener(
+            "unload",
+            () => {
+              browser.removeProgressListener(progressListener);
+              editor.browser = null;
+            },
+            { once: true }
+          );
+        } else {
+          // Close the editor if the tab is switched or navigates.
+          parentWindow.gBrowser.tabContainer.addEventListener(
+            "TabSelect",
+            onTabSelect,
+            { once: true }
+          );
+          parentWindow.gBrowser.addProgressListener(progressListener);
+          editor.addEventListener(
+            "unload",
+            () => {
+              parentWindow.gBrowser.tabContainer.removeEventListener(
+                "TabSelect",
+                onTabSelect
+              );
+              parentWindow.gBrowser.removeProgressListener(progressListener);
+              editor.browser = null;
+            },
+            { once: true }
+          );
         }
       },
-    };
-    const onTabSelect = editor.close.bind(editor);
-    if (browser) {
-      browser.addProgressListener(progressListener);
-      editor.addEventListener(
-        "unload",
-        () => {
-          browser.removeProgressListener(progressListener);
-          editor.browser = null;
-        },
-        { once: true }
-      );
-    } else {
-      // Close the editor if the tab is switched or navigates.
-      parentWindow.gBrowser.tabContainer.addEventListener(
-        "TabSelect",
-        onTabSelect,
-        { once: true }
-      );
-      parentWindow.gBrowser.addProgressListener(progressListener);
-      editor.addEventListener(
-        "unload",
-        () => {
-          parentWindow.gBrowser.tabContainer.removeEventListener(
-            "TabSelect",
-            onTabSelect
-          );
-          parentWindow.gBrowser.removeProgressListener(progressListener);
-          editor.browser = null;
-        },
-        { once: true }
-      );
-    }
+      { once: true }
+    );
 
     editor.browser = browser;
     // Give the domain

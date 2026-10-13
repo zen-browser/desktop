@@ -5,7 +5,10 @@
 
 add_setup(async function () {
   await SpecialPowers.pushPrefEnv({
-    set: [["zen.urlbar.open-on-startup", false]],
+    set: [
+      ["zen.urlbar.open-on-startup", false],
+      ["zen.window-sync.enabled", false],
+    ],
   });
 });
 

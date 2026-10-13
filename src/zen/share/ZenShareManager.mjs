@@ -222,16 +222,11 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   #serializeFolder(folder) {
-    const item = {
+    return {
       type: "folder",
       name: folder.label || "Folder",
       items: this.#serializeItems(folder.allItems, { pinned: false }),
     };
-    const icon = folder.iconURL;
-    if (icon) {
-      item.icon = icon;
-    }
-    return item;
   }
 
   #serializeTab(tab, { pinned = false } = {}) {

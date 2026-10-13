@@ -417,12 +417,16 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       finalResults.push(result);
     }
     let i = 0;
+    let shown = 0;
     zenUrlbarResultsLearner
       .sortCommandsByPriority(finalResults)
       .forEach(result => {
         if (isPrefixed && !isWorkspaceSearch && i === 0 && query.length > 1) {
           result.heuristic = true;
           delete result.suggestedIndex;
+        } else if (typeof result.suggestedIndex === "number") {
+          result.suggestedIndex += shown;
+          shown++;
         }
         addCallback(this, result);
         i++;

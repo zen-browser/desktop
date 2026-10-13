@@ -57,6 +57,13 @@ class ZenStartup {
     } catch (error) {
       console.error("ZenCookieConsent failed to start", error);
     }
+    try {
+      ChromeUtils.importESModule(
+        "moz-src:///zen/underpowered/ZenUnderpowered.sys.mjs"
+      ).ZenUnderpowered.init();
+    } catch (error) {
+      console.error("ZenUnderpowered failed to start", error);
+    }
   }
 
   get #shouldUseWatermark() {

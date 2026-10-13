@@ -1,0 +1,26 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zen-underpowered-button {
+  list-style-image: url("chrome://browser/skin/zen-icons/battery-low.svg");
+
+  & > .toolbarbutton-icon {
+    transition: scale 0.15s ease;
+    scale: 1;
+  }
+
+  &:hover > .toolbarbutton-icon {
+    scale: 1.14;
+  }
+
+  &:active > .toolbarbutton-icon {
+    scale: 1.06;
+  }
+
+  &[checked] > .toolbarbutton-icon {
+    background-color: var(--toolbarbutton-background-color-active);
+  }
+}

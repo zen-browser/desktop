@@ -77,6 +77,10 @@ zen-ghost-mode-button =
     .label = Ghost Mode
     .tooltiptext = Open a new Ghost Window
 
+zen-underpowered-button =
+    .label = Underpowered Mode
+    .tooltiptext = Freeze background tabs and limit resource use
+
 zen-toggle-compact-mode-button =
     .label = Compact Mode
     .tooltiptext = Toggle Compact Mode

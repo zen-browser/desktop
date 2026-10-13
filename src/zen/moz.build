@@ -30,5 +30,6 @@ DIRS += [
     "space-routing",
     "sync",
     "tabs",
+    "underpowered",
     "window-drag",
 ]

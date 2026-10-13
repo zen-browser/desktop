@@ -142,3 +142,13 @@
     opacity: 1;
   }
 }
+
+/* Mark: Underpowered mode */
+/* 1ms rather than none, so the end events chrome code waits for still fire. */
+:root[zen-underpowered] :is(*, ::before, ::after) {
+  animation-delay: 0s !important;
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-delay: 0s !important;
+  transition-duration: 1ms !important;
+}

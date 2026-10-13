@@ -26,6 +26,7 @@ BROWSER_CHROME_MANIFESTS += [
     "tabs/browser.toml",
     "ub-actions/browser.toml",
     "ui/browser.toml",
+    "underpowered/browser.toml",
     "urlbar/browser.toml",
     "welcome/browser.toml",
     "window_drag/browser.toml",

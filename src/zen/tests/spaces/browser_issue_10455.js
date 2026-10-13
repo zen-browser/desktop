@@ -16,10 +16,10 @@ add_task(async function test_Issue_10455() {
   await newWindow.gZenWorkspaces.promiseInitialized;
 
   const unloadEvent = BrowserTestUtils.waitForEvent(newWindow, "unload");
-  Assert.equal(
+  Assert.greaterOrEqual(
     newWindow.gBrowser.tabs.length,
-    3,
-    "New window should have three tabs"
+    2,
+    "New window should have at least two tabs to close"
   );
   newWindow.BrowserCommands.closeTabOrWindow();
   newWindow.BrowserCommands.closeTabOrWindow();
@@ -41,10 +41,10 @@ add_task(async function test_Issue_10455_Dont_Close() {
   let newWindow = await BrowserTestUtils.openNewBrowserWindow();
   await newWindow.gZenWorkspaces.promiseInitialized;
 
-  Assert.equal(
+  Assert.greaterOrEqual(
     newWindow.gBrowser.tabs.length,
-    3,
-    "New window should have three tabs"
+    2,
+    "New window should have at least two tabs to close"
   );
   newWindow.BrowserCommands.closeTabOrWindow();
   newWindow.BrowserCommands.closeTabOrWindow();

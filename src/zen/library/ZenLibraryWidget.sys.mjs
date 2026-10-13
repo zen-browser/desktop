@@ -546,7 +546,7 @@ class ZenLibraryDownloadStack {
   #statusText(download) {
     const strings = lazy.DownloadsCommon.strings;
     if (!download.stopped) {
-      return lazy.transferText(download);
+      return lazy.transferText(download, { speed: true });
     }
     if (download.deleted) {
       return strings.fileDeleted;

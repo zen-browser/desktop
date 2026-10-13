@@ -86,6 +86,14 @@ add_task(async function test_downloads_rows_show_speed() {
       speed: 0,
     })
   );
+  section.onDownloadAdded(
+    fakeDownload("slow.bin", {
+      currentBytes: 3 * MB,
+      totalBytes: 40 * MB,
+      progress: 7,
+      speed: 250 * 1024,
+    })
+  );
   await TestUtils.waitForCondition(
     () => statusOf(section, "starting.bin"),
     "the rows are drawn"
@@ -111,6 +119,12 @@ add_task(async function test_downloads_rows_show_speed() {
   ok(
     !statusOf(section, "starting.bin").includes("/s"),
     "no speed is shown before there is one"
+  );
+
+  const slow = statusOf(section, "slow.bin");
+  ok(
+    /\b250 KB\/s\b/.test(slow),
+    `under a megabyte a second it is told in KB/s: ${slow}`
   );
 
   Library.toggle();

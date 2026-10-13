@@ -6,6 +6,8 @@ const PREF_ENABLED = "zen.underpowered.enabled";
 const PREF_SAVED = "zen.underpowered.saved-prefs";
 const ROOT_ATTRIBUTE = "zen-underpowered";
 const BUTTON_ID = "zen-underpowered-button";
+const TOAST_ID = "zen-underpowered-enabled-toast";
+const TOAST_TIMEOUT_MS = 1800;
 // Lets tab switches and Glance settle before the tab left behind is frozen.
 const FREEZE_DELAY_MS = 250;
 
@@ -132,7 +134,18 @@ class ZenUnderpoweredImpl {
     }
     if (!enabled) {
       this.#frozen = new WeakSet();
+    } else if (!startup) {
+      this.#announce();
     }
+  }
+
+  #announce() {
+    const win = Services.wm.getMostRecentBrowserWindow();
+    win?.gZenUIManager?.showToast(TOAST_ID, {
+      descriptionId: "zen-underpowered-enabled-toast-description",
+      timeout: TOAST_TIMEOUT_MS,
+      frosted: true,
+    });
   }
 
   *#browserWindows() {

@@ -80,6 +80,8 @@ zen-ghost-mode-button =
 zen-underpowered-button =
     .label = Underpowered Mode
     .tooltiptext = Freeze background tabs and limit resource use
+zen-underpowered-enabled-toast = Underpowered Mode on
+zen-underpowered-enabled-toast-description = Background tabs are frozen to save power
 
 zen-toggle-compact-mode-button =
     .label = Compact Mode

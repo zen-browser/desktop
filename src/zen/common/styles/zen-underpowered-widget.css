@@ -22,5 +22,6 @@
 
   &[checked] > .toolbarbutton-icon {
     background-color: var(--toolbarbutton-background-color-active);
+    fill: var(--zen-low-power-color);
   }
 }

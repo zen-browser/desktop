@@ -12,6 +12,14 @@ function button() {
   return document.getElementById("zen-underpowered-button");
 }
 
+function announcement() {
+  return [...document.querySelectorAll("#zen-toast-container .zen-toast")].find(
+    toast =>
+      toast.querySelector("label")?.getAttribute("data-l10n-id") ===
+      "zen-underpowered-enabled-toast"
+  );
+}
+
 function isFrozen(tab) {
   return tab.hasAttribute("pending") && !tab.linkedPanel;
 }
@@ -86,6 +94,7 @@ add_task(async function test_freeze_switch_and_restore() {
 
   setUnderpowered(true);
   ok(button().hasAttribute("checked"), "The button is checked");
+  ok(announcement()?.hasAttribute("frosted"), "A frosted toast announces it");
   ok(
     document.documentElement.hasAttribute("zen-underpowered"),
     "The window is marked underpowered"
@@ -113,8 +122,13 @@ add_task(async function test_freeze_switch_and_restore() {
   );
   ok(!isFrozen(background), "The newly selected tab stays loaded");
 
+  await TestUtils.waitForCondition(
+    () => !announcement(),
+    "The announcement hides on its own"
+  );
   setUnderpowered(false);
   ok(!button().hasAttribute("checked"), "The button is unchecked");
+  ok(!announcement(), "Turning it off is not announced");
   ok(
     !document.documentElement.hasAttribute("zen-underpowered"),
     "The window is no longer marked underpowered"

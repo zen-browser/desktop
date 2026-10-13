@@ -353,6 +353,21 @@ menuseparator {
     min-height: var(--zen-toast-max-height);
     font-size: 14px;
 
+    &[frosted] {
+      background: var(--zen-popup-background-solid);
+      color: var(--zen-popup-foreground);
+      outline: 1px solid var(--zen-frosted-stroke);
+      outline-offset: -1px;
+
+      @media not (prefers-reduced-transparency: reduce) {
+        :root:not([zen-no-acrylic="true"]) & {
+          background: var(--zen-frosted-urlbar-fill);
+          color: var(--zen-frosted-fg);
+          backdrop-filter: var(--zen-frosted-urlbar-backdrop);
+        }
+      }
+    }
+
     & .description {
       opacity: 0.6;
       font-size: smaller;

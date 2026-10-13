@@ -25,6 +25,7 @@ export class nsZenToastManager {
    * @param {object} [options.l10nArgs] - Fluent args for the label.
    * @param {string} [options.descriptionId] - Fluent id of a second line.
    * @param {number} [options.timeout] - Auto-hide delay in milliseconds.
+   * @param {boolean} [options.frosted] - Frosted glass instead of the accent.
    * @param {{id: string, command: Function}} [options.button] - Action button.
    */
   async show(messageId, options = {}) {
@@ -116,6 +117,7 @@ export class nsZenToastManager {
         continue;
       }
       child.removeAttribute("button");
+      child.toggleAttribute("frosted", !!options.frosted);
       if (options.button) {
         child.querySelector("button")?.remove();
         child.appendChild(createButton());
@@ -140,6 +142,7 @@ export class nsZenToastManager {
       wrapper.appendChild(createButton());
       wrapper.setAttribute("button", true);
     }
+    wrapper.toggleAttribute("frosted", !!options.frosted);
     wrapper.classList.add("zen-toast");
     wrapper._messageId = messageId;
     return [wrapper, false];

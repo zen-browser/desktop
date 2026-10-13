@@ -32,3 +32,4 @@ color-scheme: dark;
 --zen-raised-button-foreground: var(--zen-primary-color);
 --zen-raised-button-border: rgb(255 255 255 / 16%);
 --zen-raised-button-inset: rgb(255 255 255 / 14%);
+--zen-low-power-color: rgb(250 204 21);

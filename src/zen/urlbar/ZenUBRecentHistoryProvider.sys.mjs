@@ -12,6 +12,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   UrlbarPrefs: "moz-src:///browser/components/urlbar/UrlbarPrefs.sys.mjs",
   UrlbarProviderOpenTabs:
     "moz-src:///browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs",
@@ -79,16 +80,45 @@ export class ZenUrlbarProviderRecentHistory extends UrlbarProvider {
     const openTabUrls = lazy.UrlbarPrefs.get("suggest.openpage")
       ? lazy.UrlbarProviderOpenTabs.getOpenTabUrls()
       : new Map();
-    let resultsAdded = 0;
+    // History only records page loads, so switching tabs doesn't update it.
+    // Rank by whichever is newer: the last visit or the tab's last access.
+    const entries = new Map();
     for (const row of rows) {
       const url = row.getResultByName("url");
-      if (url == queryContext.currentPage) {
+      entries.set(url, {
+        url,
+        title: row.getResultByName("title") || "",
+        lastVisit: lazy.PlacesUtils.toDate(
+          row.getResultByName("last_visit_date")
+        ).getTime(),
+      });
+    }
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      if (win.closed || lazy.PrivateBrowsingUtils.isWindowPrivate(win)) {
         continue;
       }
-      const lastVisit = lazy.PlacesUtils.toDate(
-        row.getResultByName("last_visit_date")
-      ).getTime();
-      const title = row.getResultByName("title") || "";
+      for (const tab of win.gBrowser.tabs) {
+        const url = tab.linkedBrowser?.currentURI?.spec;
+        if (!url || url == "about:blank" || !tab.lastAccessed) {
+          continue;
+        }
+        const entry = entries.get(url);
+        if (entry) {
+          entry.lastVisit = Math.max(entry.lastVisit, tab.lastAccessed);
+        } else {
+          entries.set(url, {
+            url,
+            title: tab.label || "",
+            lastVisit: tab.lastAccessed,
+          });
+        }
+      }
+    }
+    const sorted = [...entries.values()]
+      .filter(entry => entry.url != queryContext.currentPage)
+      .sort((a, b) => b.lastVisit - a.lastVisit)
+      .slice(0, maxResults);
+    for (const { url, title, lastVisit } of sorted) {
       // Pages that are already open switch to their tab instead of opening
       // a new one.
       const openTab = [...(openTabUrls.get(url) || [])][0];
@@ -126,9 +156,6 @@ export class ZenUrlbarProviderRecentHistory extends UrlbarProvider {
             },
           })
         );
-      }
-      if (++resultsAdded == maxResults) {
-        return;
       }
     }
   }

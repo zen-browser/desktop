@@ -17,8 +17,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
   canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   fileGroupOf: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   blockedText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  canRetry: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   confirmUnblock: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   isBlocked: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  retryDownload: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
@@ -81,7 +83,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     super.connectedCallback();
     this.#data = lazy.DownloadsCommon.getData(window, true);
     this.#data.addView(this);
-    this.#menu = this.#buildMenu();
   }
 
   /** The view of the old library window this section stands in for. */
@@ -433,28 +434,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     this.requestUpdate();
   }
 
-  #canRetry(download) {
-    return (
-      download.stopped &&
-      !download.succeeded &&
-      !lazy.isBlocked(download) &&
-      (download.canceled || !!download.error)
-    );
-  }
-
-  #retryDownload(download) {
-    if (download.start) {
-      // Errors when retrying are already reported as download failures.
-      download.start().catch(() => {});
-      return;
-    }
-    // History-only entries have no session object, so download the URL again.
-    const targetName = download.target.path
-      ? PathUtils.filename(download.target.path)
-      : null;
-    window.DownloadURL(download.source.url, targetName, document);
-  }
-
   #cancelDownload(download) {
     download.cancel().catch(() => {});
     download
@@ -582,15 +561,18 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       }
     });
     menu.addEventListener("popuphidden", () => {
+      menu.hidden = true;
       this.#menuRow?.removeAttribute("menu-open");
       this.#menuRow = null;
       this.#menuDownload = null;
     });
+    menu.hidden = true;
     document.getElementById("mainPopupSet").appendChild(menu);
     return menu;
   }
 
   #openMenu(download, row, anchor, event) {
+    this.#menu ??= this.#buildMenu();
     const fileName = this.#fileName(download);
     for (const item of this.#menu.querySelectorAll("menuitem")) {
       const { action } = item.dataset;
@@ -607,6 +589,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       }
       item.disabled = !enabled;
     }
+    this.#menu.hidden = false;
     this.#menuRow?.removeAttribute("menu-open");
     this.#menuRow = row;
     this.#menuDownload = download;
@@ -711,7 +694,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         data-l10n-id="library-downloads-retry-button"
         @click=${event => {
           event.stopPropagation();
-          this.#retryDownload(download);
+          lazy.retryDownload(download, window);
         }}
       >
         <img
@@ -769,7 +752,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         </div>
         <div class="zen-library-row-actions">
           ${when(!download.stopped, () => this.#renderCancelButton(download))}
-          ${when(this.#canRetry(download), () =>
+          ${when(lazy.canRetry(download), () =>
             this.#renderRetryButton(download)
           )}
           ${when(this.#hasFile(download), () =>

@@ -115,6 +115,8 @@ library-downloads-menu-delete =
     .label = Delete File
 library-downloads-menu-clear-preview =
     .label = Clear Download Preview
+library-downloads-menu-retry =
+    .label = Retry Download
 library-downloads-opening-in = { PLATFORM() ->
     [macos] Opening in Finder…
     [windows] Opening in File Explorer…

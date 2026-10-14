@@ -160,7 +160,6 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     this.#placesQuery = new lazy.PlacesQuery();
     this.#placesQuery.observeHistory(() => this.#fetch());
     Services.obs.addObserver(this.#closedObserver, CLOSED_OBJECTS_TOPIC);
-    this.#menu = this.#buildMenu();
     this.#fetch();
   }
 
@@ -203,18 +202,22 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
       }
     });
     menu.addEventListener("popuphidden", () => {
+      menu.hidden = true;
       this.#menuRow?.removeAttribute("menu-open");
       this.#menuRow = null;
       this.#menuVisit = null;
     });
+    menu.hidden = true;
     document.getElementById("mainPopupSet").appendChild(menu);
     return menu;
   }
 
   #openMenu(visit, row, event) {
+    this.#menu ??= this.#buildMenu();
     const forgetSite = this.#menu.querySelector('[data-action="forget-site"]');
     forgetSite.hidden = this.#showingClosed;
     forgetSite.disabled = !this.#hostOf(visit);
+    this.#menu.hidden = false;
     this.#menuRow?.removeAttribute("menu-open");
     this.#menuRow = row;
     this.#menuVisit = visit;

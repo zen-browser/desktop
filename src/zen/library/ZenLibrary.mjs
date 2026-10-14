@@ -467,6 +467,7 @@ export class ZenLibrary extends MozLitElement {
     const lib = this.getInstance();
 
     const settled =
+      target === lib.#target &&
       target === lib.openProgress &&
       lib.#isOpen === (target === 1) &&
       !lib.#springControls;
@@ -760,6 +761,33 @@ export class ZenLibrary extends MozLitElement {
     return this;
   }
 
+  static SIDEBAR_COMMANDS = [
+    "cmd_zenToggleSidebar",
+    "cmd_zenToggleTabsOnRight",
+  ];
+
+  #disabledCommands = [];
+
+  /** Turns those commands off for as long as the library is up. */
+  #holdSidebarCommands() {
+    this.#disabledCommands = [];
+    for (const id of ZenLibrary.SIDEBAR_COMMANDS) {
+      const command = document.getElementById(id);
+      if (command && !command.hasAttribute("disabled")) {
+        command.setAttribute("disabled", "true");
+        this.#disabledCommands.push(command);
+      }
+    }
+  }
+
+  /** Hands them back once the library is out of the way. */
+  #releaseSidebarCommands() {
+    for (const command of this.#disabledCommands) {
+      command.removeAttribute("disabled");
+    }
+    this.#disabledCommands = [];
+  }
+
   /**
    * Internal callback for whenever the
    * library is about to be opened.
@@ -779,6 +807,7 @@ export class ZenLibrary extends MozLitElement {
       }
 
       this.setAttribute("open", "true");
+      this.#holdSidebarCommands();
       document.addEventListener("keydown", this, true);
       window.addEventListener("TabOpen", this);
 
@@ -810,6 +839,7 @@ export class ZenLibrary extends MozLitElement {
     }
     this.#initialized = false;
     this.removeAttribute("open");
+    this.#releaseSidebarCommands();
     for (const tab of this.querySelectorAll(".zen-library-tab[animate]")) {
       tab.removeAttribute("animate");
     }

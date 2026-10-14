@@ -12,7 +12,7 @@ ChromeUtils.defineESModuleGetters(this, {
 
 const PROVIDER_NAME = "ZenUrlbarProviderRecentHistory";
 const ENABLED_PREF = "zen.urlbar.suggestions.recent-history";
-const MAX_RESULTS_PREF = "zen.urlbar.suggestions.recent-history.max-results";
+const MAX_RESULTS_PREF = "browser.urlbar.maxRichResults";
 
 const PAGES = [1, 2, 3, 4, 5, 6, 7].map(i => ({
   url: `https://example.com/zen-recent-${i}`,

@@ -19,7 +19,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 const ENABLED_PREF = "zen.urlbar.suggestions.recent-history";
-const MAX_RESULTS_PREF = "zen.urlbar.suggestions.recent-history.max-results";
 
 // Most recently visited, non-hidden pages. moz_places has one row per url, so
 // a page visited several times only shows up once.
@@ -64,10 +63,7 @@ export class ZenUrlbarProviderRecentHistory extends UrlbarProvider {
 
   async startQuery(queryContext, addCallback) {
     const instance = this.queryInstance;
-    const maxResults = Math.min(
-      Services.prefs.getIntPref(MAX_RESULTS_PREF, 5),
-      queryContext.maxResults
-    );
+    const maxResults = queryContext.maxResults;
     if (maxResults <= 0) {
       return;
     }

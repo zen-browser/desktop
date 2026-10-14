@@ -105,8 +105,10 @@ https_first_disabled = true
 ["browser_capabilities.js"]
 
 ["browser_cleaner.js"]
+disabled="Disabled by import_external_tests.py"
 
 ["browser_clear_container_closed_windows.js"]
+disabled="Disabled by import_external_tests.py"
 
 ["browser_closedId.js"]
 disabled="Disabled by import_external_tests.py"
@@ -389,8 +391,10 @@ skip-if = [
 ]
 
 ["browser_tab_groups_closed_groups_in_closed_windows.js"]
+disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_empty.js"]
+disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_restore_closed_in_closed_window.js"]
 disabled="Disabled by import_external_tests.py"
@@ -414,6 +418,7 @@ disabled="Disabled by import_external_tests.py"
 disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_restore_to_group.js"]
+disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_save_on_removeAllTabsBut.js"]
 disabled="Disabled by import_external_tests.py"
@@ -428,6 +433,7 @@ disabled="Disabled by import_external_tests.py"
 disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_saved.js"]
+disabled="Disabled by import_external_tests.py"
 skip-if = [
   "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && opt", # Bug 1945957
 ]

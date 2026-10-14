@@ -260,7 +260,10 @@
   --panel-separator-color: color-mix(in srgb, currentColor 15%, transparent) !important;
 
   --zen-big-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  --zen-active-tab-scale: 0.985;
+  --zen-active-tab-scale: 0.99;
+  @media (-moz-platform: macos) {
+    --zen-active-tab-scale: 0.985;
+  }
 
   /* Define tab hover background color */
   --tab-background-color-hover: var(--toolbarbutton-background-color-hover);

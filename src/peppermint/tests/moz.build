@@ -10,6 +10,7 @@ BROWSER_CHROME_MANIFESTS += [
     "homepage/browser.toml",
     "new_tab/browser.toml",
     "notepad/browser.toml",
+    "reader/browser.toml",
     "tab_unloader/browser.toml",
     "underpowered/browser.toml",
     "url_snippets/browser.toml",

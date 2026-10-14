@@ -13,6 +13,7 @@ DIRS += [
     "ghost-mode",
     "homepage",
     "notepad",
+    "reader",
     "tab-unloader",
     "tests",
     "underpowered",

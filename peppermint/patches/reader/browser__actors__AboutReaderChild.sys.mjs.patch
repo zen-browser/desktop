@@ -1,0 +1,13 @@
+--- a/browser/actors/AboutReaderChild.sys.mjs
++++ b/browser/actors/AboutReaderChild.sys.mjs
+@@ -67,6 +67,10 @@
+         lazy.ReaderMode.leaveReaderMode(this.docShell, this.contentWindow);
+         break;
+       }
++      case "Reader:GetArticle": {
++        // The article shown in Reader Mode, for saving it for offline use.
++        return this._reader?._article ?? null;
++      }
+     }
+ 
+     // Forward the message to the reader if it has been created.

@@ -1,0 +1,16 @@
+--- a/toolkit/components/reader/AboutReader.sys.mjs
++++ b/toolkit/components/reader/AboutReader.sys.mjs
+@@ -1501,6 +1501,13 @@
+     );
+     this._contentElement.innerHTML = "";
+     this._contentElement.appendChild(contentFragment);
++    // Pictures saved for offline reading: the sanitizer above drops data: URIs,
++    // so they travel in an attribute that it keeps.
++    for (let img of this._contentElement.querySelectorAll(
++      "img[data-peppermint-src]"
++    )) {
++      img.src = img.dataset.peppermintSrc;
++    }
+     this._maybeSetTextDirection(article);
+     this._languageDeferred.resolve(article.detectedLanguage);
+ 

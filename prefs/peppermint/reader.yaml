@@ -1,0 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Offer Reader Mode on every web page with text, not only on pages that look
+# like articles, and let it open home pages and sites Firefox blocklists.
+- name: peppermint.reader.always-available
+  value: true
+
+# Keep the pictures of an article saved for offline reading, so they show
+# without a connection.
+- name: peppermint.reader.offline.inline-images
+  value: true
+
+# Pictures larger than this many bytes are left out of a saved article.
+- name: peppermint.reader.offline.max-image-bytes
+  value: 2097152
+
+# A saved article (text and pictures) is never larger than this many bytes.
+- name: peppermint.reader.offline.max-article-bytes
+  value: 12582912

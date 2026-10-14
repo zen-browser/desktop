@@ -1,0 +1,33 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Save for offline reading, next to Reader Mode in the site panel header. It
+ * is sized and framed like its neighbours by #zen-site-data-header. */
+#peppermint-reader-save-button {
+  list-style-image: url("chrome://browser/skin/zen-icons/downloads.svg");
+
+  &[saving] {
+    opacity: 0.6;
+
+    & image {
+      animation: peppermint-reader-saving 1s ease-in-out infinite alternate;
+    }
+  }
+}
+
+@keyframes peppermint-reader-saving {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #peppermint-reader-save-button[saving] image {
+    animation: none;
+  }
+}

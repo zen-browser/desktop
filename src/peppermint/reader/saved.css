@@ -1,0 +1,252 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+:root {
+  color-scheme: light dark;
+  --saved-accent: var(--zen-primary-color, #14b8a6);
+  --saved-ink: light-dark(#10211e, #e8f6f1);
+  --saved-muted: light-dark(#5c726c, #9db5ad);
+  --saved-paper: light-dark(#f7fbf8, #16302b);
+  --saved-page: light-dark(#d5ebe4, #0c1f1c);
+  --saved-line: light-dark(rgb(16 33 30 / 12%), rgb(232 246 241 / 14%));
+  --saved-fill: light-dark(rgb(255 255 255 / 72%), rgb(255 255 255 / 10%));
+  --saved-stroke: light-dark(rgb(0 0 0 / 12%), rgb(255 255 255 / 25%));
+  --saved-hover: light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 10%));
+  --saved-danger: light-dark(#b42318, #ffb4b4);
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--saved-page);
+  color: var(--saved-ink);
+  font: 16px/1.5 system-ui, sans-serif;
+}
+
+.saved {
+  box-sizing: border-box;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.saved-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block-end: 1.25rem;
+}
+
+.saved-title {
+  margin: 0;
+  margin-inline-end: auto;
+  font-size: 1.5rem;
+  font-weight: 650;
+}
+
+.saved-search {
+  box-sizing: border-box;
+  width: min(18rem, 40%);
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--saved-stroke);
+  border-radius: 10px;
+  background: var(--saved-fill);
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+
+  &:focus-visible {
+    outline: 2px solid var(--saved-accent);
+    outline-offset: 1px;
+  }
+}
+
+.saved-text-button {
+  appearance: none;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--saved-stroke);
+  border-radius: 10px;
+  background: var(--saved-fill);
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--saved-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--saved-accent);
+    outline-offset: 1px;
+  }
+
+  &.confirming {
+    border-color: var(--saved-danger);
+    color: var(--saved-danger);
+  }
+}
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.saved-item {
+  position: relative;
+  border: 1px solid var(--saved-line);
+  border-radius: 14px;
+  background: var(--saved-paper);
+
+  &:hover,
+  &:focus-within {
+    border-color: color-mix(in srgb, var(--saved-accent) 55%, transparent);
+  }
+}
+
+.saved-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 5.5rem 0.85rem 1rem;
+  border-radius: inherit;
+  color: inherit;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--saved-accent);
+    outline-offset: -2px;
+  }
+}
+
+.saved-item-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.saved-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.75rem;
+  color: var(--saved-muted);
+  font-size: 0.8rem;
+}
+
+.saved-item-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: var(--saved-muted);
+  font-size: 0.875rem;
+}
+
+.saved-item-actions {
+  position: absolute;
+  inset-block-start: 0.6rem;
+  inset-inline-end: 0.6rem;
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.12s ease-in-out;
+
+  .saved-item:hover &,
+  .saved-item:focus-within & {
+    opacity: 1;
+  }
+}
+
+.saved-icon-button {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--saved-stroke);
+  border-radius: 9px;
+  background: var(--saved-fill);
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--saved-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--saved-accent);
+    outline-offset: 1px;
+  }
+
+  &.saved-remove:hover {
+    color: var(--saved-danger);
+  }
+
+  & img {
+    width: 16px;
+    height: 16px;
+    -moz-context-properties: fill;
+    fill: currentColor;
+    pointer-events: none;
+  }
+}
+
+.saved-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-block: 4rem;
+  text-align: center;
+
+  & h2 {
+    margin: 0.75rem 0 0.25rem;
+    font-size: 1.15rem;
+  }
+
+  & p {
+    max-width: 28rem;
+    margin: 0;
+    color: var(--saved-muted);
+  }
+}
+
+.saved-empty-icon {
+  width: 40px;
+  height: 40px;
+  -moz-context-properties: fill;
+  fill: var(--saved-accent);
+}
+
+.saved-note {
+  margin-block: 2rem;
+  color: var(--saved-muted);
+  text-align: center;
+}
+
+.saved-error {
+  color: var(--saved-danger);
+}
+
+.saved-footer {
+  margin-block-start: 1.25rem;
+  color: var(--saved-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saved-item-actions {
+    transition: none;
+  }
+}

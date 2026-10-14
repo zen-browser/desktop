@@ -8,6 +8,7 @@ const PREF_ADBLOCK = "zen.adblock.enabled";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  PeppermintReader: "moz-src:///peppermint/reader/PeppermintReader.sys.mjs",
   noteURL: "resource:///modules/zen/notepad/ZenNotepadMarkdown.mjs",
   gZenCookieConsent:
     "resource:///modules/zen/cookieconsent/ZenCookieConsentManager.sys.mjs",
@@ -53,6 +54,26 @@ const ACTIONS = [
     window => {
       window.openTrustedLinkIn(lazy.noteURL(crypto.randomUUID()), "tab");
     }
+  ),
+  action(
+    "toggle-reader-mode",
+    "zen-action-toggle-reader-mode",
+    "chrome://browser/skin/zen-icons/reader-mode.svg",
+    window => window.document.getElementById("View:ReaderView")?.doCommand(),
+    window => !window.document.getElementById("reader-mode-button")?.hidden
+  ),
+  action(
+    "save-article-offline",
+    "zen-action-save-article-offline",
+    "chrome://browser/skin/zen-icons/downloads.svg",
+    window => lazy.PeppermintReader.toggleSaveCurrent(window),
+    window => lazy.PeppermintReader.canSaveCurrent(window)
+  ),
+  action(
+    "open-saved-articles",
+    "zen-action-open-saved-articles",
+    "chrome://browser/skin/zen-icons/reader-mode.svg",
+    window => lazy.PeppermintReader.openSavedArticles(window)
   ),
   action(
     "manage-url-snippets",

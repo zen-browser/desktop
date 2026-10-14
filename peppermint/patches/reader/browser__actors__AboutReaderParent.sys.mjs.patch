@@ -1,0 +1,81 @@
+--- a/browser/actors/AboutReaderParent.sys.mjs
++++ b/browser/actors/AboutReaderParent.sys.mjs
+@@ -8,6 +8,10 @@
+   PageActions: "resource:///modules/PageActions.sys.mjs",
+   PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
+   ReaderMode: "moz-src:///toolkit/components/reader/ReaderMode.sys.mjs",
++  PeppermintReader: "moz-src:///peppermint/reader/PeppermintReader.sys.mjs",
++  getArticle: "moz-src:///peppermint/reader/PeppermintReaderStore.sys.mjs",
++  isReaderEligible:
++    "moz-src:///peppermint/reader/PeppermintReaderAvailability.sys.mjs",
+ });
+ 
+ // A set of all of the AboutReaderParent actors that exist.
+@@ -82,6 +86,13 @@
+   async receiveMessage(message) {
+     switch (message.name) {
+       case "Reader:EnterReaderMode": {
++        if (!message.data) {
++          // The page has no text Reader Mode could extract.
++          lazy.PeppermintReader.onNoReadableText(
++            this.browsingContext.embedderElement
++          );
++          break;
++        }
+         gCachedArticles.set(message.data.url, message.data);
+         this.enterReaderMode(message.data.url);
+         break;
+@@ -93,6 +104,14 @@
+       case "Reader:GetCachedArticle": {
+         let cachedArticle = gCachedArticles.get(message.data.url);
+         gCachedArticles.delete(message.data.url);
++        if (
++          !cachedArticle &&
++          (Services.io.offline || !Services.io.connectivity)
++        ) {
++          // Without a connection, the copy saved for offline reading is the
++          // only one there is. Online, the live page always wins.
++          cachedArticle = await lazy.getArticle(message.data.url);
++        }
+         return cachedArticle;
+       }
+       case "Reader:FaviconRequest": {
+@@ -184,14 +203,17 @@
+ 
+       Services.obs.notifyObservers(null, "reader-mode-available");
+     } else {
++      // Reader Mode is offered on every page with text, not only articles.
++      let isAvailable = browser.isArticle || lazy.isReaderEligible(browser);
++
+       button.removeAttribute("readeractive");
+-      button.hidden = !browser.isArticle;
++      button.hidden = !isAvailable;
+       doc.l10n.setAttributes(button, "reader-view-enter-button");
+ 
+-      menuitem.hidden = !browser.isArticle;
++      menuitem.hidden = !isAvailable;
+       doc.l10n.setAttributes(menuitem, "menu-view-enter-readerview");
+ 
+-      key.toggleAttribute("disabled", !browser.isArticle);
++      key.toggleAttribute("disabled", !isAvailable);
+ 
+       if (browser.isArticle) {
+         Services.obs.notifyObservers(null, "reader-mode-available");
+@@ -203,6 +225,17 @@
+     }
+   }
+ 
++  /**
++   * Hand the page a ready article the next time it asks for one, so about:reader
++   * does not download it again.
++   *
++   * @param {string} url - The original URL of the article
++   * @param {object} article
++   */
++  static cacheArticle(url, article) {
++    gCachedArticles.set(url, article);
++  }
++
+   static forceShowReaderIcon(browser) {
+     browser.isArticle = true;
+     AboutReaderParent.updateReaderButton(browser);

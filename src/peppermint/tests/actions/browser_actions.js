@@ -25,6 +25,9 @@ add_task(function test_actions_are_in_the_palette() {
   const ids = [
     "peppermint:toggle-underpowered",
     "peppermint:open-notepad",
+    "peppermint:toggle-reader-mode",
+    "peppermint:save-article-offline",
+    "peppermint:open-saved-articles",
     "peppermint:manage-url-snippets",
     "peppermint:toggle-adblock",
     "peppermint:clear-cookie-exceptions",
@@ -37,10 +40,28 @@ add_task(function test_actions_are_in_the_palette() {
       `${id} is registered with the command palette`
     );
     ok(action.label.length > 0, `${id} has a label`);
-    if (id !== "peppermint:clear-cookie-exceptions") {
+    // These depend on the page: cookie exceptions on there being some, the
+    // reader actions on the tab showing a page Reader Mode can open.
+    const dependsOnPage = [
+      "peppermint:clear-cookie-exceptions",
+      "peppermint:toggle-reader-mode",
+      "peppermint:save-article-offline",
+    ];
+    if (!dependsOnPage.includes(id)) {
       ok(action.isAvailable(window), `${id} is available`);
     }
   }
+});
+
+add_task(function test_reader_actions_follow_the_page() {
+  ok(
+    !byId("peppermint:save-article-offline").isAvailable(window),
+    "Saving needs an article open in Reader Mode"
+  );
+  ok(
+    byId("peppermint:open-saved-articles").isAvailable(window),
+    "The saved articles list is always available"
+  );
 });
 
 add_task(function test_underpowered_action_toggles_the_pref() {

@@ -7,3 +7,6 @@ zen-action-open-notepad = Open Notepad
 zen-action-manage-url-snippets = Manage URL Snippets
 zen-action-toggle-adblock = Toggle Ad Blocker
 zen-action-clear-cookie-exceptions = Clear Cookie Banner Exceptions
+zen-action-toggle-reader-mode = Toggle Reader Mode
+zen-action-save-article-offline = Save Article for Offline Reading
+zen-action-open-saved-articles = Open Saved Articles

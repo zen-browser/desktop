@@ -1,0 +1,44 @@
+--- a/toolkit/components/reader/ReaderMode.sys.mjs
++++ b/toolkit/components/reader/ReaderMode.sys.mjs
+@@ -177,7 +177,12 @@
+    */
+   parseDocument(doc) {
+     if (
+-      !lazy.Readerable.shouldCheckUri(doc.documentURIObject) ||
++      !lazy.Readerable.shouldCheckUri(
++        doc.documentURIObject,
++        // The blocked hosts and the home page rule only guard the automatic
++        // check; someone who asks for Reader Mode gets it.
++        ReaderMode.alwaysAvailable
++      ) ||
+       !lazy.Readerable.shouldCheckUri(doc.baseURIObject, true)
+     ) {
+       this.log("Reader mode disabled for URI");
+@@ -203,7 +208,12 @@
+     }
+     let { doc, newURL } = result;
+     if (
+-      !lazy.Readerable.shouldCheckUri(doc.documentURIObject) ||
++      !lazy.Readerable.shouldCheckUri(
++        doc.documentURIObject,
++        // The blocked hosts and the home page rule only guard the automatic
++        // check; someone who asks for Reader Mode gets it.
++        ReaderMode.alwaysAvailable
++      ) ||
+       !lazy.Readerable.shouldCheckUri(doc.baseURIObject, true)
+     ) {
+       this.log("Reader mode disabled for URI");
+@@ -531,6 +541,13 @@
+     return clone;
+   },
+ };
++
++XPCOMUtils.defineLazyPreferenceGetter(
++  ReaderMode,
++  "alwaysAvailable",
++  "peppermint.reader.always-available",
++  true
++);
+ 
+ XPCOMUtils.defineLazyPreferenceGetter(
+   ReaderMode,

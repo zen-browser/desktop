@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title data-l10n-id="peppermint-saved-title"></title>
+    <link rel="localization" href="browser/peppermint-reader.ftl" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="chrome://browser/skin/zen-icons/reader-mode.svg"
+    />
+    <link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-styles/peppermint-reader-saved.css"
+    />
+    <script src="chrome://browser/content/zenThemeModifier.js"></script>
+  </head>
+  <body>
+    <main class="saved">
+      <header class="saved-header">
+        <h1 class="saved-title" data-l10n-id="peppermint-saved-title"></h1>
+        <input
+          type="search"
+          id="saved-search"
+          class="saved-search"
+          data-l10n-id="peppermint-saved-search"
+        />
+        <button
+          type="button"
+          id="saved-clear"
+          class="saved-text-button"
+          data-l10n-id="peppermint-saved-clear-all"
+          hidden="hidden"
+        ></button>
+      </header>
+      <ul id="saved-list" class="saved-list"></ul>
+      <section id="saved-empty" class="saved-empty" hidden="hidden">
+        <img
+          class="saved-empty-icon"
+          src="chrome://browser/skin/zen-icons/reader-mode.svg"
+          alt=""
+        />
+        <h2 data-l10n-id="peppermint-saved-empty-title"></h2>
+        <p data-l10n-id="peppermint-saved-empty-description"></p>
+      </section>
+      <p
+        id="saved-no-results"
+        class="saved-note"
+        data-l10n-id="peppermint-saved-no-results"
+        hidden="hidden"
+      ></p>
+      <p
+        id="saved-error"
+        class="saved-note saved-error"
+        data-l10n-id="peppermint-saved-open-error"
+        hidden="hidden"
+        role="alert"
+      ></p>
+      <footer class="saved-footer">
+        <span id="saved-storage"></span>
+      </footer>
+    </main>
+    <script
+      type="module"
+      src="chrome://browser/content/peppermint-reader/saved.mjs"
+    ></script>
+  </body>
+</html>

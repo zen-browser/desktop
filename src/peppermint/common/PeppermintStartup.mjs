@@ -47,6 +47,11 @@ export const PeppermintStartup = {
         "resource:///modules/zen/cookieconsent/ZenCookieConsentManager.sys.mjs"
       ).gZenCookieConsent.init()
     );
+    start("PeppermintReader", () =>
+      ChromeUtils.importESModule(
+        "moz-src:///peppermint/reader/PeppermintReader.sys.mjs"
+      ).PeppermintReader.init(window)
+    );
     start("ZenUnderpowered", () =>
       ChromeUtils.importESModule(
         "moz-src:///peppermint/underpowered/ZenUnderpowered.sys.mjs"

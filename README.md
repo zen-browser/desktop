@@ -11,7 +11,7 @@
 **A calm, productive Firefox-based browser. Built for focus, not noise.**
 
 [![License: MPL-2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
-[![Firefox Version](https://img.shields.io/badge/Firefox-157.0.1-orange.svg)](https://www.mozilla.org/firefox/)
+[![Firefox Version](https://img.shields.io/badge/Firefox-158.0-orange.svg)](https://www.mozilla.org/firefox/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/AstroDevCompany/desktop/actions)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/AstroDevCompany/desktop/releases)
 
@@ -133,7 +133,7 @@ peppermint/
 
 | Layer            | Technology                                               |
 | ---------------- | -------------------------------------------------------- |
-| **Engine**       | Firefox 157 (Gecko)                                      |
+| **Engine**       | Firefox 158 (Gecko)                                      |
 | **UI Framework** | React 18 + TypeScript                                    |
 | **Styling**      | CSS Variables + Custom Properties                        |
 | **Build System** | [Surfer](https://github.com/zen-browser/surfer) (custom) |

@@ -5,3 +5,8 @@
 # Key that confirms a suggestion in mint://note. Only used while that menu is open.
 - name: zen.notepad.autocomplete-key
   value: "Tab"
+
+# Close open notes and drop the unwrapped key after this many idle minutes.
+# 0 leaves notes unlocked.
+- name: zen.notepad.auto-lock-minutes
+  value: 10

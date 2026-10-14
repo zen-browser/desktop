@@ -3,6 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [DEFAULT]
-prefs = ["zen.homepage.mode=builtin"]
+prefs = [
+  "zen.homepage.mode=builtin",
+  "zen.adblock.enabled=false",
+]
 
 ["browser_homepage.js"]

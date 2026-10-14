@@ -11,9 +11,10 @@ const { isVideoAdRequest, rewriteVideoAdBody, shouldRewriteVideoAdResponse } =
   ChromeUtils.importESModule(
     "resource:///modules/zen/adblock/ZenAdblockVideo.sys.mjs"
   );
-const { gZenAdblock } = ChromeUtils.importESModule(
-  "resource:///modules/zen/adblock/ZenAdblockManager.sys.mjs"
-);
+const { cacheNeedsRefresh, fetchFilterLists, gZenAdblock } =
+  ChromeUtils.importESModule(
+    "resource:///modules/zen/adblock/ZenAdblockManager.sys.mjs"
+  );
 
 const FIXTURE = [
   "||ads.example^",
@@ -250,4 +251,58 @@ add_task(function test_network_hot_path_skips_cheap_requests() {
     true,
     "third-party scripts are inspected"
   );
+});
+
+add_task(function test_partial_list_cache_retries_after_an_hour() {
+  const now = Date.now();
+  const hour = 60 * 60 * 1000;
+  const interval = 4 * 24 * hour;
+  Assert.equal(
+    cacheNeedsRefresh({ updatedAt: now - hour }, now, interval),
+    false,
+    "a cache with no complete field waits out the normal interval"
+  );
+  Assert.equal(
+    cacheNeedsRefresh({ updatedAt: now - hour, complete: false }, now, interval),
+    false,
+    "a partial cache is kept for the first hour"
+  );
+  Assert.equal(
+    cacheNeedsRefresh(
+      { updatedAt: now - hour - 1, complete: false },
+      now,
+      interval
+    ),
+    true,
+    "a partial cache retries after an hour"
+  );
+  Assert.equal(
+    cacheNeedsRefresh({ updatedAt: now - 5 * 24 * hour, complete: true }, now, interval),
+    true,
+    "a complete cache refreshes after the update interval"
+  );
+});
+
+add_task(async function test_filter_lists_download_together() {
+  let started = 0;
+  let release;
+  const gate = new Promise(resolve => {
+    release = resolve;
+  });
+  const pending = fetchFilterLists(["a", "b", "c"], async url => {
+    started++;
+    await gate;
+    if (url === "b") {
+      throw new Error("missing");
+    }
+    return `list ${url}`;
+  });
+  await TestUtils.waitForCondition(
+    () => started === 3,
+    "every list download starts before the first one finishes"
+  );
+  release();
+  const result = await pending;
+  Assert.equal(result.complete, false, "a failed list marks the cache incomplete");
+  Assert.deepEqual(result.texts, ["list a", "list c"], "successful lists keep their order");
 });

@@ -2,8 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { isUnloadSafe } from "moz-src:///peppermint/common/PeppermintTabs.sys.mjs";
+
 const PREF_ENABLED = "zen.underpowered.enabled";
 const PREF_SAVED = "zen.underpowered.saved-prefs";
+const PREF_AUTO = "zen.underpowered.auto-on-battery";
+const PREF_THRESHOLD = "zen.underpowered.battery-threshold";
+const PREF_AUTO_ENABLED = "zen.underpowered.auto-enabled";
 const ROOT_ATTRIBUTE = "zen-underpowered";
 const BUTTON_ID = "zen-underpowered-button";
 const TOAST_ID = "zen-underpowered-enabled-toast";
@@ -74,6 +79,19 @@ class ZenUnderpoweredImpl {
   /** Tabs this mode unloaded, the only ones it loads again. */
   #frozen = new WeakSet();
   #freezing = new WeakSet();
+  #battery = null;
+  #batteryHost = null;
+  #onLevel = null;
+  #onCharging = null;
+  #batteryToken = 0;
+  #writingAuto = false;
+  #dismissed = false;
+  /**
+   * Tests replace this with a function that returns a battery manager.
+   *
+   * @type {(() => object|Promise<object>)|null}
+   */
+  _batterySource = null;
 
   init() {
     if (this.#initialized) {
@@ -81,11 +99,13 @@ class ZenUnderpoweredImpl {
     }
     this.#initialized = true;
     Services.prefs.addObserver(PREF_ENABLED, this);
+    Services.prefs.addObserver(PREF_AUTO, this);
     Services.obs.addObserver(this, "browser-delayed-startup-finished");
     this.#update(true);
+    this.#syncBattery();
   }
 
-  observe(subject, topic) {
+  observe(subject, topic, data) {
     if (topic === "browser-delayed-startup-finished") {
       if (this.#enabled) {
         this.#attach(subject);
@@ -94,7 +114,23 @@ class ZenUnderpoweredImpl {
       }
       return;
     }
+    if (data === PREF_AUTO) {
+      this.#syncBattery();
+      return;
+    }
+    if (data === PREF_ENABLED && !this.#writingAuto) {
+      this.#noteManualToggle();
+    }
     this.#update();
+  }
+
+  /**
+   * Re-read the battery. Tests await this after installing `_batterySource`.
+   *
+   * @returns {Promise<void>}
+   */
+  syncBatteryForTests() {
+    return this.#syncBattery();
   }
 
   /**
@@ -153,6 +189,149 @@ class ZenUnderpoweredImpl {
       if (!win.closed && win.gBrowserInit?.delayedStartupFinished) {
         yield win;
       }
+    }
+  }
+
+  // Battery
+
+  #noteManualToggle() {
+    const enabled = Services.prefs.getBoolPref(PREF_ENABLED, false);
+    if (enabled || !Services.prefs.getBoolPref(PREF_AUTO_ENABLED, false)) {
+      return;
+    }
+    // The user turned off a session we started. Stay off until they plug in.
+    this.#dismissed = true;
+    this.#writeOwned(false);
+  }
+
+  #writeOwned(owned) {
+    this.#writingAuto = true;
+    try {
+      Services.prefs.setBoolPref(PREF_AUTO_ENABLED, owned);
+    } finally {
+      this.#writingAuto = false;
+    }
+  }
+
+  #setFromBattery(enabled) {
+    this.#writingAuto = true;
+    try {
+      Services.prefs.setBoolPref(PREF_AUTO_ENABLED, enabled);
+      Services.prefs.setBoolPref(PREF_ENABLED, enabled);
+    } finally {
+      this.#writingAuto = false;
+    }
+  }
+
+  #batteryWindow() {
+    if (this._batterySource) {
+      return null;
+    }
+    try {
+      const hidden = Services.appShell.hiddenDOMWindow;
+      if (hidden && typeof hidden.navigator?.getBattery === "function") {
+        this.#batteryHost = hidden;
+        return hidden;
+      }
+    } catch {
+      // The hidden window is not available yet.
+    }
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      if (win.closed || typeof win.navigator?.getBattery !== "function") {
+        continue;
+      }
+      if (!win.__zenUnderpoweredBatteryUnload) {
+        win.__zenUnderpoweredBatteryUnload = true;
+        win.addEventListener(
+          "unload",
+          () => {
+            if (this.#batteryHost === win) {
+              this.#batteryHost = null;
+              this.#syncBattery();
+            }
+          },
+          { once: true }
+        );
+      }
+      this.#batteryHost = win;
+      return win;
+    }
+    this.#batteryHost = null;
+    return null;
+  }
+
+  #dropBattery() {
+    if (this.#battery) {
+      this.#battery.removeEventListener("levelchange", this.#onLevel);
+      this.#battery.removeEventListener("chargingchange", this.#onCharging);
+    }
+    this.#battery = null;
+    this.#onLevel = null;
+    this.#onCharging = null;
+  }
+
+  async #syncBattery() {
+    const token = ++this.#batteryToken;
+    this.#dropBattery();
+    if (!Services.prefs.getBoolPref(PREF_AUTO, false)) {
+      this.#dismissed = false;
+      if (Services.prefs.getBoolPref(PREF_AUTO_ENABLED, false)) {
+        this.#writeOwned(false);
+      }
+      return;
+    }
+    let battery = null;
+    try {
+      if (this._batterySource) {
+        battery = await this._batterySource();
+      } else {
+        const win = this.#batteryWindow();
+        if (win) {
+          battery = await win.navigator.getBattery();
+        }
+      }
+    } catch (error) {
+      console.error("ZenUnderpowered could not read the battery", error);
+      return;
+    }
+    if (token !== this.#batteryToken || !battery) {
+      return;
+    }
+    this.#onLevel = () => this.#onBatteryEvent("levelchange");
+    this.#onCharging = () => this.#onBatteryEvent("chargingchange");
+    battery.addEventListener("levelchange", this.#onLevel);
+    battery.addEventListener("chargingchange", this.#onCharging);
+    this.#battery = battery;
+    this.#applyBattery(battery);
+  }
+
+  #onBatteryEvent(type) {
+    const battery = this.#battery;
+    if (!battery) {
+      return;
+    }
+    if (type === "chargingchange" && battery.charging) {
+      this.#dismissed = false;
+    }
+    this.#applyBattery(battery);
+  }
+
+  #applyBattery(battery) {
+    if (!Services.prefs.getBoolPref(PREF_AUTO, false)) {
+      return;
+    }
+    const threshold = Services.prefs.getIntPref(PREF_THRESHOLD, 20) / 100;
+    const low = battery.level < threshold && !battery.charging;
+    const enabled = Services.prefs.getBoolPref(PREF_ENABLED, false);
+    const owned = Services.prefs.getBoolPref(PREF_AUTO_ENABLED, false);
+    if (low) {
+      if (!enabled && !this.#dismissed) {
+        this.#setFromBattery(true);
+      }
+      return;
+    }
+    if (battery.charging && owned) {
+      this.#setFromBattery(false);
     }
   }
 
@@ -301,29 +480,7 @@ class ZenUnderpoweredImpl {
    * @returns {boolean} Whether the tab is live, off screen, and safe to unload
    */
   #canFreeze(tab, selected) {
-    if (
-      !tab ||
-      tab === selected ||
-      tab.closing ||
-      !tab.linkedPanel ||
-      tab.hasAttribute("pending") ||
-      // Still loading: frozen once it stops, so its session entry is complete.
-      tab.hasAttribute("busy") ||
-      tab.hasAttribute("zen-empty-tab") ||
-      tab.hasAttribute("pictureinpicture") ||
-      tab.isEmpty
-    ) {
-      return false;
-    }
-    if (tab.linkedBrowser?.zenModeActive) {
-      return false;
-    }
-    const group = tab.group;
-    if (group?.hasAttribute("split-view-group") && group === selected.group) {
-      return false;
-    }
-    const glanceId = selected.getAttribute("glance-id");
-    return !glanceId || tab.getAttribute("glance-id") !== glanceId;
+    return isUnloadSafe(tab, selected);
   }
 
   async #freezeTab(win, tab) {

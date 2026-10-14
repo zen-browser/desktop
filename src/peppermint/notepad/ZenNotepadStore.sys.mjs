@@ -9,7 +9,42 @@ import { isNoteId } from "resource:///modules/zen/notepad/ZenNotepadMarkdown.mjs
 const KEY_FILE = "key.bin";
 const NOTE_SUFFIX = ".note";
 
-let cachedKey = null;
+let keyPromise = null;
+const inflightSaves = new Set();
+
+function startAutoLock() {
+  ChromeUtils.importESModule(
+    "resource:///modules/zen/notepad/ZenNotepadLock.sys.mjs"
+  ).ZenNotepadLock.start();
+}
+
+/**
+ * Drop the unwrapped key. The next read or write authenticates again.
+ */
+export function lockNotes() {
+  keyPromise = null;
+}
+
+/**
+ * @returns {boolean} A key unwrap is cached in this process
+ */
+export function isKeyCached() {
+  return !!keyPromise;
+}
+
+/**
+ * @returns {number} Saves that have not finished writing yet
+ */
+export function pendingSaveCount() {
+  return inflightSaves.size;
+}
+
+/**
+ * @returns {Promise<void>} Resolves when every save started so far has settled
+ */
+export function waitForPendingSaves() {
+  return Promise.allSettled([...inflightSaves]).then(() => {});
+}
 
 function bytesToBase64(bytes) {
   let binary = "";
@@ -44,32 +79,47 @@ async function ensureDirectory() {
   await IOUtils.makeDirectory(notesDirectory());
 }
 
-async function encryptionKey() {
-  if (cachedKey) {
-    return cachedKey;
-  }
+async function unwrapKey() {
   await ensureDirectory();
   const keyPath = PathUtils.join(notesDirectory(), KEY_FILE);
   if (await IOUtils.exists(keyPath)) {
     const wrapped = await IOUtils.readUTF8(keyPath);
     const rawBase64 = await OSKeyStore.decrypt(wrapped, "zen-notepad");
-    cachedKey = await crypto.subtle.importKey(
+    return crypto.subtle.importKey(
       "raw",
       base64ToBytes(rawBase64),
       "AES-GCM",
       false,
       ["encrypt", "decrypt"]
     );
-    return cachedKey;
   }
   const raw = crypto.getRandomValues(new Uint8Array(32));
   const wrapped = await OSKeyStore.encrypt(bytesToBase64(raw));
   await IOUtils.writeUTF8(keyPath, wrapped);
-  cachedKey = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, [
+  return crypto.subtle.importKey("raw", raw, "AES-GCM", false, [
     "encrypt",
     "decrypt",
   ]);
-  return cachedKey;
+}
+
+function encryptionKey() {
+  if (keyPromise) {
+    return keyPromise;
+  }
+  // One shared promise so two first-run saves cannot each write key.bin.
+  const promise = unwrapKey()
+    .then(key => {
+      startAutoLock();
+      return key;
+    })
+    .catch(error => {
+      if (keyPromise === promise) {
+        keyPromise = null;
+      }
+      throw error;
+    });
+  keyPromise = promise;
+  return promise;
 }
 
 function encodeNotePlaintext(markdown, title) {
@@ -95,7 +145,13 @@ function decodeNotePlaintext(plain) {
   return { markdown: decoded, title: null };
 }
 
-export async function saveNote(id, markdown, title = null) {
+export function saveNote(id, markdown, title = null) {
+  const job = writeEncryptedNote(id, markdown, title);
+  inflightSaves.add(job);
+  return job.finally(() => inflightSaves.delete(job));
+}
+
+async function writeEncryptedNote(id, markdown, title = null) {
   const path = noteFilePath(id);
   const key = await encryptionKey();
   const iv = crypto.getRandomValues(new Uint8Array(12));

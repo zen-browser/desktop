@@ -38,6 +38,49 @@ const CACHE_VERSION = 1;
 const TOPIC = "zen-adblock-updated";
 const FETCH_TIMEOUT_MS = 20000;
 const CNAME_TIMEOUT_MS = 250;
+const INCOMPLETE_RETRY_MS = 60 * 60 * 1000;
+
+/**
+ * A cached engine is refreshed in the background once it is older than the
+ * normal update interval. A cache written from a partial download retries
+ * after an hour. A meta file with no `complete` field counts as complete.
+ *
+ * @param {object} meta
+ * @param {number} now
+ * @param {number} updateIntervalMs
+ * @returns {boolean}
+ */
+export function cacheNeedsRefresh(meta, now, updateIntervalMs) {
+  const age = now - (meta?.updatedAt || 0);
+  if (meta?.complete === false) {
+    return age > INCOMPLETE_RETRY_MS;
+  }
+  return age > updateIntervalMs;
+}
+
+/**
+ * Download every list at once and keep the original order.
+ *
+ * @param {string[]} urls
+ * @param {(url: string) => Promise<string>} fetchText
+ * @returns {Promise<{ texts: string[], complete: boolean }>}
+ */
+export async function fetchFilterLists(urls, fetchText) {
+  const results = await Promise.all(
+    urls.map(async url => {
+      try {
+        return (await fetchText(url)) || "";
+      } catch (error) {
+        console.error("ZenAdblock list failed", url, error);
+        return "";
+      }
+    })
+  );
+  return {
+    texts: results.filter(Boolean),
+    complete: results.length > 0 && results.every(Boolean),
+  };
+}
 
 const INACTIVE_COSMETICS = {
   active: false,
@@ -481,7 +524,7 @@ class ZenAdblockManager {
         if (meta?.hash === hash && meta.version === CACHE_VERSION) {
           const bytes = await IOUtils.read(binPath);
           const engine = lazy.deserializeEngine(bytes);
-          if (Date.now() - meta.updatedAt > lazy.UPDATE_INTERVAL_MS) {
+          if (cacheNeedsRefresh(meta, Date.now(), lazy.UPDATE_INTERVAL_MS)) {
             const generation = this.#generation[level];
             this.#fetchAndStore(level, hash, binPath, metaPath).then(fresh => {
               if (fresh && this.#generation[level] === generation) {
@@ -502,17 +545,14 @@ class ZenAdblockManager {
   }
 
   async #fetchAndStore(level, hash, binPath, metaPath) {
-    const texts = [];
-    for (const url of lazy.LIST_URLS[level]) {
-      try {
-        const text = await this.#fetchText(url);
-        if (text) {
-          texts.push(text);
-        }
-      } catch (error) {
-        console.error("ZenAdblock list failed", url, error);
-      }
-    }
+    const [lists, resourcesText] = await Promise.all([
+      fetchFilterLists(lazy.LIST_URLS[level], url => this.#fetchText(url)),
+      this.#fetchText(lazy.RESOURCES_URL).catch(error => {
+        console.error("ZenAdblock resources failed", error);
+        return "";
+      }),
+    ]);
+    const texts = lists.texts;
     if (!texts.length) {
       return null;
     }
@@ -520,12 +560,7 @@ class ZenAdblockManager {
     if (custom) {
       texts.push(custom);
     }
-    let resources = "";
-    try {
-      resources = (await this.#fetchText(lazy.RESOURCES_URL)) || "";
-    } catch (error) {
-      console.error("ZenAdblock resources failed", error);
-    }
+    const resources = resourcesText || "";
     const engine = await this.#compileEngine(texts.join("\n"), level, resources);
     try {
       await IOUtils.makeDirectory(this.#cacheDir(), { ignoreExisting: true });
@@ -534,6 +569,7 @@ class ZenAdblockManager {
         hash,
         updatedAt: Date.now(),
         version: CACHE_VERSION,
+        complete: lists.complete,
       });
     } catch (error) {
       console.error("ZenAdblock failed to cache lists", error);

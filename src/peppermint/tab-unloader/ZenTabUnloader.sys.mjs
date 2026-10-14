@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { isUnloadSafe } from "moz-src:///peppermint/common/PeppermintTabs.sys.mjs";
+
 const PREF = "zen.tab-unloader.timeout-minutes";
 const CHECK_INTERVAL_MS = 3 * 60 * 1000;
 
@@ -9,7 +11,8 @@ const CHECK_INTERVAL_MS = 3 * 60 * 1000;
  * Unloads background tabs that have been idle longer than
  * zen.tab-unloader.timeout-minutes. One scheduler for the whole process.
  * Pinned tabs, essentials, the selected tab, its split-view partners,
- * Glance overlays, and tabs playing sound stay loaded. 0 disables it.
+ * Glance overlays, tabs playing sound, and tabs that would prompt
+ * (beforeunload) stay loaded. 0 disables it.
  */
 class ZenTabUnloaderImpl {
   #started = false;
@@ -41,7 +44,7 @@ class ZenTabUnloaderImpl {
       () => {
         ChromeUtils.idleDispatch(() => {
           try {
-            this.#unloadIdleTabs();
+            this.unloadIdleTabs();
           } catch (error) {
             console.error("ZenTabUnloader failed", error);
           }
@@ -54,7 +57,9 @@ class ZenTabUnloaderImpl {
   }
 
   #shouldKeep(tab, selected) {
-    if (!tab || tab.closing || tab === selected) {
+    // isUnloadSafe covers prompts, media playback in a PiP window, split
+    // partners and the selected glance. Policy on top of that stays here.
+    if (!isUnloadSafe(tab, selected)) {
       return true;
     }
     if (tab.pinned || tab.hasAttribute("zen-essential")) {
@@ -63,20 +68,16 @@ class ZenTabUnloaderImpl {
     if (tab.hasAttribute("zen-glance-tab") || tab.hasAttribute("glance-id")) {
       return true;
     }
-    if (tab.hasAttribute("pending")) {
-      return true;
-    }
     if (tab.soundPlaying || tab.hasAttribute("soundplaying")) {
-      return true;
-    }
-    const group = tab.group;
-    if (group?.hasAttribute("split-view-group") && selected?.group === group) {
       return true;
     }
     return false;
   }
 
-  #unloadIdleTabs() {
+  /**
+   * Unload idle tabs now. The timer calls this; tests call it directly.
+   */
+  unloadIdleTabs() {
     const minutes = Services.prefs.getIntPref(PREF, 10);
     if (minutes <= 0) {
       return;

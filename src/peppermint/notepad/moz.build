@@ -4,6 +4,7 @@
 
 EXTRA_JS_MODULES.zen.notepad += [
     "ZenNotepadAssets.mjs",
+    "ZenNotepadLock.sys.mjs",
     "ZenNotepadMarkdown.mjs",
     "ZenNotepadPage.mjs",
     "ZenNotepadProtocol.sys.mjs",

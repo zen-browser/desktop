@@ -5,8 +5,12 @@
 
 const { commitOnSpace, parseMarkdown, parseNoteURL, serializeMarkdown } =
   ChromeUtils.importESModule("resource:///modules/zen/notepad/ZenNotepadMarkdown.mjs");
-const { loadNote, notesDirectory } = ChromeUtils.importESModule(
-  "resource:///modules/zen/notepad/ZenNotepadStore.sys.mjs"
+const { isKeyCached, loadNote, lockNotes, notesDirectory, saveNote } =
+  ChromeUtils.importESModule(
+    "resource:///modules/zen/notepad/ZenNotepadStore.sys.mjs"
+  );
+const { ZenNotepadLock } = ChromeUtils.importESModule(
+  "resource:///modules/zen/notepad/ZenNotepadLock.sys.mjs"
 );
 
 /* eslint-disable mozilla/no-arbitrary-setTimeout */
@@ -297,4 +301,47 @@ add_task(async function test_export_writes_markdown_without_autosave() {
   }
   await IOUtils.remove(destination);
   BrowserTestUtils.removeTab(tab);
+});
+
+add_task(async function test_parallel_first_saves_share_one_key() {
+  await clearNotes();
+  lockNotes();
+  const first = crypto.randomUUID();
+  const second = crypto.randomUUID();
+  await Promise.all([saveNote(first, "one"), saveNote(second, "two")]);
+  Assert.equal((await loadNote(first)).markdown, "one");
+  Assert.equal((await loadNote(second)).markdown, "two");
+  ok(isKeyCached(), "The shared unwrap stays cached");
+});
+
+add_task(async function test_lock_closes_notes_and_drops_the_key() {
+  await clearNotes();
+  lockNotes();
+  const selected = await openNote();
+  await typeText("Locked note", selected);
+  await clickNoteButton(selected, "mint-note-save");
+  await TestUtils.waitForCondition(
+    async () => (await notepad(selected)).armed,
+    "save armed autosave"
+  );
+  const id = parseNoteURL(selected.linkedBrowser.currentURI.spec).id;
+  const background = await openNote(`mint://note/${id}`);
+  gBrowser.selectedTab = selected;
+  ok(isKeyCached(), "Opening a note unwraps the key");
+
+  await ZenNotepadLock.lockOpenNotes();
+  await TestUtils.waitForCondition(
+    () => selected.linkedBrowser.currentURI.spec === "about:blank",
+    "The selected note leaves the tab"
+  );
+  ok(
+    background.hasAttribute("pending") ||
+      background.linkedBrowser.currentURI.spec === "about:blank",
+    "The background note is unloaded"
+  );
+  ok(!isKeyCached(), "Lock drops the unwrapped key");
+  Assert.equal((await loadNote(id)).markdown, "Locked note");
+  ok(isKeyCached(), "The next read unwraps the key again");
+  BrowserTestUtils.removeTab(background);
+  BrowserTestUtils.removeTab(selected);
 });

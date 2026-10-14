@@ -24,6 +24,11 @@ export const PeppermintStartup = {
         "resource:///modules/zen/ZenTabUnloader.sys.mjs"
       ).ZenTabUnloader.start()
     );
+    start("Peppermint actions", () =>
+      ChromeUtils.importESModule(
+        "moz-src:///peppermint/common/PeppermintActions.sys.mjs"
+      ).registerPeppermintActions()
+    );
   },
 
   late(window) {

@@ -26,9 +26,16 @@ ChromeUtils.defineESModuleGetters(lazy, {
   Downloads: "resource://gre/modules/Downloads.sys.mjs",
 });
 
+const HISTORY_TTL_MS = 2 * 60 * 1000;
+
 let trackingStarted = false;
 let lastTick = 0;
 let pendingMs = 0;
+let historyCache = null;
+let historyInflight = null;
+let historyEpoch = 0;
+let historyObserved = false;
+let historyQueries = 0;
 
 function todayKey() {
   const date = new Date();
@@ -287,6 +294,62 @@ async function queryVisitedOrigins() {
   return String(rows[0]?.getResultByName("count") || 0);
 }
 
+function watchHistory() {
+  if (historyObserved) {
+    return;
+  }
+  try {
+    lazy.PlacesUtils.observers.addListener(
+      ["history-cleared", "page-removed"],
+      () => {
+        historyEpoch++;
+        historyCache = null;
+      }
+    );
+    historyObserved = true;
+  } catch (error) {
+    console.error("Zen homepage could not watch history", error);
+  }
+}
+
+async function historyStats() {
+  if (historyCache && Date.now() < historyCache.expires) {
+    return historyCache;
+  }
+  if (historyInflight) {
+    return historyInflight;
+  }
+  watchHistory();
+  const epoch = historyEpoch;
+  historyQueries++;
+  historyInflight = Promise.all([queryTopSite(), queryVisitedOrigins()])
+    .then(([topSite, visitedSites]) => {
+      const result = {
+        topSite,
+        visitedSites,
+        expires: Date.now() + HISTORY_TTL_MS,
+      };
+      if (epoch === historyEpoch) {
+        historyCache = result;
+      }
+      return result;
+    })
+    .finally(() => {
+      historyInflight = null;
+    });
+  return historyInflight;
+}
+
+/**
+ * @returns {{ queries: number, cached: boolean }} How many history reads ran
+ */
+export function homepageHistoryCacheForTests() {
+  return {
+    queries: historyQueries,
+    cached: !!historyCache && Date.now() < historyCache.expires,
+  };
+}
+
 async function queryDownloads() {
   try {
     const list = await lazy.Downloads.getList(lazy.Downloads.ALL);
@@ -322,10 +385,9 @@ export async function collectHomepageStats({ isPrivate = false } = {}) {
   let visitedSites = "—";
   if (!isPrivate) {
     try {
-      [topSite, visitedSites] = await Promise.all([
-        queryTopSite(),
-        queryVisitedOrigins(),
-      ]);
+      const history = await historyStats();
+      topSite = history.topSite;
+      visitedSites = history.visitedSites;
     } catch (error) {
       console.error("Zen homepage history stats failed", error);
     }

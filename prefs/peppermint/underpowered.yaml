@@ -4,3 +4,15 @@
 
 - name: zen.underpowered.enabled
   value: false
+
+# Turn Underpowered on while the battery is below the threshold and unplugged.
+- name: zen.underpowered.auto-on-battery
+  value: false
+
+# Percent. Auto-enable runs while the battery is below this and not charging.
+- name: zen.underpowered.battery-threshold
+  value: 20
+
+# Set while auto-enable owns the mode, so plugging in only turns off its own session.
+- name: zen.underpowered.auto-enabled
+  value: false

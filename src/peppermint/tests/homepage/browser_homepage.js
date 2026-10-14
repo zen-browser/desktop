@@ -3,7 +3,12 @@
 
 "use strict";
 
-const { ZenHomepage, isValidHttpURL } = ChromeUtils.importESModule(
+const {
+  ZenHomepage,
+  collectHomepageStats,
+  homepageHistoryCacheForTests,
+  isValidHttpURL,
+} = ChromeUtils.importESModule(
   "resource:///modules/zen/homepage/ZenHomepage.sys.mjs"
 );
 
@@ -119,6 +124,53 @@ add_task(async function test_homepage_live_data_updates() {
     '[data-card="time-spent"] .zen-homepage-card-value'
   );
   ok(timeSpent.textContent.length > 0, "Time spent card shows a duration");
+});
+
+add_task(async function test_history_stats_stay_cached_until_history_changes() {
+  const { PlacesUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/PlacesUtils.sys.mjs"
+  );
+  const before = homepageHistoryCacheForTests().queries;
+  await collectHomepageStats({ isPrivate: false });
+  await collectHomepageStats({ isPrivate: false });
+  await collectHomepageStats({ isPrivate: true });
+  is(
+    homepageHistoryCacheForTests().queries,
+    before + 1,
+    "A second read, and a private window, do not query Places again"
+  );
+
+  await PlacesUtils.history.clear();
+  await collectHomepageStats({ isPrivate: false });
+  is(
+    homepageHistoryCacheForTests().queries,
+    before + 2,
+    "Clearing history drops the cached top site and visit count"
+  );
+});
+
+add_task(async function test_active_time_pref_does_not_refresh_stats() {
+  Services.prefs.setStringPref("zen.homepage.mode", "builtin");
+  gBrowser.selectedTab = gZenWorkspaces._emptyTab;
+  gZenHomepage.sync();
+  ok(!document.getElementById("zen-homepage").hidden, "Homepage is visible");
+
+  const before = gZenHomepage.statsRefreshCount;
+  Services.prefs.setIntPref("zen.homepage.daily-active-ms", 5);
+  is(
+    gZenHomepage.statsRefreshCount,
+    before,
+    "Writing daily active time does not refresh stats"
+  );
+  Services.prefs.setBoolPref("zen.homepage.cards.clock", false);
+  is(
+    gZenHomepage.statsRefreshCount,
+    before + 1,
+    "A homepage card pref still refreshes stats"
+  );
+  Services.prefs.setBoolPref("zen.homepage.cards.clock", true);
+  Services.prefs.clearUserPref("zen.homepage.daily-active-ms");
+  Services.prefs.clearUserPref("zen.homepage.cards.clock");
 });
 
 add_task(async function test_card_pref_hides_card() {

@@ -5,6 +5,7 @@
 EXTRA_JS_MODULES.zen.cookieconsent += [
     "ZenCookieConsentEngine.sys.mjs",
     "ZenCookieConsentManager.sys.mjs",
+    "ZenCookieConsentVendors.sys.mjs",
 ]
 
 FINAL_TARGET_FILES.actors += [

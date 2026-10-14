@@ -60,9 +60,21 @@ class ZenHomepageController {
     this.sync();
   }
 
-  observe() {
+  observe(subject, topic, data) {
+    // Active-time bookkeeping writes these on blur. Refreshing stats here
+    // would rerun the Places queries for every focused window.
+    if (
+      data === "zen.homepage.daily-active-ms" ||
+      data === "zen.homepage.daily-active-day"
+    ) {
+      return;
+    }
     this.#warnedInvalidURL = false;
     this.sync();
+  }
+
+  get statsRefreshCount() {
+    return this.#statsToken;
   }
 
   handleEvent(event) {
@@ -90,17 +102,28 @@ class ZenHomepageController {
     }
   }
 
+  #scheduleClock() {
+    const delay = 60000 - (Date.now() % 60000);
+    this.#clockTimer = window.setTimeout(() => {
+      this.#clockTimer = 0;
+      this.#tickClock();
+      if (this.#root && !this.#root.hidden) {
+        this.#scheduleClock();
+      }
+    }, delay);
+  }
+
   #syncTimers(show) {
     if (show) {
       if (!this.#clockTimer) {
-        this.#clockTimer = window.setInterval(() => this.#tickClock(), 1000);
+        this.#scheduleClock();
       }
       if (!this.#statsTimer) {
         this.#statsTimer = window.setInterval(() => this.#refreshStats(), 60000);
       }
       return;
     }
-    window.clearInterval(this.#clockTimer);
+    window.clearTimeout(this.#clockTimer);
     window.clearInterval(this.#statsTimer);
     this.#clockTimer = 0;
     this.#statsTimer = 0;
@@ -109,7 +132,7 @@ class ZenHomepageController {
   #shutdown() {
     Services.prefs.removeObserver("zen.homepage.", this);
     window.removeEventListener("TabSelect", this);
-    window.clearInterval(this.#clockTimer);
+    window.clearTimeout(this.#clockTimer);
     window.clearInterval(this.#statsTimer);
   }
 

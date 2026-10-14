@@ -69,6 +69,21 @@ class ZenCookieConsentManager {
     return !this.isPaused(url);
   }
 
+  hasPaused() {
+    return this.#paused.size > 0;
+  }
+
+  clearPaused() {
+    if (!this.#paused.size) {
+      return;
+    }
+    this.#epoch++;
+    this.#paused.clear();
+    IOUtils.writeJSON(this.#path(), []).catch(error => {
+      console.error("ZenCookieConsent failed to store pauses", error);
+    });
+  }
+
   setPaused(url, paused) {
     const key = siteKeyFromUrl(url);
     if (!key) {

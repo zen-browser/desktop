@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+const PREF = "zen.url-snippets.list";
+const LEGACY_FILE = "zen-url-snippets.jsonlz4";
 
 const DEFAULT_SNIPPET = Object.freeze({
   shortcut: "yt",
@@ -15,7 +16,8 @@ const DEFAULT_SNIPPET = Object.freeze({
  */
 function createDefaultSnippet() {
   return {
-    id: crypto.randomUUID(),
+    // Stable id so seeding the same default does not churn the synced pref.
+    id: "00000000-0000-4000-8000-000000000001",
     shortcut: DEFAULT_SNIPPET.shortcut,
     url: DEFAULT_SNIPPET.url,
   };
@@ -83,6 +85,30 @@ export function normalizeSnippetURL(value) {
 }
 
 /**
+ * Keep the first snippet for each shortcut. Blank shortcuts are not shortcuts,
+ * so more than one of those can stay.
+ *
+ * @param {object[]} snippets
+ * @returns {object[]}
+ */
+function dedupeSnippets(snippets) {
+  const seen = new Set();
+  const kept = [];
+  for (const snippet of snippets) {
+    const shortcut = normalizeSnippetShortcut(snippet.shortcut);
+    const key = shortcut ? shortcut.toLowerCase() : "";
+    if (key && seen.has(key)) {
+      continue;
+    }
+    if (key) {
+      seen.add(key);
+    }
+    kept.push(snippet);
+  }
+  return kept;
+}
+
+/**
  * @param {string} url
  * @returns {string}
  *   The stored URL when it is empty or allowed. Rejects every other scheme.
@@ -98,16 +124,33 @@ function assertAllowedSnippetURL(url) {
 }
 
 class nsZenUrlSnippetsManager {
-  #file = null;
-  #saveFilename = "zen-url-snippets.jsonlz4";
+  #snippets = [];
   #readyPromise = null;
+  #writing = false;
+
+  constructor() {
+    Services.prefs.addObserver(PREF, this);
+  }
+
+  observe() {
+    if (this.#writing) {
+      return;
+    }
+    const raw = Services.prefs.getStringPref(PREF, "");
+    if (!raw) {
+      return;
+    }
+    if (this.#adopt(raw) === "changed") {
+      this.#write();
+    }
+  }
 
   /**
    * @returns {Promise<void>}
    */
   ready() {
     if (!this.#readyPromise) {
-      this.#readyPromise = this.#readFromDisk();
+      this.#readyPromise = this.#load();
     }
     return this.#readyPromise;
   }
@@ -117,10 +160,10 @@ class nsZenUrlSnippetsManager {
    *   A copy of the saved snippets, in settings order.
    */
   getAll() {
-    if (!Array.isArray(this.#file?.data?.snippets)) {
+    if (!Array.isArray(this.#snippets)) {
       return [];
     }
-    return structuredClone(this.#file.data.snippets);
+    return structuredClone(this.#snippets);
   }
 
   /**
@@ -186,12 +229,16 @@ class nsZenUrlSnippetsManager {
    */
   async create(shortcut = "", url = "") {
     await this.ready();
+    const normalized = normalizeSnippetShortcut(shortcut) || "";
+    if (normalized && this.isShortcutTaken(normalized)) {
+      throw new Error("Snippet shortcut already exists");
+    }
     const snippet = {
       id: crypto.randomUUID(),
-      shortcut,
+      shortcut: normalized,
       url: assertAllowedSnippetURL(url),
     };
-    this.#file.data.snippets.push(snippet);
+    this.#snippets.push(snippet);
     await this.#write();
     return structuredClone(snippet);
   }
@@ -202,13 +249,18 @@ class nsZenUrlSnippetsManager {
    */
   async update(snippet) {
     await this.ready();
-    const idx = this.#file.data.snippets.findIndex(item => item.id === snippet.id);
+    const idx = this.#snippets.findIndex(item => item.id === snippet.id);
     if (idx === -1) {
       return;
     }
     const next = structuredClone(snippet);
+    const normalized = normalizeSnippetShortcut(next.shortcut) || "";
+    if (normalized && this.isShortcutTaken(normalized, next.id)) {
+      throw new Error("Snippet shortcut already exists");
+    }
+    next.shortcut = normalized;
     next.url = assertAllowedSnippetURL(next.url);
-    this.#file.data.snippets[idx] = next;
+    this.#snippets[idx] = next;
     await this.#write();
   }
 
@@ -218,11 +270,11 @@ class nsZenUrlSnippetsManager {
    */
   async remove(id) {
     await this.ready();
-    const idx = this.#file.data.snippets.findIndex(item => item.id === id);
+    const idx = this.#snippets.findIndex(item => item.id === id);
     if (idx === -1) {
       return;
     }
-    this.#file.data.snippets.splice(idx, 1);
+    this.#snippets.splice(idx, 1);
     await this.#write();
   }
 
@@ -233,49 +285,100 @@ class nsZenUrlSnippetsManager {
    */
   async resetStore() {
     await this.ready();
-    await this.#file.saveSoon();
-    await IOUtils.remove(this.#storePath, { ignoreAbsent: true });
-    await this.#readFromDisk();
-    await this.#file.saveSoon();
+    await IOUtils.remove(this.#legacyPath, { ignoreAbsent: true });
+    this.#writing = true;
+    try {
+      Services.prefs.clearUserPref(PREF);
+    } catch {
+      // The pref is already on its default.
+    } finally {
+      this.#writing = false;
+    }
+    await this.#load();
   }
 
   /**
-   * Reload the store from disk.
+   * Reload the store from the pref, or from the legacy file when that pref
+   * has never been written.
    *
    * @returns {Promise<void>}
    */
   async reload() {
     await this.ready();
-    await this.#file.saveSoon();
-    await this.#readFromDisk();
+    await this.#load();
   }
 
-  async #write() {
-    await this.#file.saveSoon();
+  async #load() {
+    const raw = Services.prefs.getStringPref(PREF, "");
+    if (raw) {
+      const adopted = this.#adopt(raw);
+      if (adopted) {
+        if (adopted === "changed") {
+          await this.#write();
+        }
+        return;
+      }
+    }
+    const legacy = await this.#readLegacy();
+    if (legacy) {
+      const normalized = normalizeUrlSnippetsData(legacy);
+      this.#snippets = dedupeSnippets(normalized.snippets);
+      await this.#write();
+      await IOUtils.remove(this.#legacyPath, { ignoreAbsent: true });
+      return;
+    }
+    this.#snippets = normalizeUrlSnippetsData(null).snippets;
+    await this.#write();
   }
 
-  async #readFromDisk() {
-    let needsPersist = false;
-    this.#file = new JSONFile({
-      path: this.#storePath,
-      compression: "lz4",
-      dataPostProcessor: data => {
-        const hadList =
-          !!data && typeof data === "object" && Array.isArray(data.snippets);
-        const before = hadList ? data.snippets.length : -1;
-        const normalized = normalizeUrlSnippetsData(data);
-        needsPersist = !hadList || before !== normalized.snippets.length;
-        return normalized;
-      },
-    });
-    await this.#file.load();
-    if (needsPersist) {
-      await this.#file.saveSoon();
+  /**
+   * @param {string} raw
+   * @returns {"same"|"changed"|false} Whether the pref held a list
+   */
+  #adopt(raw) {
+    let data = null;
+    try {
+      data = JSON.parse(raw);
+    } catch (error) {
+      console.error("Zen URL snippets pref is unreadable", error);
+      return false;
+    }
+    if (!data || typeof data !== "object") {
+      return false;
+    }
+    const normalized = normalizeUrlSnippetsData(data);
+    const deduped = dedupeSnippets(normalized.snippets);
+    this.#snippets = deduped;
+    return deduped.length === normalized.snippets.length ? "same" : "changed";
+  }
+
+  async #readLegacy() {
+    if (!(await IOUtils.exists(this.#legacyPath))) {
+      return null;
+    }
+    try {
+      const text = await IOUtils.readUTF8(this.#legacyPath, { decompress: true });
+      return JSON.parse(text);
+    } catch (error) {
+      console.error("Zen URL snippets could not migrate", error);
+      return null;
     }
   }
 
-  get #storePath() {
-    return PathUtils.join(PathUtils.profileDir, this.#saveFilename);
+  async #write() {
+    this.#writing = true;
+    try {
+      Services.prefs.setStringPref(
+        PREF,
+        JSON.stringify({ snippets: this.#snippets })
+      );
+    } finally {
+      this.#writing = false;
+    }
+  }
+
+  get #legacyPath() {
+    return PathUtils.join(PathUtils.profileDir, LEGACY_FILE);
   }
 }
 

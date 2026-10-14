@@ -760,11 +760,6 @@ export class ZenLibrary extends MozLitElement {
     return this;
   }
 
-  /**
-   * What the sidebar does is not for anything else to decide while the
-   * library is over it: collapsing it or sending it to the other side would
-   * pull the ground out from under what is being shown.
-   */
   static SIDEBAR_COMMANDS = [
     "cmd_zenToggleSidebar",
     "cmd_zenToggleTabsOnRight",
@@ -777,8 +772,6 @@ export class ZenLibrary extends MozLitElement {
     this.#disabledCommands = [];
     for (const id of ZenLibrary.SIDEBAR_COMMANDS) {
       const command = document.getElementById(id);
-      // One that is already off stays off, and stays whoever turned it off's
-      // to turn back on.
       if (command && !command.hasAttribute("disabled")) {
         command.setAttribute("disabled", "true");
         this.#disabledCommands.push(command);

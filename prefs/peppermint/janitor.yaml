@@ -1,0 +1,35 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Peppermint Janitor cleans temporary files, usage traces, update leftovers and
+# stale app caches on launch. Nothing runs until the user opts in.
+- name: peppermint.janitor.enabled
+  value: false
+
+# Set once the opt-in dialog has been shown, so it is asked only once.
+- name: peppermint.janitor.prompted
+  value: false
+
+- name: peppermint.janitor.clean-temp
+  value: true
+
+- name: peppermint.janitor.clean-traces
+  value: true
+
+- name: peppermint.janitor.clean-updates
+  value: true
+
+- name: peppermint.janitor.clean-caches
+  value: true
+
+- name: peppermint.janitor.clean-recycle-bin
+  value: false
+
+# Show a toast for every location group that freed space.
+- name: peppermint.janitor.notifications
+  value: true
+
+# Developer switch (not in the settings): scan and log, delete nothing.
+- name: peppermint.janitor.dry-run
+  value: false

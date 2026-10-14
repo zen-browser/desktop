@@ -1,0 +1,50 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<html:template id="template-paneZenJanitor">
+
+<hbox id="zenJanitorCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenJanitor">
+<html:h1 data-l10n-id="zen-janitor-section-title"/>
+</hbox>
+
+<groupbox id="zenJanitorGroup" data-category="paneZenJanitor" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-janitor-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-janitor-description"/>
+
+      <checkbox id="zenJanitorEnabled"
+                data-l10n-id="zen-janitor-enabled"
+                preference="peppermint.janitor.enabled"/>
+
+      <label><html:h2 data-l10n-id="zen-janitor-clean-header"/></label>
+
+      <checkbox id="zenJanitorTemp"
+                data-l10n-id="zen-janitor-clean-temp"
+                preference="peppermint.janitor.clean-temp"/>
+      <checkbox id="zenJanitorTraces"
+                data-l10n-id="zen-janitor-clean-traces"
+                preference="peppermint.janitor.clean-traces"/>
+      <checkbox id="zenJanitorUpdates"
+                data-l10n-id="zen-janitor-clean-updates"
+                preference="peppermint.janitor.clean-updates"/>
+      <checkbox id="zenJanitorCaches"
+                data-l10n-id="zen-janitor-clean-caches"
+                preference="peppermint.janitor.clean-caches"/>
+      <checkbox id="zenJanitorRecycleBin"
+                data-l10n-id="zen-janitor-clean-recycle-bin"
+                preference="peppermint.janitor.clean-recycle-bin"/>
+      <description class="description-deemphasized" data-l10n-id="zen-janitor-recycle-bin-description"/>
+
+      <checkbox id="zenJanitorNotifications"
+                data-l10n-id="zen-janitor-notifications"
+                preference="peppermint.janitor.notifications"/>
+
+      <hbox>
+            <button id="zenJanitorCleanNow" data-l10n-id="zen-janitor-clean-now"/>
+      </hbox>
+</groupbox>
+
+</html:template>

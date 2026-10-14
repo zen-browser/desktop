@@ -1,15 +1,16 @@
 --- a/zen/common/styles/zen-popup.css
 +++ b/zen/common/styles/zen-popup.css
-@@ -353,6 +353,21 @@
+@@ -352,7 +352,32 @@
+     max-height: var(--zen-toast-max-height);
      min-height: var(--zen-toast-max-height);
      font-size: 14px;
- 
++
 +    &[frosted] {
 +      background: var(--zen-popup-background-solid);
 +      color: var(--zen-popup-foreground);
 +      outline: 1px solid var(--zen-frosted-stroke);
 +      outline-offset: -1px;
-+
+ 
 +      @media not (prefers-reduced-transparency: reduce) {
 +        :root:not([zen-no-acrylic="true"]) & {
 +          background: var(--zen-frosted-urlbar-fill);
@@ -17,6 +18,16 @@
 +          backdrop-filter: var(--zen-frosted-urlbar-backdrop);
 +        }
 +      }
++    }
++
++    & .zen-toast-icon {
++      flex: none;
++      width: 20px;
++      height: 20px;
++      margin-inline: 2px 0;
++      -moz-context-properties: fill, stroke;
++      fill: var(--icon-color-success);
++      stroke: var(--icon-color-success);
 +    }
 +
      & .description {

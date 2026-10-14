@@ -12,6 +12,31 @@ zen-underpowered-enabled-toast = Underpowered Mode on
 
 zen-underpowered-enabled-toast-description = Background tabs are frozen to save power
 
+peppermint-janitor-prompt-title = Peppermint Janitor
+
+peppermint-janitor-prompt-message = Free up disk space every time { -brand-short-name } starts? The Janitor clears temporary files, usage traces, leftover update files and app caches that nothing has used for 72 hours. Your documents, downloads and browser data are never touched. You can change this at any time in Settings.
+
+peppermint-janitor-prompt-enable = Enable the Janitor
+
+peppermint-janitor-prompt-not-now = Not now
+
+peppermint-janitor-toast-temp = Temporary files cleared
+
+peppermint-janitor-toast-traces = Usage traces cleared
+
+peppermint-janitor-toast-updates = Update leftovers cleared
+
+peppermint-janitor-toast-caches = App caches cleared
+
+peppermint-janitor-toast-trash = Recycle bin emptied
+
+# $size (String) - amount of space that was freed, for example "1.4 GB".
+peppermint-janitor-toast-description = { $size } freed
+
+peppermint-janitor-toast-nothing = Already tidy
+
+peppermint-janitor-toast-nothing-description = There was nothing to clean
+
 # $minutes (Number) - whole minutes remaining on a temporary grant.
 zen-site-data-setting-allow-timed = Allowed for { $minutes } min
 

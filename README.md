@@ -41,6 +41,7 @@ Modern browsers are cluttered; Endless toolbars, telemetry, sponsored shortcuts,
 - Temporary permissions
 - URL Snippets
 - Underpowered mode
+- Peppermint Janitor (opt-in space saver that clears stale temp files, caches and traces on launch)
 - Rich homepage
 - Light & Fast
 - More secure Ghost mode

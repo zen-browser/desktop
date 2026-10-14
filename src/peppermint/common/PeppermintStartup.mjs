@@ -57,5 +57,10 @@ export const PeppermintStartup = {
         "moz-src:///peppermint/underpowered/ZenUnderpowered.sys.mjs"
       ).ZenUnderpowered.init()
     );
+    start("PeppermintJanitor", () =>
+      ChromeUtils.importESModule(
+        "moz-src:///peppermint/janitor/PeppermintJanitor.sys.mjs"
+      ).PeppermintJanitor.init(window)
+    );
   },
 };

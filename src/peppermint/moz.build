@@ -12,6 +12,7 @@ DIRS += [
     "cookie-consent",
     "ghost-mode",
     "homepage",
+    "janitor",
     "notepad",
     "reader",
     "tab-unloader",

@@ -1,6 +1,6 @@
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
-@@ -123,26 +123,46 @@
+@@ -123,26 +123,51 @@
          iconsrc="chrome://browser/skin/preferences/category-general.svg"
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
@@ -56,10 +56,15 @@
 +        iconsrc="chrome://browser/skin/preferences/category-general.svg"
 +        data-l10n-id="pane-zen-performance-title">
 +      </html:moz-page-nav-button>
++      <html:moz-page-nav-button id="category-zen-janitor"
++        view="paneZenJanitor"
++        iconsrc="chrome://browser/skin/zen-icons/sparkles.svg"
++        data-l10n-id="pane-zen-janitor-title">
++      </html:moz-page-nav-button>
        <html:moz-page-nav-button id="category-sync"
          hidden="true"
          view="paneSync"
-@@ -280,10 +300,14 @@
+@@ -280,10 +305,15 @@
  #include privacy.inc.xhtml
  #include sync.inc.xhtml
  #include moreFromMozilla.inc.xhtml
@@ -74,6 +79,7 @@
 +#include zenHomepage.inc.xhtml
 +#include zenUrlSnippets.inc.xhtml
 +#include zenPerformance.inc.xhtml
++#include zenJanitor.inc.xhtml
          </vbox>
        </vbox>
      </vbox>

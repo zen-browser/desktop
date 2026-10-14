@@ -1,0 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+MOZ_SRC_FILES += [
+    "PeppermintJanitor.sys.mjs",
+    "PeppermintJanitorCleaner.sys.mjs",
+    "PeppermintJanitorTargets.sys.mjs",
+]
+
+# A ChromeWorker needs a resource:/// URL, like the adblock compiler.
+EXTRA_JS_MODULES.zen.janitor += [
+    "PeppermintJanitorRecycleBin.worker.mjs",
+]

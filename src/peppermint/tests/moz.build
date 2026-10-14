@@ -8,6 +8,7 @@ BROWSER_CHROME_MANIFESTS += [
     "adblock/browser.toml",
     "cookie_consent/browser.toml",
     "homepage/browser.toml",
+    "janitor/browser.toml",
     "new_tab/browser.toml",
     "notepad/browser.toml",
     "reader/browser.toml",

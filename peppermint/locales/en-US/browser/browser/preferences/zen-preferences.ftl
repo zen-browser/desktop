@@ -61,6 +61,11 @@ pane-zen-performance-title = Performance and effects
 category-zen-performance =
     .tooltiptext = { pane-zen-performance-title }
 
+pane-zen-janitor-title = Janitor
+
+category-zen-janitor =
+    .tooltiptext = { pane-zen-janitor-title }
+
 pane-zen-shortcuts-title = Shortcuts
 
 category-zen-shortcuts =
@@ -303,3 +308,37 @@ zen-performance-essentials-favicon =
 zen-tab-unloader-minutes-label = Unload idle tabs after
 
 zen-tab-unloader-minutes-description = Minutes. Pinned tabs, essentials, the tab you are viewing, and tabs playing sound stay loaded.
+
+zen-janitor-section-title = Peppermint Janitor
+
+zen-janitor-header = Free up disk space on launch
+
+zen-janitor-description = Every time { -brand-short-name } starts, the Janitor clears files that nothing has used for 72 hours. Your documents, downloads and browser data are never touched.
+
+zen-janitor-enabled =
+    .label = Run the Janitor on every launch
+
+zen-janitor-clean-header = What to clean
+
+zen-janitor-clean-temp =
+    .label = Temporary files
+
+zen-janitor-clean-traces =
+    .label = Usage traces (crash reports, old logs, recent item lists)
+
+zen-janitor-clean-updates =
+    .label = Leftover update files
+
+zen-janitor-clean-caches =
+    .label = App caches not used in the last 72 hours
+
+zen-janitor-clean-recycle-bin =
+    .label = Empty the recycle bin
+
+zen-janitor-recycle-bin-description = Files in the recycle bin cannot be restored afterwards. Off by default.
+
+zen-janitor-notifications =
+    .label = Show a notification for every location that was cleaned
+
+zen-janitor-clean-now =
+    .label = Clean now

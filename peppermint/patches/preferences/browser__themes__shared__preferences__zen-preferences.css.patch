@@ -60,14 +60,14 @@
  #zenTabsUnloadDelayContainer {
    display: flex;
    align-items: center;
-@@ -150,9 +152,23 @@
+@@ -150,9 +152,27 @@
  /* CKS */
  
  #category-zen-CKS > .category-icon {
 -  list-style-image: url("chrome://browser/skin/quickactions.svg");
 +  list-style-image: url("chrome://browser/skin/zen-icons/brackets-curly.svg");
- }
- 
++}
++
 +#category-zen-adblock > .category-icon {
 +  list-style-image: url("chrome://browser/skin/zen-icons/tracking-protection-fill.svg");
 +}
@@ -76,6 +76,10 @@
 +  list-style-image: url("chrome://browser/skin/preferences/category-general.svg");
 +}
 +
++#category-zen-janitor > .category-icon {
++  list-style-image: url("chrome://browser/skin/zen-icons/sparkles.svg");
+ }
+ 
 +/* Marketplace was removed; hide a leftover nav entry if chrome is stale. */
 +#category-zen-marketplace,
 +moz-page-nav-button[view="paneZenMarketplace"] {
@@ -85,7 +89,7 @@
  .zenCKSOption-input {
    padding: 5px;
    border-radius: 5px;
-@@ -237,7 +253,7 @@
+@@ -237,7 +257,7 @@
    flex-direction: column;
    justify-content: center;
    padding: 15px;
@@ -94,7 +98,7 @@
    border-radius: 10px;
    margin-bottom: 10px;
  }
-@@ -265,7 +281,12 @@
+@@ -265,7 +285,12 @@
    border-radius: 10px;
    margin: 10px;
    background: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
@@ -108,7 +112,7 @@
    border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
  }
  
-@@ -281,165 +302,6 @@
+@@ -281,165 +306,6 @@
    transform: translate(-50%, -50%);
  }
  
@@ -274,7 +278,7 @@
  #zenLayoutList {
    display: flex;
    gap: 20px;
-@@ -478,8 +340,8 @@
+@@ -478,8 +344,8 @@
  /* Disable mozilla's settings */
  
  #dataCollectionCategory,
@@ -284,7 +288,7 @@
  #websiteAdvertisingGroup,
  #helpButton,
  #support-firefox,
-@@ -502,6 +364,67 @@
+@@ -502,6 +368,67 @@
    }
  }
  

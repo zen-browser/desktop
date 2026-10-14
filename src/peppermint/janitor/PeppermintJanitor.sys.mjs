@@ -54,7 +54,9 @@ const START_DELAY_MS = 20 * 1000;
 // Groups that freed less than this stay silent.
 const MIN_TOAST_BYTES = 1024 * 1024;
 const TOAST_TIMEOUT_MS = 3500;
-const TOAST_WAIT_LIMIT_MS = 15 * 1000;
+// Toasts of one run appear this far apart, so they cascade instead of popping
+// in as one block.
+const TOAST_STAGGER_MS = 150;
 const WORKER_TIMEOUT_MS = 2 * 60 * 1000;
 
 /**
@@ -359,8 +361,8 @@ class PeppermintJanitorImpl {
   }
 
   /**
-   * One toast per group that freed something, one after the other: toasts
-   * are stacked on top of each other, so two at once would hide one.
+   * One toast per group that freed something. They are shown together,
+   * stacked under each other, each leaving on its own timer.
    *
    * @param {RunSummary} summary
    * @param {boolean} manual
@@ -375,34 +377,27 @@ class PeppermintJanitorImpl {
     if (!toasts.length && manual) {
       toasts.push({ messageId: "peppermint-janitor-toast-nothing" });
     }
-    for (const { messageId, size } of toasts) {
-      const win = Services.wm.getMostRecentBrowserWindow();
-      if (!win?.gZenUIManager || win.closed) {
-        return;
-      }
-      await win.gZenUIManager.showToast(messageId, {
-        descriptionId: size
-          ? "peppermint-janitor-toast-description"
-          : "peppermint-janitor-toast-nothing-description",
-        size,
-        timeout: TOAST_TIMEOUT_MS,
-        frosted: true,
-        icon: CHECK_ICON,
-      });
-      await this.#waitForToastsGone(win);
+    const win = Services.wm.getMostRecentBrowserWindow();
+    if (!win?.gZenUIManager) {
+      return;
     }
-  }
-
-  async #waitForToastsGone(win) {
-    const start = ChromeUtils.now();
-    while (
-      !win.closed &&
-      win.document.querySelector("#zen-toast-container .zen-toast") &&
-      ChromeUtils.now() - start < TOAST_WAIT_LIMIT_MS
-    ) {
-      await sleep(200);
-    }
-    await sleep(150);
+    await Promise.all(
+      toasts.map(async ({ messageId, size }, index) => {
+        await sleep(index * TOAST_STAGGER_MS);
+        if (win.closed) {
+          return;
+        }
+        await win.gZenUIManager.showToast(messageId, {
+          descriptionId: size
+            ? "peppermint-janitor-toast-description"
+            : "peppermint-janitor-toast-nothing-description",
+          size,
+          timeout: TOAST_TIMEOUT_MS,
+          frosted: true,
+          icon: CHECK_ICON,
+        });
+      })
+    );
   }
 }
 

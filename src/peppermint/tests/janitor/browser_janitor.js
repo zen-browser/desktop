@@ -503,29 +503,54 @@ function watchToasts() {
   return { seen, stop: () => observer.disconnect() };
 }
 
-add_task(async function test_toasts_one_per_group_with_check_icon() {
+function currentToasts() {
+  return [...document.querySelectorAll("#zen-toast-container .zen-toast")];
+}
+
+function waitForNoToasts() {
+  return TestUtils.waitForCondition(
+    () => !currentToasts().length,
+    "All toasts are gone"
+  );
+}
+
+add_task(async function test_toasts_show_together_one_per_group() {
+  await waitForNoToasts();
   const machine = await fixtureMachine("toasts");
-  const watcher = watchToasts();
   const summary = await PeppermintJanitor.run(
     pipelineOptions(machine, { groups: ["temp", "caches"], notify: true })
   );
-  watcher.stop();
-
   Assert.equal(summary.groups.length, 2);
+
+  // They are on screen at the same time, not one after the other.
+  const toasts = currentToasts();
+  Assert.equal(toasts.length, 2, "Both toasts are showing together");
   Assert.deepEqual(
-    watcher.seen.map(entry => entry.id),
+    toasts.map(t => t.querySelector("label").getAttribute("data-l10n-id")),
     ["peppermint-janitor-toast-temp", "peppermint-janitor-toast-caches"],
     "One toast per cleaned group, in order"
   );
-  for (const entry of watcher.seen) {
+  for (const toast of toasts) {
     Assert.equal(
-      entry.icon,
+      toast.querySelector(".zen-toast-icon").getAttribute("src"),
       "chrome://global/skin/icons/check-filled.svg",
       "A checkmark on the left"
     );
-    Assert.ok(entry.frosted, "Frosted like the other notices");
-    Assert.equal(entry.description, "peppermint-janitor-toast-description");
+    Assert.ok(toast.hasAttribute("frosted"), "Frosted like the other notices");
+    Assert.equal(
+      toast.querySelector(".description").getAttribute("data-l10n-id"),
+      "peppermint-janitor-toast-description"
+    );
   }
+
+  // Stacked under each other, not on top of each other.
+  const [first, second] = toasts.map(t => t.getBoundingClientRect());
+  Assert.greaterOrEqual(
+    second.top,
+    first.bottom - 1,
+    "The second toast sits below the first"
+  );
+  await waitForNoToasts();
 });
 
 add_task(async function test_notifications_off_and_small_groups_are_silent() {
@@ -571,6 +596,7 @@ add_task(async function test_manual_run_says_when_nothing_was_cleaned() {
   );
   Assert.ok(toast);
   await run;
+  await waitForNoToasts();
 });
 
 add_task(async function test_only_one_run_at_a_time() {

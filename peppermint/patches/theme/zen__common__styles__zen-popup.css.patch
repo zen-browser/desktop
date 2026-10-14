@@ -1,16 +1,55 @@
 --- a/zen/common/styles/zen-popup.css
 +++ b/zen/common/styles/zen-popup.css
-@@ -352,7 +352,32 @@
+@@ -310,7 +310,10 @@
+   top: var(--zen-toast-spacing);
+   z-index: 1000;
+   display: flex;
+-  align-items: end;
++  /* Toasts shown together stack under each other, on the side of the window
++     the sidebar is not on. */
++  flex-direction: column;
++  gap: var(--zen-toast-spacing);
+ 
+   &:empty {
+     display: none;
+@@ -318,17 +321,15 @@
+ 
+   :root:not([zen-right-side="true"]) & {
+     right: var(--zen-toast-spacing);
++    align-items: end;
+   }
+ 
+   :root[zen-right-side="true"] & {
+     left: var(--zen-toast-spacing);
++    align-items: start;
+   }
+ 
+   & .zen-toast {
+-    :root[zen-right-side="true"] & {
+-      translate: 100%;
+-    }
+-
+     --zen-toast-padding: 6px;
+     --zen-toast-max-height: 42px;
+     @media (-moz-platform: macos) {
+@@ -347,12 +348,38 @@
+     font-weight: 600;
+     align-items: center;
+     width: max-content;
+-    position: absolute;
++    flex: none;
++    position: relative;
+     transform-origin: top center;
      max-height: var(--zen-toast-max-height);
      min-height: var(--zen-toast-max-height);
      font-size: 14px;
-+
+ 
 +    &[frosted] {
 +      background: var(--zen-popup-background-solid);
 +      color: var(--zen-popup-foreground);
 +      outline: 1px solid var(--zen-frosted-stroke);
 +      outline-offset: -1px;
- 
++
 +      @media not (prefers-reduced-transparency: reduce) {
 +        :root:not([zen-no-acrylic="true"]) & {
 +          background: var(--zen-frosted-urlbar-fill);

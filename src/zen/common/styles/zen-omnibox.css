@@ -692,7 +692,6 @@
   max-height: 244px;
   overflow-y: auto;
   scrollbar-width: none;
-  margin-block-start: calc(var(--urlbarView-results-padding) - 6px);
   margin-block-end: calc(var(--urlbarView-results-padding) - 2px);
   padding-block-end: 0 !important;
 

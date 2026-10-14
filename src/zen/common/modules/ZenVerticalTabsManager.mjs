@@ -4,14 +4,6 @@
 
 import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(
-  lazy,
-  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
-  { global: "current" }
-);
-
 /**
  * Lays out the sidebar, toolbars and window controls for the current
  * combination of preferences.
@@ -64,9 +56,6 @@ window.gZenVerticalTabsManager = {
   },
 
   toggleExpand() {
-    if (lazy.ZenLibrary.isLibrarySlightlyOpen) {
-      return;
-    }
     const newVal = !Services.prefs.getBoolPref("zen.view.sidebar-expanded");
     Services.prefs.setBoolPref("zen.view.sidebar-expanded", newVal);
     Services.prefs.setBoolPref("zen.view.use-single-toolbar", false);

@@ -5,3 +5,7 @@
 category browser-before-ui-startup resource:///modules/ZenActorsManager.sys.mjs gZenActorsManager.init
 
 category browser-window-delayed-startup resource:///modules/zen/ui/ZenProgressBar.sys.mjs ZenProgressBar.create
+
+#ifdef MOZ_PROFILE_GENERATE
+category browser-window-delayed-startup resource:///modules/ZenPGOTraining.sys.mjs ZenPGOTraining.onWindowReady
+#endif

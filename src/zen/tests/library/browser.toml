@@ -11,6 +11,8 @@ prefs = [
 
 ["browser_library_download_speed.js"]
 
+["browser_library_focus_search.js"]
+
 ["browser_library_folder_first_expand.js"]
 
 ["browser_library_rapid_toggle.js"]

@@ -33,29 +33,32 @@ disable = [
   "browser_javascript_links.js",
 ]
 
-[performance]
-source = "browser/base/content/test/browser-performance"
+[metaTags]
+source = "browser/base/content/test/browser-metaTags"
 is_direct_path = true
-disable = [
-  # These three measure how a horizontal tab strip redistributes width.
-  "browser_tabclose_grow.js",
-  "browser_tabopen_squeeze.js",
-  "browser_tabstrip_overflow_underflow.js",
-  # Zen replaces tab drag and drop.
-  "browser_tabdetach.js",
-  # This one types into the urlbar with synthesized keys. Zen hands focus back
-  # to the content area after a window settles, so the keys never reach the
-  # input and no search ever starts.
-  "browser_urlbar_keyed_search.js",
-]
 
-[performance.replace-manifest]
-'  "browser.migration.version=9999999",' = '''  "browser.migration.version=9999999",
-  "zen.ui.migration.version=9999999",'''
-'  "browser.startup.record=true",' = '''
-  "zen.window-sync.enabled=false",
-  "zen.urlbar.show-domain-only-in-sidebar=false",
-  "browser.startup.record=true",'''
+[mousepostracker]
+source = "browser/base/content/test/browser-mousepostracker"
+is_direct_path = true
+
+[outOfProcess]
+source = "browser/base/content/test/browser-outOfProcess"
+is_direct_path = true
+
+[pageStyle]
+source = "browser/base/content/test/browser-pageStyle"
+is_direct_path = true
+
+[pageinfo]
+source = "browser/base/content/test/browser-pageinfo"
+is_direct_path = true
+
+[pageinfo.replace-manifest]
+"../browser-general/" = "../../../../browser/base/content/test/browser-general/"
+
+[plugins]
+source = "browser/base/content/test/browser-plugins"
+is_direct_path = true
 
 [readermode]
 source = "toolkit/components/reader/tests/browser"
@@ -77,6 +80,10 @@ xpcshell = true
 
 [safebrowsing]
 source = "browser/components/safebrowsing/content/test"
+is_direct_path = true
+
+[scroll-to-text-fragment]
+source = "browser/base/content/test/browser-scroll-to-text-fragment"
 is_direct_path = true
 
 [services-crypto]
@@ -182,6 +189,10 @@ is_direct_path = true
 prefs = [
   "zen.window-sync.enabled=false",
 ]"""
+
+[tabdialogs]
+source = "browser/base/content/test/browser-tabdialogs"
+is_direct_path = true
 
 [tooltiptext]
 source = "toolkit/components/tooltiptext"

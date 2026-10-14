@@ -31,6 +31,11 @@ on:
         required: false
         type: "boolean"
         default: false
+      regenerate-pgo:
+        description: "Ignore cached PGO profile data and generate it fresh"
+        required: false
+        type: "boolean"
+        default: false
   workflow_call:
     inputs:
       create_release:
@@ -55,6 +60,11 @@ on:
         default: false
       disable-pgo:
         description: "Build without PGO (skips the profile generation stages)"
+        required: false
+        type: "boolean"
+        default: false
+      regenerate-pgo:
+        description: "Ignore cached PGO profile data and generate it fresh"
         required: false
         type: "boolean"
         default: false
@@ -288,11 +298,107 @@ jobs:
           name: zen.source.tar.zst
           path: ./zen.source.tar.zst
 
+  pgo-cache:
+    name: Probe cached PGO profile data
+    runs-on: ubuntu-latest
+    outputs:
+      prefix: ${{ steps.key.outputs.prefix }}
+      mac-hit: ${{ steps.probe.outputs.mac }}
+      windows-hit: ${{ steps.probe.outputs.windows }}
+      linux-hit: ${{ steps.probe.outputs.linux }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Decide whether a cached profile may be reused
+        id: gate
+        run: |
+          enabled=true
+          if [ "${{ inputs.disable-pgo }}" = "true" ]; then
+            enabled=false
+          elif [ "${{ inputs.update_branch }}" != "twilight" ]; then
+            enabled=false
+          fi
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+          echo "PGO profile reuse: $enabled (branch ${{ inputs.update_branch }})"
+
+      - name: Build the cache key
+        id: key
+        if: ${{ steps.gate.outputs.enabled == 'true' }}
+        run: |
+          ff=$(node -p "require('./surfer.json').version.version")
+          echo "prefix=pgo-profdata-v1-ff${ff}" >> "$GITHUB_OUTPUT"
+
+      - name: Look up the macOS x86_64 profile
+        id: mac-x86
+        if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
+        uses: actions/cache/restore@v5
+        with:
+          key: ${{ steps.key.outputs.prefix }}-macos-x86_64-${{ github.run_id }}
+          restore-keys: ${{ steps.key.outputs.prefix }}-macos-x86_64-
+          path: ~/artifact
+          lookup-only: true
+
+      - name: Look up the macOS aarch64 profile
+        id: mac-arm
+        if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
+        uses: actions/cache/restore@v5
+        with:
+          key: ${{ steps.key.outputs.prefix }}-macos-aarch64-${{ github.run_id }}
+          restore-keys: ${{ steps.key.outputs.prefix }}-macos-aarch64-
+          path: ~/artifact
+          lookup-only: true
+
+      - name: Look up the Windows x86_64 profile
+        id: win-x86
+        if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
+        uses: actions/cache/restore@v5
+        with:
+          key: ${{ steps.key.outputs.prefix }}-windows-x86_64-${{ github.run_id }}
+          restore-keys: ${{ steps.key.outputs.prefix }}-windows-x86_64-
+          path: ~/artifact
+          lookup-only: true
+
+      - name: Look up the Linux x86_64 profile
+        id: linux-x86
+        if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
+        uses: actions/cache/restore@v5
+        with:
+          key: ${{ steps.key.outputs.prefix }}-linux-x86_64-${{ github.run_id }}
+          restore-keys: ${{ steps.key.outputs.prefix }}-linux-x86_64-
+          path: ~/artifact
+          lookup-only: true
+
+      - name: Report what is cached
+        id: probe
+        env:
+          MAC_X86: ${{ steps.mac-x86.outputs.cache-matched-key }}
+          MAC_ARM: ${{ steps.mac-arm.outputs.cache-matched-key }}
+          WIN_X86: ${{ steps.win-x86.outputs.cache-matched-key }}
+          LINUX_X86: ${{ steps.linux-x86.outputs.cache-matched-key }}
+        run: |
+          mac=false
+          if [ -n "$MAC_X86" ] && [ -n "$MAC_ARM" ]; then
+            mac=true
+          fi
+          windows=false
+          if [ -n "$WIN_X86" ]; then
+            windows=true
+          fi
+          linux=false
+          if [ -n "$LINUX_X86" ]; then
+            linux=true
+          fi
+          echo "mac=$mac" >> "$GITHUB_OUTPUT"
+          echo "windows=$windows" >> "$GITHUB_OUTPUT"
+          echo "linux=$linux" >> "$GITHUB_OUTPUT"
+          echo "macOS: $mac, Windows: $windows, Linux: $linux"
+
   windows-step-1:
     name: Windows build step 1 (PGO build)
     uses: ./.github/workflows/windows-release-build.yml
-    if: ${{ !inputs.disable-pgo }}
-    needs: [build-data, buildid]
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' }}
+    needs: [build-data, buildid, pgo-cache]
     permissions:
       contents: write
     secrets: inherit
@@ -307,15 +413,16 @@ jobs:
   windows-step-2:
     name: Windows build step 2 (Generate profile data)
     uses: ./.github/workflows/windows-profile-build.yml
-    if: ${{ !inputs.disable-pgo }}
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' }}
     permissions:
       contents: write
     secrets: inherit
-    needs: [windows-step-1, build-data]
+    needs: [windows-step-1, build-data, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       profile-data-path-archive: zen.win64-pgo-stage-1.zip
       release-branch: ${{ inputs.update_branch }}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows', needs.pgo-cache.outputs.prefix) || '' }}
 
   windows-step-3:
     name: Windows build step 3 (build with profile data)
@@ -325,7 +432,7 @@ jobs:
     secrets: inherit
     # windows-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
-    needs: [build-data, windows-step-2, start-self-host, buildid]
+    needs: [build-data, windows-step-2, start-self-host, buildid, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
@@ -333,6 +440,8 @@ jobs:
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows', needs.pgo-cache.outputs.prefix) || '' }}
+      pgo-cache-hit: ${{ needs.pgo-cache.outputs.windows-hit == 'true' }}
 
   linux:
     name: Linux build
@@ -340,19 +449,21 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, start-self-host, buildid]
+    needs: [build-data, start-self-host, buildid, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
       disable-pgo: ${{ inputs.disable-pgo }}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-linux', needs.pgo-cache.outputs.prefix) || '' }}
+      pgo-cache-hit: ${{ needs.pgo-cache.outputs.linux-hit == 'true' }}
 
   mac-step-1:
     name: macOS build step 1 (PGO build)
     uses: ./.github/workflows/macos-release-build.yml
-    if: ${{ !inputs.disable-pgo }}
-    needs: [build-data, buildid]
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.mac-hit != 'true' }}
+    needs: [build-data, buildid, pgo-cache]
     permissions:
       contents: write
     secrets: inherit
@@ -366,14 +477,15 @@ jobs:
   mac-step-2:
     name: macOS build step 2 (Generate profile data)
     uses: ./.github/workflows/macos-profile-build.yml
-    if: ${{ !inputs.disable-pgo }}
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.mac-hit != 'true' }}
     permissions:
       contents: write
     secrets: inherit
-    needs: [mac-step-1, build-data]
+    needs: [mac-step-1, build-data, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-macos', needs.pgo-cache.outputs.prefix) || '' }}
 
   mac-step-3:
     name: macOS build step 3 (build with profile data)
@@ -383,7 +495,7 @@ jobs:
     secrets: inherit
     # mac-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
-    needs: [build-data, mac-step-2, start-self-host, buildid]
+    needs: [build-data, mac-step-2, start-self-host, buildid, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
@@ -391,6 +503,8 @@ jobs:
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-macos', needs.pgo-cache.outputs.prefix) || '' }}
+      pgo-cache-hit: ${{ needs.pgo-cache.outputs.mac-hit == 'true' }}
 
   mac-uni:
     name: macOS build (Universal)

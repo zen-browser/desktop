@@ -127,6 +127,9 @@
   };
 
   function handleZenCommand(event) {
+    if (event.target.getAttribute("disabled") === "true") {
+      return;
+    }
     const id = event.target.id;
     const handler = ZEN_COMMANDS[id];
     if (handler) {

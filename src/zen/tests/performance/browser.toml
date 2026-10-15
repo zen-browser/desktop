@@ -8,22 +8,8 @@ prefs = [
   # Skip migration work in BG__migrateUI for browser_startup.js since it isn't
   # representative of common startup.
   "browser.migration.version=9999999",
-  # Zen decides "is this a new profile?" from browser.migration.version, so
-  # pinning it above makes gZenUIMigration run every migration step. One of
-  # them opens a modal dialog that blocks the whole suite, so skip Zen's
-  # migrations as well.
   "zen.ui.migration.version=9999999",
-  # Several tests here open and close extra browser windows; window sync
-  # mirrors tabs back into the original one and trips the harness' unexpected
-  # tab check at the end of the test.
   "zen.window-sync.enabled=false",
-  # Zen's fast path at the top of UrlbarValueFormatter.#ensureFormattedHostVisible
-  # reads inputField.scrollLeftMax, which flushes layout. It only runs once the
-  # single-toolbar layout has been applied, and that races window startup, so
-  # browser_windowopen.js and browser_window_resize.js see the reflow on some
-  # runs and not others -- and the harness fails on both "unexpected" and
-  # "unused expected". Pin the gate off so the suite is deterministic. The
-  # flushing read is a real bug; drop this pref once it is fixed.
   "zen.urlbar.show-domain-only-in-sidebar=false",
   "browser.startup.record=true",
   "gfx.canvas.willReadFrequently.enable=true",
@@ -97,23 +83,11 @@ skip-if = [
   "os == 'win'", # Bug 1488537, Bug 1497713
 ]
 
-["browser_tabclose_grow.js"]
-disabled="Disabled by import_external_tests.py"
-
-["browser_tabdetach.js"]
-disabled="Disabled by import_external_tests.py"
-
 ["browser_tabopen.js"]
 skip-if = [
   "os == 'mac' && os_version == '10.15' && arch == 'x86_64'", # Bug 1705492
   "os == 'mac' && os_version == '14.70' && arch == 'x86_64' && opt", # Bug 1870476
 ]
-
-["browser_tabopen_squeeze.js"]
-disabled="Disabled by import_external_tests.py"
-
-["browser_tabstrip_overflow_underflow.js"]
-disabled="Disabled by import_external_tests.py"
 
 ["browser_tabswitch.js"]
 skip-if = [
@@ -121,9 +95,6 @@ skip-if = [
 ]
 
 ["browser_toolbariconcolor_restyles.js"]
-
-["browser_urlbar_keyed_search.js"]
-disabled="Disabled by import_external_tests.py"
 
 ["browser_urlbar_search.js"]
 

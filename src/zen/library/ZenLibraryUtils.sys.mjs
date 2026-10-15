@@ -191,6 +191,38 @@ export function isBlocked(download) {
 }
 
 /**
+ * @param {object} download - Any download
+ * @returns {boolean} Whether there is anything to try again
+ */
+export function canRetry(download) {
+  return (
+    download.stopped &&
+    !download.succeeded &&
+    !isBlocked(download) &&
+    (download.canceled || !!download.error)
+  );
+}
+
+/**
+ * Picks a download back up (see gh-15928).
+ *
+ * @param {object} download - A download that stopped before it was done
+ * @param {Window} window - The window to download into, for the rare entry
+ *   that has no download left to pick up
+ */
+export function retryDownload(download, window) {
+  if (download.start) {
+    // Errors when retrying are already reported as download failures.
+    download.start().catch(() => {});
+    return;
+  }
+  const targetName = download.target.path
+    ? PathUtils.filename(download.target.path)
+    : null;
+  window.DownloadURL(download.source.url, targetName, window.document);
+}
+
+/**
  * Asks whether a download the reputation check stopped should be kept after
  * all, the way the downloads panel does, and does what the answer says.
  *

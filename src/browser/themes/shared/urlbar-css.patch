@@ -1,6 +1,6 @@
 --- a/browser/themes/shared/urlbar.css
 +++ b/browser/themes/shared/urlbar.css
-@@ -136,18 +136,13 @@
+@@ -142,18 +142,13 @@
      min(var(--urlbar-background-border-radius), var(--urlbar-height) / 2) + var(--urlbar-background-overhang-open)
    );
    --urlbar-background-box-shadow-open: 0 0 14px 0 var(--chrome-box-shadow);
@@ -21,7 +21,7 @@
    --urlbar-searchmode-switcher-panel-list-min-width: 17em;
  
    @media (prefers-contrast) {
-@@ -159,6 +154,7 @@
+@@ -165,6 +160,7 @@
      --urlbar-background-border-open: var(--urlbar-input-container-border-width) solid var(--panel-border-color);
      --urlbar-background-border-focused: var(--urlbar-background-border);
      --urlbar-background-box-shadow-open: 0 2px 14px var(--chrome-box-shadow);
@@ -29,7 +29,7 @@
      /* We want the focus outline with the theme's border-color when focused.
         --toolbar-field-border-color-focus is set equal to --focus-outline-color
         on :root, but LWT themes can override this value. */
-@@ -167,8 +163,7 @@
+@@ -173,8 +169,7 @@
      --urlbar-input-container-outline-open: none;
      --urlbar-input-container-outline-open-focused: none;
      --urlbar-input-container-outline-offset-open: 0px;
@@ -39,7 +39,7 @@
      --urlbar-searchmode-switcher-panel-list-min-width: auto;
    }
  }
-@@ -185,7 +180,7 @@
+@@ -190,7 +185,7 @@
  .urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
  .urlbar:not(#searchbar-new, [focused]) > .urlbar-input-container > .urlbar-go-button,
  #urlbar-revert-button-container {
@@ -48,7 +48,7 @@
  }
  
  /* Document Picture-in-Picture API window */
-@@ -206,6 +201,8 @@
+@@ -211,6 +206,8 @@
  .urlbar-container {
    padding-block: var(--urlbar-container-padding-block);
    margin-inline: var(--urlbar-margin-inline);
@@ -57,7 +57,7 @@
  }
  
  .urlbar {
-@@ -216,10 +213,27 @@
+@@ -221,10 +218,27 @@
    -moz-user-focus: ignore;
    user-select: none;
  
@@ -89,7 +89,7 @@
  }
  
  .urlbar,
-@@ -298,30 +312,16 @@
+@@ -342,30 +356,16 @@
      border: var(--urlbar-background-border-focused);
    }
  
@@ -124,7 +124,7 @@
    }
  
    .urlbar[open] > & {
-@@ -346,21 +346,17 @@
+@@ -390,21 +390,17 @@
    border-radius: var(--urlbar-border-radius);
    overflow: clip;
  
@@ -151,8 +151,8 @@
 +  .urlbar[focused]:popover-open:where([open], :not([in-page])) > & {
      outline: var(--urlbar-input-container-outline-open-focused);
    }
- }
-@@ -470,6 +466,10 @@
+ 
+@@ -520,6 +516,10 @@
    .urlbar:not([focused])[textoverflow="left"][domaindir="rtl"] > .urlbar-input-container > .urlbar-input-box > & {
      mask-image: linear-gradient(to right, transparent var(--urlbar-scheme-size), black calc(var(--urlbar-scheme-size) + 3ch));
    }
@@ -163,7 +163,7 @@
  }
  
  #urlbar-scheme {
-@@ -526,70 +526,19 @@
+@@ -576,70 +576,19 @@
    position: relative;
  }
  

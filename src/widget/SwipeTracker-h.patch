@@ -1,14 +1,14 @@
 --- a/widget/SwipeTracker.h
 +++ b/widget/SwipeTracker.h
-@@ -7,6 +7,7 @@
- 
+@@ -8,6 +8,7 @@
  #include "EventForwards.h"
+ #include "InputData.h"
  #include "Units.h"
 +#include "mozilla/Maybe.h"
  #include "mozilla/RefPtr.h"
  #include "mozilla/TimeStamp.h"
  #include "mozilla/layers/AxisPhysicsMSDModel.h"
-@@ -75,6 +76,10 @@
+@@ -74,6 +75,10 @@
      return mAllowedDirections & mSwipeDirection;
    }
    double SwipeSuccessTargetValue() const;
@@ -19,7 +19,7 @@
    double ClampToAllowedRange(double aGestureAmount) const;
    bool ComputeSwipeSuccess() const;
    void StartAnimating(double aStartValue, double aTargetValue);
-@@ -91,6 +96,8 @@
+@@ -90,6 +95,8 @@
    TimeStamp mLastAnimationFrameTime;
    const uint32_t mAllowedDirections;
    const uint32_t mSwipeDirection;

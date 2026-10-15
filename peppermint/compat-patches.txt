@@ -7,6 +7,7 @@ src/browser/components/tabbrowser/Tabbrowser-sys-mjs.patch
 src/browser/components/urlbar/content/UrlbarInputBase-mjs.patch
 src/browser/components/urlbar/content/UrlbarShared-mjs.patch
 src/browser/components/urlbar/content/UrlbarView-mjs.patch
+src/browser/locales/en-US/browser/places-ftl.patch
 src/browser/themes/shared/identity-block/identity-block-css.patch
 src/browser/themes/shared/tabbrowser/content-area-css.patch
 src/browser/themes/shared/tabbrowser/tabs-css.patch

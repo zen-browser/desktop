@@ -1,6 +1,6 @@
 --- a/browser/themes/shared/urlbar.css
 +++ b/browser/themes/shared/urlbar.css
-@@ -25,21 +25,6 @@
+@@ -26,21 +26,6 @@
  
    /* How far the background reaches past the input while the view is open. */
    --urlbar-background-overhang-open: 8px;
@@ -22,18 +22,19 @@
  
    /* The container's block padding, which the popover takes as its offset from
       the container's border box. */
-@@ -47,8 +32,8 @@
+@@ -48,9 +33,9 @@
  
    @media not -moz-pref("browser.nova.enabled") {
      --urlbar-basic-component-size: calc(var(--urlbar-height) - 2 * (var(--urlbar-input-container-border-width) + var(--urlbar-input-container-padding)));
 -    --urlbar-icon-padding: calc((var(--urlbar-height) - 2px /* border */ - 2px /* padding */ - 16px /* icon */) / 2);
--    --urlbar-input-container-padding: round(up, 1px, env(hairline));
 +    --urlbar-icon-padding: calc((var(--urlbar-height) - 2px /* border */ - 14px /* icon */) / 2);
+     --urlbar-component-gap: 0px;
+-    --urlbar-input-container-padding: round(up, 1px, env(hairline));
 +    --urlbar-input-container-padding: 2px;
      --urlbar-background-overhang-open: 0px;
    }
    &[uidensity="compact"] {
-@@ -527,6 +512,15 @@
+@@ -577,6 +562,15 @@
  }
  
  @media not -moz-pref("browser.nova.enabled") {
@@ -49,7 +50,7 @@
    .urlbar-input-container {
      border: var(--urlbar-input-container-border);
    }
-@@ -539,6 +533,18 @@
+@@ -589,6 +583,18 @@
        padding-block: calc((var(--urlbar-container-height) - var(--urlbar-height)) / 2);
        padding-inline: calc(var(--urlbar-margin-inline) + var(--urlbar-input-container-padding));
      }

@@ -1,6 +1,6 @@
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
-@@ -818,7 +818,7 @@
+@@ -822,7 +822,7 @@
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -9,7 +9,7 @@
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -962,10 +962,6 @@
+@@ -966,10 +966,6 @@
      }
  
      // If search mode isn't active, close the view.
@@ -18,9 +18,9 @@
 -      return;
 -    }
  
-     // Search mode is active.  If the one-offs should be shown, make sure they
-     // are enabled and show the view.
-@@ -3290,6 +3286,8 @@
+     // Search mode is active. Without results the view has nothing to show but
+     // the one-offs, so open it only when they will show.
+@@ -3302,6 +3298,8 @@
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -29,7 +29,7 @@
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3956,7 +3954,7 @@
+@@ -3968,7 +3966,7 @@
    }
  
    #enableOrDisableRowWrap() {
@@ -38,7 +38,7 @@
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
-@@ -4450,6 +4448,12 @@
+@@ -4548,6 +4546,12 @@
    }
  
    on_blur() {

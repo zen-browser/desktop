@@ -1,6 +1,6 @@
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -132,6 +132,7 @@
+@@ -131,6 +131,7 @@
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -8,7 +8,7 @@
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -471,6 +472,8 @@
+@@ -469,6 +470,8 @@
    tabsBrowsing: {
      l10nId: "tabs-browsing-section",
      groupIds: [
@@ -17,7 +17,7 @@
        "browserLayout",
        "tabs",
        "pageNavigation",
-@@ -524,7 +527,7 @@
+@@ -522,7 +525,7 @@
        }
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
@@ -26,8 +26,8 @@
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -568,6 +571,10 @@
-   register_module("paneHome", gHomePane);
+@@ -565,6 +568,10 @@
+   }
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
 +  register_module("paneZenLooks", gZenLooksAndFeel);

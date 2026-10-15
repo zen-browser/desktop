@@ -1,7 +1,7 @@
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -87,6 +87,8 @@
- #include "mozilla/StaticPrefs_gfx.h"
+@@ -88,6 +88,8 @@
+ #include "mozilla/StaticPrefs_mozilla.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
 +#include "mozilla/StaticPrefs_zen.h"
@@ -9,7 +9,7 @@
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
-@@ -1332,7 +1334,111 @@
+@@ -1333,7 +1335,111 @@
    return self.bounds;
  }
  @end
@@ -121,7 +121,7 @@
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -3878,7 +3984,9 @@
+@@ -3909,7 +4015,9 @@
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -132,7 +132,7 @@
  }
  
  // NSDraggingDestination
-@@ -3894,6 +4002,9 @@
+@@ -3925,6 +4033,9 @@
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -142,7 +142,7 @@
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -4939,6 +5050,10 @@
+@@ -4979,6 +5090,10 @@
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  

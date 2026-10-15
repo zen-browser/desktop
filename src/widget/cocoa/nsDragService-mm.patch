@@ -8,7 +8,7 @@
  #include "nsArrayUtils.h"
  #include "nsCOMPtr.h"
  #include "nsClipboard.h"
-@@ -145,6 +146,10 @@
+@@ -185,6 +186,10 @@
                                              bitsPerPixel:32];
  
    uint8_t* dest = [imageRep bitmapData];
@@ -19,7 +19,7 @@
    for (uint32_t i = 0; i < height; ++i) {
      uint8_t* src = map.mData + i * map.mStride;
      for (uint32_t j = 0; j < width; ++j) {
-@@ -152,15 +157,15 @@
+@@ -192,15 +197,15 @@
        // is premultipled here. Also, Quartz likes RGBA, so do that translation
        // as well.
  #ifdef IS_BIG_ENDIAN
@@ -43,7 +43,7 @@
  #endif
        src += 4;
        dest += 4;
-@@ -248,13 +253,45 @@
+@@ -288,13 +293,45 @@
    NSDraggingItem* dragItem =
        [[[NSDraggingItem alloc] initWithPasteboardWriter:pbItem] autorelease];
    [dragItem setDraggingFrame:localDragRect contents:image];
@@ -87,10 +87,10 @@
 +  if (dragItems.count > 1) {
 +    mNSDraggingSession.draggingFormation = NSDraggingFormationStack;
 +  }
- 
-   mNSDraggingSession.animatesToStartingPositionsOnCancelOrFail =
-       !mDataTransfer || mDataTransfer->MozShowFailAnimation();
-@@ -455,29 +492,44 @@
+   if (!mNSDraggingSession) {
+     // The system refused to start a drag, for example because the mouse button
+     // was released before we got here. Fail, so that our caller ends this drag
+@@ -503,29 +540,44 @@
      }
  
      if (pc) {

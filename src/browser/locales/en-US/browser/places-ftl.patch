@@ -1,4 +1,3 @@
-diff --git a/browser/locales/en-US/browser/places.ftl b/browser/locales/en-US/browser/places.ftl
 --- a/browser/locales/en-US/browser/places.ftl
 +++ b/browser/locales/en-US/browser/places.ftl
 @@ -21,7 +21,7 @@
@@ -7,6 +6,6 @@ diff --git a/browser/locales/en-US/browser/places.ftl b/browser/locales/en-US/br
  places-open-in-private-window =
 -  .label = Open in New Private Window
 +  .label = Open in New Ghost Window
-   .accesskey = P
+   .accesskey = v
  
  places-empty-bookmarks-folder =

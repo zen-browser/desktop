@@ -10,6 +10,10 @@
 
 **A calm, productive Firefox-based browser. Built for focus, not noise.**
 
+_Peppermint is an independent fork._
+
+> Note: No auto-update feature exists yet. So, to update the app, you still have to check this repo from time to time. We are working on the update system and we’ll do our best to get it shipped soon.
+
 [![License: MPL-2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Firefox Version](https://img.shields.io/badge/Firefox-158.0-orange.svg)](https://www.mozilla.org/firefox/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/AstroDevCompany/desktop/actions)

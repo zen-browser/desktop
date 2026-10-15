@@ -6,9 +6,9 @@
    /* Collapsed tabs should be square, so set width to match the min height */
 -  --tab-collapsed-background-width: var(--tab-min-height);
 +  --tab-collapsed-background-width: 48px;
-   --tab-collapsed-width: calc(var(--tab-collapsed-background-width) + 2 * var(--tab-inner-inline-margin));
+   --tab-collapsed-width: calc(var(--tab-collapsed-background-width) + 2 * var(--tab-margin-inline-inner));
    --tab-collapsed-split-pill-offset: 0px;
-   --tab-pinned-min-width-expanded: calc(var(--tab-pinned-expanded-background-width) + 2 * var(--tab-pinned-margin-inline-expanded));
+   --tab-pinned-min-width-expanded: calc(var(--tab-background-width-pinned-expanded) + 2 * var(--tab-margin-inline-pinned-expanded));
 @@ -361,7 +361,6 @@
    }
  
@@ -47,7 +47,7 @@
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -668,7 +660,7 @@
+@@ -670,7 +662,7 @@
    }
  
    #tabbrowser-tabs[orient="vertical"] & {
@@ -56,7 +56,7 @@
    }
  
    &[crashed] {
-@@ -676,7 +668,7 @@
+@@ -678,7 +670,7 @@
    }
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) &:not([crashed]),
@@ -65,7 +65,7 @@
      &[soundplaying] {
        list-style-image: url("chrome://browser/skin/tabbrowser/tab-audio-playing-small.svg");
      }
-@@ -754,7 +746,7 @@
+@@ -756,7 +748,7 @@
      }
    }
  
@@ -74,7 +74,7 @@
    &[crashed] {
      display: revert;
    }
-@@ -941,7 +933,7 @@
+@@ -945,7 +937,7 @@
        has not been added to root. There are certain scenarios when that attribute is temporarily
        removed from root such as when toggling the sidebar to expand with the toolbar button. */
      #tabbrowser-tabs[orient="horizontal"] &:not([pinned]):not([crashed]),
@@ -83,7 +83,7 @@
        &:is([soundplaying], [muted], [activemedia-blocked]) {
          display: flex;
        }
-@@ -1230,7 +1222,6 @@
+@@ -1234,7 +1226,6 @@
  .tabbrowser-tab:is([image], [pinned]) > .tab-stack > .tab-content[attention]:not([selected]),
  .tabbrowser-tab > .tab-stack > .tab-content[pinned][titlechanged]:not([selected]),
  #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab > .tab-stack > .tab-content[titlechanged]:not([selected]) {
@@ -91,7 +91,7 @@
    background-position: center bottom 6.5px;
    background-size: 4px 4px;
    background-repeat: no-repeat;
-@@ -1998,7 +1989,7 @@
+@@ -2024,7 +2015,7 @@
  }
  
  #tabbrowser-tabs[orient="vertical"][expanded] {
@@ -100,7 +100,7 @@
    &[movingtab][movingtab-addToGroup]:not([movingtab-group], [movingtab-ungroup]) .tabbrowser-tab:is(:active, [multiselected]) {
      margin-inline-start: var(--space-medium);
    }
-@@ -2649,7 +2640,7 @@
+@@ -2675,7 +2666,7 @@
    }
  }
  
@@ -109,7 +109,7 @@
  #vertical-tabs-newtab-button {
    appearance: none;
    min-height: var(--tab-min-height);
-@@ -2669,7 +2660,7 @@
+@@ -2695,7 +2686,7 @@
    }
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) & > .toolbarbutton-text {
@@ -118,7 +118,7 @@
    }
  
    &:hover {
-@@ -2694,7 +2685,7 @@
+@@ -2725,7 +2716,7 @@
   * flex container. #tabs-newtab-button is a child of the arrowscrollbox where
   * we don't want a gap (between tabs), so we have to add some margin.
   */
@@ -127,7 +127,7 @@
    margin-block: var(--tab-margin-block);
  }
  
-@@ -2908,7 +2899,6 @@
+@@ -2943,7 +2934,6 @@
      --tab-close-button-border-color-active: var(--button-border-color-active);
  
      .tabbrowser-tab[pinned] {
@@ -135,7 +135,7 @@
      }
  
      .tab-background {
-@@ -2947,8 +2937,8 @@
+@@ -2982,8 +2972,8 @@
        display: block;
        position: absolute;
        inset: auto;
@@ -144,9 +144,9 @@
 +      top: -2px;
 +      inset-inline-start: -2px;
  
-       /* In forced colors mode, --close-button-extra-background is opaque, so
-        * foreground needs to match it. Same for the other media queries below */
-@@ -3081,9 +3071,6 @@
+       /* In forced-colors, --close-button-extra-background will be opaque, and
+        * foreground needs to match that. Same for the media queries below. */
+@@ -3117,9 +3107,6 @@
    ~ #tabbrowser-tabs[orient="horizontal"]::before {
      display: flex;
      content: "";
@@ -156,7 +156,7 @@
    }
  }
  
-@@ -3116,7 +3103,6 @@
+@@ -3152,7 +3139,6 @@
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

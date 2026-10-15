@@ -1,7 +1,7 @@
 --- a/browser/base/moz.build
 +++ b/browser/base/moz.build
-@@ -82,3 +82,5 @@
- DEFINES["APP_LICENSE_BLOCK"] = "%s/content/overrides/app-license.html" % SRCDIR
+@@ -90,3 +90,5 @@
+ ]
  
  JAR_MANIFESTS += ["jar.mn"]
 +

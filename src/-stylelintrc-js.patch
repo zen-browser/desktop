@@ -9,8 +9,8 @@
        {
          ignore: ["blockless-at-rules"],
        },
-@@ -282,7 +282,7 @@
-     "stylelint-plugin-mozilla/no-background-without-text-color": true,
+@@ -281,7 +281,7 @@
+     "stylelint-plugin-mozilla/media-query-no-invalid": true,
      "stylelint-plugin-mozilla/no-base-design-tokens": true,
      "stylelint-plugin-mozilla/no-has-selector": true,
 -    "stylelint-plugin-mozilla/use-design-tokens": true,

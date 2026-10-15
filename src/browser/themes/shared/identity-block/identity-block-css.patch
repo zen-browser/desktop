@@ -1,15 +1,15 @@
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
-@@ -12,7 +12,7 @@
- }
+@@ -20,7 +20,7 @@
+     margin-inline-start: var(--urlbar-component-gap);
+   }
  
- #identity-box {
 -  &[pageproxystate="invalid"] {
 +  :root[zen-has-empty-tab='true'] & {
      pointer-events: none;
      -moz-user-focus: ignore;
  
-@@ -96,13 +96,6 @@
+@@ -104,13 +104,6 @@
    margin: 0;
  }
  
@@ -23,7 +23,7 @@
  
  #urlbar[focused] {
    #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button:not(:hover, [open]),
-@@ -193,16 +186,17 @@
+@@ -201,16 +194,17 @@
    }
  
    #identity-icon {

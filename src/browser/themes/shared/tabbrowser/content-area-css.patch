@@ -1,6 +1,6 @@
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
-@@ -177,7 +177,6 @@
+@@ -178,7 +178,6 @@
    min-width: 0;
  
    /* We want to be able to show the frame color behind the clipped radiused corner */
@@ -8,7 +8,7 @@
  
    display: grid;
    /**
-@@ -375,7 +374,6 @@
+@@ -376,7 +375,6 @@
    }
  
    browser:is([blank], [pendingpaint]) {
@@ -16,7 +16,7 @@
    }
  
    /* Exclude browsers with smartwindow-content attribute which inherit
-@@ -748,7 +746,7 @@
+@@ -775,7 +773,7 @@
  
  .dialogStack {
    z-index: var(--browser-stack-z-index-dialog-stack);
@@ -25,7 +25,7 @@
  
    /* --browser-with-dialog set on browser[tabDialogShowing], we want to position the overlay
       only on the top of the <browser> element so it doesn't overlap the DevTools toolbox */
-@@ -928,7 +926,7 @@
+@@ -955,7 +953,7 @@
  
  .dialogOverlay[topmost="true"],
  #window-modal-dialog::backdrop {
@@ -33,4 +33,4 @@
 +  background-color: light-dark(rgba(255, 255, 255, .3), rgba(0, 0, 0, .3));
  }
  
- .dialogOverlay[hideContent="true"][topmost="true"] {
+ @media -moz-pref("browser.nova.enabled") {

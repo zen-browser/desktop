@@ -35,5 +35,5 @@
 +    }
 +
      // Keyboard shortcuts that would close a tab that is pinned select the first
-     // unpinned tab instead.
+     // visible unpinned tab instead.
      if (

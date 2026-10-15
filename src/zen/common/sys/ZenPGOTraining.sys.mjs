@@ -55,7 +55,8 @@ export const ZenPGOTraining = {
       return;
     }
     this._started = true;
-    this.run(window).catch(e => console.error("[ZenPGOTraining]", e));
+    console.warn("[ZenPGOTraining] window ready");
+    this.run(window);
   },
 
   async run(window) {
@@ -64,6 +65,8 @@ export const ZenPGOTraining = {
       await window.gZenStartup.promiseInitialized;
       const tour = new TrainingTour(window, pages);
       await tour.run();
+    } catch (e) {
+      console.error("[ZenPGOTraining] gave up", e);
     } finally {
       Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
     }

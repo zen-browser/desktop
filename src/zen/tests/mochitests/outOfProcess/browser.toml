@@ -1,0 +1,22 @@
+[DEFAULT]
+support-files = [
+  "file_base.html",
+  "file_frame1.html",
+  "file_frame2.html",
+  "file_innerframe.html",
+  "head.js",
+]
+
+["browser_basic_outofprocess.js"]
+
+["browser_controller.js"]
+skip-if = [
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && display == 'wayland'", # Bug 1663506
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11'", # Bug 1663506
+  "os == 'mac' && os_version == '10.15' && arch == 'x86_64'", # Bug 1663506
+  "os == 'mac' && os_version == '14.70' && arch == 'x86_64'", # Bug 1663506
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64' && debug", # Bug 1663506
+  "os == 'win' && arch == 'x86_64'", # Bug 1663506
+]
+
+["browser_promisefocus.js"]

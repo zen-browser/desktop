@@ -43,8 +43,13 @@ add_task(async function test_Issue_9981() {
   );
 
   const tab2ResetButton = tab2.querySelector(".tab-reset-button");
-  tab2ResetButton.style.display = "flex";
-  EventUtils.synthesizeMouseAtCenter(tab2ResetButton, {});
+  tab2ResetButton.style.visibility = "visible";
+  await clickWhenReady(tab2ResetButton);
+
+  await TestUtils.waitForCondition(
+    () => !tab2.hasAttribute("folder-active"),
+    "Tab 2 should be unloaded out of the active folder"
+  );
 
   ok(
     tab1.hasAttribute("folder-active"),

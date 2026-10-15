@@ -6,7 +6,8 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   JSONFile: "resource://gre/modules/JSONFile.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
-  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  TabStateCache:
+    "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
 });
@@ -50,7 +51,8 @@ class nsZenLiveFoldersManager {
   }
 
   async init() {
-    if (this.#isInitialized) {
+    // Live folders live in the first synced window.
+    if (this.#isInitialized || !this.window) {
       return;
     }
 
@@ -166,6 +168,50 @@ class nsZenLiveFoldersManager {
   // ----------
   getFolder(id) {
     return this.liveFolders.get(id);
+  }
+
+  /**
+   * Returns the provider config needed to recreate this live folder on
+   * another device, or null for non-live folders. Fetch bookkeeping fields
+   * are stripped since they are device-local.
+   *
+   * @param {string} id - The folder ID.
+   */
+  getSyncableFolderData(id) {
+    const liveFolder = this.liveFolders.get(id);
+    if (!liveFolder) {
+      return null;
+    }
+    const state = { ...liveFolder.serialize().state };
+    delete state.lastFetched;
+    delete state.lastErrorId;
+    return { type: liveFolder.constructor.type, state };
+  }
+
+  /**
+   * Registers a live folder provider for a folder that arrived from
+   * Firefox Sync. The folder element must already exist.
+   *
+   * @param {string} id - The folder ID.
+   * @param {{ type: string, state: object }} config - Synced provider config.
+   */
+  async adoptSyncedFolder(id, { type, state } = {}) {
+    await this.stateRestored.promise;
+    if (this.liveFolders.has(id)) {
+      return;
+    }
+    const ProviderClass = this.registry.get(type);
+    if (!ProviderClass || !state) {
+      return;
+    }
+    const liveFolder = new ProviderClass({
+      id,
+      state: this.#applyDefaultStateValues({ ...state }),
+      manager: this,
+    });
+    this.liveFolders.set(id, liveFolder);
+    liveFolder.start();
+    this.saveState();
   }
 
   async createFolder(type) {
@@ -358,7 +404,7 @@ class nsZenLiveFoldersManager {
       browser: gBrowser.selectedBrowser,
       theme: { preset: "chrome" },
     });
-    callout.showFeatureCallout({
+    const shown = callout.showFeatureCallout({
       id: "ZEN_LIVE_FOLDERS_CALLOUT",
       template: "feature_callout",
       groups: ["cfr"],
@@ -381,7 +427,7 @@ class nsZenLiveFoldersManager {
               },
             ],
             content: {
-              width: "310px",
+              width: "312px",
               position: "callout",
               title_logo: {
                 imageURL: icon,
@@ -400,10 +446,13 @@ class nsZenLiveFoldersManager {
         ],
       },
     });
-
-    lazy.setTimeout(() => {
-      callout.endTour();
-    }, 10000);
+    shown.then(() => {
+      lazy.setTimeout(() => {
+        if (callout.ready) {
+          callout.endTour();
+        }
+      }, 8000);
+    });
   }
 
   deleteFolder(id, deleteFolder = true) {
@@ -498,36 +547,52 @@ class nsZenLiveFoldersManager {
         const compositeId = this.#makeCompositeId(liveFolder.id, item.id);
         return !existingItemIds.has(compositeId) && !this.dismissedItems.has(compositeId);
       })
-      .map((item) => {
-        const tab = this.window.gBrowser.addTrustedTab(item.url, {
-          createLazyBrowser: true,
-          inBackground: true,
-          skipAnimation: true,
-          noInitialLabel: true,
-          lazyTabTitle: item.title,
-          userContextId,
-        });
-        // createLazyBrowser can't be pinned by default
-        this.window.gBrowser.pinTab(tab);
-        if (item.icon) {
-          this.window.gBrowser.setIcon(tab, item.icon);
-          if (tab.linkedBrowser) {
-            lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
-              image: null,
+      .map(item => {
+        try {
+          const tab = this.window.gBrowser.addTrustedTab(item.url, {
+            createLazyBrowser: true,
+            inBackground: true,
+            skipAnimation: true,
+            noInitialLabel: true,
+            lazyTabTitle: item.title,
+            userContextId,
+          });
+          // createLazyBrowser can't be pinned by default
+          this.window.gBrowser.pinTab(tab);
+          if (userContextId) {
+            tab.setAttribute("zenDefaultUserContextId", "true");
+          }
+          if (item.icon) {
+            this.window.gBrowser.setIcon(tab, item.icon);
+            if (tab.linkedBrowser) {
+              lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
+                image: null,
+              });
+            }
+          }
+          tab.setAttribute(
+            "zen-live-folder-item-id",
+            this.#makeCompositeId(liveFolder.id, item.id)
+          );
+          if (item.subtitle) {
+            tab.setAttribute("zen-show-sublabel", item.subtitle);
+            const tabLabel = tab.querySelector(".zen-tab-sublabel");
+            this.window.document.l10n.setArgs(tabLabel, {
+              tabSubtitle: item.subtitle,
             });
           }
-        }
-        tab.setAttribute("zen-live-folder-item-id", this.#makeCompositeId(liveFolder.id, item.id));
-        if (item.subtitle) {
-          tab.setAttribute("zen-show-sublabel", item.subtitle);
-          const tabLabel = tab.querySelector(".zen-tab-sublabel");
-          this.window.document.l10n.setArgs(tabLabel, {
-            tabSubtitle: item.subtitle,
-          });
-        }
 
-        return tab;
-      });
+          return tab;
+        } catch (e) {
+          console.error(
+            "ZenLiveFoldersManager: Failed to add tab for item",
+            item.url,
+            e
+          );
+          return null;
+        }
+      })
+      .filter(tab => tab);
 
     // Wait for tabs to (hopefully) be initialized on all windows
     lazy.setTimeout(() => {
@@ -584,8 +649,7 @@ class nsZenLiveFoldersManager {
   // Persistence
   // -----------
   get #storePath() {
-    const profilePath = this.window.PathUtils.profileDir;
-    return this.window.PathUtils.join(profilePath, this.#saveFilename);
+    return PathUtils.join(PathUtils.profileDir, this.#saveFilename);
   }
 
   async #readStateFromDisk() {
@@ -656,6 +720,7 @@ class nsZenLiveFoldersManager {
   async #restoreState() {
     let data = await this.#readStateFromDisk();
     if (!Array.isArray(data)) {
+      this.stateRestored.resolve();
       return;
     }
 

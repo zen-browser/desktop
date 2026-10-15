@@ -64,12 +64,14 @@ export class nsZenBoostEditor {
   }
 
   /**
-   * Returns the ZenBoosts JSWindowActor child for the currently selected tab.
+   * Returns the parent Boost JSActor for the currently selected tab.
    *
-   * @returns {ZenBoostsChild} zenBoostsChild Boost JSActor child
+   * @returns {ZenBoostsParent} Boost JSActor parent
    */
-  get zenBoostsChild() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+  get zenBoostsParent() {
+    const linkedBrowser =
+      this.editorWindow.browser ??
+      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor =
       linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     return actor;
@@ -137,6 +139,18 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById("zen-boost-css-inspector")
       .addEventListener("click", this.onInspectorButtonPressed.bind(this));
+
+    const commandActions = {
+      cmd_zenBoostEditName: () => this.editBoostName(),
+      cmd_zenBoostShuffle: () => this.shuffleBoost(),
+      cmd_zenBoostReset: () => this.resetBoost(),
+      cmd_zenBoostLoad: () => this.onLoadBoostClick(),
+      cmd_zenBoostSave: () => this.onSaveBoostClick(),
+      cmd_zenBoostDelete: () => this.deleteBoost(),
+    };
+    for (const [id, action] of Object.entries(commandActions)) {
+      this.doc.getElementById(id).addEventListener("command", action);
+    }
 
     this.doc.addEventListener("keydown", event => {
       if (
@@ -454,13 +468,13 @@ export class nsZenBoostEditor {
   }
 
   async onZapButtonPressed() {
-    this.zenBoostsChild.sendQuery("ZenBoost:ToggleZapMode");
+    this.zenBoostsParent.sendQuery("ZenBoost:ToggleZapMode");
     // Focus the parent browser window
     this.openerWindow.focus();
   }
 
   async onPickerButtonPressed() {
-    this.zenBoostsChild.sendQuery("ZenBoost:TogglePickerMode");
+    this.zenBoostsParent.sendQuery("ZenBoost:TogglePickerMode");
     this.openerWindow.focus();
   }
 
@@ -485,11 +499,11 @@ ${cssSelector} {
   }
 
   onInspectorButtonPressed() {
-    this.zenBoostsChild.sendQuery("ZenBoost:OpenInspector");
+    this.zenBoostsParent.sendQuery("ZenBoost:OpenInspector");
   }
 
   async onUpdateZapButtonVisual() {
-    const actor = this.zenBoostsChild;
+    const actor = this.zenBoostsParent;
     const zapButton = this.doc.getElementById("zen-boost-zap");
 
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
@@ -501,7 +515,7 @@ ${cssSelector} {
 
   async onUpdatePickerButtonVisual() {
     const pickerButton = this.doc.getElementById("zen-boost-css-picker");
-    const selectEnabled = await this.zenBoostsChild.sendQuery(
+    const selectEnabled = await this.zenBoostsParent.sendQuery(
       "ZenBoost:SelectorPickerModeEnabled"
     );
 
@@ -648,7 +662,7 @@ ${cssSelector} {
   /**
    * Handles the size toggle button press, cycling through size override options
    */
-  async onBoostSizePressed() {
+  onBoostSizePressed() {
     if (this.currentBoostData.sizeOverride == 1) {
       this.currentBoostData.sizeOverride = 1.1;
     } else if (this.currentBoostData.sizeOverride == 1.1) {
@@ -659,7 +673,10 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
-      await this.zenBoostsChild.sendQuery("ZenBoost:DisableSizeOverride");
+      this.zenBoostsParent.updateBoostSizeOverride(
+        this.currentBoostData.sizeOverride,
+        /* disable: */ true
+      );
     }
 
     this.currentBoostData.changeWasMade = true;
@@ -1506,7 +1523,7 @@ ${cssSelector} {
   shuffleBoost() {
     const availFonts = this.fetchFontList();
     const commonFonts = this.commonFonts;
-    let font = commonFonts[Math.round(Math.random() * commonFonts.length)];
+    let font = commonFonts[Math.floor(Math.random() * commonFonts.length)];
     if (availFonts.includes(font)) {
       this.currentBoostData.fontFamily = font;
     }

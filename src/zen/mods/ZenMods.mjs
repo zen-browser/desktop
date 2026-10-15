@@ -182,15 +182,21 @@ class nsZenMods extends nsZenPreloadedFeature {
       ({ enabled, preferences, name }) => ({
         enabled,
         sanitizedName: this.sanitizeModName(name),
-        prefs: preferences.map(({ property, type }) => ({
-          property,
-          type,
-          sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
-          value:
-            enabled === undefined || enabled
-              ? Services.prefs.getStringPref(property, "")
-              : "",
-        })),
+        prefs: preferences.map(({ property, type }) => {
+          const isEnabled = enabled === undefined || enabled;
+          const getPref =
+            type === "checkbox"
+              ? Services.prefs.getBoolPref
+              : Services.prefs.getStringPref;
+          const fallback = type === "checkbox" ? false : "";
+
+          return {
+            property,
+            type,
+            sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
+            value: isEnabled ? getPref(property, fallback) : fallback,
+          };
+        }),
       })
     );
 
@@ -524,13 +530,20 @@ class nsZenMods extends nsZenPreloadedFeature {
       console.error("[ZenMods]: Error loading Zen Mods:", e);
     }
 
-    Services.prefs.addObserver(
-      this.updatePref,
-      this.#rebuildModsStylesheet.bind(this)
-    );
-    Services.prefs.addObserver(
-      "zen.themes.disable-all",
-      this.#handleDisableMods.bind(this)
+    const rebuildObserver = this.#rebuildModsStylesheet.bind(this);
+    const disableObserver = this.#handleDisableMods.bind(this);
+    Services.prefs.addObserver(this.updatePref, rebuildObserver);
+    Services.prefs.addObserver("zen.themes.disable-all", disableObserver);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.prefs.removeObserver(this.updatePref, rebuildObserver);
+        Services.prefs.removeObserver(
+          "zen.themes.disable-all",
+          disableObserver
+        );
+      },
+      { once: true }
     );
   }
 

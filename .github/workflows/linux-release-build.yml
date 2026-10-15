@@ -20,6 +20,21 @@ on:
         required: true
         type: boolean
         default: false
+      disable-pgo:
+        description: "Build without PGO at all"
+        required: false
+        type: boolean
+        default: false
+      pgo-cache-key-prefix:
+        description: "Cache key prefix for the PGO profile data"
+        required: false
+        type: string
+        default: ""
+      pgo-cache-hit:
+        description: "Take the profile data from the cache instead of generating it"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-linux:
@@ -105,6 +120,8 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch }}
           SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
           SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+          SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+          SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
         run: |
           . "$HOME/.cargo/env"
           npm run import
@@ -119,8 +136,17 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
 
+      - name: Restore cached profile data
+        uses: actions/cache/restore@v5
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && inputs.pgo-cache-hit }}
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          restore-keys: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-
+          path: ~/artifact
+          fail-on-cache-miss: true
+
       - name: Build (PGO stage 1 - generate)
-        if: ${{ matrix.arch == 'x86_64' }}
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
@@ -137,7 +163,7 @@ jobs:
           bash .github/workflows/src/release-build.sh
 
       - name: Generate PGO profile data
-        if: ${{ matrix.arch == 'x86_64' }}
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit }}
         run: |
           set -x
           export DISPLAY=:2
@@ -151,10 +177,18 @@ jobs:
           mv merged.profdata "$HOME/artifact/merged.profdata"
           mv en-US.log "$HOME/artifact/en-US.log"
 
+      - name: Cache profile data
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit && inputs.pgo-cache-key-prefix != '' }}
+        uses: actions/cache/save@v5
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          path: ~/artifact
+
       - name: Build
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_GA_DISABLE_PGO: ${{ inputs.disable-pgo && '1' || '' }}
           ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
           ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
           ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}

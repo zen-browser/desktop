@@ -41,9 +41,10 @@ add_task(async function test_Unload_Changed_Pinned() {
             "The tab should not have a zen-pinned-changed attribute after being closed"
           );
 
+          ok(!tab.linkedPanel, "The tab should be unloaded after being closed");
           ok(
-            tab.hasAttribute("discarded"),
-            "The tab should not be discarded after being closed"
+            !tab.hasAttribute("discarded"),
+            "Unloading a pinned tab should not leave it marked discarded"
           );
           Assert.notEqual(
             tab,

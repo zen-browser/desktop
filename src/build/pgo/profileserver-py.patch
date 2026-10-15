@@ -1,8 +1,8 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index b11171e3ef14b1f2c4a279b10d83eb4dadde45ca..fdf7c2d5ad6352bdd8f2ea20ee80c0927daa2ba2 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..797c3b08b03a193e4776e6b5b7ac223b3ac8d3ec 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
-@@ -17,7 +17,13 @@ from mozprofile import FirefoxProfile, Preferences
+@@ -17,7 +17,15 @@ from mozprofile import FirefoxProfile, Preferences
  from mozprofile.permissions import ServerLocations
  from mozrunner import CLI, FirefoxRunner
  
@@ -14,6 +14,74 @@ index b11171e3ef14b1f2c4a279b10d83eb4dadde45ca..fdf7c2d5ad6352bdd8f2ea20ee80c092
 +        return s.getsockname()[1]
 +
 +PORT = find_free_port()
++
++UI_TRAINING_TIMEOUT = 900
  
  PATH_MAPPINGS = {
      "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",
+@@ -242,11 +250,11 @@ if __name__ == "__main__":
+         )
+         runner.start(debug_args=debug_args, interactive=interactive)
+         ret = runner.wait()
+-        sp3_httpd.stop()
+-        if has_extended_corpus:
+-            js3_httpd.stop()
+-        httpd.stop()
+         if ret:
++            sp3_httpd.stop()
++            if has_extended_corpus:
++                js3_httpd.stop()
++            httpd.stop()
+             print("Firefox exited with code %d during profiling" % ret)
+             logfile = process_args.get("logfile")
+             if logfile:
+@@ -256,6 +264,49 @@ if __name__ == "__main__":
+             get_crashreports(profilePath, name="Profiling run")
+             sys.exit(ret)
+ 
++        if "UPLOAD_PATH" in env:
++            process_args["logfile"] = os.path.join(
++                env["UPLOAD_PATH"], "profile-run-3.log"
++            )
++        training_urls = [
++            "http://localhost:%d/blueprint/sample.html" % PORT,
++            "http://localhost:%d/blueprint/elements.html" % PORT,
++            "http://localhost:%d/blueprint/grid.html" % PORT,
++            "http://localhost:%d/blueprint/forms.html" % PORT,
++        ]
++        ui_env = env.copy()
++        ui_env["ZEN_PGO_UI_TRAINING"] = "1"
++        ui_env["ZEN_PGO_UI_TRAINING_URLS"] = ",".join(training_urls)
++        runner = FirefoxRunner(
++            profile=profile,
++            binary=binary,
++            cmdargs=[training_urls[0]],
++            env=ui_env,
++            process_args=process_args,
++        )
++        runner.start(debug_args=debug_args, interactive=interactive)
++        ret = runner.wait(timeout=UI_TRAINING_TIMEOUT)
++        if ret is None:
++            print(
++                "Zen UI training did not quit within %ds, killing it"
++                % UI_TRAINING_TIMEOUT
++            )
++            runner.stop()
++        elif ret:
++            print("Firefox exited with code %d during Zen UI training" % ret)
++            logfile = process_args.get("logfile")
++            if logfile:
++                print("Firefox output (%s):" % logfile)
++                with open(logfile) as f:
++                    print(f.read())
++            get_crashreports(profilePath, name="Zen UI training run")
++            sys.exit(ret)
++
++        sp3_httpd.stop()
++        if has_extended_corpus:
++            js3_httpd.stop()
++        httpd.stop()
++
+         if "UPLOAD_PATH" in env:
+             should_err = False
+             print("Verify log for LLVM Profile Error")

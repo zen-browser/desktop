@@ -1,0 +1,23 @@
+<!-- originally a crash test for bug 713417
+     https://bug713417.bugzilla.mozilla.org/attachment.cgi?id=584240 -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+
+function boom() {
+  var w = document.getElementById("f").contentWindow;
+  var d = w.document;
+  d.designMode = "on";
+  var r = d.documentElement;
+  d.removeChild(r);
+  document.adoptNode(r);
+}
+
+</script>
+</head>
+<body onload="boom();">
+<iframe src="browser_739531_frame.html" id="f"></iframe>
+</body>
+</html>

@@ -61,6 +61,7 @@ zen-workspace-creation-profile = الملف الشخصي
     .tooltiptext = تستخدم الملفات الشخصية لفصل ملفات تعريف الارتباط وبيانات الموقع بين المساحات.
 zen-workspace-creation-header = إنشاء مساحة
 zen-workspace-creation-label = يتم استخدام المساحات لتنظيم علامات التبويب والجلسات الخاصة بك.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = حذف المساحة؟
 zen-workspaces-delete-workspace-body = هل أنت متأكد من رغبتك في حذف { $name }؟ لا يمكن التراجع عن هذا الإجراء.
 # Note that the html tag MUST not be changed or removed, as it is used to better

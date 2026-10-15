@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Proffil
     .tooltiptext = Mae proffiliau'n cael eu defnyddio i wahanu cwcis a data gwefan rhwng gofodau.
 zen-workspace-creation-header = Creu Gofod
 zen-workspace-creation-label = Mae gofodau'n cael eu defnyddio i drefnu eich tabiau a'ch sesiynau.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Dileu Gofod Gwaith?
 zen-workspaces-delete-workspace-body = Ydych chi'n siŵr eich bod chi eisiau dileu { $name }? Does dim modd dadwneud y weithred hon.
 # Note that the html tag MUST not be changed or removed, as it is used to better

@@ -48,11 +48,12 @@
   </menu>
   <menuseparator id="context_zenWorkspacesSeparator"/>
   <menuseparator/>
-  <menuitem id="context_zenReorderWorkspaces" data-l10n-id="zen-workspaces-panel-context-reorder" command="cmd_zenReorderWorkspaces"/>
+  <menuitem id="context_zenManageWorkspaces" data-l10n-id="zen-workspaces-panel-context-manage" command="cmd_zenManageWorkspaces"/>
   <menuitem id="context_zenUnloadWorkspace" data-l10n-id="zen-workspaces-panel-unload" command="cmd_zenUnloadWorkspace"/>
   <menuitem id="context_zenUnloadAllOtherWorkspace" data-l10n-id="zen-workspaces-panel-unload-others" command="cmd_zenUnloadAllOtherWorkspace"/>
   <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation"/>
+  <menuitem id="context_zenShareWorkspace" data-l10n-id="zen-share-space" command="cmd_zenCtxShareWorkspace"/>
   <menuitem id="context_zenDeleteWorkspace" data-l10n-id="zen-workspaces-panel-context-delete" command="cmd_zenCtxDeleteWorkspace"/>
   <menuseparator/>
   <menuitem id="context_zenSpaceRoutingSettings" data-l10n-id="zen-space-routing-settings" command="cmd_zenOpenSpaceRoutingSettings"/>
@@ -76,6 +77,7 @@
     <menupopup />
   </menu>
   <menuitem id="context_zenFolderToSpace" data-l10n-id="zen-folders-panel-convert-folder-to-space" />
+  <menuitem id="context_zenShareFolder" data-l10n-id="zen-share-folder"/>
   <menuseparator />
   <menuitem id="context_zenFolderUnpack" data-l10n-id="zen-folders-panel-unpack-folder"/>
   <menuitem id="context_zenFolderDelete" data-l10n-id="zen-folders-panel-delete-folder"/>

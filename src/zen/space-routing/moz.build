@@ -5,4 +5,5 @@
 EXTRA_JS_MODULES.zen.spacerouting += [
     "ZenSpaceRoutingDialog.mjs",
     "ZenSpaceRoutingManager.sys.mjs",
+    "ZenSpaceRoutingNavigation.sys.mjs",
 ]

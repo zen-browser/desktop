@@ -48,6 +48,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         if (status === 404) {
           return "zen-live-folder-github-no-auth";
         }
+        // Don't decide the page format from an error response, try again on
+        // the next fetch instead.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
+        }
         try {
           JSON.parse(text);
           this.state.isJsonApi = true;
@@ -77,6 +82,13 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         // Assume no auth
         if (status === 404) {
           return "zen-live-folder-github-no-auth";
+        }
+
+        // Any other error (rate limit, server error) is a failed fetch, not an
+        // empty result. Otherwise every tab in the folder gets closed and the
+        // known repositories are cleared.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
         }
 
         if (items) {
@@ -197,45 +209,36 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     }
 
     const document = new DOMParser().parseFromString(text, "text/html");
-    const issues = document.querySelectorAll(
-      "div[class^=IssueItem-module__defaultRepoContainer]"
+    const links = document.querySelectorAll(
+      'a[data-testid="issue-listitem-title-link"]'
     );
     const items = [];
     const activeRepos = new Set();
 
-    if (issues.length) {
-      const authors = document.querySelectorAll(
-        "a[class^=IssueItem-module__authorCreatedLink]"
+    for (const link of links) {
+      const issueUrl = new URL(link.getAttribute("href"), this.state.url);
+      const pathMatch = issueUrl.pathname.match(
+        /^\/([^/]+\/[^/]+)\/(?:issues|pull)\/([0-9]+)/
       );
-      const titles = document.querySelectorAll(
-        "div[class^=Title-module__container]"
-      );
-      const links = document.querySelectorAll(
-        '[data-testid="issue-pr-title-link"]'
-      );
-
-      for (let i = 0; i < issues.length; i++) {
-        const [rawRepo, rawNumber] = issues[i].childNodes;
-        const author = authors[i]?.textContent;
-        const title = titles[i]?.textContent;
-        const issueUrl = links[i]?.href;
-
-        const repo = rawRepo.textContent?.trim();
-        if (repo) {
-          activeRepos.add(repo);
-        }
-
-        const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
-        const number = numberMatch?.[0] ?? "";
-
-        items.push({
-          title,
-          subtitle: author,
-          icon: "chrome://browser/content/zen-images/favicons/github.svg",
-          url: "https://github.com" + issueUrl,
-          id: `${repo}#${number}`,
-        });
+      if (!pathMatch) {
+        continue;
       }
+
+      const [, repo, number] = pathMatch;
+      activeRepos.add(repo);
+
+      const author = link
+        .closest("li")
+        ?.querySelector('[data-testid="author-filter-link"]')
+        ?.lastChild?.textContent.trim();
+
+      items.push({
+        title: link.textContent.trim(),
+        subtitle: author,
+        icon: "chrome://browser/content/zen-images/favicons/github.svg",
+        url: issueUrl.href,
+        id: `${repo}#${number}`,
+      });
     }
 
     return {
@@ -250,8 +253,16 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     const baseQuery = [
       this.state.type === "pull-requests" ? "is:pr" : "is:issue",
       "is:open",
+      "archived:false",
       "sort:updated-desc",
     ];
+
+    if (
+      this.state.type === "pull-requests" &&
+      !(this.state.options.includeDrafts ?? true)
+    ) {
+      baseQuery.push("draft:false");
+    }
 
     const options = [
       {
@@ -335,6 +346,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         key: "reviewRequested",
         checked: this.state.options.reviewRequested ?? false,
         hidden: this.state.type === "issues",
+      },
+      {
+        l10nId: "zen-live-folder-github-option-include-drafts",
+        key: "includeDrafts",
+        checked: this.state.options.includeDrafts ?? true,
+        hidden: this.state.type !== "pull-requests",
       },
       { type: "separator" },
       {

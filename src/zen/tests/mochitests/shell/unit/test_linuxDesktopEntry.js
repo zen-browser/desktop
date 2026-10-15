@@ -463,3 +463,109 @@ add_task(async function test_deletion() {
   await ShellService.deleteLinuxDesktopEntry("deletion");
   ok(!(await IOUtils.exists(path)), "The desktop file was deleted");
 });
+
+add_task(async function test_overrideApi() {
+  // Implicitly it's "default", and the other tests would've failed if not.
+  Services.prefs.setStringPref("browser.shell.desktop-entry-api", "filesystem");
+  equal(
+    ShellService.desktopEntryApi,
+    "filesystem",
+    "Setting the pref to 'filesystem' caused the filesystem to be used"
+  );
+
+  Services.prefs.setStringPref(
+    "browser.shell.desktop-entry-api",
+    "dynamiclauncher"
+  );
+  equal(
+    ShellService.desktopEntryApi,
+    "dynamiclauncher",
+    "Setting the pref to 'dynamiclauncher' caused the dynamic launcher to be used"
+  );
+
+  Services.prefs.setStringPref("browser.shell.desktop-entry-api", "disabled");
+  equal(
+    ShellService.desktopEntryApi,
+    null,
+    "Setting the pref to 'disabled' caused the API to be disabled"
+  );
+
+  Services.prefs.clearUserPref("browser.shell.desktop-entry-api");
+});
+
+add_task(async function test_dynamicLauncher() {
+  let sandbox = sinon.createSandbox();
+  let fakeWindow = {};
+
+  Services.prefs.setStringPref(
+    "browser.shell.desktop-entry-api",
+    "dynamiclauncher"
+  );
+
+  // This checks that the dynamiclauncher API is called correctly. Refer to
+  // test_dynamicLauncher for tests that the API does the right thing.
+  let installStub = sandbox.stub();
+  let uninstallStub = sandbox.stub();
+  sandbox.stub(ShellService, "shellService").value({
+    requestInstallDynamicLauncher: installStub,
+    requestUninstallDynamicLauncher: uninstallStub,
+    getArgv0: () => "unimportant",
+  });
+  await ShellService.createLinuxDesktopEntry(
+    "overrideapi",
+    "Override API",
+    ["abc"],
+    "icon",
+    { window: fakeWindow }
+  );
+  equal(
+    installStub.callCount,
+    1,
+    "requestInstallDynamicLauncher was called once"
+  );
+  equal(installStub.firstCall.args[0], "overrideapi", "Correct id was passed");
+  ok(
+    installStub.firstCall.args[1] instanceof Ci.nsIINIParserWriter,
+    "An INI file was passed"
+  );
+  equal(installStub.firstCall.args[2], fakeWindow, "Correct window was passed");
+
+  await ShellService.deleteLinuxDesktopEntry("overrideapi");
+  equal(
+    uninstallStub.callCount,
+    1,
+    "requestUninstallDynamicLauncher was called once"
+  );
+  equal(
+    uninstallStub.firstCall.args[0],
+    "overrideapi",
+    "Correct id was passed"
+  );
+
+  sandbox.restore();
+  Services.prefs.clearUserPref("browser.shell.desktop-entry-api");
+});
+
+add_task(async function test_failsIfApiDisabled() {
+  Services.prefs.setStringPref("browser.shell.desktop-entry-api", "disabled");
+
+  await Assert.rejects(
+    (async () =>
+      ShellService.createLinuxDesktopEntry(
+        "overrideapi",
+        "Override API",
+        ["abc"],
+        "icon"
+      ))(),
+    /.*when managing desktop entries is disabled.*/,
+    "createLinuxDesktopEntry fails without a backend"
+  );
+
+  await Assert.rejects(
+    (async () => ShellService.deleteLinuxDesktopEntry("overrideapi"))(),
+    /.*when managing desktop entries is disabled.*/,
+    "deleteLinuxDesktopEntry fails without a backend"
+  );
+
+  Services.prefs.clearUserPref("browser.shell.desktop-entry-api");
+});

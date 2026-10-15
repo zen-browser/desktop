@@ -1,17 +1,17 @@
 diff --git a/servo/components/style/queries/feature_expression.rs b/servo/components/style/queries/feature_expression.rs
-index 1519c1993d3f3c689aac423f430a53efe92aa009..9c94cda6290448c040e43182957c10ead99ba178 100644
+index 3632c4054ac01ec4ed6b8e6903322ef908e25da0..9ce42db40fe72db3c1fef5010f579ffc34734d6e 100644
 --- a/servo/components/style/queries/feature_expression.rs
 +++ b/servo/components/style/queries/feature_expression.rs
-@@ -23,7 +23,7 @@ use crate::values::computed::{self, CSSPixelLength, ToComputedValue};
+@@ -21,7 +21,7 @@ use crate::selector_map::PrecomputedHashSet;
+ use crate::str::{starts_with_ignore_ascii_case, string_as_ascii_lowercase};
+ use crate::stylesheets::container_rule::AttrReferenceSet;
+ use crate::stylesheets::{CssRuleType, Origin, UrlExtraData};
+-use crate::values::DashedIdent;
++use crate::values::{AtomString, DashedIdent};
+ use crate::values::computed::{self, CSSPixelLength, ToComputedValue};
  use crate::values::specified::{
      Angle, Integer, Length, Number, Percentage, Ratio, Resolution, Time,
- };
--use crate::values::DashedIdent;
-+use crate::values::{DashedIdent, AtomString};
- use crate::{Atom, Zero};
- use cssparser::{Parser, ParserInput, Token};
- use selectors::kleene_value::KleeneValue;
-@@ -643,6 +643,10 @@ impl QueryFeatureExpression {
+@@ -638,6 +638,10 @@ impl QueryFeatureExpression {
                      .map(|v| *expect!(Enumerated, v));
                  return evaluator(context, computed);
              },
@@ -22,7 +22,7 @@ index 1519c1993d3f3c689aac423f430a53efe92aa009..9c94cda6290448c040e43182957c10ea
              Evaluator::BoolInteger(eval) => {
                  let computed = self
                      .kind
-@@ -681,6 +685,7 @@ pub enum QueryExpressionValue {
+@@ -676,6 +680,7 @@ pub enum QueryExpressionValue {
      /// An enumerated value, defined by the variant keyword table in the
      /// feature's `mData` member.
      Enumerated(KeywordDiscriminant),
@@ -30,15 +30,15 @@ index 1519c1993d3f3c689aac423f430a53efe92aa009..9c94cda6290448c040e43182957c10ea
      /// Value types only used by style-range query expressions, not feature queries.
      /// A CSS-wide keyword.
      Keyword(CSSWideKeyword),
-@@ -728,6 +733,7 @@ impl QueryExpressionValue {
-                 Evaluator::Enumerated { serializer, .. } => dest.write_str(&*serializer(value)),
+@@ -723,6 +728,7 @@ impl QueryExpressionValue {
+                 Evaluator::Enumerated { serializer, .. } => dest.write_str(&serializer(value)),
                  _ => unreachable!(),
              },
 +            QueryExpressionValue::String(ref s) => s.to_css(dest),
          }
      }
  
-@@ -764,6 +770,9 @@ impl QueryExpressionValue {
+@@ -759,6 +765,9 @@ impl QueryExpressionValue {
              Evaluator::Resolution(..) => {
                  QueryExpressionValue::Resolution(Resolution::parse(context, input)?)
              },

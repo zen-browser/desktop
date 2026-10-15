@@ -7,24 +7,30 @@ unified-extensions-description = Forritsaukar eru notaðir til að auðga notagi
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Endurglæða þarfaflipa
-           *[false] Endurglæða festan flipa
+            [true] Endurlesa Mikilvægt-flipa
+           *[false] Endurlesa festan flipa
         }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Bæta við þarfaflipa
+    .label = Bæta við Mikilvægt
     .accesskey = F
 tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
-    .label = Fjarlægja úr þarfaflipum
+    .label = Fjarlægja úr Mikilvægt-flipum
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Skipta út vefslóð þarfaflipa fyrir fyrirliggjandi slóð
-           *[false] Skipta út vefslóð fests flipa fyrir fyrirliggjandi slóð
+            [true] Breyta vefslóð á Mikilvægt
+           *[false] Breyta vefslóð fests flipa
         }
     .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Skipta út fyrir fyrirliggjandi vefslóð
+    .accesskey = P
+tab-context-zen-edit-pinned-url = 
+    .label = Breyta…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Skipta um merkingu...
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Staðfesta
 zen-pinned-tab-replaced = URL-slóð festa flipans hefur verið skipt út með fyrirliggjandi slóð!
+zen-pinned-tab-url-edited = Vefslóð festa flipans hefur verið breytt!
+zen-pinned-tab-url-invalid = Þetta virðist ekki vera gild vefslóð.
+zen-pinned-tab-edit-url-title = Breyta festri vefslóð
+zen-pinned-tab-edit-url-label = Sláðu inn slóðina sem þessi festi flipi ætti að vísa á:
 zen-tabs-renamed = Tókst að endurnefna flipann!
 zen-background-tab-opened-toast = Nýr bakgrunnsflipi opnaður!
 zen-workspace-renamed-toast = Tókst að endurnefna vinnusvæðið!
@@ -63,12 +73,14 @@ zen-icons-picker-emoji =
     .label = Emoji-tákn
 zen-icons-picker-svg = 
     .label = Táknmyndir
+zen-emojis-picker-search = 
+    .placeholder = Leita að emoji-táknum
 urlbar-search-mode-zen_actions = Aðgerðir
 zen-site-data-settings = Stillingar
 zen-generic-manage = Sýsla
 zen-generic-more = Meira
 zen-generic-next = Næsta
-zen-essentials-promo-label = Bæta við þarfaflipa
+zen-essentials-promo-label = Bæta við Mikilvægt
 zen-essentials-promo-sublabel = Hafðu eftirlætisflipana þína við hendina
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Leyft
@@ -114,6 +126,9 @@ zen-sidebar-notification-updated-heading = Uppfærslu lokið!
 zen-sidebar-notification-updated-label = Nýtt á döfinni í { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Skoða útgáfuupplýsingar
+zen-sidebar-notification-donate-label = Styrkja { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Styrkja verkefnið með framlagi
 zen-sidebar-notification-restart-safe-mode-label = Bilaði eitthvað?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Endurræsa í öruggum ham

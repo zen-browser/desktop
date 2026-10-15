@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
 &:not([zen-compact-animating])
   #zen-sidebar-top-buttons:not(:has(#zen-sidebar-top-buttons-customization-target > *:not(#zen-sidebar-top-buttons-separator), .titlebar-buttonbox-container)) {
   max-height: 0 !important;

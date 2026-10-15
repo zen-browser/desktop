@@ -1,9 +1,18 @@
 diff --git a/browser/installer/windows/nsis/uninstaller.nsi b/browser/installer/windows/nsis/uninstaller.nsi
 old mode 100755
 new mode 100644
-index becbb0f70c84eb7f2d9bff5a3aedcbb7a78a61cf..05835d2088ab631316a25a9f0728898bd7998d8d
+index becbb0f70c84eb7f2d9bff5a3aedcbb7a78a61cf..a23a8a1b160932368377fc841b501df9355918db
 --- a/browser/installer/windows/nsis/uninstaller.nsi
 +++ b/browser/installer/windows/nsis/uninstaller.nsi
+@@ -150,7 +150,7 @@ OutFile "helper.exe"
+ !endif
+ ShowUnInstDetails nevershow
+ 
+-!define URLUninstallSurvey "https://qsurvey.mozilla.com/s3/FF-Desktop-Post-Uninstall?channel=${UpdateChannel}&version=${AppVersion}&osversion="
++!define URLUninstallSurvey "https://links.zen-browser.app/uninstall-feedback?osversion="
+ 
+ ; Support for the profile refresh feature
+ !define URLProfileRefreshHelp "https://support.mozilla.org/kb/refresh-firefox-reset-add-ons-and-settings"
 @@ -516,6 +516,7 @@ Section "Uninstall"
    ${un.RegCleanFileHandler}  ".svg"   "FirefoxHTML-$AppUserModelID"
    ${un.RegCleanFileHandler}  ".webp"  "FirefoxHTML-$AppUserModelID"

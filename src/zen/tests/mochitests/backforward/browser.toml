@@ -1,0 +1,7 @@
+[DEFAULT]
+
+["browser_history_menu.js"]
+fail-if = [
+  "a11y_checks", # Bug 1854233 navigator-toolbox may not be focusable
+]
+https_first_disabled = true

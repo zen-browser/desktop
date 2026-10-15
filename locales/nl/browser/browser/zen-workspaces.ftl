@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Profiel
     .tooltiptext = Profielen worden gebruikt om cookies en site-gegevens tussen ruimtes te scheiden.
 zen-workspace-creation-header = Maak een ruimte
 zen-workspace-creation-label = Ruimtes worden gebruikt om je tabbladen en sessies te organiseren.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Ruimte verwijderen?
 zen-workspaces-delete-workspace-body = Weet je zeker dat je { $name } wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden.
 # Note that the html tag MUST not be changed or removed, as it is used to better

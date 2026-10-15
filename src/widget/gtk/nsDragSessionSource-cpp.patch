@@ -1,0 +1,29 @@
+diff --git a/widget/gtk/nsDragSessionSource.cpp b/widget/gtk/nsDragSessionSource.cpp
+index a5f67d700f8c80d513f08cc25405b57cf28a2a9a..58186470bcbb7b1eda34ee20a19e29d540ab052a 100644
+--- a/widget/gtk/nsDragSessionSource.cpp
++++ b/widget/gtk/nsDragSessionSource.cpp
+@@ -13,6 +13,7 @@
+ #include "mozilla/Services.h"
+ #include "mozilla/StaticPrefs_widget.h"
+ #include "mozilla/WidgetUtilsGtk.h"
++#include "mozilla/nsZenDragAndDrop.h"
+ #include "nsAppShell.h"
+ #include "nsArrayUtils.h"
+ #include "nsCRT.h"
+@@ -1196,11 +1197,15 @@ bool nsDragSessionSource::SetAlphaPixmap(SourceSurface* aSurface,
+       cairo_image_surface_get_stride(surf), SurfaceFormat::B8G8R8A8);
+   if (!dt) return false;
+ 
++  auto drag_translucency = DRAG_IMAGE_ALPHA_LEVEL;
++  if (auto zenDragAndDrop = zen::nsZenDragAndDrop::GetZenDragAndDropInstance()) {
++    drag_translucency = zenDragAndDrop->GetDragImageOpacity();
++  }
+   dt->ClearRect(Rect(0, 0, dragRect.width, dragRect.height));
+   dt->DrawSurface(
+       aSurface, Rect(0, 0, dragRect.width, dragRect.height),
+       Rect(0, 0, dragRect.width, dragRect.height), DrawSurfaceOptions(),
+-      DrawOptions(DRAG_IMAGE_ALPHA_LEVEL, CompositionOp::OP_SOURCE));
++      DrawOptions(drag_translucency, CompositionOp::OP_SOURCE));
+ 
+   cairo_surface_mark_dirty(surf);
+   cairo_surface_set_device_offset(surf, -aXOffset, -aYOffset);

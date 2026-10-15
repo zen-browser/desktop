@@ -28,6 +28,7 @@ export default [
   "ZEN_KEYSET_ID",
 
   "gZenPinnedTabManager",
+  "gZenTabRenamer",
 
   "gZenEmojiPicker",
   "gZenSessionStore",
@@ -39,6 +40,8 @@ export default [
   "gZenThemePicker",
 
   "gZenViewSplitter",
+
+  "gZenShareManager",
 
   "gZenSpaceRoutingManager",
 
@@ -275,8 +278,6 @@ export default [
   "Favicons",
   "WindowsUIUtils",
   "BrowserHandler",
-  "Marionette",
-  "RemoteAgent",
   "Marionette",
   "RemoteAgent",
   "RTL_UI",

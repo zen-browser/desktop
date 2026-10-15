@@ -51,11 +51,15 @@ export const ZenPGOTraining = {
   _started: false,
 
   onWindowReady(window) {
-    if (this._started || !Services.env.exists(TRAINING_ENV_VAR)) {
+    if (this._started) {
+      return;
+    }
+    const wanted = Services.env.exists(TRAINING_ENV_VAR);
+    console.warn(`[ZenPGOTraining] window ready, training=${wanted}`);
+    if (!wanted) {
       return;
     }
     this._started = true;
-    console.warn("[ZenPGOTraining] window ready");
     this.run(window);
   },
 

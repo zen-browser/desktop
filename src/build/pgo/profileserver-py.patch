@@ -1,5 +1,5 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index a23e879dfdc4994ff615fb389fad92f5234ef1fa..56f373fd5cf5fdc23194c778809dfa0404bcb9da 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..413f7db4c5fb9e07fe69284b46619abf270ab039 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
 @@ -17,7 +17,15 @@ from mozprofile import FirefoxProfile, Preferences
@@ -15,7 +15,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..56f373fd5cf5fdc23194c778809dfa04
 +
 +PORT = find_free_port()
 +
-+UI_TRAINING_TIMEOUT = 900
++UI_TRAINING_TIMEOUT = 400
  
  PATH_MAPPINGS = {
      "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",

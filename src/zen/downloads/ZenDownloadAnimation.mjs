@@ -25,9 +25,16 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
     try {
       const Downloads = window.Downloads;
       const list = await Downloads.getList(Downloads.ALL);
-      list.addView({
+      if (window.closed) {
+        return;
+      }
+      const view = {
         onDownloadAdded: this.#handleNewDownload.bind(this),
+      };
+      window.addEventListener("unload", () => list.removeView(view), {
+        once: true,
       });
+      list.addView(view);
     } catch (error) {
       console.error(
         `[${nsZenDownloadAnimation.name}] Failed to set up download animation listeners: ${error}`

@@ -18,6 +18,11 @@ on:
         description: "The branch to build"
         required: true
         type: string
+      pgo-cache-key-prefix:
+        description: "Cache key prefix for the generated profile data"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   windows-profile-build:
@@ -102,6 +107,20 @@ jobs:
           dir engine
           mv engine/merged.profdata merged.profdata
           mv engine/en-US.log en-US.log
+
+      - name: Stage profile data where a build expects it
+        if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
+        shell: bash
+        run: |
+          mkdir -p ~/artifact
+          cp merged.profdata en-US.log ~/artifact/
+
+      - name: Cache profile data
+        if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
+        uses: actions/cache/save@v5
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          path: ~/artifact
 
       - name: Upload artifacts
         if: ${{ matrix.arch == 'x86_64' }}

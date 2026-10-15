@@ -1,0 +1,11 @@
+[DEFAULT]
+support-files = ["head.js"]
+
+["browser_bad_meta_tags.js"]
+support-files = ["bad_meta_tags.html"]
+
+["browser_meta_tags.js"]
+skip-if = [
+  "tsan", # Bug 1403403
+]
+support-files = ["meta_tags.html"]

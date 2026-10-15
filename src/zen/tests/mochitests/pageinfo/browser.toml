@@ -1,0 +1,51 @@
+[DEFAULT]
+
+["browser_pageinfo_iframe_media.js"]
+support-files = [
+  "iframes.html",
+  "../../../../browser/base/content/test/browser-general/moz.png",
+]
+
+["browser_pageinfo_image_info.js"]
+support-files = ["../../../../browser/base/content/test/browser-general/moz.png"]
+skip-if = [
+  "true", # Bug 1998143, 1997129, 1161699
+]
+
+["browser_pageinfo_images.js"]
+skip-if = [
+  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
+]
+support-files = [
+  "all_images.html",
+  "../../../../browser/base/content/test/browser-general/moz.png",
+]
+
+["browser_pageinfo_permissions.js"]
+
+["browser_pageinfo_previewBrowser.js"]
+support-files = [
+  "image.html",
+  "../../../../browser/base/content/test/browser-general/audio.ogg",
+  "../../../../browser/base/content/test/browser-general/moz.png",
+  "../../../../browser/base/content/test/browser-general/video.webm",
+]
+skip-if = [
+  "asan",
+  "tsan",
+  "verify", # bug 1997129
+]
+
+["browser_pageinfo_rtl.js"]
+
+["browser_pageinfo_security.js"]
+https_first_disabled = true
+support-files = ["../../../../browser/base/content/test/browser-general/moz.png"]
+
+["browser_pageinfo_separate_private.js"]
+
+["browser_pageinfo_svg_image.js"]
+support-files = [
+  "svg_image.html",
+  "../../../../browser/base/content/test/browser-general/title_test.svg",
+]

@@ -5,6 +5,11 @@ run-if = [
 firefox-appdir = "browser"
 tags = "os_integration"
 
+["test_customIconManager.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["test_desktopEntryStatus.js"]
 run-if = [
   "os == 'linux'",
@@ -25,9 +30,17 @@ support-files = [
 ]
 tags = ["portal"]
 
+["test_isOneClickSetDefaultEnabled.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["test_linuxDesktopEntry.js"]
 run-if = [
   "os == 'linux'",
+]
+prefs = [
+  "browser.shell.desktop-entry-api=filesystem",
 ]
 
 ["test_macOS_showSecurityPreferences.js"]
@@ -40,6 +53,11 @@ run-if = [
   "os == 'win'"
 ]
 
+["test_taskbarPinningPolicy.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["test_writeShortcutIcon.js"]
 run-if = [
   "os == 'win'",
@@ -47,5 +65,5 @@ run-if = [
 ]
 support-files = [
   "../../../places/tests/browser/favicon-normal16.png",
-  "../../../../base/content/test/favicons/icon.svg",
+  "../../../../base/content/test/browser-favicons/icon.svg",
 ]

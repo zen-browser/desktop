@@ -3,17 +3,37 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 /**
- * Base class for UI components in Zen.
- * UI components are responsible for managing their own event listeners
- * and providing a consistent interface for handling events.
+ * Base class for per-window UI components in Zen.
+ *
+ * A component is created once for every browser window. It owns its event
+ * listeners, which are removed automatically when the window unloads, and
+ * dispatches DOM events to `on_<eventType>` methods.
+ *
+ * Components are not constructed by hand during startup. Instead, register
+ * them in the feature's component manifest so the browser creates them once
+ * the window has finished its delayed startup:
+ *
+ *   category browser-window-delayed-startup resource:///modules/zen/ui/ZenProgressBar.sys.mjs ZenProgressBar.create
  */
 export class ZenUIComponent {
   #window = null;
   #eventListeners = new Set();
 
+  /**
+   * Category manager entry point. Creates and initializes the component for
+   * the given window.
+   *
+   * @param {Window} aWindow - The browser window to attach the component to.
+   * @returns {ZenUIComponent} The created component.
+   */
+  static create(aWindow) {
+    const component = new this(aWindow);
+    component.init();
+    return component;
+  }
+
   constructor(aWindow) {
     this.#window = aWindow;
-    this.init();
     this.#window.addEventListener("unload", () => {
       if (typeof this.uninit === "function") {
         this.uninit();
@@ -27,6 +47,10 @@ export class ZenUIComponent {
 
   get window() {
     return this.#window;
+  }
+
+  get document() {
+    return this.#window.document;
   }
 
   /**

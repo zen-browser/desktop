@@ -1,5 +1,5 @@
 diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
-index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..e221b077dbfbe20c8696732f003bd5809d761a02 100644
+index 6438045fc006da5bd11b257646fadf8139a57a00..614d2f77fa48b1cae840d9ba41ca9553a7fda617 100644
 --- a/browser/components/extensions/parent/ext-browser.js
 +++ b/browser/components/extensions/parent/ext-browser.js
 @@ -362,6 +362,7 @@ class TabTracker extends TabTrackerBase {
@@ -18,7 +18,17 @@ index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..e221b077dbfbe20c8696732f003bd580
  
      this._tabs.set(nativeTab, id);
      this._tabIds.set(id, nativeTab);
-@@ -1262,6 +1264,10 @@ class TabManager extends TabManagerBase {
+@@ -659,7 +661,8 @@ class TabTracker extends TabTrackerBase {
+    * @private
+    */
+   _handleWindowClose(window) {
+-    for (let nativeTab of window.gBrowser.tabs) {
++    let tabs = window.gZenWorkspaces?.allStoredTabs ?? window.gBrowser.tabs;
++    for (let nativeTab of tabs) {
+       if (!this.adoptedTabs.has(nativeTab)) {
+         this.emitRemoved(nativeTab, true);
+       }
+@@ -1296,6 +1299,10 @@ class TabManager extends TabManagerBase {
    }
  
    canAccessTab(nativeTab) {

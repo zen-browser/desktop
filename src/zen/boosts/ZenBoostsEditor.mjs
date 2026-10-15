@@ -69,7 +69,9 @@ export class nsZenBoostEditor {
    * @returns {ZenBoostsParent} Boost JSActor parent
    */
   get zenBoostsParent() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const linkedBrowser =
+      this.editorWindow.browser ??
+      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor =
       linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     return actor;
@@ -1521,7 +1523,7 @@ ${cssSelector} {
   shuffleBoost() {
     const availFonts = this.fetchFontList();
     const commonFonts = this.commonFonts;
-    let font = commonFonts[Math.round(Math.random() * commonFonts.length)];
+    let font = commonFonts[Math.floor(Math.random() * commonFonts.length)];
     if (availFonts.includes(font)) {
       this.currentBoostData.fontFamily = font;
     }

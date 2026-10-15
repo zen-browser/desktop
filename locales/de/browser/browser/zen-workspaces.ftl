@@ -61,7 +61,7 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profile trennen Cookies und Website-Daten zwischen verschiedenen Arbeitsbereichen.
 zen-workspace-creation-header = Arbeitsbereich erstellen
 zen-workspace-creation-label = Arbeitsbereiche helfen dir, deine Tabs und Sitzungen zu organisieren.
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = Standard
 zen-workspaces-delete-workspace-title = Arbeitsbereich löschen?
 zen-workspaces-delete-workspace-body = Möchtest du { $name } wirklich löschen? Das lässt sich nicht rückgängig machen.
 # Note that the html tag MUST not be changed or removed, as it is used to better

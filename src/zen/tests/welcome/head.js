@@ -16,7 +16,7 @@ async function goNextWelcomePage(l10nId) {
       setTimeout(() => {
         resolve();
       }, 0);
-    }, 3000); // Wait for the transition to complete
+    }, 800); // Wait for the transition to complete
   });
 }
 

@@ -36,10 +36,10 @@ zen-add-zap-helper = Нажимайте по элементам на стран�
 zen-remove-zap-helper = ← Нажмите, чтобы вернуть
 zen-select-this = Вставить селектор для этого
 zen-select-related = Вставить селектор для связанного
-zen-select-cancel = Отмена
+zen-select-cancel = Отменить
 zen-zap-this = Стереть это
 zen-zap-related = Стереть всё связанное
-zen-zap-cancel = Отмена
+zen-zap-cancel = Отменить
 zen-zap-done = Готово
 zen-unzap-tooltip =
     { $elementCount ->

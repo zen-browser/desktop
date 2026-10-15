@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 4960f4baed32a9e9f523262591eb93550ca9c4b0..9ee825057b1b3b5a08e1d2b2c1036f1be2088da6 100644
+index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb1392fee3fd 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -34,6 +34,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,7 +10,7 @@ index 4960f4baed32a9e9f523262591eb93550ca9c4b0..9ee825057b1b3b5a08e1d2b2c1036f1b
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -831,7 +832,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
+@@ -852,7 +853,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
    var backDisabled = backCommand.hasAttribute("disabled");
    var forwardDisabled = forwardCommand.hasAttribute("disabled");
@@ -24,7 +24,7 @@ index 4960f4baed32a9e9f523262591eb93550ca9c4b0..9ee825057b1b3b5a08e1d2b2c1036f1b
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3973,7 +3979,7 @@ function warnAboutClosingWindow() {
+@@ -3985,7 +3991,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -33,7 +33,7 @@ index 4960f4baed32a9e9f523262591eb93550ca9c4b0..9ee825057b1b3b5a08e1d2b2c1036f1b
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4013,7 +4019,7 @@ function warnAboutClosingWindow() {
+@@ -4025,7 +4031,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -42,7 +42,7 @@ index 4960f4baed32a9e9f523262591eb93550ca9c4b0..9ee825057b1b3b5a08e1d2b2c1036f1b
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4038,7 +4044,7 @@ function warnAboutClosingWindow() {
+@@ -4050,7 +4056,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -51,7 +51,35 @@ index 4960f4baed32a9e9f523262591eb93550ca9c4b0..9ee825057b1b3b5a08e1d2b2c1036f1b
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4998,6 +5004,16 @@ var ConfirmationHint = {
+@@ -4763,9 +4769,13 @@ var gDialogBox = {
+     // Bring the window to the front in case we're minimized or occluded:
+     window.focus();
+ 
+-    // Prevent urlbar views from showing on top of the modal.
+-    for (let urlbar of document.querySelectorAll(".urlbar")) {
+-      urlbar.view?.close();
++    try {
++      // Prevent urlbars from showing on top of modal
++      for (let urlbar of document.querySelectorAll(".urlbar")) {
++        urlbar.incrementPopoverBlockerCount();
++      }
++    } catch (ex) {
++      console.error(ex);
+     }
+ 
+     try {
+@@ -4791,6 +4801,10 @@ var gDialogBox = {
+       this._updateMenuAndCommandState(true /* to enable */);
+       this._dialog = null;
+       UpdatePopupNotificationsVisibility();
++      // Restore the urlbar popovers if needed
++      for (let urlbar of document.querySelectorAll(".urlbar")) {
++        urlbar.decrementPopoverBlockerCount();
++      }
+     }
+     if (this._queued.length) {
+       setTimeout(() => this._openNextDialog(), 0);
+@@ -4976,6 +4990,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

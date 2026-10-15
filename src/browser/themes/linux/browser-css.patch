@@ -1,11 +1,11 @@
 diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
-index e735ec80b56e1a2da4bc5bec29136ce60353277b..330ea62d220d9acd96a95a605888839388e97452 100644
+index f276db1d456703493ee713370691352985021708..619ee6724eec1e6a25adcb257af0d02eb7a29d34 100644
 --- a/browser/themes/linux/browser.css
 +++ b/browser/themes/linux/browser.css
 @@ -14,7 +14,6 @@
      @media (-moz-gtk-theme-family) {
        --tabs-navbar-separator-style: none;
-       @media (prefers-color-scheme: light) and (not -moz-pref("browser.nova.enabled")) {
+       @media (prefers-color-scheme: light) {
 -        --urlbar-box-background-color: #fafafa;
        }
      }

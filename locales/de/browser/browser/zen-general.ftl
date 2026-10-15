@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Essentials URL bearbeiten
+           *[false] Angeheftete URL bearbeiten
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Mit aktueller URL ersetzen
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Bearbeiten...
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Titel ändern...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bestätigen
 zen-pinned-tab-replaced = Die URL des angehefteten Tabs wurde aktualisiert!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Angeheftete URL wurde aktualisiert!
+zen-pinned-tab-url-invalid = Das sieht nicht nach einer gültigen URL aus.
+zen-pinned-tab-edit-url-title = Angeheftete URL bearbeiten
+zen-pinned-tab-edit-url-label = Gib die URL an, auf die der angeheftete Tab verweisen soll:
 zen-tabs-renamed = Tab umbenannt!
 zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
 zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Symbole
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Emojis durchsuchen
 urlbar-search-mode-zen_actions = Aktionen
 zen-site-data-settings = Einstellungen
 zen-generic-manage = Verwalten
@@ -128,9 +128,9 @@ zen-sidebar-notification-updated-heading = Update abgeschlossen!
 zen-sidebar-notification-updated-label = Was in { -brand-short-name } neu ist
 zen-sidebar-notification-updated-tooltip = 
     .title = Versionshinweise anzeigen
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Unterstütze { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Spende für das Projekt
 zen-sidebar-notification-restart-safe-mode-label = Funktioniert etwas nicht?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Im abgesicherten Modus neu starten

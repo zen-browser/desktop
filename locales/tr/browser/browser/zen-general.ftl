@@ -21,20 +21,20 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Temel sekme adresini düzenle
+           *[false] Sabitlenmiş sekme adresini düzenle
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Mevcut adresle değiştir
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Düzenle…
     .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Etiketi Değiştir...
+    .label = Etiketi değiştir…
 tab-context-zen-edit-icon = 
-    .label = Simgeyi Değiştir...
+    .label = Simgeyi değiştir…
 zen-themes-corrupted = { -brand-short-name } adlı modun dosyaları hatalı. Varsayılan temaya sıfırlandılar.
 zen-shortcuts-corrupted = { -brand-short-name } kısayol dosyanız bozuldu. Varsayılan kısayollara sıfırlandı.
 # note: Do not translate the "<br/>" tags in the following string
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Onayla
 zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiştirildi!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Sabitlenmiş sekme adresi güncellendi!
+zen-pinned-tab-url-invalid = Bu geçerli bir adres gibi görünmüyor.
+zen-pinned-tab-edit-url-title = Sabitlenmiş sekme adresini düzenle
+zen-pinned-tab-edit-url-label = Bu sabitlenmiş sekmenin yönlendirileceği adresi girin:
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Simgeler
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Emojilerde ara
 urlbar-search-mode-zen_actions = Eylemler
 zen-site-data-settings = Ayarlar
 zen-generic-manage = Yönet
@@ -128,9 +128,9 @@ zen-sidebar-notification-updated-heading = Güncelleme tamamlandı!
 zen-sidebar-notification-updated-label = { -brand-short-name }'de neler yeni
 zen-sidebar-notification-updated-tooltip = 
     .title = Sürüm Notlarını Görüntüle
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = { -brand-short-name } uygulamasını destekle
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Projeye bağış yap
 zen-sidebar-notification-restart-safe-mode-label = Bir sorun mu oluştu?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Güvenli Modda Yeniden Başlat

@@ -24,10 +24,10 @@ zen-workspaces-panel-context-delete =
     .accesskey = D
 
 zen-workspaces-panel-change-name =
-    .label = Change Name
+    .label = Change Name…
 
 zen-workspaces-panel-change-icon =
-    .label = Change Icon
+    .label = Change Icon…
 
 zen-workspaces-panel-context-default-profile =
     .label = Set Profile
@@ -38,11 +38,8 @@ zen-workspaces-panel-unload =
 zen-workspaces-panel-unload-others =
     .label = Unload All Other Spaces
 
-zen-workspaces-how-to-reorder-title = How to reorder spaces
-zen-workspaces-how-to-reorder-desc = Drag the space icons at the bottom of the sidebar to reorder them
-
 zen-workspaces-change-theme =
-    .label = Edit Theme
+    .label = Edit Theme…
 
 zen-workspaces-panel-context-open =
     .label = Open Workspace
@@ -72,19 +69,22 @@ zen-workspace-creation-name =
     .placeholder = Space Name
 
 zen-move-tab-to-workspace-button =
-    .label = Move To...
+    .label = Move To
     .tooltiptext = Move all tabs in this window to a Space
 
-zen-workspaces-panel-context-reorder =
-    .label = Reorder Spaces
+zen-workspaces-panel-context-manage =
+    .label = Manage Spaces…
 
 zen-workspace-creation-profile = Profile
     .tooltiptext = Profiles are used to separate cookies and site data between spaces.
 zen-workspace-creation-header = Create a Space
 zen-workspace-creation-label = Spaces are used to organize your tabs and sessions.
+zen-workspace-default-profile = Default
 
 zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.

@@ -894,7 +894,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 20;
+  static LATEST_KBS_VERSION = 21;
 
   constructor() {}
 
@@ -1318,6 +1318,22 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.setDisabled(true);
         }
       }
+    }
+
+    if (version < 21) {
+      // Migrate from version 20 to 21.
+      // Add shortcut to toggle the library
+      data.push(
+        new KeyShortcut(
+          "zen-library-toggle",
+          "L",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ alt: true, shift: true }),
+          "cmd_zenToggleLibrary",
+          "zen-library-shortcut-toggle"
+        )
+      );
     }
 
     return data;

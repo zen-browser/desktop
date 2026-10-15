@@ -21,10 +21,10 @@ zen-space-routing-regex =
     .label = RegEx
 zen-space-routing-open-in = Abrir em
 zen-space-routing-url = URL
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
+zen-space-routing-tab-routed-toast = Nova aba aberta em { $targetWorkspace}
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
+            [one] Adicionar Rota para Domínio
+           *[other] Adicionar Rota para Domínios
         }

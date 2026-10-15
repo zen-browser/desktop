@@ -70,8 +70,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   static PREVENTABLE_SET = new Set(ZenBoostsChild.PREVENTABLE_EVENTS);
 
-  actorCreated() {
-    this.#applyBoostForPageIfAvailable();
+  handleEvent(event) {
+    if (event.type === "DOMDocElementInserted") {
+      this.#applyBoostForPageIfAvailable();
+    }
   }
 
   didDestroy() {
@@ -331,6 +333,22 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   /**
+   * Sets a synced BrowsingContext field only when its value changes. Every
+   * setter commits a transaction that is broadcast to the whole browsing
+   * context group, even when the value is unchanged, so this avoids three
+   * such broadcasts on every page load that has no boost.
+   *
+   * @param {BrowsingContext} browsingContext
+   * @param {string} field - The synced field name.
+   * @param {number | boolean} value
+   */
+  #setSyncedField(browsingContext, field, value) {
+    if (browsingContext[field] !== value) {
+      browsingContext[field] = value;
+    }
+  }
+
+  /**
    * Applies the boost settings for the current page if available.
    *
    * @param {boolean} unloadStyles - Indicates whether to unload styles.
@@ -360,7 +378,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
         sizeOverride: boostData.sizeOverride,
       });
 
-      browsingContext.isZenBoostsInverted = boostData.smartInvert;
+      this.#setSyncedField(
+        browsingContext,
+        "isZenBoostsInverted",
+        !!boostData.smartInvert
+      );
       if (boostData.enableColorBoost) {
         let primaryColor;
         if (boostData.autoTheme) {
@@ -396,18 +418,21 @@ export class ZenBoostsChild extends JSWindowActorChild {
             boostData
           );
         }
-        browsingContext.zenBoostsData = primaryColor;
+        this.#setSyncedField(browsingContext, "zenBoostsData", primaryColor);
         // The complementary accent is derived in the backend by rotating the
         // primary accent's hue by this delta (in degrees).
-        browsingContext.zenBoostsComplementaryRotation =
-          boostData.secondaryDotAngleDegDelta ?? 0;
+        this.#setSyncedField(
+          browsingContext,
+          "zenBoostsComplementaryRotation",
+          boostData.secondaryDotAngleDegDelta ?? 0
+        );
         return;
       }
     } else {
-      browsingContext.isZenBoostsInverted = false;
+      this.#setSyncedField(browsingContext, "isZenBoostsInverted", false);
     }
-    browsingContext.zenBoostsData = 0;
-    browsingContext.zenBoostsComplementaryRotation = 0;
+    this.#setSyncedField(browsingContext, "zenBoostsData", 0);
+    this.#setSyncedField(browsingContext, "zenBoostsComplementaryRotation", 0);
   }
 
   /**

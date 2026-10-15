@@ -1,0 +1,37 @@
+#filter dumbComments emptyLines substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="context-fill" fill-opacity="context-fill-opacity" class="zen-library-icon" viewBox="4 4 24 24"><style>@property --zen-triangle-anim { syntax: &apos;&lt;number&gt;&apos;; initial-value: 1; inherits: false; }
+    @property --zen-circle-anim { syntax: &apos;&lt;number&gt;&apos;; initial-value: 1; inherits: false; }
+    @keyframes StarBackward {
+      0% { transform: rotate(120deg); }
+      100% { transform: rotate(0deg); }
+    }
+    @keyframes TriangleBackward {
+      0% { --zen-triangle-anim: 1; }
+      100% { --zen-triangle-anim: 0; }
+    }
+    @keyframes CircleBackward {
+      0% { --zen-circle-anim: 1; }
+      100% { --zen-circle-anim: 0; }
+    }
+    @keyframes GlowBackward {
+      0% { opacity: 0.4; }
+      100% { opacity: 0; }
+    }
+    @keyframes GlowElementsBackward {
+      0% { opacity: 0.5; }
+      100% { opacity: 0; }
+    }
+    .zen-library-star { transform-origin: 10px 10.2px; animation: StarBackward 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .zen-library-triangle-group { transform-origin: 17px 9.2px; animation: TriangleBackward 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; transform: translate(calc(var(--zen-triangle-anim) * 2px), 0px) rotate(calc(var(--zen-triangle-anim) * 365deg)) scale(max(1 - var(--zen-triangle-anim) / 0.65, (var(--zen-triangle-anim) - 0.65) / 0.35)); }
+    .zen-library-circle { transform-origin: 0px 0px; animation: CircleBackward 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; transform: translate(calc(var(--zen-circle-anim) * 1px), calc(var(--zen-circle-anim) * -1.5px)) scale(max(0, max((var(--zen-circle-anim) - 0.75) / 0.25, min(1, 1 - (var(--zen-circle-anim) - 0.3) / 0.35)))); }
+    .zen-library-glow { filter: blur(2px); animation: GlowBackward 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .zen-library-glow-element { filter: blur(2px); animation: GlowElementsBackward 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .zen-library-glow-bg, .zen-library-glow-element { fill: transparent !important; stroke: none !important; }
+    .zen-library-glow-rays { stroke: transparent !important; fill: none !important; }
+    @media (prefers-color-scheme: dark) {
+      .zen-library-glow-bg, .zen-library-glow-element { fill: white !important; }
+      .zen-library-glow-rays { stroke: white !important; }
+    }</style><defs><mask id="zen-library-box-mask"><rect width="40" height="40" x="-10" y="-10" fill="#fff"/><rect width="40" height="40" x="-10" y="11.635" fill="#000"/></mask></defs><g fill-rule="evenodd"><g mask="url(#zen-library-box-mask)"><path d="M7.773 11.635c.363.228.467.44.445.659l-.182 1.788a.579.579 0 0 0 .946.503l1.38-1.153a.58.58 0 0 1 .604-.085l1.644.725a.578.578 0 0 0 .77-.745l-.679-1.692a.58.58 0 0 1 .115-.577l1.198-1.34a.578.578 0 0 0-.47-.962l-1.794.121a.58.58 0 0 1-.539-.286l-.904-1.553a.578.578 0 0 0-1.06.15l-.439 1.743a.58.58 0 0 1-.438.424l-1.757.38a.578.578 0 0 0-.186 1.055z" class="zen-library-star zen-library-glow-element"/><path d="M7.773 11.635c.363.228.467.44.445.659l-.182 1.788a.579.579 0 0 0 .946.503l1.38-1.153a.58.58 0 0 1 .604-.085l1.644.725a.578.578 0 0 0 .77-.745l-.679-1.692a.58.58 0 0 1 .115-.577l1.198-1.34a.578.578 0 0 0-.47-.962l-1.794.121a.58.58 0 0 1-.539-.286l-.904-1.553a.578.578 0 0 0-1.06.15l-.439 1.743a.58.58 0 0 1-.438.424l-1.757.38a.578.578 0 0 0-.186 1.055z" class="zen-library-star"/></g><g transform="translate(14, 6.2)"><circle r="1.4" class="zen-library-circle zen-library-glow-element"/><circle r="1" class="zen-library-circle"/></g><g class="zen-library-triangle-group"><g transform="translate(17, 9.2)"><path d="M-1.1 1.8c-.3.2-.6 0-.6-.3v-3c0-.3.3-.5.6-.3L1.4-.4c.3.2.3.6 0 .8Z" class="zen-library-triangle zen-library-glow-element"/><path d="M-1.1 1.8c-.3.2-.6 0-.6-.3v-3c0-.3.3-.5.6-.3L1.4-.4c.3.2.3.6 0 .8Z" class="zen-library-triangle"/></g></g><g class="zen-library-glow"><path d="m6.6 6.6 1.44 6.1h9.92l1.44-6.1Z" class="zen-library-glow-bg"/><path d="m6.1 6.6 1.94 6.1h9.92l1.94-6.1" class="zen-library-glow-rays"/></g><path d="M7.218 13.287c0-.456.37-.826.826-.826h9.913c.457 0 .826.37.826.826v4.131a3.304 3.304 0 0 1-3.304 3.304h-4.956a3.305 3.305 0 0 1-3.305-3.304zm3.391 1.239c0-.456.37-.826.826-.826h3.304a.826.826 0 1 1 0 1.652h-3.304a.826.826 0 0 1-.826-.826" class="zen-library-box"/></g></svg>

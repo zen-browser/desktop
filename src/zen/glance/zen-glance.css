@@ -5,6 +5,7 @@
  */
 
 .zen-glance-sidebar-container {
+  color-scheme: var(--toolbar-color-scheme);
   position: absolute;
   display: flex;
   z-index: 999;
@@ -41,11 +42,11 @@
 
     &:hover {
       background: light-dark(rgb(41, 41, 41), rgb(204, 204, 204));
-      scale: 1.05;
+      scale: 1.02;
     }
 
     &:hover:active {
-      scale: 0.95;
+      scale: 0.98;
     }
 
     & label {
@@ -103,11 +104,14 @@
 }
 
 .browserSidebarContainer.zen-glance-background,
-.browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
-  border-radius: var(--zen-native-inner-radius);
+:is(.browserSidebarContainer.zen-glance-overlay, #zen-glance-detached)
+  .browserContainer:not([fade-out="true"]) {
+  /* stylelint-disable-next-line property-no-unknown */
+  corner-shape: round;
+  border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
 }
 
-.browserSidebarContainer.zen-glance-overlay {
+:is(.browserSidebarContainer.zen-glance-overlay, #zen-glance-detached) {
   box-shadow: none !important;
   visibility: inherit;
   z-index: 1;
@@ -124,7 +128,6 @@
     height: 100%;
 
     &:not([has-finished-animation="true"]) {
-      will-change: transform;
       contain: layout size;
       transform-origin: 0 0;
 
@@ -141,9 +144,11 @@
     }
 
     & .browserStack {
-      border-radius: var(--zen-native-inner-radius);
       overflow: hidden;
       box-shadow: var(--zen-big-shadow);
+      /* stylelint-disable-next-line property-no-unknown */
+      corner-shape: round;
+      border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
     }
 
     & browser {
@@ -186,5 +191,17 @@
     width: 100%;
     max-width: 100%;
     max-height: 100%;
+  }
+}
+
+#zen-main-app-wrapper > #zen-glance-detached {
+  position: fixed;
+  inset: calc(var(--zen-element-separation) / 2);
+  z-index: 100;
+  display: flex;
+
+  & .zen-glance-detached-backdrop {
+    position: fixed;
+    inset: 0;
   }
 }

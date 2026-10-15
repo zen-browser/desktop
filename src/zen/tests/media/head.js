@@ -30,8 +30,8 @@ async function playVideoIn(tab) {
     }
   );
   // Wait for the browser to actually consider the tab "playing" — this is
-  // what drives DOMAudioPlaybackStarted into the media controller.
-  await BrowserTestUtils.waitForCondition(
+  // what drives the soundplaying TabAttrModified into the media controller.
+  await TestUtils.waitForCondition(
     () => tab.soundPlaying,
     "tab reports soundplaying"
   );
@@ -57,7 +57,7 @@ function isMediaBarVisible() {
 }
 
 async function waitForMediaBarVisible() {
-  await BrowserTestUtils.waitForCondition(
+  await TestUtils.waitForCondition(
     isMediaBarVisible,
     "media bar becomes visible"
   );

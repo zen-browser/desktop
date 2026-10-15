@@ -3,7 +3,7 @@
 
 "use strict";
 
-const HTTP_PAGE = "https://mochi.test:8888/";
+const HTTP_PAGE = "http://mochi.test:8888/";
 const HTTPS_PAGE = "https://example.com/";
 
 async function loadUrl(url) {

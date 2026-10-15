@@ -1,0 +1,13 @@
+diff --git a/dom/base/nsAttrValue.cpp b/dom/base/nsAttrValue.cpp
+index 47387126ef7cce245900200f821343a380bd5f8e..2e0235579b73de461f24bc77ca09baf5d16a90ab 100644
+--- a/dom/base/nsAttrValue.cpp
++++ b/dom/base/nsAttrValue.cpp
+@@ -1883,7 +1883,7 @@ bool nsAttrValue::ParseColor(const nsAString& aString) {
+     const NS_ConvertUTF16toUTF8 colorNameU8(colorStr);
+     StyleAbsoluteColor result;
+     if (Servo_ColorNameToRgb(&colorNameU8, &result)) {
+-      return SetColorValue(result.ToColor(), aString);
++      return SetColorValue(result.ToColor(nullptr), aString);
+     }
+   }
+ 

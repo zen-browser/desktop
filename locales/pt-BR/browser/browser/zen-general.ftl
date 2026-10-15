@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Editar URL Essencial
+           *[false] Editar URL Fixada
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Substituir por URL atual
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Editar…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Alterar Rótulo...
@@ -50,13 +50,13 @@ zen-general-cancel-label =
     .label = Cancelar
 zen-general-confirm = 
     .label = Confirmar
-zen-pinned-tab-replaced = A URL da guia fixada foi substituída pela URL atual!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
-zen-tabs-renamed = A guia foi renomeada com sucesso!
-zen-background-tab-opened-toast = Nova guia em segundo plano aberta!
+zen-pinned-tab-replaced = A URL da aba fixada foi substituída pela URL atual!
+zen-pinned-tab-url-edited = A URL da aba fixada foi atualizada!
+zen-pinned-tab-url-invalid = Isso não parece ser uma URL válida.
+zen-pinned-tab-edit-url-title = Editar URL Fixada
+zen-pinned-tab-edit-url-label = Digite a URL que esta aba fixada deve apontar para:
+zen-tabs-renamed = A aba foi renomeada com sucesso!
+zen-background-tab-opened-toast = Nova aba em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
 zen-split-view-limit-toast = Não é possível adicionar mais painéis à visualização dividida!
 zen-toggle-compact-mode-button = 
@@ -74,7 +74,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ícones
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Procurar emojis
 urlbar-search-mode-zen_actions = Ações
 zen-site-data-settings = Configurações
 zen-generic-manage = Gerenciar
@@ -126,9 +126,9 @@ zen-sidebar-notification-updated-heading = Atualização Completa!
 zen-sidebar-notification-updated-label = O que há de novo em { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Ver Notas da Versão
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Apoie { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Doe para o projeto
 zen-sidebar-notification-restart-safe-mode-label = Algo quebrou?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reiniciar no Modo Seguro

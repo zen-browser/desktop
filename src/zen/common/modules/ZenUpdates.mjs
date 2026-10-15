@@ -61,6 +61,14 @@ export async function createWindowUpdateAnimation() {
     return;
   }
   Services.prefs.setStringPref(ZEN_BUILD_ID_PREF, appID);
+  await playWindowSweepAnimation();
+}
+
+/**
+ * Plays the full-window sweep shown after updates. Also used the first
+ * time incoming sync data is applied on this profile.
+ */
+export async function playWindowSweepAnimation() {
   await gZenWorkspaces.promiseInitialized;
   const appWrapper = document.getElementById("zen-main-app-wrapper");
   const element = document.createElement("div");

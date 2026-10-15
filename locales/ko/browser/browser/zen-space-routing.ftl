@@ -21,10 +21,10 @@ zen-space-routing-regex =
     .label = 정규식
 zen-space-routing-open-in = ...에서 열기
 zen-space-routing-url = 주소
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
+zen-space-routing-tab-routed-toast = { $targetWorkspace }에 새 탭이 열렸습니다
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
+            [one] 이 도메인을 경로로 추가
+           *[other] 이 도메인들을 경로로 추가
         }

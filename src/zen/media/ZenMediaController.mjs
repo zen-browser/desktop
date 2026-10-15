@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
+
 const lazy = {};
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
@@ -19,9 +21,7 @@ const MAX_STACKED_CARDS = 3;
 const MAX_PEEK_LEVELS = 2;
 
 /**
- * A single card in the sidebar media stack: the full control UI for one
- * media controller, or for a WebRTC sharing session when `controller` is
- * null.
+ * A single card in the sidebar media stack.
  */
 class ZenMediaCard {
   #updateInterval = null;
@@ -346,7 +346,7 @@ class ZenMediaCard {
 
   onToggle() {
     if (this.controller?.isPlaying) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       this.controller?.play();
     }
@@ -365,7 +365,7 @@ class ZenMediaCard {
   }
 
   onSeekDrag(event) {
-    this.controller?.pause();
+    this.controller?.pause("user");
     const newTime = (event.target.value / 100) * this.duration;
     this.currentTimeEl.textContent = this.formatSecondsToTime(newTime);
   }
@@ -408,7 +408,7 @@ class ZenMediaCard {
 
   onClose() {
     if (this.controller) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       const webRTC =
         this.browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
@@ -441,6 +441,7 @@ class ZenMediaCard {
     const { element } = this;
     if (element.hidden) {
       element.remove();
+      this.manager.onCardDestroyed(this);
     } else {
       // Animate the card out instead of popping it away. It leaves the
       // flex flow immediately (so the remaining cards re-slot right away)
@@ -454,20 +455,20 @@ class ZenMediaCard {
       // immediately if they never start (e.g. reduced motion).
       Promise.allSettled(
         element.getAnimations().map(animation => animation.finished)
-      ).then(() => element.remove());
+      ).then(() => {
+        element.remove();
+        this.manager.onCardDestroyed(this);
+      });
     }
-
-    this.manager.onCardDestroyed(this);
   }
 }
 
 /**
  * Zen Media Controller, handles the stack of media control cards located at
  * the bottom of the sidebar. Each active media controller (and WebRTC
- * sharing session) gets its own card; cards stack behind each other and
- * expand upwards when hovering the container.
+ * sharing session) gets its own card.
  */
-class nsZenMediaController {
+class nsZenMediaController extends nsZenDOMOperatedFeature {
   #cards = new Map();
   #cardTemplate = null;
 
@@ -494,37 +495,47 @@ class nsZenMediaController {
     window.addEventListener("TabClose", onTabDiscardedOrClosed);
     window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
 
-    window.addEventListener("DOMAudioPlaybackStarted", event => {
-      const browser = event.target;
-      // The card is created right away (while the controller is fresh)
-      // but only shown if the media is still playing a moment later, so
-      // short sounds (e.g. notification pings) never reveal it.
-      setTimeout(() => {
-        const card = this.#cardForBrowser(browser);
-        if (!card || card.isSharing) {
-          return;
-        }
-        if (card.controller.isPlaying) {
-          card.refreshVisibility();
-        } else if (card.element.hidden) {
-          // The sound was over before ever being shown (e.g. a
-          // notification ping): drop the card instead of keeping a ghost
-          // around.
-          card.destroy();
-        }
-      }, 1000);
-
-      this.activateMediaControls(
-        browser.browsingContext.mediaController,
-        browser
-      );
-    });
-
-    window.addEventListener("DOMAudioPlaybackStopped", () => {
-      for (const card of this.#cards.values()) {
-        card.updateMuteState();
+    window.addEventListener("TabAttrModified", event => {
+      if (!event.detail.changed.includes("soundplaying")) {
+        return;
       }
+      const tab = event.target;
+      if (!tab.hasAttribute("soundplaying")) {
+        this.onAudioPlaybackStopped();
+        return;
+      }
+      this.onAudioPlaybackStarted(tab.linkedBrowser);
     });
+  }
+
+  onAudioPlaybackStarted(browser) {
+    // The card is created right away (while the controller is fresh) but
+    // only shown if the media is still playing a moment later, so short
+    // sounds (e.g. notification pings) never reveal it.
+    setTimeout(() => {
+      const card = this.#cardForBrowser(browser);
+      if (!card || card.isSharing) {
+        return;
+      }
+      if (card.controller.isPlaying) {
+        card.refreshVisibility();
+      } else if (card.element.hidden) {
+        // The sound was over before ever being shown (e.g. a notification
+        // ping): drop the card instead of keeping a ghost around.
+        card.destroy();
+      }
+    }, 1000);
+
+    this.activateMediaControls(
+      browser.browsingContext?.mediaController,
+      browser
+    );
+  }
+
+  onAudioPlaybackStopped() {
+    for (const card of this.#cards.values()) {
+      card.updateMuteState();
+    }
   }
 
   get frontCard() {
@@ -660,7 +671,7 @@ class nsZenMediaController {
     this.#cards.set(key, card);
     if (controller) {
       // Media cards start hidden and appear via the delayed check in
-      // DOMAudioPlaybackStarted or on tab switch, like the original bar;
+      // onAudioPlaybackStarted or on tab switch, like the original bar;
       // sharing cards show right away.
       card.element.hidden = true;
     } else {

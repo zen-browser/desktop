@@ -3,12 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
-import {
-  UrlbarProvider,
-  UrlbarUtils,
-} from "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs";
+import { UrlbarProvider } from "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs";
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
-import { globalActions } from "resource:///modules/ZenUBGlobalActions.sys.mjs";
+import {
+  globalActions,
+  labelFor,
+} from "resource:///modules/ZenUBGlobalActions.sys.mjs";
 import { zenUrlbarResultsLearner } from "./ZenUBResultsLearner.sys.mjs";
 
 const lazy = {};
@@ -21,15 +21,18 @@ const MAX_RECENT_ACTIONS = 5;
 const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
+// Exact and prefix matches must outrank any fuzzy match. The fuzzy score grows
+// quadratically with a run of consecutive matches, so a longer label that merely
+// contains the query ("Reopen Closed Tab" for "close tab") could beat the label
+// that is exactly the query.
+const EXACT_MATCH_SCORE = 1_000_000;
+const PREFIX_MATCH_SCORE = 100_000;
+
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
-});
-
-ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
-  return new Localization(["browser/zen-command-palette.ftl"], true);
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -41,10 +44,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 /**
  * A convenience function that takes a payload annotated with
- * UrlbarUtils.HIGHLIGHT enums and returns the payload and the payload's
+ * UrlbarShared.HIGHLIGHT enums and returns the payload and the payload's
  * highlights. Use this function when the highlighting required by your
  * payload is based on simple substring matching, as done by
- * UrlbarUtils.getTokenMatches(). Pass the return values as the `payload` and
+ * UrlbarShared.getTokenMatches(). Pass the return values as the `payload` and
  * `payloadHighlights` params of the UrlbarResult constructor.
  * `payloadHighlights` is optional. If omitted, payload will not be
  * highlighted.
@@ -64,7 +67,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
  *        payloadPropertyValue may be a string or an array of strings.  If
  *        it's a string, then the payloadHighlights in the return value will
  *        be an array of match highlights as described in
- *        UrlbarUtils.getTokenMatches().  If it's an array, then
+ *        UrlbarShared.getTokenMatches().  If it's an array, then
  *        payloadHighlights will be an array of arrays of match highlights,
  *        one element per element in payloadPropertyValue.
  * @returns {{ payload: object, payloadHighlights: object }}
@@ -93,14 +96,14 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
   ) {
     // If there's no title, show the domain as the title. Not all valid URLs
     // have a domain.
-    highlightTypes.title = UrlbarUtils.HIGHLIGHT.TYPED;
+    highlightTypes.title = UrlbarShared.HIGHLIGHT.TYPED;
     try {
       payload.title = new URL(payload.url).URI.displayHostPort;
     } catch (e) {}
   }
   if (payload.url) {
     // For display purposes we need to unescape the url.
-    payload.displayUrl = UrlbarUtils.prepareUrlForDisplay(payload.url);
+    payload.displayUrl = UrlbarShared.prepareUrlForDisplay(payload.url);
     highlightTypes.displayUrl = highlightTypes.url;
   }
   // For performance reasons limit excessive string lengths, to reduce the
@@ -109,7 +112,7 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
   for (let prop of ["displayUrl", "title", "suggestion"]) {
     let value = payload[prop];
     if (typeof value == "string") {
-      payload[prop] = value.substring(0, UrlbarUtils.MAX_TEXT_LENGTH);
+      payload[prop] = value.substring(0, UrlbarShared.MAX_TEXT_LENGTH);
     }
   }
   let payloadHighlights = {};
@@ -118,9 +121,9 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
       let value = payload[name];
       let highlights = Array.isArray(value)
         ? value.map(subval =>
-            UrlbarUtils.getTokenMatches(tokens, subval, highlightType)
+            UrlbarShared.getTokenMatches(tokens, subval, highlightType)
           )
-        : UrlbarUtils.getTokenMatches(tokens, value || "", highlightType);
+        : UrlbarShared.getTokenMatches(tokens, value || "", highlightType);
       if (highlights.length) {
         payloadHighlights[name] = highlights;
       }
@@ -140,10 +143,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   }
 
   /**
-   * @returns {Values<typeof UrlbarUtils.PROVIDER_TYPE>}
+   * @returns {Values<typeof UrlbarShared.PROVIDER_TYPE>}
    */
   get type() {
-    return UrlbarUtils.PROVIDER_TYPE.HEURISTIC;
+    return UrlbarShared.PROVIDER_TYPE.HEURISTIC;
   }
 
   /**
@@ -161,7 +164,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&
         queryContext.searchString &&
-        queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
+        queryContext.searchString.length < UrlbarShared.MAX_TEXT_LENGTH &&
         queryContext.searchString.length > 2 &&
         !lazy.UrlUtils.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
     );
@@ -183,7 +186,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           .workspaceElement(workspace.uuid)
           ?.style.getPropertyValue("--zen-primary-color");
         actions.push({
-          label: lazy.l10n.formatValueSync("zen-action-focus-on"),
+          label: labelFor("zen-action-focus-on"),
           extraPayload: {
             workspaceId: workspace.uuid,
             prettyName: workspace.name,
@@ -216,7 +219,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       .map(addon => {
         return {
           icon: "chrome://browser/skin/zen-icons/extension.svg",
-          label: lazy.l10n.formatValueSync("zen-action-extension"),
+          label: labelFor("zen-action-extension"),
           commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,
@@ -301,11 +304,11 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     }
     // 1. Exact match gets the highest score.
     if (targetLower === queryLower) {
-      return 200;
+      return EXACT_MATCH_SCORE;
     }
     // 2. Exact prefix matches are heavily prioritized.
     if (targetLower.startsWith(queryLower)) {
-      return 100 + queryLen;
+      return PREFIX_MATCH_SCORE + queryLen;
     }
     let score = 0;
     let queryIndex = 0;
@@ -413,12 +416,16 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       finalResults.push(result);
     }
     let i = 0;
+    let shown = 0;
     zenUrlbarResultsLearner
       .sortCommandsByPriority(finalResults)
       .forEach(result => {
         if (isPrefixed && !isWorkspaceSearch && i === 0 && query.length > 1) {
           result.heuristic = true;
           delete result.suggestedIndex;
+        } else if (typeof result.suggestedIndex === "number") {
+          result.suggestedIndex += shown;
+          shown++;
         }
         addCallback(this, result);
         i++;

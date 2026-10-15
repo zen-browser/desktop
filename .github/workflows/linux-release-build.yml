@@ -140,8 +140,7 @@ jobs:
         uses: actions/cache/restore@v5
         if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && inputs.pgo-cache-hit }}
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
-          restore-keys: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
           fail-on-cache-miss: true
 
@@ -181,7 +180,7 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit && inputs.pgo-cache-key-prefix != '' }}
         uses: actions/cache/save@v5
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Build

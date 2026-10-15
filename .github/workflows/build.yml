@@ -325,17 +325,18 @@ jobs:
       - name: Build the cache key
         id: key
         if: ${{ steps.gate.outputs.enabled == 'true' }}
+        env:
+          INPUTS_HASH: ${{ hashFiles('src/zen/common/sys/ZenPGOTraining.sys.mjs', 'src/build/pgo/profileserver-py.patch', 'src/testing/profiles/profileserver/user-js.patch') }}
         run: |
           ff=$(node -p "require('./surfer.json').version.version")
-          echo "prefix=pgo-profdata-v1-ff${ff}" >> "$GITHUB_OUTPUT"
+          echo "prefix=pgo-profdata-v2-ff${ff}-${INPUTS_HASH:0:12}" >> "$GITHUB_OUTPUT"
 
       - name: Look up the macOS x86_64 profile
         id: mac-x86
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-macos-x86_64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-macos-x86_64-
+          key: ${{ steps.key.outputs.prefix }}-macos-x86_64
           path: ~/artifact
           lookup-only: true
 
@@ -344,8 +345,7 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-macos-aarch64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-macos-aarch64-
+          key: ${{ steps.key.outputs.prefix }}-macos-aarch64
           path: ~/artifact
           lookup-only: true
 
@@ -354,8 +354,7 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-windows-x86_64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-windows-x86_64-
+          key: ${{ steps.key.outputs.prefix }}-windows-x86_64
           path: ~/artifact
           lookup-only: true
 
@@ -364,29 +363,28 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-linux-x86_64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-linux-x86_64-
+          key: ${{ steps.key.outputs.prefix }}-linux-x86_64
           path: ~/artifact
           lookup-only: true
 
       - name: Report what is cached
         id: probe
         env:
-          MAC_X86: ${{ steps.mac-x86.outputs.cache-matched-key }}
-          MAC_ARM: ${{ steps.mac-arm.outputs.cache-matched-key }}
-          WIN_X86: ${{ steps.win-x86.outputs.cache-matched-key }}
-          LINUX_X86: ${{ steps.linux-x86.outputs.cache-matched-key }}
+          MAC_X86: ${{ steps.mac-x86.outputs.cache-hit }}
+          MAC_ARM: ${{ steps.mac-arm.outputs.cache-hit }}
+          WIN_X86: ${{ steps.win-x86.outputs.cache-hit }}
+          LINUX_X86: ${{ steps.linux-x86.outputs.cache-hit }}
         run: |
           mac=false
-          if [ -n "$MAC_X86" ] && [ -n "$MAC_ARM" ]; then
+          if [ "$MAC_X86" = "true" ] && [ "$MAC_ARM" = "true" ]; then
             mac=true
           fi
           windows=false
-          if [ -n "$WIN_X86" ]; then
+          if [ "$WIN_X86" = "true" ]; then
             windows=true
           fi
           linux=false
-          if [ -n "$LINUX_X86" ]; then
+          if [ "$LINUX_X86" = "true" ]; then
             linux=true
           fi
           echo "mac=$mac" >> "$GITHUB_OUTPUT"

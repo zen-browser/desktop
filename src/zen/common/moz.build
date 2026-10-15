@@ -5,9 +5,13 @@
 EXTRA_JS_MODULES += [
     "sys/ZenActorsManager.sys.mjs",
     "sys/ZenCustomizableUI.sys.mjs",
-    "sys/ZenPGOTraining.sys.mjs",
     "sys/ZenUIMigration.sys.mjs",
 ]
+
+if CONFIG["MOZ_PROFILE_GENERATE"]:
+    EXTRA_JS_MODULES += [
+        "sys/ZenPGOTraining.sys.mjs",
+    ]
 
 EXTRA_JS_MODULES.zen += [
     "modules/ZenToasts.mjs",

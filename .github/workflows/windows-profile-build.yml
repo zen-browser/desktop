@@ -119,7 +119,7 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
         uses: actions/cache/save@v5
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Upload artifacts

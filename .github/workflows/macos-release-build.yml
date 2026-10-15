@@ -164,8 +164,7 @@ jobs:
         uses: actions/cache/restore@v5
         if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && inputs.pgo-cache-hit }}
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
-          restore-keys: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
           fail-on-cache-miss: true
 

@@ -25,7 +25,7 @@
   :root[zen-right-side='true'] & {
     &::before,
     &::after {
-      background-position: right top !important;
+      background-position: right top;
     }
   }
 

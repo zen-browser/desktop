@@ -200,6 +200,16 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      this.parentController.openSERP(
        engine.id,
        searchString,
+@@ -1404,6 +1482,9 @@ ${
+       (result.heuristic ||
+         !this.valueIsTyped ||
+         result.type == UrlbarShared.RESULT_TYPE.TIP ||
++        // Recent pages are offered for an empty bar, which counts as typed.
++        (!this.value &&
++          result.providerName == "ZenUrlbarProviderRecentHistory") ||
+         this.value == this.#getValueFromResult(result));
+ 
+     // In an engine search mode the selected engine is authoritative at Enter
 @@ -1850,7 +1931,11 @@ ${
      openParams.avoidBrowserFocus = keepViewOpen;
  
@@ -684,6 +694,22 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
            break;
          }
  
+@@ -5549,7 +5923,14 @@ ${
+       // a tab preview was opened
+       this.view.maybeRollupPopups();
+ 
+-      if (!value && !UrlbarPrefs.get("suggest.topsites")) {
++      if (
++        !value &&
++        !UrlbarPrefs.get("suggest.topsites") &&
++        !Services.prefs.getBoolPref(
++          "zen.urlbar.suggestions.recent-history",
++          true
++        )
++      ) {
+         this.view.clear();
+         if (!this.searchMode || !this.view.oneOffSearchButtons?.hasView) {
+           this.view.close();
 @@ -5704,7 +6065,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.

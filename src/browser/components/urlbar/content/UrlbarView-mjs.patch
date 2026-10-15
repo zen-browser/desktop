@@ -11,6 +11,43 @@ index 5a562d6385855264fc3bfdc3df02365f91543534..ef0faea64fe0a0ed029e5a73b376225e
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
+@@ -931,6 +931,24 @@ export class UrlbarView {
+     this.#cacheL10nStrings();
+   }
+ 
++  /**
++   * Preselects the most recent page when the urlbar opens with an empty query.
++   *
++   * @param {UrlbarQueryContext} queryContext
++   */
++  #preselectRecentHistory(queryContext) {
++    if (
++      queryContext.searchString ||
++      queryContext.results[0]?.providerName != "ZenUrlbarProviderRecentHistory"
++    ) {
++      return;
++    }
++    this.#selectElement(this.getFirstSelectableElement(), {
++      updateInput: false,
++      setAccessibleFocus: this.controller.userSelectionBehavior == "arrow",
++    });
++  }
++
+   onQueryCancelled() {
+     this.#queryWasCancelled = true;
+     this.#cancelRemoveStaleRowsTimer();
+@@ -946,6 +964,11 @@ export class UrlbarView {
+     // results, remove stale rows. Otherwise remove all rows.
+     if (this.#queryUpdatedResults) {
+       this.#removeStaleRows();
++      // The selected row may have been a stale one, e.g. the heuristic of the
++      // previous query.
++      if (!this.#selectedElement && !this.oneOffSearchButtons?.selectedButton) {
++        this.#preselectRecentHistory(queryContext);
++      }
+     } else {
+       this.clear();
+     }
 @@ -966,10 +966,6 @@ export class UrlbarView {
      }
  
@@ -22,6 +59,15 @@ index 5a562d6385855264fc3bfdc3df02365f91543534..ef0faea64fe0a0ed029e5a73b376225e
  
      // Search mode is active. Without results the view has nothing to show but
      // the one-offs, so open it only when they will show.
+@@ -1042,6 +1061,8 @@ export class UrlbarView {
+         // them, resembling tab-to-search. In that case, the input value is
+         // still associated with the first result.
+         this.input.setResultForCurrentValue(firstResult);
++      } else {
++        this.#preselectRecentHistory(queryContext);
+       }
+     }
+ 
 @@ -3302,6 +3298,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
@@ -31,6 +77,23 @@ index 5a562d6385855264fc3bfdc3df02365f91543534..ef0faea64fe0a0ed029e5a73b376225e
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
+@@ -3309,6 +3332,16 @@ export class UrlbarView {
+     this.#setAccessibleFocus(setAccessibleFocus && element);
+     this.#rawSelectedElement = element;
+ 
++    // Recent pages are offered for an empty bar; browsing them with the
++    // keyboard must not write their url into the input.
++    if (
++      updateInput &&
++      result?.providerName == "ZenUrlbarProviderRecentHistory" &&
++      !this.#queryContext?.searchString
++    ) {
++      updateInput = false;
++    }
++
+     if (updateInput) {
+       let urlOverride = null;
+       if (element?.classList?.contains("urlbarView-button")) {
 @@ -3968,7 +3966,7 @@ export class UrlbarView {
    }
  

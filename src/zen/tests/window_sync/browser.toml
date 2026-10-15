@@ -15,3 +15,5 @@ support-files = [
 ["browser_sync_tab_label.js"]
 
 ["browser_sync_tab_open.js"]
+
+["browser_window_tab_tracker_cleanup.js"]

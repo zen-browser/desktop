@@ -1,6 +1,9 @@
+src/-prettierignore.patch
 src/-stylelintrc-js.patch
 src/browser/base/content/browser-commands-js.patch
 src/browser/base/moz-build.patch
+src/browser/components/customizableui/CustomizableUI-sys-mjs.patch
+src/browser/components/extensions/parent/ext-browser-js.patch
 src/browser/components/preferences/preferences-js.patch
 src/browser/components/sessionstore/SessionStore-sys-mjs.patch
 src/browser/components/tabbrowser/Tabbrowser-sys-mjs.patch
@@ -12,6 +15,7 @@ src/browser/themes/shared/identity-block/identity-block-css.patch
 src/browser/themes/shared/tabbrowser/content-area-css.patch
 src/browser/themes/shared/tabbrowser/tabs-css.patch
 src/browser/themes/shared/urlbar-css.patch
+src/build/pgo/profileserver-py.patch
 src/external-patches/firefox/native_macos_popovers_fix.patch
 src/toolkit/components/pictureinpicture/content/player-xhtml.patch
 src/widget/SwipeTracker-cpp.patch

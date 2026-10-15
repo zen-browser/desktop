@@ -1,0 +1,45 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Peppermint Vault keeps saved passwords behind the Primary Password, with an
+# inactivity lock. Nothing changes until the user opts in.
+- name: peppermint.vault.enabled
+  value: false
+
+# Set once the opt-in dialog has been shown, so it is asked only once.
+- name: peppermint.vault.prompted
+  value: false
+
+# Lock after this many minutes without keyboard or mouse input. 0 never locks
+# on idle.
+- name: peppermint.vault.autolock-minutes
+  value: 15
+
+# Ask for the Primary Password again before revealing, copying, editing or
+# deleting when the last entry is older than this many minutes. 0 never asks
+# again during an unlocked session.
+- name: peppermint.vault.stepup-minutes
+  value: 5
+
+- name: peppermint.vault.lock-on-sleep
+  value: true
+
+# Lock after the Vault tab has been in the background this many minutes. 0
+# never locks for this reason.
+- name: peppermint.vault.lock-on-hidden-minutes
+  value: 5
+
+# Clear a copied username or password from the clipboard after this many
+# seconds, unless something else was copied since. 0 leaves it.
+- name: peppermint.vault.clipboard-clear-seconds
+  value: 30
+
+# Keep opening about:logins instead of Vault. Developer escape hatch.
+- name: peppermint.vault.allow-legacy-logins
+  value: false
+
+# The value browser.contextual-password-manager.enabled had before Vault
+# switched it off ("" when Vault has not changed it).
+- name: peppermint.vault.restore-password-sidebar
+  value: ""

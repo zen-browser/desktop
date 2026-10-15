@@ -20,4 +20,5 @@ DIRS += [
     "underpowered",
     "url-snippets",
     "urlbar",
+    "vault",
 ]

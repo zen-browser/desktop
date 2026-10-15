@@ -342,3 +342,13 @@ zen-janitor-notifications =
 
 zen-janitor-clean-now =
     .label = Clean now
+
+## Peppermint Vault, in the password settings
+
+peppermint-vault-settings-set-up =
+    .label = Set up Peppermint Vault
+    .description = Protect your saved passwords with a Primary Password and an automatic lock.
+
+peppermint-vault-settings-open =
+    .label = Open Peppermint Vault
+    .description = Vault is on. The Primary Password cannot be turned off while it is on.

@@ -1,0 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+MOZ_SRC_FILES += [
+    "PeppermintVault.sys.mjs",
+    "PeppermintVaultClipboard.sys.mjs",
+    "PeppermintVaultLogins.sys.mjs",
+    "PeppermintVaultPassword.sys.mjs",
+    "PeppermintVaultRegistry.sys.mjs",
+    "PeppermintVaultSession.sys.mjs",
+]
+
+# Registered through components.conf, which needs a resource:/// URL.
+EXTRA_JS_MODULES.zen.vault += [
+    "PeppermintAboutVault.sys.mjs",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]

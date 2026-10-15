@@ -1,0 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        content/browser/peppermint-vault/vault.xhtml                          (../../peppermint/vault/vault.xhtml)
+        content/browser/peppermint-vault/vault.mjs                            (../../peppermint/vault/vault.mjs)
+        content/browser/peppermint-vault/dom.mjs                              (../../peppermint/vault/components/dom.mjs)
+        content/browser/peppermint-vault/lock-screen.mjs                      (../../peppermint/vault/components/lock-screen.mjs)
+        content/browser/peppermint-vault/setup.mjs                            (../../peppermint/vault/components/setup.mjs)
+        content/browser/peppermint-vault/section-view.mjs                     (../../peppermint/vault/components/section-view.mjs)
+        content/browser/peppermint-vault/modal.mjs                            (../../peppermint/vault/components/modal.mjs)
+        content/browser/zen-styles/peppermint-vault-agent.css                 (../../peppermint/vault/vault-agent.css)
+        content/browser/zen-styles/peppermint-vault.css                       (../../peppermint/vault/vault.css)

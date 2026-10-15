@@ -62,5 +62,10 @@ export const PeppermintStartup = {
         "moz-src:///peppermint/janitor/PeppermintJanitor.sys.mjs"
       ).PeppermintJanitor.init(window)
     );
+    start("PeppermintVault", () =>
+      ChromeUtils.importESModule(
+        "moz-src:///peppermint/vault/PeppermintVault.sys.mjs"
+      ).PeppermintVault.init(window)
+    );
   },
 };

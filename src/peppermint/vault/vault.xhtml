@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src chrome:; img-src chrome: data:; object-src 'none'"
+    />
+    <title data-l10n-id="peppermint-vault-title"></title>
+    <link rel="localization" href="browser/peppermint-vault.ftl" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="chrome://browser/skin/zen-icons/passwords.svg"
+    />
+    <link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-styles/peppermint-vault.css"
+    />
+    <script src="chrome://browser/content/zenThemeModifier.js"></script>
+  </head>
+  <body>
+    <div id="vault-root"></div>
+    <p id="vault-toast" class="vault-toast" role="status" hidden="hidden"></p>
+    <script
+      type="module"
+      src="chrome://browser/content/peppermint-vault/vault.mjs"
+    ></script>
+  </body>
+</html>

@@ -5,5 +5,6 @@
 #include homepage/jar.inc.mn
 #include notepad/jar.inc.mn
 #include reader/jar.inc.mn
+#include vault/jar.inc.mn
 #include fonts/jar.inc.mn
 #include common/jar.inc.mn

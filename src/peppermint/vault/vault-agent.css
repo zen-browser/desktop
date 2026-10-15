@@ -1,0 +1,10 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Loaded as an agent sheet: ::-moz-reveal can only be selected from one.
+ * Vault has its own show/hide button with a proper accessible name, so the
+ * browser-native reveal button inside password fields would be a duplicate. */
+input[type="password"]::-moz-reveal {
+  display: none;
+}

@@ -3,9 +3,6 @@
 
 "use strict";
 
-// A translated ancestor changes how a fixed background is painted. Compare the
-// same point within the sidebar during and after its reveal, so the gradient
-// cannot jump to the opposite end of the window's palette.
 add_task(async function test_compact_sidebar_gradient_during_reveal() {
   await SpecialPowers.pushPrefEnv({
     set: [

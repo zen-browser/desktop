@@ -22,18 +22,17 @@
     background-size: 100vw 100vh !important;
   }
 
+  :root[zen-right-side='true'] & {
+    &::before,
+    &::after {
+      background-position: right top !important;
+    }
+  }
+
   &,
   &::before,
   &::after {
     border-radius: calc((var(--zen-native-inner-radius) - var(--zen-compact-mode-no-padding-radius-fix, 0px)));
-  }
-}
-
-/* Translation makes fixed backgrounds local to the sidebar. */
-:root[zen-right-side='true'] .zen-toolbar-background {
-  &::before,
-  &::after {
-    background-position: right top !important;
   }
 }
 

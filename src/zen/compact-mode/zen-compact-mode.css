@@ -29,6 +29,14 @@
   }
 }
 
+/* Translation makes fixed backgrounds local to the sidebar. */
+:root[zen-right-side='true'] .zen-toolbar-background {
+  &::before,
+  &::after {
+    background-position: right top !important;
+  }
+}
+
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
 
 %include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css

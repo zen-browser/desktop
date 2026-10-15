@@ -708,9 +708,11 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
 
   #renderDownload(download) {
     const pending = this.#isPending(download);
+    const fileName = this.#fileName(download);
     return html`
       <div
         class="zen-library-row"
+        title=${fileName}
         draggable="true"
         ?pending=${pending}
         ?missing=${this.#isMissing(download)}
@@ -747,7 +749,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
           ${when(pending, () => this.#renderProgressRing(download))}
         </div>
         <div class="zen-library-row-text">
-          <span class="zen-library-row-title">${this.#fileName(download)}</span>
+          <span class="zen-library-row-title">${fileName}</span>
           ${this.#renderSubtitle(download)}
         </div>
         <div class="zen-library-row-actions">

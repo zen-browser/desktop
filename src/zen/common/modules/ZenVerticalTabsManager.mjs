@@ -109,7 +109,8 @@ window.gZenVerticalTabsManager = {
       !gZenStartup.isReady ||
       aItem.group?.hasAttribute("split-view-group") ||
       aItem.hasAttribute("zen-glance-tab") ||
-      window.gZenViewSplitter?.waitingForSplitTab
+      window.gZenViewSplitter?.waitingForSplitTab ||
+      document.hidden
     );
   },
 
@@ -182,7 +183,8 @@ window.gZenVerticalTabsManager = {
       aItem.hasAttribute("zen-essential") ||
       aItem.group?.hasAttribute("split-view-group") ||
       !gZenUIManager.motion ||
-      gReduceMotion
+      gReduceMotion ||
+      document.hidden
     ) {
       return Promise.resolve();
     }

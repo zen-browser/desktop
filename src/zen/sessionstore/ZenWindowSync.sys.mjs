@@ -100,8 +100,7 @@ class nsZenWindowSync {
 
   /**
    * Tail of the docshell swap queue. Swaps run one at a time, in the order they
-   * were requested: each new swap is chained onto this promise, which is then
-   * replaced by the new one. It is never null and never rejects.
+   * were requested.
    */
   #swapQueue = Promise.resolve();
 

@@ -214,6 +214,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   #setupObservers() {
     Services.obs.addObserver(this, "quit-application-requested");
+    window.addEventListener("unload", this.onUnload.bind(this), { once: true });
   }
 
   #insertIntoContextMenu() {
@@ -310,11 +311,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Clean up all glances when the application is unloading
+   * Clean up glances before quitting or unloading the window.
+   *
+   * @param {Event} [event] - The window unload event, absent on a quit request
    */
-  onUnload() {
-    for (const [, glance] of this.#glances) {
-      gBrowser.removeTab(glance.tab, { animate: false });
+  onUnload(event) {
+    // A quit request can be canceled; keep observing until the window unloads.
+    if (event?.type === "unload") {
+      Services.obs.removeObserver(this, "quit-application-requested");
+    } else {
+      for (const [, glance] of this.#glances) {
+        gBrowser.removeTab(glance.tab, { animate: false });
+      }
     }
     this.#glances.clear();
   }

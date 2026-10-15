@@ -21,6 +21,4 @@ support-files = [
 
 ["browser_glance_select_parent.js"]
 
-["browser_glance_window_cleanup.js"]
-
 ["browser_issue_14049.js"]

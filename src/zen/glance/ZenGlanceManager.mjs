@@ -311,13 +311,15 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Clean up glances before quitting or unloading the window.
+   * Closes any open glances, either when the window unloads or when a quit is
+   * requested.
    *
-   * @param {Event} [event] - The window unload event, absent on a quit request
+   * @param {Event} [event] - The unload event, or nothing for a quit request.
    */
   onUnload(event) {
-    // A quit request can be canceled; keep observing until the window unloads.
     if (event?.type === "unload") {
+      // The window is really going now, so stop listening. A quit request can
+      // still be canceled, so that path leaves the observer in place.
       Services.obs.removeObserver(this, "quit-application-requested");
     } else {
       for (const [, glance] of this.#glances) {

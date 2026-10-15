@@ -28,7 +28,7 @@ index 6438045fc006da5bd11b257646fadf8139a57a00..614d2f77fa48b1cae840d9ba41ca9553
        if (!this.adoptedTabs.has(nativeTab)) {
          this.emitRemoved(nativeTab, true);
        }
-@@ -1296,6 +1299,10 @@ class TabTracker extends TabTrackerBase {
+@@ -1296,6 +1299,10 @@ class TabManager extends TabManagerBase {
    }
  
    canAccessTab(nativeTab) {

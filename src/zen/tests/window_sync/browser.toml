@@ -12,6 +12,8 @@ support-files = [
 
 ["browser_move_unloaded_tabs.js"]
 
+["browser_sync_tab_close.js"]
+
 ["browser_sync_tab_close_hidden.js"]
 
 ["browser_sync_tab_label.js"]

@@ -406,17 +406,23 @@ class nsZenWindowSync {
       this.#handleNextEventInternal(aEvent);
       return;
     }
-    if (
+    if (aEvent.type === "TabClose" && aEvent.target._zenClosedBySync) {
+      return;
+    }
+    const isOtherWindowEvent =
       this.#eventHandlingContext.window &&
-      this.#eventHandlingContext.window !== window
-    ) {
+      this.#eventHandlingContext.window !== window;
+    // Dropping a close would leave dead copies of the tab in other windows.
+    if (isOtherWindowEvent && aEvent.type !== "TabClose") {
       // We're already handling an event for another window.
       // To avoid re-entrancy issues, we skip this event.
       return;
     }
     const lastHandlerPromise = this.#eventHandlingContext.lastHandlerPromise;
     this.#eventHandlingContext.eventCount++;
-    this.#eventHandlingContext.window = window;
+    if (!isOtherWindowEvent) {
+      this.#eventHandlingContext.window = window;
+    }
     let resolveNewPromise;
     this.#eventHandlingContext.lastHandlerPromise = new Promise(resolve => {
       resolveNewPromise = resolve;
@@ -1543,7 +1549,7 @@ class nsZenWindowSync {
     const window = tab.documentGlobal;
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
-      if (!targetTab) {
+      if (!targetTab || targetTab.closing) {
         return;
       }
       if (targetTab.splitView) {
@@ -1552,7 +1558,11 @@ class nsZenWindowSync {
           changeTab: false,
         });
       }
+      targetTab._zenClosedBySync = true;
       win.gBrowser.removeTab(targetTab, { animate: true });
+      if (!targetTab.closing) {
+        delete targetTab._zenClosedBySync;
+      }
     });
   }
 

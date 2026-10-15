@@ -1,16 +1,16 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index a23e879dfdc4994ff615fb389fad92f5234ef1fa..1dd8fc497cdd5d52805ccba1b3d85dd08c871a6d 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..ed002d56dea0a36887b447a6e0c345bb119dbc2d 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
-@@ -8,6 +8,7 @@ import glob
+@@ -6,6 +6,7 @@
+ 
+ import glob
  import os
++import shutil
  import subprocess
  import sys
-+import time
  
- import mozcrash
- from mozbuild.base import BinaryNotFoundException, MozbuildObject
-@@ -17,7 +18,18 @@ from mozprofile import FirefoxProfile, Preferences
+@@ -17,7 +18,15 @@ from mozprofile import FirefoxProfile, Preferences
  from mozprofile.permissions import ServerLocations
  from mozrunner import CLI, FirefoxRunner
  
@@ -24,13 +24,10 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..1dd8fc497cdd5d52805ccba1b3d85dd0
 +PORT = find_free_port()
 +
 +UI_TRAINING_TIMEOUT = 400
-+
-+UI_TRAINING_ATTEMPTS = 3
-+UI_TRAINING_RETRY_DELAY = 20
  
  PATH_MAPPINGS = {
      "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",
-@@ -242,11 +254,11 @@ if __name__ == "__main__":
+@@ -242,11 +251,11 @@ if __name__ == "__main__":
          )
          runner.start(debug_args=debug_args, interactive=interactive)
          ret = runner.wait()
@@ -46,7 +43,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..1dd8fc497cdd5d52805ccba1b3d85dd0
              print("Firefox exited with code %d during profiling" % ret)
              logfile = process_args.get("logfile")
              if logfile:
-@@ -256,6 +268,70 @@ if __name__ == "__main__":
+@@ -256,6 +265,72 @@ if __name__ == "__main__":
              get_crashreports(profilePath, name="Profiling run")
              sys.exit(ret)
  
@@ -63,41 +60,43 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..1dd8fc497cdd5d52805ccba1b3d85dd0
 +        ui_env = env.copy()
 +        ui_env["ZEN_PGO_UI_TRAINING"] = "1"
 +        ui_env["ZEN_PGO_UI_TRAINING_URLS"] = ",".join(training_urls)
++        # The corpus run's processes are still letting go of the profile when
++        # this starts, and a browser that cannot take it exits immediately
++        # without writing anything. Hand this run a copy, already initialised
++        # so it skips first-run migration, and leave the lock files behind.
++        ui_profile_path = profilePath + "-ui"
++        shutil.copytree(
++            profilePath,
++            ui_profile_path,
++            ignore=shutil.ignore_patterns(".parentlock", "lock", "*.lock"),
++        )
++        ui_profile = FirefoxProfile(
++            profile=ui_profile_path,
++            preferences=prefs,
++            addons=[
++                os.path.join(
++                    build.topsrcdir, "tools", "quitter", "quitter@mozilla.org.xpi"
++                )
++            ],
++            locations=locations,
++        )
 +        runner = FirefoxRunner(
-+            profile=profile,
++            profile=ui_profile,
 +            binary=binary,
 +            cmdargs=[training_urls[0]],
 +            env=ui_env,
 +            process_args=process_args,
 +        )
-+        for attempt in range(1, UI_TRAINING_ATTEMPTS + 1):
-+            print(
-+                "Starting Zen UI training run %d on %s"
-+                % (attempt, training_urls[0]),
-+                flush=True,
-+            )
-+            runner.start(debug_args=debug_args, interactive=interactive)
-+            ret = runner.wait(timeout=UI_TRAINING_TIMEOUT)
-+            output = ""
-+            try:
-+                with open(ui_log) as f:
-+                    output = f.read()
-+            except OSError as e:
-+                print("Zen UI training log unreadable: %s" % e, flush=True)
-+            print("Zen UI training output (%s):" % ui_log, flush=True)
-+            print(output, flush=True)
-+            # A browser that cannot take the profile exits straight away
-+            # without writing anything. Run 2's children can still be holding
-+            # it, so give them a moment and try again.
-+            if ret != 0 or output.strip():
-+                break
-+            if attempt < UI_TRAINING_ATTEMPTS:
-+                print(
-+                    "Zen UI training produced no output; retrying in %ds"
-+                    % UI_TRAINING_RETRY_DELAY,
-+                    flush=True,
-+                )
-+                time.sleep(UI_TRAINING_RETRY_DELAY)
++        print("Starting Zen UI training run on %s" % training_urls[0], flush=True)
++        runner.start(debug_args=debug_args, interactive=interactive)
++        ret = runner.wait(timeout=UI_TRAINING_TIMEOUT)
++        print("Zen UI training output (%s):" % ui_log, flush=True)
++        try:
++            with open(ui_log) as f:
++                print(f.read(), flush=True)
++        except OSError as e:
++            print("could not be read: %s" % e, flush=True)
++        shutil.rmtree(ui_profile_path, ignore_errors=True)
 +        if ret is None:
 +            print(
 +                "Zen UI training did not quit within %ds, killing it"

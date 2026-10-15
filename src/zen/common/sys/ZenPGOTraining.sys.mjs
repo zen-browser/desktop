@@ -2,12 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs",
-});
-
 // Set by build/pgo/profileserver.py for the run that exists only to collect
 // this tour's data.
 const TRAINING_ENV_VAR = "ZEN_PGO_UI_TRAINING";
@@ -44,6 +38,8 @@ const REPEATS = {
 const WAIT_TIMEOUT_MS = 5000;
 const STEP_BUDGET_MS = 60000;
 
+const FOLDER_BUDGET_MS = 120000;
+
 const TAB_COUNT = 100;
 const FOLDER_TAB_COUNT = 25;
 const SPACE_TAB_COUNT = 25;
@@ -77,6 +73,7 @@ export const ZenPGOTraining = {
 class TrainingTour {
   #window;
   #pages;
+  #results = [];
   #tabs = [];
   #createdSpaces = [];
   #folder = null;
@@ -91,11 +88,15 @@ class TrainingTour {
   }
 
   async run() {
+    console.warn(
+      `[ZenPGOTraining] start: ${TAB_COUNT} tabs over ${this.#pages.length} pages`
+    );
     await this.#addTabs(TAB_COUNT);
     for (const step of this.#steps()) {
       await this.#runStep(step);
     }
     await this.#cleanup();
+    console.warn(`[ZenPGOTraining] done: ${this.#results.join(", ")}`);
   }
 
   #steps() {
@@ -165,6 +166,7 @@ class TrainingTour {
       {
         name: "folder",
         count: REPEATS.folder,
+        budget: FOLDER_BUDGET_MS,
         before: () => this.#createFolder(),
         after: () => this.#removeFolder(),
         step: async () => {
@@ -180,12 +182,13 @@ class TrainingTour {
     ];
   }
 
-  async #runStep({ name, count, enabled, before, step, after }) {
+  async #runStep({ name, count, enabled, before, step, after, budget }) {
     if (enabled && !enabled()) {
       console.warn(`[ZenPGOTraining] ${name}: skipped, feature is off`);
+      this.#results.push(`${name} skipped`);
       return;
     }
-    const deadline = this.#now() + STEP_BUDGET_MS;
+    const deadline = this.#now() + (budget ?? STEP_BUDGET_MS);
     let done = 0;
     try {
       await before?.();
@@ -207,6 +210,7 @@ class TrainingTour {
     if (done < count) {
       console.warn(`[ZenPGOTraining] ${name}: only ran ${done}/${count}`);
     }
+    this.#results.push(`${name} ${done}/${count}`);
   }
 
   // Section: waiting
@@ -331,10 +335,18 @@ class TrainingTour {
   }
 
   async #library() {
+    const library = this.#document.querySelector("zen-library");
+    if (!library) {
+      return;
+    }
+    const settled = open =>
+      library.hasAttribute("open") === open &&
+      !library.hasAttribute("transitioning");
+
     this.#command("cmd_zenToggleLibrary");
-    await this.#until(() => lazy.ZenLibrary.isLibraryOpen);
+    await this.#until(() => settled(true));
     this.#command("cmd_zenToggleLibrary");
-    await this.#until(() => !lazy.ZenLibrary.isLibrarySlightlyOpen);
+    await this.#until(() => settled(false));
   }
 
   async #ensureTwoSpaces() {

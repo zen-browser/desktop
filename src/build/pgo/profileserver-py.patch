@@ -1,5 +1,5 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index a23e879dfdc4994ff615fb389fad92f5234ef1fa..797c3b08b03a193e4776e6b5b7ac223b3ac8d3ec 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..56f373fd5cf5fdc23194c778809dfa0404bcb9da 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
 @@ -17,7 +17,15 @@ from mozprofile import FirefoxProfile, Preferences
@@ -35,7 +35,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..797c3b08b03a193e4776e6b5b7ac223b
              print("Firefox exited with code %d during profiling" % ret)
              logfile = process_args.get("logfile")
              if logfile:
-@@ -256,6 +264,49 @@ if __name__ == "__main__":
+@@ -256,6 +264,50 @@ if __name__ == "__main__":
              get_crashreports(profilePath, name="Profiling run")
              sys.exit(ret)
  
@@ -59,6 +59,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..797c3b08b03a193e4776e6b5b7ac223b
 +            env=ui_env,
 +            process_args=process_args,
 +        )
++        print("Starting Zen UI training run on %s" % training_urls[0], flush=True)
 +        runner.start(debug_args=debug_args, interactive=interactive)
 +        ret = runner.wait(timeout=UI_TRAINING_TIMEOUT)
 +        if ret is None:

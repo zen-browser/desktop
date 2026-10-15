@@ -182,7 +182,10 @@ window.gZenVerticalTabsManager = {
       aItem.hasAttribute("zen-essential") ||
       aItem.group?.hasAttribute("split-view-group") ||
       !gZenUIManager.motion ||
-      gReduceMotion
+      gReduceMotion ||
+      // Hidden windows barely tick, so the animation would never finish and
+      // removeTab would leave the tab stuck as closing (e.g. synced copies).
+      document.hidden
     ) {
       return Promise.resolve();
     }

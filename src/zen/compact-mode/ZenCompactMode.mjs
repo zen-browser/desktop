@@ -391,8 +391,6 @@ window.gZenCompactModeManager = {
     ) {
       return null;
     }
-    // Keep controls in normal flow so toolbar overflow and sizing still work.
-    // Counter their parents' movement visually while the sidebar slides.
     const controls = [
       gZenVerticalTabsManager.actualWindowButtons,
       document.getElementById("zen-sidebar-top-buttons-customization-target"),
@@ -423,7 +421,7 @@ window.gZenCompactModeManager = {
     const rightSide = this.sidebarIsOnRight;
     const sidebar = this.sidebar;
     const animations = [];
-    // Moving the header to the toolbar must not pull the tab list upward.
+    // Reserve the header's height so the tab list does not jump.
     titlebar.style.marginTop = `${
       navbar.getBoundingClientRect().bottom -
       document.getElementById("browser").getBoundingClientRect().y
@@ -431,14 +429,12 @@ window.gZenCompactModeManager = {
     return {
       start(width, options) {
         if (rightSide) {
-          // The right header changes width when it moves into the navbar.
-          // Measure its destination so it follows the path between layouts.
+          // Temporarily use idle CSS to measure the controls' final positions.
           sidebar.removeAttribute("animate");
           document.documentElement.removeAttribute("zen-compact-animating");
           const destination = controls.map(element =>
             element.getBoundingClientRect()
           );
-          // Compact mode only applies the navbar's inset when idle.
           const idleInset = getComputedStyle(navbar).marginLeft;
           document.documentElement.setAttribute(
             "zen-compact-animating",
@@ -446,8 +442,6 @@ window.gZenCompactModeManager = {
           );
           sidebar.setAttribute("animate", "true");
           const animatingInset = getComputedStyle(navbar).marginLeft;
-          // Release the header's space gradually as the sidebar closes.
-          // A collapsed sidebar instead gives its width back to the navbar.
           const headerWidth = sidebarExpanded
             ? header.getBoundingClientRect().width
             : width;
@@ -475,8 +469,6 @@ window.gZenCompactModeManager = {
             layout.forEach(({ element, property, values }) => {
               element.style[property] = values[index];
             });
-          // Measure how these margins move each control, so that the transform
-          // and the layout change together cancel out.
           applyLayout(1);
           const shifted = controls.map(element =>
             element.getBoundingClientRect()
@@ -489,8 +481,7 @@ window.gZenCompactModeManager = {
               }
             });
             if (sidebarExpanded) {
-              // The header returns to the expanded sidebar after the animation.
-              // Its navbar position is not the destination for this direction.
+              // The expanded header finishes in the sidebar, not the navbar.
               destination[1].x =
                 sidebar.getBoundingClientRect().x +
                 parseFloat(getComputedStyle(sidebar).paddingLeft) -
@@ -531,8 +522,6 @@ window.gZenCompactModeManager = {
         const leadingSpace =
           navbarContents.getBoundingClientRect().x -
           navbar.getBoundingClientRect().x;
-        // Navigation ends immediately after the stationary header controls.
-        // Its compact inset can differ when the browser spacing is customized.
         const compactMargin =
           bounds[1].x +
           controls[1].getBoundingClientRect().width -
@@ -572,7 +561,6 @@ window.gZenCompactModeManager = {
         });
       },
       restore() {
-        // Cancel finished effects too, so later layouts use their CSS margins.
         animations.forEach(animation => animation.cancel());
         for (const { element, property, value, priority } of styles) {
           if (value) {
@@ -662,8 +650,7 @@ window.gZenCompactModeManager = {
       this.sidebar.style.removeProperty("margin-right");
       this.sidebar.style.removeProperty("margin-left");
       this.sidebar.style.removeProperty("transform");
-      // Toolbar compensation needs the new layout after reparenting the controls.
-      // Keep other layouts on their existing measurement path.
+      // Reparenting controls invalidates layout; compensation needs fresh bounds.
       let sidebarWidth = toolbarTransition
         ? this.sidebar.getBoundingClientRect().width
         : window.windowUtils.getBoundsWithoutFlushing(this.sidebar).width;

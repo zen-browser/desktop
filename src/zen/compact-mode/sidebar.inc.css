@@ -47,7 +47,6 @@
     }
 
     &:dir(ltr):not([zen-single-toolbar='true']):not([zen-right-side='true']) #nav-bar {
-      /* Match the sidebar's inset, compensating for the navbar margin below. */
       & > .titlebar-buttonbox-container {
         margin-inline-start: calc(
           var(--zen-toolbox-padding) - (var(--zen-element-separation) - 3px)

@@ -755,7 +755,15 @@ export class nsZenSessionManager {
    * @returns {boolean} True if the tab should be collected, false otherwise.
    */
   #shouldCollectTab(tabData) {
-    return tabData && !(tabData.zenIsEmpty && !tabData.groupId);
+    if (!tabData || (tabData.zenIsEmpty && !tabData.groupId)) {
+      return false;
+    }
+    // See gh-12152.
+    let isBlank = this.#isBlankTabData(tabData);
+    if (isBlank) {
+      this.log("Skipping blank tab data", tabData);
+    }
+    return !!tabData.zenSyncId || !isBlank;
   }
 
   /**

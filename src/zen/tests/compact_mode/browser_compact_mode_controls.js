@@ -39,10 +39,19 @@ async function checkToolbarControls({
     const layoutElements = [
       document.getElementById("titlebar"),
       document.getElementById("nav-bar-customization-target"),
+      document.getElementById("nav-bar"),
+      document.getElementById("zen-sidebar-top-buttons"),
     ];
     const navigation = ["back-button", "forward-button", "reload-button"].map(
       id => document.getElementById(id)
     );
+    const toolbarElements = [
+      ...navigation,
+      document.getElementById("urlbar-container"),
+      document.getElementById("PanelUI-button"),
+    ];
+    const toolbarBounds = () =>
+      toolbarElements.map(element => element.getBoundingClientRect());
     const compactButton = document.getElementById("zen-toggle-compact-mode");
     const customizations = [...controls[1].children];
 
@@ -53,6 +62,7 @@ async function checkToolbarControls({
       }));
       const layoutStyles = layoutElements.map(element => element.style.cssText);
       const samples = [];
+      const initialToolbar = toolbarBounds();
       const initialButtonX = compactButton.getBoundingClientRect().x;
       const initialTabY = gBrowser.selectedTab.getBoundingClientRect().y;
       const initialNavigation = navigation.map(
@@ -65,6 +75,10 @@ async function checkToolbarControls({
             controls: controls.map(element => element.getBoundingClientRect()),
             animating: manager.sidebar.hasAttribute("animate"),
             buttonX: compactButton.getBoundingClientRect().x,
+            toolbar: toolbarBounds(),
+            menuRight: document
+              .getElementById("PanelUI-button")
+              .getBoundingClientRect().right,
             tabY: gBrowser.selectedTab.getBoundingClientRect().y,
             navigation: navigation.map(
               element => element.getBoundingClientRect().x
@@ -83,6 +97,7 @@ async function checkToolbarControls({
         "ZenCompactMode:Toggled"
       );
       let beforeCleanupButtonX;
+      let beforeCleanupToolbar;
       const motion = gZenUIManager.motion;
       const animateElement = motion.animate;
       motion.animate = function (element, keyframes, options) {
@@ -94,6 +109,7 @@ async function checkToolbarControls({
           then(onFulfilled, onRejected) {
             return animation.then(value => {
               beforeCleanupButtonX = compactButton.getBoundingClientRect().x;
+              beforeCleanupToolbar = toolbarBounds();
               return onFulfilled(value);
             }, onRejected);
           },
@@ -128,6 +144,31 @@ async function checkToolbarControls({
           0.5,
           `${direction} keeps sidebar content at the same height`
         );
+      }
+      if (animate && rightSide) {
+        Assert.ok(
+          samples.every(sample => sample.menuRight <= sample.buttonX + 0.5),
+          `${direction} keeps the menu before the sidebar button without overlap`
+        );
+        toolbarBounds().forEach((bounds, index) => {
+          for (const edge of ["x", "right"]) {
+            const positions = samples.map(
+              sample => sample.toolbar[index][edge]
+            );
+            Assert.ok(
+              Math.min(...positions) >=
+                Math.min(initialToolbar[index][edge], bounds[edge]) - 1 &&
+                Math.max(...positions) <=
+                  Math.max(initialToolbar[index][edge], bounds[edge]) + 1,
+              `${direction} keeps ${toolbarElements[index].id} ${edge} within its endpoints`
+            );
+            Assert.lessOrEqual(
+              Math.abs(beforeCleanupToolbar[index][edge] - bounds[edge]),
+              1,
+              `${direction} reaches ${toolbarElements[index].id} ${edge} before cleanup`
+            );
+          }
+        });
       }
       const finalButtonX = compactButton.getBoundingClientRect().x;
       if (animate && rightSide) {

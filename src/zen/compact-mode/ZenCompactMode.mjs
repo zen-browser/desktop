@@ -402,10 +402,14 @@ window.gZenCompactModeManager = {
     const navbarContents = document.getElementById(
       "nav-bar-customization-target"
     );
+    const header = document.getElementById("zen-sidebar-top-buttons");
     const styles = [
       ...controls.map(element => [element, "transform"]),
       [titlebar, "margin-top"],
       [navbarContents, "margin-left"],
+      [navbar, "margin-left"],
+      [navbar, "margin-right"],
+      [header, "margin-left"],
     ].map(([element, property]) => ({
       element,
       property,
@@ -434,14 +438,55 @@ window.gZenCompactModeManager = {
           const destination = controls.map(element =>
             element.getBoundingClientRect()
           );
+          // Compact mode only applies the navbar's inset when idle.
+          const idleInset = getComputedStyle(navbar).marginLeft;
           document.documentElement.setAttribute(
             "zen-compact-animating",
             "true"
           );
           sidebar.setAttribute("animate", "true");
+          const animatingInset = getComputedStyle(navbar).marginLeft;
+          // Release the header's space gradually as the sidebar closes.
+          // A collapsed sidebar instead gives its width back to the navbar.
+          const headerWidth = sidebarExpanded
+            ? header.getBoundingClientRect().width
+            : width;
+          const layout = [
+            {
+              element: navbar,
+              property: "marginLeft",
+              values: [animatingInset, idleInset],
+            },
+            {
+              element: navbar,
+              property: "marginRight",
+              values: [sidebarExpanded ? "0px" : `-${width}px`, "0px"],
+            },
+            {
+              element: header,
+              property: "marginLeft",
+              values: [sidebarExpanded ? `-${headerWidth}px` : "0px", "0px"],
+            },
+          ];
+          if (!hiding) {
+            layout.forEach(({ values }) => values.reverse());
+          }
+          const applyLayout = index =>
+            layout.forEach(({ element, property, values }) => {
+              element.style[property] = values[index];
+            });
+          // Measure how these margins move each control, so that the transform
+          // and the layout change together cancel out.
+          applyLayout(1);
+          const shifted = controls.map(element =>
+            element.getBoundingClientRect()
+          );
+          applyLayout(0);
           if (!hiding) {
             controls.forEach((element, index) => {
-              destination[index] = element.getBoundingClientRect();
+              if (index === 0 || sidebarExpanded) {
+                destination[index] = DOMRect.fromRect(shifted[index]);
+              }
             });
             if (sidebarExpanded) {
               // The header returns to the expanded sidebar after the animation.
@@ -460,8 +505,8 @@ window.gZenCompactModeManager = {
             const from = `translate(${x}px, ${y}px)`;
             const displacement = index === 1 ? sidebarDisplacement : 0;
             const destinationX =
-              destination[index].x - current.x + displacement;
-            const destinationY = destination[index].y - current.y;
+              destination[index].x - shifted[index].x + displacement;
+            const destinationY = destination[index].y - shifted[index].y;
             const to = `translate(${destinationX}px, ${destinationY}px)`;
             element.style.transform = from;
             animations.push(
@@ -472,6 +517,15 @@ window.gZenCompactModeManager = {
               )
             );
           });
+          for (const { element, property, values } of layout) {
+            animations.push(
+              gZenUIManager.motion.animate(
+                element,
+                { [property]: values },
+                options
+              )
+            );
+          }
           return;
         }
         const leadingSpace =
@@ -518,7 +572,8 @@ window.gZenCompactModeManager = {
         });
       },
       restore() {
-        animations.forEach(animation => animation.stop());
+        // Cancel finished effects too, so later layouts use their CSS margins.
+        animations.forEach(animation => animation.cancel());
         for (const { element, property, value, priority } of styles) {
           if (value) {
             element.style.setProperty(property, value, priority);

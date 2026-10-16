@@ -54,6 +54,20 @@ async function checkToolbarControls({
       toolbarElements.map(element => element.getBoundingClientRect());
     const compactButton = document.getElementById("zen-toggle-compact-mode");
     const customizations = [...controls[1].children];
+    const assertOriginalButtonOrder = direction => {
+      if (!rightSide) {
+        return;
+      }
+      const menu = document
+        .getElementById("PanelUI-button")
+        .getBoundingClientRect();
+      const button = compactButton.getBoundingClientRect();
+      const toggleInNavbar = manager.preference || !expanded;
+      Assert.ok(
+        toggleInNavbar ? button.right <= menu.x : menu.right <= button.x,
+        `${direction} preserves the original ${toggleInNavbar ? "toggle then menu" : "menu then toggle"} order`
+      );
+    };
 
     for (const direction of ["hide", "show", "hide", "show"]) {
       const initial = controls.map(element => ({
@@ -76,9 +90,6 @@ async function checkToolbarControls({
             animating: manager.sidebar.hasAttribute("animate"),
             buttonX: compactButton.getBoundingClientRect().x,
             toolbar: toolbarBounds(),
-            menuRight: document
-              .getElementById("PanelUI-button")
-              .getBoundingClientRect().right,
             tabY: gBrowser.selectedTab.getBoundingClientRect().y,
             navigation: navigation.map(
               element => element.getBoundingClientRect().x
@@ -145,11 +156,8 @@ async function checkToolbarControls({
           `${direction} keeps sidebar content at the same height`
         );
       }
+      assertOriginalButtonOrder(direction);
       if (animate && rightSide) {
-        Assert.ok(
-          samples.every(sample => sample.menuRight <= sample.buttonX + 0.5),
-          `${direction} keeps the menu before the sidebar button without overlap`
-        );
         toolbarBounds().forEach((bounds, index) => {
           for (const edge of ["x", "right"]) {
             const positions = samples.map(

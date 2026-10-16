@@ -320,13 +320,6 @@ body,
   }
 }
 
-@media (-moz-platform: macos) and (not -moz-pref('zen.view.compact.hide-toolbar')) {
-  :root:dir(ltr):not([zen-single-toolbar="true"])[zen-right-side="true"] #zen-appcontent-navbar-wrapper #zen-sidebar-top-buttons {
-    /* Keep the menu before the sidebar button in both toolbar layouts. */
-    order: 3;
-  }
-}
-
 :root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
 }

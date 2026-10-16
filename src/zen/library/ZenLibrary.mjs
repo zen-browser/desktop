@@ -73,6 +73,8 @@ export class ZenLibrary extends MozLitElement {
   // or a spring that has been replaced, no longer touches the library.
   #animation = 0;
   #initialized = false;
+  // What had focus before the library opened, given back when it closes.
+  #focusBeforeOpen = null;
 
   #wrapperSwipeAttached = false;
   #tabMenu = null;
@@ -496,6 +498,7 @@ export class ZenLibrary extends MozLitElement {
       lib.#isOpen = false;
       lib.#canSwipe = false;
       lib.#tellSection("onLibraryClosing");
+      lib.#restoreFocus();
     }
 
     const finish = () => {
@@ -796,6 +799,7 @@ export class ZenLibrary extends MozLitElement {
     this.#tellSection("onLibraryOpening");
     if (!this.#initialized) {
       this.#initialized = true;
+      this.#rememberFocus();
       this.isHidden = false;
 
       gURLBar.view.close();
@@ -820,6 +824,62 @@ export class ZenLibrary extends MozLitElement {
     this.#focusActiveSection();
   }
 
+  /**
+   * Remembers what had focus before the library opened, and the selection
+   * in it if it is a text field, so closing the library can give it back.
+   */
+  #rememberFocus() {
+    const element = document.activeElement;
+    if (!element || this.contains(element)) {
+      this.#focusBeforeOpen = null;
+      return;
+    }
+    let selection = null;
+    try {
+      if (
+        element.selectionStart !== null &&
+        element.selectionStart !== undefined
+      ) {
+        selection = [
+          element.selectionStart,
+          element.selectionEnd,
+          element.selectionDirection,
+        ];
+      }
+    } catch {}
+    this.#focusBeforeOpen = { element, selection };
+  }
+
+  /**
+   * Gives focus back to what had it before the library opened. Only does so
+   * while focus is still inside the library (or nowhere), so focus the user
+   * moved somewhere else in the meantime stays where they put it.
+   */
+  #restoreFocus() {
+    const focused = document.activeElement;
+    const focusIsOurs =
+      !focused ||
+      focused === document.documentElement ||
+      focused === document.body ||
+      this.contains(focused);
+    if (!focusIsOurs) {
+      return;
+    }
+    const saved = this.#focusBeforeOpen;
+    const { element, selection } = saved ?? {};
+    if (!element?.isConnected || !element.checkVisibility()) {
+      // The tab that had focus may have been switched away from or closed.
+      gBrowser.selectedBrowser.focus();
+      return;
+    }
+    element.focus();
+    if (selection) {
+      try {
+        element.setSelectionRange(...selection);
+      } catch {}
+    }
+  }
+
   async #focusActiveSection() {
     // On the first open the sections are only being mounted now.
     await this.updateComplete;
@@ -838,6 +898,8 @@ export class ZenLibrary extends MozLitElement {
       return;
     }
     this.#initialized = false;
+    this.#restoreFocus();
+    this.#focusBeforeOpen = null;
     this.removeAttribute("open");
     this.#releaseSidebarCommands();
     for (const tab of this.querySelectorAll(".zen-library-tab[animate]")) {

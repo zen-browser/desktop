@@ -76,7 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: C:\base
-          name: windows-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
+          name: windows-base-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
 
       - name: Unpack artifact
         if: ${{ matrix.arch == 'x86_64' }}

@@ -28,7 +28,8 @@
   value: false
 
 - name: zen.urlbar.show-pinned
-  value: false
+  value: "@cond"
+  condition: "!@IS_TWILIGHT@"
 
 - name: zen.urlbar.enable-overrides
   value: false

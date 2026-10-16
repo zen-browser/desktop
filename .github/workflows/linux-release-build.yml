@@ -41,7 +41,7 @@ jobs:
     permissions:
       contents: write
     # aarch64 does not need full 16x
-    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
+    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'blacksmith-16vcpu-ubuntu-2404' || 'blacksmith-8vcpu-ubuntu-2404' }}
     strategy:
       fail-fast: false
       matrix:

@@ -7,13 +7,14 @@ async function checkToolbarControls({
   expanded = true,
   spacing = 8,
   animate = true,
+  rightSide = false,
 } = {}) {
   await SpecialPowers.pushPrefEnv({
     set: [
       ["zen.view.use-single-toolbar", false],
       ["zen.view.sidebar-expanded", expanded],
       ["zen.theme.content-element-separation", spacing],
-      ["zen.tabs.vertical.right-side", false],
+      ["zen.tabs.vertical.right-side", rightSide],
       ["zen.view.compact.enable-at-startup", false],
       ["zen.view.compact.hide-tabbar", true],
       ["zen.view.compact.hide-toolbar", false],
@@ -81,8 +82,29 @@ async function checkToolbarControls({
         window,
         "ZenCompactMode:Toggled"
       );
-      manager.toggle(true);
-      await toggled;
+      let beforeCleanupButtonX;
+      const motion = gZenUIManager.motion;
+      const animateElement = motion.animate;
+      motion.animate = function (element, keyframes, options) {
+        const animation = animateElement(element, keyframes, options);
+        if (element !== manager.sidebar) {
+          return animation;
+        }
+        return {
+          then(onFulfilled, onRejected) {
+            return animation.then(value => {
+              beforeCleanupButtonX = compactButton.getBoundingClientRect().x;
+              return onFulfilled(value);
+            }, onRejected);
+          },
+        };
+      };
+      try {
+        manager.toggle(true);
+        await toggled;
+      } finally {
+        motion.animate = animateElement;
+      }
       finished = true;
       await sampling;
 
@@ -107,14 +129,31 @@ async function checkToolbarControls({
           `${direction} keeps sidebar content at the same height`
         );
       }
-      Assert.lessOrEqual(
-        Math.max(
-          ...samples.map(sample => Math.abs(sample.buttonX - initialButtonX)),
-          Math.abs(compactButton.getBoundingClientRect().x - initialButtonX)
-        ),
-        0.5,
-        `${direction} keeps the compact-mode button in place`
+      const finalButtonX = compactButton.getBoundingClientRect().x;
+      if (animate && rightSide) {
+        Assert.lessOrEqual(
+          Math.abs(beforeCleanupButtonX - finalButtonX),
+          4,
+          `${direction} reaches the compact-mode button's destination before cleanup`
+        );
+      }
+      Assert.greaterOrEqual(
+        Math.min(...samples.map(sample => sample.buttonX)),
+        Math.min(initialButtonX, finalButtonX) - 0.5,
+        `${direction} keeps the compact-mode button from overshooting left`
       );
+      Assert.lessOrEqual(
+        Math.max(...samples.map(sample => sample.buttonX)),
+        Math.max(initialButtonX, finalButtonX) + 0.5,
+        `${direction} keeps the compact-mode button from overshooting right`
+      );
+      if (!rightSide) {
+        Assert.lessOrEqual(
+          Math.abs(finalButtonX - initialButtonX),
+          0.5,
+          `${direction} keeps the compact-mode button in place`
+        );
+      }
       navigation.forEach((element, index) => {
         const finalX = element.getBoundingClientRect().x;
         const positions = samples.map(sample => sample.navigation[index]);
@@ -137,15 +176,26 @@ async function checkToolbarControls({
         );
       }
       for (let index = 0; index < controls.length; index++) {
-        const displacement = Math.max(
-          ...samples.map(sample =>
-            Math.abs(sample.controls[index].x - initial[index].bounds.x)
-          )
+        const finalX = controls[index].getBoundingClientRect().x;
+        const positions = samples.map(sample => sample.controls[index].x);
+        if (!rightSide) {
+          Assert.lessOrEqual(
+            Math.max(
+              ...positions.map(x => Math.abs(x - initial[index].bounds.x))
+            ),
+            4,
+            `${direction} keeps control ${index} in place`
+          );
+        }
+        Assert.greaterOrEqual(
+          Math.min(...positions),
+          Math.min(initial[index].bounds.x, finalX) - 4,
+          `${direction} keeps control ${index} from overshooting left`
         );
         Assert.lessOrEqual(
-          displacement,
-          4,
-          `${direction} keeps control ${index} in place`
+          Math.max(...positions),
+          Math.max(initial[index].bounds.x, finalX) + 4,
+          `${direction} keeps control ${index} from overshooting right`
         );
         Assert.lessOrEqual(
           Math.max(
@@ -182,14 +232,26 @@ add_task(async function test_collapsed_sidebar_controls() {
   await checkToolbarControls({ expanded: false });
 });
 
+add_task(async function test_right_sidebar_controls() {
+  await checkToolbarControls({ rightSide: true });
+});
+
+add_task(async function test_collapsed_right_sidebar_controls() {
+  await checkToolbarControls({ rightSide: true, expanded: false });
+});
+
 add_task(async function test_custom_browser_spacing() {
-  for (const spacing of [0, 12]) {
-    await checkToolbarControls({ spacing });
+  for (const rightSide of [false, true]) {
+    for (const spacing of [0, 12]) {
+      await checkToolbarControls({ spacing, rightSide });
+    }
   }
 });
 
 add_task(async function test_disabled_animation() {
-  await checkToolbarControls({ animate: false });
+  for (const rightSide of [false, true]) {
+    await checkToolbarControls({ animate: false, rightSide });
+  }
 });
 
 add_task(async function test_rtl_does_not_compensate_toolbar() {

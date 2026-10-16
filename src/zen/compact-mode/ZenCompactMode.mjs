@@ -385,7 +385,6 @@ window.gZenCompactModeManager = {
       AppConstants.platform !== "macosx" ||
       document.documentElement.matches(":dir(rtl)") ||
       gZenVerticalTabsManager._hasSetSingleToolbar ||
-      this.sidebarIsOnRight ||
       !this.canHideSidebar ||
       this.canHideToolbar ||
       !this._canAnimateSidebar
@@ -417,6 +416,8 @@ window.gZenCompactModeManager = {
     const hiding = !this.preference;
     const initialNavbarX = navbarContents.getBoundingClientRect().x;
     const sidebarExpanded = gZenVerticalTabsManager._prefsSidebarExpanded;
+    const rightSide = this.sidebarIsOnRight;
+    const sidebar = this.sidebar;
     const animations = [];
     // Moving the header to the toolbar must not pull the tab list upward.
     titlebar.style.marginTop = `${
@@ -425,6 +426,54 @@ window.gZenCompactModeManager = {
     }px`;
     return {
       start(width, options) {
+        if (rightSide) {
+          // The right header changes width when it moves into the navbar.
+          // Measure its destination so it follows the path between layouts.
+          sidebar.removeAttribute("animate");
+          document.documentElement.removeAttribute("zen-compact-animating");
+          const destination = controls.map(element =>
+            element.getBoundingClientRect()
+          );
+          document.documentElement.setAttribute(
+            "zen-compact-animating",
+            "true"
+          );
+          sidebar.setAttribute("animate", "true");
+          if (!hiding) {
+            controls.forEach((element, index) => {
+              destination[index] = element.getBoundingClientRect();
+            });
+            if (sidebarExpanded) {
+              // The header returns to the expanded sidebar after the animation.
+              // Its navbar position is not the destination for this direction.
+              destination[1].x =
+                sidebar.getBoundingClientRect().x +
+                parseFloat(getComputedStyle(sidebar).paddingLeft) -
+                width;
+            }
+          }
+          const sidebarDisplacement = hiding ? -width : width;
+          controls.forEach((element, index) => {
+            const current = element.getBoundingClientRect();
+            const x = bounds[index].x - current.x;
+            const y = bounds[index].y - current.y;
+            const from = `translate(${x}px, ${y}px)`;
+            const displacement = index === 1 ? sidebarDisplacement : 0;
+            const destinationX =
+              destination[index].x - current.x + displacement;
+            const destinationY = destination[index].y - current.y;
+            const to = `translate(${destinationX}px, ${destinationY}px)`;
+            element.style.transform = from;
+            animations.push(
+              gZenUIManager.motion.animate(
+                element,
+                { transform: [from, to] },
+                options
+              )
+            );
+          });
+          return;
+        }
         const leadingSpace =
           navbarContents.getBoundingClientRect().x -
           navbar.getBoundingClientRect().x;
@@ -638,7 +687,9 @@ window.gZenCompactModeManager = {
             this.sidebarIsOnRight
               ? {
                   marginRight: [`-${sidebarWidth}px`, 0],
-                  transform: ["translateX(100%)", "translateX(0)"],
+                  ...(!toolbarTransition && {
+                    transform: ["translateX(100%)", "translateX(0)"],
+                  }),
                 }
               : { marginLeft: [`-${sidebarWidth}px`, 0] },
             animationOptions

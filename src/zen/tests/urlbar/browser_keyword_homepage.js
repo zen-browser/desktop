@@ -186,6 +186,23 @@ add_task(async function test_keyword_homepage() {
     await UrlbarTestUtils.promiseAutocompleteResultPopup({
       window,
       waitForFocus,
+      value: "yt ",
+    });
+    const programmaticCount = opened.length;
+    gURLBar.handleCommand();
+    await TestUtils.waitForTick();
+    Assert.equal(
+      opened.length,
+      programmaticCount + 1,
+      "A command without an event opens the homepage"
+    );
+    Assert.equal(opened.at(-1).url, engine.searchForm);
+    await UrlbarTestUtils.promisePopupClose(window);
+
+    await gURLBar.setSearchMode(null, gBrowser.selectedBrowser);
+    await UrlbarTestUtils.promiseAutocompleteResultPopup({
+      window,
+      waitForFocus,
       value: "",
     });
     const count = opened.length;
@@ -205,5 +222,56 @@ add_task(async function test_keyword_homepage() {
       await SearchService.removeEngine(engine);
     }
     await SpecialPowers.popPrefEnv();
+  }
+});
+
+add_task(async function test_background_homepage_restores_input() {
+  const engine = await SearchService.addUserEngine({
+    name: "Background keyword homepage",
+    alias: "backgroundhome",
+    url: "https://example.com/?q={searchTerms}",
+  });
+  try {
+    await BrowserTestUtils.withNewTab("about:robots", async browser => {
+      const originalTab = gBrowser.selectedTab;
+      await UrlbarTestUtils.promiseAutocompleteResultPopup({
+        window,
+        waitForFocus,
+        value: "backgroundhome ",
+      });
+      const opened = BrowserTestUtils.waitForNewTab(
+        gBrowser,
+        new URL(engine.searchForm).href,
+        true
+      );
+      EventUtils.synthesizeKey("KEY_Enter", { altKey: true, shiftKey: true });
+      const tab = await opened;
+      try {
+        Assert.equal(
+          gBrowser.selectedTab,
+          originalTab,
+          "The original tab stays selected"
+        );
+        Assert.equal(
+          gURLBar.value,
+          "about:robots",
+          "The original URL is restored"
+        );
+        Assert.equal(
+          gURLBar.searchMode,
+          null,
+          "The original search mode is cleared"
+        );
+        Assert.equal(
+          browser.userTypedValue,
+          null,
+          "The original typed input is cleared"
+        );
+      } finally {
+        BrowserTestUtils.removeTab(tab);
+      }
+    });
+  } finally {
+    await SearchService.removeEngine(engine);
   }
 });

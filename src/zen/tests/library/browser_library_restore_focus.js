@@ -106,3 +106,37 @@ add_task(async function test_focus_moved_elsewhere_is_left_alone() {
     browser.focus();
   });
 });
+
+add_task(async function test_page_text_box_focus_comes_back() {
+  const page = "data:text/html,<p>Search</p><input id='box' value='wiki'>";
+  await BrowserTestUtils.withNewTab(page, async browser => {
+    await SpecialPowers.spawn(browser, [], () => {
+      const box = content.document.getElementById("box");
+      box.focus();
+      box.setSelectionRange(1, 3);
+    });
+    browser.focus();
+
+    for (const section of ["history", "downloads"]) {
+      await openLibrary(section);
+      libraryClass().toggle(section);
+      await waitClosed();
+
+      Assert.equal(document.activeElement, browser, "The page has focus");
+      const state = await SpecialPowers.spawn(browser, [], () => {
+        const el = content.document.activeElement;
+        return [
+          el?.id,
+          el?.selectionStart,
+          el?.selectionEnd,
+          content.document.hasFocus(),
+        ];
+      });
+      Assert.deepEqual(
+        state,
+        ["box", 1, 3, true],
+        `The text box has focus and its selection after closing ${section}`
+      );
+    }
+  });
+});

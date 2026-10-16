@@ -159,7 +159,7 @@
   --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-padding-outer: 4px;
   --zen-toolbar-height-with-bookmarks: var(--zen-toolbar-height);
-  &[zen-has-bookmarks='true'] {
+  &[zen-has-bookmarks] {
     /* Make sure `30px` matches the bookmarks toolbar height */
     --zen-toolbar-height-with-bookmarks: calc(var(--zen-toolbar-height) + 30px);
   }

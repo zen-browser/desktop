@@ -52,7 +52,7 @@
 
         /* stylelint-disable-next-line media-query-no-invalid */
         @media -moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("browser.tabs.inTitlebar")) {
-          :root:not([zen-has-bookmarks="true"])[zen-single-toolbar="true"] & {
+          :root:not([zen-has-bookmarks])[zen-single-toolbar="true"] & {
             --margin-top-fix: 0px;
           }
         }

@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
-index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc6381ea3e 100644
+index 9093501ce7d288a51ba4822637e58a67c3faa273..82cd09a89b8e1f786530a4cf0adb9b943eb7aa99 100644
 --- a/browser/components/urlbar/content/UrlbarInputBase.mjs
 +++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
 @@ -83,6 +83,12 @@ if (lazy) {
@@ -200,7 +200,22 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      this.parentController.openSERP(
        engine.id,
        searchString,
-@@ -1850,7 +1931,11 @@ ${
+@@ -1481,6 +1562,14 @@ ${
+       return;
+     }
+     if (searchModeEngine) {
++      if (!typedValue.trim()) {
++        this.openSearchEnginePage(typedValue, {
++          searchEngine: searchModeEngine,
++          event,
++          where: this.controller.whereToOpen(event),
++        });
++        return;
++      }
+       this.#openEngineSearch(
+         searchModeEngine,
+         typedValue,
+@@ -1850,7 +1939,11 @@ ${
      openParams.avoidBrowserFocus = keepViewOpen;
  
      if (!this.#providesSearchMode(result) && !keepViewOpen) {
@@ -213,7 +228,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      }
  
      if (isCanonized) {
-@@ -3122,35 +3207,146 @@ ${
+@@ -3122,35 +3215,146 @@ ${
      return state;
    }
  
@@ -370,7 +385,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
    }
  
    /**
-@@ -3179,7 +3375,7 @@ ${
+@@ -3179,7 +3383,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -379,7 +394,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3412,6 +3608,91 @@ ${
+@@ -3412,6 +3616,91 @@ ${
      this.view.close();
    }
  
@@ -471,7 +486,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
    /**
     * Sets the input field value.
     *
-@@ -3753,6 +4034,52 @@ ${
+@@ -3753,6 +4042,52 @@ ${
      );
    }
  
@@ -524,7 +539,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
    _updateUrlTooltip() {
      if (this.focused || !this._overflowing) {
        this.inputField.removeAttribute("title");
-@@ -3863,6 +4190,7 @@ ${
+@@ -3863,6 +4198,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -532,7 +547,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -3961,9 +4289,10 @@ ${
+@@ -3961,9 +4297,10 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -546,7 +561,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
      return UrlbarContentUtils.isTextDirectionRTL(trimmedValue, window) ||
-@@ -4171,6 +4500,11 @@ ${
+@@ -4171,6 +4508,11 @@ ${
      keepViewOpen = false,
      browserId = null,
    }) {
@@ -558,7 +573,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      let keyDownEnterDeferred;
      if (
        this._keyDownEnterDeferred &&
-@@ -4492,6 +4826,7 @@ ${
+@@ -4492,6 +4834,7 @@ ${
            this.setResultForCurrentValue(null);
            this.handleCommand();
            this.parentController.clearLastQueryContextCache();
@@ -566,7 +581,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
  
            this._suppressStartQuery = false;
          });
-@@ -4503,7 +4838,6 @@ ${
+@@ -4503,7 +4846,6 @@ ${
          // Close the results pane, because paste and go doesn't want a result
          // selection. This has to happen before the menu opens: hiding the
          // popover once it's open keeps it from showing (bug 2037468).
@@ -574,7 +589,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
  
          // The edit context menu is shared with other inputs in chrome, and
          // only the items we add here conflict, so mark it for this opening
-@@ -4778,7 +5112,11 @@ ${
+@@ -4778,7 +5120,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -587,7 +602,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5092,6 +5430,7 @@ ${
+@@ -5092,6 +5438,7 @@ ${
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -595,7 +610,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5142,6 +5481,12 @@ ${
+@@ -5142,6 +5489,12 @@ ${
      }
  
      logger().debug("Blur Event");
@@ -608,7 +623,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      // We cannot count every blur events after a missed engagement as abandoment
      // because the user may have clicked on some view element that executes
      // a command causing a focus change. For example opening preferences from
-@@ -5196,6 +5541,7 @@ ${
+@@ -5196,6 +5549,7 @@ ${
      if (!UrlbarPrefs.get("ui.popup.disable_autohide")) {
        this.view.close();
      }
@@ -616,7 +631,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
  
      // We may have hidden popup notifications, show them again if necessary.
      if (
-@@ -5221,6 +5567,11 @@ ${
+@@ -5221,6 +5575,11 @@ ${
    }
  
    _on_click(event) {
@@ -628,7 +643,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5281,6 +5632,7 @@ ${
+@@ -5281,6 +5640,7 @@ ${
      if (!this._hideFocus) {
        this.toggleAttribute("focused", true);
      }
@@ -636,7 +651,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
  
      // If the value was trimmed, check whether we should untrim it.
      // This is necessary when a protocol was typed, but the whole url has
-@@ -5315,10 +5667,11 @@ ${
+@@ -5315,10 +5675,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -649,7 +664,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5362,9 +5715,16 @@ ${
+@@ -5362,9 +5723,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -667,7 +682,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
          if (
            event.target != this.inputField &&
            event.target != this._inputContainer &&
-@@ -5375,6 +5735,10 @@ ${
+@@ -5375,6 +5743,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -678,7 +693,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5410,7 +5774,7 @@ ${
+@@ -5410,7 +5782,7 @@ ${
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -687,7 +702,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc
            break;
          }
  
-@@ -5704,7 +6068,7 @@ ${
+@@ -5704,7 +6076,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

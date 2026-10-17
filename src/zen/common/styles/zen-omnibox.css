@@ -135,6 +135,12 @@
     cursor: default;
   }
 
+  /* Page actions shown on hover can fill a narrow sidebar. Keep part of the URL
+     visible and clickable, and let the extra icons overflow instead (gh-15941). */
+  & .urlbar-input-box {
+    min-width: 30%;
+  }
+
   & #identity-box {
     margin-inline-end: 0 !important;
 

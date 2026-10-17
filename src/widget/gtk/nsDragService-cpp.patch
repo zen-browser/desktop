@@ -1,0 +1,16 @@
+diff --git a/widget/gtk/nsDragService.cpp b/widget/gtk/nsDragService.cpp
+index 61b72d0019279b8967039530a8c1e62f23b091a8..e190f0ffdb86d4e6137545d9743a35ea8d9eff6e 100644
+--- a/widget/gtk/nsDragService.cpp
++++ b/widget/gtk/nsDragService.cpp
+@@ -968,6 +968,11 @@
+             GetDragServiceTaskName(aTask->mType));
+     return FALSE;
+   }
++
++  // A leave task carries no window, and mSourceWindow is only set on Wayland,
++  // so the null test is not redundant. Set here and not in RunScheduledTask(),
++  // which runs from a timeout that may still be pending when the drag ends.
++  mDragIsOverSourceWindow = aTask->mWindow && aTask->mWindow == mSourceWindow;
+ 
+   mNextScheduledTask = std::move(aTask);
+ 

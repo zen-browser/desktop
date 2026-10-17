@@ -1,0 +1,16 @@
+diff --git a/widget/gtk/nsDragService.h b/widget/gtk/nsDragService.h
+index cf7c197ddfa39e9d20379c93bcce31c1f47113c5..77e4113e64bff3dc538647c54c21a33a6ffd2bb8 100644
+--- a/widget/gtk/nsDragService.h
++++ b/widget/gtk/nsDragService.h
+@@ -157,6 +157,11 @@
+   // Recent drag task, always present.
+   // If empty it's mType = eDragTaskNone.
+   mozilla::UniquePtr<DragTask> mRecentTask;
++
++  // Whether the drag is currently over the window it was started from. Starts
++  // true because that is where a drag starts, so a compositor that reports no
++  // drag motion at all leaves it true.
++  bool mDragIsOverSourceWindow = true;
+ 
+   gboolean Schedule(mozilla::UniquePtr<DragTask> aTask);
+ 

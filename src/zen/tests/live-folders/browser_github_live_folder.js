@@ -277,6 +277,65 @@ add_task(async function test_server_error_returns_failed_fetch() {
   sandbox.restore();
 });
 
+add_task(async function test_empty_result_is_trusted_on_second_fetch() {
+  info("should only accept an empty result once a second fetch confirms it");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    authorMe: true,
+  });
+  instance.state.isJsonApi = true;
+  instance.state.repos = new Set(["zen-browser/desktop"]);
+
+  const results = count =>
+    JSON.stringify({
+      payload: {
+        pullsDashboardSurfaceContentRoute: {
+          results: Array.from({ length: count }, (_, number) => ({
+            repoNameWithOwner: "zen-browser/desktop",
+            number,
+            title: "Add live folders",
+            author: { displayLogin: "alice" },
+            permalink: `https://github.com/zen-browser/desktop/pull/${number}`,
+          })),
+        },
+      },
+    });
+
+  instance.fetch.resolves({ status: 200, text: results(0) });
+
+  Assert.equal(
+    await instance.fetchItems(),
+    "zen-live-folder-failed-fetch",
+    "Should not trust a first empty result"
+  );
+  for (let i = 0; i < 3; i++) {
+    Assert.deepEqual(
+      await instance.fetchItems(),
+      [],
+      "Should keep accepting an empty result once confirmed"
+    );
+  }
+  Assert.deepEqual(
+    [...instance.state.repos],
+    ["zen-browser/desktop"],
+    "Should keep the known repositories"
+  );
+
+  instance.fetch.resolves({ status: 200, text: results(1) });
+  Assert.equal((await instance.fetchItems()).length, 1);
+
+  instance.fetch.resolves({ status: 200, text: results(0) });
+  Assert.equal(
+    await instance.fetchItems(),
+    "zen-live-folder-failed-fetch",
+    "Should distrust the next empty result after items came back"
+  );
+
+  sandbox.restore();
+});
+
 add_task(async function test_repo_excludes_emit_negative_repo_filters() {
   info("should add -repo:<repo> clauses for each excluded repository");
 

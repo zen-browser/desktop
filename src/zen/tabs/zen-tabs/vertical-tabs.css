@@ -539,6 +539,7 @@ zen-library {
   & .tab-label-container .zen-tab-sublabel {
     max-height: 10px;
     opacity: 0.5;
+    line-height: 1.2;
   }
 }
 
@@ -684,6 +685,7 @@ zen-library {
         & ~ .tab-label-container .zen-tab-sublabel {
           max-height: 10px;
           opacity: 0.6;
+          line-height: 1.2;
         }
 
         & ~ .tab-icon-stack .tab-icon-image {
@@ -827,7 +829,7 @@ zen-library {
       margin-right: auto !important;
 
       & image {
-        width: 100%;
+        background: transparent !important;
       }
     }
 
@@ -1263,6 +1265,8 @@ zen-library {
   --zen-drag-indicator-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.95)) 50%);
 
   position: fixed;
+  top: 0;
+  left: 0;
   z-index: 1000;
   background: var(--zen-drag-indicator-bg);
   pointer-events: none;
@@ -1278,8 +1282,12 @@ zen-library {
     background: transparent;
   }
 
+  /* Positioned with transform, not top/left, so moving it skips layout. */
   &[orientation="horizontal"] {
-    left: calc(var(--indicator-left) + 2 * var(--zen-drag-indicator-height) + 4px);
+    transform: translate(
+      calc(var(--indicator-left, 0px) + 2 * var(--zen-drag-indicator-height) + 4px),
+      var(--indicator-top, 0)
+    );
     width: calc(var(--indicator-width) - 2 * var(--zen-drag-indicator-height) - 4px);
     height: var(--zen-drag-indicator-height);
 

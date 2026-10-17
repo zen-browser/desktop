@@ -115,12 +115,18 @@ library-downloads-menu-delete =
     .label = Delete File
 library-downloads-menu-clear-preview =
     .label = Clear Download Preview
+library-downloads-menu-retry =
+    .label = Retry Download
 library-downloads-opening-in = { PLATFORM() ->
     [macos] Opening in Finder…
     [windows] Opening in File Explorer…
    *[other] Opening in file manager…
 }
 library-downloads-open-when-done = Opens when finished
+# Variables:
+#   $rate (string) - How much comes in per second, like 3.2
+#   $unit (string) - The unit of $rate, like MB
+library-downloads-speed = { $rate } { $unit }/s
 library-downloads-cancel-button =
     .title = { -library-cancel-download }
 library-downloads-cancel-tooltip =

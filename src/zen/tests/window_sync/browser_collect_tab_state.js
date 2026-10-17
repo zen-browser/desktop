@@ -78,3 +78,33 @@ add_task(async function test_activeCopyStillWins() {
     "The copy the user is looking at is the one that counts"
   );
 });
+
+add_task(async function test_blankTabWithNoSyncIdIsNotCollected() {
+  ZenSessionStore.saveState(
+    {
+      windows: [
+        {
+          tabs: [
+            { index: 1, entries: [{ url: "about:blank" }] },
+            { index: 1, entries: [] },
+            { zenSyncId: SYNC_ID, index: 1, entries: [{ url: PAGE }] },
+          ],
+        },
+      ],
+    },
+    true
+  );
+  const tabs = ZenSessionStore.getSidebarData().tabs;
+  info(
+    `collected: ${JSON.stringify(
+      tabs.map(tab => ({
+        id: tab.zenSyncId,
+        url: tab.entries?.[0]?.url ?? null,
+      }))
+    )}`
+  );
+  Assert.ok(
+    !tabs.some(tab => !tab.zenSyncId),
+    "A blank tab that window sync never tracked should not reach the session"
+  );
+});

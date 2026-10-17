@@ -214,6 +214,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   #setupObservers() {
     Services.obs.addObserver(this, "quit-application-requested");
+    window.addEventListener("unload", this.onUnload.bind(this), { once: true });
   }
 
   #insertIntoContextMenu() {
@@ -310,11 +311,20 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Clean up all glances when the application is unloading
+   * Closes any open glances, either when the window unloads or when a quit is
+   * requested.
+   *
+   * @param {Event} [event] - The unload event, or nothing for a quit request.
    */
-  onUnload() {
-    for (const [, glance] of this.#glances) {
-      gBrowser.removeTab(glance.tab, { animate: false });
+  onUnload(event) {
+    if (event?.type === "unload") {
+      // The window is really going now, so stop listening. A quit request can
+      // still be canceled, so that path leaves the observer in place.
+      Services.obs.removeObserver(this, "quit-application-requested");
+    } else {
+      for (const [, glance] of this.#glances) {
+        gBrowser.removeTab(glance.tab, { animate: false });
+      }
     }
     this.#glances.clear();
   }
@@ -416,11 +426,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #createNewOverlayButtons() {
     const template = document.getElementById("zen-glance-sidebar-template");
-    const newButtons = template.content.cloneNode(true);
-    const container = newButtons.querySelector(".zen-glance-sidebar-container");
-
+    const container = template.content
+      .querySelector(".zen-glance-sidebar-container")
+      .cloneNode(true);
     this.#animateOverlayButtons(container);
-    return newButtons;
+    return container;
   }
 
   /**

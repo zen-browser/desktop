@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
-index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0cf3a09e5 100644
+index 9093501ce7d288a51ba4822637e58a67c3faa273..1b768808fba7706388588f66d7becfdc6381ea3e 100644
 --- a/browser/components/urlbar/content/UrlbarInputBase.mjs
 +++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
 @@ -83,6 +83,12 @@ if (lazy) {
@@ -213,7 +213,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      }
  
      if (isCanonized) {
-@@ -3122,35 +3207,143 @@ ${
+@@ -3122,35 +3207,146 @@ ${
      return state;
    }
  
@@ -304,6 +304,9 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
 +    // user sees only sees two states: not expanded, and expanded with the view
 +    // open.
 +    if (!this.matches(":popover-open")) {
++      if (this.hasAttribute("breakout-extend") && this.focused) {
++        this.startQuery({ allowAutofill: false });
++      }
        return;
      }
  
@@ -367,7 +370,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
    }
  
    /**
-@@ -3179,7 +3372,7 @@ ${
+@@ -3179,7 +3375,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -376,7 +379,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3412,6 +3605,91 @@ ${
+@@ -3412,6 +3608,91 @@ ${
      this.view.close();
    }
  
@@ -468,7 +471,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
    /**
     * Sets the input field value.
     *
-@@ -3753,6 +4031,52 @@ ${
+@@ -3753,6 +4034,52 @@ ${
      );
    }
  
@@ -521,7 +524,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
    _updateUrlTooltip() {
      if (this.focused || !this._overflowing) {
        this.inputField.removeAttribute("title");
-@@ -3863,6 +4187,7 @@ ${
+@@ -3863,6 +4190,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -529,7 +532,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -3961,9 +4286,10 @@ ${
+@@ -3961,9 +4289,10 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -543,7 +546,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
      return UrlbarContentUtils.isTextDirectionRTL(trimmedValue, window) ||
-@@ -4171,6 +4497,11 @@ ${
+@@ -4171,6 +4500,11 @@ ${
      keepViewOpen = false,
      browserId = null,
    }) {
@@ -555,7 +558,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      let keyDownEnterDeferred;
      if (
        this._keyDownEnterDeferred &&
-@@ -4492,6 +4823,7 @@ ${
+@@ -4492,6 +4826,7 @@ ${
            this.setResultForCurrentValue(null);
            this.handleCommand();
            this.parentController.clearLastQueryContextCache();
@@ -563,7 +566,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
  
            this._suppressStartQuery = false;
          });
-@@ -4503,7 +4835,6 @@ ${
+@@ -4503,7 +4838,6 @@ ${
          // Close the results pane, because paste and go doesn't want a result
          // selection. This has to happen before the menu opens: hiding the
          // popover once it's open keeps it from showing (bug 2037468).
@@ -571,7 +574,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
  
          // The edit context menu is shared with other inputs in chrome, and
          // only the items we add here conflict, so mark it for this opening
-@@ -4778,7 +5109,11 @@ ${
+@@ -4778,7 +5112,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -584,7 +587,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5092,6 +5427,7 @@ ${
+@@ -5092,6 +5430,7 @@ ${
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -592,7 +595,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5142,6 +5478,12 @@ ${
+@@ -5142,6 +5481,12 @@ ${
      }
  
      logger().debug("Blur Event");
@@ -605,7 +608,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      // We cannot count every blur events after a missed engagement as abandoment
      // because the user may have clicked on some view element that executes
      // a command causing a focus change. For example opening preferences from
-@@ -5196,6 +5538,7 @@ ${
+@@ -5196,6 +5541,7 @@ ${
      if (!UrlbarPrefs.get("ui.popup.disable_autohide")) {
        this.view.close();
      }
@@ -613,7 +616,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
  
      // We may have hidden popup notifications, show them again if necessary.
      if (
-@@ -5221,6 +5564,11 @@ ${
+@@ -5221,6 +5567,11 @@ ${
    }
  
    _on_click(event) {
@@ -625,7 +628,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5281,6 +5629,7 @@ ${
+@@ -5281,6 +5632,7 @@ ${
      if (!this._hideFocus) {
        this.toggleAttribute("focused", true);
      }
@@ -633,7 +636,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
  
      // If the value was trimmed, check whether we should untrim it.
      // This is necessary when a protocol was typed, but the whole url has
-@@ -5315,10 +5664,11 @@ ${
+@@ -5315,10 +5667,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -646,7 +649,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5362,9 +5712,16 @@ ${
+@@ -5362,9 +5715,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -664,7 +667,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
          if (
            event.target != this.inputField &&
            event.target != this._inputContainer &&
-@@ -5375,6 +5732,10 @@ ${
+@@ -5375,6 +5735,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -675,7 +678,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5410,7 +5771,7 @@ ${
+@@ -5410,7 +5774,7 @@ ${
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -684,7 +687,7 @@ index 9093501ce7d288a51ba4822637e58a67c3faa273..8b26175e1c149e8bcb2a6da7fc2d5ee0
            break;
          }
  
-@@ -5704,7 +6065,7 @@ ${
+@@ -5704,7 +6068,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

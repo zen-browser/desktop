@@ -8,6 +8,7 @@ add_task(async function test_Private_Mode() {
     set: [
       ["privacy.userContext.enabled", true],
       ["zen.testing.enabled", false],
+      ["zen.urlbar.open-on-startup", false],
     ],
   });
 

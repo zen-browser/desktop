@@ -173,6 +173,7 @@ jobs:
           ./mach python ../scripts/download_pgo_extended_corpus.py
           ./mach package
           ./mach python build/pgo/profileserver.py --extended-corpus ./pgo-extended-corpus
+          ZEN_PGO_UI_ONLY=1 ./mach python build/pgo/profileserver.py
           mv merged.profdata "$HOME/artifact/merged.profdata"
           mv en-US.log "$HOME/artifact/en-US.log"
 

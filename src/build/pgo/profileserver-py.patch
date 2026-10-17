@@ -1,8 +1,16 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index a23e879dfdc4994ff615fb389fad92f5234ef1fa..61b0395cf112830f0daf25b7417b6bf9b19568bf 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..af915fe15d35203943dabb97168b024f178182c4 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
-@@ -17,7 +17,15 @@ from mozprofile import FirefoxProfile, Preferences
+@@ -8,6 +8,7 @@ import glob
+ import os
+ import subprocess
+ import sys
++import time
+ 
+ import mozcrash
+ from mozbuild.base import BinaryNotFoundException, MozbuildObject
+@@ -17,7 +18,17 @@ from mozprofile import FirefoxProfile, Preferences
  from mozprofile.permissions import ServerLocations
  from mozrunner import CLI, FirefoxRunner
  
@@ -16,60 +24,122 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..61b0395cf112830f0daf25b7417b6bf9
 +PORT = find_free_port()
 +
 +UI_TRAINING_TIMEOUT = 400
++
++ZEN_UI_ONLY = bool(os.environ.get("ZEN_PGO_UI_ONLY"))
  
  PATH_MAPPINGS = {
      "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",
-@@ -218,6 +226,49 @@ if __name__ == "__main__":
+@@ -139,9 +150,10 @@ if __name__ == "__main__":
+     locations = ServerLocations()
+     locations.add_host(host="127.0.0.1", port=PORT, options="primary,privileged")
+ 
+-    old_profraw_files = glob.glob("*.profraw")
+-    for f in old_profraw_files:
+-        os.remove(f)
++    if not ZEN_UI_ONLY:
++        old_profraw_files = glob.glob("*.profraw")
++        for f in old_profraw_files:
++            os.remove(f)
+ 
+     with TemporaryDirectory() as profilePath:
+         # TODO: refactor this into mozprofile
+@@ -218,6 +230,56 @@ if __name__ == "__main__":
              get_crashreports(profilePath, name="Profile initialization")
              sys.exit(ret)
  
-+        ui_log = os.path.join(
-+            env.get("UPLOAD_PATH", os.getcwd()), "profile-run-ui.log"
-+        )
-+        training_urls = [
-+            "http://localhost:%d/blueprint/sample.html" % PORT,
-+            "http://localhost:%d/blueprint/elements.html" % PORT,
-+            "http://localhost:%d/blueprint/grid.html" % PORT,
-+            "http://localhost:%d/blueprint/forms.html" % PORT,
-+        ]
-+        ui_env = env.copy()
-+        ui_env["ZEN_PGO_UI_TRAINING"] = "1"
-+        ui_env["ZEN_PGO_UI_TRAINING_URLS"] = ",".join(training_urls)
-+        runner = FirefoxRunner(
-+            profile=profile,
-+            binary=binary,
-+            cmdargs=[training_urls[0]],
-+            env=ui_env,
-+            process_args=dict(process_args, logfile=ui_log),
-+        )
-+        print("Starting Zen UI training run on %s" % training_urls[0], flush=True)
-+        runner.start(debug_args=debug_args, interactive=interactive)
-+        ret = runner.wait(timeout=UI_TRAINING_TIMEOUT)
-+        print("Zen UI training output (%s):" % ui_log, flush=True)
-+        try:
-+            with open(ui_log) as f:
-+                print(f.read(), flush=True)
-+        except OSError as e:
-+            print("could not be read: %s" % e, flush=True)
-+        if ret is None:
-+            print(
-+                "Zen UI training did not quit within %ds, killing it"
-+                % UI_TRAINING_TIMEOUT
++        if ZEN_UI_ONLY:
++            ui_log = os.path.join(
++                env.get("UPLOAD_PATH", os.getcwd()), "profile-run-ui.log"
 +            )
-+            runner.stop()
-+        elif ret:
-+            print("Firefox exited with code %d during Zen UI training" % ret)
++            training_urls = [
++                "http://localhost:%d/blueprint/sample.html" % PORT,
++                "http://localhost:%d/blueprint/elements.html" % PORT,
++                "http://localhost:%d/blueprint/grid.html" % PORT,
++                "http://localhost:%d/blueprint/forms.html" % PORT,
++            ]
++            ui_env = env.copy()
++            ui_env["ZEN_PGO_UI_TRAINING"] = "1"
++            ui_env["ZEN_PGO_UI_TRAINING_URLS"] = ",".join(training_urls)
++            runner = FirefoxRunner(
++                profile=profile,
++                binary=binary,
++                cmdargs=[training_urls[0]],
++                env=ui_env,
++                process_args=dict(process_args, logfile=ui_log),
++            )
++            print(
++                "Starting Zen UI training run on %s" % training_urls[0], flush=True
++            )
++            runner.start(debug_args=debug_args, interactive=interactive)
++            ret = runner.wait(timeout=UI_TRAINING_TIMEOUT)
++            print("Zen UI training output (%s):" % ui_log, flush=True)
++            try:
++                with open(ui_log) as f:
++                    print(f.read(), flush=True)
++            except OSError as e:
++                print("could not be read: %s" % e, flush=True)
 +            sp3_httpd.stop()
 +            if has_extended_corpus:
 +                js3_httpd.stop()
 +            httpd.stop()
-+            get_crashreports(profilePath, name="Zen UI training run")
-+            sys.exit(ret)
++            if ret is None:
++                print(
++                    "Zen UI training did not quit within %ds, killing it"
++                    % UI_TRAINING_TIMEOUT,
++                    flush=True,
++                )
++                runner.stop()
++            elif ret:
++                print(
++                    "Firefox exited with code %d during Zen UI training" % ret,
++                    flush=True,
++                )
++                get_crashreports(profilePath, name="Zen UI training run")
++                sys.exit(ret)
 +
          jarlog = os.getenv("JARLOG_FILE")
          if jarlog:
              env["MOZ_JAR_LOG_FILE"] = os.path.abspath(jarlog)
-@@ -259,7 +310,7 @@ if __name__ == "__main__":
+@@ -240,26 +302,31 @@ if __name__ == "__main__":
+             env=env,
+             process_args=process_args,
+         )
+-        runner.start(debug_args=debug_args, interactive=interactive)
+-        ret = runner.wait()
+-        sp3_httpd.stop()
+-        if has_extended_corpus:
+-            js3_httpd.stop()
+-        httpd.stop()
+-        if ret:
+-            print("Firefox exited with code %d during profiling" % ret)
+-            logfile = process_args.get("logfile")
+-            if logfile:
+-                print("Firefox output (%s):" % logfile)
+-                with open(logfile) as f:
+-                    print(f.read())
+-            get_crashreports(profilePath, name="Profiling run")
+-            sys.exit(ret)
++        corpus_seconds = 0
++        if not ZEN_UI_ONLY:
++            started = time.monotonic()
++            runner.start(debug_args=debug_args, interactive=interactive)
++            ret = runner.wait()
++            corpus_seconds = time.monotonic() - started
++            sp3_httpd.stop()
++            if has_extended_corpus:
++                js3_httpd.stop()
++            httpd.stop()
++            print("corpus run took %ds" % corpus_seconds, flush=True)
++            if ret:
++                print("Firefox exited with code %d during profiling" % ret)
++                logfile = process_args.get("logfile")
++                if logfile:
++                    print("Firefox output (%s):" % logfile)
++                    with open(logfile) as f:
++                        print(f.read())
++                get_crashreports(profilePath, name="Profiling run")
++                sys.exit(ret)
+ 
          if "UPLOAD_PATH" in env:
              should_err = False
              print("Verify log for LLVM Profile Error")
@@ -78,7 +148,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..61b0395cf112830f0daf25b7417b6bf9
                  log = os.path.join(env["UPLOAD_PATH"], f"profile-run-{n}.log")
                  with open(log) as f:
                      for line in f.readlines():
-@@ -288,6 +339,7 @@ if __name__ == "__main__":
+@@ -288,6 +355,7 @@ if __name__ == "__main__":
                  )
                  sys.exit(1)
  

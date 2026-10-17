@@ -12,6 +12,7 @@ import { ZenLibraryDragAndDrop } from "moz-src:///zen/library/ZenLibraryDragAndD
 
 const GRADIENT_TOPIC = "zen-space-gradient-update";
 const SIZING_FALLBACK_MS = 600;
+const PLUS_BUTTON_WIDTH_PX = 50;
 const SCROLL_EDGE_PX = 48;
 const SCROLL_STEP_PX = 12;
 
@@ -89,6 +90,8 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   /** @type {Set<string>|null} The spaces to rebuild, or null for every card */
   #pendingSpaces = new Set();
   #resizeObserver = new ResizeObserver(() => this.#updateLibraryWidth());
+  /** @type {IntersectionObserver?} Fills a card once it is in view */
+  #cardObserver = null;
   #onScroll = event => {
     if (event.target.classList.contains("zen-library-space-body")) {
       this.#updateScrollBorders(event.target);
@@ -173,7 +176,8 @@ export class ZenLibrarySpacesSection extends MozLitElement {
 
   updated(changedProperties) {
     super.updated(changedProperties);
-    this.#fillStrips();
+    this.#fillStrips(false, null, this.#activeCards());
+    this.#watchCards();
     this.#updateLibraryWidth();
     for (const card of this.#cards) {
       this.#updateScrollBorders(card.querySelector(".zen-library-space-body"));
@@ -195,6 +199,59 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     this.library?.style.removeProperty("--zen-library-content-width");
   }
 
+  onLibraryClosing() {
+    this.#cardObserver?.disconnect();
+    for (const card of this.#cards) {
+      card.querySelector(".zen-library-space-tabs").replaceChildren();
+    }
+    this.#pendingSpaces = new Set();
+    clearTimeout(this.#refreshTimer);
+    this.#refreshTimer = null;
+  }
+
+  onLibraryOpening() {
+    // Every row of a card is a tab or a folder of its own, built and connected
+    // like any other, so building every card of every space is what the open
+    // was left waiting for. Only the space being looked at is built up front.
+    this.#fillStrips(false, null, this.#activeCards());
+    this.#watchCards();
+  }
+
+  /**
+   * @returns {Element[]} The card of the space in view, the one worth having
+   *   ready before the library has even finished opening
+   */
+  #activeCards() {
+    const active = gZenWorkspaces.activeWorkspace;
+    return this.#cards.filter(card => card.dataset.uuid === active);
+  }
+
+  /**
+   * Builds each of the other cards as it comes into view, which for most of
+   * them is never: the cards sit in a strip that scrolls sideways.
+   */
+  #watchCards() {
+    const list = this.querySelector(".zen-library-spaces");
+    if (!list) {
+      return;
+    }
+    this.#cardObserver ??= new IntersectionObserver(
+      entries => {
+        const coming = entries
+          .filter(entry => entry.isIntersecting)
+          .map(entry => entry.target);
+        if (coming.length) {
+          this.#fillStrips(false, null, coming);
+        }
+      },
+      // Enough that a card is ready by the time it is scrolled to.
+      { root: list, rootMargin: "300px" }
+    );
+    for (const card of this.#cards) {
+      this.#cardObserver.observe(card);
+    }
+  }
+
   #updateLibraryWidth() {
     const side = this.library?.querySelector("#zen-library-side");
     const list = this.querySelector(".zen-library-spaces");
@@ -202,7 +259,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       return;
     }
     const sideWidth = window.windowUtils.getBoundsWithoutFlushing(side).width;
-    const width = `${sideWidth + this.#cardsWidth(list)}px`;
+    const width = `${sideWidth + this.#cardsWidth(list) + this.#plusButtonWidth()}px`;
     if (
       this.library.style.getPropertyValue("--zen-library-content-width") ===
       width
@@ -319,13 +376,23 @@ export class ZenLibrarySpacesSection extends MozLitElement {
    *   fill in cards that have none yet
    * @param {Set<string>|null} uuids - When rebuilding, limit to these spaces.
    */
-  #fillStrips(rebuild = false, uuids = null) {
-    for (const card of this.#cards) {
+  /**
+   * @param {boolean} [rebuild] - Throw away what a card holds and build it
+   *   again, in place of leaving a card that is already built alone
+   * @param {Set<string>?} [uuids] - The spaces to build, or every one of them
+   * @param {Element[]} [cards] - The cards to build, where only some of them
+   *   are worth the work
+   */
+  #fillStrips(rebuild = false, uuids = null, cards = this.#cards) {
+    for (const card of cards) {
       if (rebuild && uuids && !uuids.has(card.dataset.uuid)) {
         continue;
       }
       const strip = card.querySelector(".zen-library-space-tabs");
       if (!rebuild && strip.childElementCount) {
+        continue;
+      }
+      if (rebuild && !strip.childElementCount) {
         continue;
       }
       const before = rebuild ? this.#rowPositions(strip) : null;
@@ -359,6 +426,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #fillGroups() {
     while (this.#pendingGroups.length) {
       const { copy, inner } = this.#pendingGroups.shift();
+      this.#copyFolderIcon(copy);
       for (const child of inner.children) {
         if (!child.classList.contains("zen-tab-group-start")) {
           this.#appendCopy(copy, child);
@@ -436,6 +504,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #appendCopy(container, node) {
     // A closing tab stays in the strip through its animation, but is gone.
     if (
+      !container ||
       node.nodeType !== Node.ELEMENT_NODE ||
       node.hasAttribute("hidden") ||
       node.closing
@@ -455,6 +524,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       container.appendChild(copy);
       this.#realElements.set(copy, node);
       if (node.glanceTab) {
+        copy.initialize?.();
         this.#appendCopy(copy.querySelector(".tab-content"), node.glanceTab);
       }
       return;
@@ -467,13 +537,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       }
       container.appendChild(copy);
       this.#realElements.set(copy, node);
-      const icon = copy.querySelector(".tab-group-folder-icon");
-      const realIcon = node.querySelector(".tab-group-folder-icon");
-      if (icon && realIcon) {
-        icon.replaceChildren(
-          ...[...realIcon.children].map(child => child.cloneNode(true))
-        );
-      }
+      this.#copyFolderIcon(copy);
       // A group empties itself and builds its own scaffolding the moment it
       // joins the document, so its rows are put in afterwards.
       this.#pendingGroups.push({
@@ -496,6 +560,18 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     }
   }
 
+  #copyFolderIcon(copy) {
+    const icon = copy.querySelector(".tab-group-folder-icon");
+    const realIcon = this.#realElements
+      .get(copy)
+      ?.querySelector(".tab-group-folder-icon");
+    if (icon && realIcon) {
+      icon.replaceChildren(
+        ...[...realIcon.children].map(child => child.cloneNode(true))
+      );
+    }
+  }
+
   #containEvent = event => {
     event.stopPropagation();
   };
@@ -505,33 +581,56 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     capture: true,
   };
 
-  #onStripClick = event => {
-    const label = event.target.closest(".tab-group-label-container");
-    if (label) {
-      const copy = label.closest(GROUP_TAGS.join());
-      const group = this.#realElements.get(copy);
-      if (group) {
+  #onStripClick = {
+    capture: true,
+    handleEvent: event => {
+      const label = event.target.closest(".tab-group-label-container");
+      if (label) {
+        if (event.target.closest(".tab-reset-button")) {
+          // Unloading a copy's tabs would mean nothing; it is left alone.
+          event.stopPropagation();
+          return;
+        }
+        const copy = label.closest(GROUP_TAGS.join());
+        const group = this.#realElements.get(copy);
+        if (!group) {
+          return;
+        }
         event.stopPropagation();
+        event.preventDefault();
+        copy.collapsed = !copy.collapsed;
         this.#collapsedCopies.set(group, copy.collapsed);
+        gZenFolders.updateFolderIcon(copy);
         if (copy.collapsed) {
           gZenFolders.animateCollapse(copy);
         } else {
           gZenFolders.animateExpand(copy);
         }
+        return;
       }
-      return;
-    }
-    const tab = this.#realElements.get(event.target.closest("tab"));
-    if (!tab) {
-      return;
-    }
-    event.stopPropagation();
-    if (event.target.closest(".tab-close-button")) {
-      gBrowser.removeTab(tab, { animate: true });
-      return;
-    }
-    gBrowser.selectedTab = tab;
-    this.library?.constructor.toggle();
+      const tab = this.#realElements.get(event.target.closest("tab"));
+      if (!tab) {
+        return;
+      }
+      event.stopPropagation();
+      event.preventDefault();
+      if (event.target.closest(".tab-close-button")) {
+        gZenVerticalTabsManager.animateItemClose(event.target.closest("tab"));
+        gBrowser.removeTab(tab, { animate: true });
+        return;
+      }
+      gBrowser.selectedTab = tab;
+      this.library?.constructor.toggle();
+    },
+  };
+
+  #containInput = {
+    capture: true,
+    handleEvent: event => {
+      if (event.target.closest(`tab, ${GROUP_TAGS.join()}`)) {
+        event.stopPropagation();
+      }
+    },
   };
 
   /**
@@ -627,6 +726,10 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           orient="vertical"
           expanded="true"
           @click=${this.#onStripClick}
+          @mousedown=${this.#containInput}
+          @mouseup=${this.#containInput}
+          @dblclick=${this.#containInput}
+          @auxclick=${this.#containInput}
           @contextmenu=${this.#onStripContextMenu}
           @mouseover=${this.#containHover}
           @mouseout=${this.#containHover}
@@ -824,7 +927,9 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     let content = "";
     if (hasIcon) {
       const icon = gZenWorkspaces.getWorkspaceIcon(workspace);
-      content = icon.endsWith(".svg") ? html`<img src=${icon} alt="" />` : icon;
+      content = icon.endsWith(".svg")
+        ? html`<img src=${icon} draggable="false" alt="" />`
+        : icon;
     }
     return html`
       <button
@@ -880,6 +985,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
             <img
               class="toolbarbutton-icon"
               src="chrome://browser/skin/zen-icons/paintbrush-fill.svg"
+              draggable="false"
               alt=""
             />
           </toolbarbutton>
@@ -896,7 +1002,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           >
             <img
               class="toolbarbutton-icon"
-              src="chrome://browser/skin/zen-icons/drag-indicator.svg"
+              src="chrome://browser/skin/zen-icons/move-cursor.svg"
               draggable="false"
               alt=""
             />
@@ -910,9 +1016,72 @@ export class ZenLibrarySpacesSection extends MozLitElement {
             <img
               class="toolbarbutton-icon"
               src="chrome://global/skin/icons/more.svg"
+              draggable="false"
               alt=""
             />
           </toolbarbutton>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * The add button sits in the strip after the last card, so the library has to
+   * be wide enough for it and for the gap it keeps from that card.
+   *
+   * @returns {number} The width the button needs in px, its gap included
+   */
+  #plusButtonWidth() {
+    const list = this.querySelector(".zen-library-spaces");
+    const button = this.querySelector(".zen-swipe-add-space-container");
+    if (!list || !button) {
+      return PLUS_BUTTON_WIDTH_PX;
+    }
+    const { width } = window.windowUtils.getBoundsWithoutFlushing(button);
+    const gap = parseFloat(window.getComputedStyle(list).columnGap) || 0;
+    return (width || PLUS_BUTTON_WIDTH_PX) + gap;
+  }
+
+  #plusButtonHover = {
+    handleEvent: event => {
+      const badge = event.target.closest(".zen-swipe-add-space-container");
+      const isOver = event.type === "mouseover";
+
+      badge.querySelector(
+        ".zen-swipe-add-space-progress-arc"
+      ).style.strokeDasharray = isOver ? "100 100" : "0 100";
+
+      if (isOver) {
+        badge.setAttribute("readytoadd", "true");
+      } else {
+        badge.removeAttribute("readytoadd");
+      }
+    },
+    capture: true,
+  };
+
+  #onPlusButtonClick() {
+    gZenWorkspaces.openWorkspaceCreation();
+  }
+
+  #renderPlusButton() {
+    return html`
+      <div class="zen-swipe-add-space-container space-section">
+        <div
+          class="zen-swipe-add-space-progress-badge no-squircles"
+          @click=${this.#onPlusButtonClick}
+          @mouseover=${this.#plusButtonHover}
+          @mouseout=${this.#plusButtonHover}
+        >
+          <svg class="zen-swipe-add-space-progress-ring" viewBox="0 0 30 30">
+            <circle
+              class="zen-swipe-add-space-progress-arc"
+              cx="15"
+              cy="15"
+              pathLength="100"
+            ></circle>
+          </svg>
+          <span class="zen-swipe-add-space-icon"></span>
         </div>
       </div>
     `;
@@ -926,6 +1095,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
           workspace => workspace.uuid,
           workspace => this.#renderSpace(workspace)
         )}
+        ${this.#renderPlusButton()}
       </div>
     `;
   }

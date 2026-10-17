@@ -246,34 +246,38 @@ var gZenMarketplaceManager = {
     successBox.hidden = true;
     errorBox.hidden = true;
 
-    let temporalAnchor, temporalUrl;
     try {
       const mods = await gZenMods.getMods();
       const modsJson = JSON.stringify(mods, null, 2);
-      const blob = new Blob([modsJson], { type: "application/json" });
 
-      temporalUrl = URL.createObjectURL(blob);
-      // Creating a link to download the JSON file
-      temporalAnchor = document.createElement("a");
-      temporalAnchor.href = temporalUrl;
-      temporalAnchor.download = "zen-mods-export.json";
+      const nsIFilePicker = Ci.nsIFilePicker;
+      const fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
 
-      document.body.appendChild(temporalAnchor);
-      temporalAnchor.click();
-      temporalAnchor.remove();
+      fp.init(
+        window.browsingContext,
+        "Export Zen Mods",
+        nsIFilePicker.modeSave
+      );
+      fp.defaultString = "zen-mods-export";
+      fp.defaultExtension = "json";
+      fp.appendFilter("JSON Files", "*.json");
+      fp.appendFilters(nsIFilePicker.filterAll);
 
-      successBox.hidden = false;
+      const result = await new Promise(resolve => {
+        fp.open(resolve);
+      });
+
+      if (
+        (result === nsIFilePicker.returnOK ||
+          result === nsIFilePicker.returnReplace) &&
+        fp.file
+      ) {
+        await IOUtils.writeUTF8(fp.file.path, modsJson);
+        successBox.hidden = false;
+      }
     } catch (error) {
       console.error("[ZenSettings:ZenMods]: Error while exporting mods:", error);
       errorBox.hidden = false;
-    }
-
-    if (temporalAnchor) {
-      temporalAnchor.remove();
-    }
-
-    if (temporalUrl) {
-      URL.revokeObjectURL(temporalUrl);
     }
   },
 

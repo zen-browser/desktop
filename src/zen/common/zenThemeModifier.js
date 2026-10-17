@@ -13,6 +13,18 @@
   const { AppConstants } = ChromeUtils.importESModule(
     "resource://gre/modules/AppConstants.sys.mjs"
   );
+  const { XPCOMUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/XPCOMUtils.sys.mjs"
+  );
+
+  const lazy = {};
+
+  XPCOMUtils.defineLazyPreferenceGetter(
+    lazy,
+    "elementSeparation",
+    "zen.theme.content-element-separation",
+    8
+  );
 
   const kZenThemePrefsList = [
     "zen.theme.accent-color",
@@ -183,10 +195,7 @@
     },
 
     get elementSeparation() {
-      return Math.min(
-        Services.prefs.getIntPref("zen.theme.content-element-separation"),
-        kZenMaxElementSeparation
-      );
+      return Math.min(lazy.elementSeparation, kZenMaxElementSeparation);
     },
 
     /**

@@ -95,7 +95,10 @@ add_task(async function test_fetch_items_url_complex_options() {
     assignedMe: true,
     includeDrafts: false,
     reviewRequested: true,
+    type: "pull-requests",
   });
+
+  instance.state.isJsonApi = true;
 
   instance.fetch.resolves({
     status: 200,
@@ -133,14 +136,14 @@ add_task(async function test_html_parsing_logic() {
       <body>
         <ul>
           <li class="ListItem-module__listItem__wBJcm">
-            <h4><a data-testid="issue-listitem-title-link" href="https://github.com/mozilla/zen/issues/101"><span><span>Fix the login bug</span></span></a></h4>
+            <h4><a data-testid="issue-listitem-title-link" href="https://github.com/zen-browser/desktop/issues/101"><span><span>Fix the login bug</span></span></a></h4>
             <div class="Description-module__container__hpqJz">
               <span>zen-browser/desktop#101</span>
               <span> · <button data-testid="author-filter-link"><span class="prc-VisuallyHidden-VisuallyHidden-Q0qSB">Filter by author </span>UserA</button></span>
             </div>
           </li>
           <li class="ListItem-module__listItem__wBJcm">
-            <h4><a data-testid="issue-listitem-title-link" href="https://github.com/mozilla/zen/pull/102"><span><span>Add dark mode</span></span></a></h4>
+            <h4><a data-testid="issue-listitem-title-link" href="https://github.com/zen-browser/desktop/pull/102"><span><span>Add dark mode</span></span></a></h4>
             <div class="Description-module__container__hpqJz">
               <span>zen-browser/desktop#102</span>
               <span> · <button data-testid="author-filter-link"><span class="prc-VisuallyHidden-VisuallyHidden-Q0qSB">Filter by author </span>UserB</button></span>
@@ -162,7 +165,7 @@ add_task(async function test_html_parsing_logic() {
 
   Assert.equal(items[0].title, "Fix the login bug");
   Assert.equal(items[0].subtitle, "UserA");
-  Assert.equal(items[0].id, "mozilla/zen#101");
+  Assert.equal(items[0].id, "zen-browser/desktop#101");
   Assert.equal(
     items[0].url,
     "https://github.com/zen-browser/desktop/issues/101"
@@ -170,7 +173,7 @@ add_task(async function test_html_parsing_logic() {
 
   Assert.equal(items[1].title, "Add dark mode");
   Assert.equal(items[1].subtitle, "UserB");
-  Assert.equal(items[1].id, "mozilla/zen#102");
+  Assert.equal(items[1].id, "zen-browser/desktop#102");
   Assert.equal(items[1].url, "https://github.com/zen-browser/desktop/pull/102");
 
   sandbox.restore();
@@ -240,6 +243,36 @@ add_task(async function test_404_returns_no_auth() {
     "zen-live-folder-github-no-auth",
     "Should return the no-auth error id"
   );
+
+  sandbox.restore();
+});
+
+add_task(async function test_server_error_returns_failed_fetch() {
+  info("should treat a rate limit or server error as a failed fetch");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    authorMe: true,
+  });
+  instance.state.repos = new Set(["zen-browser/desktop"]);
+
+  for (const status of [429, 500, 503]) {
+    instance.fetch.resolves({ status, text: "" });
+
+    const result = await instance.fetchItems();
+
+    Assert.equal(
+      result,
+      "zen-live-folder-failed-fetch",
+      `Should return a fetch error for status ${status}, not an empty list`
+    );
+    Assert.deepEqual(
+      [...instance.state.repos],
+      ["zen-browser/desktop"],
+      "Should keep the known repositories"
+    );
+  }
 
   sandbox.restore();
 });

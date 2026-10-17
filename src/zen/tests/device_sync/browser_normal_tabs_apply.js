@@ -127,3 +127,33 @@ add_task(async function test_ApplyPinStateTransition() {
   BrowserTestUtils.removeTab(tab);
   await SpecialPowers.popPrefEnv();
 });
+
+add_task(async function test_ApplySyncsTabLabel() {
+  await SpecialPowers.pushPrefEnv({ set: [[NORMAL_TABS_PREF, true]] });
+  const id = "test-spaces-sync-label";
+  let failed = await ZenSpacesSyncApplier.applyBatch([
+    tabRecord(id, { pinned: false, title: "Remote title" }),
+  ]);
+  Assert.deepEqual(failed, [], "The record should apply cleanly");
+  const tab = document.getElementById(id);
+  Assert.ok(!tab.linkedPanel, "The synced tab should stay unloaded");
+  Assert.equal(
+    tab.label,
+    "Remote title",
+    "The synced title should be the unloaded tab's label"
+  );
+
+  failed = await ZenSpacesSyncApplier.applyBatch([
+    tabRecord(id, { pinned: false, title: "Retitled remotely" }),
+  ]);
+  Assert.deepEqual(failed, [], "The retitling record should apply cleanly");
+  Assert.equal(
+    tab.label,
+    "Retitled remotely",
+    "A later title change should reach the label"
+  );
+
+  ZenSpacesSyncModel.noteApplied(id, null);
+  BrowserTestUtils.removeTab(tab);
+  await SpecialPowers.popPrefEnv();
+});

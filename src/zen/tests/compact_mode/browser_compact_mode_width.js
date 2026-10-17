@@ -33,7 +33,10 @@ async function testSidebarWidth() {
     if (hasRan) {
       // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       setTimeout(() => {
-        gZenCompactModeManager.removeEventListener(onCompactChanged);
+        window.removeEventListener(
+          "ZenCompactMode:LayoutUpdate",
+          onCompactChanged
+        );
         resolvePromise();
       }, 500);
       return;
@@ -53,7 +56,7 @@ async function testSidebarWidth() {
     }, 500);
   };
 
-  gZenCompactModeManager.addEventListener(onCompactChanged);
+  window.addEventListener("ZenCompactMode:LayoutUpdate", onCompactChanged);
 
   gZenCompactModeManager.preference = true;
   await promise;

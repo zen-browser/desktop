@@ -10,9 +10,18 @@ let lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
-  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
-  mediaKindOf: "moz-src:///zen/library/ZenLibraryFileTypes.sys.mjs",
+  canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  extensionOf: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  MEDIA_EXTENSIONS: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  mediaKindOf: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
 });
+
+XPCOMUtils.defineLazyServiceGetter(
+  lazy,
+  "zenLibraryFiles",
+  "@mozilla.org/zen/library-files;1",
+  Ci.nsIZenLibraryFiles
+);
 
 const FILE_MIME = "application/x-moz-file";
 const HTML_NS = "http://www.w3.org/1999/xhtml";
@@ -50,6 +59,19 @@ const MAX_ITEMS = 300;
 export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
   static id = "media";
   static label = "library-media-section-title";
+
+  /** @returns {object[]} What a right click on the media tab offers */
+  static get tabMenu() {
+    if (!Services.prefs.getBoolPref(ENABLED_PREF, false)) {
+      return [];
+    }
+    return [
+      {
+        l10nId: "library-media-turn-off",
+        command: () => Services.prefs.setBoolPref(ENABLED_PREF, false),
+      },
+    ];
+  }
 
   static properties = {
     items: { state: true },
@@ -107,8 +129,11 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     this.requestUpdate();
   }
 
+  #enabledObserver = { observe: () => this.#onEnabledChanged() };
+
   connectedCallback() {
     super.connectedCallback();
+    Services.prefs.addObserver(ENABLED_PREF, this.#enabledObserver);
     if (!this.#enabled) {
       this.loading = false;
       return;
@@ -125,18 +150,41 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
 
   #enable() {
     Services.prefs.setBoolPref(ENABLED_PREF, true);
-    this.loading = true;
-    this.requestUpdate();
-    this.#scan();
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  /**
+   * Looking through the folders was just agreed to, or taken back, which can
+   * happen from the tab's menu, from settings or from another window.
+   */
+  #onEnabledChanged() {
+    this.#stopScan();
+    if (this.#enabled) {
+      this.loading = true;
+      this.requestUpdate();
+      this.#scan();
+      return;
+    }
+    this.#preview?.destroy();
+    this.#preview = null;
+    this.items = [];
+    this.#scanned = [];
+    this.loading = false;
+    this.requestUpdate();
+  }
+
+  /** Forgets any scan under way, so that its results are dropped. */
+  #stopScan() {
     this.#scanId++;
     if (this.#scanHandle) {
       window.cancelIdleCallback(this.#scanHandle);
       this.#scanHandle = null;
     }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    Services.prefs.removeObserver(ENABLED_PREF, this.#enabledObserver);
+    this.#stopScan();
     this.#thumbObserver?.disconnect();
     this.#thumbObserver = null;
     this.#preview?.destroy();
@@ -183,92 +231,58 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     const scanId = ++this.#scanId;
     this.#scanHandle = null;
     this.loading = true;
-    const found = [];
-    const budget = { folders: MAX_FOLDERS };
     this.#scanned = this.#folders();
-    for (const folder of this.#scanned) {
-      budget.root = folder;
-      await this.#walk(folder, 0, found, budget);
-      if (scanId !== this.#scanId) {
-        return;
-      }
-      // Let the window breathe between folders.
-      await new Promise(resolve =>
-        window.requestIdleCallback(resolve, { timeout: 100 })
-      );
+    const files = await this.#scanFolders(this.#scanned);
+    if (scanId !== this.#scanId) {
+      return;
     }
-    found.sort((a, b) => b.modified - a.modified);
-    this.items = found.slice(0, MAX_ITEMS);
+    const found = [];
+    for (const file of files) {
+      const fileName = PathUtils.filename(file.path);
+      const kind = kindFor(fileName);
+      if (!kind) {
+        continue;
+      }
+      found.push({
+        folder: file.root,
+        path: file.path,
+        name: fileName,
+        extension: lazy.extensionOf(fileName),
+        kind,
+        modified: file.lastModified,
+        size: file.size,
+        cloudPlaceholder: file.cloudPlaceholder,
+        url: PathUtils.toFileURI(file.path),
+      });
+    }
+    this.items = found;
     this.loading = false;
   }
 
   /**
-   * @param {string} path - Folder to look through
-   * @param {number} depth - How far below the named folder this is
-   * @param {object[]} found - Collects the media
-   * @param {object} budget - Caps how many folders one scan opens
+   * Hands the folders to the scanner, which goes through them on a thread
+   * of its own: a folder listing already carries the dates and sizes this
+   * wants, so there is nothing left to ask about each file.
+   *
+   * @param {string[]} roots - The folders to look through
+   * @returns {Promise<object[]>} What it found, newest first
    */
-  async #walk(path, depth, found, budget) {
-    if (depth > MAX_DEPTH || budget.folders <= 0) {
-      return;
-    }
-    budget.folders--;
-    let children = [];
-    try {
-      children = await IOUtils.getChildren(path);
-    } catch (error) {
-      return;
-    }
-    const candidates = [];
-    for (const child of children) {
-      const fileName = PathUtils.filename(child);
-      if (fileName.startsWith(".")) {
-        continue;
+  #scanFolders(roots) {
+    return new Promise(resolve => {
+      try {
+        lazy.zenLibraryFiles.scanMedia(
+          roots,
+          lazy.MEDIA_EXTENSIONS,
+          MAX_DEPTH,
+          MAX_FOLDERS,
+          MAX_ITEMS,
+          resolve
+        );
+      } catch (error) {
+        console.error("ZenLibraryMediaSection: the scan went nowhere", error);
+        resolve([]);
       }
-      const dot = fileName.lastIndexOf(".");
-      const extension = dot > 0 ? fileName.slice(dot + 1).toLowerCase() : "";
-      const kind = kindFor(fileName);
-      // A name with a suffix that is not media is a file to pass over, or a
-      // bundle on macOS. Either way there is nothing to ask the disk about.
-      if (!kind && extension) {
-        continue;
-      }
-      candidates.push({ child, fileName, extension, kind });
-    }
-    const stats = await Promise.all(
-      candidates.map(candidate =>
-        IOUtils.stat(candidate.child).catch(() => null)
-      )
-    );
-    const folders = [];
-    for (const [index, candidate] of candidates.entries()) {
-      const info = stats[index];
-      if (!info) {
-        continue;
-      }
-      if (info.type === "directory") {
-        if (!candidate.extension) {
-          folders.push(candidate.child);
-        }
-        continue;
-      }
-      if (!candidate.kind) {
-        continue;
-      }
-      found.push({
-        folder: budget.root,
-        path: candidate.child,
-        name: candidate.fileName,
-        extension: candidate.extension,
-        kind: candidate.kind,
-        modified: info.lastModified,
-        size: info.size,
-        url: PathUtils.toFileURI(candidate.child),
-      });
-    }
-    for (const folder of folders) {
-      await this.#walk(folder, depth + 1, found, budget);
-    }
+    });
   }
 
   // Interaction
@@ -344,7 +358,8 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
       frame.appendChild(element);
       return element;
     };
-    if (item.kind === "video") {
+    const kind = item.cloudPlaceholder ? "file" : item.kind;
+    if (kind === "video") {
       const video = make("video");
       video.className = "zen-library-media-thumb";
       video.src = `${item.url}#t=0.1`;
@@ -358,12 +373,13 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
       return;
     }
     const image = make("img");
+    image.decoding = "async";
     image.className =
-      item.kind === "image"
+      kind === "image"
         ? "zen-library-media-thumb"
         : "zen-library-media-thumb zen-library-media-file";
     image.src =
-      item.kind === "image" ? item.url : `moz-icon://${item.name}?size=128`;
+      kind === "image" ? item.url : `moz-icon://${item.name}?size=128`;
     image.alt = "";
   }
 

@@ -20,11 +20,8 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [popup-window]) {
-  #navigator-toolbox,
-  #zen-sidebar-splitter {
-    visibility: collapse;
-  }
+:root:is([inDOMFullscreen="true"], [popup-window]) #navigator-toolbox {
+  visibility: collapse;
 }
 
 :root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
@@ -45,7 +42,7 @@ body,
   overflow: clip;
 
   isolation: isolate;
-  contain: content;
+  contain: size style;
 
   &::after,
   &::before {
@@ -83,7 +80,7 @@ body,
     }
   }
 
-  :root:not([animating-background="true"]) &::before {
+  &:not([animating-background])::before {
     transition: background-color var(--inactive-window-transition);
   }
 
@@ -100,7 +97,7 @@ body,
     display: flex;
     opacity: var(--zen-grainy-background-opacity, 0);
 
-    &:not([swipe-gesture="true"]) {
+    &:not([swipe-gesture]) {
       /* note: Keep in sync with kGlobalAnimationDuration */
       transition: opacity 0.2s ease-in-out;
     }
@@ -110,15 +107,6 @@ body,
 #tabbrowser-arrowscrollbox[swipe-gesture] {
   /* See gh-13703 for rationale. */
   pointer-events: none;
-}
-
-#zen-browser-background {
-  /*
-   *  Important: We set the color to `AccentColor` so we can
-   *  Compute the stylings and get the native accent color.
-   *  Please, do not remove this.
-   */
-  color: AccentColor;
 }
 
 #sidebar-box {
@@ -255,6 +243,7 @@ body,
   border: none;
   cursor: ew-resize;
   z-index: 3;
+  -moz-window-dragging: no-drag;
 
   &:is(.zen-split-view-splitter[orient="vertical"]) {
     /* Bit of a hacky solution, but it works */
@@ -263,29 +252,13 @@ body,
     height: unset;
     cursor: ew-resize;
   }
-
-  &::before {
-    height: 50px;
-    width: 2px;
-    background: var(--button-background-color-primary);
-    border-radius: 2px;
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
-    pointer-events: none;
-  }
-
-  &:hover::before {
-    opacity: 1;
-  }
 }
+
 .zen-split-view-splitter[orient="horizontal"] {
   &::before {
     height: 2px;
     width: 50px;
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-paired-color-tokens */
     background: var(--button-background-color-primary);
     border-radius: 2px;
     content: "";
@@ -318,16 +291,22 @@ body,
 }
 
 #zen-sidebar-splitter {
-  border-radius: 14px;
-  transition:
-    background 0.2s ease-in-out,
-    opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+  border-radius: 4px;
+  background: var(--zen-accent-button-background);
+  height: calc(100% - var(--zen-element-separation) * 2);
+  top: var(--zen-element-separation);
+  width: var(--zen-toolbox-padding);
+  position: absolute;
+  :root:not([zen-right-side="true"]) & {
+    right: 0;
+    left: unset;
+  }
 
-  &:hover {
-    background: var(--zen-primary-color);
-    transition: background 0.2s ease-in-out;
+  &:is(:hover, [zen-resizing="true"]) {
     transition-delay: 0.2s;
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 

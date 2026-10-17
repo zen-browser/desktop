@@ -107,6 +107,12 @@
         "zen.tabs.dnd-switch-space-delay",
         1000
       );
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        "_prefsShowNewTabButtonTop",
+        "zen.view.show-newtab-button-top",
+        true
+      );
 
       ChromeUtils.defineESModuleGetters(
         this,
@@ -648,7 +654,7 @@
         dropBefore = true;
       }
       this._setDragOverGroupColor(colorCode);
-      this._tabbrowserTabs.toggleAttribute("movingtab-addToGroup", colorCode);
+      this._tabbrowserTabs.toggleAttribute("movingtab-addToGroup", !!colorCode);
       this._tabbrowserTabs.toggleAttribute("movingtab-ungroup", !colorCode);
 
       if (
@@ -669,13 +675,30 @@
     }
 
     get #dragShiftableItems() {
+      // This getter is called from the dragover hot path (once per dragover
+      // event), so doing a querySelector + building a new array each time is
+      // wasteful. Cache the result, keyed on the values it was derived from so
+      // that it is invalidated when the active workspace changes mid-drag
+      // (e.g. when dragging a tab over the workspace switcher) or when the
+      // pref is toggled.
+      const workspace = gZenWorkspaces.activeWorkspace;
+      const showNewTabButtonTop = this._prefsShowNewTabButtonTop;
+      const cache = this._dragShiftableItemsCache;
+      if (
+        cache?.workspace === workspace &&
+        cache.showNewTabButtonTop === showNewTabButtonTop
+      ) {
+        return cache.items;
+      }
       const separator = gZenWorkspaces.pinnedTabsContainer.querySelector(
         ".pinned-tabs-container-separator"
       );
       // Make sure to always return the separator at the start of the array
-      return Services.prefs.getBoolPref("zen.view.show-newtab-button-top")
+      const items = showNewTabButtonTop
         ? [separator, gZenWorkspaces.activeWorkspaceElement.newTabButton]
         : [separator];
+      this._dragShiftableItemsCache = { workspace, showNewTabButtonTop, items };
+      return items;
     }
 
     handle_dragover(event) {
@@ -695,9 +718,6 @@
       const padding = Services.prefs.getIntPref(
         "zen.workspaces.dnd-switch-padding"
       );
-      // If we are hovering over the edges of the gNavToolbox or the splitter, we
-      // can change the workspace after a short delay.
-      const splitter = document.getElementById("zen-sidebar-splitter");
       let rect = window.windowUtils.getBoundsWithoutFlushing(gNavToolbox);
       // If we are hovering over the essentials container, we can't change the workspace
       const essentialsContainer = event.target.closest(
@@ -705,13 +725,6 @@
       );
       if (essentialsContainer) {
         return { isNearLeftEdge: false, isNearRightEdge: false };
-      }
-      if (!(
-        gZenCompactModeManager.preference &&
-        gZenCompactModeManager.canHideSidebar
-      )) {
-        rect.width +=
-          window.windowUtils.getBoundsWithoutFlushing(splitter).width;
       }
       const { clientX } = event;
       const isNearLeftEdge =
@@ -879,10 +892,17 @@
         parent.appendChild(indicator);
       }
       indicator.setAttribute("orientation", "horizontal");
-      indicator.style.setProperty("--indicator-left", `${left}px`);
-      indicator.style.setProperty("--indicator-width", `${width}px`);
-      indicator.style.top = `${Math.round(top)}px`;
-      indicator.style.removeProperty("left");
+      const style = indicator.style;
+      const vars = {
+        "--indicator-left": `${left}px`,
+        "--indicator-width": `${width}px`,
+        "--indicator-top": `${Math.round(top)}px`,
+      };
+      for (const [name, value] of Object.entries(vars)) {
+        if (style.getPropertyValue(name) !== value) {
+          style.setProperty(name, value);
+        }
+      }
       return indicator;
     }
 
@@ -896,6 +916,12 @@
       }
 
       const dt = event.dataTransfer;
+      // A dragover can carry something other than a tab, or nothing at all,
+      // and mozGetDataAt throws IndexSizeError for those rather than returning
+      // null. This is the same guard handle_spaceIconDragOver uses.
+      if (!dt.mozItemCount || dt.mozTypesAt(0)[0] !== TAB_DROP_TYPE) {
+        return;
+      }
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (!isTab(draggedTab)) {
         return;
@@ -1209,6 +1235,21 @@
         }
       }
       this._landingElements = landing;
+      // handle_dragend shows these again, but dragend is not guaranteed to
+      // arrive (see gh-8643 in handle_drop), and a synthesized drop has no
+      // drag session to end at all. Whatever happens, a dropped tab must not
+      // stay invisible; any real landing animation is long over by then.
+      if (landing.length) {
+        setTimeout(() => {
+          if (this._landingElements !== landing) {
+            return;
+          }
+          for (const element of landing) {
+            element.style.visibility = "";
+          }
+          delete this._landingElements;
+        }, 1000);
+      }
     }
 
     #handle_dropSwitchSpace(event) {
@@ -1571,7 +1612,7 @@
             (hoveringPeriphery ||
               (showIndicatorUnderNewTabButton &&
                 !(pinnedTabsCount - gBrowser._numZenEssentials))) &&
-            Services.prefs.getBoolPref("zen.view.show-newtab-button-top");
+            this._prefsShowNewTabButtonTop;
           dropElement =
             (useLastPinned
               ? this._tabbrowserTabs.ariaFocusableItems.at(pinnedTabsCount)
@@ -1634,7 +1675,7 @@
       ) {
         this.clearDragOverVisuals();
         dropElement = null;
-        return [dropElement, dropBefore];
+        return [dropBefore, dropElement];
       }
       if (
         isTabGroupLabel(draggedTab) &&
@@ -1646,7 +1687,7 @@
       ) {
         dropElement = null;
         this.clearDragOverVisuals();
-        return [dropElement, dropBefore];
+        return [dropBefore, dropElement];
       }
       if (
         isTab(dropElement) ||
@@ -1662,7 +1703,8 @@
         dropBefore =
           !showIndicatorUnderNewTabButton && this._dropsBefore(event, rect);
         const top = Math.round(dropBefore ? rect.top : rect.top + rect.height);
-        if (gZenPinnedTabManager.dragIndicator.style.top !== `${top}px`) {
+        const indicatorStyle = gZenPinnedTabManager.dragIndicator.style;
+        if (indicatorStyle.getPropertyValue("--indicator-top") !== `${top}px`) {
           shouldPlayHapticFeedback = true;
         }
         this._placeDropIndicator({
@@ -1744,6 +1786,8 @@
           numEssentials
         );
         this._fakeEssentialTab = document.createXULElement("vbox");
+        this._fakeEssentialTab.style.height =
+          "calc(var(--tab-min-height) + var(--tab-margin-block) * 2)";
         this._fakeEssentialTab.elementIndex = numEssentials;
         delete dragData.animDropElementIndex;
         if (!draggedTab.hasAttribute("zen-essential")) {

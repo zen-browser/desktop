@@ -4,10 +4,13 @@
 
 zen-action-toggle-compact-mode = Toggle Compact Mode
 zen-action-open-theme-picker = Open Theme Picker
+zen-action-open-library = Open Library
 zen-action-new-split-view = New Split View
 zen-action-unsplit-view = Expand current view
 zen-action-new-space = New Space
 zen-action-new-folder = New Folder
+zen-action-collapse-all-folders = Collapse All Folders
+zen-action-expand-all-folders = Expand All Folders
 zen-action-copy-current-url = Copy Current URL
 zen-action-settings = Settings
 zen-action-open-private-window = Open Private Window

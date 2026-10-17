@@ -1335,6 +1335,18 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-search-tabs-shortcut"
         )
       );
+      // Add shortcut to toggle the library
+      data.push(
+        new KeyShortcut(
+          "zen-library-toggle",
+          "L",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ alt: true, shift: true }),
+          "cmd_zenToggleLibrary",
+          "zen-library-shortcut-toggle"
+        )
+      );
     }
 
     return data;

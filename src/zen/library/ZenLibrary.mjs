@@ -34,24 +34,24 @@ ChromeUtils.defineESModuleGetters(
 
 const LAST_TAB_PREF = "zen.library.last-tab";
 const CLEANUP_DELAY_MS = 30000;
+const IDLE_CLEANUP_TIMEOUT_MS = 2000;
 
 ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
 
+ChromeUtils.defineLazyGetter(lazy, "toastContainer", function () {
+  return document.getElementById("zen-toast-container");
+});
+
 export class ZenLibrary extends MozLitElement {
   static instance = null;
   static getInstance() {
-    if (!this.instance) {
-      this.instance = new ZenLibrary();
-      this.instance.style.visibility = "collapse";
-      const mountAfter = document.getElementById("navigator-toolbox");
-      mountAfter.after(this.instance);
-    }
+    this.instance ??= document.querySelector("zen-library");
     return this.instance;
   }
 
-  #contentMounted = true;
+  #contentMounted = false;
   #mounted = new Set();
 
   #springControls = null;
@@ -66,10 +66,17 @@ export class ZenLibrary extends MozLitElement {
 
   #progress = 0;
   #isOpen = false;
+  // Where the last request to open or close is heading, which #isOpen only
+  // catches up with once that request has waited for styles and a flush.
+  #target = 0;
+  // Bumped by every request, so one that has been overtaken by a newer one,
+  // or a spring that has been replaced, no longer touches the library.
+  #animation = 0;
   #initialized = false;
 
-  #wrapperGestureControl = null;
-  #gestureControl = null;
+  #wrapperSwipeAttached = false;
+  #tabMenu = null;
+  #tabMenuItems = [];
 
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
@@ -101,25 +108,29 @@ export class ZenLibrary extends MozLitElement {
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
     this.#mounted.add(this.activeTab);
-    this.#hijackFirefoxCommands();
   }
 
   static get isLibraryOpen() {
     const lib = this.getInstance();
-    return lib.#isOpen;
+    return lib?.#isOpen;
   }
 
   static get isLibrarySlightlyOpen() {
     const lib = this.getInstance();
-    return lib.openProgress > 0.001;
+    return lib?.openProgress > 0.001;
   }
 
   static get libraryProgress() {
-    return this.getInstance().openProgress;
+    return this.getInstance()?.openProgress;
   }
 
   static get libraryOnRight() {
-    return this.getInstance().#libraryOnRight;
+    return this.getInstance()?.#libraryOnRight;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("unload", this, { once: true });
   }
 
   set isHidden(value) {
@@ -131,7 +142,6 @@ export class ZenLibrary extends MozLitElement {
     if (this._activeTab === value) {
       return;
     }
-    this.#refreshToolboxWidth();
 
     this._activeTab = value;
     this.#mounted.add(value);
@@ -175,12 +185,16 @@ export class ZenLibrary extends MozLitElement {
         "transform",
         `translateX(calc(${leftAligned} * -100% * (1 - ${value})))`
       );
-      lazy.appContentWrapper?.style.setProperty(
+      lazy.appContentWrapper.style.setProperty(
         "transform",
         `translateX(${value * webOffset}px)`
       );
+      lazy.toastContainer.style.setProperty(
+        "transform",
+        `translateX(${-(value * webOffset)}px)`
+      );
 
-      const toolboxProgress = Math.min(1, value * 1.5);
+      const toolboxProgress = Math.min(1, value * 3);
       if (this.#isCompactMode) {
         if (this.#libraryOnRight) {
           gNavToolbox.style.setProperty(
@@ -236,24 +250,80 @@ export class ZenLibrary extends MozLitElement {
   }
 
   /**
-   * Clears the styles for the library open/close animation
-   * to avoid unecessary layer creation
+   * Right clicking a tab offers what that section has for the whole of what it
+   * lists, as its static `tabMenu` says, and the way back to the library window
+   * Firefox came with.
+   *
+   * @param {MouseEvent} event - The right click on a tab
+   * @param {object} Section - The section the tab stands for
    */
-  #clearStyleProperties() {
-    lazy.appContentWrapper?.style.removeProperty("transform");
-    gNavToolbox?.style.removeProperty("transform");
-    gNavToolbox?.style.removeProperty("opacity");
+  #openTabMenu(event, Section) {
+    const offered = Section.tabMenu ?? [];
+    if (!offered.length) {
+      return;
+    }
+    event.preventDefault();
+    const items = [...offered];
+    if (Section.legacyLibraryView) {
+      items.push({
+        l10nId: "library-open-legacy",
+        separatorBefore: true,
+        command: () =>
+          window.PlacesCommandHook.showPlacesOrganizer(
+            Section.legacyLibraryView
+          ),
+      });
+    }
+    if (!this.#tabMenu) {
+      this.#tabMenu = window.MozXULElement.parseXULToFragment(
+        `<menupopup class="zen-library-tab-menu"/>`
+      ).firstElementChild;
+      this.#tabMenu.addEventListener("command", menuEvent => {
+        this.#tabMenuItems[menuEvent.target.dataset.index]?.command();
+      });
+      document.getElementById("mainPopupSet").appendChild(this.#tabMenu);
+    }
+    this.#tabMenuItems = [];
+    this.#tabMenu.replaceChildren(...this.#buildTabMenuItems(items));
+    this.#tabMenu.openPopupAtScreen(event.screenX, event.screenY, true);
   }
 
-  #hijackFirefoxCommands() {
-    document
-      .getElementById("Browser:ShowAllHistory")
-      .addEventListener("command", event => {
-        event.stopPropagation();
-        event.stopImmediatePropagation();
+  /**
+   * Turns what a section offers into menu nodes, an item carrying `items`
+   * becoming a submenu. Each command keeps its own index in `#tabMenuItems`,
+   * which is what the popup's single command listener looks it up by.
+   *
+   * @param {object[]} items - What the menu, or one of its submenus, offers
+   * @returns {Element[]} The nodes for it
+   */
+  #buildTabMenuItems(items) {
+    const nodes = [];
+    for (const item of items) {
+      if (item.separatorBefore && nodes.length) {
+        nodes.push(document.createXULElement("menuseparator"));
+      }
+      if (item.items) {
+        const menu = document.createXULElement("menu");
+        menu.setAttribute("data-l10n-id", item.l10nId);
+        const popup = document.createXULElement("menupopup");
+        popup.append(...this.#buildTabMenuItems(item.items));
+        menu.appendChild(popup);
+        nodes.push(menu);
+        continue;
+      }
+      const menuitem = document.createXULElement("menuitem");
+      menuitem.dataset.index = this.#tabMenuItems.push(item) - 1;
+      menuitem.setAttribute("data-l10n-id", item.l10nId);
+      nodes.push(menuitem);
+    }
+    return nodes;
+  }
 
-        ZenLibrary.toggle("history");
-      });
+  #clearStyleProperties() {
+    lazy.appContentWrapper.style.removeProperty("transform");
+    lazy.toastContainer.style.removeProperty("transform");
+    gNavToolbox.style.removeProperty("transform");
+    gNavToolbox.style.removeProperty("opacity");
   }
 
   /**
@@ -333,14 +403,17 @@ export class ZenLibrary extends MozLitElement {
     this.#cancelIdleCleanup();
     this.#cleanupTimer = window.setTimeout(() => {
       this.#cleanupTimer = null;
-      this.#idleCleanup = window.requestIdleCallback(() => {
-        this.#idleCleanup = null;
-        this.#stylesLoaded = null;
+      this.#idleCleanup = window.requestIdleCallback(
+        () => {
+          this.#idleCleanup = null;
+          this.#stylesLoaded = null;
 
-        this.#contentMounted = false;
-        this.#mounted = new Set([this.activeTab]);
-        this.requestUpdate();
-      });
+          this.#contentMounted = false;
+          this.#mounted = new Set([this.activeTab]);
+          this.requestUpdate();
+        },
+        { timeout: IDLE_CLEANUP_TIMEOUT_MS }
+      );
     }, CLEANUP_DELAY_MS);
   }
 
@@ -368,10 +441,11 @@ export class ZenLibrary extends MozLitElement {
     }
 
     const lib = this.getInstance();
+    const opening = lib.#target === 1;
     if (tab && tab in lib.zenLibrarySections) {
-      if (lib.#isOpen && lib.activeTab === tab) {
+      if (opening && lib.activeTab === tab) {
         this.animateProgress(0);
-      } else if (lib.#isOpen) {
+      } else if (opening) {
         lib.activeTab = tab;
       } else {
         lib.activeTab = tab;
@@ -379,7 +453,7 @@ export class ZenLibrary extends MozLitElement {
       }
       return;
     }
-    this.animateProgress(lib.#isOpen ? 0 : 1);
+    this.animateProgress(opening ? 0 : 1);
   }
 
   /**
@@ -392,13 +466,23 @@ export class ZenLibrary extends MozLitElement {
   static async animateProgress(target) {
     const lib = this.getInstance();
 
-    if (target === lib.openProgress) {
+    const settled =
+      target === lib.#target &&
+      target === lib.openProgress &&
+      lib.#isOpen === (target === 1) &&
+      !lib.#springControls;
+    if (settled) {
       return;
     }
 
+    const animation = ++lib.#animation;
+    lib.#target = target;
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
     await window.promiseDocumentFlushed(() => {});
+    if (animation !== lib.#animation) {
+      return;
+    }
 
     if (lib.#springControls) {
       lib.#springControls.stop();
@@ -411,9 +495,27 @@ export class ZenLibrary extends MozLitElement {
     } else if (target === 0) {
       lib.#isOpen = false;
       lib.#canSwipe = false;
+      lib.#tellSection("onLibraryClosing");
     }
 
+    const finish = () => {
+      if (animation !== lib.#animation) {
+        return;
+      }
+      if (target === 0) {
+        lib.#cleanup();
+      }
+
+      lib.openProgress = target;
+      lib.#springControls = null;
+      lib.removeAttribute("transitioning");
+    };
+
     lib.setAttribute("transitioning", "true");
+    if (lib.openProgress === target) {
+      finish();
+      return;
+    }
     lib.#springControls = gZenUIManager.motion.animate(
       lib.openProgress,
       target,
@@ -423,22 +525,21 @@ export class ZenLibrary extends MozLitElement {
         damping: 47,
         mass: 1.2,
         onUpdate: latest => {
-          lib.openProgress = latest;
-        },
-        onComplete: () => {
-          if (target === 0) {
-            lib.#cleanup();
+          if (animation === lib.#animation) {
+            lib.openProgress = latest;
           }
-
-          lib.openProgress = target;
-          lib.#springControls = null;
-          lib.removeAttribute("transitioning");
         },
+        onComplete: finish,
       }
     );
   }
 
-  #readySwipeLibrary = null;
+  static close() {
+    let lib = this.getInstance();
+    if (lib) {
+      this.animateProgress(0);
+    }
+  }
 
   /**
    * Checks if the library can be opened
@@ -447,25 +548,16 @@ export class ZenLibrary extends MozLitElement {
    * @returns {boolean} True if library can be swiped
    */
   static readySwipeOpenLibrary() {
-    const lib = this.getInstance();
-    if (lib.#readySwipeLibrary) {
-      return lib.#readySwipeLibrary;
-    }
-
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
     const libraryOnRight = this.libraryOnRight;
 
-    lib.#readySwipeLibrary =
+    return (
       spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
-      libraryEnabled;
-    return lib.#readySwipeLibrary;
-  }
-
-  static clearReadySwipeLibraryCache() {
-    const lib = this.getInstance();
-    lib.#readySwipeLibrary = null;
+      libraryEnabled &&
+      gZenWorkspaces.shouldSwipeEdgeActions
+    );
   }
 
   /**
@@ -492,12 +584,17 @@ export class ZenLibrary extends MozLitElement {
    */
   static async startSwipe() {
     const lib = this.getInstance();
+    const animation = ++lib.#animation;
     lib.#cancelIdleCleanup();
     lib.#canSwipe = true;
     lib.#beforeSwipeState = this.isLibraryOpen ? 1 : 0;
 
     await lib.#whenStylesLoaded();
     await window.promiseDocumentFlushed(() => {});
+    // The swipe may already have ended, its own animation taking over.
+    if (animation !== lib.#animation) {
+      return;
+    }
 
     lib.#onOpenInit();
 
@@ -506,6 +603,7 @@ export class ZenLibrary extends MozLitElement {
       lib.#springControls = null;
     }
 
+    lib.setAttribute("transitioning", "true");
     lib.style.pointerEvents = "none";
     lib.#shouldUnfreezeSwipe = true;
   }
@@ -608,11 +706,13 @@ export class ZenLibrary extends MozLitElement {
     this.style.pointerEvents = "";
     this.#canSwipe = false;
     this.#beforeSwipeState = null;
+    this.removeAttribute("transitioning");
 
     // This will only run if the swipe was
     // cancelled, otherwise cleanup will happen
-    // in animateProgress (onComplete)
-    if (!ZenLibrary.isLibrarySlightlyOpen) {
+    // in animateProgress (onComplete). A spring still running may dip
+    // below zero on its way closed, and stopping it there would strand it.
+    if (!ZenLibrary.isLibrarySlightlyOpen && !this.#springControls) {
       this.#cleanup();
     }
   }
@@ -623,13 +723,14 @@ export class ZenLibrary extends MozLitElement {
    * ending unexpectedly mid-swipe.
    */
   #attachWrapperToSwipe() {
-    if (!this.#wrapperGestureControl) {
-      const appWrapper = document.getElementById("zen-main-app-wrapper");
-      this.#wrapperGestureControl =
-        window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
-          appWrapper
-        );
+    if (this.#wrapperSwipeAttached) {
+      return;
     }
+    const appWrapper = document.getElementById("zen-main-app-wrapper");
+    window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(
+      appWrapper
+    );
+    this.#wrapperSwipeAttached = true;
   }
 
   /**
@@ -637,14 +738,14 @@ export class ZenLibrary extends MozLitElement {
    * the main app wrapper.
    */
   #detachWrapperOfSwipe() {
-    if (this.#wrapperGestureControl) {
-      const appWrapper = document.getElementById("zen-main-app-wrapper");
-      window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
-        appWrapper,
-        this.#wrapperGestureControl
-      );
-      this.#wrapperGestureControl = null;
+    if (!this.#wrapperSwipeAttached) {
+      return;
     }
+    const appWrapper = document.getElementById("zen-main-app-wrapper");
+    window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(
+      appWrapper
+    );
+    this.#wrapperSwipeAttached = false;
   }
 
   /**
@@ -652,24 +753,39 @@ export class ZenLibrary extends MozLitElement {
    * navigator-toolbox and caches it.
    */
   #refreshToolboxWidth() {
-    // Get the width from the css property,
-    // getBoundsWithoutFlushing will fail as it takes the
-    // toolbox transformation during the animation into account
-    this.#toolboxWidth = parseFloat(
-      gNavToolbox.style
-        .getPropertyValue("--actual-zen-sidebar-width")
-        .replace("/\D/g", "")
-    );
-    if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
-      const splitterWidth = window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("zen-sidebar-splitter")
-      ).width;
-      this.#toolboxWidth += splitterWidth;
-    }
+    this.#toolboxWidth =
+      window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
   }
 
   createRenderRoot() {
     return this;
+  }
+
+  static SIDEBAR_COMMANDS = [
+    "cmd_zenToggleSidebar",
+    "cmd_zenToggleTabsOnRight",
+  ];
+
+  #disabledCommands = [];
+
+  /** Turns those commands off for as long as the library is up. */
+  #holdSidebarCommands() {
+    this.#disabledCommands = [];
+    for (const id of ZenLibrary.SIDEBAR_COMMANDS) {
+      const command = document.getElementById(id);
+      if (command && !command.hasAttribute("disabled")) {
+        command.setAttribute("disabled", "true");
+        this.#disabledCommands.push(command);
+      }
+    }
+  }
+
+  /** Hands them back once the library is out of the way. */
+  #releaseSidebarCommands() {
+    for (const command of this.#disabledCommands) {
+      command.removeAttribute("disabled");
+    }
+    this.#disabledCommands = [];
   }
 
   /**
@@ -677,34 +793,37 @@ export class ZenLibrary extends MozLitElement {
    * library is about to be opened.
    */
   #onOpenInit() {
-    if (this.#initialized) {
-      return;
+    this.#tellSection("onLibraryOpening");
+    if (!this.#initialized) {
+      this.#initialized = true;
+      this.isHidden = false;
+
+      gURLBar.view.close();
+
+      this.#cancelIdleCleanup();
+      if (!this.#contentMounted) {
+        this.#contentMounted = true;
+        this.requestUpdate();
+      }
+
+      this.setAttribute("open", "true");
+      this.#holdSidebarCommands();
+      document.addEventListener("keydown", this, true);
+      window.addEventListener("TabOpen", this);
+
+      this.#attachWrapperToSwipe();
+      window.gZenWorkspaces._swipeManager?.attachWorkspaceSwipeGestures(this);
+      this.#resizeObserver.observe(this);
+      ZenLibraryWidget.attachLibrary(this);
+      this.#refreshToolboxWidth();
     }
-    this.#initialized = true;
-    this.style.visibility = "";
-    this.isHidden = false;
+    this.#focusActiveSection();
+  }
 
-    gURLBar.view.close();
-
-    this.#cancelIdleCleanup();
-    if (!this.#contentMounted) {
-      this.#contentMounted = true;
-      this.requestUpdate();
-    }
-
-    this.setAttribute("open", "true");
-    document
-      .getElementById("zen-sidebar-splitter")
-      .setAttribute("zen-library-open", "true");
-    document.addEventListener("keydown", this, true);
-    window.addEventListener("TabOpen", this);
-
-    this.#attachWrapperToSwipe();
-    this.#gestureControl =
-      window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
-    this.#resizeObserver.observe(this);
-    ZenLibraryWidget.attachLibrary(this);
-    this.#refreshToolboxWidth();
+  async #focusActiveSection() {
+    // On the first open the sections are only being mounted now.
+    await this.updateComplete;
+    this.#tellSection("onLibraryOpened");
   }
 
   /**
@@ -712,21 +831,20 @@ export class ZenLibrary extends MozLitElement {
    * after the library was just closed.
    */
   #cleanup() {
+    // Even an already cleaned up library may have been restyled since, by the
+    // last frames of a spring that outlived a swipe.
+    this.#clearStyleProperties();
     if (!this.#initialized) {
       return;
     }
     this.#initialized = false;
-
-    this.#clearStyleProperties();
     this.removeAttribute("open");
+    this.#releaseSidebarCommands();
     for (const tab of this.querySelectorAll(".zen-library-tab[animate]")) {
       tab.removeAttribute("animate");
     }
     this.#mounted = new Set([this.activeTab]);
     this.requestUpdate();
-    document
-      .getElementById("zen-sidebar-splitter")
-      .removeAttribute("zen-library-open");
 
     if (this.#springControls) {
       this.#springControls.stop();
@@ -735,12 +853,7 @@ export class ZenLibrary extends MozLitElement {
     this.removeAttribute("transitioning");
 
     this.#detachWrapperOfSwipe();
-    if (this.#gestureControl) {
-      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
-        this,
-        this.#gestureControl
-      );
-    }
+    window.gZenWorkspaces._swipeManager?.detachWorkspaceSwipeGestures(this);
 
     this.#restoreWindowButtons();
     ZenLibraryWidget.detachLibrary(this);
@@ -756,10 +869,21 @@ export class ZenLibrary extends MozLitElement {
       case "TabOpen":
         this.onTabOpen();
         break;
+      case "unload":
+        this.#teardown();
+        break;
       case "keydown":
         this.onKeyDown(e);
         break;
     }
+  }
+
+  #teardown() {
+    this.#cleanup();
+    this.#cancelIdleCleanup();
+    this.#contentMounted = false;
+    this.#mounted = new Set([this.activeTab]);
+    this._content?.replaceChildren();
   }
 
   onTabOpen() {
@@ -775,24 +899,29 @@ export class ZenLibrary extends MozLitElement {
    * close itself, for a tab asked for from inside it that stays in the
    * background.
    *
-   * @param {function()} open - Opens the tab
+   * @param {function()} openTab - Opens the tab
    */
-  keepOpenWhile(open) {
+  keepOpenWhile(openTab) {
     this.#keepingOpen = true;
     try {
-      open();
+      openTab();
     } finally {
       this.#keepingOpen = false;
     }
   }
 
   onKeyDown(e) {
-    if (!this.hasAttribute("open")) {
+    if (!this.hasAttribute("open") || e.key !== "Escape") {
       return;
     }
-    if (e.key === "Escape") {
-      ZenLibrary.animateProgress(0);
+    const focused = document.activeElement;
+    if (
+      focused?.closest("zen-library") === this &&
+      !focused.closest(".zen-library-search-box")
+    ) {
+      return;
     }
+    ZenLibrary.animateProgress(0);
   }
 
   firstUpdated() {
@@ -841,10 +970,19 @@ export class ZenLibrary extends MozLitElement {
   }
 
   /**
-   * Shows the section being looked at and puts the others out of sight. A
-   * section is told which it is, so one that reaches outside itself, such as
-   * spaces setting the library's width, only does so while it is on show.
+   * Tells the section being looked at that the library is opening or closing,
+   * for one that would rather not be dragged along as it slides.
+   *
+   * @param {"onLibraryOpening"|"onLibraryClosing"} hook
    */
+  #tellSection(hook) {
+    for (const section of this._content?.children ?? []) {
+      if (section.dataset?.section === this.activeTab) {
+        section[hook]?.();
+      }
+    }
+  }
+
   #updateMountedSections() {
     for (const section of this._content?.children ?? []) {
       const id = section.dataset?.section;
@@ -877,6 +1015,7 @@ export class ZenLibrary extends MozLitElement {
                   class="zen-library-tab"
                   ?active=${this.activeTab === Section.id}
                   data-section=${Section.id}
+                  @contextmenu=${event => this.#openTabMenu(event, Section)}
                   @click=${event => {
                     if (this.activeTab !== Section.id) {
                       this.activeTab = Section.id;
@@ -894,7 +1033,9 @@ export class ZenLibrary extends MozLitElement {
                   <div class="zen-library-tab-icon">
                     <div class="zen-library-tab-icon-image"></div>
                   </div>
-                  <label data-l10n-id=${Section.label}></label>
+                  <label
+                    data-l10n-id=${Section.tabLabel ?? Section.label}
+                  ></label>
                 </vbox>
               `
             )}

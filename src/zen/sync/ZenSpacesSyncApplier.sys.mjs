@@ -568,6 +568,7 @@ class nsZenSpacesSyncApplier {
       inBackground: true,
       skipAnimation: true,
       skipBackgroundNotify: true,
+      noInitialLabel: true,
       lazyTabTitle: data.title || undefined,
       userContextId,
       skipRoute: true,
@@ -681,16 +682,23 @@ class nsZenSpacesSyncApplier {
       const state = JSON.parse(win.SessionStore.getTabState(tab));
       const entries = state.entries || [];
       let currentUrl = null;
+      let currentTitle = "";
       if (entries.length) {
         const index = Math.min(
           Math.max((state.index || entries.length) - 1, 0),
           entries.length - 1
         );
         currentUrl = entries[index]?.url || null;
+        currentTitle = entries[index]?.title || "";
       }
       if (
-        currentUrl === data.url ||
-        (currentUrl && previousPinUrl && currentUrl !== previousPinUrl)
+        // A remote record can retitle a tab without moving it, so only skip
+        // the retarget when the title matches as well as the url.
+        (currentUrl === data.url && currentTitle === (data.title || "")) ||
+        (currentUrl &&
+          currentUrl !== data.url &&
+          previousPinUrl &&
+          currentUrl !== previousPinUrl)
       ) {
         return;
       }

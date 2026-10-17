@@ -23,6 +23,16 @@ on:
         description: "The branch to build"
         required: true
         type: string
+      pgo-cache-key-prefix:
+        description: "Cache key prefix for the PGO profile data"
+        required: false
+        type: string
+        default: ""
+      pgo-cache-hit:
+        description: "Take the profile data from the cache instead of stage 2"
+        required: false
+        type: boolean
+        default: false
       MOZ_BUILD_DATE:
         type: string
         required: true
@@ -145,10 +155,19 @@ jobs:
 
       - name: Download artifact (if use profdata)
         uses: actions/download-artifact@v4
-        if: ${{ !inputs.generate-pgo && !inputs.disable-pgo }}
+        if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && !inputs.pgo-cache-hit }}
         with:
           path: ~/artifact
           name: macos-profdata-${{ matrix.arch }}
+
+      - name: Restore cached profile data
+        uses: actions/cache/restore@v5
+        if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && inputs.pgo-cache-hit }}
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          restore-keys: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-
+          path: ~/artifact
+          fail-on-cache-miss: true
 
       - name: Show artifact info
         if: ${{ !inputs.generate-pgo && !inputs.disable-pgo }}

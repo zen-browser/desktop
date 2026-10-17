@@ -417,7 +417,11 @@ export class ZenLibraryMediaPreview {
       item.kind === "video" ? "video" : "img"
     );
     media.className = "zen-library-media-preview-media";
-    media.src = item.url;
+    // A picture the browser has no decoder for would be a blank stage, so it
+    // is shown by the icon its kind gets everywhere else.
+    media.toggleAttribute("file", item.kind === "file");
+    media.src =
+      item.kind === "file" ? `moz-icon://${item.name}?size=128` : item.url;
     if (item.kind !== "video") {
       media.draggable = true;
       media.addEventListener("dragstart", event =>

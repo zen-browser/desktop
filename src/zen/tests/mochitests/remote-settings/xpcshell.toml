@@ -3,8 +3,8 @@ head = "../../../../services/common/tests/unit/head_global.js ../../../../servic
 firefox-appdir = "browser"
 tags = "remote-settings"
 support-files = ["test_remote_settings_signatures/**"]
-skip-if = [
-  "appname == 'thunderbird'", # Bug 1662758 - these tests don't pass if default bucket isn't "main".
+run-if = [
+  "appname != 'thunderbird'", # these tests assume the default Remote Settings bucket is main
 ]
 
 ["test_attachments_downloader.js"]

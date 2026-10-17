@@ -49,7 +49,8 @@ class nsZenLiveFoldersManager {
   }
 
   async init() {
-    if (this.#isInitialized) {
+    // Live folders live in the first synced window.
+    if (this.#isInitialized || !this.window) {
       return;
     }
 
@@ -346,7 +347,7 @@ class nsZenLiveFoldersManager {
       browser: gBrowser.selectedBrowser,
       theme: { preset: "chrome" },
     });
-    callout.showFeatureCallout({
+    const shown = callout.showFeatureCallout({
       id: "ZEN_LIVE_FOLDERS_CALLOUT",
       template: "feature_callout",
       groups: ["cfr"],
@@ -387,6 +388,13 @@ class nsZenLiveFoldersManager {
           },
         ],
       },
+    });
+    shown.then(() => {
+      lazy.setTimeout(() => {
+        if (callout.ready) {
+          callout.endTour();
+        }
+      }, 8000);
     });
   }
 
@@ -602,8 +610,7 @@ class nsZenLiveFoldersManager {
   // Persistence
   // -----------
   get #storePath() {
-    const profilePath = this.window.PathUtils.profileDir;
-    return this.window.PathUtils.join(profilePath, this.#saveFilename);
+    return PathUtils.join(PathUtils.profileDir, this.#saveFilename);
   }
 
   async #readStateFromDisk() {

@@ -11,7 +11,7 @@ const CONFIG = Object.freeze({
   ANIMATION: {
     ARC_STEPS: 60,
     MAX_ARC_HEIGHT: 1200,
-    ARC_HEIGHT_RATIO: 0.8, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
+    ARC_HEIGHT_RATIO: 2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
     SCALE_END: 0.45, // Final scale at destination
   },
 });
@@ -25,9 +25,16 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
     try {
       const Downloads = window.Downloads;
       const list = await Downloads.getList(Downloads.ALL);
-      list.addView({
+      if (window.closed) {
+        return;
+      }
+      const view = {
         onDownloadAdded: this.#handleNewDownload.bind(this),
+      };
+      window.addEventListener("unload", () => list.removeView(view), {
+        once: true,
       });
+      list.addView(view);
     } catch (error) {
       console.error(
         `[${nsZenDownloadAnimation.name}] Failed to set up download animation listeners: ${error}`

@@ -159,7 +159,7 @@
   --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-padding-outer: 4px;
   --zen-toolbar-height-with-bookmarks: var(--zen-toolbar-height);
-  &[zen-has-bookmarks='true'] {
+  &[zen-has-bookmarks] {
     /* Make sure `30px` matches the bookmarks toolbar height */
     --zen-toolbar-height-with-bookmarks: calc(var(--zen-toolbar-height) + 30px);
   }
@@ -260,7 +260,10 @@
   --panel-separator-color: color-mix(in srgb, currentColor 15%, transparent) !important;
 
   --zen-big-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  --zen-active-tab-scale: 0.985;
+  --zen-active-tab-scale: 0.98;
+  @media (-moz-platform: macos) {
+    --zen-active-tab-scale: 0.985;
+  }
 
   /* Define tab hover background color */
   --tab-background-color-hover: var(--toolbarbutton-background-color-hover);

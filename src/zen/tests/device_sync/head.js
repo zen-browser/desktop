@@ -55,6 +55,7 @@ function tabRecord(
   {
     pinned,
     url = "https://example.com/",
+    title = "Synced tab",
     current = null,
     workspaceUuid,
     folderId = null,
@@ -68,7 +69,7 @@ function tabRecord(
       data: {
         tabId: id,
         url,
-        title: "Synced tab",
+        title,
         current,
         icon: null,
         containerGuid: null,

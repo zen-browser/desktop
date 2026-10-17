@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
+
 const lazy = {};
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
@@ -19,9 +21,7 @@ const MAX_STACKED_CARDS = 3;
 const MAX_PEEK_LEVELS = 2;
 
 /**
- * A single card in the sidebar media stack: the full control UI for one
- * media controller, or for a WebRTC sharing session when `controller` is
- * null.
+ * A single card in the sidebar media stack.
  */
 class ZenMediaCard {
   #updateInterval = null;
@@ -441,6 +441,7 @@ class ZenMediaCard {
     const { element } = this;
     if (element.hidden) {
       element.remove();
+      this.manager.onCardDestroyed(this);
     } else {
       // Animate the card out instead of popping it away. It leaves the
       // flex flow immediately (so the remaining cards re-slot right away)
@@ -454,20 +455,20 @@ class ZenMediaCard {
       // immediately if they never start (e.g. reduced motion).
       Promise.allSettled(
         element.getAnimations().map(animation => animation.finished)
-      ).then(() => element.remove());
+      ).then(() => {
+        element.remove();
+        this.manager.onCardDestroyed(this);
+      });
     }
-
-    this.manager.onCardDestroyed(this);
   }
 }
 
 /**
  * Zen Media Controller, handles the stack of media control cards located at
  * the bottom of the sidebar. Each active media controller (and WebRTC
- * sharing session) gets its own card; cards stack behind each other and
- * expand upwards when hovering the container.
+ * sharing session) gets its own card.
  */
-class nsZenMediaController {
+class nsZenMediaController extends nsZenDOMOperatedFeature {
   #cards = new Map();
   #cardTemplate = null;
 

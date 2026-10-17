@@ -2,6 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Use the old libstdc++ ABI, matching upstream Firefox
+# (build/unix/mozconfig.stdcxx). Upstream keeps old-distro compatibility this
+# way. Without it, the Firefox 144 base (GCC 10 libstdc++ headers, bug 1981921)
+# makes our binaries require GLIBCXX_3.4.26, which glibc 2.28 systems lack.
+export MOZ_STDCXX_COMPAT=1
+
 if test "$ZEN_RELEASE"; then
     if test "$SURFER_COMPAT" = "x86_64"; then
         ac_add_options --target=x86_64-pc-linux

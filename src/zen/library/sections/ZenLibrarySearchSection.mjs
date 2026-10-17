@@ -64,7 +64,7 @@ export class ZenLibrarySearchSection extends MozLitElement {
    *
    * @returns {{id: string, titleL10nId: string, exclusive?: boolean,
    *            options: {id: string, l10nId?: string, label?: string,
-   *                      icon?: string}[]}[]}
+   *                      icon?: string, disabled?: boolean}[]}[]}
    */
   get filterGroups() {
     return [];
@@ -180,6 +180,7 @@ export class ZenLibrarySearchSection extends MozLitElement {
       <button
         class="zen-library-filter-chip"
         ?active=${this.isFilterActive(group.id, option.id)}
+        ?disabled=${option.disabled}
         @click=${() => this.#toggleFilter(group, option.id)}
       >
         ${when(option.icon, () => html`<img src=${option.icon} alt="" />`)}
@@ -223,6 +224,30 @@ export class ZenLibrarySearchSection extends MozLitElement {
     `;
   }
 
+  #faded = false;
+
+  async onShown() {
+    if (this.#faded) {
+      this.removeAttribute("fade-in");
+    } else {
+      this.#faded = true;
+      this.setAttribute("fade-in", "true");
+    }
+    await this.updateComplete;
+    this.focusSearch();
+  }
+
+  /** Called when the library opens on this section, already shown. */
+  async onLibraryOpened() {
+    await this.updateComplete;
+    this.focusSearch();
+  }
+
+  /** Puts the keyboard in the search field, which is what it is here for. */
+  focusSearch() {
+    this.querySelector(".zen-library-search-box input")?.focus();
+  }
+
   render() {
     const hasFilters = !!this.filterGroups.length;
     return html`
@@ -248,7 +273,11 @@ export class ZenLibrarySearchSection extends MozLitElement {
                   this.filtersOpen = true;
                 }}
               >
-                <img src="chrome://browser/skin/zen-icons/sliders.svg" alt="" />
+                <img
+                  src="chrome://browser/skin/zen-icons/circle-bars-filter.svg"
+                  draggable="false"
+                  alt=""
+                />
                 <span data-l10n-id="library-filter-button"></span>
               </button>
             `

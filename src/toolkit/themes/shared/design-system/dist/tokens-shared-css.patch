@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/design-system/dist/tokens-shared.css b/toolkit/themes/shared/design-system/dist/tokens-shared.css
-index b0f8fa146de335c53e73d46853f45dda9b15cc73..1b7592c0e9ca12fd9d1f8a555633fd39c2efb537 100644
+index 5564b097da8f2837d4623cd48928640741f0f600..894eef3d2f43db1889438f365f89255fe7b0857d 100644
 --- a/toolkit/themes/shared/design-system/dist/tokens-shared.css
 +++ b/toolkit/themes/shared/design-system/dist/tokens-shared.css
 @@ -7,6 +7,8 @@
@@ -26,7 +26,7 @@ index b0f8fa146de335c53e73d46853f45dda9b15cc73..1b7592c0e9ca12fd9d1f8a555633fd39
      --border-width: 1px;
  
      /** box-shadow **/
-@@ -477,8 +479,8 @@
+@@ -439,8 +441,8 @@
      --panel-background-color-dimmed-further: var(--background-color-dimmed-further);
      --panel-border-color: light-dark(rgb(240, 240, 244), rgb(82, 82, 94));
      --panel-border-radius: var(--border-radius-medium);
@@ -35,5 +35,5 @@ index b0f8fa146de335c53e73d46853f45dda9b15cc73..1b7592c0e9ca12fd9d1f8a555633fd39
 +    --panel-box-shadow: var(--zen-big-shadow);
 +    --panel-box-shadow-margin: 8px;
      --panel-menuitem-border-radius: var(--border-radius-small);
-     --panel-menuitem-margin: var(--panel-menuitem-margin-block) var(--panel-menuitem-margin-inline);
-     --panel-menuitem-margin-block: 0;
+     /* Block margin must be 0 so that there's always an item highlighted and no dead space when moving the pointer across items. */
+     --panel-menuitem-margin: 0 var(--panel-menuitem-margin-inline);

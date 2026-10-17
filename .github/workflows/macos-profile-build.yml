@@ -99,6 +99,7 @@ jobs:
           cd engine
           ./mach python ../scripts/download_pgo_extended_corpus.py
           ./mach python build/pgo/profileserver.py --binary "$BINARY" --extended-corpus ./pgo-extended-corpus
+          ZEN_PGO_UI_ONLY=1 ./mach python build/pgo/profileserver.py --binary "$BINARY"
 
       - name: Move profile data
         run: |
@@ -116,7 +117,7 @@ jobs:
         if: ${{ inputs.pgo-cache-key-prefix != '' }}
         uses: actions/cache/save@v5
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Upload artifacts

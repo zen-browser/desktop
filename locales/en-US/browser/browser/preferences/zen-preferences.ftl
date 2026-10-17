@@ -36,6 +36,9 @@ zen-glance-trigger-shift-click =
     .label = Shift + Click
 zen-glance-trigger-meta-click =
     .label = Meta (Command) + Click
+zen-glance-trigger-long-press =
+    .label = Long Press
+zen-glance-long-press-duration-label = Long press duration (ms)
 
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!

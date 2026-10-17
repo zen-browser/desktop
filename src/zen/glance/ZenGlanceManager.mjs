@@ -426,11 +426,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #createNewOverlayButtons() {
     const template = document.getElementById("zen-glance-sidebar-template");
-    const newButtons = template.content.cloneNode(true);
-    const container = newButtons.querySelector(".zen-glance-sidebar-container");
-
+    const container = template.content
+      .querySelector(".zen-glance-sidebar-container")
+      .cloneNode(true);
     this.#animateOverlayButtons(container);
-    return newButtons;
+    return container;
   }
 
   /**

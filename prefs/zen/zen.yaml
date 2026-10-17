@@ -52,3 +52,9 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+- name: zen.tabs.ctrl-tab-panel.enabled
+  value: true
+
+- name: zen.tabs.ctrl-tab-panel.sort-by-recent
+  value: false

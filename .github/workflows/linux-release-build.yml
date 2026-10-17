@@ -168,6 +168,8 @@ jobs:
           export DISPLAY=:2
           export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
           export JARLOG_FILE=en-US.log
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export MOZ_WEBRENDER=1
           mkdir -p "$HOME/artifact"
           cd engine
           ./mach python ../scripts/download_pgo_extended_corpus.py

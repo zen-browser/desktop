@@ -1,5 +1,5 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index a23e879dfdc4994ff615fb389fad92f5234ef1fa..af915fe15d35203943dabb97168b024f178182c4 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..1f463a87a56121c37d7ac2f4708f75d16d7aac55 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
 @@ -8,6 +8,7 @@ import glob
@@ -43,7 +43,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..af915fe15d35203943dabb97168b024f
  
      with TemporaryDirectory() as profilePath:
          # TODO: refactor this into mozprofile
-@@ -218,6 +230,56 @@ if __name__ == "__main__":
+@@ -218,8 +230,58 @@ if __name__ == "__main__":
              get_crashreports(profilePath, name="Profile initialization")
              sys.exit(ret)
  
@@ -98,8 +98,11 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..af915fe15d35203943dabb97168b024f
 +                sys.exit(ret)
 +
          jarlog = os.getenv("JARLOG_FILE")
-         if jarlog:
+-        if jarlog:
++        if jarlog and not ZEN_UI_ONLY:
              env["MOZ_JAR_LOG_FILE"] = os.path.abspath(jarlog)
+             print("jarlog: %s" % env["MOZ_JAR_LOG_FILE"])
+             if os.path.exists(jarlog):
 @@ -240,26 +302,31 @@ if __name__ == "__main__":
              env=env,
              process_args=process_args,

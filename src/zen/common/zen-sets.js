@@ -110,6 +110,7 @@
     cmd_zenCopyCurrentURL: () => gZenCommonActions.copyCurrentURLToClipboard(),
     cmd_zenCopyCurrentURLMarkdown: () =>
       gZenCommonActions.copyCurrentURLAsMarkdownToClipboard(),
+    cmd_zenSearchTabs: () => gURLBar.search("%"),
 
     // Folders
     cmd_zenOpenFolderCreation: () =>

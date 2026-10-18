@@ -1059,6 +1059,10 @@
   list-style-image: url("bolt.svg");
 }
 
+#zen-boost-focus {
+  list-style-image: url("search-glass.svg");
+}
+
 #zen-boost-controls {
   list-style-image: url("sliders.svg");
 }

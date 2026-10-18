@@ -746,7 +746,7 @@ window.gZenCompactModeManager = {
 
       const onEnter = event => {
         isHovering = true;
-        // already expanded, don't redo the hover check or restart the transition
+        this.clearFlashTimeout("has-hover" + target.id);
         if (target.hasAttribute("zen-has-hover")) {
           return;
         }
@@ -755,14 +755,12 @@ window.gZenCompactModeManager = {
         }
         pendingEnter = setTimeout(() => {
           pendingEnter = null;
-          if (event.type === "mouseenter" && !isHovering) {
+          if (!isHovering) {
             return;
           }
           if (event.target.closest("panel")) {
             return;
           }
-          // Dont register the hover if the urlbar is floating and we are hovering over it
-          this.clearFlashTimeout("has-hover" + target.id);
           if (
             document.documentElement.getAttribute(
               "supress-primary-adjustment"
@@ -799,13 +797,12 @@ window.gZenCompactModeManager = {
         // If we want the toolbars to be draggable, we need to make sure to check the hover state after a short delay.
         // This is because the mouse is left to be handled natively so firefox thinks the mouse left the window for a split second.
         setTimeout(() => {
-          // Let's double check if the mouse is still hovering over the element, see the bug above.
+          if (isHovering || target.matches(":hover")) {
+            return;
+          }
           if (pendingEnter) {
             clearTimeout(pendingEnter);
             pendingEnter = null;
-            return;
-          }
-          if (event.target.matches(":hover")) {
             return;
           }
 

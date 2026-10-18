@@ -106,7 +106,7 @@ jobs:
 
       - name: Fix Rust version
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
           source $HOME/.cargo/env
 
           if test "${{ matrix.arch }}" = "aarch64"; then

@@ -60,7 +60,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..e746d230372a660f494e56a422ce16c4
 -    old_profraw_files = glob.glob("*.profraw")
 -    for f in old_profraw_files:
 -        os.remove(f)
-+    if not ZEN_UI_ONLY:
++    if ZEN_UI_ONLY:
 +        old_profraw_files = glob.glob("*.profraw")
 +        for f in old_profraw_files:
 +            os.remove(f)

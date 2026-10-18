@@ -150,8 +150,6 @@ zen-library:is([transitioning], [sizing])
 }
 
 #zen-library-sidebar-tabs {
-  --zen-library-tab-outline: color-mix(in srgb, var(--zen-accent-button-color) 55%, transparent);
-
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -228,7 +226,7 @@ zen-library[editing] .zen-library-tab {
   user-select: none;
 
   &::before {
-    border-color: var(--zen-library-tab-outline);
+    border-color: var(--zen-library-drop-outline);
     transition:
       transform 0.1s ease-in-out,
       box-shadow 0.2s ease;
@@ -260,14 +258,19 @@ zen-library[editing] .zen-library-tab {
   }
 }
 
-.zen-library-tab-slot {
+/* What a button or card being dragged would land in, behind those moving aside. */
+:is(#zen-library-sidebar-tabs, .zen-library-spaces) {
+  --zen-library-drop-outline: color-mix(in srgb, var(--zen-accent-button-color) 55%, transparent);
+}
+
+.zen-library-drop-slot {
   position: absolute;
   top: 0;
   left: 0;
   z-index: -1;
   box-sizing: border-box;
-  border: 2px dashed var(--zen-library-tab-outline);
-  border-radius: 10px;
+  border: 2px dashed var(--zen-library-drop-outline);
+  border-radius: var(--zen-library-drop-radius, 10px);
   corner-shape: round;
   background: color-mix(in srgb, var(--zen-accent-button-color) 12%, transparent);
   pointer-events: none;
@@ -291,7 +294,8 @@ zen-library[editing] #zen-library-edit-button > .toolbarbutton-icon {
 
 @media (prefers-reduced-motion: reduce) {
   zen-library[editing] .zen-library-tab,
-  .zen-library-tab-slot {
+  #zen-library-sidebar-tabs[no-transition] .zen-library-tab,
+  .zen-library-drop-slot {
     transition: none;
   }
 }
@@ -1077,6 +1081,7 @@ zen-library-history-section {
 .zen-library-spaces {
   --zen-library-space-width: 242px;
   --zen-library-space-gap: 24px;
+  --zen-library-drop-radius: 14px;
 
   flex: 1;
   min-height: 0;
@@ -1086,6 +1091,9 @@ zen-library-history-section {
   overflow-x: auto;
   -moz-window-dragging: no-drag;
   user-select: none;
+  /* The drop slot is placed against the list and kept behind the cards. */
+  position: relative;
+  isolation: isolate;
 }
 
 .zen-library-space {

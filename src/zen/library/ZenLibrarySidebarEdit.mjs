@@ -177,7 +177,7 @@ export class ZenLibrarySidebarEdit {
     }
 
     const slot = document.createElement("div");
-    slot.className = "zen-library-tab-slot";
+    slot.className = "zen-library-drop-slot";
     slot.setAttribute("aria-hidden", "true");
     slot.style.left = `${rect.left - listRect.left}px`;
     slot.style.width = `${rect.width}px`;

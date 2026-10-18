@@ -127,10 +127,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #lastPointerX = 0;
   #scrollFrame = null;
   #slotCenters = [];
-  // Marks where the dragged card would land, and how far each place is from
-  // the next.
-  #slot = null;
-  #slotStep = 0;
 
   constructor() {
     super();
@@ -829,7 +825,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
         const rect = window.windowUtils.getBoundsWithoutFlushing(other);
         return rect.left + rect.width / 2;
       });
-    this.#slot = this.#createSlot(card, cards);
     card.setAttribute("dragging", "true");
     event.currentTarget.setPointerCapture(event.pointerId);
     event.preventDefault();
@@ -838,37 +833,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
 
   get #list() {
     return this.querySelector(".zen-library-spaces");
-  }
-
-  /**
-   * Adds the outline of the place the dragged card stands in. It is measured
-   * from the scrolled content of the list, so scrolling carries it along, and
-   * it is moved with a transform only, like the cards around it.
-   *
-   * @param {Element} card - The card being dragged
-   * @param {Element[]} cards - Every card, in the order they stand in
-   * @returns {Element} The slot, in the list
-   */
-  #createSlot(card, cards) {
-    const bounds = element =>
-      window.windowUtils.getBoundsWithoutFlushing(element);
-    const list = this.#list;
-    const listRect = bounds(list);
-    const rect = bounds(card);
-    const first = bounds(cards[0]);
-    const gap = cards.length > 1 ? bounds(cards[1]).left - first.right : 0;
-    this.#slotStep = rect.width + gap;
-
-    const slot = document.createElement("div");
-    slot.className = "zen-library-drop-slot";
-    slot.setAttribute("aria-hidden", "true");
-    slot.style.left = `${first.left - listRect.left + list.scrollLeft}px`;
-    slot.style.top = `${rect.top - listRect.top + list.scrollTop}px`;
-    slot.style.width = `${rect.width}px`;
-    slot.style.height = `${rect.height}px`;
-    slot.style.translate = `${this.#dragIndex * this.#slotStep}px 0`;
-    list.prepend(slot);
-    return slot;
   }
 
   #onPointerMove(event) {
@@ -888,7 +852,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     const index = this.#slotCenters.filter(center => centerX > center).length;
     if (index !== this.#dropIndex) {
       this.#dropIndex = index;
-      this.#slot.style.translate = `${index * this.#slotStep}px 0`;
       this.#shiftCards(cards);
     }
   }
@@ -936,8 +899,6 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       return;
     }
     event.currentTarget.releasePointerCapture(event.pointerId);
-    this.#slot.remove();
-    this.#slot = null;
     cancelAnimationFrame(this.#scrollFrame);
     this.#scrollFrame = null;
     const moved =

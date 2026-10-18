@@ -16,3 +16,6 @@
 
 - name: zen.library.media.folders
   value: "downloads,documents,pictures"
+
+- name: zen.library.tab-order
+  value: ""

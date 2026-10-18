@@ -270,7 +270,7 @@ zen-library[editing] .zen-library-tab {
   z-index: -1;
   box-sizing: border-box;
   border: 2px dashed var(--zen-library-drop-outline);
-  border-radius: var(--zen-library-drop-radius, 10px);
+  border-radius: 10px;
   corner-shape: round;
   background: color-mix(in srgb, var(--zen-accent-button-color) 12%, transparent);
   pointer-events: none;
@@ -1081,7 +1081,6 @@ zen-library-history-section {
 .zen-library-spaces {
   --zen-library-space-width: 242px;
   --zen-library-space-gap: 24px;
-  --zen-library-drop-radius: 14px;
 
   flex: 1;
   min-height: 0;

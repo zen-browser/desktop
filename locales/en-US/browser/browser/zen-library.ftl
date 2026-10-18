@@ -10,10 +10,6 @@ library-footer-close-button =
     .tooltiptext = Close library
 library-footer-donate-button =
     .tooltiptext = Donate to Zen
-library-footer-edit-button =
-    .tooltiptext = Edit sidebar
-library-footer-save-button =
-    .tooltiptext = Save changes
 
 library-history-section-title = History
 library-downloads-section-title = Downloads

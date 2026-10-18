@@ -13,6 +13,7 @@ MOZ_SRC_FILES += [
   "ZenLibrary.mjs",
   "ZenLibraryDragAndDrop.mjs",
   "ZenLibraryMediaPreview.mjs",
+  "ZenLibrarySidebarEdit.mjs",
   "ZenLibraryUtils.sys.mjs",
   "ZenLibraryWidget.sys.mjs",
 ]

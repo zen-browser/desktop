@@ -12,6 +12,7 @@ zen-library {
   --zen-library-pill-bg: color-mix(in srgb, currentColor 7%, transparent);
   --zen-library-pill-hover-bg: color-mix(in srgb, currentColor 12%, transparent);
   --zen-library-radius: 12px;
+  --zen-library-surface-bg: light-dark(rgb(250, 250, 252), rgb(28, 29, 33));
 
   contain: strict;
 
@@ -149,11 +150,15 @@ zen-library:is([transitioning], [sizing])
 }
 
 #zen-library-sidebar-tabs {
+  --zen-library-tab-outline: color-mix(in srgb, var(--zen-accent-button-color) 55%, transparent);
+
   display: flex;
   flex-direction: column;
   gap: 8px;
   justify-content: space-between;
   height: min-content;
+  position: relative;
+  isolation: isolate;
 }
 
 .zen-library-tab {
@@ -175,12 +180,19 @@ zen-library:is([transitioning], [sizing])
   }
 
   isolation: isolate;
+  z-index: 0;
+  transition:
+    translate 0.2s ease,
+    scale 0.2s ease,
+    z-index 0.2s step-end;
 
   &::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -2;
+    box-sizing: border-box;
+    border: 2px dashed transparent;
     border-radius: 10px;
     transition: transform 0.1s ease-in-out;
   }
@@ -207,6 +219,80 @@ zen-library:is([transitioning], [sizing])
     &[animate] .zen-library-tab-icon-image {
       animation: zen-library-sprite-play 0.583s steps(36, jump-none);
     }
+  }
+}
+
+zen-library[editing] .zen-library-tab {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+
+  &::before {
+    border-color: var(--zen-library-tab-outline);
+    transition:
+      transform 0.1s ease-in-out,
+      box-shadow 0.2s ease;
+  }
+
+  &:hover:active::before {
+    transform: none;
+  }
+
+  &[dragging] {
+    z-index: 1;
+    scale: 1.03;
+    cursor: grabbing;
+    transition: scale 0.2s ease;
+
+    &::before {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      background: var(--zen-library-surface-bg);
+    }
+  }
+
+  /* The shift is measured when a drag starts. */
+  &[shift="up"] {
+    translate: 0 calc(-1 * var(--zen-library-tab-shift, 0px));
+  }
+
+  &[shift="down"] {
+    translate: 0 var(--zen-library-tab-shift, 0px);
+  }
+}
+
+.zen-library-tab-slot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  box-sizing: border-box;
+  border: 2px dashed var(--zen-library-tab-outline);
+  border-radius: 10px;
+  corner-shape: round;
+  background: color-mix(in srgb, var(--zen-accent-button-color) 12%, transparent);
+  pointer-events: none;
+  transition: translate 0.2s ease;
+}
+
+zen-library[editing] #zen-library-edit-button > .toolbarbutton-icon {
+  background-color: var(--toolbarbutton-background-color-active);
+}
+
+#zen-library-content[inert] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#zen-library-sidebar-tabs[no-transition] .zen-library-tab {
+  transition:
+    scale 0.2s ease,
+    z-index 0.2s step-end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  zen-library[editing] .zen-library-tab,
+  .zen-library-tab-slot {
+    transition: none;
   }
 }
 

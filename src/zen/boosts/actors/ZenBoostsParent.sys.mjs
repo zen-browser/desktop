@@ -9,6 +9,9 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
+  #zapBar = null;
+  #locationListener = null;
+
   static OBSERVERS = [
     "zen-boosts-update",
     "zen-space-gradient-update",
@@ -39,6 +42,33 @@ export class ZenBoostsParent extends JSWindowActorParent {
     });
   }
 
+  actorCreated() {
+    const browsingContext = this.browsingContext;
+    const webProgress = browsingContext?.webProgress;
+    if (!webProgress || browsingContext.parent) {
+      return;
+    }
+    this.#locationListener = {
+      QueryInterface: ChromeUtils.generateQI([
+        "nsIWebProgressListener",
+        "nsISupportsWeakReference",
+      ]),
+      onLocationChange: (progress, request, location, flags) => {
+        if (flags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT) {
+          try {
+            this.sendAsyncMessage("ZenBoost:LocationChanged");
+          } catch {
+            // The actor is already destroyed.
+          }
+        }
+      },
+    };
+    webProgress.addProgressListener(
+      this.#locationListener,
+      Ci.nsIWebProgress.NOTIFY_LOCATION
+    );
+  }
+
   /**
    * Called when the actor is destroyed. Cleans up the observer.
    */
@@ -46,6 +76,45 @@ export class ZenBoostsParent extends JSWindowActorParent {
     ZenBoostsParent.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this._observe, observe);
     });
+    if (this.#locationListener) {
+      try {
+        this.browsingContext?.webProgress?.removeProgressListener(
+          this.#locationListener
+        );
+      } catch {
+        // The browsing context is already gone.
+      }
+      this.#locationListener = null;
+    }
+    this.#setZapBarVisible(false);
+  }
+
+  /**
+   * Shows or removes the zap bar in the chrome of the zapped browser.
+   *
+   * @param {boolean} visible - Whether the bar should be shown.
+   */
+  #setZapBarVisible(visible) {
+    if (!visible) {
+      this.#zapBar?.remove();
+      this.#zapBar = null;
+      return;
+    }
+    if (this.#zapBar) {
+      return;
+    }
+
+    const browsingContext = this.browsingContext;
+    const browser = browsingContext?.top.embedderElement;
+    // Zap mode only runs on top-level documents.
+    if (!browser || browsingContext.parent) {
+      return;
+    }
+    const bar = browser.ownerDocument.createElement("zen-zap-bar");
+    bar.browser = browser;
+    bar.actor = this;
+    browser.parentNode.insertAdjacentElement("afterend", bar);
+    this.#zapBar = bar;
   }
 
   /**
@@ -141,18 +210,28 @@ export class ZenBoostsParent extends JSWindowActorParent {
           break;
         }
 
+        const mode = data.mode === "focus" ? "focus" : "zap";
+        const url = typeof data.url === "string" ? data.url : null;
         if (data.action == "add") {
           lazy.gZenBoostsManager.addZapSelectorToActive(
             data.selector,
-            data.domain
+            data.domain,
+            mode,
+            url
           );
         } else if (data.action == "remove") {
           lazy.gZenBoostsManager.removeZapSelectorToActive(
             data.selector,
-            data.domain
+            data.domain,
+            mode,
+            url
           );
         } else if (data.action == "clear") {
-          lazy.gZenBoostsManager.clearZapSelectorsForActive(data.domain);
+          lazy.gZenBoostsManager.clearZapSelectorsForActive(
+            data.domain,
+            data.mode ? mode : null,
+            url
+          );
         }
         break;
       }
@@ -194,6 +273,22 @@ export class ZenBoostsParent extends JSWindowActorParent {
       case "ZenBoost:UpdateBoostSize": {
         const { sizeOverride } = message.data;
         this.updateBoostSizeOverride(sizeOverride);
+        break;
+      }
+      case "ZenBoost:ZapBarState": {
+        this.#setZapBarVisible(!!message.data?.visible);
+        break;
+      }
+      case "ZenBoost:ZapBarUpdate": {
+        const entries = (message.data?.entries ?? [])
+          .filter(entry => typeof entry?.selector === "string")
+          .map(({ selector, count }) => ({
+            selector,
+            count: Number.isFinite(count) ? count : 0,
+          }));
+        if (this.#zapBar) {
+          this.#zapBar.entries = entries;
+        }
         break;
       }
       default: {

@@ -4,7 +4,10 @@
 
 EXTRA_JS_MODULES += [
     "sys/ZenActorsManager.sys.mjs",
+    "sys/ZenArcMigrator.sys.mjs",
+    "sys/ZenChromiumSessionReader.sys.mjs",
     "sys/ZenCustomizableUI.sys.mjs",
+    "sys/ZenMultiBrowserMigrator.sys.mjs",
     "sys/ZenUIMigration.sys.mjs",
 ]
 

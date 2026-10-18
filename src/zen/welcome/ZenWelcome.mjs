@@ -544,11 +544,19 @@
             })
           );
         },
-        commit(content) {
+        async commit(content) {
           if (content.querySelector("#zen-welcome-import-yes").checked) {
-            MigrationUtils.showMigrationWizard(window, {
+            await MigrationUtils.showMigrationWizard(window, {
               isStartupMigration: true,
             });
+            try {
+              const { ZenMultiBrowserMigrator } = ChromeUtils.importESModule(
+                "resource:///modules/ZenMultiBrowserMigrator.sys.mjs"
+              );
+              await ZenMultiBrowserMigrator.onPostMigration(window);
+            } catch (e) {
+              console.error("ZenWelcome: error hydrating imported spaces/tabs:", e);
+            }
           }
         },
       },

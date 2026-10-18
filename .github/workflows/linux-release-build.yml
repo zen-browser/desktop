@@ -174,7 +174,6 @@ jobs:
           cd engine
           ./mach python ../scripts/download_pgo_extended_corpus.py
           ./mach package
-          ZEN_PGO_UI_ONLY=1 ./mach python build/pgo/profileserver.py
           ./mach python build/pgo/profileserver.py --extended-corpus ./pgo-extended-corpus
           mv merged.profdata "$HOME/artifact/merged.profdata"
           mv en-US.log "$HOME/artifact/en-US.log"

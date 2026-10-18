@@ -1,19 +1,16 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index a23e879dfdc4994ff615fb389fad92f5234ef1fa..e746d230372a660f494e56a422ce16c4c6e4448b 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..16da05a89407665ee8404edcfc9d0d09af9a9c12 100644
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
-@@ -6,8 +6,10 @@
+@@ -6,6 +6,7 @@
  
  import glob
  import os
 +import socket
  import subprocess
  import sys
-+import time
  
- import mozcrash
- from mozbuild.base import BinaryNotFoundException, MozbuildObject
-@@ -17,7 +19,38 @@ from mozprofile import FirefoxProfile, Preferences
+@@ -17,7 +18,14 @@ from mozprofile import FirefoxProfile, Preferences
  from mozprofile.permissions import ServerLocations
  from mozrunner import CLI, FirefoxRunner
  
@@ -26,182 +23,17 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..e746d230372a660f494e56a422ce16c4
 +
 +
 +PORT = find_free_port()
-+
-+UI_TRAINING_TIMEOUT = 900
-+
-+# The last thing ZenPGOTraining prints once it has walked the whole tour.
-+TOUR_DONE_MARKER = "[ZenPGOTraining] done:"
-+
-+
-+def wait_for_profile_unlock(profile_path, timeout=30):
-+    # The run before this one has just quit, and a profile it still holds
-+    # would turn this launch into an "already running" dialog that exits
-+    # straight away. Gecko drops these on a clean unlock.
-+    locks = [os.path.join(profile_path, name) for name in ("lock", "parent.lock")]
-+    deadline = time.monotonic() + timeout
-+    while any(os.path.lexists(lock) for lock in locks):
-+        if time.monotonic() > deadline:
-+            print(
-+                "profile is still locked after %ds, starting anyway" % timeout,
-+                flush=True,
-+            )
-+            return
-+        time.sleep(0.25)
-+
-+
-+ZEN_UI_ONLY = bool(os.environ.get("ZEN_PGO_UI_ONLY"))
  
  PATH_MAPPINGS = {
      "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",
-@@ -139,9 +172,10 @@ if __name__ == "__main__":
-     locations = ServerLocations()
-     locations.add_host(host="127.0.0.1", port=PORT, options="primary,privileged")
- 
--    old_profraw_files = glob.glob("*.profraw")
--    for f in old_profraw_files:
--        os.remove(f)
-+    if ZEN_UI_ONLY:
-+        old_profraw_files = glob.glob("*.profraw")
-+        for f in old_profraw_files:
-+            os.remove(f)
- 
-     with TemporaryDirectory() as profilePath:
-         # TODO: refactor this into mozprofile
-@@ -218,8 +252,80 @@ if __name__ == "__main__":
-             get_crashreports(profilePath, name="Profile initialization")
-             sys.exit(ret)
- 
-+        if ZEN_UI_ONLY:
-+            # Named as the run it is, so the LLVM error check below reads it.
-+            ui_log = os.path.join(
-+                env.get("UPLOAD_PATH", os.getcwd()), "profile-run-2.log"
-+            )
-+            training_urls = [
-+                "http://localhost:%d/blueprint/sample.html" % PORT,
-+                "http://localhost:%d/blueprint/elements.html" % PORT,
-+                "http://localhost:%d/blueprint/grid.html" % PORT,
-+                "http://localhost:%d/blueprint/forms.html" % PORT,
-+            ]
-+            ui_env = env.copy()
-+            ui_env["ZEN_PGO_UI_TRAINING"] = "1"
-+            ui_env["ZEN_PGO_UI_TRAINING_URLS"] = ",".join(training_urls)
-+            ui_output = []
-+
-+            def keep_ui_line(line):
-+                # mozprocess only streams to stdout while nothing else is
-+                # listening, and a logfile counts as something, so what the
-+                # browser says reaches the build log through here.
-+                ui_output.append(line)
-+                print(line, flush=True)
-+
-+            wait_for_profile_unlock(profilePath)
-+            runner = FirefoxRunner(
-+                profile=profile,
-+                binary=binary,
-+                cmdargs=[training_urls[0]],
-+                env=ui_env,
-+                process_args=dict(
-+                    process_args, logfile=ui_log, processOutputLine=[keep_ui_line]
-+                ),
-+            )
-+            print("Starting Zen UI training run on %s" % training_urls[0], flush=True)
-+            ui_started = time.monotonic()
-+            runner.start(debug_args=debug_args, interactive=interactive)
-+            ret = runner.wait(timeout=UI_TRAINING_TIMEOUT)
-+            print(
-+                "Zen UI training run exited with %s after %ds"
-+                % (ret, time.monotonic() - ui_started),
-+                flush=True,
-+            )
-+            sp3_httpd.stop()
-+            if has_extended_corpus:
-+                js3_httpd.stop()
-+            httpd.stop()
-+            if ret is None:
-+                print(
-+                    "Zen UI training did not quit within %ds, killing it"
-+                    % UI_TRAINING_TIMEOUT,
-+                    flush=True,
-+                )
-+                runner.stop()
-+            elif ret:
-+                print(
-+                    "Firefox exited with code %d during Zen UI training" % ret,
-+                    flush=True,
-+                )
-+                get_crashreports(profilePath, name="Zen UI training run")
-+                sys.exit(ret)
-+            if not any(TOUR_DONE_MARKER in line for line in ui_output):
-+                # A browser that quits before the tour leaves a profile with
-+                # none of Zen's own UI in it, which is the whole point of
-+                # this run, so it is a failure rather than a short run.
-+                print(
-+                    "Zen UI training quit without walking the tour: no %r in "
-+                    "its output" % TOUR_DONE_MARKER,
-+                    flush=True,
-+                )
-+                get_crashreports(profilePath, name="Zen UI training run")
-+                sys.exit(1)
-+
-         jarlog = os.getenv("JARLOG_FILE")
--        if jarlog:
-+        if jarlog and not ZEN_UI_ONLY:
-             env["MOZ_JAR_LOG_FILE"] = os.path.abspath(jarlog)
-             print("jarlog: %s" % env["MOZ_JAR_LOG_FILE"])
-             if os.path.exists(jarlog):
-@@ -240,26 +346,31 @@ if __name__ == "__main__":
-             env=env,
-             process_args=process_args,
-         )
--        runner.start(debug_args=debug_args, interactive=interactive)
--        ret = runner.wait()
--        sp3_httpd.stop()
--        if has_extended_corpus:
--            js3_httpd.stop()
--        httpd.stop()
--        if ret:
--            print("Firefox exited with code %d during profiling" % ret)
--            logfile = process_args.get("logfile")
--            if logfile:
--                print("Firefox output (%s):" % logfile)
--                with open(logfile) as f:
--                    print(f.read())
--            get_crashreports(profilePath, name="Profiling run")
--            sys.exit(ret)
-+        corpus_seconds = 0
-+        if not ZEN_UI_ONLY:
-+            started = time.monotonic()
-+            runner.start(debug_args=debug_args, interactive=interactive)
-+            ret = runner.wait()
-+            corpus_seconds = time.monotonic() - started
-+            sp3_httpd.stop()
-+            if has_extended_corpus:
-+                js3_httpd.stop()
-+            httpd.stop()
-+            print("corpus run took %ds" % corpus_seconds, flush=True)
-+            if ret:
-+                print("Firefox exited with code %d during profiling" % ret)
-+                logfile = process_args.get("logfile")
-+                if logfile:
-+                    print("Firefox output (%s):" % logfile)
-+                    with open(logfile) as f:
-+                        print(f.read())
-+                get_crashreports(profilePath, name="Profiling run")
-+                sys.exit(ret)
- 
-         if "UPLOAD_PATH" in env:
-             should_err = False
-             print("Verify log for LLVM Profile Error")
--            for n in range(1, 2):
-+            for n in range(1, 3):
-                 log = os.path.join(env["UPLOAD_PATH"], f"profile-run-{n}.log")
-                 with open(log) as f:
-                     for line in f.readlines():
-@@ -288,6 +399,7 @@ if __name__ == "__main__":
-                 )
-                 sys.exit(1)
- 
-+            print("merging %d profraw files" % len(profraw_files), flush=True)
-             merged_profdata = "merged.profdata"
-             merge_cmd = [
-                 llvm_profdata,
+@@ -233,6 +241,10 @@ if __name__ == "__main__":
+             "http://localhost:%d/index.html?extendedCorpus=%s"
+             % (PORT, str(has_extended_corpus).lower())
+         ]
++        env["ZEN_PGO_UI_TRAINING_URLS"] = ",".join(
++            "http://localhost:%d/blueprint/%s" % (PORT, page)
++            for page in ("sample.html", "elements.html", "grid.html", "forms.html")
++        )
+         runner = FirefoxRunner(
+             profile=profile,
+             binary=binary,

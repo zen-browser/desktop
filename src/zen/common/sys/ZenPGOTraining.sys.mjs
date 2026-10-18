@@ -2,9 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// Set by build/pgo/profileserver.py for the run that exists only to collect
-// this tour's data.
-const TRAINING_ENV_VAR = "ZEN_PGO_UI_TRAINING";
 const TRAINING_URLS_ENV_VAR = "ZEN_PGO_UI_TRAINING_URLS";
 
 const LOAD_TIMEOUT_MS = 15000;
@@ -73,31 +70,44 @@ const BOOST_ACCENTS = [
   accent(60, 180, 120, 220),
 ];
 
-log("module loaded");
-
 /**
  * Exercises Zen's own UI while the instrumented browser collects PGO data.
  */
 export const ZenPGOTraining = {
+  _window: null,
+  _pages: null,
   _started: false,
 
   onWindowReady(window) {
-    if (this._started) {
+    const pages = trainingPages();
+    log(`window ready, ${pages.length} training pages`);
+    if (!pages.length || this._window) {
       return;
     }
-    const wanted = Services.env.exists(TRAINING_ENV_VAR);
-    log(`window ready, training=${wanted}`);
-    if (!wanted) {
-      return;
-    }
-    this._started = true;
-    this.run(window);
+    this._window = window;
+    this._pages = pages;
+    this._takeOverOnQuit(window);
+    log("waiting for the corpus to finish");
   },
 
-  async run(window) {
+  _takeOverOnQuit(window) {
+    const canCloseWindow = window.CanCloseWindow;
+    window.CanCloseWindow = () => {
+      if (this._started) {
+        // The tour is done and quitting for real.
+        return canCloseWindow.call(window);
+      }
+      this._started = true;
+      log("corpus asked to quit, taking over the browser");
+      // Asked from inside the quit itself, so the tour starts once that has
+      // been turned away rather than during it.
+      window.setTimeout(() => this.run(window, this._pages), 0);
+      return false;
+    };
+  },
+
+  async run(window, pages) {
     try {
-      const pages = trainingPages();
-      log(`waiting for startup, ${pages.length} pages`);
       await withTimeout(
         window,
         window.gZenStartup.promiseInitialized,

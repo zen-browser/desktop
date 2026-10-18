@@ -98,7 +98,6 @@ jobs:
           test -n "$BINARY"
           cd engine
           ./mach python ../scripts/download_pgo_extended_corpus.py
-          ZEN_PGO_UI_ONLY=1 ./mach python build/pgo/profileserver.py --binary "$BINARY"
           ./mach python build/pgo/profileserver.py --binary "$BINARY" --extended-corpus ./pgo-extended-corpus
 
       - name: Move profile data

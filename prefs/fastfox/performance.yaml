@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Performance optimizations based on Fastfox (Betterfox subset)
+
+- name: gfx.content.skia-font-cache-size
+  value: 20
+
+- name: content.notify.interval
+  value: 100000
+
+- name: gfx.canvas.accelerated.cache-size
+  value: 512
+
+- name: image.mem.decode_bytes_at_a_time
+  value: 32768
+
+- name: media.cache_readahead_limit
+  value: 3600
+
+- name: media.cache_resume_threshold
+  value: 1800
+
+- name: network.buffer.cache.size
+  value: 65535
+
+- name: network.buffer.cache.count
+  value: 48
+
+- name: network.http.max-connections
+  value: 1800
+
+- name: network.http.max-persistent-connections-per-server
+  value: 10
+
+- name: network.http.max-urgent-start-excessive-connections-per-host
+  value: 5
+
+- name: network.http.request.max-start-delay
+  value: 5
+
+- name: network.dnsCacheExpiration
+  value: 3600

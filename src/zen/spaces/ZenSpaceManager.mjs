@@ -61,6 +61,8 @@ class nsZenWorkspaces {
   #activeWorkspace = "";
 
   _workspaceCache = [];
+  _workspaceMap = new Map();
+  _workspaceElementsMap = new Map();
 
   #lastScrollTime = 0;
   #currentSpaceSwitchContext = {
@@ -322,7 +324,18 @@ class nsZenWorkspaces {
     if (typeof workspaceId !== "string") {
       workspaceId = workspaceId?.uuid;
     }
-    return document.getElementById(workspaceId);
+    if (!workspaceId) {
+      return null;
+    }
+    let el = this._workspaceElementsMap.get(workspaceId);
+    if (el && el.isConnected) {
+      return el;
+    }
+    el = document.getElementById(workspaceId);
+    if (el) {
+      this._workspaceElementsMap.set(workspaceId, el);
+    }
+    return el;
   }
 
   #initializeTabsStripSections() {
@@ -736,9 +749,34 @@ class nsZenWorkspaces {
     return this.getWorkspaceFromId(this.activeWorkspace);
   }
 
+  #rebuildWorkspaceMap() {
+    this._workspaceMap.clear();
+    for (const ws of this._workspaceCache) {
+      if (ws?.uuid) {
+        this._workspaceMap.set(ws.uuid, ws);
+      }
+    }
+  }
+
   getWorkspaceFromId(id) {
+    if (!id) {
+      return null;
+    }
+    if (typeof id === "object") {
+      return id;
+    }
+    const fromMap = this._workspaceMap.get(id);
+    if (fromMap) {
+      return fromMap;
+    }
     try {
-      return this.getWorkspaces().find(workspace => workspace.uuid === id);
+      const lower = id.toLowerCase();
+      for (const workspace of this._workspaceCache) {
+        if (workspace.name?.toLowerCase() === lower) {
+          return workspace;
+        }
+      }
+      return null;
     } catch {
       return null;
     }
@@ -748,18 +786,7 @@ class nsZenWorkspaces {
     if (!value) {
       return null;
     }
-    try {
-      const workspaces = this.getWorkspaces();
-      return (
-        workspaces.find(
-          workspace =>
-            workspace.uuid === value ||
-            workspace.name?.toLowerCase() === value.toLowerCase()
-        ) || null
-      );
-    } catch {
-      return null;
-    }
+    return this.getWorkspaceFromId(value);
   }
 
   getWorkspaces(lieToMe = false) {
@@ -827,6 +854,7 @@ class nsZenWorkspaces {
       // Spaces created while containers were disabled were saved without one
       workspace.containerTabId ??= 0;
     }
+    this.#rebuildWorkspaceMap();
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     if (aWinData.selected) {
@@ -1421,6 +1449,7 @@ class nsZenWorkspaces {
     } else {
       workspacesData.push(workspaceData);
     }
+    this._workspaceMap.set(workspaceData.uuid, workspaceData);
 
     this.#propagateWorkspaceData();
   }
@@ -1434,6 +1463,8 @@ class nsZenWorkspaces {
     workspacesData = workspacesData.filter(
       workspace => workspace.uuid !== windowID
     );
+    this._workspaceMap.delete(windowID);
+    this._workspaceElementsMap.delete(windowID);
     window.addEventListener(
       "ZenWorkspacesUIUpdate",
       () => {
@@ -1547,6 +1578,7 @@ class nsZenWorkspaces {
     }
     return Promise.all(promises).then(() => {
       this._workspaceCache = aWorkspaces;
+      this.#rebuildWorkspaceMap();
       if (hasChanged) {
         this.#fireSpaceUIUpdate();
       }
@@ -1561,17 +1593,9 @@ class nsZenWorkspaces {
       return;
     }
     const workspaces = this.getWorkspaces();
-
-    const workspace = workspaces.find(w => w.uuid === id);
-    if (!workspace) {
-      console.warn(`Workspace with ID ${id} not found for reordering.`);
-      return;
-    }
-
-    // Remove the workspace from its current position
-    const currentIndex = workspaces.indexOf(workspace);
+    const currentIndex = workspaces.findIndex(w => w.uuid === id);
     if (currentIndex === -1) {
-      console.warn(`Workspace with ID ${id} not found in the list.`);
+      console.warn(`Workspace with ID ${id} not found for reordering.`);
       return;
     }
 
@@ -1583,12 +1607,13 @@ class nsZenWorkspaces {
       return;
     }
 
-    workspaces.splice(currentIndex, 1);
+    const [workspace] = workspaces.splice(currentIndex, 1);
     workspaces.splice(newPosition, 0, workspace);
 
     // Propagate the changes if the order has changed
     if (currentIndex !== newPosition) {
       this._workspaceCache = workspaces;
+      this.#rebuildWorkspaceMap();
       this.#propagateWorkspaceData(workspaces);
     }
   }

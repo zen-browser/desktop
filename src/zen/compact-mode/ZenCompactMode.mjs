@@ -921,12 +921,8 @@ window.gZenCompactModeManager = {
 
     gURLBar.addEventListener("mouseleave", () => {
       setTimeout(() => {
-        setTimeout(() => {
-          requestAnimationFrame(() => {
-            delete this._hasHoveredUrlbar;
-          });
-        }, 10);
-      }, 0);
+        delete this._hasHoveredUrlbar;
+      }, 10);
     });
   },
 

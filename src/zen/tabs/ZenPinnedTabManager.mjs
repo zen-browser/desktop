@@ -968,9 +968,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
     const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
-    if (
-      Services.io.newURI(currentUrl).spec === Services.io.newURI(pinUrl).spec
-    ) {
+    let isSame = currentUrl === pinUrl;
+    if (!isSame) {
+      try {
+        isSame =
+          Services.io.newURI(currentUrl).spec ===
+          Services.io.newURI(pinUrl).spec;
+      } catch {
+        isSame = false;
+      }
+    }
+    if (isSame) {
       this.resetPinChangedUrl(tab);
       return;
     }

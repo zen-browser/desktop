@@ -10,8 +10,11 @@ prefs = [
   "browser.tabs.closeTabByDblclick=false",
 ]
 support-files = [
+  "client_auth_dialog.pem",
   "slow_load.sjs",
 ]
+
+["browser_client_auth_dialog.js"]
 
 ["browser_tab_loading_indicator.js"]
 

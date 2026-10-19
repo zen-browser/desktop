@@ -1,0 +1,22 @@
+diff --git a/security/manager/pki/resources/content/clientauthask.js b/security/manager/pki/resources/content/clientauthask.js
+index 91ca3dbb932d3ec0d33ac135e2005dad7a6df183..022cb62c9feb44a4352d27e4935f38e04c4094a8 100644
+--- a/security/manager/pki/resources/content/clientauthask.js
++++ b/security/manager/pki/resources/content/clientauthask.js
+@@ -87,6 +87,7 @@
+   }
+ 
+   await setDetails();
++  await document.l10n.translateRoots();
+   document.addEventListener("dialogaccept", doOK);
+   document.addEventListener("dialogcancel", doCancel);
+   document
+@@ -179,4 +180,8 @@
+   retVals.rememberDuration = getRememberSetting();
+ }
+ 
+-window.addEventListener("load", () => onLoad());
++// Wait for the certificate details and their translations before SubDialog
++// measures the dialog. A translated hostname can wrap onto additional lines.
++document.mozSubdialogReady = new Promise(resolve => {
++  window.addEventListener("load", () => resolve(onLoad()), { once: true });
++});

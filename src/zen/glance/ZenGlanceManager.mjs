@@ -592,6 +592,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #animateGlanceOpening(data, browserElement) {
     this.#prepareGlanceAnimation(data);
+    const glanceID = this.#currentGlanceID;
     // FIXME(cheffy): We *must* have the call back async (at least,
     // until a better solution is found). If we do it inside the requestAnimationFrame,
     // we see flashing and if we do it directly, the animation does not play at all.
@@ -605,10 +606,32 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         // when we start animating the glance.
         this.contentWrapper.style.opacity = 0;
         data.elementData = await this.#getElementPreviewData(data);
+        // The glance tab may have been closed (e.g. by an extension) while we
+        // were capturing the preview. Don't start dimming the parent again.
+        if (this.#isGlanceClosed(glanceID)) {
+          URL.revokeObjectURL(data.elementData);
+          resolve(null);
+          return;
+        }
       }
-      this.#glances.get(this.#currentGlanceID).elementData = data.elementData;
-      this.#executeGlanceAnimation(data, browserElement, resolve);
+      this.#glances.get(glanceID).elementData = data.elementData;
+      this.#executeGlanceAnimation(data, browserElement, glanceID, resolve);
     });
+  }
+
+  /**
+   * Check whether a glance has been closed, or is being closed, since it
+   * started opening. This happens when something else (e.g. an extension)
+   * removes the glance tab while the opening animation is still running.
+   *
+   * @param {string} glanceID - The glance ID captured when opening started
+   * @returns {boolean} True if the glance is closed or closing
+   */
+  #isGlanceClosed(glanceID) {
+    return (
+      !this.#glances.has(glanceID) ||
+      (this.closingGlance && this.#currentGlanceID === glanceID)
+    );
   }
 
   /**
@@ -708,9 +731,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    *
    * @param {object} data - Glance data
    * @param {Browser} browserElement - The browser element
+   * @param {string} glanceID - The ID of the glance being opened
    * @param {Function} resolve - Promise resolve function
    */
-  #executeGlanceAnimation(data, browserElement, resolve) {
+  #executeGlanceAnimation(data, browserElement, glanceID, resolve) {
     const imageDataElement = this.#handleElementPreview(data);
 
     // Create the curved animation sequence. The transform origin is handled
@@ -725,9 +749,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // nice fade-in effect to the content. But if it doesn't exist,
     // we just fall back to always showing the browser directly.
     if (data.elementData) {
+      // Keep a reference, this.contentWrapper is cleared if the glance closes
+      // before the fade-in finishes.
+      const contentWrapper = this.contentWrapper;
       gZenUIManager
         .elementAnimate(
-          this.contentWrapper,
+          contentWrapper,
           { opacity: [0, 1] },
           {
             duration: this.#GLANCE_ANIMATION_DURATION / 4,
@@ -735,7 +762,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
           }
         )
         .then(() => {
-          this.contentWrapper.style.opacity = "";
+          contentWrapper.style.opacity = "";
         });
     }
 
@@ -756,6 +783,13 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         easing: "ease-in-out",
       })
       .then(() => {
+        // The glance tab was closed mid-animation, the closing path has
+        // already taken over cleanup so there's nothing left to finalize.
+        if (this.#isGlanceClosed(glanceID)) {
+          imageDataElement?.remove();
+          resolve(null);
+          return;
+        }
         if (shouldDeactivateDocShell) {
           browserElement.zenModeActive = activeValue;
           browserElement.docShellIsActive = true;

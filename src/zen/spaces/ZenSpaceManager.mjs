@@ -63,8 +63,6 @@ class nsZenWorkspaces {
   _workspaceCache = [];
 
   #lastScrollTime = 0;
-  // The space a `--space` command line is switching to, while it switches.
-  #pendingCommandLineWorkspace = null;
   #currentSpaceSwitchContext = {
     promise: null,
     animations: [],
@@ -417,21 +415,6 @@ class nsZenWorkspaces {
 
   getCurrentSpaceContainerId() {
     return this.#spaceContainerId(this.getActiveWorkspaceFromCache());
-  }
-
-  /**
-   * The space a tab being opened right now belongs to. Normally the active
-   * one, except while a `--space` command line is still switching, when it is
-   * the space that command line asked for.
-   *
-   * @returns {object|undefined} The space to take the container from
-   */
-  #workspaceForNewTab() {
-    return (
-      (this.#pendingCommandLineWorkspace &&
-        this.getWorkspaceFromId(this.#pendingCommandLineWorkspace)) ||
-      this.getActiveWorkspaceFromCache()
-    );
   }
 
   getCurrentEssentialsContainer() {
@@ -1883,23 +1866,28 @@ class nsZenWorkspaces {
   }
 
   async changeWorkspaceFromCommandLine(workspaceMatch) {
-    // Resolved before the first await, because a URL in the same command line
-    // is opened in the same tick as this call and would otherwise be given the
-    // container of the space being switched away from.
-    const pending =
-      this.resolveWorkspaceFromCLIString(workspaceMatch)?.uuid ?? null;
-    this.#pendingCommandLineWorkspace = pending;
-    try {
-      await this.promiseInitialized;
-      const workspace = this.resolveWorkspaceFromCLIString(workspaceMatch);
-      if (workspace && workspace.uuid !== this.activeWorkspace) {
-        await this.changeWorkspaceWithID(workspace.uuid);
-      }
-    } finally {
-      // A second --space may have arrived meanwhile; leave its destination be.
-      if (this.#pendingCommandLineWorkspace === pending) {
-        this.#pendingCommandLineWorkspace = null;
-      }
+    // A URL in the same command line is opened in the same tick as this call
+    // and takes its container from the active space, so the destination has to
+    // become active before the first await rather than once the switch has
+    // animated its way there.
+    const early = this.resolveWorkspaceFromCLIString(workspaceMatch);
+    const movedEarly = !!early && early.uuid !== this.activeWorkspace;
+    if (movedEarly) {
+      this.activeWorkspace = early.uuid;
+    }
+
+    await this.promiseInitialized;
+    const workspace =
+      early ?? this.resolveWorkspaceFromCLIString(workspaceMatch);
+    if (!workspace) {
+      return;
+    }
+    if (movedEarly) {
+      // activeWorkspace is already the destination, so the switch has to be
+      // told this is not a no-op.
+      await this.changeWorkspace(workspace, { alwaysChange: true });
+    } else if (workspace.uuid !== this.activeWorkspace) {
+      await this.changeWorkspaceWithID(workspace.uuid);
     }
   }
 
@@ -3306,7 +3294,7 @@ class nsZenWorkspaces {
       }
     }
 
-    const activeWorkspace = this.#workspaceForNewTab();
+    const activeWorkspace = this.getActiveWorkspaceFromCache();
     const activeWorkspaceUserContextId = activeWorkspace?.containerTabId;
 
     if (

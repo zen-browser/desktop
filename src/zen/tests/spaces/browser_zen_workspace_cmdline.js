@@ -156,7 +156,7 @@ add_task(async function test_command_line_space_container_used_immediately() {
   Assert.notStrictEqual(
     gZenWorkspaces.getContextIdIfNeeded(undefined, false, null)[0],
     targetContainer,
-    "Switching back leaves no pending destination behind."
+    "Switching back makes new tabs follow the active space again."
   );
   await gZenWorkspaces.removeWorkspace(target.uuid);
 });

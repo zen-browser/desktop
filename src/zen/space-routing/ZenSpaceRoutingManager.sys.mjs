@@ -134,12 +134,6 @@ class nsZenSpaceRoutingManager {
    * Resolves the container a startup URI from another application belongs in,
    * so Tabbrowser can hand it to the initial tab.
    *
-   * Firefox loads a single startup URI into the initial tab rather than
-   * through addTab(), so routing it means giving that tab the destination
-   * space's container. This runs while gBrowser is being built, which can be
-   * before the session file has been read, so coming up empty is expected and
-   * routeStartupTab() settles where the link actually lands.
-   *
    * @param {Window} win - The browser window receiving the startup URI
    * @returns {number|null} The container to use, or null to leave it alone
    */
@@ -191,10 +185,6 @@ class nsZenSpaceRoutingManager {
   /**
    * Moves the initial tab into the space its rule points at, when the startup
    * URI came from another application.
-   *
-   * Called once gZenWorkspaces has its spaces, so unlike
-   * getStartupUserContextId() this cannot lose the race with the session file,
-   * and it is what decides where the link ends up.
    *
    * @param {Element} initialTab - The tab the startup URI was loaded into
    * @param {Window} win - The browser window receiving the startup URI

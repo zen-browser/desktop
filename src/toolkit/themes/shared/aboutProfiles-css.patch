@@ -1,0 +1,12 @@
+diff --git a/toolkit/themes/shared/aboutProfiles.css b/toolkit/themes/shared/aboutProfiles.css
+index ed8bc729fc10588cf7cefd32a6a8393e592873a3..664a771ff776787ee82add6ae6089f4169205268 100644
+--- a/toolkit/themes/shared/aboutProfiles.css
++++ b/toolkit/themes/shared/aboutProfiles.css
+@@ -3,6 +3,7 @@
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ @import url("chrome://global/skin/in-content/info-pages.css");
++@import url("chrome://browser/content/zen-styles/zen-about-profiles.css");
+ 
+ #profiles {
+   clear: both;

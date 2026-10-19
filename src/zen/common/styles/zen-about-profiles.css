@@ -1,0 +1,179 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Zen look for about:profiles: cards instead of bordered tables. Style only,
+   the page's markup and behavior are Firefox's. */
+
+:root {
+  --zen-profiles-field: light-dark(
+    rgba(0, 0, 0, 0.04),
+    rgba(255, 255, 255, 0.05)
+  );
+  --zen-profiles-field-hover: light-dark(
+    rgba(0, 0, 0, 0.08),
+    rgba(255, 255, 255, 0.09)
+  );
+  --zen-profiles-muted: light-dark(
+    rgba(0, 0, 0, 0.55),
+    rgba(255, 255, 255, 0.55)
+  );
+  --zen-profiles-radius: 12px;
+}
+
+body.wide-container {
+  max-width: 820px;
+  margin-inline: auto;
+  padding-block: 48px;
+}
+
+h1 {
+  font-size: 1.8em;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.header-flex {
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.page-subtitle {
+  color: var(--zen-profiles-muted);
+}
+
+.action-box {
+  min-width: 17em;
+  border: none;
+  border-radius: var(--zen-profiles-radius);
+  background: var(--zen-profiles-field);
+  padding: 14px 16px;
+
+  & h3 {
+    margin-top: 0;
+    font-size: 0.95em;
+    font-weight: 600;
+  }
+
+  & button {
+    display: block;
+    width: 100%;
+    margin: 6px 0 0;
+  }
+}
+
+button {
+  border-radius: 8px;
+  margin-inline: 0 6px;
+}
+
+#create-button {
+  margin: 20px 0 16px;
+  background-color: var(--color-accent-primary);
+  border-color: transparent;
+  color: var(--button-text-color-primary);
+
+  &:hover {
+    background-color: var(--color-accent-primary-hover);
+  }
+}
+
+/* One card per profile. */
+#profiles > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  border-radius: var(--zen-profiles-radius);
+  background: var(--zen-profiles-field);
+
+  & > h2 {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+
+  /* "This is the profile in use" and similar messages, as a badge. */
+  & > h3 {
+    margin: 0 0 4px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.8em;
+    font-weight: 600;
+    background: color-mix(
+      in srgb,
+      var(--color-accent-primary) 18%,
+      transparent
+    );
+    color: var(--color-accent-primary);
+  }
+
+  & > table {
+    flex-basis: 100%;
+    margin: 8px 0 10px;
+    border: none;
+    border-collapse: separate;
+    border-spacing: 0 4px;
+    background: transparent;
+  }
+
+  & th,
+  & td {
+    border: none;
+    background: transparent;
+    padding: 2px 0;
+    vertical-align: baseline;
+  }
+
+  & th {
+    width: 9em;
+    padding-inline-end: 12px;
+    font-weight: 500;
+    color: var(--zen-profiles-muted);
+    text-align: start;
+  }
+
+  & td {
+    font-family: ui-monospace, monospace;
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+  }
+
+  & .opendir {
+    margin-inline-start: 8px;
+    padding: 1px 8px;
+    min-height: 0;
+    font-family: system-ui, sans-serif;
+    font-size: 0.95em;
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-accent-primary);
+
+    &:hover {
+      background: var(--zen-profiles-field-hover);
+    }
+  }
+
+  & > button {
+    margin: 0;
+    background: var(--zen-profiles-field-hover);
+    border-color: transparent;
+  }
+
+  & > button[data-l10n-id="profiles-launch-profile"] {
+    margin-inline-start: auto;
+    background-color: var(--color-accent-primary);
+    color: var(--button-text-color-primary);
+  }
+
+  & > button[data-l10n-id="profiles-remove"] {
+    color: var(--text-color-error, #e22850);
+  }
+
+  & > hr {
+    display: none;
+  }
+}

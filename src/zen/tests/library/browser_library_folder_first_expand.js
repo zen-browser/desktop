@@ -22,7 +22,12 @@ add_task(async function test_collapsed_folder_copy_slides_open() {
     label: "first expand",
     collapsed: true,
   });
-  await BrowserTestUtils.waitForEvent(folder, "ZenFolderAnimationFinished");
+  await BrowserTestUtils.waitForEvent(
+    folder,
+    "TabGroupAnimationComplete",
+    false,
+    event => event.target === folder
+  );
   ok(folder.collapsed, "the folder is collapsed in the sidebar");
 
   const Library = customElements.get("zen-library");

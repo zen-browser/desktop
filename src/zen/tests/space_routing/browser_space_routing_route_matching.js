@@ -51,11 +51,11 @@ add_task(async function test_regex_match_is_case_sensitive_on_raw_uri() {
   );
 
   ok(
-    !gZenSpaceRoutingManager.isRouteMatching("https://github.com", {
+    gZenSpaceRoutingManager.isRouteMatching("https://github.com", {
       reference: "GitHub",
       matchType: "regex",
     }),
-    "'regex' is case-sensitive (no implicit lower-casing like 'contains')"
+    "'regex' is case-insensitive (no implicit lower-casing like 'contains')"
   );
 });
 

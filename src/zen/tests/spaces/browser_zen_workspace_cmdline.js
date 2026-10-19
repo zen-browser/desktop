@@ -93,6 +93,74 @@ add_task(async function test_change_workspace_from_command_line() {
   );
 });
 
+add_task(async function test_command_line_space_container_used_immediately() {
+  const { ContextualIdentityService } = ChromeUtils.importESModule(
+    "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs"
+  );
+  const targetContainer =
+    ContextualIdentityService.getPublicIdentities()[0].userContextId;
+
+  const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
+  await gZenWorkspaces.createAndSaveWorkspace(
+    "Cmdline Container",
+    undefined,
+    /* dontChange */ true,
+    targetContainer
+  );
+  const target = gZenWorkspaces
+    .getWorkspaces()
+    .find(workspace => workspace.name === "Cmdline Container");
+  Assert.ok(target, "The target workspace should exist.");
+  registerCleanupFunction(async () => {
+    if (gZenWorkspaces.getWorkspaceFromId(target.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  });
+
+  Assert.strictEqual(
+    gZenWorkspaces.activeWorkspace,
+    originalWorkspaceUUID,
+    "We should still be on the original workspace."
+  );
+  Assert.notStrictEqual(
+    gZenWorkspaces.getWorkspaceFromId(originalWorkspaceUUID)?.containerTabId,
+    targetContainer,
+    "The two workspaces must use different containers for this to mean anything."
+  );
+
+  // Deliberately not awaited: BrowserContentHandler opens a URL from the same
+  // command line in the same tick, before the switch has finished.
+  const switching =
+    gZenWorkspaces.changeWorkspaceFromCommandLine("cmdline container");
+
+  Assert.strictEqual(
+    gZenWorkspaces.getContextIdIfNeeded(undefined, false, null)[0],
+    targetContainer,
+    "A tab opened while the switch runs gets the destination's container."
+  );
+
+  await switching;
+  Assert.strictEqual(
+    gZenWorkspaces.activeWorkspace,
+    target.uuid,
+    "The command line flag should switch to the target workspace."
+  );
+  Assert.strictEqual(
+    gZenWorkspaces.getContextIdIfNeeded(undefined, false, null)[0],
+    targetContainer,
+    "The container still comes from the destination once it is active."
+  );
+
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+  Assert.notStrictEqual(
+    gZenWorkspaces.getContextIdIfNeeded(undefined, false, null)[0],
+    targetContainer,
+    "Switching back leaves no pending destination behind."
+  );
+  await gZenWorkspaces.removeWorkspace(target.uuid);
+});
+
 add_task(async function test_unknown_workspace_does_not_switch() {
   const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
 

@@ -136,33 +136,17 @@ class nsZenSpaceRoutingManager {
    *
    * Firefox loads a single startup URI into the initial tab rather than
    * through addTab(), so routing it means giving that tab the destination
-   * space's container up front. This runs while gBrowser is being built, long
-   * before gZenWorkspaces has populated its own cache, so the spaces are read
-   * straight from the session store.
+   * space's container. This runs while gBrowser is being built, which can be
+   * before the session file has been read, so coming up empty is expected and
+   * routeStartupTab() settles where the link actually lands.
    *
    * @param {Window} win - The browser window receiving the startup URI
    * @returns {number|null} The container to use, or null to leave it alone
    */
   getStartupUserContextId(win) {
     try {
-      const extraOptions = win.arguments?.[1];
-      if (
-        !(extraOptions instanceof Ci.nsIPropertyBag2) ||
-        !extraOptions.hasKey("fromExternal") ||
-        !extraOptions.getPropertyAsBool("fromExternal")
-      ) {
-        return null;
-      }
-
-      // Resolved synchronously for anything but the homepage, which is never
-      // an external link.
-      const uriString = win.gBrowserInit.uriToLoadPromise;
-      if (typeof uriString != "string") {
-        return null;
-      }
-
-      const targetRoute = this.routeUri(uriString, { fromExternal: true });
-      if (targetRoute === "most-recent-space") {
+      const targetRoute = this.#startupExternalRoute(win);
+      if (!targetRoute) {
         return null;
       }
 
@@ -174,6 +158,55 @@ class nsZenSpaceRoutingManager {
       console.error("[ZenSpaceRouting]: Error routing the startup URI:", err);
       return null;
     }
+  }
+
+  /**
+   * The space an externally supplied startup URI is configured to land in, or
+   * null when Firefox's usual handling should be left alone.
+   *
+   * @param {Window} win - The browser window receiving the startup URI
+   * @returns {string|null} The destination space's id, or null
+   */
+  #startupExternalRoute(win) {
+    const extraOptions = win.arguments?.[1];
+    if (
+      !(extraOptions instanceof Ci.nsIPropertyBag2) ||
+      !extraOptions.hasKey("fromExternal") ||
+      !extraOptions.getPropertyAsBool("fromExternal")
+    ) {
+      return null;
+    }
+
+    // Resolved synchronously for anything but the homepage, which is never
+    // an external link.
+    const uriString = win.gBrowserInit.uriToLoadPromise;
+    if (typeof uriString != "string") {
+      return null;
+    }
+
+    const targetRoute = this.routeUri(uriString, { fromExternal: true });
+    return targetRoute === "most-recent-space" ? null : targetRoute;
+  }
+
+  /**
+   * Moves the initial tab into the space its rule points at, when the startup
+   * URI came from another application.
+   *
+   * Called once gZenWorkspaces has its spaces, so unlike
+   * getStartupUserContextId() this cannot lose the race with the session file,
+   * and it is what decides where the link ends up.
+   *
+   * @param {Element} initialTab - The tab the startup URI was loaded into
+   * @param {Window} win - The browser window receiving the startup URI
+   * @returns {Promise<void>} Resolved once the tab has been routed
+   */
+  async routeStartupTab(initialTab, win) {
+    const targetRoute = this.#startupExternalRoute(win);
+    if (!targetRoute) {
+      return;
+    }
+
+    await this.#routeToWorkspace(targetRoute, initialTab, false, win);
   }
 
   /**

@@ -189,3 +189,46 @@ add_task(async function test_initial_workspace_pref_survives_private_window() {
   Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
   await SpecialPowers.popPrefEnv();
 });
+
+add_task(async function test_url_opens_in_requested_space() {
+  const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
+  await gZenWorkspaces.createAndSaveWorkspace("Cmdline Url", undefined, false, 1);
+  const target = gZenWorkspaces
+    .getWorkspaces()
+    .find(workspace => workspace.name === "Cmdline Url");
+  Assert.ok(target, "The target workspace should exist.");
+  registerCleanupFunction(async () => {
+    if (gZenWorkspaces.getWorkspaceFromId(target.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  });
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+
+  const url = "https://example.com/?space-cmdline";
+  const tabPromise = BrowserTestUtils.waitForNewTab(gBrowser, url, true);
+  const cmdLine = Cu.createCommandLine(
+    ["--space", "cmdline url", url],
+    null,
+    Ci.nsICommandLine.STATE_REMOTE_EXPLICIT
+  );
+  Cc["@mozilla.org/browser/clh;1"]
+    .getService(Ci.nsICommandLineHandler)
+    .handle(cmdLine);
+
+  const tab = await tabPromise;
+  Assert.equal(
+    tab.getAttribute("zen-workspace-id"),
+    target.uuid,
+    "The URL should open in the requested space."
+  );
+  Assert.equal(
+    tab.userContextId,
+    target.containerTabId,
+    "The tab should use the requested space's container."
+  );
+
+  BrowserTestUtils.removeTab(tab);
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+  await gZenWorkspaces.removeWorkspace(target.uuid);
+});

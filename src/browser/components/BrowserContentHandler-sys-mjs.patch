@@ -11,7 +11,7 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e
  });
  
  /**
-@@ -672,6 +674,60 @@ nsBrowserContentHandler.prototype = {
+@@ -672,6 +674,75 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -47,13 +47,28 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e
 +          targetWin?.gZenWorkspaces &&
 +          !targetWin.gZenWorkspaces.privateWindowOrDisabled
 +        ) {
++          let urls = [];
++          while (cmdLine.length) {
++            urls.push(cmdLine.getArgument(0));
++            cmdLine.removeArguments(0, 0);
++          }
 +          targetWin.gZenWorkspaces
 +            .changeWorkspaceFromCommandLine(zenWorkspaceParam)
++            .then(() => {
++              for (let url of urls) {
++                let { uri, principal } = resolveURIInternal(cmdLine, url);
++                handURIToExistingBrowser(
++                  uri,
++                  Ci.nsIBrowserDOMWindow.OPEN_NEWTAB,
++                  cmdLine,
++                  false,
++                  principal
++                );
++              }
++            })
 +            .catch(console.error);
 +          targetWin.focus();
-+          if (!cmdLine.length) {
-+            cmdLine.preventDefault = true;
-+          }
++          cmdLine.preventDefault = true;
 +        } else {
 +          // Cold start: stash the space so the first window that
 +          // restores picks it up, and let normal startup open that window.
@@ -72,7 +87,7 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -742,6 +798,8 @@ nsBrowserContentHandler.prototype = {
+@@ -742,6 +813,8 @@ nsBrowserContentHandler.prototype = {
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --data <data-URL>  Open a data: URL.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
@@ -81,7 +96,7 @@ index f4a0e1e566c363d5eb1d77e0c021df250d96b3f3..2cd8c4b383723372a648a4511bed2c6e
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
-@@ -1330,7 +1388,9 @@ function handURIToExistingBrowser(
+@@ -1330,7 +1403,9 @@ function handURIToExistingBrowser(
    });
  
    if (navWin) {

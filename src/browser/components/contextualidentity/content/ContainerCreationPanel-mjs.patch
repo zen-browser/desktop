@@ -1,5 +1,5 @@
 diff --git a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
-index 9868c288653b83717afb0403901c8adc0058bd4d..acc42f8c11c2467f19931f619496ac619fd21726 100644
+index 9868c288653b83717afb0403901c8adc0058bd4d..8e47c46ab02e8fb61ac565299c25eeb890d23ad5 100644
 --- a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
 +++ b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
 @@ -4,7 +4,6 @@
@@ -10,18 +10,50 @@ index 9868c288653b83717afb0403901c8adc0058bd4d..acc42f8c11c2467f19931f619496ac61
  const ANCHOR_PINNED_CLASS = "container-anchor-pinned";
  
  const lazy = {};
-@@ -80,7 +79,9 @@ export const ContainerCreationPanel = {
+@@ -21,6 +20,14 @@ function unpinAnchor(anchor) {
+   anchor.classList.remove(ANCHOR_PINNED_CLASS);
+ }
+ 
++/**
++ * Returns true when the element is actually laid out and visible, unlike a
++ * plain `hidden` attribute check, which misses hidden ancestors.
++ */
++function isRendered(el) {
++  return !!el && !!el.getClientRects().length;
++}
++
+ /**
+  * Shared entry point for the "Add new container" menu items. Shows a panel,
+  * hosting the same editor as the about:preferences container dialog, anchored
+@@ -80,7 +87,26 @@ export const ContainerCreationPanel = {
      createButton.addEventListener("click", onCreate);
      cancelButton.addEventListener("click", onCancel);
  
 -    let anchor = doc.getElementById(ANCHOR_ID);
-+    let anchor = win.gZenWorkspaces.activeWorkspaceStrip.querySelector(
++    let anchor = win.gZenWorkspaces.activeWorkspaceStrip?.querySelector(
 +      "#tabs-newtab-button"
 +    );
++
++    // While creating a space, the active space's tab strip (and with it the
++    // new-tab button) is hidden behind the creation form, and popups anchored
++    // to non-rendered elements are placed off-screen. Anchor the editor to the
++    // creation form's profile button in those cases; when neither element is
++    // visible, the navigator toolbox is always laid out.
++    if (!isRendered(anchor)) {
++      let creationProfileButton = doc.querySelector(
++        ".zen-workspace-creation-profile"
++      );
++      anchor = isRendered(creationProfileButton)
++        ? creationProfileButton
++        : doc.getElementById("navigator-toolbox");
++      if (!isRendered(anchor)) {
++        return;
++      }
++    }
  
      panel.addEventListener("popupshown", () => editor.focus(), { once: true });
      panel.addEventListener(
-@@ -99,6 +100,6 @@ export const ContainerCreationPanel = {
+@@ -99,6 +125,6 @@ export const ContainerCreationPanel = {
        anchor.hidden = false;
      }
  

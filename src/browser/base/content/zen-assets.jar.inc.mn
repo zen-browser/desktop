@@ -23,3 +23,4 @@
 #include ../../../zen/share/jar.inc.mn
 #include ../../../zen/library/jar.inc.mn
 #include ../../../zen/containers/jar.inc.mn
+#include ../../../zen/containers/icons.jar.inc.mn

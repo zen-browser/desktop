@@ -3,12 +3,6 @@
 
 "use strict";
 
-add_setup(async function () {
-  await SpecialPowers.pushPrefEnv({
-    set: [["test.wait300msAfterTabSwitch", true]],
-  });
-});
-
 /**
  * Ensure that a pending tab has label and icon correctly set.
  */

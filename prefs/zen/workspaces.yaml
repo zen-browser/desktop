@@ -20,6 +20,9 @@
 - name: zen.workspaces.swipe-actions.delta-multiplier
   value: 100
 
+- name: zen.workspaces.swipe-actions.edge-actions
+  value: true
+
 - name: zen.workspaces.switch-animation-duration
   value: 250
 

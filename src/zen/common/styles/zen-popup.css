@@ -312,6 +312,10 @@ menuseparator {
   display: flex;
   align-items: end;
 
+  &:empty {
+    display: none;
+  }
+
   :root:not([zen-right-side="true"]) & {
     right: var(--zen-toast-spacing);
   }
@@ -410,4 +414,8 @@ menuseparator {
 
 #window-modal-dialog {
   inset: 0;
+}
+
+.tab-preview-thumbnail-container > canvas {
+  border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
 }

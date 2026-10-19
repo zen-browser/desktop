@@ -45,7 +45,7 @@ class TestAutoRestoreWithTabGroups(SessionStoreTestCase):
             """
             let resolve = arguments[0];
             let group = gBrowser.addTabGroup([gBrowser.tabs[0]], { id: "test-group", label: "test-group" });
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
             """
         )
@@ -121,7 +121,7 @@ class TestAutoRestoreWithTabGroups(SessionStoreTestCase):
             """
             let resolve = arguments[0];
             let group = gBrowser.addTabGroup([gBrowser.tabs[0]], { id: "test-group", label: "test-group" });
-            let { TabStateFlusher } = ChromeUtils.importESModule("resource:///modules/sessionstore/TabStateFlusher.sys.mjs");
+            let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
             TabStateFlusher.flushWindow(gBrowser.documentGlobal).then(resolve);
             """
         )

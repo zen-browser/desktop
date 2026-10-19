@@ -77,7 +77,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   __hasSetMenuListener = false;
   overlay = null;
   _splitNodeToSplitters = new Map();
-  _tabToSplitNode = new Map();
+  _tabToSplitNode = new WeakMap();
   dropZone;
   _edgeHoverSize;
   minResizeWidth;
@@ -336,7 +336,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (
         !gBrowser.isTab(draggedTab) ||
         gBrowser.selectedTab.hasAttribute("zen-empty-tab") ||
-        draggedTab.documentGlobal !== window
+        draggedTab.documentGlobal !== window ||
+        // See gh-15329.
+        draggedTab.multiselected
       ) {
         return;
       }
@@ -1184,6 +1186,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     document.l10n.setAttributes(splitTabCommand, "tab-zen-split-tabs", {
       tabCount: isExistingSplitView ? -1 : selectedTabs.length,
     });
+    document.getElementById("context_zenShareSplitView").hidden =
+      !gZenShareManager.enabled || !isExistingSplitView;
     if (isExistingSplitView) {
       splitTabCommand.removeAttribute("hidden");
       return;
@@ -1204,6 +1208,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 data-lazy-l10n-id="tab-zen-split-tabs"
                 data-l10n-args='{"tabCount": 1}'
                 command="cmd_zenSplitViewContextMenu"/>
+      <menuitem id="context_zenShareSplitView"
+                data-lazy-l10n-id="zen-share-split-view"
+                hidden="true"
+                command="cmd_zenCtxShareSplitView"/>
     `);
     document.getElementById("context_moveTabToSplitView").before(element);
   }
@@ -1250,6 +1258,16 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return;
     }
     this.splitTabs([currentTab, newTab], undefined, 1);
+  }
+
+  /**
+   * Shares the split view of the context tab.
+   */
+  contextShareSplitView() {
+    const group = TabContextMenu.contextTab?.group;
+    if (group?.hasAttribute("split-view-group")) {
+      gZenShareManager.shareSplitView(group);
+    }
   }
 
   /**
@@ -1407,9 +1425,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *                                use -1 to avoid selecting any tab.
    * @param {object} options - Additional options.
    * @param {string|null} options.groupFetchId - An optional group fetch ID.
+   * @param {boolean} options.activate - Whether to select the split after creating it.
    * @returns {object|undefined} The split view data or undefined if the split was not performed.
    */
-  splitTabs(tabs, gridType, initialIndex = 0, { groupFetchId = null } = {}) {
+  splitTabs(
+    tabs,
+    gridType,
+    initialIndex = 0,
+    { groupFetchId = null, activate = true } = {}
+  ) {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
@@ -1425,6 +1449,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       const existingSplitTab = tabs.find(tab => tab.splitView);
       let shouldActivateSplit =
+        activate &&
         (initialIndex >= 0 || tabs.includes(window.gBrowser.selectedTab)) &&
         !this._sessionRestoring;
 
@@ -1583,7 +1608,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       tab.hasAttribute("pending")
     );
     if (pendingTabs.length) {
-      pendingTabs.forEach(tab => gBrowser._insertBrowser(tab));
+      pendingTabs.forEach(tab => gBrowser.insertBrowser(tab));
       // SessionStore listens for this on the tab container and restores each
       // tab's saved history, scroll position and form data. Kept non-bubbling
       // so it doesn't reach tabbrowser, which tracks Firefox's own split view.
@@ -2026,6 +2051,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const parentWindow = window.parent;
     const targetWindow = parentWindow || window;
     const tab = targetWindow.gBrowser.addTab(url, {
+      skipAnimation: true,
       ...options,
       triggeringPrincipal,
     });
@@ -2528,6 +2554,16 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
+  /**
+   * Clears the flag a frame late, so a tab opened just before the urlbar
+   * closed is still covered when the strip checks whether to animate it.
+   */
+  #clearWaitingForSplitTab() {
+    window.requestAnimationFrame(() => {
+      this.waitingForSplitTab = false;
+    });
+  }
+
   createEmptySplit(side = "right") {
     const selectedTab = gBrowser.selectedTab;
     const emptyTab = gZenWorkspaces._emptyTab;
@@ -2547,6 +2583,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         const closeToken = {};
         const controller = new AbortController();
         const cleanup = (onSwitch = false, groupIndex = null) => {
+          this.#clearWaitingForSplitTab();
           if (groupIndex === null) {
             groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
@@ -2566,6 +2603,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               return;
             }
             controller.abort();
+            this.#clearWaitingForSplitTab();
             const { onElementPicked, onSwitch } = event.detail;
             const groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
@@ -2599,6 +2637,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           },
           { signal: controller.signal }
         );
+        this.waitingForSplitTab = true;
         if (
           !gZenUIManager.handleNewTab(false, false, "tab", true, closeToken)
         ) {

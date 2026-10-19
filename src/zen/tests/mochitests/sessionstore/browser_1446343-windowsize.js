@@ -10,7 +10,41 @@ add_task(async function test() {
     await changeSizeMode("restore");
   }
 
-  const { outerWidth, outerHeight, screenX, screenY } = win;
+  const { outerWidth, outerHeight } = win;
+  // Sizes are in CSS pixels, but positions are in desktop pixels (bug
+  // 1247335), so use device pixels from the widget instead of
+  // window.screenX/Y.
+  const baseWindow = win.docShell.treeOwner.QueryInterface(Ci.nsIBaseWindow);
+  const scale = baseWindow.devicePixelsPerDesktopPixel;
+  function getPosition() {
+    const posX = {},
+      posY = {};
+    baseWindow.getPosition(posX, posY);
+    return { x: posX.value / scale, y: posY.value / scale };
+  }
+
+  // Once the window is maximized or minimized, its position is read back from
+  // the persisted screenX/screenY attributes of the root element rather than
+  // from the widget. Those are written a short time after the window is moved,
+  // so move it once here and wait for them, to be sure they describe where this
+  // window actually is.  See bug 2064941.
+  {
+    const pos = getPosition();
+    baseWindow.setPositionDesktopPix(pos.x + 1, pos.y + 1);
+    await TestUtils.waitForCondition(
+      () => getPosition().x == pos.x + 1 && getPosition().y == pos.y + 1,
+      "Window should have moved"
+    );
+    await TestUtils.waitForCondition(
+      () =>
+        win.document.documentElement.getAttribute("screenX") ==
+        String(pos.x + 1),
+      "Persisted screenX attribute should catch up with the window position"
+    );
+  }
+
+  const { x: screenX, y: screenY } = getPosition();
+
   function checkCurrentState(sizemode) {
     let state = ss.getWindowState(win);
     let winState = state.windows[0];

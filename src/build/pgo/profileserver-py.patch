@@ -1,19 +1,39 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index b11171e3ef14b1f2c4a279b10d83eb4dadde45ca..fdf7c2d5ad6352bdd8f2ea20ee80c0927daa2ba2 100755
+index a23e879dfdc4994ff615fb389fad92f5234ef1fa..16da05a89407665ee8404edcfc9d0d09af9a9c12 100644
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
-@@ -17,7 +17,13 @@ from mozprofile import FirefoxProfile, Preferences
+@@ -6,6 +6,7 @@
+ 
+ import glob
+ import os
++import socket
+ import subprocess
+ import sys
+ 
+@@ -17,7 +18,14 @@ from mozprofile import FirefoxProfile, Preferences
  from mozprofile.permissions import ServerLocations
  from mozrunner import CLI, FirefoxRunner
  
 -PORT = 8888
-+import socket
++
 +def find_free_port():
 +    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-+        s.bind(('', 0))
++        s.bind(("", 0))
 +        return s.getsockname()[1]
++
 +
 +PORT = find_free_port()
  
  PATH_MAPPINGS = {
      "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",
+@@ -233,6 +241,10 @@ if __name__ == "__main__":
+             "http://localhost:%d/index.html?extendedCorpus=%s"
+             % (PORT, str(has_extended_corpus).lower())
+         ]
++        env["ZEN_PGO_UI_TRAINING_URLS"] = ",".join(
++            "http://localhost:%d/blueprint/%s" % (PORT, page)
++            for page in ("sample.html", "elements.html", "grid.html", "forms.html")
++        )
+         runner = FirefoxRunner(
+             profile=profile,
+             binary=binary,

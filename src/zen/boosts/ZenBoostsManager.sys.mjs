@@ -140,6 +140,7 @@ class nsZenBoostsManager {
         sizeOverride: 1,
 
         zapSelectors: [],
+        focusSelectors: [],
         customCSS: "",
 
         changeWasMade: false,
@@ -249,25 +250,37 @@ class nsZenBoostsManager {
   }
 
   /**
+   * Returns the selector list of a boost for the given mode.
+   *
+   * @param {object} boostData - The boost data
+   * @param {string} mode - "zap" or "focus"
+   * @returns {Array} The entries of that mode
+   */
+  #selectorsForMode(boostData, mode) {
+    const key = mode === "focus" ? "focusSelectors" : "zapSelectors";
+    if (!boostData[key]) {
+      boostData[key] = [];
+    }
+    return boostData[key];
+  }
+
+  /**
    * Adds the zap selector to the selectors list and updates the website.
    *
    * @param {string} selector - Selector which will hide the elements
    * @param {string} domain - Domain of the target boost
+   * @param {string} [mode] - "zap" hides the elements, "focus" hides everything else
    */
-  addZapSelectorToActive(selector, domain) {
+  addZapSelectorToActive(selector, domain, mode = "zap") {
     const boost = this.loadActiveBoostFromStore(domain);
     if (!boost) {
       console.error("[ZenBoostsManager] Active boost is null");
       return;
     }
 
-    const { boostData } = boost.boostEntry;
-
-    if (!boostData.zapSelectors) {
-      boostData.zapSelectors = [];
-    }
-    if (!boostData.zapSelectors.includes(selector)) {
-      boostData.zapSelectors.push(selector);
+    const entries = this.#selectorsForMode(boost.boostEntry.boostData, mode);
+    if (!entries.includes(selector)) {
+      entries.push(selector);
     }
 
     this.updateBoost(boost);
@@ -278,21 +291,19 @@ class nsZenBoostsManager {
    *
    * @param {string} selector - Selector which will no longer hide the elements
    * @param {string} domain - Domain of the target boost
+   * @param {string} [mode] - The list it was added to, "zap" or "focus"
    */
-  removeZapSelectorToActive(selector, domain) {
+  removeZapSelectorToActive(selector, domain, mode = "zap") {
     const boost = this.loadActiveBoostFromStore(domain);
     if (!boost) {
       console.error("[ZenBoostsManager] Active boost is null");
       return;
     }
 
-    const { boostData } = boost.boostEntry;
-
-    if (boostData.zapSelectors && boostData.zapSelectors.includes(selector)) {
-      const i = boostData.zapSelectors.indexOf(selector);
-      if (i !== -1) {
-        boostData.zapSelectors.splice(i, 1);
-      }
+    const entries = this.#selectorsForMode(boost.boostEntry.boostData, mode);
+    const i = entries.indexOf(selector);
+    if (i !== -1) {
+      entries.splice(i, 1);
     }
 
     this.updateBoost(boost);
@@ -353,11 +364,13 @@ class nsZenBoostsManager {
   }
 
   /**
-   * Clears all zap selectors from a boost
+   * Clears the zap selectors of a boost
    *
    * @param {string} domain - Target boost domain
+   * @param {string|null} [mode] - Only clear "zap" or "focus" entries; both when omitted
+   * @param {string[]|null} [selectors] - Only clear these entries of that mode
    */
-  clearZapSelectorsForActive(domain) {
+  clearZapSelectorsForActive(domain, mode = null, selectors = null) {
     const boost = this.loadActiveBoostFromStore(domain);
     if (!boost) {
       console.error("[ZenBoostsManager] Active boost is null");
@@ -365,7 +378,17 @@ class nsZenBoostsManager {
     }
 
     const { boostData } = boost.boostEntry;
-    boostData.zapSelectors = [];
+    const clear = key => {
+      boostData[key] = selectors
+        ? (boostData[key] ?? []).filter(entry => !selectors.includes(entry))
+        : [];
+    };
+    if (mode !== "focus") {
+      clear("zapSelectors");
+    }
+    if (mode !== "zap") {
+      clear("focusSelectors");
+    }
 
     this.updateBoost(boost);
   }
@@ -606,9 +629,12 @@ class nsZenBoostsManager {
    * @param {Window} parentWindow - The parent browser window
    * @param {Boost} boost - The boost which will be edited
    * @param {nsIURI} domainUri - The boost which will be edited
+   * @param {object} [options]
+   * @param {Element} [options.browser] - Browser showing the site when it is
+   *   not the selected tab, e.g. a detached glance
    * @returns {Window|null} The instanced editor window
    */
-  openBoostWindow(parentWindow, boost, domainUri) {
+  openBoostWindow(parentWindow, boost, domainUri, { browser = null } = {}) {
     if (!this.canBoostSite(domainUri)) {
       console.error(
         "[ZenBoostsManager] Cannot open editor for boost with invalid domain."
@@ -623,7 +649,7 @@ class nsZenBoostsManager {
     const width = parentWindow.outerWidth;
     const height = parentWindow.outerHeight;
     const editorWidth = 185;
-    const editorHeight = 565;
+    const editorHeight = 629;
     const pad = 20;
 
     let left = screenX + width + pad;
@@ -648,38 +674,57 @@ class nsZenBoostsManager {
       null
     );
 
-    // Close the editor if the tab is switched
-    const onTabSelect = editor.close.bind(editor);
-    parentWindow.gBrowser.tabContainer.addEventListener(
-      "TabSelect",
-      onTabSelect,
-      {
-        once: true,
-      }
-    );
-
-    const progressListener = {
-      onLocationChange: webProgress => {
-        if (webProgress.isTopLevel) {
-          editor.close();
-        }
-      },
-    };
-
-    parentWindow.gBrowser.addProgressListener(progressListener);
-
     editor.addEventListener(
-      "unload",
+      "load",
       () => {
-        parentWindow.gBrowser.tabContainer.removeEventListener(
-          "TabSelect",
-          onTabSelect
-        );
-        parentWindow.gBrowser.removeProgressListener(progressListener);
+        const progressListener = {
+          QueryInterface: ChromeUtils.generateQI([
+            "nsIWebProgressListener",
+            "nsISupportsWeakReference",
+          ]),
+          onLocationChange: webProgress => {
+            if (webProgress.isTopLevel) {
+              editor.close();
+            }
+          },
+        };
+        const onTabSelect = editor.close.bind(editor);
+        if (browser) {
+          browser.addProgressListener(progressListener);
+          editor.addEventListener(
+            "unload",
+            () => {
+              browser.removeProgressListener(progressListener);
+              editor.browser = null;
+            },
+            { once: true }
+          );
+        } else {
+          // Close the editor if the tab is switched or navigates.
+          parentWindow.gBrowser.tabContainer.addEventListener(
+            "TabSelect",
+            onTabSelect,
+            { once: true }
+          );
+          parentWindow.gBrowser.addProgressListener(progressListener);
+          editor.addEventListener(
+            "unload",
+            () => {
+              parentWindow.gBrowser.tabContainer.removeEventListener(
+                "TabSelect",
+                onTabSelect
+              );
+              parentWindow.gBrowser.removeProgressListener(progressListener);
+              editor.browser = null;
+            },
+            { once: true }
+          );
+        }
       },
       { once: true }
     );
 
+    editor.browser = browser;
     // Give the domain
     editor.domain = domain;
     editor.openerWindow = parentWindow;

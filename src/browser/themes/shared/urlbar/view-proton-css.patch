@@ -1,17 +1,37 @@
 diff --git a/browser/themes/shared/urlbar/view-proton.css b/browser/themes/shared/urlbar/view-proton.css
-index 3620b33cb11f2e6bba189cbaf7532cca0e97cd3b..346c318ed178fb77a217b3b992b94706db6bf0ee 100644
+index a49dfd00bcf8a05ea2a6f4abf9c8a7f730b99039..344cbf60cc6ed97f86e689b07621384a72dcc3b5 100644
 --- a/browser/themes/shared/urlbar/view-proton.css
 +++ b/browser/themes/shared/urlbar/view-proton.css
-@@ -12,7 +12,7 @@
+@@ -12,11 +12,7 @@
  
    --urlbarView-small-font-size: 0.85em;
  
 -  --urlbarView-results-padding: 7px;
+-  /* The view's own margin, which urlbar.css also derives the joint
+-     background's outsets from. */
+-  --urlbarView-margin-block: 0px;
+-  --urlbarView-margin-inline: var(--urlbarView-results-padding);
 +  --urlbarView-results-padding: 8px;
    --urlbarView-row-gutter: var(--space-xxsmall);
    --urlbarview-row-padding-block: 6px;
    --urlbarView-row-padding-inline: var(--urlbar-icon-padding);
-@@ -165,7 +165,6 @@
+@@ -95,8 +91,13 @@
+   display: none;
+   text-shadow: none;
+   overflow: clip;
+-  margin-inline: var(--urlbarView-margin-inline);
+-  width: calc(100% - 2 * var(--urlbarView-margin-inline));
++  margin-inline: var(--urlbarView-results-padding);
++  width: calc(100% - 2 * var(--urlbarView-results-padding));
++
++  .urlbar[open] > & {
++    display: flex;
++    flex-direction: column;
++  }
+ 
+   /* The gap under the input sits outside the scrollport, so a row scrolling
+      past it doesn't paint over the input's border edge. */
+@@ -197,7 +198,6 @@
        min-height: var(--urlbarview-row-min-height);
      }
      :root[uidensity="touch"] & {

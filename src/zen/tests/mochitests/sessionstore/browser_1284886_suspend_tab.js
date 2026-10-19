@@ -3,7 +3,12 @@
 
 add_task(async function test() {
   await SpecialPowers.pushPrefEnv({
-    set: [["dom.require_user_interaction_for_beforeunload", false]],
+    set: [
+      ["dom.require_user_interaction_for_beforeunload", false],
+      // Keep the tab closing animation, which this test relies on to observe
+      // a tab in its closing state.
+      ["ui.prefersReducedMotion", 0],
+    ],
   });
 
   let url = "about:robots";
@@ -37,12 +42,15 @@ add_task(async function test() {
   ok(tab0.linkedPanel, "active tab is not able to be suspended");
 
   // Test that tab that is closing is not able to be suspended.
-  gBrowser._beginRemoveTab(tab1);
+  gBrowser.removeTab(tab1, { animate: true });
   gBrowser.discardBrowser(tab1);
 
   ok(tab1.linkedPanel, "cannot suspend a tab that is closing");
 
-  gBrowser._endRemoveTab(tab1);
+  await TestUtils.waitForCondition(
+    () => !tab1.isConnected,
+    "tab1 finished closing"
+  );
 
   // Open tab containing a page which has a beforeunload handler which shows a prompt.
   url =

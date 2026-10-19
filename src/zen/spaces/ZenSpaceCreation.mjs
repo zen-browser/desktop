@@ -8,6 +8,12 @@ ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
   return new Localization(["browser/zen-workspaces.ftl"], true);
 });
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 class nsZenWorkspaceCreation extends MozXULElement {
   #wasInCollapsedMode = false;
   #urlbarDimmed = false;
@@ -149,6 +155,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
       return;
     }
 
+    lazy.ZenLibrary.close();
     this.appendChild(this.constructor.fragment);
     this.initializeAttributeInheritance();
 
@@ -259,8 +266,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     document.getElementById("zen-sidebar-splitter").style.pointerEvents =
       "none";
-
-    gZenCompactModeManager.getAndApplySidebarWidth({});
     this.#dimUrlbar();
     this.resolveInitialized();
   }
@@ -275,7 +280,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     const workspace = gZenWorkspaces.getActiveWorkspace();
     workspace.name = this.inputName.value.trim();
     workspace.icon = this.inputIcon.image || this.inputIcon.label || undefined;
-    workspace.containerTabId = this.currentProfile;
+    workspace.containerTabId = this.currentProfile ?? 0;
     await gZenWorkspaces.saveWorkspace(workspace);
 
     await this.#cleanup();

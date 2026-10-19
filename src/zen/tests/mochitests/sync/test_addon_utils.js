@@ -6,6 +6,12 @@
 const { AddonUtils } = ChromeUtils.importESModule(
   "resource://services-sync/addonutils.sys.mjs"
 );
+const { EnterprisePolicyTesting } = ChromeUtils.importESModule(
+  "resource://testing-common/EnterprisePolicyTesting.sys.mjs"
+);
+const { AppConstants } = ChromeUtils.importESModule(
+  "resource://gre/modules/AppConstants.sys.mjs"
+);
 
 const HTTP_PORT = 8888;
 const SERVER_ADDRESS = "http://127.0.0.1:8888";
@@ -106,6 +112,35 @@ add_test(function test_ignore_untrusted_source_uris() {
   }
   run_next_test();
 });
+
+// The Extensions policy is implemented in the Firefox-specific Policies module.
+add_task(
+  { skip_if: () => AppConstants.MOZ_APP_NAME != "firefox" },
+  async function test_policy_locked_addon() {
+    _(
+      "Ensures that a policy-locked add-on may not be disabled or uninstalled."
+    );
+
+    const ID = "locked@tests.mozilla.org";
+
+    // setupPolicyEngineWithJson waits on an observer that is not registered
+    // until the policy service is first instantiated.
+    Cc["@mozilla.org/enterprisepolicies;1"].getService(Ci.nsIObserver);
+
+    await EnterprisePolicyTesting.setupPolicyEngineWithJson({
+      policies: { Extensions: { Locked: [ID] } },
+    });
+
+    Assert.ok(!AddonUtils.canDisableAddon(ID));
+    Assert.ok(!AddonUtils.canUninstallAddon(ID));
+    Assert.ok(
+      AddonUtils.canDisableAddon("other@tests.mozilla.org"),
+      "Other add-ons are unaffected"
+    );
+
+    await EnterprisePolicyTesting.setupPolicyEngineWithJson("");
+  }
+);
 
 add_task(async function test_source_uri_rewrite() {
   _("Ensure that a 'src=api' query string is rewritten to 'src=sync'");

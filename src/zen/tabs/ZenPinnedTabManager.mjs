@@ -34,7 +34,8 @@ class ZenPinnedTabsObserver {
     ChromeUtils.defineESModuleGetters(lazy, {
       // eslint-disable-next-line mozilla/valid-lazy
       E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
-      TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+      TabStateCache:
+        "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
     });
     this.#listenPinnedTabEvents();
   }
@@ -144,10 +145,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
     const tab = event.target;
-    if (this._ignoreNextTabPinnedEvent) {
-      delete this._ignoreNextTabPinnedEvent;
-      return;
-    }
     switch (action) {
       case "TabPinned":
         tab._zenClickEventListener = this._zenClickEventListener;
@@ -356,7 +353,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         alwaysUnload &&
         ["close", "reset", "switch", "reset-switch"].includes(behavior)
       ) {
-        behavior = behavior.contains("reset")
+        behavior = behavior.includes("reset")
           ? "reset-unload-switch"
           : "unload-switch";
       }
@@ -373,6 +370,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         case "reset-switch":
         case "switch":
           if (behavior.includes("unload")) {
+            if (pinnedTabs.some(tab => tab.selected)) {
+              const selectedTabs = pinnedTabs.filter(tab => tab.selected);
+              const tabToBlurTo = gBrowser._findTabToBlurTo(
+                selectedTabs[0],
+                pinnedTabs
+              );
+              gBrowser.selectedTab = tabToBlurTo;
+            }
             for (const tab of pinnedTabs) {
               if (tab.hasAttribute("glance-id")) {
                 // We have a glance tab inside the tab we are trying to unload,
@@ -465,14 +470,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
 
     // Remove everything except the entry we want to keep
+    let url;
+    try {
+      url = Services.io.newURI(initialState.entry.url);
+    } catch {}
     state.entries = [
       {
         ...initialState.entry,
         triggeringPrincipal_base64: E10SUtils.serializePrincipal(
-          Services.scriptSecurityManager.createContentPrincipal(
-            Services.io.newURI(initialState.entry.url),
-            {}
-          )
+          url
+            ? Services.scriptSecurityManager.createContentPrincipal(url, {})
+            : Services.scriptSecurityManager.createNullPrincipal()
         ),
       },
     ];
@@ -546,7 +554,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         });
       } else {
         gBrowser.pinTab(tab);
-        this._ignoreNextTabPinnedEvent = true;
       }
       tab.setAttribute("zenDefaultUserContextId", true);
       if (tab.selected) {
@@ -662,7 +669,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     document
       .getElementById("context_zen-edit-tab-title")
       .addEventListener("command", event => {
-        gZenVerticalTabsManager.renameTabStart(event);
+        gZenTabRenamer.start(event);
       });
     document
       .getElementById("context_zen-edit-tab-icon")
@@ -680,7 +687,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             }
             gBrowser.setIcon(tab, icon);
             lazy.TabStateCache.update(tab.permanentKey, {
-              image: null,
+              image: icon || null,
             });
           },
         });

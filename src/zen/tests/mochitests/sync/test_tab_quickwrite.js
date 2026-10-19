@@ -146,7 +146,7 @@ add_task(async function test_tab_quickwrite_keeps_old_tabs() {
 
   // This test can be flakey because sometimes we are so fast we think there is nothing to do.
   // Resetting the last sync time here ensures we always fetch records from the server.
-  engine.setLastSync(0);
+  await engine.resetLastSync();
   await Service.sync({ engines: ["tabs"] });
 
   // collection should now have 2 records - ours and the pretend remote one we inserted.

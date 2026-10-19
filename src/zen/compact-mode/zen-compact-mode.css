@@ -13,10 +13,6 @@
   z-index: -1;
   background: light-dark(#e9e9e9, #131313);
   box-shadow: var(--zen-big-shadow);
-  @media -moz-pref('zen.theme.acrylic-elements') {
-    background: transparent;
-    backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-  }
 
   &::before,
   &::after {
@@ -24,6 +20,13 @@
     outline-offset: -1px;
     background-attachment: fixed !important;
     background-size: 100vw 100vh !important;
+  }
+
+  :root[zen-right-side='true'] & {
+    &::before,
+    &::after {
+      background-position: right top;
+    }
   }
 
   &,

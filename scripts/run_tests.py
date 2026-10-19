@@ -53,6 +53,14 @@ def main():
   other_args = [arg for arg in args if arg != path]
 
   engine_dir = project_root / 'engine'
+  if sys.platform == "darwin" and not any(
+      "sandbox" in arg for arg in other_args
+  ):
+    other_args = other_args + [
+        "--setpref="
+        f"security.sandbox.content.mac.testing_read_path2={project_root / 'src'}"
+    ]
+
   os.chdir(engine_dir)
 
   def run_mach_with_paths(test_paths):

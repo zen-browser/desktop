@@ -8,10 +8,14 @@
     "name": "Native MacOS popovers fix"
   },
   {
-    "type": "local",
-    // TODO: Convert into https://phabricator.services.mozilla.com/D298079
-    //    once it gets accepted.
-    "path": "firefox/allow_backdrop_to_work_on_transparency.patch"
+    "type": "phabricator",
+    "id": "D323933",
+    "name": "Issue 15123"
+  },
+  {
+    "type": "phabricator",
+    "id": "D327914",
+    "name": "Backdrop filter reads web content"
   },
   {
     "type": "local",
@@ -43,20 +47,16 @@
   },
   {
     "type": "phabricator",
-    "id": "D320897",
-    "name": "Bug 2011236"
-  },
-  {
-    "type": "phabricator",
     "id": "D321446",
     "name": "Issue 14710"
   },
   {
     "type": "local",
-    "path": "firefox/css_corner_shape_rendering.patch"
+    "path": "firefox/override_cert_checks_temp.patch"
   },
   {
-    "type": "local",
-    "path": "firefox/override_cert_checks_temp.patch"
+    "type": "phabricator",
+    "id": "D323514",
+    "name": "Fix HEVC video stutters and dropped frames"
   }
 ]

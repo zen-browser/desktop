@@ -6,12 +6,6 @@
  * correctly, without stretching, for both <img> and <canvas> targets.
  */
 
-add_setup(async function () {
-  await SpecialPowers.pushPrefEnv({
-    set: [["test.wait300msAfterTabSwitch", true]],
-  });
-});
-
 async function testPreview(url, targetSelector) {
   await BrowserTestUtils.withNewTab({ gBrowser, url }, async browser => {
     const dialogLoad = BrowserTestUtils.domWindowOpened(null, async win => {

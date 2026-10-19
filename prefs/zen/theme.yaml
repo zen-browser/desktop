@@ -17,8 +17,17 @@
 - name: zen.theme.essentials-favicon-bg
   value: true
 
-- name: zen.theme.acrylic-elements
+- name: zen.theme.acrylic-urlbar
   value: "@IS_TWILIGHT@"
+  cpptype: bool
+  mirror: once
+  type: static
+
+- name: zen.theme.acrylic-sidebar
+  value: "@IS_TWILIGHT@"
+  cpptype: bool
+  mirror: once
+  type: static
 
 - name: zen.theme.disable-lightweight
   value: true

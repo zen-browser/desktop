@@ -10,3 +10,4 @@ disabled="Disabled by import_external_tests.py"
 support-files = [
   "file_javascript_links_subframe.html"
 ]
+["browser_nested_hrefless_links.js"]

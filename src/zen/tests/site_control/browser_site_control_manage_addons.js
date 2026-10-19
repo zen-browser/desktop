@@ -31,7 +31,7 @@ add_task(async function test_manage_addons_opens_addons_manager() {
       "about:addons opened in a new tab"
     );
 
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => siteDataPanel().state === "closed",
       "panel auto-closes after opening the addons manager"
     );
@@ -46,7 +46,7 @@ add_task(async function test_manage_addons_opens_addons_manager() {
 
 add_task(async function test_get_addons_button_opens_amo() {
   await SpecialPowers.pushPrefEnv({
-    set: [["extensions.getAddons.link.url", "https://example.com/"]],
+    set: [["extensions.getAddons.link.url", "https://example.org/"]],
   });
 
   const tab = BrowserTestUtils.addTab(gBrowser, HTTPS_PAGE, {

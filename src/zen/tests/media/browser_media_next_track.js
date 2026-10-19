@@ -14,6 +14,10 @@ add_task(async function test_next_track_relays_to_page() {
 
     await BrowserTestUtils.switchTab(gBrowser, originalTab);
     await waitForMediaBarVisible();
+    await TestUtils.waitForCondition(
+      () => frontMediaCard()?.browser === mediaTab.linkedBrowser,
+      "front media card belongs to the tab without a nexttrack handler"
+    );
 
     const nextButton = frontMediaCard().element.querySelector(
       ".zen-media-nexttrack-button"
@@ -21,7 +25,7 @@ add_task(async function test_next_track_relays_to_page() {
 
     // supportedkeyschange propagates asynchronously; wait for the bar's
     // next-track button to become enabled before clicking.
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => !nextButton.disabled,
       "next-track button becomes enabled once the page registers a handler"
     );
@@ -48,6 +52,10 @@ add_task(async function test_next_track_button_disabled_without_handler() {
     await playVideoIn(mediaTab);
     await BrowserTestUtils.switchTab(gBrowser, originalTab);
     await waitForMediaBarVisible();
+    await TestUtils.waitForCondition(
+      () => frontMediaCard()?.browser === mediaTab.linkedBrowser,
+      "front media card belongs to the tab without a nexttrack handler"
+    );
 
     const nextButton = frontMediaCard().element.querySelector(
       ".zen-media-nexttrack-button"

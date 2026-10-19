@@ -6,7 +6,8 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   JSONFile: "resource://gre/modules/JSONFile.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
-  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  TabStateCache:
+    "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
 });
@@ -48,7 +49,8 @@ class nsZenLiveFoldersManager {
   }
 
   async init() {
-    if (this.#isInitialized) {
+    // Live folders live in the first synced window.
+    if (this.#isInitialized || !this.window) {
       return;
     }
 
@@ -345,7 +347,7 @@ class nsZenLiveFoldersManager {
       browser: gBrowser.selectedBrowser,
       theme: { preset: "chrome" },
     });
-    callout.showFeatureCallout({
+    const shown = callout.showFeatureCallout({
       id: "ZEN_LIVE_FOLDERS_CALLOUT",
       template: "feature_callout",
       groups: ["cfr"],
@@ -386,6 +388,13 @@ class nsZenLiveFoldersManager {
           },
         ],
       },
+    });
+    shown.then(() => {
+      lazy.setTimeout(() => {
+        if (callout.ready) {
+          callout.endTour();
+        }
+      }, 8000);
     });
   }
 
@@ -497,41 +506,51 @@ class nsZenLiveFoldersManager {
         );
       })
       .map(item => {
-        const tab = this.window.gBrowser.addTrustedTab(item.url, {
-          createLazyBrowser: true,
-          inBackground: true,
-          skipAnimation: true,
-          noInitialLabel: true,
-          lazyTabTitle: item.title,
-          userContextId,
-        });
-        // createLazyBrowser can't be pinned by default
-        this.window.gBrowser.pinTab(tab);
-        if (userContextId) {
-          tab.setAttribute("zenDefaultUserContextId", "true");
-        }
-        if (item.icon) {
-          this.window.gBrowser.setIcon(tab, item.icon);
-          if (tab.linkedBrowser) {
-            lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
-              image: null,
+        try {
+          const tab = this.window.gBrowser.addTrustedTab(item.url, {
+            createLazyBrowser: true,
+            inBackground: true,
+            skipAnimation: true,
+            noInitialLabel: true,
+            lazyTabTitle: item.title,
+            userContextId,
+          });
+          // createLazyBrowser can't be pinned by default
+          this.window.gBrowser.pinTab(tab);
+          if (userContextId) {
+            tab.setAttribute("zenDefaultUserContextId", "true");
+          }
+          if (item.icon) {
+            this.window.gBrowser.setIcon(tab, item.icon);
+            if (tab.linkedBrowser) {
+              lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
+                image: null,
+              });
+            }
+          }
+          tab.setAttribute(
+            "zen-live-folder-item-id",
+            this.#makeCompositeId(liveFolder.id, item.id)
+          );
+          if (item.subtitle) {
+            tab.setAttribute("zen-show-sublabel", item.subtitle);
+            const tabLabel = tab.querySelector(".zen-tab-sublabel");
+            this.window.document.l10n.setArgs(tabLabel, {
+              tabSubtitle: item.subtitle,
             });
           }
-        }
-        tab.setAttribute(
-          "zen-live-folder-item-id",
-          this.#makeCompositeId(liveFolder.id, item.id)
-        );
-        if (item.subtitle) {
-          tab.setAttribute("zen-show-sublabel", item.subtitle);
-          const tabLabel = tab.querySelector(".zen-tab-sublabel");
-          this.window.document.l10n.setArgs(tabLabel, {
-            tabSubtitle: item.subtitle,
-          });
-        }
 
-        return tab;
-      });
+          return tab;
+        } catch (e) {
+          console.error(
+            "ZenLiveFoldersManager: Failed to add tab for item",
+            item.url,
+            e
+          );
+          return null;
+        }
+      })
+      .filter(tab => tab);
 
     // Wait for tabs to (hopefully) be initialized on all windows
     lazy.setTimeout(() => {
@@ -591,8 +610,7 @@ class nsZenLiveFoldersManager {
   // Persistence
   // -----------
   get #storePath() {
-    const profilePath = this.window.PathUtils.profileDir;
-    return this.window.PathUtils.join(profilePath, this.#saveFilename);
+    return PathUtils.join(PathUtils.profileDir, this.#saveFilename);
   }
 
   async #readStateFromDisk() {

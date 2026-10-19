@@ -25,13 +25,23 @@ on:
         required: false
         type: boolean
         default: false
+      pgo-cache-key-prefix:
+        description: "Cache key prefix for the PGO profile data"
+        required: false
+        type: string
+        default: ""
+      pgo-cache-hit:
+        description: "Take the profile data from the cache instead of generating it"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-linux:
     permissions:
       contents: write
     # aarch64 does not need full 16x
-    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
+    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'blacksmith-16vcpu-ubuntu-2404' || 'blacksmith-8vcpu-ubuntu-2404' }}
     strategy:
       fail-fast: false
       matrix:
@@ -96,7 +106,7 @@ jobs:
 
       - name: Fix Rust version
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
           source $HOME/.cargo/env
 
           if test "${{ matrix.arch }}" = "aarch64"; then
@@ -126,8 +136,16 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
 
+      - name: Restore cached profile data
+        uses: actions/cache/restore@v5
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && inputs.pgo-cache-hit }}
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
+          path: ~/artifact
+          fail-on-cache-miss: true
+
       - name: Build (PGO stage 1 - generate)
-        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo }}
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
@@ -144,12 +162,14 @@ jobs:
           bash .github/workflows/src/release-build.sh
 
       - name: Generate PGO profile data
-        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo }}
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit }}
         run: |
           set -x
           export DISPLAY=:2
           export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
           export JARLOG_FILE=en-US.log
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export MOZ_WEBRENDER=1
           mkdir -p "$HOME/artifact"
           cd engine
           ./mach python ../scripts/download_pgo_extended_corpus.py
@@ -157,6 +177,13 @@ jobs:
           ./mach python build/pgo/profileserver.py --extended-corpus ./pgo-extended-corpus
           mv merged.profdata "$HOME/artifact/merged.profdata"
           mv en-US.log "$HOME/artifact/en-US.log"
+
+      - name: Cache profile data
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit && inputs.pgo-cache-key-prefix != '' }}
+        uses: actions/cache/save@v5
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
+          path: ~/artifact
 
       - name: Build
         env:

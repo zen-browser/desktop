@@ -5,8 +5,8 @@
 
 const TARGET_WS = {
   uuid: "ws-target",
-  name: "Target Workspace",
   containerTabId: 7,
+  name: "Target Workspace",
 };
 let savedDefaultExternalRoute;
 
@@ -179,36 +179,38 @@ add_task(async function test_onBeforeAddTab_routes_external_during_startup() {
   );
 });
 
-add_task(async function test_external_startup_open_disposition() {
+// The startup URI arrives as window.arguments, with fromExternal carried in
+// the property bag at index 1, and gBrowser reads the container before
+// gZenWorkspaces has a cache of its own.
+function makeStartupWindow({ uriToLoad, fromExternal, workspaces = [] }) {
+  const extraOptions = Cc["@mozilla.org/hash-property-bag;1"].createInstance(
+    Ci.nsIWritablePropertyBag2
+  );
+  if (fromExternal !== undefined) {
+    extraOptions.setPropertyAsBool("fromExternal", fromExternal);
+  }
+
+  const win = makeFakeWindow({ ready: false, workspaces });
+  win.arguments = [uriToLoad, extraOptions];
+  win.gBrowserInit = { uriToLoadPromise: uriToLoad };
+  win.gZenWorkspaces.getWorkspaces = () => workspaces;
+  return win;
+}
+
+add_task(async function test_startup_user_context_id_routes_external() {
   clearAllRoutes();
   gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
-  const win = makeFakeWindow({ ready: false, workspaces: [TARGET_WS] });
 
-  Assert.ok(
-    await gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
-      "https://example.com",
-      true,
-      win
+  Assert.equal(
+    gZenSpaceRoutingManager.getStartupUserContextId(
+      makeStartupWindow({
+        uriToLoad: "https://example.com",
+        fromExternal: true,
+        workspaces: [TARGET_WS],
+      })
     ),
-    "A cold-start external URI with a specific default route opens in a new tab"
-  );
-  Assert.ok(
-    !(await gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
-      "https://example.com",
-      false,
-      win
-    )),
-    "A non-external startup URI keeps Firefox's current-tab behavior"
-  );
-
-  gZenSpaceRoutingManager.setDefaultExternalRoute("most-recent-space");
-  Assert.ok(
-    !(await gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
-      "https://example.com",
-      true,
-      win
-    )),
-    "The most-recent-space external default keeps the current-tab behavior"
+    TARGET_WS.containerTabId,
+    "A cold-start external URI resolves the default route's container"
   );
 
   addRoute({
@@ -216,80 +218,82 @@ add_task(async function test_external_startup_open_disposition() {
     matchType: "contains",
     openIn: TARGET_WS.uuid,
   });
-  Assert.ok(
-    await gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
-      "https://github.com/zen",
-      true,
-      win
+  Assert.equal(
+    gZenSpaceRoutingManager.getStartupUserContextId(
+      makeStartupWindow({
+        uriToLoad: "https://github.com/zen",
+        fromExternal: true,
+        workspaces: [TARGET_WS],
+      })
     ),
-    "A matching explicit route also sends a cold-start external URI through addTab"
+    TARGET_WS.containerTabId,
+    "A matching explicit route resolves its container too"
+  );
+});
+
+add_task(async function test_startup_user_context_id_leaves_tab_alone() {
+  clearAllRoutes();
+  gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
+
+  Assert.equal(
+    gZenSpaceRoutingManager.getStartupUserContextId(
+      makeStartupWindow({
+        uriToLoad: "https://example.com",
+        fromExternal: false,
+        workspaces: [TARGET_WS],
+      })
+    ),
+    null,
+    "A startup URI that did not come from another application is not routed"
+  );
+
+  Assert.equal(
+    gZenSpaceRoutingManager.getStartupUserContextId(
+      makeStartupWindow({
+        uriToLoad: "https://example.com",
+        workspaces: [TARGET_WS],
+      })
+    ),
+    null,
+    "A property bag without fromExternal is not routed"
+  );
+
+  Assert.equal(
+    gZenSpaceRoutingManager.getStartupUserContextId(
+      makeStartupWindow({
+        uriToLoad: Promise.resolve("https://example.com"),
+        fromExternal: true,
+        workspaces: [TARGET_WS],
+      })
+    ),
+    null,
+    "A URI still being resolved, which only happens for the homepage, is not routed"
+  );
+
+  gZenSpaceRoutingManager.setDefaultExternalRoute("most-recent-space");
+  Assert.equal(
+    gZenSpaceRoutingManager.getStartupUserContextId(
+      makeStartupWindow({
+        uriToLoad: "https://example.com",
+        fromExternal: true,
+        workspaces: [TARGET_WS],
+      })
+    ),
+    null,
+    "The most-recent-space default leaves the initial tab's container alone"
   );
 
   gZenSpaceRoutingManager.setDefaultExternalRoute("ws-does-not-exist");
-  Assert.ok(
-    !(await gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
-      "https://example.com",
-      true,
-      win
-    )),
-    "A stale external destination does not create an unnecessary startup tab"
-  );
-});
-
-add_task(async function test_external_startup_waits_for_workspace_data() {
-  clearAllRoutes();
-  gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
-  const workspaces = [];
-  const win = makeFakeWindow({ ready: false, workspaces });
-  const initialized = Promise.withResolvers();
-  win.gZenWorkspaces.promiseInitialized = initialized.promise;
-
-  Assert.ok(
-    !(await gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
-      "https://example.com",
-      false,
-      win
-    )),
-    "Non-external startup does not wait for workspace initialization"
-  );
-
-  let settled = false;
-  const result = gZenSpaceRoutingManager
-    .shouldOpenExternalInNewTab("https://example.com", true, win)
-    .then(value => {
-      settled = true;
-      return value;
-    });
-
-  await flushEventLoop();
-  Assert.ok(
-    !settled,
-    "External routing waits while workspace data is unavailable"
-  );
-
-  workspaces.push(TARGET_WS);
-  initialized.resolve();
-  Assert.ok(await result, "The restored destination opens in a routed tab");
-});
-
-add_task(async function test_external_startup_window_closed_while_waiting() {
-  clearAllRoutes();
-  gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
-  const win = makeFakeWindow({ ready: false, workspaces: [TARGET_WS] });
-  const initialized = Promise.withResolvers();
-  win.gZenWorkspaces.promiseInitialized = initialized.promise;
-
-  const result = gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
-    "https://example.com",
-    true,
-    win
-  );
-  win.closed = true;
-  initialized.resolve();
-
-  Assert.ok(
-    !(await result),
-    "A window closed during initialization is not routed"
+  Assert.equal(
+    gZenSpaceRoutingManager.getStartupUserContextId(
+      makeStartupWindow({
+        uriToLoad: "https://example.com",
+        fromExternal: true,
+        workspaces: [TARGET_WS],
+      })
+    ),
+    null,
+    "A stale external destination does not route the initial tab"
   );
 });
 

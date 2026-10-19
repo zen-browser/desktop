@@ -11,9 +11,12 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenLiveFoldersManager:
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
-  SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
-  SessionStartup: "resource:///modules/sessionstore/SessionStartup.sys.mjs",
-  TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
+  SessionStore:
+    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
+  SessionStartup:
+    "moz-src:///browser/components/sessionstore/SessionStartup.sys.mjs",
+  TabStateFlusher:
+    "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs",
   gWindowSyncEnabled: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   gSyncOnlyPinnedTabs: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
@@ -672,7 +675,12 @@ export class nsZenSessionManager {
       // every few hours (configurable via gBackupHourSpan), so that we
       // can have multiple backups per day for recent days, but only
       // one backup per day for older days.
-      let dateToUse = today.toISOString().slice(0, 10); // YYYY-MM-DD
+      // Use the local date, since the hour below is local too. Otherwise the
+      // file names don't sort in the order the backups were made.
+      const pad = n => String(n).padStart(2, "0");
+      const year = today.getFullYear();
+      const month = pad(today.getMonth() + 1);
+      let dateToUse = `${year}-${month}-${pad(today.getDate())}`; // YYYY-MM-DD
       const hourSpan = Math.min(Math.max(1, lazy.gBackupHourSpan), 24);
       const backupHour = Math.floor(today.getHours() / hourSpan) * hourSpan;
       dateToUse += `-${String(backupHour).padStart(2, "0")}`;
@@ -747,7 +755,45 @@ export class nsZenSessionManager {
    * @returns {boolean} True if the tab should be collected, false otherwise.
    */
   #shouldCollectTab(tabData) {
-    return tabData && !(tabData.zenIsEmpty && !tabData.groupId);
+    if (!tabData || (tabData.zenIsEmpty && !tabData.groupId)) {
+      return false;
+    }
+    // See gh-12152.
+    let isBlank = this.#isBlankTabData(tabData);
+    if (isBlank) {
+      this.log("Skipping blank tab data", tabData);
+    }
+    return !!tabData.zenSyncId || !isBlank;
+  }
+
+  /**
+   * Whether a tab's data holds nothing.
+   *
+   * @param {object} aTabData - A tab's collected data
+   * @returns {boolean} Whether it is one of those stand-ins
+   */
+  #isBlankTabData(aTabData) {
+    const entries = aTabData.entries || [];
+    return (
+      !entries.length ||
+      (entries.length === 1 && entries[0].url === "about:blank")
+    );
+  }
+
+  /**
+   * Decides which of a tab's two copies to keep for the session.
+   *
+   * @param {object} aCandidate - The copy just come across
+   * @param {object} aKept - The copy held so far
+   * @returns {boolean} Whether the candidate should take its place
+   */
+  #isBetterTabData(aCandidate, aKept) {
+    // See gh-14004.
+    const candidateIsBlank = this.#isBlankTabData(aCandidate);
+    if (candidateIsBlank !== this.#isBlankTabData(aKept)) {
+      return !candidateIsBlank;
+    }
+    return !!aCandidate._zenIsActiveTab;
   }
 
   #collectUsedTabsFromWindows(aStateWindows) {
@@ -761,10 +807,8 @@ export class nsZenSessionManager {
         if (!this.#shouldCollectTab(tabData)) {
           continue;
         }
-        if (
-          !tabIdRelationMap.has(tabData.zenSyncId) ||
-          tabData._zenIsActiveTab
-        ) {
+        const kept = tabIdRelationMap.get(tabData.zenSyncId);
+        if (!kept || this.#isBetterTabData(tabData, kept)) {
           tabIdRelationMap.set(tabData.zenSyncId, tabData);
         }
       }
@@ -1003,6 +1047,9 @@ export class nsZenSessionManager {
     aWindow.gZenWorkspaces.restoreWorkspacesFromSessionStore({
       spaces: this.#sidebarWithoutCloning.spaces || [],
     });
+    // There is no restore coming for this window, so nothing else is going to
+    // tell the spaces their tabs are in place.
+    aWindow.gZenWorkspaces.onWindowRestored();
   }
 
   /**

@@ -66,7 +66,7 @@ class AIWindowTestMixin:
             """
             const lazy = {};
             ChromeUtils.defineESModuleGetters(lazy, {
-                SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+                SessionStore: "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
             });
             function observeClosedObjectsChange() {
                 return new Promise(resolve => {
@@ -117,7 +117,7 @@ class SmartWindowDefaultMixin(AIWindowTestMixin):
         return self.marionette.execute_script(
             """
             const { SessionStore } = ChromeUtils.importESModule(
-                "resource:///modules/sessionstore/SessionStore.sys.mjs"
+                "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs"
             );
             return SessionStore.canRestoreLastSession;
             """

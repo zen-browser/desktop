@@ -21,7 +21,7 @@ add_task(async function test_media_stack_shows_multiple_cards() {
     await waitForMediaBarVisible();
 
     // Cards reappear on the 500ms tab-switch debounce; wait for both.
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => visibleMediaCards().length === 2,
       "both playing tabs get their own card in the stack"
     );
@@ -32,7 +32,7 @@ add_task(async function test_media_stack_shows_multiple_cards() {
       "front card belongs to the most recently started media"
     );
 
-    await BrowserTestUtils.waitForCondition(() => {
+    await TestUtils.waitForCondition(() => {
       const titles = visibleMediaCards().map(
         card => card.querySelector(".zen-media-title").textContent
       );
@@ -41,7 +41,7 @@ add_task(async function test_media_stack_shows_multiple_cards() {
 
     // Closing the front card only removes that session.
     clickMediaButton("zen-media-close-button");
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => visibleMediaCards().length === 1,
       "closing the front card only removes that card"
     );

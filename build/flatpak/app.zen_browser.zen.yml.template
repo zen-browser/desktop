@@ -26,6 +26,7 @@ finish-args:
   - --device=all
   - --talk-name=org.freedesktop.FileManager1
   - --system-talk-name=org.freedesktop.NetworkManager
+  - --system-talk-name=org.freedesktop.Avahi
   - --talk-name=org.a11y.Bus
   - --talk-name=org.gtk.vfs.*
   - --own-name=org.mpris.MediaPlayer2.firefox.*

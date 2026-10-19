@@ -5,6 +5,7 @@
 #include "nsISupports.idl"
 
 interface mozIDOMWindowProxy;
+webidl Node;
 
 /**
  * @brief Interface for Zen's drag and drop functionality.
@@ -33,4 +34,24 @@ interface nsIZenDragAndDrop : nsISupports {
    * @param window The chrome window to move.
    */
   void beginNativeWindowMove(in mozIDOMWindowProxy window);
+
+  /**
+   * @brief Slide the drag image onto the drop instead of removing it.
+   * macOS only, the drag ends once it lands.
+   * @param arm Whether this drag's drops land the image.
+   */
+  void armDropLanding(in boolean arm);
+
+  /**
+   * @brief Drag an extra image along as its own item, one per further tab.
+   * macOS stacks and counts them. Add before the drag starts.
+   * @param image The element to render.
+   */
+  void addDragImage(in Node image);
+
+  /**
+   * @brief Where a drag item lands, in screen CSS pixels. One call per
+   * item in order, from within the drop event.
+   */
+  void addDropLandingRect(in long x, in long y, in long width, in long height);
 };

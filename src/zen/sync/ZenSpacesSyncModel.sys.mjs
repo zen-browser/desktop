@@ -145,6 +145,36 @@ export function recordDigest(kind, data) {
 class nsZenSpacesSyncModel {
   #file = null;
   #cache = null;
+  /**
+   * Ids applied from an incoming batch, keyed to the projection generation
+   * (sidebar lastCollected) that was current when they were applied. The
+   * projection only refreshes on the delayed session collection that runs
+   * after the sync, so within the same sync the just-applied ids are in the
+   * uploaded snapshot (noteApplied) but not yet in the projection. Without
+   * this, the outgoing diff would read that gap as local deletions and
+   * upload tombstones for records it just downloaded, wiping them on every
+   * other device (gh-15426).
+   */
+  #appliedStamp = new Map();
+  #appliedStampGen = 0;
+
+  /** The projection generation the current sidebar data belongs to. */
+  #currentStamp() {
+    return lazy.ZenSessionStore.getSidebarData()?.lastCollected || 0;
+  }
+
+  /**
+   * The current projection generation, dropping held ids once a newer
+   * collection has caught up (they can no longer be in the skew window).
+   */
+  #appliedStampNow() {
+    const stamp = this.#currentStamp();
+    if (stamp !== this.#appliedStampGen) {
+      this.#appliedStamp.clear();
+      this.#appliedStampGen = stamp;
+    }
+    return stamp;
+  }
 
   #data() {
     if (!this.#file) {
@@ -743,15 +773,20 @@ class nsZenSpacesSyncModel {
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();
+    const stamp = this.#appliedStampNow();
     const now = Date.now() / 1000;
     const changes = {};
     for (const [id, digest] of current) {
-      if (uploaded[id] !== digest) {
+      if (uploaded[id] !== digest && this.#appliedStamp.get(id) !== stamp) {
         changes[id] = now;
       }
     }
     for (const id of Object.keys(uploaded)) {
-      if (!current.has(id) && !pending.has(id)) {
+      if (
+        !current.has(id) &&
+        !pending.has(id) &&
+        this.#appliedStamp.get(id) !== stamp
+      ) {
         changes[id] = now;
       }
     }
@@ -774,13 +809,18 @@ class nsZenSpacesSyncModel {
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();
+    const stamp = this.#appliedStampNow();
     for (const [id, digest] of current) {
-      if (uploaded[id] !== digest) {
+      if (uploaded[id] !== digest && this.#appliedStamp.get(id) !== stamp) {
         return true;
       }
     }
     for (const id of Object.keys(uploaded)) {
-      if (!current.has(id) && !pending.has(id)) {
+      if (
+        !current.has(id) &&
+        !pending.has(id) &&
+        this.#appliedStamp.get(id) !== stamp
+      ) {
         return true;
       }
     }
@@ -823,11 +863,13 @@ class nsZenSpacesSyncModel {
    */
   noteApplied(id, cleartext) {
     const data = this.#data();
+    const stamp = this.#appliedStampNow();
     if (!cleartext) {
       delete data.uploaded[id];
     } else {
       data.uploaded[id] = recordDigest(cleartext.kind, cleartext.data);
     }
+    this.#appliedStamp.set(id, stamp);
     syncLog(
       `acknowledged incoming ${cleartext ? cleartext.kind : "tombstone"} ${id}`
     );

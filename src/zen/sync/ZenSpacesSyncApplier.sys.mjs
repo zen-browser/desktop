@@ -23,9 +23,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
 );
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  SessionSaver: "resource:///modules/sessionstore/SessionSaver.sys.mjs",
+  SessionSaver:
+    "moz-src:///browser/components/sessionstore/SessionSaver.sys.mjs",
+  SessionStore:
+    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
   E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
-  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  TabStateCache:
+    "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   ZenLiveFoldersManager:
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
@@ -155,6 +159,7 @@ class nsZenSpacesSyncApplier {
         fail(entry.record, noWindow);
       }
     } else {
+      await lazy.SessionStore.promiseAllWindowsRestored;
       await win.gZenWorkspaces.promiseInitialized;
       this.#maybePlayFirstSyncAnimation(win);
       // A sync apply is a materialization just like session restore,
@@ -524,9 +529,6 @@ class nsZenSpacesSyncApplier {
         if (!folder?.isZenFolder) {
           continue;
         }
-        // Members without their own tombstone survive: unpack, then delete
-        // the (now empty) folder.
-        await folder.unpackTabs();
         await folder.delete();
       } catch (e) {
         fail(record, e);
@@ -566,6 +568,7 @@ class nsZenSpacesSyncApplier {
       inBackground: true,
       skipAnimation: true,
       skipBackgroundNotify: true,
+      noInitialLabel: true,
       lazyTabTitle: data.title || undefined,
       userContextId,
       skipRoute: true,
@@ -652,7 +655,7 @@ class nsZenSpacesSyncApplier {
         );
         win.gBrowser.setIcon(tab, icon);
         lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
-          image: null,
+          image: icon || null,
         });
       } catch (e) {
         console.error("ZenSpacesSync: failed to set tab icon", e);
@@ -679,16 +682,23 @@ class nsZenSpacesSyncApplier {
       const state = JSON.parse(win.SessionStore.getTabState(tab));
       const entries = state.entries || [];
       let currentUrl = null;
+      let currentTitle = "";
       if (entries.length) {
         const index = Math.min(
           Math.max((state.index || entries.length) - 1, 0),
           entries.length - 1
         );
         currentUrl = entries[index]?.url || null;
+        currentTitle = entries[index]?.title || "";
       }
       if (
-        currentUrl === data.url ||
-        (currentUrl && previousPinUrl && currentUrl !== previousPinUrl)
+        // A remote record can retitle a tab without moving it, so only skip
+        // the retarget when the title matches as well as the url.
+        (currentUrl === data.url && currentTitle === (data.title || "")) ||
+        (currentUrl &&
+          currentUrl !== data.url &&
+          previousPinUrl &&
+          currentUrl !== previousPinUrl)
       ) {
         return;
       }
@@ -878,7 +888,7 @@ class nsZenSpacesSyncApplier {
         prev &&
         prev.parentNode &&
         prev.parentNode === el.parentNode &&
-        prev.nextElementSibling !== el
+        prev.compareDocumentPosition(el) & win.Node.DOCUMENT_POSITION_PRECEDING
       ) {
         win.gBrowser.zenHandleTabMove(el, () => prev.after(el));
       }

@@ -1,0 +1,276 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Zen icons available to containers. */
+.identity-icon-zen-airplane {
+  --identity-icon: url("resource://usercontext-content/zen-airplane.svg");
+}
+.identity-icon-zen-american-football {
+  --identity-icon: url("resource://usercontext-content/zen-american-football.svg");
+}
+.identity-icon-zen-baseball {
+  --identity-icon: url("resource://usercontext-content/zen-baseball.svg");
+}
+.identity-icon-zen-basket {
+  --identity-icon: url("resource://usercontext-content/zen-basket.svg");
+}
+.identity-icon-zen-bed {
+  --identity-icon: url("resource://usercontext-content/zen-bed.svg");
+}
+.identity-icon-zen-bell {
+  --identity-icon: url("resource://usercontext-content/zen-bell.svg");
+}
+.identity-icon-zen-book {
+  --identity-icon: url("resource://usercontext-content/zen-book.svg");
+}
+.identity-icon-zen-bookmark {
+  --identity-icon: url("resource://usercontext-content/zen-bookmark.svg");
+}
+.identity-icon-zen-briefcase {
+  --identity-icon: url("resource://usercontext-content/zen-briefcase.svg");
+}
+.identity-icon-zen-brush {
+  --identity-icon: url("resource://usercontext-content/zen-brush.svg");
+}
+.identity-icon-zen-bug {
+  --identity-icon: url("resource://usercontext-content/zen-bug.svg");
+}
+.identity-icon-zen-build {
+  --identity-icon: url("resource://usercontext-content/zen-build.svg");
+}
+.identity-icon-zen-cafe {
+  --identity-icon: url("resource://usercontext-content/zen-cafe.svg");
+}
+.identity-icon-zen-call {
+  --identity-icon: url("resource://usercontext-content/zen-call.svg");
+}
+.identity-icon-zen-card {
+  --identity-icon: url("resource://usercontext-content/zen-card.svg");
+}
+.identity-icon-zen-chat {
+  --identity-icon: url("resource://usercontext-content/zen-chat.svg");
+}
+.identity-icon-zen-checkbox {
+  --identity-icon: url("resource://usercontext-content/zen-checkbox.svg");
+}
+.identity-icon-zen-circle {
+  --identity-icon: url("resource://usercontext-content/zen-circle.svg");
+}
+.identity-icon-zen-cloud {
+  --identity-icon: url("resource://usercontext-content/zen-cloud.svg");
+}
+.identity-icon-zen-code {
+  --identity-icon: url("resource://usercontext-content/zen-code.svg");
+}
+.identity-icon-zen-coins {
+  --identity-icon: url("resource://usercontext-content/zen-coins.svg");
+}
+.identity-icon-zen-construct {
+  --identity-icon: url("resource://usercontext-content/zen-construct.svg");
+}
+.identity-icon-zen-cutlery {
+  --identity-icon: url("resource://usercontext-content/zen-cutlery.svg");
+}
+.identity-icon-zen-egg {
+  --identity-icon: url("resource://usercontext-content/zen-egg.svg");
+}
+.identity-icon-zen-extension-puzzle {
+  --identity-icon: url("resource://usercontext-content/zen-extension-puzzle.svg");
+}
+.identity-icon-zen-eye {
+  --identity-icon: url("resource://usercontext-content/zen-eye.svg");
+}
+.identity-icon-zen-fast-food {
+  --identity-icon: url("resource://usercontext-content/zen-fast-food.svg");
+}
+.identity-icon-zen-fish {
+  --identity-icon: url("resource://usercontext-content/zen-fish.svg");
+}
+.identity-icon-zen-flag {
+  --identity-icon: url("resource://usercontext-content/zen-flag.svg");
+}
+.identity-icon-zen-flame {
+  --identity-icon: url("resource://usercontext-content/zen-flame.svg");
+}
+.identity-icon-zen-flask {
+  --identity-icon: url("resource://usercontext-content/zen-flask.svg");
+}
+.identity-icon-zen-folder {
+  --identity-icon: url("resource://usercontext-content/zen-folder.svg");
+}
+.identity-icon-zen-game-controller {
+  --identity-icon: url("resource://usercontext-content/zen-game-controller.svg");
+}
+.identity-icon-zen-globe {
+  --identity-icon: url("resource://usercontext-content/zen-globe.svg");
+}
+.identity-icon-zen-globe-1 {
+  --identity-icon: url("resource://usercontext-content/zen-globe-1.svg");
+}
+.identity-icon-zen-grid-2x2 {
+  --identity-icon: url("resource://usercontext-content/zen-grid-2x2.svg");
+}
+.identity-icon-zen-grid-3x3 {
+  --identity-icon: url("resource://usercontext-content/zen-grid-3x3.svg");
+}
+.identity-icon-zen-heart {
+  --identity-icon: url("resource://usercontext-content/zen-heart.svg");
+}
+.identity-icon-zen-ice-cream {
+  --identity-icon: url("resource://usercontext-content/zen-ice-cream.svg");
+}
+.identity-icon-zen-image {
+  --identity-icon: url("resource://usercontext-content/zen-image.svg");
+}
+.identity-icon-zen-inbox {
+  --identity-icon: url("resource://usercontext-content/zen-inbox.svg");
+}
+.identity-icon-zen-key {
+  --identity-icon: url("resource://usercontext-content/zen-key.svg");
+}
+.identity-icon-zen-layers {
+  --identity-icon: url("resource://usercontext-content/zen-layers.svg");
+}
+.identity-icon-zen-leaf {
+  --identity-icon: url("resource://usercontext-content/zen-leaf.svg");
+}
+.identity-icon-zen-lightning {
+  --identity-icon: url("resource://usercontext-content/zen-lightning.svg");
+}
+.identity-icon-zen-location {
+  --identity-icon: url("resource://usercontext-content/zen-location.svg");
+}
+.identity-icon-zen-lock-closed {
+  --identity-icon: url("resource://usercontext-content/zen-lock-closed.svg");
+}
+.identity-icon-zen-logo-github {
+  --identity-icon: url("resource://usercontext-content/zen-logo-github.svg");
+}
+.identity-icon-zen-logo-rss {
+  --identity-icon: url("resource://usercontext-content/zen-logo-rss.svg");
+}
+.identity-icon-zen-logo-usd {
+  --identity-icon: url("resource://usercontext-content/zen-logo-usd.svg");
+}
+.identity-icon-zen-mail {
+  --identity-icon: url("resource://usercontext-content/zen-mail.svg");
+}
+.identity-icon-zen-map {
+  --identity-icon: url("resource://usercontext-content/zen-map.svg");
+}
+.identity-icon-zen-megaphone {
+  --identity-icon: url("resource://usercontext-content/zen-megaphone.svg");
+}
+.identity-icon-zen-moon {
+  --identity-icon: url("resource://usercontext-content/zen-moon.svg");
+}
+.identity-icon-zen-music {
+  --identity-icon: url("resource://usercontext-content/zen-music.svg");
+}
+.identity-icon-zen-navigate {
+  --identity-icon: url("resource://usercontext-content/zen-navigate.svg");
+}
+.identity-icon-zen-nuclear {
+  --identity-icon: url("resource://usercontext-content/zen-nuclear.svg");
+}
+.identity-icon-zen-page {
+  --identity-icon: url("resource://usercontext-content/zen-page.svg");
+}
+.identity-icon-zen-palette {
+  --identity-icon: url("resource://usercontext-content/zen-palette.svg");
+}
+.identity-icon-zen-paw {
+  --identity-icon: url("resource://usercontext-content/zen-paw.svg");
+}
+.identity-icon-zen-people {
+  --identity-icon: url("resource://usercontext-content/zen-people.svg");
+}
+.identity-icon-zen-pizza {
+  --identity-icon: url("resource://usercontext-content/zen-pizza.svg");
+}
+.identity-icon-zen-planet {
+  --identity-icon: url("resource://usercontext-content/zen-planet.svg");
+}
+.identity-icon-zen-present {
+  --identity-icon: url("resource://usercontext-content/zen-present.svg");
+}
+.identity-icon-zen-rocket {
+  --identity-icon: url("resource://usercontext-content/zen-rocket.svg");
+}
+.identity-icon-zen-school {
+  --identity-icon: url("resource://usercontext-content/zen-school.svg");
+}
+.identity-icon-zen-shapes {
+  --identity-icon: url("resource://usercontext-content/zen-shapes.svg");
+}
+.identity-icon-zen-shirt {
+  --identity-icon: url("resource://usercontext-content/zen-shirt.svg");
+}
+.identity-icon-zen-skull {
+  --identity-icon: url("resource://usercontext-content/zen-skull.svg");
+}
+.identity-icon-zen-square {
+  --identity-icon: url("resource://usercontext-content/zen-square.svg");
+}
+.identity-icon-zen-squares {
+  --identity-icon: url("resource://usercontext-content/zen-squares.svg");
+}
+.identity-icon-zen-star {
+  --identity-icon: url("resource://usercontext-content/zen-star.svg");
+}
+.identity-icon-zen-star-1 {
+  --identity-icon: url("resource://usercontext-content/zen-star-1.svg");
+}
+.identity-icon-zen-stats-chart {
+  --identity-icon: url("resource://usercontext-content/zen-stats-chart.svg");
+}
+.identity-icon-zen-sun {
+  --identity-icon: url("resource://usercontext-content/zen-sun.svg");
+}
+.identity-icon-zen-tada {
+  --identity-icon: url("resource://usercontext-content/zen-tada.svg");
+}
+.identity-icon-zen-terminal {
+  --identity-icon: url("resource://usercontext-content/zen-terminal.svg");
+}
+.identity-icon-zen-ticket {
+  --identity-icon: url("resource://usercontext-content/zen-ticket.svg");
+}
+.identity-icon-zen-time {
+  --identity-icon: url("resource://usercontext-content/zen-time.svg");
+}
+.identity-icon-zen-trash {
+  --identity-icon: url("resource://usercontext-content/zen-trash.svg");
+}
+.identity-icon-zen-triangle {
+  --identity-icon: url("resource://usercontext-content/zen-triangle.svg");
+}
+.identity-icon-zen-video {
+  --identity-icon: url("resource://usercontext-content/zen-video.svg");
+}
+.identity-icon-zen-volume-high {
+  --identity-icon: url("resource://usercontext-content/zen-volume-high.svg");
+}
+.identity-icon-zen-wallet {
+  --identity-icon: url("resource://usercontext-content/zen-wallet.svg");
+}
+.identity-icon-zen-warning {
+  --identity-icon: url("resource://usercontext-content/zen-warning.svg");
+}
+.identity-icon-zen-water {
+  --identity-icon: url("resource://usercontext-content/zen-water.svg");
+}
+.identity-icon-zen-weight {
+  --identity-icon: url("resource://usercontext-content/zen-weight.svg");
+}
+
+.identity-color-brown {
+  --identity-tab-color: #9f6b53;
+  --identity-icon-color: #9f6b53;
+
+  @media -moz-pref("browser.nova.enabled") {
+    --identity-fill-color: light-dark(#7a5240, #c99a83);
+    --identity-stroke-color: #9f6b53;
+  }
+}

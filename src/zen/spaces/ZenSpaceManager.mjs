@@ -417,6 +417,38 @@ class nsZenWorkspaces {
     return this.#spaceContainerId(this.getActiveWorkspaceFromCache());
   }
 
+  /**
+   * The container the initial tab of a window should be created with, when
+   * either the command line asked for a space or Space Routing has a
+   * destination for the startup URI.
+   *
+   * @returns {number|null} The container, or null to leave Firefox's choice
+   */
+  getStartupUserContextId() {
+    try {
+      // Stashed by the `--space` flag. Consumed later, during init.
+      const cmdLineSpace = Services.prefs.getStringPref(
+        "zen.workspaces.cmdline-initial-workspace",
+        ""
+      );
+      // The cache is filled for every window but the first one of a session,
+      // where the session store is all there is.
+      const workspace =
+        this.resolveWorkspaceFromCLIString(cmdLineSpace) ??
+        this.resolveWorkspaceFromCLIString(cmdLineSpace, true);
+      if (workspace) {
+        return this.#spaceContainerId(workspace);
+      }
+      return gZenSpaceRoutingManager.getStartupUserContextId(window);
+    } catch (e) {
+      console.error(
+        "gZenWorkspaces: Error resolving the initial tab's container",
+        e
+      );
+      return null;
+    }
+  }
+
   getCurrentEssentialsContainer() {
     return this.getEssentialsSection(this.getCurrentSpaceContainerId());
   }
@@ -744,12 +776,12 @@ class nsZenWorkspaces {
     }
   }
 
-  resolveWorkspaceFromCLIString(value) {
+  resolveWorkspaceFromCLIString(value, lieToMe = false) {
     if (!value) {
       return null;
     }
     try {
-      const workspaces = this.getWorkspaces();
+      const workspaces = this.getWorkspaces(lieToMe);
       return (
         workspaces.find(
           workspace =>

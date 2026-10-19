@@ -173,6 +173,87 @@ add_task(async function test_unknown_workspace_does_not_switch() {
   );
 });
 
+add_task(async function test_initial_tab_gets_cmdline_space_container() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["zen.testing.enabled", false],
+      ["zen.urlbar.open-on-startup", false],
+    ],
+  });
+  const { ContextualIdentityService } = ChromeUtils.importESModule(
+    "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs"
+  );
+  const container =
+    ContextualIdentityService.getPublicIdentities()[0].userContextId;
+
+  const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
+  await gZenWorkspaces.createAndSaveWorkspace(
+    "Cmdline Container Cold",
+    undefined,
+    /* dontChange */ true,
+    container
+  );
+  const target = gZenWorkspaces
+    .getWorkspaces()
+    .find(workspace => workspace.name === "Cmdline Container Cold");
+  Assert.ok(target, "The target workspace should exist.");
+  registerCleanupFunction(async () => {
+    Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
+    if (gZenWorkspaces.getWorkspaceFromId(target.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  });
+
+  // A window being created has no space cache of its own yet, so the lookup
+  // falls back to the session store. Collect into it the way a session save
+  // would, which is what has happened by the time a real cold start gets here.
+  const { ZenSessionStore } = ChromeUtils.importESModule(
+    "resource:///modules/zen/ZenSessionManager.sys.mjs"
+  );
+  ZenSessionStore.saveState(JSON.parse(SessionStore.getBrowserState()), true);
+  Assert.ok(
+    gZenWorkspaces
+      .getWorkspaces(true)
+      .some(workspace => workspace.uuid === target.uuid),
+    "The session store knows about the target workspace."
+  );
+
+  // Simulates the pref stashed by `--space` on a cold start, see
+  // BrowserContentHandler.sys.mjs.
+  Services.prefs.setStringPref(
+    "zen.workspaces.cmdline-initial-workspace",
+    "cmdline container cold"
+  );
+
+  const newWindow = await BrowserTestUtils.openNewBrowserWindow();
+  await newWindow.gZenWorkspaces.promiseInitialized;
+
+  Assert.strictEqual(
+    newWindow.gZenWorkspaces.activeWorkspace,
+    target.uuid,
+    "The new window should start on the requested workspace."
+  );
+  // Zen puts its own empty tab first, so the tab carrying the startup URI is
+  // the one that is not it.
+  const initialTab = [...newWindow.gBrowser.tabs].find(
+    tab => !tab.hasAttribute("zen-empty-tab")
+  );
+  Assert.ok(initialTab, "The new window has a real initial tab.");
+  // A tab's container is fixed when it is created, so this is the assertion
+  // that the flag was honoured before the initial tab existed.
+  Assert.strictEqual(
+    initialTab.getAttribute("usercontextid"),
+    String(container),
+    "The initial tab is created in the requested space's container."
+  );
+
+  await BrowserTestUtils.closeWindow(newWindow);
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+  await gZenWorkspaces.removeWorkspace(target.uuid);
+  await SpecialPowers.popPrefEnv();
+});
+
 add_task(async function test_initial_workspace_pref_consumed_on_restore() {
   await SpecialPowers.pushPrefEnv({
     set: [

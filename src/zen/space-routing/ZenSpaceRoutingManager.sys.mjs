@@ -144,9 +144,11 @@ class nsZenSpaceRoutingManager {
         return null;
       }
 
-      const workspace = win.gZenWorkspaces
-        .getWorkspaces(true)
-        .find(space => space.uuid === targetRoute);
+      const workspace =
+        win.gZenWorkspaces.getWorkspaceFromId(targetRoute) ??
+        win.gZenWorkspaces
+          .getWorkspaces(true)
+          .find(space => space.uuid === targetRoute);
       return workspace?.containerTabId ?? null;
     } catch (err) {
       console.error("[ZenSpaceRouting]: Error routing the startup URI:", err);

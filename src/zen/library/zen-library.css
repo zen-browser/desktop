@@ -978,7 +978,7 @@ zen-library-history-section {
   display: none;
 }
 
-.zen-library-row:hover:not([opening], [pending]) {
+.zen-library-row:hover:not([pending]) {
   & .zen-library-download-status {
     display: none;
   }

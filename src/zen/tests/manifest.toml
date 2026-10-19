@@ -1,0 +1,208 @@
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[alerts]
+source = "toolkit/components/alerts/test/browser"
+is_direct_path = true
+
+[backforward]
+source = "browser/base/content/test/browser-backforward"
+is_direct_path = true
+
+[caps]
+source = "browser/base/content/test/browser-caps"
+is_direct_path = true
+
+[gesture]
+source = "browser/base/content/test/browser-gesture"
+is_direct_path = true
+
+[gesture.replace-manifest]
+"[DEFAULT]" = '''[DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=false",
+]'''
+
+[linkHandling]
+source = "browser/base/content/test/browser-linkHandling"
+is_direct_path = true
+disable = [
+  # Glance opens with alt+click, firefox doesnt know that.
+  "browser_javascript_links.js",
+]
+
+[metaTags]
+source = "browser/base/content/test/browser-metaTags"
+is_direct_path = true
+
+[mousepostracker]
+source = "browser/base/content/test/browser-mousepostracker"
+is_direct_path = true
+
+[outOfProcess]
+source = "browser/base/content/test/browser-outOfProcess"
+is_direct_path = true
+
+[pageStyle]
+source = "browser/base/content/test/browser-pageStyle"
+is_direct_path = true
+
+[pageinfo]
+source = "browser/base/content/test/browser-pageinfo"
+is_direct_path = true
+
+[pageinfo.replace-manifest]
+"../browser-general/" = "../../../../browser/base/content/test/browser-general/"
+
+[plugins]
+source = "browser/base/content/test/browser-plugins"
+is_direct_path = true
+
+[readermode]
+source = "toolkit/components/reader/tests/browser"
+is_direct_path = true
+disable = [
+  "browser_drag_url_readerMode.js",
+  "browser_localfile_readerMode.js",
+  "browser_readerMode.js",
+  "browser_readerMode_colorSchemePref.js",
+]
+
+[remote-settings]
+source = "services/settings/test/unit"
+is_direct_path = true
+xpcshell = true
+
+[remote-settings.replace-manifest]
+"../../../" = "../../../../services/"
+
+[safebrowsing]
+source = "browser/components/safebrowsing/content/test"
+is_direct_path = true
+
+[scroll-to-text-fragment]
+source = "browser/base/content/test/browser-scroll-to-text-fragment"
+is_direct_path = true
+
+[services-crypto]
+source = "services/crypto/tests/unit"
+is_direct_path = true
+xpcshell = true
+
+[services-crypto.replace-manifest]
+"../../../" = "../../../../services/"
+
+[sessionstore]
+source = "browser/components/sessionstore/test"
+is_direct_path = true
+disable = [
+  "browser_1933485_tab_groups_history.js",
+  "browser_1953801_tab_groups_history_close_other.js",
+  "browser_aboutSessionRestore.js",
+  "browser_bfcache_telemetry.js",
+  "browser_closedId.js",
+  "browser_closed_objects_changed_notifications_tabs.js",
+  "browser_closed_objects_changed_notifications_windows.js",
+  "browser_closed_tabs_closed_windows.js",
+  "browser_closed_tabs_windows.js",
+  "browser_cookies_partitioned.js",
+  "browser_crashedTabs.js",
+  "browser_dying_cache.js",
+  "browser_firefoxView_restore.js",
+  "browser_firefoxView_selected_restore.js",
+  "browser_forget_closed_tab_window_byId.js",
+  "browser_movePendingTabToNewWindow.js",
+  "browser_newtab_userTypedValue.js",
+  "browser_pinned_tabs.js",
+  "browser_purge_domaindata.js",
+  "browser_reopen_all_windows.js",
+  "browser_restoreLastActionCorrectOrder.js",
+  "browser_restoreLastClosedTabOrWindowOrSession.js",
+  "browser_restore_container_tabs_oa.js",
+  "browser_restore_tabless_window.js",
+  "browser_restore_verticalPinnedTabs.js",
+  "browser_restored_window_features.js",
+  "browser_scrollPositions.js",
+  "browser_scrollPositionsReaderMode.js",
+  "browser_searchModeSwitcher_restore.js",
+  "browser_speculative_connect.js",
+  "browser_splitview_integer_ids.js",
+  "browser_splitview_restore_in_closed_window.js",
+  "browser_splitview_string_migration.js",
+  "browser_swapDocShells.js",
+  "browser_tab_groups_restore_closed_in_closed_window.js",
+  "browser_tab_groups_restore_closed_in_open_window.js",
+  "browser_tab_groups_restore_closed_many_tabs.js",
+  "browser_tab_groups_closed.js",
+  "browser_tab_groups_closed_groups_in_closed_windows.js",
+  "browser_tab_groups_empty.js",
+  "browser_tab_groups_restore_to_group.js",
+  "browser_tab_groups_saved.js",
+  "browser_tab_groups_restore_multiple.js",
+  "browser_tab_groups_restore_saved.js",
+  "browser_tab_groups_restore_simple.js",
+  "browser_tab_groups_save_on_removeAllTabsBut.js",
+  "browser_tab_groups_save_on_removeTabsToTheEnd.js",
+  "browser_tab_groups_save_on_removeTabsToTheStart.js",
+  "browser_tab_groups_save_on_window_close.js",
+  "browser_tab_groups_state.js",
+  "browser_tab_groups_undo.js",
+  "browser_tab_label_during_restore.js",
+  "browser_undoCloseById.js",
+  "browser_urlbarSearchMode.js",
+  "browser_windowStateContainer.js",
+  "browser_wireframe_basic.js",
+  "browser_cleaner.js",
+  # window, so such a window can't exist here and the record rightly stays.
+  "browser_clear_container_closed_windows.js",
+]
+
+[sessionstore.replace-manifest]
+'prefs = [' = '''prefs = [
+  "zen.window-sync.enabled=false",'''
+
+[shell]
+source = "browser/components/shell/test"
+is_direct_path = true
+disable = [
+  "browser_1119088.js",
+  "browser_setDesktopBackgroundPreview.js",
+]
+
+[sync]
+source = "services/sync/tests/unit"
+is_direct_path = true
+xpcshell = true
+
+[sync.replace-manifest]
+"../../../" = "../../../../services/"
+'"identity.fxaccounts.enabled=true"' = '"identity.fxaccounts.enabled=true", "browser.formfill.enable=true"'
+
+[tabMediaIndicator]
+source = "browser/components/tabbrowser/test/browser/tabMediaIndicator"
+is_direct_path = true
+
+[tabMediaIndicator.replace-manifest]
+"[DEFAULT]" = """[DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=false",
+]"""
+
+[tabdialogs]
+source = "browser/base/content/test/browser-tabdialogs"
+is_direct_path = true
+
+[tooltiptext]
+source = "toolkit/components/tooltiptext"
+disable = [
+  "browser_input_file_tooltips.js",
+]
+
+[zoom]
+source = "browser/base/content/test/browser-zoom"
+is_direct_path = true
+
+[zoom.replace-manifest]
+"../browser-general/" = "../../../../browser/base/content/test/browser-general/"

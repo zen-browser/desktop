@@ -1,0 +1,62 @@
+diff --git a/toolkit/moz.configure b/toolkit/moz.configure
+index 75e99bbd2490b9014be6f4e956546d4507e751df..fbe16d282113175f067d739e1284b2544d014e7d 100644
+--- a/toolkit/moz.configure
++++ b/toolkit/moz.configure
+@@ -20,6 +20,7 @@ def check_moz_app_id(moz_app_id, build_project):
+ 
+ project_flag(
+     env="MOZ_APP_VENDOR",
++    default="Zen Team",
+     nargs=1,
+     help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
+ )
+@@ -33,6 +34,7 @@ project_flag(
+ 
+ project_flag(
+     "MOZ_APP_PROFILE",
++    default="zen",
+     nargs=1,
+     help='Used for application.ini\'s "Profile" field, which controls profile location',
+ )
+@@ -84,10 +86,13 @@ option(
+ )
+ set_config("MOZ_INCLUDE_SOURCE_INFO", True, when="MOZ_INCLUDE_SOURCE_INFO")
+ 
++option(env="ZEN_FIREFOX_VERSION", help="Set Zen version of Firefox", nargs=1)
++set_config("ZEN_FIREFOX_VERSION", depends_if("ZEN_FIREFOX_VERSION")(lambda v: v[0]))
++
+ option(
+     "--with-distribution-id",
+     nargs=1,
+-    default="org.mozilla",
++    default="app.zen-browser",
+     help="Set distribution-specific id",
+ )
+ set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))
+@@ -2032,7 +2037,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
+ # ==============================================================
+ @depends(milestone)
+ def require_signing(milestone):
+-    return milestone.is_release_or_beta and not milestone.is_esr
++    return False
+ 
+ 
+ option(
+@@ -3916,7 +3921,7 @@ with only_when(compile_environment):
+             return "Mozilla"
+         elif target.os == "Android":
+             return ".mozilla"
+-        return "mozilla"
++        return "zen"
+ 
+     option(
+         "--with-user-appdir",
+@@ -4329,7 +4334,7 @@ with only_when(target_is_windows):
+ 
+     @depends(target.abi)
+     def desktop_launcher_enabled(abi):
+-        return abi == "msvc"
++        return False # See gh-13745
+ 
+     set_config("DESKTOP_LAUNCHER_ENABLED", True, when=desktop_launcher_enabled)
+     set_define("DESKTOP_LAUNCHER_ENABLED", True, when=desktop_launcher_enabled)

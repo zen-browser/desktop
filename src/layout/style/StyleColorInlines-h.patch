@@ -1,0 +1,13 @@
+diff --git a/layout/style/StyleColorInlines.h b/layout/style/StyleColorInlines.h
+index 332f715ca2a11c98afcb80a870da98c038a7e4f0..a5bddde67165fcb40d40b3aec76a9d19d8880d64 100644
+--- a/layout/style/StyleColorInlines.h
++++ b/layout/style/StyleColorInlines.h
+@@ -66,7 +66,7 @@ template <>
+ nscolor StyleColor::CalcColor(nscolor) const;
+ 
+ template <>
+-nscolor StyleColor::CalcColor(const ComputedStyle&) const;
++nscolor StyleColor::CalcColor(const ComputedStyle&, const nsIFrame*) const;
+ 
+ template <>
+ nscolor StyleColor::CalcColor(const nsIFrame*) const;

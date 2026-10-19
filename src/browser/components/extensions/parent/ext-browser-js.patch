@@ -1,0 +1,41 @@
+diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
+index 6438045fc006da5bd11b257646fadf8139a57a00..614d2f77fa48b1cae840d9ba41ca9553a7fda617 100644
+--- a/browser/components/extensions/parent/ext-browser.js
++++ b/browser/components/extensions/parent/ext-browser.js
+@@ -362,6 +362,7 @@ class TabTracker extends TabTrackerBase {
+   }
+ 
+   getId(nativeTab) {
++    if (nativeTab.hasAttribute("zen-empty-tab")) return -1;
+     let id = this._tabs.get(nativeTab);
+     if (id) {
+       return id;
+@@ -395,6 +396,7 @@ class TabTracker extends TabTrackerBase {
+     if (nativeTab.documentGlobal.closed) {
+       throw new Error("Cannot attach ID to a tab in a closed window.");
+     }
++    if (nativeTab.hasAttribute("zen-empty-tab")) return;
+ 
+     this._tabs.set(nativeTab, id);
+     this._tabIds.set(id, nativeTab);
+@@ -659,7 +661,8 @@ class TabTracker extends TabTrackerBase {
+    * @private
+    */
+   _handleWindowClose(window) {
+-    for (let nativeTab of window.gBrowser.tabs) {
++    let tabs = window.gZenWorkspaces?.allStoredTabs ?? window.gBrowser.tabs;
++    for (let nativeTab of tabs) {
+       if (!this.adoptedTabs.has(nativeTab)) {
+         this.emitRemoved(nativeTab, true);
+       }
+@@ -1296,6 +1299,10 @@ class TabManager extends TabManagerBase {
+   }
+ 
+   canAccessTab(nativeTab) {
++    if (nativeTab.hasAttribute("zen-empty-tab")) {
++      return false
++    }
++
+     // Check private browsing access at browser window level.
+     if (!this.extension.canAccessWindow(nativeTab.documentGlobal)) {
+       return false;

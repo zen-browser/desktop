@@ -1,0 +1,50 @@
+diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
+index dcce3335e14f9f5d3c0b9fe6a86527be6011c143..ca788d6bd1db3a14d80bf571813e9c706456968f 100644
+--- a/toolkit/xre/nsXREDirProvider.cpp
++++ b/toolkit/xre/nsXREDirProvider.cpp
+@@ -1335,14 +1335,10 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+   // Similar to nsXREDirProvider::AppendProfilePath.
+   // TODO: Bug 1990407 - Evaluate if refactoring might be required there in the
+   // future?
+-  if (gAppData->profile) {
++  // Use aIsDotted for a different purpose here, will probably break in the future
++  if (gAppData->profile && aIsDotted) {
+     nsAutoCString profile;
+-#  if defined(MOZ_THUNDERBIRD)
+-    if (gAppData->profile[0] != '.') {
+-      profile.Assign('.');
+-    }
+-#  endif
+-    profile.Append(gAppData->profile);
++    profile = "."_ns + nsDependentCString(gAppData->profile);
+     MOZ_TRY(aFile->AppendRelativeNativePath(profile));
+   } else {
+     nsAutoCString vendor;
+@@ -1352,8 +1348,6 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+     ToLowerCase(vendor);
+     ToLowerCase(appName);
+ 
+-    MOZ_TRY(aFile->AppendRelativeNativePath(aIsDotted ? ("."_ns + vendor)
+-                                                      : vendor));
+     MOZ_TRY(aFile->AppendRelativeNativePath(appName));
+   }
+ 
+@@ -1530,18 +1524,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
+     // of a specific build where legacy needs to be forced, similar to the
+     // Firefox handling. Both casing are verified to account for systems where
+     // that matters.
+-    if (gAppData->profile
+-#  if defined(MOZ_THUNDERBIRD)
+-        && strcmp(gAppData->profile, "thunderbird") != 0 &&
+-        strcmp(gAppData->profile, "Thunderbird") != 0
+-#  endif
+-    ) {
+-      MOZ_TRY(NS_NewNativeLocalFile(nsDependentCString(aHomeDir),
+-                                    getter_AddRefs(localDir)));
+-    } else {
+       MOZ_TRY(GetLegacyOrXDGConfigHome(aHomeDir, getter_AddRefs(localDir)));
+       MOZ_TRY(localDir->Clone(getter_AddRefs(parentDir)));
+-    }
+ 
+     MOZ_TRY(AppendFromAppData(localDir, false));
+   }

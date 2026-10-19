@@ -1,0 +1,81 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+/**
+ * @brief One file the library came across while looking through a folder.
+ */
+[scriptable, uuid(846be65c-a5ae-4b14-a264-85cb98811a9e)]
+interface nsIZenMediaFile : nsISupports {
+  /**
+   * @brief The absolute path of the file.
+   */
+  readonly attribute AString path;
+  /**
+   * @brief The folder the scan was looking through when it came across the
+   * file, as it was handed in.
+   */
+  readonly attribute AString root;
+  /**
+   * @brief When the file was last written, in milliseconds since the epoch.
+   */
+  readonly attribute int64_t lastModified;
+  /**
+   * @brief How big the file says it is, in bytes.
+   */
+  readonly attribute int64_t size;
+  /**
+   * @brief Whether the file is only a stand-in for one kept in the cloud.
+   */
+  readonly attribute boolean cloudPlaceholder;
+};
+
+/**
+ * @brief Handed the files once a scan has been all the way through.
+ */
+[scriptable, function, uuid(1ceade6a-d5fc-452b-a251-b85936a63081)]
+interface nsIZenMediaScanCallback : nsISupports {
+  /**
+   * @brief Called on the main thread with what the scan found, newest
+   * first. An empty list is what a scan that found nothing hands back.
+   * @param files The files, already cut down to the number asked for.
+   */
+  void onMediaScanned(in Array<nsIZenMediaFile> files);
+};
+
+/**
+ * @brief What the library needs to know about files before it reads them.
+ */
+[scriptable, uuid(40a25032-7151-48bd-b5d8-3f5984bd1e25)]
+interface nsIZenLibraryFiles : nsISupports {
+  /**
+   * @brief Check whether a file is only a stand-in for one kept in the
+   * cloud, as the files OneDrive holds online are. Reading one of those
+   * has the provider fetch the whole thing first, which is not something
+   * to set off just to draw a thumbnail of it.
+   * @param path The absolute path of the file to look at.
+   * @returns True if reading the file would fetch it from elsewhere.
+   */
+  boolean isCloudPlaceholder(in AString path);
+  /**
+   * @brief Look through folders for files worth showing, off the main
+   * thread. A folder listing already carries everything that is wanted of
+   * each file, so asking here costs one pass over the folder rather than
+   * a trip per file.
+   * @param roots The folders to look through.
+   * @param extensions The extensions a file must have, lowercased and
+   *        without the dot. Everything else is passed over.
+   * @param maxDepth How far below each root to go, 0 being the root alone.
+   * @param maxFolders How many folders the whole scan may open.
+   * @param maxItems How many files to hand back.
+   * @param callback Called with the files once the scan is through.
+   */
+  void scanMedia(in Array<AString> roots,
+                 in Array<AString> extensions,
+                 in unsigned long maxDepth,
+                 in unsigned long maxFolders,
+                 in unsigned long maxItems,
+                 in nsIZenMediaScanCallback callback);
+};

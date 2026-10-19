@@ -1,0 +1,21 @@
+{
+  "next": null,
+  "results": [
+    {
+      "name": "Non-Restartless Test Extension",
+      "type": "extension",
+      "guid": "missing-xpi@tests.mozilla.org",
+      "current_version": {
+        "version": "1.0",
+        "files": [
+          {
+            "platform": "all",
+            "size": 485,
+            "url": "http://127.0.0.1:8888/THIS_DOES_NOT_EXIST.xpi"
+          }
+        ]
+      },
+      "last_updated": "2011-09-05T20:42:09Z"
+    }
+  ]
+}

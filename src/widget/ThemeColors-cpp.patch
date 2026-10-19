@@ -1,0 +1,13 @@
+diff --git a/widget/ThemeColors.cpp b/widget/ThemeColors.cpp
+index 0ac3a8cbb04258312cba20a89a23700c6fd1b49f..dfd5203c1a795fc14befa88a474f241dd16e9c8f 100644
+--- a/widget/ThemeColors.cpp
++++ b/widget/ThemeColors.cpp
+@@ -113,7 +113,7 @@ ThemeAccentColor::ThemeAccentColor(const ComputedStyle& aStyle,
+   }
+   MOZ_ASSERT(color.IsColor());
+   nscolor accentColor =
+-      ColorPalette::EnsureOpaque(color.AsColor().CalcColor(aStyle));
++      ColorPalette::EnsureOpaque(color.AsColor().CalcColor(aStyle, nullptr));
+   if (sRGBColor::FromABGR(accentColor) == mDefaultPalette->mAccent) {
+     return;
+   }

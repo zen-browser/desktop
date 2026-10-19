@@ -1,0 +1,7 @@
+[DEFAULT]
+
+["browser_alert_capture.js"]
+support-files = ["file_empty.html"]
+
+["browser_bug1682866.js"]
+support-files = ["file_bug1682866.html"]

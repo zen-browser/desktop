@@ -1,0 +1,63 @@
+diff --git a/browser/components/sessionstore/SessionStartup.sys.mjs b/browser/components/sessionstore/SessionStartup.sys.mjs
+index 919d4536c5462603346684bbe26794ae9279b517..5a8fae0708e4a9a82c5e85f8a473ebaeafebe71f 100644
+--- a/browser/components/sessionstore/SessionStartup.sys.mjs
++++ b/browser/components/sessionstore/SessionStartup.sys.mjs
+@@ -41,6 +41,7 @@ const lazy = XPCOMUtils.declareLazy({
+     "moz-src:///browser/components/sessionstore/StartupPerformance.sys.mjs",
+   sessionStoreLogger:
+     "moz-src:///browser/components/sessionstore/SessionLogger.sys.mjs",
++  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+ });
+ 
+ const STATE_RUNNING_STR = "running";
+@@ -86,7 +87,7 @@ export var SessionStartup = {
+     }
+ 
+     // do not need to initialize anything in auto-started private browsing sessions
+-    if (lazy.PrivateBrowsingUtils.permanentPrivateBrowsing) {
++    if (false) {
+       this._initialized = true;
+       gOnceInitializedDeferred.resolve();
+       return;
+@@ -180,6 +181,8 @@ export var SessionStartup = {
+       this._initialState = parsed;
+     }
+ 
++    this._initialState = lazy.ZenSessionStore.onFileRead(this._initialState);
++
+     if (this._initialState == null) {
+       // No valid session found.
+       this._sessionType = this.NO_SESSION;
+@@ -277,6 +280,8 @@ export var SessionStartup = {
+         `Previous shutdown ok? ${this._previousSessionCrashed}, reason: ${previousSessionCrashedReason}`
+       );
+ 
++      lazy.ZenSessionStore.onCrashCheckpoints(this._initialState);
++
+       Services.obs.addObserver(this, "sessionstore-windows-restored", true);
+ 
+       if (this.sessionType == this.NO_SESSION) {
+@@ -337,12 +342,7 @@ export var SessionStartup = {
+   isAutomaticRestoreEnabled() {
+     if (this._resumeSessionEnabled === null) {
+       this._resumeSessionEnabled =
+-        !lazy.PrivateBrowsingUtils.permanentPrivateBrowsing &&
+-        (Services.prefs.getBoolPref(
+-          "browser.sessionstore.resume_session_once"
+-        ) ||
+-          Services.prefs.getIntPref("browser.startup.page") ==
+-            BROWSER_STARTUP_RESUME_SESSION);
++        true;
+     }
+ 
+     return this._resumeSessionEnabled;
+@@ -355,8 +355,7 @@ export var SessionStartup = {
+    */
+   willRestore() {
+     return (
+-      this.sessionType == this.RECOVER_SESSION ||
+-      this.sessionType == this.RESUME_SESSION
++      true
+     );
+   },
+ 

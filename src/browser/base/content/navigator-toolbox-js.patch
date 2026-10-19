@@ -1,0 +1,64 @@
+diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
+index 10faff18ca0c6df472de81b5dbdba83309fa2eb8..b675df9ad22150f5a1060dedbabf6cb27c951619 100644
+--- a/browser/base/content/navigator-toolbox.js
++++ b/browser/base/content/navigator-toolbox.js
+@@ -10,7 +10,7 @@ ChromeUtils.defineESModuleGetters(this, {
+ document.addEventListener(
+   "DOMContentLoaded",
+   () => {
+-    const navigatorToolbox = document.getElementById("navigator-toolbox");
++    const navigatorToolbox = document.getElementById("browser");
+     const widgetOverflow = document.getElementById("widget-overflow");
+ 
+     function onPopupShowing(event) {
+@@ -188,6 +188,7 @@ document.addEventListener(
+         #forward-button,
+         #reload-button ,
+         #reader-mode-button,
++        #zen-tabs-wrapper,
+         #picture-in-picture-button,
+         #urlbar-zoom-button,
+         #star-button-box,
+@@ -214,6 +215,17 @@ document.addEventListener(
+           gBrowser.handleNewTabMiddleClick(element, event);
+           break;
+ 
++        case "zen-tabs-wrapper":
++          if (event.button == 1) {
++            BrowserCommands.openTab();
++            // Stop the propagation of the click event, to prevent the event from being
++            // handled more than once.
++            // E.g. see https://bugzilla.mozilla.org/show_bug.cgi?id=1657992#c4
++            event.stopPropagation();
++            event.preventDefault();
++          }
++          break;
++
+         case "back-button":
+         case "forward-button":
+         case "reload-button":
+@@ -331,6 +343,7 @@ document.addEventListener(
+         #downloads-button,
+         #fxa-toolbar-menu-button,
+         #unified-extensions-button,
++        #zen-site-data-icon-button,
+         #library-button,
+         #ipprotection-button,
+         #split-view-button,
+@@ -416,6 +429,16 @@ document.addEventListener(
+           gUnifiedExtensions.togglePanel(event);
+           break;
+ 
++        case "zen-site-data-icon-button":
++          gUnifiedExtensions.togglePanel(
++            event,
++            null,
++            window.gZenSiteDataPanel.unifiedPanel,
++            window.gZenSiteDataPanel.unifiedPanelView,
++            window.gZenSiteDataPanel.anchor,
++          );
++          break;
++
+         case "library-button":
+           PanelUI.showSubView("appMenu-libraryView", element, event);
+           break;

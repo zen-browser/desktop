@@ -1,0 +1,56 @@
+name: Pull request test
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore Surfer engine cache
+        id: surfer-engine-cache
+        uses: actions/cache@v5
+        with:
+          path: .surfer/engine/
+          key: surfer-engine-${{ hashFiles('surfer.json') }}
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Download Firefox and dependencies
+        run: npm run download
+
+      - name: Run Bootstrap
+        run: npm run bootstrap
+
+      - name: Add .hgignore file to the engine dir
+        run: touch engine/.hgignore
+
+      - name: Import patches
+        run: npm run import
+
+      - name: Run linting
+        run: npm run lint

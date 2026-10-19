@@ -1,0 +1,35 @@
+diff --git a/dom/chrome-webidl/MediaController.webidl b/dom/chrome-webidl/MediaController.webidl
+index 494ed7a424457dae822c86c0ef7f6d4e8685cd5e..a5a859cbdc76e0d79460780cfc41d7ed95e660e1 100644
+--- a/dom/chrome-webidl/MediaController.webidl
++++ b/dom/chrome-webidl/MediaController.webidl
+@@ -23,6 +23,12 @@ enum MediaControlKey {
+   "setvolume",
+ };
+ 
++dictionary MediaControllerPositionState {
++  required double duration;
++  required double playbackRate;
++  required double position;
++};
++
+ /**
+  * The reason a chrome caller is pausing the controller. "user" preserves the
+  * existing user-initiated pause; the "system-*" values represent an
+@@ -49,6 +55,7 @@ interface MediaController : EventTarget {
+   readonly attribute boolean isPlaying;
+   readonly attribute boolean isAnyMediaBeingControlled;
+   readonly attribute MediaSessionPlaybackState playbackState;
++  readonly attribute boolean isBeingUsedInPIPModeOrFullscreen;
+ 
+   // The effective audio-session type the tab is currently claiming. Chrome
+   // consumers can use this to apply tab/application level audio-focus
+@@ -59,6 +66,9 @@ interface MediaController : EventTarget {
+   [Throws]
+   MediaMetadataInit getMetadata();
+ 
++  [Throws]
++  MediaControllerPositionState getPositionState();
++
+   [Frozen, Cached, Pure]
+   readonly attribute sequence<MediaControlKey> supportedKeys;
+ 

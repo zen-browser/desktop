@@ -1,0 +1,14 @@
+diff --git a/dom/webidl/SimpleGestureEvent.webidl b/dom/webidl/SimpleGestureEvent.webidl
+index 58a242331ebfa36f6c3df1b1a52c7c1510b90a0d..79b15ab56e8369d2b4f5df7166daed62fd9369f2 100644
+--- a/dom/webidl/SimpleGestureEvent.webidl
++++ b/dom/webidl/SimpleGestureEvent.webidl
+@@ -132,6 +132,9 @@ interface SimpleGestureEvent : MouseEvent
+    */
+   attribute unsigned long allowedDirections;
+ 
++  attribute double swipeSuccessThreshold;
++  attribute double swipeSuccessVelocityContribution;
++
+   /* Direction of a gesture. Diagonals are indicated by OR'ing the
+    * applicable constants together.
+    *

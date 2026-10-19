@@ -1,0 +1,12 @@
+diff --git a/browser/base/content/browser-profiles.js b/browser/base/content/browser-profiles.js
+index 35a5fd0c320cdf3cdf42442881d71e5ee6dc865d..6ef175f27c614f74ad32ecefb2854e3b9fc01d13 100644
+--- a/browser/base/content/browser-profiles.js
++++ b/browser/base/content/browser-profiles.js
+@@ -70,6 +70,7 @@ var gProfiles = {
+   },
+ 
+   toggleProfileMenus(isEnabled) {
++    isEnabled &&= Services.prefs.getBoolPref("browser.profiles.enabled", false);
+     let profilesMenu = document.getElementById("profiles-menu");
+     profilesMenu.hidden = !isEnabled;
+   },

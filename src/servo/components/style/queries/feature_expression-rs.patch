@@ -1,0 +1,50 @@
+diff --git a/servo/components/style/queries/feature_expression.rs b/servo/components/style/queries/feature_expression.rs
+index 3632c4054ac01ec4ed6b8e6903322ef908e25da0..9ce42db40fe72db3c1fef5010f579ffc34734d6e 100644
+--- a/servo/components/style/queries/feature_expression.rs
++++ b/servo/components/style/queries/feature_expression.rs
+@@ -21,7 +21,7 @@ use crate::selector_map::PrecomputedHashSet;
+ use crate::str::{starts_with_ignore_ascii_case, string_as_ascii_lowercase};
+ use crate::stylesheets::container_rule::AttrReferenceSet;
+ use crate::stylesheets::{CssRuleType, Origin, UrlExtraData};
+-use crate::values::DashedIdent;
++use crate::values::{AtomString, DashedIdent};
+ use crate::values::computed::{self, CSSPixelLength, ToComputedValue};
+ use crate::values::specified::{
+     Angle, Integer, Length, Number, Percentage, Ratio, Resolution, Time,
+@@ -638,6 +638,10 @@ impl QueryFeatureExpression {
+                     .map(|v| *expect!(Enumerated, v));
+                 return evaluator(context, computed);
+             },
++            Evaluator::String(evaluator) => {
++                let string = self.kind.non_ranged_value().map(|v| expect!(String, v));
++                return evaluator(context, string);
++            },
+             Evaluator::BoolInteger(eval) => {
+                 let computed = self
+                     .kind
+@@ -676,6 +680,7 @@ pub enum QueryExpressionValue {
+     /// An enumerated value, defined by the variant keyword table in the
+     /// feature's `mData` member.
+     Enumerated(KeywordDiscriminant),
++    String(AtomString),
+     /// Value types only used by style-range query expressions, not feature queries.
+     /// A CSS-wide keyword.
+     Keyword(CSSWideKeyword),
+@@ -723,6 +728,7 @@ impl QueryExpressionValue {
+                 Evaluator::Enumerated { serializer, .. } => dest.write_str(&serializer(value)),
+                 _ => unreachable!(),
+             },
++            QueryExpressionValue::String(ref s) => s.to_css(dest),
+         }
+     }
+ 
+@@ -759,6 +765,9 @@ impl QueryExpressionValue {
+             Evaluator::Resolution(..) => {
+                 QueryExpressionValue::Resolution(Resolution::parse(context, input)?)
+             },
++            Evaluator::String(..) => {
++                QueryExpressionValue::String(input.expect_string()?.as_ref().into())
++            },
+             Evaluator::Enumerated { parser, .. } => {
+                 QueryExpressionValue::Enumerated(parser(context, input)?)
+             },

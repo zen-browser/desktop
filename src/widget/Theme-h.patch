@@ -1,0 +1,19 @@
+diff --git a/widget/Theme.h b/widget/Theme.h
+index 4e0acbb25b9e39b712a2d96d8dee366dfdce4a01..9aa377ca9f0d7f96d938339d198b797ceebbc602 100644
+--- a/widget/Theme.h
++++ b/widget/Theme.h
+@@ -161,10 +161,12 @@ class Theme : protected nsNativeTheme, public nsITheme {
+                            const ElementState&, DPIRatio);
+   template <typename PaintBackendData>
+   void PaintTextField(PaintBackendData&, const LayoutDeviceRect&,
+-                      const ElementState&, const Colors&, DPIRatio);
++                      const ElementState&, const Colors&, DPIRatio,
++                      const nsIFrame*);
+   template <typename PaintBackendData>
+   void PaintListbox(PaintBackendData&, const LayoutDeviceRect&,
+-                    const ElementState&, const Colors&, DPIRatio);
++                    const ElementState&, const Colors&, DPIRatio,
++                    const nsIFrame*);
+   template <typename PaintBackendData>
+   void PaintMenulist(PaintBackendData&, const LayoutDeviceRect&,
+                      const ElementState&, const Colors&, DPIRatio);

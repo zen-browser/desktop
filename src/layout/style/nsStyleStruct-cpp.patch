@@ -1,0 +1,13 @@
+diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
+index 758c673f48a5e5b2d440b67713340872e7db3041..3bfaeea43a6710338ab15bdd5dacd03752d718ae 100644
+--- a/layout/style/nsStyleStruct.cpp
++++ b/layout/style/nsStyleStruct.cpp
+@@ -2212,7 +2212,7 @@ nscolor nsStyleBackground::BackgroundColor(const nsIFrame* aFrame) const {
+ }
+ 
+ nscolor nsStyleBackground::BackgroundColor(const ComputedStyle* aStyle) const {
+-  return mBackgroundColor.CalcColor(*aStyle);
++  return mBackgroundColor.CalcColor(*aStyle, nullptr);
+ }
+ 
+ bool nsStyleBackground::IsTransparent(const nsIFrame* aFrame) const {

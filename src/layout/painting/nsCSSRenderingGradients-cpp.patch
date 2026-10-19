@@ -1,0 +1,78 @@
+diff --git a/layout/painting/nsCSSRenderingGradients.cpp b/layout/painting/nsCSSRenderingGradients.cpp
+index 80a9d36ca865bbcd090d7aa556270a698447b016..2b1e0a70ed7e6f975c51a0912598c7903552ab20 100644
+--- a/layout/painting/nsCSSRenderingGradients.cpp
++++ b/layout/painting/nsCSSRenderingGradients.cpp
+@@ -667,7 +667,8 @@ static nsTArray<ColorStop> ComputeColorStops(ComputedStyle* aComputedStyle,
+ 
+ nsCSSGradientRenderer nsCSSGradientRenderer::Create(
+     nsPresContext* aPresContext, ComputedStyle* aComputedStyle,
+-    const StyleGradient& aGradient, const nsSize& aIntrinsicSize) {
++    const nsIFrame* aFrame, const StyleGradient& aGradient,
++    const nsSize& aIntrinsicSize) {
+   auto srcSize = CSSSize::FromAppUnits(aIntrinsicSize);
+ 
+   // Compute "gradient line" start and end relative to the intrinsic size of
+@@ -704,6 +705,7 @@ nsCSSGradientRenderer nsCSSGradientRenderer::Create(
+ 
+   nsCSSGradientRenderer renderer;
+   renderer.mPresContext = aPresContext;
++  renderer.mFrame = aFrame;
+   renderer.mGradient = &aGradient;
+   renderer.mStops = std::move(stops);
+   renderer.mLineStart = {
+@@ -992,9 +994,10 @@ void nsCSSGradientRenderer::Paint(gfxContext& aContext, const nsRect& aDest,
+       GradientStopInterpolator(
+           const nsTArray<ColorStop>& aStops,
+           const StyleColorInterpolationMethod& aStyleColorInterpolationMethod,
+-          bool aExtend, nsTArray<gfx::GradientStop>& aResult)
++          bool aExtend, nsTArray<gfx::GradientStop>& aResult,
++          const nsIFrame* aFrame)
+           : ColorStopInterpolator(aStops, aStyleColorInterpolationMethod,
+-                                  aExtend),
++                                  aExtend, aFrame),
+             mStops(aResult) {}
+       void CreateStop(float aPosition, gfx::DeviceColor aColor) {
+         mStops.AppendElement(gfx::GradientStop{aPosition, aColor});
+@@ -1007,12 +1010,12 @@ void nsCSSGradientRenderer::Paint(gfxContext& aContext, const nsRect& aDest,
+     bool extend = !isRepeat && styleColorInterpolationMethod.hue ==
+                                    StyleHueInterpolationMethod::Longer;
+     GradientStopInterpolator interpolator(mStops, styleColorInterpolationMethod,
+-                                          extend, rawStops);
++                                          extend, rawStops, mFrame);
+     interpolator.CreateStops();
+   } else {
+     rawStops.SetLength(mStops.Length());
+     for (uint32_t i = 0; i < mStops.Length(); i++) {
+-      rawStops[i].color = ToDeviceColor(mStops[i].mColor);
++      rawStops[i].color = ToDeviceColor(mStops[i].mColor, mFrame);
+       rawStops[i].color.a *= aOpacity;
+       rawStops[i].offset = stopScale * (mStops[i].mPosition - stopOrigin);
+     }
+@@ -1203,8 +1206,10 @@ class MOZ_STACK_CLASS WrColorStopInterpolator
+   WrColorStopInterpolator(
+       const nsTArray<ColorStop>& aStops,
+       const StyleColorInterpolationMethod& aStyleColorInterpolationMethod,
+-      float aOpacity, nsTArray<wr::GradientStop>& aResult, bool aExtend)
+-      : ColorStopInterpolator(aStops, aStyleColorInterpolationMethod, aExtend),
++      float aOpacity, nsTArray<wr::GradientStop>& aResult, bool aExtend,
++      const nsIFrame* aFrame)
++      : ColorStopInterpolator(aStops, aStyleColorInterpolationMethod, aExtend,
++                              aFrame),
+         mResult(aResult),
+         mOpacity(aOpacity),
+         mOutputStop(0) {}
+@@ -1284,12 +1289,12 @@ void nsCSSGradientRenderer::BuildWebRenderParameters(
+                   styleColorInterpolationMethod.hue ==
+                       StyleHueInterpolationMethod::Longer;
+     WrColorStopInterpolator interpolator(mStops, styleColorInterpolationMethod,
+-                                         aOpacity, aStops, extend);
++                                         aOpacity, aStops, extend, mFrame);
+     interpolator.CreateStops();
+   } else {
+     aStops.SetLength(mStops.Length());
+     for (uint32_t i = 0; i < mStops.Length(); i++) {
+-      aStops[i].color = wr::ToColorF(ToDeviceColor(mStops[i].mColor));
++      aStops[i].color = wr::ToColorF(ToDeviceColor(mStops[i].mColor, mFrame));
+       aStops[i].color.a *= aOpacity;
+       aStops[i].offset = (float)mStops[i].mPosition;
+     }

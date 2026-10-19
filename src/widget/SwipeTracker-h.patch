@@ -1,0 +1,32 @@
+diff --git a/widget/SwipeTracker.h b/widget/SwipeTracker.h
+index 197a9a1e985a0a8ed0380ed82449bf80f1c69ae0..cc3939f1799ec6cea235368564232ecf017931d0 100644
+--- a/widget/SwipeTracker.h
++++ b/widget/SwipeTracker.h
+@@ -8,6 +8,7 @@
+ #include "EventForwards.h"
+ #include "InputData.h"
+ #include "Units.h"
++#include "mozilla/Maybe.h"
+ #include "mozilla/RefPtr.h"
+ #include "mozilla/TimeStamp.h"
+ #include "mozilla/layers/AxisPhysicsMSDModel.h"
+@@ -74,6 +75,10 @@ class SwipeTracker final : public nsARefreshObserver {
+     return mAllowedDirections & mSwipeDirection;
+   }
+   double SwipeSuccessTargetValue() const;
++  double SuccessThreshold() const;
++  double SuccessVelocityContribution() const;
++  bool HasConsumerThreshold() const;
++  void ReadConsumerSwipeConfig(const WidgetSimpleGestureEvent& aEvent);
+   double ClampToAllowedRange(double aGestureAmount) const;
+   bool ComputeSwipeSuccess() const;
+   void StartAnimating(double aStartValue, double aTargetValue);
+@@ -90,6 +95,8 @@ class SwipeTracker final : public nsARefreshObserver {
+   TimeStamp mLastAnimationFrameTime;
+   const uint32_t mAllowedDirections;
+   const uint32_t mSwipeDirection;
++  Maybe<double> mConsumerThreshold;
++  Maybe<double> mConsumerVelocityContribution;
+   double mGestureAmount = 0.0;
+   double mCurrentVelocity = 0.0;
+   bool mDeltaTypeIsPage = false;

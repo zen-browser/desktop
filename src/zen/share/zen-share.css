@@ -1,0 +1,259 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+.zen-share-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 32px;
+  background: var(--zen-transparent-browser-background);
+}
+
+browser[zen-share-overlay-showing] {
+  -moz-subtree-hidden-only-visually: 1;
+}
+
+.zen-share-overlay-card {
+  display: flex;
+  flex-direction: column;
+  width: 325px;
+  max-height: 76%;
+  border-radius: 30px;
+  background: var(--zen-dialog-background);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.07),
+    0 14px 40px -10px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  animation: zen-share-overlay-enter 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.zen-share-overlay-add {
+  min-width: 260px;
+  max-width: 100%;
+  padding: 16px 48px;
+  border-radius: 18px;
+  font-size: 1.1em;
+  animation: zen-share-overlay-enter 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) 0.06s
+    both;
+
+  &[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+@keyframes zen-share-overlay-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+
+.zen-share-overlay-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 22px 20px 16px;
+  mask-image: linear-gradient(
+    transparent,
+    black 24px,
+    black calc(100% - 20px),
+    transparent
+  );
+}
+
+.zen-share-overlay-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  min-width: 0;
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 7%, transparent);
+  }
+
+  &:active {
+    background: color-mix(in srgb, currentColor 11%, transparent);
+  }
+}
+
+.zen-share-overlay-row-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.zen-share-overlay-folder-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin: -3px;
+
+%include ../folders/zen-folder-icon.inc.css
+
+  /* The dots stand in for the icon on active sidebar folders; the preview
+   * always shows the plain folder. */
+  & .dots {
+    opacity: 0;
+  }
+}
+
+.zen-share-overlay-row-label {
+  font-size: 1.1em;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-share-overlay-split {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+
+  & .zen-share-overlay-row {
+    flex: 1 1 0;
+    padding: 6px 14px;
+    border-radius: 8px;
+  }
+
+  & .zen-share-overlay-row:not(:first-child) {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block: 6px;
+      inset-inline-start: -5.5px;
+      width: 1px;
+      background: var(--zen-colors-border);
+    }
+  }
+}
+
+.zen-share-overlay-children-clip {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.zen-share-overlay-folder[collapsed] > .zen-share-overlay-children-clip {
+  grid-template-rows: 0fr;
+}
+
+.zen-share-overlay-children {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-inline-start: 28px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.zen-share-overlay-status {
+  padding: 28px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.zen-share-overlay-footer {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  padding: 22px 20px 20px;
+  border-top: 2px dashed
+    color-mix(in srgb, var(--zen-primary-color) 22%, var(--zen-colors-border));
+  background: color-mix(
+    in srgb,
+    var(--zen-primary-color) 7%,
+    var(--zen-dialog-background)
+  );
+}
+
+.zen-share-overlay-badge-stack {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.zen-share-overlay-badge {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 14px 18px;
+  border-radius: 18px;
+  border: 1px solid
+    light-dark(
+      color-mix(in srgb, currentColor 12%, var(--zen-colors-border)),
+      color-mix(in srgb, currentColor 8%, transparent)
+    );
+  background: light-dark(#ffffff, #1c1c1e);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+}
+
+.zen-share-overlay-badge-sheet {
+  position: absolute;
+  height: 26px;
+  border-radius: 14px;
+  border: 1px solid
+    light-dark(
+      color-mix(in srgb, currentColor 12%, var(--zen-colors-border)),
+      color-mix(in srgb, currentColor 8%, transparent)
+    );
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+
+  &.first {
+    z-index: 1;
+    inset-inline: 10px;
+    top: -7px;
+    background: color-mix(in srgb, currentColor 2%, light-dark(#ffffff, #1c1c1e));
+  }
+
+  &.second {
+    z-index: 0;
+    inset-inline: 22px;
+    top: -13px;
+    background: color-mix(in srgb, currentColor 4%, light-dark(#ffffff, #1c1c1e));
+  }
+}
+
+.zen-share-overlay-badge-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  -moz-context-properties: fill;
+  fill: color-mix(in srgb, var(--zen-accent-button-color) 60%, currentColor);
+}
+
+.zen-share-overlay-badge-text {
+  min-width: 0;
+  color: color-mix(in srgb, var(--zen-accent-button-color) 30%, currentColor);
+}
+
+.zen-share-overlay-badge-title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-share-overlay-badge-subtitle {
+  opacity: 0.6;
+  font-size: smaller;
+}

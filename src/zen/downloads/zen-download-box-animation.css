@@ -1,0 +1,27 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+.zen-download-box-animation {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background-color: var(--zen-accent-button-background);
+  border-radius: 12px;
+  box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  z-index: 1100;
+}
+
+.zen-download-box-animation-icon {
+  width: 24px;
+  height: 24px;
+  background: url("chrome://browser/skin/zen-icons/library/library.svg") no-repeat right;
+  fill: var(--toolbar-color);
+  -moz-context-properties: fill;
+  transform: scale(1.2) translate(3px, 3px);
+}

@@ -1,0 +1,87 @@
+diff --git a/layout/painting/nsCSSRendering.cpp b/layout/painting/nsCSSRendering.cpp
+index a581b039a8681f7d8191edfad100d287af38592e..4cd3d6695a04a42d806c36f8d5a324cac9efda34 100644
+--- a/layout/painting/nsCSSRendering.cpp
++++ b/layout/painting/nsCSSRendering.cpp
+@@ -598,7 +598,8 @@ void nsCSSRendering::ComputePixelRadii(const nsRectCornerRadii& aRadii,
+   }
+ }
+ 
+-static Maybe<nsStyleBorder> GetBorderIfVisited(const ComputedStyle& aStyle) {
++static Maybe<nsStyleBorder> GetBorderIfVisited(const ComputedStyle& aStyle,
++                                               const nsIFrame* aFrame) {
+   Maybe<nsStyleBorder> result;
+   // Don't check RelevantLinkVisited here, since we want to take the
+   // same amount of time whether or not it's true.
+@@ -611,7 +612,7 @@ static Maybe<nsStyleBorder> GetBorderIfVisited(const ComputedStyle& aStyle) {
+   auto& newBorder = result.ref();
+   for (const auto side : mozilla::AllPhysicalSides()) {
+     nscolor color = aStyle.GetVisitedDependentColor(
+-        nsStyleBorder::BorderColorFieldFor(side));
++        nsStyleBorder::BorderColorFieldFor(side), aFrame);
+     newBorder.BorderColorFor(side) = StyleColor::FromColor(color);
+   }
+ 
+@@ -624,7 +625,7 @@ ImgDrawResult nsCSSRendering::PaintBorder(
+     ComputedStyle* aStyle, PaintBorderFlags aFlags, Sides aSkipSides) {
+   AUTO_PROFILER_LABEL("nsCSSRendering::PaintBorder", GRAPHICS);
+ 
+-  Maybe<nsStyleBorder> visitedBorder = GetBorderIfVisited(*aStyle);
++  Maybe<nsStyleBorder> visitedBorder = GetBorderIfVisited(*aStyle, aForFrame);
+   return PaintBorderWithStyleBorder(
+       aPresContext, aRenderingContext, aForFrame, aDirtyRect, aBorderArea,
+       visitedBorder.refOr(*aStyle->StyleBorder()), aStyle, aFlags, aSkipSides);
+@@ -634,7 +635,7 @@ Maybe<nsCSSBorderRenderer> nsCSSRendering::CreateBorderRenderer(
+     nsPresContext* aPresContext, DrawTarget* aDrawTarget, nsIFrame* aForFrame,
+     const nsRect& aDirtyRect, const nsRect& aBorderArea, ComputedStyle* aStyle,
+     bool* aOutBorderIsEmpty, Sides aSkipSides) {
+-  Maybe<nsStyleBorder> visitedBorder = GetBorderIfVisited(*aStyle);
++  Maybe<nsStyleBorder> visitedBorder = GetBorderIfVisited(*aStyle, aForFrame);
+   return CreateBorderRendererWithStyleBorder(
+       aPresContext, aDrawTarget, aForFrame, aDirtyRect, aBorderArea,
+       visitedBorder.refOr(*aStyle->StyleBorder()), aStyle, aOutBorderIsEmpty,
+@@ -649,7 +650,7 @@ ImgDrawResult nsCSSRendering::CreateWebRenderCommandsForBorder(
+     mozilla::layers::RenderRootStateManager* aManager,
+     nsDisplayListBuilder* aDisplayListBuilder) {
+   const auto* style = aForFrame->Style();
+-  Maybe<nsStyleBorder> visitedBorder = GetBorderIfVisited(*style);
++  Maybe<nsStyleBorder> visitedBorder = GetBorderIfVisited(*style, aForFrame);
+   return nsCSSRendering::CreateWebRenderCommandsForBorderWithStyleBorder(
+       aItem, aForFrame, aBorderArea, aBuilder, aResources, aSc, aManager,
+       aDisplayListBuilder, visitedBorder.refOr(*style->StyleBorder()));
+@@ -785,7 +786,7 @@ static nsCSSBorderRenderer ConstructBorderRenderer(
+   // pull out styles, colors
+   for (const auto i : mozilla::AllPhysicalSides()) {
+     borderStyles[i] = aStyleBorder.GetBorderStyle(i);
+-    borderColors[i] = aStyleBorder.BorderColorFor(i).CalcColor(*aStyle);
++    borderColors[i] = aStyleBorder.BorderColorFor(i).CalcColor(*aStyle, aForFrame);
+   }
+ 
+   PrintAsFormatString(
+@@ -1005,7 +1006,7 @@ nsCSSRendering::CreateBorderRendererForNonThemedOutline(
+   // This handles treating the initial color as 'currentColor'; if we
+   // ever want 'invert' back we'll need to do a bit of work here too.
+   nscolor outlineColor =
+-      aStyle->GetVisitedDependentColor(&nsStyleOutline::mOutlineColor);
++      aStyle->GetVisitedDependentColor(&nsStyleOutline::mOutlineColor, aForFrame);
+   nscolor outlineColors[4] = {outlineColor, outlineColor, outlineColor,
+                               outlineColor};
+ 
+@@ -2341,7 +2342,7 @@ static Maybe<nscolor> CalcScrollbarColor(nsIFrame* aFrame,
+   const auto& color = aKind == ScrollbarColorKind::Thumb
+                           ? colors.AsColors().thumb
+                           : colors.AsColors().track;
+-  return Some(color.CalcColor(*scrollbarStyle));
++  return Some(color.CalcColor(*scrollbarStyle, aFrame));
+ }
+ 
+ static nscolor GetBackgroundColor(nsIFrame* aFrame,
+@@ -2367,7 +2368,8 @@ static nscolor GetBackgroundColor(nsIFrame* aFrame,
+     default:
+       break;
+   }
+-  return aStyle->GetVisitedDependentColor(&nsStyleBackground::mBackgroundColor);
++  return aStyle->GetVisitedDependentColor(&nsStyleBackground::mBackgroundColor,
++                                          aFrame);
+ }
+ 
+ nscolor nsCSSRendering::DetermineBackgroundColor(nsPresContext* aPresContext,

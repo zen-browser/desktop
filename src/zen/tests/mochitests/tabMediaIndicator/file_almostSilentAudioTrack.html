@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+</head>
+<body>
+<video id="autoplay" src="almostSilentAudioTrack.webm"></video>
+<script type="text/javascript">
+
+// In linux debug on try server, sometimes the download process would fail, so
+// we can't activate the "auto-play" or playing after receving "oncanplay".
+// Therefore, we just call play here.
+var video = document.getElementById("autoplay");
+video.loop = true;
+video.play();
+
+</script>
+</body>

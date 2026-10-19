@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 64" height="64" width="156">
+  <defs>
+    <style>
+      .label {
+        font-size: 1.5rem;
+        font-family: sans-serif;
+        font-weight: 700;
+        text-align: center;
+        fill: #1f1f1f;
+      }
+      @media (prefers-color-scheme: dark) {
+        .label {
+          fill: #d1cfc0;
+        }
+      }
+    </style>
+  </defs>
+  <text class="label" y="38" x="5">Zen Browser</text>
+</svg>

@@ -1,0 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+XPIDL_SOURCES += [
+    "nsIZenCommonUtils.idl",
+]
+
+EXPORTS.mozilla += [
+    "ZenCommonUtils.h",
+    "ZenShareInternal.h",
+]
+
+SOURCES += [
+    "ZenCommonUtils.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
+    DIRS += ["windows"]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
+    DIRS += ["cocoa"]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen"

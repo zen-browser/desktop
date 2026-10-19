@@ -1,0 +1,13 @@
+diff --git a/layout/style/GeckoBindings.cpp b/layout/style/GeckoBindings.cpp
+index b834569f339ad83467f7140992236730461a6199..0e232baa9d61540b20cb947a951d7a13267d750c 100644
+--- a/layout/style/GeckoBindings.cpp
++++ b/layout/style/GeckoBindings.cpp
+@@ -1026,7 +1026,7 @@ void Gecko_SetFontPaletteOverride(
+     return;
+   }
+   aValues->mOverrides.AppendElement(gfx::FontPaletteValueSet::OverrideColor{
+-      uint32_t(aIndex), aColor->ToColor()});
++      uint32_t(aIndex), aColor->ToColor(nullptr)});
+ }
+ 
+ void Gecko_EnsureImageLayersLength(nsStyleImageLayers* aLayers, size_t aLen,

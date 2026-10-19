@@ -1,0 +1,23 @@
+diff --git a/gfx/thebes/gfxUtils.h b/gfx/thebes/gfxUtils.h
+index 55f874429fd8cbb7a0a469eba33f6c777a5bc5f7..8cf0567d81fcae7413cee6df9471d1fa1738fc4a 100644
+--- a/gfx/thebes/gfxUtils.h
++++ b/gfx/thebes/gfxUtils.h
+@@ -598,6 +598,9 @@ class ElementOrArray {
+ };
+ 
+ struct StyleAbsoluteColor;
++}  // namespace mozilla
++class nsIFrame;
++namespace mozilla {
+ 
+ namespace gfx {
+ 
+@@ -609,7 +612,7 @@ namespace gfx {
+  * applicable).
+  */
+ DeviceColor ToDeviceColor(const sRGBColor&);
+-DeviceColor ToDeviceColor(const StyleAbsoluteColor&);
++DeviceColor ToDeviceColor(const StyleAbsoluteColor&, const nsIFrame*);
+ DeviceColor ToDeviceColor(nscolor);
+ 
+ sRGBColor ToSRGBColor(const StyleAbsoluteColor&);

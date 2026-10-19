@@ -1,0 +1,24 @@
+diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
+index 73eb08f648d55121a0cd96cd808f932fb14bfee6..efa99861a5da12ad8d0daa2c0eb1473c57810397 100644
+--- a/dom/base/Document.cpp
++++ b/dom/base/Document.cpp
+@@ -471,6 +471,7 @@
+ #include "prtime.h"
+ #include "prtypes.h"
+ #include "xpcpublic.h"
++#include "mozilla/ZenStyleSheetCache.h"
+ 
+ // clang-format off
+ #include "mozilla/Encoding.h"
+@@ -3164,6 +3165,11 @@ void Document::FillStyleSetUserAndUASheets() {
+     }
+   };
+ 
++  if (IsInChromeDocShell()) {
++    // The mods sheet is only used in the chrome docshell.
++    MaybeAppend(zen::ZenStyleSheetCache::Singleton()->GetModsSheet());
++  }
++
+   MaybeAppend(IsInChromeDocShell() ? cache->GetUserChromeSheet()
+                                    : cache->GetUserContentSheet());
+   MaybeAppend(cache->GetUASheet());

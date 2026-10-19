@@ -1,0 +1,12 @@
+diff --git a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
+index 577e27598597de27116153be1ad149facd721e41..eeca455aad8323ef24957af076f131cb70d66e7d 100644
+--- a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
++++ b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
+@@ -938,6 +938,7 @@ export class AsyncTabSwitcher {
+       this.tabbrowser._printPreviewBrowsers.has(browser) ||
+       this.tabbrowser.splitViewBrowsers.includes(browser) ||
+       lazy.PictureInPicture.isOriginatingBrowser(browser)
++      || browser?.zenModeActive
+     );
+   }
+ 

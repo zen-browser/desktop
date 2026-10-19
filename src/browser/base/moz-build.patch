@@ -1,0 +1,10 @@
+diff --git a/browser/base/moz.build b/browser/base/moz.build
+index 3ca8d96f564ef19872d8d02516bd7bf2fcc0d0aa..89b047d28da3b95b852f6ec3d4f82cfe1963d56f 100644
+--- a/browser/base/moz.build
++++ b/browser/base/moz.build
+@@ -90,3 +90,5 @@ GENERATED_FILES["license.html"].inputs = [
+ ]
+ 
+ JAR_MANIFESTS += ["jar.mn"]
++
++DIRS += ["../../zen"]

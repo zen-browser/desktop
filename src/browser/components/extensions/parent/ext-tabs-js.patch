@@ -1,0 +1,20 @@
+diff --git a/browser/components/extensions/parent/ext-tabs.js b/browser/components/extensions/parent/ext-tabs.js
+index f342748d4b680a5de3a8b7c90df79f7c380b9e1c..65091cf370e00a580ae2cb1fad9cde76f10c8bd9 100644
+--- a/browser/components/extensions/parent/ext-tabs.js
++++ b/browser/components/extensions/parent/ext-tabs.js
+@@ -438,6 +438,7 @@ this.tabs = class extends ExtensionAPIPersistent {
+         }
+ 
+         let tab = tabManager.getWrapper(updatedTab);
++        if (!tab) return;
+ 
+         let changeInfo = {};
+         for (let prop of needed) {
+@@ -806,6 +807,7 @@ this.tabs = class extends ExtensionAPIPersistent {
+               });
+             }
+ 
++            window.gZenCompactModeManager._nextTimeWillBeActive = active;
+             let nativeTab = window.gBrowser.addTab(url, options);
+             tabTracker.addTabReadyBlocker(nativeTab);
+ 

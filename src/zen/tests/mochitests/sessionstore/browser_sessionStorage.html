@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>browser_sessionStorage.html</title>
+  </head>
+  <body>
+    <iframe id="iframe"></iframe>
+
+    <script type="text/javascript">
+      let isOuter = window == window.top;
+      let args = window.location.search.slice(1).split("&");
+      let rand = args[0];
+
+      if (isOuter) {
+        let iframe = document.getElementById("iframe");
+        let isSecure = args.indexOf("secure") > -1;
+        let scheme = isSecure ? "https" : "http";
+        // WARNING This iframe might not finish loading before the top level document does
+        // See intermittent bug 1775609, bug 2001322
+        iframe.setAttribute("src", scheme + "://example.com" + location.pathname + "?" + rand);
+      }
+
+      if (sessionStorage.length === 0) {
+        sessionStorage.test = (isOuter ? "outer" : "inner") + "-value-" + rand;
+        document.title = sessionStorage.test;
+      }
+
+      // Log the load so that it becomes more obvious if intermittent failures reoccur
+      onload = () => {
+        dump(`browser_sessionStorage.html ${isOuter ? 'TOP LEVEL' : 'IFRAME'} loaded\n`);
+      }
+    </script>
+  </body>
+</html>

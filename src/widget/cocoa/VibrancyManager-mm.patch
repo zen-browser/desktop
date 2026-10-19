@@ -1,0 +1,22 @@
+diff --git a/widget/cocoa/VibrancyManager.mm b/widget/cocoa/VibrancyManager.mm
+index bc62ff28285691c605fe0680e7a98927f11d5882..c209b63179df298e9b43182813ba0045f08328cc 100644
+--- a/widget/cocoa/VibrancyManager.mm
++++ b/widget/cocoa/VibrancyManager.mm
+@@ -9,6 +9,7 @@
+ #import <objc/message.h>
+ 
+ #include "mozilla/StaticPrefs_widget.h"
++#include "mozilla/StaticPrefs_zen.h"
+ #include "nsCocoaWindow.h"
+ 
+ using namespace mozilla;
+@@ -28,6 +29,9 @@ static NSVisualEffectState VisualEffectStateForVibrancyType(
+     case VibrancyType::Sidebar:
+       break;
+   }
++  if (!StaticPrefs::zen_view_grey_out_inactive_windows()) {
++    return NSVisualEffectStateActive;
++  }
+   return NSVisualEffectStateFollowsWindowActiveState;
+ }
+ 

@@ -1,0 +1,13 @@
+diff --git a/browser/modules/ExtensionsUI.sys.mjs b/browser/modules/ExtensionsUI.sys.mjs
+index 73ef024602cb4554a024de4ddef83f492adc33ef..959c3403a48a3e4294ad5d2f72bad0e5d4fbfd75 100644
+--- a/browser/modules/ExtensionsUI.sys.mjs
++++ b/browser/modules/ExtensionsUI.sys.mjs
+@@ -507,7 +507,7 @@ export var ExtensionsUI = {
+         // right after the panel opens can't accidentally grant permissions).
+         autofocus: true,
+         popupOptions: {
+-          position: "bottomright topright",
++          position: window.gZenUIManager.panelUIPosition(),
+         },
+         // Pass additional options used internally by the
+         // addon-webext-permissions-notification custom element

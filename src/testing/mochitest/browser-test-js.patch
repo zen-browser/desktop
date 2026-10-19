@@ -1,0 +1,38 @@
+diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
+index 2fc462e0d7fcebc8befb777dd29972021344e589..70bba1ee9db3942ca301bb4bc444b9cf404ff318 100644
+--- a/testing/mochitest/browser-test.js
++++ b/testing/mochitest/browser-test.js
+@@ -513,6 +513,7 @@ Tester.prototype = {
+     Services.console.registerListener(this);
+     this._globalProperties = Object.keys(window);
+     this._globalPropertyWhitelist = [
++      "Motion",
+       "navigator",
+       "constructor",
+       "top",
+@@ -668,10 +669,10 @@ Tester.prototype = {
+     // But not the Thunderbird window, it doesn't have these things!
+     if (AppConstants.MOZ_APP_NAME != "thunderbird") {
+       // Remove stale tabs
+-      if (this.currentTest && window.gBrowser && gBrowser.tabs.length > 1) {
++      if (this.currentTest && window.gBrowser && gBrowser.tabs.length > 2) {
+         let lastURI = "";
+         let lastURIcount = 0;
+-        while (gBrowser.tabs.length > 1) {
++        while (gBrowser.tabs.length > 2) {
+           let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
+           if (!lastTab.closing) {
+             // Report the stale tab as an error only when they're not closing.
+@@ -1468,12 +1469,6 @@ Tester.prototype = {
+     // test_end is logged, otherwise the new windows created by addTab will be
+     // tracked by ShutdownLeaks as belonging to the test and cause false leak reports.
+     if (window.gBrowser) {
+-      gBrowser.addTab("about:blank", {
+-        skipAnimation: true,
+-        triggeringPrincipal:
+-          Services.scriptSecurityManager.getSystemPrincipal(),
+-      });
+-      gBrowser.removeTab(gBrowser.selectedTab, { skipPermitUnload: true });
+       gBrowser.stop();
+     }
+ 

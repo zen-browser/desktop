@@ -1,0 +1,17 @@
+diff --git a/toolkit/mozapps/extensions/content/aboutaddons.css b/toolkit/mozapps/extensions/content/aboutaddons.css
+index d0af33257f01df0deb5469d964a53be687a15f2f..2ef7fc1f0d8b0b67743b7d67df3719be0b46a4b0 100644
+--- a/toolkit/mozapps/extensions/content/aboutaddons.css
++++ b/toolkit/mozapps/extensions/content/aboutaddons.css
+@@ -713,6 +713,12 @@ section:not(:empty) ~ #empty-addons-message {
+   font-weight: var(--font-weight-bold);
+ }
+ 
++@media -moz-pref('zen.theme.disable-lightweight') {
++  #category-theme {
++    display: none;
++  }
++}
++
+ /* Position the badged dot in the top-end (right in ltr, left in rtl)
+  * corner of the badged category icon. */
+ @media (max-width: 950px) {

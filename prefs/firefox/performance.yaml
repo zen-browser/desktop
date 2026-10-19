@@ -1,0 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# See https://github.com/zen-browser/desktop/issues/11599, this pref seems to
+# have disabled itself on macos for some unknown reason.
+# Make sure its in sync with:
+# https://searchfox.org/firefox-main/rev/dd2579cb6e7f1761a27ce64fb84d92c61d85c27f/modules/libpref/init/StaticPrefList.yaml#8396
+- name: gfx.webrender.compositor
+  condition: "defined(XP_WIN) || defined(XP_DARWIN) || defined(MOZ_WIDGET_GTK)"
+  value: "@cond"
+  mirror: once

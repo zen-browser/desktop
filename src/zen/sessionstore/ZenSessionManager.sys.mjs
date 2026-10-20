@@ -721,6 +721,8 @@ export class nsZenSessionManager {
       return;
     }
     if (!isLastWindow) {
+      // Pinned-only sync leaves window-local unpinned tabs that still need
+      // Firefox's close-in-series restoration.
       if (lazy.gWindowSyncEnabled && !lazy.gSyncOnlyPinnedTabs) {
         // Fully synced tabs survive in the remaining window. Keep this window
         // available for undo, but don't reopen it as part of a series of closes.

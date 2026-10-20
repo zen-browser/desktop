@@ -198,7 +198,6 @@
   --thickness: 3px;
   --progress: var(--zen-accent-button-background);
 
-  border: 1px solid var(--progress);
   border-radius: 100px;
 
   & circle {

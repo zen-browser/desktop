@@ -422,7 +422,11 @@ class nsZenWorkspaces {
    * either the command line asked for a space or Space Routing has a
    * destination for the startup URI.
    *
-   * @returns {number|null} The container, or null to leave Firefox's choice
+   * `isSpaceDefault` says the container is a space's default rather than one
+   * the tab asked for, which is what zenDefaultUserContextId marks.
+   *
+   * @returns {{userContextId: number|null, isSpaceDefault: boolean}} The
+   *   container to use, with null leaving Firefox's choice alone
    */
   getStartupUserContextId() {
     try {
@@ -437,15 +441,21 @@ class nsZenWorkspaces {
         this.resolveWorkspaceFromCLIString(cmdLineSpace) ??
         this.resolveWorkspaceFromCLIString(cmdLineSpace, true);
       if (workspace) {
-        return this.#spaceContainerId(workspace);
+        return {
+          userContextId: this.#spaceContainerId(workspace),
+          isSpaceDefault: true,
+        };
       }
-      return gZenSpaceRoutingManager.getStartupUserContextId(window);
+      return {
+        userContextId: gZenSpaceRoutingManager.getStartupUserContextId(window),
+        isSpaceDefault: false,
+      };
     } catch (e) {
       console.error(
         "gZenWorkspaces: Error resolving the initial tab's container",
         e
       );
-      return null;
+      return { userContextId: null, isSpaceDefault: false };
     }
   }
 

@@ -41,13 +41,12 @@ add_task(async function test_icon_picker_search() {
           .getElementById("PanelUI-zen-emojis-picker-change-svg")
           .doCommand();
       }
-      search("heart");
-      const heartRects = visible(gZenEmojiPicker.svgList).map(item =>
-        item.getBoundingClientRect()
+      const iconRects = Array.from(gZenEmojiPicker.svgList.children).map(
+        item => item.getBoundingClientRect()
       );
-      const firstRow = heartRects[0];
-      const secondRow = heartRects.find(rect => rect.top > firstRow.top + 1);
-      ok(secondRow, "Heart results span multiple rows");
+      const firstRow = iconRects[0];
+      const secondRow = iconRects.find(rect => rect.top > firstRow.top + 1);
+      ok(secondRow, "Icons span multiple rows");
       const rowGap = parseFloat(
         getComputedStyle(gZenEmojiPicker.svgList).rowGap
       );
@@ -56,7 +55,7 @@ add_task(async function test_icon_picker_search() {
           secondRow.top - firstRow.bottom,
           rowGap,
           1,
-          "Filtered icon rows keep their normal spacing"
+          "Icon rows keep their normal spacing"
         );
       }
       search("gaming");

@@ -646,6 +646,7 @@ export class ZenMediaController extends ZenUIComponent {
   uninit() {
     for (const card of this.#cards.values()) {
       card.teardown();
+      card.element.remove();
     }
     this.#cards.clear();
   }

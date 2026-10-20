@@ -37,7 +37,7 @@ async function addPeerConnectionTab(win = window) {
 }
 
 async function closePeerConnection(tab) {
-  if (!tab.isConnected) {
+  if (!tab.isConnected || !tab.linkedBrowser?.browsingContext) {
     return;
   }
   await SpecialPowers.spawn(tab.linkedBrowser, [], () => {

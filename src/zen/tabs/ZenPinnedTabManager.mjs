@@ -763,49 +763,61 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   ) {
     let newIndex = dropIndex;
     let fromDifferentWindow = false;
-    let ownedTabs = Array.from(movingTabs || draggedTab)
-      .reverse()
-      .map(tab => {
-        if (!gBrowser.isTab(tab)) {
-          return tab;
-        }
-        let workspaceId;
-        if (
-          !tab.hasAttribute("zen-essential") &&
-          tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
-        ) {
-          workspaceId = gZenWorkspaces.activeWorkspace;
-        }
-        if (tab.documentGlobal !== window) {
-          fromDifferentWindow = true;
-          if (workspaceId) {
-            tab.documentGlobal.gBrowser.selectedTab =
-              tab.documentGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
-            tab.documentGlobal.gZenWorkspaces.moveTabToWorkspace(
-              tab,
-              workspaceId
-            );
-          }
-          // Move the tabs into this window. To avoid multiple tab-switches in
-          // the original window, the selected tab should be adopted last.
-          tab = gBrowser.adoptTab(tab, {
-            elementIndex: newIndex,
-            selectTab: tab == draggedTab,
-            spaceId: workspaceId,
-          });
-          if (tab) {
-            ++newIndex;
-          }
-        }
-        if (workspaceId) {
-          tab.setAttribute("zen-workspace-id", workspaceId);
-        }
-        return tab;
-      });
-    if (!fromDifferentWindow) {
-      // See gh-13796 and gh-12156
-      ownedTabs = ownedTabs.reverse();
+    // Keep the tabs in their original order. Tabs from another window are
+    // adopted one after another at increasing indices, so going through them
+    // in reverse would also reverse them in this window (gh-15273).
+    // To avoid multiple tab-switches in the original window, move its
+    // selection off the tabs being moved before adopting any of them.
+    const sourceSelectedTab = movingTabs?.find(
+      tab =>
+        gBrowser.isTab(tab) && tab.documentGlobal !== window && tab.selected
+    );
+    if (sourceSelectedTab) {
+      const sourceBrowser = sourceSelectedTab.documentGlobal.gBrowser;
+      const tabToBlurTo = sourceBrowser._findTabToBlurTo(
+        sourceSelectedTab,
+        movingTabs
+      );
+      if (tabToBlurTo) {
+        sourceBrowser.selectedTab = tabToBlurTo;
+      }
     }
+    let ownedTabs = Array.from(movingTabs || draggedTab).map(tab => {
+      if (!gBrowser.isTab(tab)) {
+        return tab;
+      }
+      let workspaceId;
+      if (
+        !tab.hasAttribute("zen-essential") &&
+        tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
+      ) {
+        workspaceId = gZenWorkspaces.activeWorkspace;
+      }
+      if (tab.documentGlobal !== window) {
+        fromDifferentWindow = true;
+        if (workspaceId) {
+          tab.documentGlobal.gBrowser.selectedTab =
+            tab.documentGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
+          tab.documentGlobal.gZenWorkspaces.moveTabToWorkspace(
+            tab,
+            workspaceId
+          );
+        }
+        // Move the tabs into this window.
+        tab = gBrowser.adoptTab(tab, {
+          elementIndex: newIndex,
+          selectTab: tab == draggedTab,
+          spaceId: workspaceId,
+        });
+        if (tab) {
+          ++newIndex;
+        }
+      }
+      if (workspaceId) {
+        tab.setAttribute("zen-workspace-id", workspaceId);
+      }
+      return tab;
+    });
     movingTabs = [...ownedTabs];
     if (fromDifferentWindow) {
       gBrowser.addRangeToMultiSelectedTabs(

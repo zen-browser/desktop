@@ -417,7 +417,10 @@ class ZenMediaCard {
     this.destroy();
   }
 
-  destroy() {
+  /**
+   * Drops what the card holds outside its own element.
+   */
+  teardown() {
     if (this.controller && this.#controllerListeners) {
       for (const [event, listener] of Object.entries(
         this.#controllerListeners
@@ -435,6 +438,10 @@ class ZenMediaCard {
       this.window.clearTimeout(this.#tabTimeout);
       this.#tabTimeout = null;
     }
+  }
+
+  destroy() {
+    this.teardown();
 
     const { element } = this;
     if (element.hidden) {
@@ -473,8 +480,6 @@ export class ZenMediaController extends ZenUIComponent {
   mediaControlBar = null;
 
   init() {
-    // Assigned even when the controls are off, because callers such as
-    // WebRTCParent reach the controller through the window.
     this.window.gZenMediaController = this;
 
     if (!Services.prefs.getBoolPref("zen.mediacontrols.enabled", true)) {
@@ -636,6 +641,13 @@ export class ZenMediaController extends ZenUIComponent {
         card.destroy();
       }
     }
+  }
+
+  uninit() {
+    for (const card of this.#cards.values()) {
+      card.teardown();
+    }
+    this.#cards.clear();
   }
 
   closeAllCards() {

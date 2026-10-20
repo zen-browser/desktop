@@ -16,8 +16,8 @@ async function waitForSharingCards(count, message) {
   );
 }
 
-async function addPeerConnectionTab() {
-  const tab = BrowserTestUtils.addTab(gBrowser, PEER_PAGE, {
+async function addPeerConnectionTab(win = window) {
+  const tab = BrowserTestUtils.addTab(win.gBrowser, PEER_PAGE, {
     skipAnimation: true,
   });
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
@@ -32,11 +32,28 @@ async function addPeerConnectionTab() {
       tab.linkedBrowser.browsingContext.currentWindowGlobal.hasActivePeerConnections(),
     "the tab reports an active peer connection"
   );
+  registerCleanupFunction(() => closePeerConnectionTab(tab));
   return tab;
 }
 
-function setSharing(tab, sharing) {
-  gZenMediaController.updateMediaSharing({
+async function closePeerConnection(tab) {
+  if (!tab.isConnected) {
+    return;
+  }
+  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
+    content.wrappedJSObject.__zenPeerConnection?.close();
+  });
+}
+
+async function closePeerConnectionTab(tab) {
+  await closePeerConnection(tab);
+  if (tab.isConnected) {
+    BrowserTestUtils.removeTab(tab);
+  }
+}
+
+function setSharing(tab, sharing, win = window) {
+  win.gZenMediaController.updateMediaSharing({
     windowId: tab.linkedBrowser.innerWindowID,
     showCameraIndicator: sharing,
     showMicrophoneIndicator: false,
@@ -46,14 +63,7 @@ function setSharing(tab, sharing) {
 add_task(async function test_twoSharingTabsKeepTheirOwnCards() {
   const first = await addPeerConnectionTab();
   const second = await addPeerConnectionTab();
-  registerCleanupFunction(async () => {
-    gZenMediaController.closeAllCards();
-    for (const tab of [first, second]) {
-      if (tab.isConnected) {
-        BrowserTestUtils.removeTab(tab);
-      }
-    }
-  });
+  registerCleanupFunction(() => gZenMediaController.closeAllCards());
 
   setSharing(first, true);
   await waitForSharingCards(1, "the first sharing tab gets a card");
@@ -97,14 +107,7 @@ add_task(async function test_twoSharingTabsKeepTheirOwnCards() {
 add_task(async function test_barStaysVisibleWhenAHideIsInterrupted() {
   const first = await addPeerConnectionTab();
   const second = await addPeerConnectionTab();
-  registerCleanupFunction(async () => {
-    gZenMediaController.closeAllCards();
-    for (const tab of [first, second]) {
-      if (tab.isConnected) {
-        BrowserTestUtils.removeTab(tab);
-      }
-    }
-  });
+  registerCleanupFunction(() => gZenMediaController.closeAllCards());
 
   setSharing(first, true);
   await waitForSharingCards(1, "a card is showing");

@@ -247,6 +247,11 @@ add_task(async function test_initial_tab_gets_cmdline_space_container() {
     String(container),
     "The initial tab is created in the requested space's container."
   );
+  Assert.strictEqual(
+    initialTab.getAttribute("zenDefaultUserContextId"),
+    "true",
+    "The container counts as the space's default, not one the tab asked for."
+  );
 
   await BrowserTestUtils.closeWindow(newWindow);
   await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);

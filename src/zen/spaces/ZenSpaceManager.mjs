@@ -3607,7 +3607,10 @@ class nsZenWorkspaces {
   }
 
   onWindowResize(event = undefined) {
-    if (!(!event || event.target === window) || document.hasAttribute("inDOMFullscreen")) {
+    if (
+      !(!event || event.target === window) ||
+      document.documentElement.hasAttribute("inDOMFullscreen")
+    ) {
       return;
     }
     gZenUIManager.updateTabsToolbar(!!event);

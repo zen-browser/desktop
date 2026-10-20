@@ -47,7 +47,6 @@ const SHOW_IN_FOLDER_ICON =
     : "chrome://browser/skin/zen-icons/folder.svg";
 
 const FILE_MIME = "application/x-moz-file";
-const OPENING_FEEDBACK_MS = 1500;
 
 export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   static id = "downloads";
@@ -76,8 +75,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   #menu = null;
   #menuDownload = null;
   #menuRow = null;
-  #openingDownload = null;
-  #openingTimer = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -100,9 +97,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     this.#menu?.hidePopup();
     this.#menu?.remove();
     this.#menu = null;
-    clearTimeout(this.#openingTimer);
-    this.#openingTimer = null;
-    this.#openingDownload = null;
   }
 
   get searchPlaceholderL10nId() {
@@ -420,18 +414,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       lazy.confirmUnblock(download, window, this.#openDownload.bind(this));
       return;
     }
-    if (!this.#hasFile(download)) {
-      return;
-    }
-    this.#showInFolder(download);
-    clearTimeout(this.#openingTimer);
-    this.#openingDownload = download;
-    this.#openingTimer = setTimeout(() => {
-      this.#openingTimer = null;
-      this.#openingDownload = null;
-      this.requestUpdate();
-    }, OPENING_FEEDBACK_MS);
-    this.requestUpdate();
+    this.#openDownload(download);
   }
 
   #cancelDownload(download) {
@@ -605,12 +588,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
 
   #renderSubtitle(download) {
     let statusNode;
-    if (download === this.#openingDownload) {
-      statusNode = html`<span
-        class="zen-library-download-status"
-        data-l10n-id="library-downloads-opening-in"
-      ></span>`;
-    } else if (this.#opensWhenDone(download)) {
+    if (this.#opensWhenDone(download)) {
       statusNode = html`<span
         class="zen-library-download-status"
         data-l10n-id="library-downloads-open-when-done"
@@ -717,7 +695,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         ?indeterminate=${pending && !download.hasProgress}
         ?paused=${pending && download.stopped}
         ?open-when-done=${this.#opensWhenDone(download)}
-        ?opening=${download === this.#openingDownload}
         @click=${() => this.#onRowClick(download)}
         @contextmenu=${event => {
           event.preventDefault();

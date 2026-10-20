@@ -417,6 +417,38 @@ class nsZenWorkspaces {
     return this.#spaceContainerId(this.getActiveWorkspaceFromCache());
   }
 
+  /**
+   * The container the initial tab of a window should be created with, when
+   * either the command line asked for a space or Space Routing has a
+   * destination for the startup URI.
+   *
+   * @returns {number|null} The container, or null to leave Firefox's choice
+   */
+  getStartupUserContextId() {
+    try {
+      // Stashed by the `--space` flag. Consumed later, during init.
+      const cmdLineSpace = Services.prefs.getStringPref(
+        "zen.workspaces.cmdline-initial-workspace",
+        ""
+      );
+      // The cache is filled for every window but the first one of a session,
+      // where the session store is all there is.
+      const workspace =
+        this.resolveWorkspaceFromCLIString(cmdLineSpace) ??
+        this.resolveWorkspaceFromCLIString(cmdLineSpace, true);
+      if (workspace) {
+        return this.#spaceContainerId(workspace);
+      }
+      return gZenSpaceRoutingManager.getStartupUserContextId(window);
+    } catch (e) {
+      console.error(
+        "gZenWorkspaces: Error resolving the initial tab's container",
+        e
+      );
+      return null;
+    }
+  }
+
   getCurrentEssentialsContainer() {
     return this.getEssentialsSection(this.getCurrentSpaceContainerId());
   }
@@ -744,12 +776,12 @@ class nsZenWorkspaces {
     }
   }
 
-  resolveWorkspaceFromCLIString(value) {
+  resolveWorkspaceFromCLIString(value, lieToMe = false) {
     if (!value) {
       return null;
     }
     try {
-      const workspaces = this.getWorkspaces();
+      const workspaces = this.getWorkspaces(lieToMe);
       return (
         workspaces.find(
           workspace =>
@@ -989,6 +1021,11 @@ class nsZenWorkspaces {
         forceUngrouped: true,
         tabIndex: 0,
       });
+      // A link handed to us by another application can be configured to open
+      // in a particular space. The container gBrowser gave this tab was
+      // resolved before the session file was necessarily readable, so this is
+      // the point where the destination is actually known.
+      await gZenSpaceRoutingManager.routeStartupTab(initialTab, window);
       removedEmptyTab = true;
       delete this._initialTab;
     }
@@ -1861,9 +1898,27 @@ class nsZenWorkspaces {
   }
 
   async changeWorkspaceFromCommandLine(workspaceMatch) {
+    // A URL in the same command line is opened in the same tick as this call
+    // and takes its container from the active space, so the destination has to
+    // become active before the first await rather than once the switch has
+    // animated its way there.
+    const early = this.resolveWorkspaceFromCLIString(workspaceMatch);
+    const movedEarly = !!early && early.uuid !== this.activeWorkspace;
+    if (movedEarly) {
+      this.activeWorkspace = early.uuid;
+    }
+
     await this.promiseInitialized;
-    const workspace = this.resolveWorkspaceFromCLIString(workspaceMatch);
-    if (workspace && workspace.uuid !== this.activeWorkspace) {
+    const workspace =
+      early ?? this.resolveWorkspaceFromCLIString(workspaceMatch);
+    if (!workspace) {
+      return;
+    }
+    if (movedEarly) {
+      // activeWorkspace is already the destination, so the switch has to be
+      // told this is not a no-op.
+      await this.changeWorkspace(workspace, { alwaysChange: true });
+    } else if (workspace.uuid !== this.activeWorkspace) {
       await this.changeWorkspaceWithID(workspace.uuid);
     }
   }

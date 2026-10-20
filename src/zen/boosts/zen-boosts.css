@@ -35,8 +35,8 @@
   appearance: none;
   border: none;
 
-  min-height: 582px;
-  max-height: 582px;
+  min-height: 646px;
+  max-height: 646px;
 }
 
 #zenBoostWindow[editor="boost"] {
@@ -139,7 +139,7 @@ body {
   user-select: none;
 
   width: 100%;
-  min-height: 582px;
+  min-height: 646px;
   height: 100%;
   padding: 0;
   margin: 0;
@@ -278,6 +278,34 @@ body {
   & > * {
     -moz-window-dragging: no-drag;
   }
+
+  & #zen-boost-code {
+    background-color: #1d1b1b !important;
+    color: #d6d6d6;
+  }
+}
+
+#zen-boost-footer-wrapper {
+  -moz-window-dragging: drag;
+
+  height: 64px;
+  min-height: 64px;
+  max-height: 64px;
+  align-items: center;
+  padding: 13px 16px;
+  box-sizing: border-box;
+
+  background-color: var(--zen-boosts-secondary-background);
+  border-top: solid 1px var(--zen-boosts-primary-border-color);
+
+  @media (-moz-windows-mica) {
+    background-color: var(--zen-boosts-mica-background);
+    border-top: none;
+  }
+
+  & > * {
+    -moz-window-dragging: no-drag;
+  }
 }
 
 .big-button {
@@ -319,8 +347,10 @@ body {
   left: 5px;
 }
 
-#zen-boost-zap {
-  & #zen-boost-zap-value {
+#zen-boost-zap,
+#zen-boost-focus {
+  & #zen-boost-zap-value,
+  & #zen-boost-focus-value {
     text-align: right;
     right: 8px;
     margin: auto;
@@ -332,7 +362,8 @@ body {
   }
 }
 
-#zen-boost-zap[hideicon="true"] {
+#zen-boost-zap[hideicon="true"],
+#zen-boost-focus[hideicon="true"] {
   list-style: none;
   list-style-type: none;
 
@@ -578,7 +609,6 @@ body {
     filter: none;
     color: rgba(0, 0, 0, 0.6);
     border-radius: 50px;
-    transition: 0.1s transform ease;
     font-size: 12px;
     padding: 2px;
     align-items: center;
@@ -586,12 +616,10 @@ body {
     display: flex;
     height: 26px;
     width: 26px;
-    transform-origin: center center;
     aspect-ratio: 1;
 
     &:hover {
       background-color: #9a9a9a30;
-      transform: scale(1.1);
     }
   }
 }

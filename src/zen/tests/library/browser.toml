@@ -9,6 +9,8 @@ prefs = [
 
 ["browser_library_closed_tab_icon.js"]
 
+["browser_library_download_click.js"]
+
 ["browser_library_download_speed.js"]
 
 ["browser_library_folder_first_expand.js"]

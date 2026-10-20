@@ -165,12 +165,10 @@
   align-self: start;
   transform: translateX(-2px);
 
-  --border-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0,0,0,.8), white) 70%);
-
   background-color: color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%);
   border: 3px solid transparent;
   box-shadow: 0 0 6px 2px rgba(0,0,0,.1);
-  color: var(--border-color);
+  color: var(--progress);
   width: 25px;
   height: 25px;
   border-radius: 100%;
@@ -200,13 +198,15 @@
   --thickness: 3px;
   --progress: var(--zen-accent-button-background);
 
+  border-radius: 100px;
+
   & circle {
     fill: none;
     stroke-width: var(--thickness);
   }
 
   & .zen-library-download-progress-track {
-    stroke: var(--border-color);
+    stroke: currentColor;
   }
 
   & .zen-library-download-progress-arc {

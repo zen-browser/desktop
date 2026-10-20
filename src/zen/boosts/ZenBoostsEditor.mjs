@@ -110,6 +110,9 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-zap")
       .addEventListener("click", this.onZapButtonPressed.bind(this));
     this.doc
+      .getElementById("zen-boost-focus")
+      .addEventListener("click", this.onFocusButtonPressed.bind(this));
+    this.doc
       .getElementById("zen-boost-code")
       .addEventListener("click", this.onCodeButtonPressed.bind(this));
     this.doc
@@ -357,7 +360,7 @@ export class nsZenBoostEditor {
 
       const fontButton = this.doc.createElement("button");
       fontButton.setAttribute("font-data", `${font}`);
-      fontButton.classList.add("subviewbutton");
+      fontButton.classList.add("subviewbutton", "no-squircles");
       fontButton.style.fontFamily = `'${font}'`;
       fontButton.innerHTML = "Aa";
       fontButton.title = font;
@@ -468,8 +471,15 @@ export class nsZenBoostEditor {
   }
 
   async onZapButtonPressed() {
-    this.zenBoostsParent.sendQuery("ZenBoost:ToggleZapMode");
+    this.zenBoostsParent.sendQuery("ZenBoost:ToggleZapMode", { mode: "zap" });
     // Focus the parent browser window
+    this.openerWindow.focus();
+  }
+
+  async onFocusButtonPressed() {
+    this.zenBoostsParent.sendQuery("ZenBoost:ToggleZapMode", {
+      mode: "focus",
+    });
     this.openerWindow.focus();
   }
 
@@ -504,13 +514,14 @@ ${cssSelector} {
 
   async onUpdateZapButtonVisual() {
     const actor = this.zenBoostsParent;
-    const zapButton = this.doc.getElementById("zen-boost-zap");
-
-    const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
-    // Checks if there are any zaps
-    const zapAny = await actor.sendQuery("ZenBoost:ZapModeAny");
-
-    zapButton.setAttribute("enabled", zapEnabled || zapAny ? "true" : "false");
+    for (const mode of ["zap", "focus"]) {
+      const button = this.doc.getElementById(`zen-boost-${mode}`);
+      const enabled = await actor.sendQuery("ZenBoost:ZapModeEnabled", {
+        mode,
+      });
+      const any = await actor.sendQuery("ZenBoost:ZapModeAny", { mode });
+      button.setAttribute("enabled", enabled || any ? "true" : "false");
+    }
   }
 
   async onUpdatePickerButtonVisual() {
@@ -535,16 +546,15 @@ ${cssSelector} {
   }
 
   onUpdateZapValue() {
-    const zapButton = this.doc.getElementById("zen-boost-zap");
-    const zapValueBox = this.doc.getElementById("zen-boost-zap-value");
-    const zapCount = this.currentBoostData.zapSelectors.length;
-
-    if (zapCount == 0) {
-      zapValueBox.textContent = "";
-      zapButton.setAttribute("hideicon", "false");
-    } else {
-      zapValueBox.textContent = zapCount;
-      zapButton.setAttribute("hideicon", "true");
+    const counts = {
+      zap: this.currentBoostData.zapSelectors.length,
+      focus: this.currentBoostData.focusSelectors?.length ?? 0,
+    };
+    for (const [mode, count] of Object.entries(counts)) {
+      const button = this.doc.getElementById(`zen-boost-${mode}`);
+      const valueBox = this.doc.getElementById(`zen-boost-${mode}-value`);
+      valueBox.textContent = count ? count : "";
+      button.setAttribute("hideicon", count ? "true" : "false");
     }
   }
 

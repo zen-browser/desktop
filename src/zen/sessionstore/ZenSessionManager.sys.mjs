@@ -776,16 +776,17 @@ export class nsZenSessionManager {
     const entries = aTabData.entries || [];
     return (
       !entries.length ||
-      (entries.length === 1 && (() => {
-        const entryUrl = entries[0].url;
-        const aTabState = aTabData;
-        return (
-          entryUrl == "about:blank" ||
-          (entryUrl == "about:home" && !aTabState.splitViewId) ||
-          (entryUrl == "about:newtab" && !aTabState.splitViewId) ||
-          entryUrl == "about:privatebrowsing"
-        );
-      })())
+      (entries.length === 1 &&
+        (() => {
+          const entryUrl = entries[0].url;
+          const aTabState = aTabData;
+          return (
+            entryUrl == "about:blank" ||
+            (entryUrl == "about:home" && !aTabState.splitViewId) ||
+            (entryUrl == "about:newtab" && !aTabState.splitViewId) ||
+            entryUrl == "about:privatebrowsing"
+          );
+        })())
     );
   }
 

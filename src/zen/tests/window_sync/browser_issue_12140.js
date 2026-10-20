@@ -34,7 +34,7 @@ add_task(async function test_closingAWindowUnqueuesTheEarlierOne() {
   const firstAgain = afterSecond.find(
     winData => winData.closedId === firstClosedId
   );
-  Assert.ok(firstAgain, "The first window is still in the closed list");
+  Assert.ok(!!firstAgain, "The first window is still in the closed list");
   Assert.ok(
     !firstAgain._shouldRestore,
     "Closing another window drops the earlier one's queued restore"

@@ -41,6 +41,10 @@ add_task(async function test_space_preview_uses_sidebar_background() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.view.window.scheme", 1]],
   });
+  if (Library.isLibraryOpen) {
+    Library.toggle();
+  }
+  await TestUtils.waitForCondition(() => !Library.isLibrarySlightlyOpen);
   gZenCompactModeManager.preference = true;
   await TestUtils.waitForCondition(
     () => !document.documentElement.hasAttribute("zen-compact-animating"),

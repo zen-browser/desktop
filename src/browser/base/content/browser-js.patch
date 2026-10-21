@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb1392fee3fd 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..eaf30d924261cb0bea04ea78ab2c1ef63b0bc15f 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -34,6 +34,7 @@ ChromeUtils.defineESModuleGetters(this, {
+@@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
      "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
    CustomizableUI:
      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
@@ -10,7 +10,7 @@ index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb13
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -852,7 +853,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
+@@ -881,7 +882,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
    var backDisabled = backCommand.hasAttribute("disabled");
    var forwardDisabled = forwardCommand.hasAttribute("disabled");
@@ -24,7 +24,16 @@ index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb13
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3985,7 +3991,7 @@ function warnAboutClosingWindow() {
+@@ -1395,6 +1401,8 @@ function loadOneOrMoreURIs(
+ 
+ function openLocation(event) {
+   if (window.location.href == AppConstants.BROWSER_CHROME_URL) {
++    window.gZenUIManager?.switchUrlbarToCurrentTab();
++
+     let focusTarget = UrlbarUtils.getURLBarForFocus(window);
+     focusTarget.select();
+     focusTarget.view.autoOpen({ event });
+@@ -4030,7 +4038,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -33,7 +42,7 @@ index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb13
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4025,7 +4031,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4078,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -42,7 +51,7 @@ index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb13
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4050,7 +4056,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4103,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -51,7 +60,7 @@ index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb13
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4763,9 +4769,13 @@ var gDialogBox = {
+@@ -4808,9 +4816,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -68,7 +77,7 @@ index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb13
      }
  
      try {
-@@ -4791,6 +4801,10 @@ var gDialogBox = {
+@@ -4836,6 +4848,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -79,7 +88,7 @@ index 6ea9b0dbcd3bfbddd74eff63df06a8637619b990..250fe064fcb5e267a27c5b645392bb13
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -4976,6 +4990,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5037,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

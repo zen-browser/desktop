@@ -19,7 +19,6 @@ export class nsZenUrlbarController {
   #owner = null;
   #openingSession = false;
 
-
   // Search mode animation.
   #animatingSearchMode = false;
   #animatingSearchModeTimeout = null;
@@ -161,8 +160,7 @@ export class nsZenUrlbarController {
       console.error("Error opening location in new tab:", e);
       this.handleUrlbarClose(closeSeq, false, false);
       return false;
-    }
-    finally {
+    } finally {
       this.#openingSession = false;
     }
     return true;
@@ -291,16 +289,20 @@ export class nsZenUrlbarController {
   }
 
   switchToCurrentTab() {
-     if (this.#openingSession || !gURLBar.hasAttribute("zen-newtab")) {
-      return false
+    if (this.#openingSession || !gURLBar.hasAttribute("zen-newtab")) {
+      return false;
     }
+
     gURLBar._zenHandleUrlbarClose = null;
     gURLBar.removeAttribute("zen-newtab");
     this.#owner = null;
 
     const lastTab = this.#lastTab;
     if (
-      lastTab && !lastTab.closing && lastTab.documentGlobal && !lastTab.documentGlobal.closed &&
+      lastTab &&
+      !lastTab.closing &&
+      lastTab.documentGlobal &&
+      !lastTab.documentGlobal.closed &&
       gBrowser.selectedTab === lastTab
     ) {
       lastTab._visuallySelected = true;
@@ -313,23 +315,18 @@ export class nsZenUrlbarController {
 
     this.#lastSearch = gURLBar._untrimmedValue || "";
     if (this.#clearTimeout) {
-      clearTimeout(this.#clearTimeout)
+      clearTimeout(this.#clearTimeout);
     }
-
     this.#clearTimeout = setTimeout(
       () => this.#clearSessionData(),
       this.waitToClear
     );
 
-    // zen newtab is gone so setURI works and can repop inout from browser.
     gURLBar.handleRevert();
     return true;
-
-
-    for (const button of this.#newtabButtons) {
-      button.removeAttribute("in-urlbar");
-    }
   }
+
+  // Section: open and close
 
   onUrlbarOpen() {
     setTimeout(() => {

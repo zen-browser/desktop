@@ -278,7 +278,7 @@
       @media -moz-pref('zen.theme.acrylic-sidebar') and (not (prefers-reduced-transparency: reduce))  {
         :root:not([zen-no-acrylic='true']) & .zen-toolbar-background:not(:-moz-window-inactive) {
           background: transparent;
-          backdrop-filter: blur(42px) saturate(110%) brightness(0.5) contrast(100%) !important;
+          backdrop-filter: blur(42px) !important;
         }
       }
 

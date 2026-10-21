@@ -20,7 +20,7 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [popup-window]) #navigator-toolbox {
+:root:is([inDOMFullscreen="true"], [popup-window]) :is(#navigator-toolbox, #notifications-toolbar) {
   visibility: collapse;
 }
 

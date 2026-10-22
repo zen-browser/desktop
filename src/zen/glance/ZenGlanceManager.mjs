@@ -1787,6 +1787,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#handleZenFolderPinning();
     gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
 
+    if (
+      this.#currentParentTab.hasAttribute("zen-essential") &&
+      this.#currentTab.hasAttribute("zen-workspace-id")
+    ) {
+      // essentials are shared between spaces, so the glance may have been opened
+      // in another one. the tab now lives in the current space, keep its id in sync
+      this.#currentTab.setAttribute(
+        "zen-workspace-id",
+        gZenWorkspaces.activeWorkspace
+      );
+    }
+
     this.#prepareTabForFullOpen();
 
     gZenVerticalTabsManager.animateItemOpen(this.#currentTab);

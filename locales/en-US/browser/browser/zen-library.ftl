@@ -10,6 +10,12 @@ library-footer-close-button =
     .tooltiptext = Close library
 library-footer-donate-button =
     .tooltiptext = Donate to Zen
+library-footer-customize-button =
+    .tooltiptext = Choose tabs
+library-tab-remove-button =
+    .title = Take this tab out
+library-tab-restore-button =
+    .title = Put this tab back
 
 library-history-section-title = History
 library-downloads-section-title = Downloads
@@ -99,6 +105,31 @@ library-history-menu-forget =
     [windows] Show in File Explorer
    *[other] Show in folder
 }
+
+library-space-routing-section-title = Routing
+library-space-routing-search-placeholder =
+    .placeholder = Search routes
+library-space-routing-new-button = New
+library-space-routing-new-title = New route
+library-space-routing-edit-title = Edit route
+library-space-routing-when-the-link = When the link
+library-space-routing-contains = Contains
+library-space-routing-equal-to = Is Exactly
+library-space-routing-regex = RegEx
+library-space-routing-open-it-in = Open it in
+# Shown as text in a route's row and as the label of an item in the menu
+# that picks where a route lands, which XUL draws from an attribute.
+-library-space-routing-most-recent = Most recent space
+library-space-routing-most-recent-space = { -library-space-routing-most-recent }
+    .label = { -library-space-routing-most-recent }
+library-space-routing-cancel = Cancel
+library-space-routing-add-route = Add route
+library-space-routing-save-route = Save route
+library-space-routing-remove-button =
+    .title = Remove route
+library-space-routing-external-links = Default route for external links
+library-space-routing-empty = Routes send links to the space you keep them in. Add one for a site you always open in the same place.
+library-space-routing-no-results = No routes found
 
 library-downloads-empty = No downloads found
 library-downloads-clear-all =

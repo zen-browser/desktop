@@ -28,6 +28,8 @@ ChromeUtils.defineESModuleGetters(
       "moz-src:///zen/library/sections/ZenLibraryMediaSection.mjs",
     ZenLibrarySpacesSection:
       "moz-src:///zen/library/sections/ZenLibrarySpacesSection.mjs",
+    ZenLibrarySidebarEdit:
+      "moz-src:///zen/library/ZenLibrarySidebarEdit.mjs",
   },
   { global: "current" }
 );
@@ -77,6 +79,9 @@ export class ZenLibrary extends MozLitElement {
   #wrapperSwipeAttached = false;
   #tabMenu = null;
   #tabMenuItems = [];
+
+  /** @type {ZenLibrarySidebarEdit} Lets the sidebar's buttons be rearranged */
+  #sidebarEdit = new lazy.ZenLibrarySidebarEdit(this);
 
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
@@ -258,6 +263,9 @@ export class ZenLibrary extends MozLitElement {
    * @param {object} Section - The section the tab stands for
    */
   #openTabMenu(event, Section) {
+    if (this.#sidebarEdit.editing) {
+      return;
+    }
     const offered = Section.tabMenu ?? [];
     if (!offered.length) {
       return;
@@ -495,6 +503,7 @@ export class ZenLibrary extends MozLitElement {
     } else if (target === 0) {
       lib.#isOpen = false;
       lib.#canSwipe = false;
+      lib.#sidebarEdit.discard();
       lib.#tellSection("onLibraryClosing");
     }
 
@@ -834,6 +843,7 @@ export class ZenLibrary extends MozLitElement {
     // Even an already cleaned up library may have been restyled since, by the
     // last frames of a spring that outlived a swipe.
     this.#clearStyleProperties();
+    this.#sidebarEdit.discard();
     if (!this.#initialized) {
       return;
     }
@@ -914,6 +924,9 @@ export class ZenLibrary extends MozLitElement {
     if (!this.hasAttribute("open") || e.key !== "Escape") {
       return;
     }
+    if (this.#sidebarEdit.onEscape(e)) {
+      return;
+    }
     const focused = document.activeElement;
     if (
       focused?.closest("zen-library") === this &&
@@ -944,6 +957,7 @@ export class ZenLibrary extends MozLitElement {
         l10nId: "library-footer-close-button",
         command: () => ZenLibrary.animateProgress(0),
       },
+      this.#sidebarEdit.footerButton,
       {
         image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
         l10nId: "library-footer-donate-button",
@@ -954,9 +968,12 @@ export class ZenLibrary extends MozLitElement {
       },
     ];
 
-    for (const { image, l10nId, command } of buttons) {
+    for (const { id, image, l10nId, command } of buttons) {
       const button = document.createXULElement("toolbarbutton");
       button.className = "toolbarbutton-1";
+      if (id) {
+        button.id = id;
+      }
       button.setAttribute("image", image);
       button.setAttribute("data-l10n-id", l10nId);
       button.addEventListener("command", command);
@@ -1008,8 +1025,18 @@ export class ZenLibrary extends MozLitElement {
       <hbox id="zen-library-panel">
         <vbox id="zen-library-side">
           <vbox id="zen-library-header"></vbox>
-          <vbox id="zen-library-sidebar-tabs">
-            ${Object.values(this.zenLibrarySections).map(
+          <vbox
+            id="zen-library-sidebar-tabs"
+            @pointerdown=${event => this.#sidebarEdit.onPointerDown(event)}
+            @pointermove=${event => this.#sidebarEdit.onPointerMove(event)}
+            @pointerup=${event => this.#sidebarEdit.onPointerUp(event)}
+            @pointercancel=${event => this.#sidebarEdit.onPointerUp(event)}
+            @lostpointercapture=${event =>
+              this.#sidebarEdit.onPointerUp(event)}
+          >
+            ${repeat(
+              this.#sidebarEdit.order.map(id => this.zenLibrarySections[id]),
+              Section => Section.id,
               Section => html`
                 <vbox
                   class="zen-library-tab"
@@ -1017,7 +1044,10 @@ export class ZenLibrary extends MozLitElement {
                   data-section=${Section.id}
                   @contextmenu=${event => this.#openTabMenu(event, Section)}
                   @click=${event => {
-                    if (this.activeTab !== Section.id) {
+                    if (
+                      !this.#sidebarEdit.editing &&
+                      this.activeTab !== Section.id
+                    ) {
                       this.activeTab = Section.id;
                       const previousTab =
                         event.currentTarget.parentNode.querySelector(
@@ -1047,7 +1077,7 @@ export class ZenLibrary extends MozLitElement {
             fullscreentoolbar="true"
           ></toolbar>
         </vbox>
-        <vbox id="zen-library-content">
+        <vbox id="zen-library-content" ?inert=${this.#sidebarEdit.editing}>
           ${
             this.#contentMounted
               ? repeat(

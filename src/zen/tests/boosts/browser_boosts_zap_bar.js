@@ -171,14 +171,14 @@ add_task(async function test_zap_bar_hides_focus_entries() {
   await BrowserTestUtils.withNewTab(PAGE, async browser => {
     const bar = await enableZapMode(browser);
 
-    gZenBoostsManager.addZapSelectorToActive("body", DOMAIN, "focus", PAGE);
+    gZenBoostsManager.addZapSelectorToActive("body", DOMAIN, "focus");
     gZenBoostsManager.addZapSelectorToActive("html", DOMAIN);
     await BrowserTestUtils.waitForCondition(
       () => getUnzapButtons(bar).length === 1,
       "Only the zap entry should get a button"
     );
 
-    gZenBoostsManager.removeZapSelectorToActive("body", DOMAIN, "focus", PAGE);
+    gZenBoostsManager.removeZapSelectorToActive("body", DOMAIN, "focus");
     gZenBoostsManager.removeZapSelectorToActive("html", DOMAIN);
     await BrowserTestUtils.waitForCondition(
       () => getUnzapButtons(bar).length === 0,

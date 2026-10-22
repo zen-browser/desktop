@@ -21,8 +21,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #overlay = null;
   // The mode the overlay was started in, "zap" or "focus"
   #zapMode = "zap";
-  // Whether the loaded sheet carries page-scoped focus rules
-  #hasFocusRules = false;
 
   static STATES = {
     NONE: "none",
@@ -288,25 +286,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
       case "ZenBoost:ZapBarUnzap":
         this.#handleZapBarMessage(message);
         break;
-      case "ZenBoost:LocationChanged":
-        this.#refreshStyleSheetForLocation();
-        break;
     }
     return null;
-  }
-
-  /**
-   * Reloads the current sheet after a same-document navigation so its
-   * URL-scoped focus rules are matched against the new URL. Sheets without
-   * focus rules do not depend on the URL and are left alone.
-   */
-  #refreshStyleSheetForLocation() {
-    const sheet = this.#currentSheet;
-    if (!sheet || !this.#hasFocusRules) {
-      return;
-    }
-    this.#unloadCurrentStyleSheet();
-    this.#loadStyleSheet({ uuid: sheet.uuid, uri: sheet.uri.spec });
   }
 
   /**
@@ -416,7 +397,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     if (boost) {
       const { boostData } = boost.boostEntry;
-      this.#hasFocusRules = !!boostData.focusSelectors?.length;
       if (boost.styleSheet) {
         this.#loadStyleSheet(boost.styleSheet);
       }
@@ -528,11 +508,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
       return;
     }
 
-    if (mode === "focus" && (await this.#hasZapEntries("focus"))) {
-      this.clearZapSelectors("focus");
-      this.sendNotify("zap-list-update");
-      this.sendNotify("zap-state-update");
-      return;
+    if (mode === "focus") {
+      const matching = await this.#matchingFocusSelectors();
+      if (matching.length) {
+        this.clearZapSelectors("focus", matching);
+        this.sendNotify("zap-list-update");
+        this.sendNotify("zap-state-update");
+        return;
+      }
     }
     this.#startZappingOverlay(mode);
   }
@@ -551,15 +534,12 @@ export class ZenBoostsChild extends JSWindowActorChild {
   /**
    * @param {string} [mode] Restrict the check to "zap" or "focus"
    * @returns {Promise<boolean>} Whether the boost has entries, of that mode
-   *   if given. Focus entries only count for the page they were made on.
+   *   if given. Focus entries only count when they match on this page.
    */
   async #hasZapEntries(mode) {
     const { boostData } = (await this.getWebsiteBoost())?.boostEntry || {};
-    const pageUrl = this.#pageUrl;
     const zapAny = !!boostData?.zapSelectors?.length;
-    const focusAny = !!boostData?.focusSelectors?.some(
-      entry => entry.url === pageUrl
-    );
+    const focusAny = !!(await this.#matchingFocusSelectors(boostData)).length;
     if (mode === "zap") {
       return zapAny;
     }
@@ -567,6 +547,22 @@ export class ZenBoostsChild extends JSWindowActorChild {
       return focusAny;
     }
     return zapAny || focusAny;
+  }
+
+  /**
+   * @param {object} [boostData] The boost data, fetched when omitted
+   * @returns {Promise<string[]>} The focus selectors with a match on this page
+   */
+  async #matchingFocusSelectors(boostData = null) {
+    const data =
+      boostData ?? (await this.getWebsiteBoost())?.boostEntry?.boostData;
+    return (data?.focusSelectors ?? []).filter(selector => {
+      try {
+        return !!this.document.querySelector(selector);
+      } catch {
+        return false;
+      }
+    });
   }
 
   async #startZappingOverlay(mode = "zap") {
@@ -610,15 +606,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   /**
-   * The page a focus entry is made for: the current URL without its query
-   * and hash.
-   */
-  get #pageUrl() {
-    const { origin, pathname } = this.document.location;
-    return `${origin}${pathname}`;
-  }
-
-  /**
    * @param {string} selector The selector to add
    * @param {string} [mode] "zap" hides the selection, "focus" hides everything else
    */
@@ -629,38 +616,35 @@ export class ZenBoostsChild extends JSWindowActorChild {
       selector,
       domain,
       mode,
-      url: mode === "focus" ? this.#pageUrl : null,
     });
   }
 
   /**
-   * @param {string} mode Clear the "zap" or "focus" entries of the boost.
-   *   Focus entries are only cleared for the current page.
+   * @param {string} mode Clear the "zap" or "focus" entries of the boost
+   * @param {string[]|null} [selectors] Only clear these entries of that mode
    */
-  clearZapSelectors(mode) {
+  clearZapSelectors(mode, selectors = null) {
     const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "clear",
       selector: "*",
       domain,
       mode,
-      url: mode === "focus" ? this.#pageUrl : null,
+      selectors,
     });
   }
 
   /**
    * @param {string} selector The selector to remove
    * @param {string} [mode] The list it was added to, "zap" or "focus"
-   * @param {string|null} [url] The page of a focus entry
    */
-  removeZapSelector(selector, mode = "zap", url = null) {
+  removeZapSelector(selector, mode = "zap") {
     const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "remove",
       selector,
       domain,
       mode,
-      url,
     });
   }
 

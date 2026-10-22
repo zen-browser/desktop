@@ -265,27 +265,13 @@ class nsZenBoostsManager {
   }
 
   /**
-   * @param {string} mode - "zap" or "focus"
-   * @param {string} selector - The entry's selector
-   * @param {string|null} url - The entry's page for focus entries
-   * @returns {Function} A predicate matching the entry in that mode's list
-   */
-  #entryMatcher(mode, selector, url) {
-    if (mode === "focus") {
-      return entry => entry.selector === selector && entry.url === url;
-    }
-    return entry => entry === selector;
-  }
-
-  /**
    * Adds the zap selector to the selectors list and updates the website.
    *
    * @param {string} selector - Selector which will hide the elements
    * @param {string} domain - Domain of the target boost
    * @param {string} [mode] - "zap" hides the elements, "focus" hides everything else
-   * @param {string|null} [url] - The page a focus entry applies to, without query or hash
    */
-  addZapSelectorToActive(selector, domain, mode = "zap", url = null) {
+  addZapSelectorToActive(selector, domain, mode = "zap") {
     const boost = this.loadActiveBoostFromStore(domain);
     if (!boost) {
       console.error("[ZenBoostsManager] Active boost is null");
@@ -293,8 +279,8 @@ class nsZenBoostsManager {
     }
 
     const entries = this.#selectorsForMode(boost.boostEntry.boostData, mode);
-    if (!entries.some(this.#entryMatcher(mode, selector, url))) {
-      entries.push(mode === "focus" ? { selector, url } : selector);
+    if (!entries.includes(selector)) {
+      entries.push(selector);
     }
 
     this.updateBoost(boost);
@@ -306,9 +292,8 @@ class nsZenBoostsManager {
    * @param {string} selector - Selector which will no longer hide the elements
    * @param {string} domain - Domain of the target boost
    * @param {string} [mode] - The list it was added to, "zap" or "focus"
-   * @param {string|null} [url] - The page of the focus entry
    */
-  removeZapSelectorToActive(selector, domain, mode = "zap", url = null) {
+  removeZapSelectorToActive(selector, domain, mode = "zap") {
     const boost = this.loadActiveBoostFromStore(domain);
     if (!boost) {
       console.error("[ZenBoostsManager] Active boost is null");
@@ -316,7 +301,7 @@ class nsZenBoostsManager {
     }
 
     const entries = this.#selectorsForMode(boost.boostEntry.boostData, mode);
-    const i = entries.findIndex(this.#entryMatcher(mode, selector, url));
+    const i = entries.indexOf(selector);
     if (i !== -1) {
       entries.splice(i, 1);
     }
@@ -383,9 +368,9 @@ class nsZenBoostsManager {
    *
    * @param {string} domain - Target boost domain
    * @param {string|null} [mode] - Only clear "zap" or "focus" entries; both when omitted
-   * @param {string|null} [url] - Only clear the focus entries of this page
+   * @param {string[]|null} [selectors] - Only clear these entries of that mode
    */
-  clearZapSelectorsForActive(domain, mode = null, url = null) {
+  clearZapSelectorsForActive(domain, mode = null, selectors = null) {
     const boost = this.loadActiveBoostFromStore(domain);
     if (!boost) {
       console.error("[ZenBoostsManager] Active boost is null");
@@ -393,13 +378,16 @@ class nsZenBoostsManager {
     }
 
     const { boostData } = boost.boostEntry;
+    const clear = key => {
+      boostData[key] = selectors
+        ? (boostData[key] ?? []).filter(entry => !selectors.includes(entry))
+        : [];
+    };
     if (mode !== "focus") {
-      boostData.zapSelectors = [];
+      clear("zapSelectors");
     }
     if (mode !== "zap") {
-      boostData.focusSelectors = url
-        ? (boostData.focusSelectors ?? []).filter(entry => entry.url !== url)
-        : [];
+      clear("focusSelectors");
     }
 
     this.updateBoost(boost);

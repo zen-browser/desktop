@@ -81,27 +81,41 @@ export class nsZenBoostStyles {
     }
 
     if (boostData.focusSelectors?.length) {
-      const pages = Map.groupBy(boostData.focusSelectors, entry => entry.url);
-      style += `/* Zen-Focus */\n`;
-      for (const [url, entries] of pages) {
-        const rule =
-          `:is(${entries.map(e => e.selector).join(", ")}) { ` +
-          `position: fixed !important; top: 50vh !important; left: 25vw !important; ` +
-          `right: auto !important; bottom: auto !important; translate: 0% -50% !important; ` +
-          `margin: 0 !important; width: 50vw !important; ` +
-          `max-width: 50vw !important; max-height: 100vh !important; box-sizing: border-box !important; ` +
-          `overflow: hidden auto !important; z-index: 2147483646 !important; ` +
-          `body *:not(&, & *, :has(&)) { display: none !important; } }`;
-        if (!url) {
-          style += `${rule}\n`;
-          continue;
-        }
-        const quoted = JSON.stringify(url);
-        const withQuery = JSON.stringify(`${url}?`);
-        const withHash = JSON.stringify(`${url}#`);
-        style += `@-moz-document url(${quoted}), url-prefix(${withQuery}), url-prefix(${withHash}) {\n${rule}\n}\n`;
-      }
-      style += `\n`;
+      const focused = `:is(${boostData.focusSelectors.join(", ")})`;
+      style += `/* Zen-Focus */
+${focused} {
+  width: fit-content !important;
+  max-width: 70vw !important;
+  width: 100% !important;
+
+  html:has(&) {
+    overflow: auto !important;
+    height: auto !important;
+
+    body {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: safe center !important;
+      justify-content: safe center !important;
+      box-sizing: border-box !important;
+      min-height: 100vh !important;
+      height: auto !important;
+      overflow: visible !important;
+      margin: 0 !important;
+      padding: 48px 0 !important;
+    }
+  }
+
+  html:has(&) body *:has(&) {
+    display: contents !important;
+  }
+
+  html:has(&) body *:not(&, & *, :has(&)) {
+    display: none !important;
+  }
+}
+
+`;
     }
 
     if (fontCase != "" || fontFamily != "") {

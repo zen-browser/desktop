@@ -545,25 +545,10 @@ ${cssSelector} {
     }
   }
 
-  /**
-   * The page the editor is working on, as focus entries record it: the URL
-   * without query and hash.
-   */
-  get #pageUrl() {
-    const browser =
-      this.editorWindow.browser ??
-      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const uri = browser.currentURI;
-    return `${uri.prePath}${uri.filePath}`;
-  }
-
   onUpdateZapValue() {
-    const pageUrl = this.#pageUrl;
     const counts = {
       zap: this.currentBoostData.zapSelectors.length,
-      focus: (this.currentBoostData.focusSelectors ?? []).filter(
-        entry => entry.url === pageUrl
-      ).length,
+      focus: this.currentBoostData.focusSelectors?.length ?? 0,
     };
     for (const [mode, count] of Object.entries(counts)) {
       const button = this.doc.getElementById(`zen-boost-${mode}`);
@@ -1426,12 +1411,10 @@ ${cssSelector} {
     if (!success) {
       return;
     }
-    const newName = input.value;
-    const maxDisplayedNameChars = 10;
+    const newName = input.value.trim();
 
-    if (newName.trim().length !== 0) {
-      var truncatedName = newName.substring(0, maxDisplayedNameChars);
-      this.currentBoostData.boostName = truncatedName;
+    if (newName.length !== 0) {
+      this.currentBoostData.boostName = newName;
       nameText.textContent = this.currentBoostData.boostName;
       this.updateCurrentBoost();
     }

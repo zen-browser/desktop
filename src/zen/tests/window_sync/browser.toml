@@ -10,6 +10,9 @@ support-files = [
 
 ["browser_collect_tab_state.js"]
 
+["browser_issue_12140.js"]
+skip-if = ["os == 'mac'"] # macOS never marks closing windows for restore
+
 ["browser_move_unloaded_tabs.js"]
 
 ["browser_sync_tab_label.js"]

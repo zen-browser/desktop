@@ -500,7 +500,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateCollapse(group);
-    group.dispatchEvent(new CustomEvent("ZenFolderAnimationFinished"));
+    this.#finishedAnimating(group);
   }
 
   #queueCollapsedRelayout(group) {
@@ -551,7 +551,28 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateExpand(group);
-    group.dispatchEvent(new CustomEvent("ZenFolderAnimationFinished"));
+    this.#finishedAnimating(group);
+  }
+
+  #finishedAnimating(group) {
+    group.dispatchEvent(
+      new CustomEvent("TabGroupAnimationComplete", { bubbles: true })
+    );
+  }
+
+  #animationFinished(folder) {
+    return new Promise(resolve => {
+      folder.addEventListener(
+        "TabGroupAnimationComplete",
+        function listener(event) {
+          if (event.target !== folder) {
+            return;
+          }
+          folder.removeEventListener("TabGroupAnimationComplete", listener);
+          resolve();
+        }
+      );
+    });
   }
 
   #onNewFolder(event) {
@@ -2369,11 +2390,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       if (!folder.isConnected || folder.collapsed === collapsed) {
         continue;
       }
-      const finished = new Promise(resolve =>
-        folder.addEventListener("ZenFolderAnimationFinished", resolve, {
-          once: true,
-        })
-      );
+      const finished = this.#animationFinished(folder);
       folder.collapsed = collapsed;
       await finished;
     }

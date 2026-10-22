@@ -119,30 +119,6 @@ jobs:
             echo ">>> Branch matches"
           fi
 
-  start-self-host:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download aws-cli
-        if: ${{ inputs.update_branch == 'release' }}
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --update
-
-      - name: Start self-hosted runner
-        if: ${{ inputs.update_branch == 'release' }}
-        run: |
-          echo "Starting self-hosted runner"
-          echo "${{ secrets.SELF_HOSTED_RUNNER_START_SCRIPT }}" | base64 -d > start.sh
-          sudo chmod +x start.sh
-          bash ./start.sh
-
-      - name: Remove self-hosted runner script
-        if: always() && ${{ inputs.update_branch == 'release' }}
-        run: |
-          echo "Removing self-hosted runner script"
-          rm start.sh || true
-
   build-data:
     permissions:
       contents: write
@@ -306,6 +282,7 @@ jobs:
       mac-hit: ${{ steps.probe.outputs.mac }}
       windows-hit: ${{ steps.probe.outputs.windows }}
       linux-hit: ${{ steps.probe.outputs.linux }}
+      windows-cs-hit: ${{ steps.probe.outputs.windows-cs }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -325,17 +302,18 @@ jobs:
       - name: Build the cache key
         id: key
         if: ${{ steps.gate.outputs.enabled == 'true' }}
+        env:
+          INPUTS_HASH: ${{ hashFiles('src/zen/common/sys/ZenPGOTraining.sys.mjs', 'src/build/pgo/profileserver-py.patch', 'src/testing/profiles/profileserver/user-js.patch') }}
         run: |
           ff=$(node -p "require('./surfer.json').version.version")
-          echo "prefix=pgo-profdata-v1-ff${ff}" >> "$GITHUB_OUTPUT"
+          echo "prefix=pgo-profdata-v2-ff${ff}-${INPUTS_HASH:0:12}" >> "$GITHUB_OUTPUT"
 
       - name: Look up the macOS x86_64 profile
         id: mac-x86
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-macos-x86_64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-macos-x86_64-
+          key: ${{ steps.key.outputs.prefix }}-macos-x86_64
           path: ~/artifact
           lookup-only: true
 
@@ -344,8 +322,7 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-macos-aarch64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-macos-aarch64-
+          key: ${{ steps.key.outputs.prefix }}-macos-aarch64
           path: ~/artifact
           lookup-only: true
 
@@ -354,8 +331,7 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-windows-x86_64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-windows-x86_64-
+          key: ${{ steps.key.outputs.prefix }}-windows-x86_64
           path: ~/artifact
           lookup-only: true
 
@@ -364,40 +340,54 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
         uses: actions/cache/restore@v5
         with:
-          key: ${{ steps.key.outputs.prefix }}-linux-x86_64-${{ github.run_id }}
-          restore-keys: ${{ steps.key.outputs.prefix }}-linux-x86_64-
+          key: ${{ steps.key.outputs.prefix }}-linux-x86_64
+          path: ~/artifact
+          lookup-only: true
+
+      - name: Look up the Windows x86_64 context-sensitive profile
+        id: win-cs
+        if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
+        uses: actions/cache/restore@v5
+        with:
+          key: ${{ steps.key.outputs.prefix }}-windows-cs-x86_64
           path: ~/artifact
           lookup-only: true
 
       - name: Report what is cached
         id: probe
         env:
-          MAC_X86: ${{ steps.mac-x86.outputs.cache-matched-key }}
-          MAC_ARM: ${{ steps.mac-arm.outputs.cache-matched-key }}
-          WIN_X86: ${{ steps.win-x86.outputs.cache-matched-key }}
-          LINUX_X86: ${{ steps.linux-x86.outputs.cache-matched-key }}
+          MAC_X86: ${{ steps.mac-x86.outputs.cache-hit }}
+          MAC_ARM: ${{ steps.mac-arm.outputs.cache-hit }}
+          WIN_X86: ${{ steps.win-x86.outputs.cache-hit }}
+          LINUX_X86: ${{ steps.linux-x86.outputs.cache-hit }}
+          WIN_CS: ${{ steps.win-cs.outputs.cache-hit }}
         run: |
           mac=false
-          if [ -n "$MAC_X86" ] && [ -n "$MAC_ARM" ]; then
+          if [ "$MAC_X86" = "true" ] && [ "$MAC_ARM" = "true" ]; then
             mac=true
           fi
           windows=false
-          if [ -n "$WIN_X86" ]; then
+          if [ "$WIN_X86" = "true" ]; then
             windows=true
           fi
           linux=false
-          if [ -n "$LINUX_X86" ]; then
+          if [ "$LINUX_X86" = "true" ]; then
             linux=true
+          fi
+          windows_cs=false
+          if [ "$WIN_CS" = "true" ]; then
+            windows_cs=true
           fi
           echo "mac=$mac" >> "$GITHUB_OUTPUT"
           echo "windows=$windows" >> "$GITHUB_OUTPUT"
           echo "linux=$linux" >> "$GITHUB_OUTPUT"
+          echo "windows-cs=$windows_cs" >> "$GITHUB_OUTPUT"
           echo "macOS: $mac, Windows: $windows, Linux: $linux"
 
   windows-step-1:
     name: Windows build step 1 (PGO build)
     uses: ./.github/workflows/windows-release-build.yml
-    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' }}
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && needs.pgo-cache.outputs.windows-cs-hit != 'true' }}
     needs: [build-data, buildid, pgo-cache]
     permissions:
       contents: write
@@ -413,7 +403,7 @@ jobs:
   windows-step-2:
     name: Windows build step 2 (Generate profile data)
     uses: ./.github/workflows/windows-profile-build.yml
-    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' }}
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && needs.pgo-cache.outputs.windows-cs-hit != 'true' }}
     permissions:
       contents: write
     secrets: inherit
@@ -424,6 +414,41 @@ jobs:
       release-branch: ${{ inputs.update_branch }}
       pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows', needs.pgo-cache.outputs.prefix) || '' }}
 
+  windows-step-cs-1:
+    name: Windows build step 3a (CS-instrumented build)
+    uses: ./.github/workflows/windows-release-build.yml
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [build-data, windows-step-2, buildid, pgo-cache]
+    with:
+      use-sccache: ${{ inputs.use-sccache }}
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-pgo: false
+      cs-pgo: generate
+      profile-data-path-archive: zen-windows-cs-profile-data-and-jarlog.zip
+      release-branch: ${{ inputs.update_branch }}
+      MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows', needs.pgo-cache.outputs.prefix) || '' }}
+      pgo-cache-hit: ${{ needs.pgo-cache.outputs.windows-hit == 'true' }}
+
+  windows-step-cs-2:
+    name: Windows build step 3b (Generate CS profile data)
+    uses: ./.github/workflows/windows-profile-build.yml
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [windows-step-cs-1, build-data, pgo-cache]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      profile-data-path-archive: zen.win64-pgo-stage-1.zip
+      release-branch: ${{ inputs.update_branch }}
+      cs-pgo: true
+      instrumented-artifact: zen-windows-cs-profile-data-and-jarlog.zip
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows-cs', needs.pgo-cache.outputs.prefix) || '' }}
+
   windows-step-3:
     name: Windows build step 3 (build with profile data)
     uses: ./.github/workflows/windows-release-build.yml
@@ -432,16 +457,17 @@ jobs:
     secrets: inherit
     # windows-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
-    needs: [build-data, windows-step-2, start-self-host, buildid, pgo-cache]
+    needs: [build-data, windows-step-2, windows-step-cs-2, buildid, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
+      cs-pgo: ${{ inputs.disable-pgo && '' || 'use' }}
       disable-pgo: ${{ inputs.disable-pgo }}
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
-      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows', needs.pgo-cache.outputs.prefix) || '' }}
-      pgo-cache-hit: ${{ needs.pgo-cache.outputs.windows-hit == 'true' }}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows-cs', needs.pgo-cache.outputs.prefix) || '' }}
+      pgo-cache-hit: ${{ needs.pgo-cache.outputs.windows-cs-hit == 'true' }}
 
   linux:
     name: Linux build
@@ -449,7 +475,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, start-self-host, buildid, pgo-cache]
+    needs: [build-data, buildid, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
@@ -495,7 +521,7 @@ jobs:
     secrets: inherit
     # mac-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
-    needs: [build-data, mac-step-2, start-self-host, buildid, pgo-cache]
+    needs: [build-data, mac-step-2, buildid, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
@@ -600,32 +626,6 @@ jobs:
           name: zen-${{ matrix.arch }}.AppImage.zsync
           path: ./dist/zen-${{ matrix.arch }}.AppImage.zsync
 
-  stop-self-hosted:
-    runs-on: ubuntu-latest
-    needs: [windows-step-3, linux]
-    if: always()
-    steps:
-      - name: Download aws-cli
-        if: ${{ inputs.update_branch == 'release' }}
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --update
-
-      - name: Stop self-hosted runner
-        if: ${{ inputs.update_branch == 'release' }}
-        run: |
-          echo "Stopping self-hosted runner"
-          echo "${{ secrets.SELF_HOSTED_RUNNER_STOP_SCRIPT }}" | base64 -d > stop.sh
-          sudo chmod +x stop.sh
-          bash ./stop.sh > /dev/null
-
-      - name: Remove self-hosted runner script
-        if: always() && ${{ inputs.update_branch == 'release' }}
-        run: |
-          echo "Removing self-hosted runner script"
-          rm stop.sh || true
-
   release:
     permissions: write-all
     name: Release
@@ -638,7 +638,6 @@ jobs:
         mac-uni,
         appimage,
         source,
-        stop-self-hosted,
       ]
     runs-on: blacksmith-2vcpu-ubuntu-2404
     environment:

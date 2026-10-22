@@ -47,11 +47,13 @@ async function closeGlanceWhileOpening(rect) {
     !parentContainer.classList.contains("zen-glance-background"),
     "The parent should not be styled as a glance background"
   );
-  Assert.equal(
-    parentContainer.style.opacity,
-    "",
+  // Closing waits for the parent's dimming animation to finish before
+  // restoring it, so the parent can still be fading back in at this point.
+  await TestUtils.waitForCondition(
+    () => parentContainer.style.opacity === "",
     "The parent should not be left dimmed"
   );
+  ok(true, "The parent is no longer dimmed");
 }
 
 add_task(async function test_Glance_Close_While_Opening() {

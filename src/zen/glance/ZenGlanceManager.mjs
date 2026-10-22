@@ -28,6 +28,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   closingGlance = false;
   #duringOpening = false;
   #ignoreClose = false;
+  #parentBackgroundAnimation = null;
 
   // Click handling
   #lastLinkClickData = { clientX: 0, clientY: 0, height: 0, width: 0 };
@@ -655,7 +656,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       ".browserSidebarContainer"
     );
 
-    gZenUIManager.motion.animate(
+    const animation = gZenUIManager.motion.animate(
       parentSidebarContainer,
       {
         scale: [1, GLANCE_BACKGROUND_SCALE],
@@ -667,6 +668,14 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         bounce: 0.2,
       }
     );
+    // Remember it while it's running so closing can wait for it to finish.
+    this.#parentBackgroundAnimation = animation;
+    const forget = () => {
+      if (this.#parentBackgroundAnimation === animation) {
+        this.#parentBackgroundAnimation = null;
+      }
+    };
+    animation.then(forget, forget);
   }
 
   /**
@@ -1240,25 +1249,35 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    *
    * @param {Element} browserSidebarContainer - The sidebar container
    */
-  #animateParentBackgroundClose(browserSidebarContainer) {
-    gZenUIManager.motion
-      .animate(
-        browserSidebarContainer,
-        {
-          scale: [GLANCE_BACKGROUND_SCALE, 1],
-          opacity: [0.3, 1],
-        },
-        {
-          duration: this.#GLANCE_ANIMATION_DURATION / 1000 / 1.5,
-          type: "spring",
-          bounce: 0,
-        }
-      )
-      .then(() => {
-        this.#clearContainerStyles(browserSidebarContainer);
-      });
-
+  async #animateParentBackgroundClose(browserSidebarContainer) {
     this.browserWrapper.style.opacity = 1;
+
+    // If the glance is closed while it's still opening (e.g. an extension
+    // removed the tab), let the dimming animation finish first. Otherwise it
+    // can keep running and leave the parent dimmed after we clear its styles.
+    const openingAnimation = this.#parentBackgroundAnimation;
+    this.#parentBackgroundAnimation = null;
+    if (openingAnimation) {
+      try {
+        await openingAnimation;
+      } catch {
+        // The animation was cancelled, nothing left to wait for.
+      }
+    }
+
+    await gZenUIManager.motion.animate(
+      browserSidebarContainer,
+      {
+        scale: [GLANCE_BACKGROUND_SCALE, 1],
+        opacity: [0.3, 1],
+      },
+      {
+        duration: this.#GLANCE_ANIMATION_DURATION / 1000 / 1.5,
+        type: "spring",
+        bounce: 0,
+      }
+    );
+    this.#clearContainerStyles(browserSidebarContainer);
   }
 
   /**

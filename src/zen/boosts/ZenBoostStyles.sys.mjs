@@ -80,6 +80,44 @@ export class nsZenBoostStyles {
       }
     }
 
+    if (boostData.focusSelectors?.length) {
+      const focused = `:is(${boostData.focusSelectors.join(", ")})`;
+      style += `/* Zen-Focus */
+${focused} {
+  width: fit-content !important;
+  max-width: 70vw !important;
+  width: 100% !important;
+
+  html:has(&) {
+    overflow: auto !important;
+    height: auto !important;
+
+    body {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: safe center !important;
+      justify-content: safe center !important;
+      box-sizing: border-box !important;
+      min-height: 100vh !important;
+      height: auto !important;
+      overflow: visible !important;
+      margin: 0 !important;
+      padding: 48px 0 !important;
+    }
+  }
+
+  html:has(&) body *:has(&) {
+    display: contents !important;
+  }
+
+  html:has(&) body *:not(&, & *, :has(&)) {
+    display: none !important;
+  }
+}
+
+`;
+    }
+
     if (fontCase != "" || fontFamily != "") {
       style += `/* Text Format */\n`;
       style += `body *:not(.google-symbols, gf-load-icon-font, mat-icon, .google-material-icons) {\n`;

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.mjs b/browser/components/tabbrowser/content/tabs.mjs
-index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917ee25aa5a5 100644
+index fe4d154c5072572f1bcfa161972e5d96cd897b3a..f0d90751b6d2b197dd5ecd4eed7ebce59a0a256b 100644
 --- a/browser/components/tabbrowser/content/tabs.mjs
 +++ b/browser/components/tabbrowser/content/tabs.mjs
 @@ -183,8 +183,12 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
@@ -53,15 +53,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
      let { altKey, shiftKey } = event;
      let [accel, nonAccel] =
        AppConstants.platform == "macosx"
-@@ -764,7 +770,6 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
-     this._updateCloseButtons();
- 
-     if (!this.#animatingGroups.size) {
--      this._handleTabSelect(true);
-     }
- 
-     document
-@@ -830,7 +835,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -830,7 +836,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    get newTabButton() {
@@ -70,7 +62,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
    }
  
    get verticalMode() {
-@@ -846,6 +851,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -846,6 +852,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    get overflowing() {
@@ -78,7 +70,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
      return this.hasAttribute("overflow");
    }
  
-@@ -859,31 +865,55 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -859,31 +866,55 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
      if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery") {
        pinnedChildren.pop();
      }
@@ -108,7 +100,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
 +        } else if (!isTab(tab)) {
 +          tabs.splice(i, 1);
 +        }
-       }
++      }
 +    };
 +    expandTabs(pinnedTabs);
 +    expandTabs(unpinnedChildren);
@@ -129,7 +121,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
 +        // remove the separator from the list
 +        allTabs.splice(i, 1);
 +        i--;
-+      }
+       }
 +      i++;
      }
 -
@@ -147,7 +139,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
    }
  
    get allSplitViews() {
-@@ -972,29 +1002,28 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -972,29 +1003,28 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
        return this.#focusableItems;
      }
  
@@ -187,7 +179,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
      this.#focusableItems = focusableItems;
  
      return this.#focusableItems;
-@@ -1008,6 +1037,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1008,6 +1038,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
     * @returns {DragAndDropElement[]}
     */
    get dragAndDropElements() {
@@ -195,7 +187,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
      if (this.#dragAndDropElements) {
        return this.#dragAndDropElements;
      }
-@@ -1079,6 +1109,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1079,6 +1110,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    _invalidateCachedTabs() {
      this.#allTabs = null;
      this._invalidateCachedVisibleTabs();
@@ -203,7 +195,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
    }
  
    _invalidateCachedVisibleTabs() {
-@@ -1098,7 +1129,8 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1098,7 +1130,8 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
  
    isContainerVerticalPinnedGrid(tab) {
      return (
@@ -213,7 +205,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
        this.verticalMode &&
        this.hasAttribute("expanded") &&
        !this.expandOnHover
-@@ -1220,7 +1252,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1220,7 +1253,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
  
      if (node == null) {
        // We have a container for non-tab elements at the end of the scrollbox.
@@ -222,7 +214,7 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
      }
  
      node.before(tab);
-@@ -1264,7 +1296,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1264,7 +1297,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
          // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
          // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
          // Attach the long click popup to all of them.
@@ -231,27 +223,18 @@ index fe4d154c5072572f1bcfa161972e5d96cd897b3a..b8d21a7129390c335bf4d99c0d30917e
          const newTab2 = this.newTabButton;
          const newTabVertical = document.getElementById(
            "vertical-tabs-newtab-button"
-@@ -1369,8 +1401,10 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1369,8 +1402,10 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
     */
    _handleTabSelect(aInstant) {
      let selectedTab = this.selectedItem;
-+      if (!selectedTab) return;
++    if (!selectedTab) return;
      this.#ensureTabIsVisible(selectedTab, aInstant);
  
-+      gZenCompactModeManager.flashSidebarIfNecessary(aInstant);
++    gZenCompactModeManager.flashSidebarIfNecessary(aInstant);
      selectedTab._notselectedsinceload = false;
    }
  
-@@ -1379,7 +1413,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
-    * @param {boolean} [shouldScrollInstantly=false]
-    */
-   #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
--    let arrowScrollbox = tab.closest("arrowscrollbox");
-+      let arrowScrollbox = this.arrowScrollbox;
-     if (arrowScrollbox?.overflowing) {
-       arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);
-     }
-@@ -1506,7 +1540,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1506,7 +1541,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    _notifyBackgroundTab(aTab) {

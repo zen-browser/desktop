@@ -23,6 +23,16 @@ on:
         required: false
         type: string
         default: ""
+      cs-pgo:
+        description: "Collect a context-sensitive profile and merge it with the base one"
+        required: false
+        type: boolean
+        default: false
+      instrumented-artifact:
+        description: "Artifact holding the instrumented build to profile"
+        required: false
+        type: string
+        default: "zen-windows-profile-data-and-jarlog.zip"
 
 jobs:
   windows-profile-build:
@@ -59,7 +69,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: C:\artifact
-          name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-zen-windows-profile-data-and-jarlog.zip
+          name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-${{ inputs.instrumented-artifact }}
+
+      - name: Download the base profile data
+        if: ${{ matrix.arch == 'x86_64' && inputs.cs-pgo }}
+        uses: actions/download-artifact@v4
+        with:
+          path: C:\base
+          name: windows-base-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
 
       - name: Unpack artifact
         if: ${{ matrix.arch == 'x86_64' }}
@@ -108,6 +125,18 @@ jobs:
           mv engine/merged.profdata merged.profdata
           mv engine/en-US.log en-US.log
 
+      - name: Merge the context-sensitive profile into the base profile
+        if: ${{ matrix.arch == 'x86_64' && inputs.cs-pgo }}
+        shell: bash
+        env:
+          LLVM_PROFDATA: /c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe
+        run: |
+          set -euo pipefail
+          mv merged.profdata cs.profdata
+          "$LLVM_PROFDATA" show --showcs cs.profdata > cs-profile-summary.txt
+          grep -Eq "Total functions: [1-9][0-9]*" cs-profile-summary.txt
+          "$LLVM_PROFDATA" merge /c/base/merged.profdata cs.profdata -o merged.profdata
+
       - name: Stage profile data where a build expects it
         if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
         shell: bash
@@ -119,7 +148,7 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
         uses: actions/cache/save@v5
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Upload artifacts
@@ -130,4 +159,4 @@ jobs:
           path: |
             merged.profdata
             en-US.log
-          name: windows-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
+          name: ${{ inputs.cs-pgo && 'windows-cs-profdata-' || 'windows-profdata-' }}${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}

@@ -246,7 +246,9 @@ export const ZenCustomizableUI = new (class {
         return;
       }
       toolbox.style.width = defaultWidth;
+      toolbox.style.setProperty("--zen-sidebar-width", defaultWidth);
       toolbox.setAttribute("width", defaultWidth);
+      this.#dispatchResizeEvent(window);
     });
   }
 

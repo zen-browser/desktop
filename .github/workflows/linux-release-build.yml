@@ -41,7 +41,7 @@ jobs:
     permissions:
       contents: write
     # aarch64 does not need full 16x
-    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
+    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'blacksmith-16vcpu-ubuntu-2404' || 'blacksmith-8vcpu-ubuntu-2404' }}
     strategy:
       fail-fast: false
       matrix:
@@ -140,8 +140,7 @@ jobs:
         uses: actions/cache/restore@v5
         if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && inputs.pgo-cache-hit }}
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
-          restore-keys: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
           fail-on-cache-miss: true
 
@@ -169,6 +168,8 @@ jobs:
           export DISPLAY=:2
           export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
           export JARLOG_FILE=en-US.log
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export MOZ_WEBRENDER=1
           mkdir -p "$HOME/artifact"
           cd engine
           ./mach python ../scripts/download_pgo_extended_corpus.py
@@ -181,7 +182,7 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo && !inputs.pgo-cache-hit && inputs.pgo-cache-key-prefix != '' }}
         uses: actions/cache/save@v5
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Build

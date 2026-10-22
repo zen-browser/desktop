@@ -249,8 +249,6 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"] 
 }
 
 zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]::after {
-  --border-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0,0,0,.8), white) 70%);
-
   content: "";
   position: absolute;
   z-index: -1;
@@ -265,7 +263,7 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
   background:
     conic-gradient(
         var(--zen-accent-button-background) var(--zen-library-download-progress, 0%),
-        var(--border-color) 0
+        currentColor 0
       )
       border-box,
     color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%)
@@ -978,7 +976,7 @@ zen-library-history-section {
   display: none;
 }
 
-.zen-library-row:hover:not([opening], [pending]) {
+.zen-library-row:hover:not([pending]) {
   & .zen-library-download-status {
     display: none;
   }

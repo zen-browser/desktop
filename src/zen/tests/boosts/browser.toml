@@ -46,3 +46,5 @@ support-files = [
 ["browser_boosts_svg_use_sprite.js"]
 
 ["browser_boosts_text_color.js"]
+
+["browser_boosts_zap_bar.js"]

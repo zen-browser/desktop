@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
+import { ZenUIComponent } from "resource:///modules/zen/ui/ZenUIComponent.sys.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+import { PictureInPicture } from "moz-src:///toolkit/components/pictureinpicture/PictureInPicture.sys.mjs";
 
 const lazy = {};
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -12,12 +14,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
-// Maximum number of cards shown in the stack; extra cards stay hidden until
-// a slot frees up.
 const MAX_STACKED_CARDS = 3;
-// How many background cards visually peek out at the top of the stack.
-// Deeper cards hide perfectly behind the last peeking one, so the stack
-// doesn't take more room with every extra card.
 const MAX_PEEK_LEVELS = 2;
 
 /**
@@ -32,6 +29,7 @@ class ZenMediaCard {
 
   constructor(manager, element, browser, controller = null) {
     this.manager = manager;
+    this.window = manager.window;
     this.element = element;
     this.browser = browser;
     this.controller = controller;
@@ -46,8 +44,6 @@ class ZenMediaCard {
     this.#initListeners();
 
     if (controller) {
-      // Queried before anything is wired up: it throws if the controller
-      // went away in the meantime, and the caller drops the card.
       const positionState = controller.getPositionState();
 
       this.#controllerListeners = {
@@ -72,7 +68,7 @@ class ZenMediaCard {
       this.element.setAttribute("media-sharing", "");
       this.element.setAttribute("media-position-hidden", "true");
       this.titleEl.textContent =
-        window.gBrowser.getTabForBrowser(browser)?.label || "";
+        this.window.gBrowser.getTabForBrowser(browser)?.label || "";
       this.artistEl.textContent = "";
       this.updateIcon();
     }
@@ -92,7 +88,9 @@ class ZenMediaCard {
     if (this.controller.isBeingUsedInPIPModeOrFullscreen) {
       return false;
     }
-    return gBrowser.selectedBrowser.browserId !== this.browser.browserId;
+    return (
+      this.window.gBrowser.selectedBrowser.browserId !== this.browser.browserId
+    );
   }
 
   #initListeners() {
@@ -201,14 +199,14 @@ class ZenMediaCard {
   // tab is selected, reappear on a small delay when switching away.
   onTabSelect() {
     if (this.#tabTimeout) {
-      clearTimeout(this.#tabTimeout);
+      this.window.clearTimeout(this.#tabTimeout);
       this.#tabTimeout = null;
     }
 
     if (!this.shouldBeVisible) {
       this.setHidden(true);
     } else if (this.element.hidden) {
-      this.#tabTimeout = setTimeout(() => {
+      this.#tabTimeout = this.window.setTimeout(() => {
         this.#tabTimeout = null;
         this.refreshVisibility();
       }, 500);
@@ -254,7 +252,7 @@ class ZenMediaCard {
 
   updatePosition() {
     if (this.#updateInterval) {
-      clearInterval(this.#updateInterval);
+      this.window.clearInterval(this.#updateInterval);
       this.#updateInterval = null;
     }
 
@@ -272,7 +270,7 @@ class ZenMediaCard {
     this.durationEl.textContent = this.formatSecondsToTime(this.duration);
     this.progressBar.value = (this.position / this.duration) * 100;
 
-    this.#updateInterval = setInterval(() => {
+    this.#updateInterval = this.window.setInterval(() => {
       if (this.controller?.isPlaying) {
         this.position += 1 * this.playbackRate;
         if (this.position > this.duration) {
@@ -283,7 +281,7 @@ class ZenMediaCard {
         );
         this.progressBar.value = (this.position / this.duration) * 100;
       } else {
-        clearInterval(this.#updateInterval);
+        this.window.clearInterval(this.#updateInterval);
         this.#updateInterval = null;
       }
     }, 1000);
@@ -329,15 +327,15 @@ class ZenMediaCard {
     if (this.controller) {
       this.controller.focus();
     } else {
-      const tab = window.gBrowser.getTabForBrowser(this.browser);
+      const tab = this.window.gBrowser.getTabForBrowser(this.browser);
       if (tab) {
-        window.gZenWorkspaces.switchTabIfNeeded(tab);
+        this.window.gZenWorkspaces.switchTabIfNeeded(tab);
       }
     }
   }
 
   onMute() {
-    const tab = window.gBrowser.getTabForBrowser(this.browser);
+    const tab = this.window.gBrowser.getTabForBrowser(this.browser);
     if (tab) {
       tab.toggleMuteAudio();
       this.updateMuteState();
@@ -419,7 +417,10 @@ class ZenMediaCard {
     this.destroy();
   }
 
-  destroy() {
+  /**
+   * Drops what the card holds outside its own element.
+   */
+  teardown() {
     if (this.controller && this.#controllerListeners) {
       for (const [event, listener] of Object.entries(
         this.#controllerListeners
@@ -430,13 +431,17 @@ class ZenMediaCard {
     }
 
     if (this.#updateInterval) {
-      clearInterval(this.#updateInterval);
+      this.window.clearInterval(this.#updateInterval);
       this.#updateInterval = null;
     }
     if (this.#tabTimeout) {
-      clearTimeout(this.#tabTimeout);
+      this.window.clearTimeout(this.#tabTimeout);
       this.#tabTimeout = null;
     }
+  }
+
+  destroy() {
+    this.teardown();
 
     const { element } = this;
     if (element.hidden) {
@@ -468,23 +473,27 @@ class ZenMediaCard {
  * the bottom of the sidebar. Each active media controller (and WebRTC
  * sharing session) gets its own card.
  */
-class nsZenMediaController extends nsZenDOMOperatedFeature {
+export class ZenMediaController extends ZenUIComponent {
   #cards = new Map();
   #cardTemplate = null;
 
   mediaControlBar = null;
 
   init() {
+    this.window.gZenMediaController = this;
+
     if (!Services.prefs.getBoolPref("zen.mediacontrols.enabled", true)) {
       return;
     }
 
-    this.mediaControlBar = document.querySelector(
+    this.mediaControlBar = this.document.querySelector(
       "#zen-media-controls-toolbar"
     );
-    this.#cardTemplate = document.querySelector("#zen-media-card-template");
+    this.#cardTemplate = this.document.querySelector(
+      "#zen-media-card-template"
+    );
 
-    window.addEventListener("TabSelect", () => {
+    this.window.addEventListener("TabSelect", () => {
       for (const card of this.#cards.values()) {
         card.onTabSelect();
       }
@@ -492,10 +501,10 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
 
     const onTabDiscardedOrClosed = this.onTabDiscardedOrClosed.bind(this);
 
-    window.addEventListener("TabClose", onTabDiscardedOrClosed);
-    window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
+    this.window.addEventListener("TabClose", onTabDiscardedOrClosed);
+    this.window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
 
-    window.addEventListener("TabAttrModified", event => {
+    this.window.addEventListener("TabAttrModified", event => {
       if (!event.detail.changed.includes("soundplaying")) {
         return;
       }
@@ -512,7 +521,7 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
     // The card is created right away (while the controller is fresh) but
     // only shown if the media is still playing a moment later, so short
     // sounds (e.g. notification pings) never reveal it.
-    setTimeout(() => {
+    this.window.setTimeout(() => {
       const card = this.#cardForBrowser(browser);
       if (!card || card.isSharing) {
         return;
@@ -520,8 +529,6 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
       if (card.controller.isPlaying) {
         card.refreshVisibility();
       } else if (card.element.hidden) {
-        // The sound was over before ever being shown (e.g. a notification
-        // ping): drop the card instead of keeping a ghost around.
         card.destroy();
       }
     }, 1000);
@@ -551,9 +558,11 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
     return Array.from(this.#cards.values()).some(card => !card.element.hidden);
   }
 
-  get #sharingCard() {
+  #sharingCardForBrowser(browser) {
     return (
-      Array.from(this.#cards.values()).find(card => card.isSharing) ?? null
+      Array.from(this.#cards.values()).find(
+        card => card.isSharing && card.browser.browserId === browser.browserId
+      ) ?? null
     );
   }
 
@@ -587,7 +596,7 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.#sharingCard?.destroy();
+    this.#sharingCardForBrowser(browser)?.destroy();
     this.#addCard(`sharing-${browser.browserId}`, browser);
   }
 
@@ -599,23 +608,21 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
     const { windowId, showCameraIndicator, showMicrophoneIndicator } = data;
     const shouldShow = showCameraIndicator || showMicrophoneIndicator;
 
-    for (const browser of window.gBrowser.browsers) {
+    for (const browser of this.window.gBrowser.browsers) {
       if (browser.innerWindowID !== windowId) {
         continue;
       }
 
-      const sharingCard = this.#sharingCard;
-      const isSharingBrowser =
-        sharingCard?.browser.browserId === browser.browserId;
+      const sharingCard = this.#sharingCardForBrowser(browser);
 
-      if (shouldShow && !isSharingBrowser) {
+      if (shouldShow && !sharingCard) {
         const webRTC =
           browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
         webRTC.sendAsyncMessage("webrtc:UnmuteMicrophone");
         webRTC.sendAsyncMessage("webrtc:UnmuteCamera");
 
         this.activateMediaDeviceControls(browser);
-      } else if (!shouldShow && isSharingBrowser) {
+      } else if (!shouldShow && sharingCard) {
         sharingCard.destroy();
       }
 
@@ -634,6 +641,14 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
         card.destroy();
       }
     }
+  }
+
+  uninit() {
+    for (const card of this.#cards.values()) {
+      card.teardown();
+      card.element.remove();
+    }
+    this.#cards.clear();
   }
 
   closeAllCards() {
@@ -726,7 +741,7 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
       Math.max(Math.min(stackedCount - 1, MAX_PEEK_LEVELS), 0)
     );
 
-    gZenUIManager.updateTabsToolbar();
+    this.window.gZenUIManager.updateTabsToolbar();
   }
 
   #refreshToolbarVisibility() {
@@ -742,7 +757,7 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
       return;
     }
 
-    gZenUIManager.motion
+    this.window.gZenUIManager.motion
       .animate(
         this.mediaControlBar,
         {
@@ -755,11 +770,15 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
       )
       .then(() => {
         if (this.#hasVisibleCards) {
-          // A card re-appeared while the hide animation was running.
+          // A card re-appeared while the hide animation was running. The
+          // animation has left the bar transparent and shifted, and
+          // showMediaControls() will not touch a bar that is not hidden, so
+          // undo it here or the bar stays invisible for good.
+          this.#revealBar();
           return;
         }
         this.mediaControlBar.setAttribute("hidden", "true");
-        gZenUIManager.updateTabsToolbar();
+        this.window.gZenUIManager.updateTabsToolbar();
       });
   }
 
@@ -769,7 +788,7 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
     }
 
     this.mediaControlBar.removeAttribute("hidden");
-    window.requestAnimationFrame(() => {
+    this.window.requestAnimationFrame(() => {
       const front = this.frontCard;
       if (!front) {
         this.mediaControlBar.setAttribute("hidden", "true");
@@ -781,21 +800,31 @@ class nsZenMediaController extends nsZenDOMOperatedFeature {
         front.element.getBoundingClientRect().height + "px"
       );
       this.mediaControlBar.style.opacity = 0;
-      gZenUIManager.updateTabsToolbar();
-      gZenUIManager.motion.animate(
-        this.mediaControlBar,
-        {
-          opacity: [0, 1],
-          y: [10, 0],
-        },
-        {}
-      );
+      this.window.gZenUIManager.updateTabsToolbar();
+      this.#revealBar(0, 10);
 
       for (const card of this.#cards.values()) {
         card.updateLabelOverflows();
       }
     });
   }
-}
 
-window.gZenMediaController = new nsZenMediaController();
+  /**
+   * Animates the bar to its resting state. Used both when it first appears,
+   * sliding in from `opacityFrom`/`yFrom`, and to undo a hide that a card
+   * interrupted, where null starts from wherever the hide got to.
+   *
+   * @param {number|null} opacityFrom - Opacity to start from.
+   * @param {number|null} yFrom - Vertical offset to start from.
+   */
+  #revealBar(opacityFrom = null, yFrom = null) {
+    this.window.gZenUIManager.motion.animate(
+      this.mediaControlBar,
+      {
+        opacity: [opacityFrom, 1],
+        y: [yFrom, 0],
+      },
+      {}
+    );
+  }
+}

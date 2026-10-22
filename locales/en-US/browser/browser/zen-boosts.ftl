@@ -41,6 +41,7 @@ zen-zap-this = Zap this
 zen-zap-related = Zap all related elements
 zen-zap-cancel = Cancel
 zen-zap-done = Done
+zen-boost-focus = Focus
 zen-unzap-tooltip = 
     {
         $elementCount -> 

@@ -17,14 +17,10 @@
           id="context_zenChangeWorkspaceTheme"
           data-l10n-id="zen-workspaces-change-theme"
           command="cmd_zenOpenZenThemePicker"/>
-  <menu id="context_zenWorkspacesOpenInContainerTab"
+  <menuitem id="context_zenWorkspacesOpenInContainerTab"
     data-l10n-id="zen-workspaces-panel-context-default-profile"
-    selection-type="single"
-    node-type="link"
     hide-if-private-browsing="true"
-    hide-if-usercontext-disabled="true">
-    <menupopup />
-  </menu>
+    hide-if-usercontext-disabled="true"/>
   <menuseparator id="context_zenWorkspacesSeparator"/>
   <menuseparator/>
   <menuitem id="context_zenManageWorkspaces" data-l10n-id="zen-workspaces-panel-context-manage" command="cmd_zenManageWorkspaces"/>

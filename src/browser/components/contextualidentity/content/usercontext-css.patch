@@ -1,0 +1,13 @@
+diff --git a/browser/components/contextualidentity/content/usercontext.css b/browser/components/contextualidentity/content/usercontext.css
+index 2e89d7e1dda9af2fce559a13b55f09706621fa14..25f0be026b1c91e900d84647e5b3dcf821664130 100644
+--- a/browser/components/contextualidentity/content/usercontext.css
++++ b/browser/components/contextualidentity/content/usercontext.css
+@@ -2,6 +2,8 @@
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
++@import url("chrome://browser/content/usercontext/zen-container-icons.css");
++
+ /* Each container color carries a legacy literal (used when browser.nova.enabled
+    is off) and, when nova is on, refreshed design-system tokens. Kept in sync
+    with CONTAINER_COLORS in ContextualIdentityService: `code` matches the legacy

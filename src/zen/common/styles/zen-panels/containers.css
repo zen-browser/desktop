@@ -1,0 +1,464 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/* Zen profile (container) picker and editor, styled after the space
+   creation form. */
+
+#zen-container-picker {
+  --zen-container-field-background: light-dark(
+    rgba(0, 0, 0, 0.05),
+    rgba(255, 255, 255, 0.05)
+  );
+  --zen-container-field-hover: light-dark(
+    rgba(0, 0, 0, 0.1),
+    rgba(255, 255, 255, 0.1)
+  );
+  --zen-container-radius: calc(8px * var(--zen-squircle-value, 1));
+}
+
+[data-icon]::before {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background: center / 16px no-repeat;
+  -moz-context-properties: fill;
+  fill: currentColor;
+}
+
+[data-icon="add"]::before {
+  background-image: url("chrome://global/skin/icons/plus.svg");
+}
+[data-icon="settings"]::before {
+  background-image: url("chrome://global/skin/icons/settings.svg");
+}
+[data-icon="edit"]::before {
+  background-image: url("chrome://global/skin/icons/edit.svg");
+}
+[data-icon="delete"]::before {
+  background-image: url("chrome://global/skin/icons/delete.svg");
+}
+
+/* Container icon tinted with its color. */
+.zen-container-chip {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background-color: color-mix(
+    in srgb,
+    var(--identity-icon-color) 18%,
+    transparent
+  );
+  transition: background-color 0.15s;
+
+  & .userContext-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &.zen-container-chip-none {
+    background-color: var(--zen-container-field-background);
+    border: 1px dashed light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+    box-sizing: border-box;
+  }
+}
+
+/* ---- Picker panel ---- */
+
+#zen-container-picker {
+  --panel-padding: 0;
+
+  & .zen-container-picker-content {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    overflow: hidden;
+  }
+
+  & .zen-container-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 14px 16px 8px;
+
+    & h1 {
+      margin: 0;
+      font-size: large;
+      font-weight: 600;
+    }
+  }
+
+  & .zen-container-picker-back {
+    position: absolute;
+    inset-inline-start: 10px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      background: url("chrome://global/skin/icons/arrow-left.svg") center / 16px
+        no-repeat;
+      -moz-context-properties: fill;
+      fill: currentColor;
+    }
+
+    &:dir(rtl)::before {
+      transform: scaleX(-1);
+    }
+
+    &:hover {
+      background: var(--zen-container-field-hover);
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  & .zen-container-picker-view {
+    display: flex;
+    flex-direction: column;
+
+    &.slide-forward {
+      animation: zen-container-slide-forward 0.2s ease-out;
+    }
+
+    &.slide-back {
+      animation: zen-container-slide-back 0.2s ease-out;
+    }
+  }
+
+  & button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* List view */
+  & .zen-container-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 8px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  & .zen-container-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 6px;
+    border-radius: var(--zen-container-radius);
+    cursor: default;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--zen-container-field-hover);
+      outline: none;
+    }
+
+    &[aria-selected="true"] {
+      background: var(--zen-container-field-background);
+    }
+  }
+
+  & .zen-container-picker-row-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  & .zen-container-picker-row-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .zen-container-picker-check {
+    width: 16px;
+    height: 16px;
+    background: url("chrome://global/skin/icons/check.svg") center / 16px
+      no-repeat;
+    -moz-context-properties: fill;
+    fill: var(--color-accent-primary);
+  }
+
+  & .zen-container-picker-row-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  &
+    .zen-container-picker-row:is(:hover, :focus-within)
+    .zen-container-picker-row-actions {
+    opacity: 1;
+  }
+
+  & .zen-container-picker-icon-button {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+
+    &:hover {
+      background: var(--zen-container-field-hover);
+      opacity: 1;
+    }
+  }
+
+  & .zen-container-picker-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 8px 8px;
+    border-top: 1px solid
+      light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+    margin-top: 4px;
+  }
+
+  & .zen-container-picker-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 34px;
+    padding: 0 12px;
+    border: none;
+    border-radius: var(--zen-container-radius);
+    background: transparent;
+    text-align: start;
+    opacity: 0.8;
+
+    &:hover {
+      background: var(--zen-container-field-hover);
+      opacity: 1;
+    }
+  }
+
+  /* Editor / delete footers */
+  & .zen-container-picker-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 16px 16px;
+  }
+
+  &
+    :is(
+      .zen-container-picker-primary,
+      .zen-container-picker-secondary,
+      .zen-container-picker-danger
+    ) {
+    min-height: 34px;
+    border: none;
+    border-radius: var(--zen-container-radius);
+  }
+
+  & .zen-container-picker-primary {
+    background: var(--color-accent-primary);
+    color: var(--button-text-color-primary);
+
+    &:disabled {
+      opacity: 0.4;
+    }
+  }
+
+  & .zen-container-picker-danger {
+    background: var(--color-red-60, #e22850);
+    color: white;
+  }
+
+  & .zen-container-picker-secondary {
+    background: transparent;
+    opacity: 0.7;
+
+    &:hover {
+      background: var(--zen-container-field-hover);
+      opacity: 1;
+    }
+  }
+
+  /* Delete view */
+  & .zen-container-picker-delete {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    padding: 8px 20px 16px;
+
+    & .zen-container-chip {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+
+      & .userContext-icon {
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    & p {
+      margin: 0;
+    }
+  }
+
+  & .zen-container-picker-delete-message {
+    font-weight: 600;
+    margin-top: 6px !important;
+  }
+
+  & .zen-container-picker-delete-description {
+    opacity: 0.6;
+  }
+}
+
+@keyframes zen-container-slide-forward {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes zen-container-slide-back {
+  from {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #zen-container-picker .zen-container-picker-view {
+    animation: none !important;
+  }
+}
+
+/* ---- Editor ---- */
+
+.zen-container-editor {
+  padding: 4px 16px 16px !important;
+  gap: 10px !important;
+
+  & .zen-container-editor-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: var(--zen-container-radius);
+    background-color: var(--zen-container-field-background);
+
+    &:focus-within {
+      outline: 2px solid
+        var(--zen-colors-border-contrast, var(--focus-outline-color));
+      outline-offset: -2px;
+    }
+
+    & moz-input-text {
+      flex: 1;
+      --input-text-border: none;
+      --input-text-background-color: transparent;
+      --input-text-min-height: 28px;
+      --focus-outline: none;
+
+      &::part(label) {
+        /* Visually hidden, kept for screen readers. */
+        position: absolute;
+        clip-path: inset(50%);
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+    }
+  }
+
+  & .swatches {
+    padding: 8px;
+    border-radius: var(--zen-container-radius);
+    background-color: var(--zen-container-field-background);
+
+    &::part(label) {
+      font-weight: 500 !important;
+      font-size: small;
+      opacity: 0.6;
+      margin-block-end: 6px;
+    }
+
+    &::part(inputs) {
+      display: grid;
+      justify-content: space-between;
+      justify-items: center;
+      gap: 4px;
+    }
+  }
+
+  & .color-swatches::part(inputs) {
+    grid-template-columns: repeat(6, auto);
+  }
+
+  & .icon-swatches::part(inputs) {
+    grid-template-columns: repeat(8, auto);
+    max-height: 132px;
+    overflow-y: auto;
+    padding-inline-end: 2px;
+  }
+
+  & .swatch {
+    --visual-picker-item-border-radius: 6px;
+    inline-size: 26px !important;
+    block-size: 26px !important;
+
+    &:hover {
+      --visual-picker-item-background-color: var(--zen-container-field-hover);
+    }
+  }
+
+  & .color-swatches .swatch {
+    inline-size: 30px !important;
+    block-size: 30px !important;
+    --visual-picker-item-border-radius: 50%;
+  }
+
+  & .color-swatches .userContext-icon {
+    background-image: none !important;
+    background-color: var(--identity-icon-color);
+    border-radius: 50%;
+    inline-size: 16px !important;
+    block-size: 16px !important;
+    margin: auto;
+  }
+
+  & .icon-swatches .userContext-icon {
+    background-size: 14px !important;
+    fill: currentColor;
+    opacity: 0.8;
+  }
+}

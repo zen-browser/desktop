@@ -1,31 +1,96 @@
 diff --git a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
-index 9868c288653b83717afb0403901c8adc0058bd4d..acc42f8c11c2467f19931f619496ac619fd21726 100644
+index 9868c288653b83717afb0403901c8adc0058bd4d..e6993c103d1231a2d2f8b160a6abbc3aa597bfde 100644
 --- a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
 +++ b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
-@@ -4,7 +4,6 @@
+@@ -2,10 +2,7 @@
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
- import { ContainerEditor } from "chrome://browser/content/usercontext/ContainerEditor.mjs";
- 
+-import { ContainerEditor } from "chrome://browser/content/usercontext/ContainerEditor.mjs";
+-
 -const ANCHOR_ID = "userContext-icons";
- const ANCHOR_PINNED_CLASS = "container-anchor-pinned";
+-const ANCHOR_PINNED_CLASS = "container-anchor-pinned";
++import { ZenContainerPicker } from "chrome://browser/content/zen-components/ZenContainerPicker.mjs";
  
  const lazy = {};
-@@ -80,7 +79,9 @@ export const ContainerCreationPanel = {
-     createButton.addEventListener("click", onCreate);
-     cancelButton.addEventListener("click", onCancel);
  
--    let anchor = doc.getElementById(ANCHOR_ID);
-+    let anchor = win.gZenWorkspaces.activeWorkspaceStrip.querySelector(
-+      "#tabs-newtab-button"
-+    );
+@@ -13,19 +10,9 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+ });
  
-     panel.addEventListener("popupshown", () => editor.focus(), { once: true });
-     panel.addEventListener(
-@@ -99,6 +100,6 @@ export const ContainerCreationPanel = {
-       anchor.hidden = false;
+-function unpinAnchor(anchor) {
+-  if (!anchor.classList.contains(ANCHOR_PINNED_CLASS)) {
+-    return;
+-  }
+-  anchor.hidden = true;
+-  anchor.classList.remove(ANCHOR_PINNED_CLASS);
+-}
+-
+ /**
+- * Shared entry point for the "Add new container" menu items. Shows a panel,
+- * hosting the same editor as the about:preferences container dialog, anchored
+- * to the URL-bar container indicator (revealing it temporarily when the
+- * current tab has no container).
++ * Shared entry point for the "Add new container" menu items. Zen shows its own
++ * container picker, opened straight into the editor.
+  */
+ export const ContainerCreationPanel = {
+   /**
+@@ -49,56 +36,8 @@ export const ContainerCreationPanel = {
+       win.focus();
      }
  
+-    let doc = win.document;
+-
+-    let panel = doc.getElementById("containerCreation-panel");
+-    if (panel.state == "open" || panel.state == "showing") {
+-      return;
+-    }
+-
+     Glean.containers.addContainerClicked.record({ source: entrypoint });
+ 
+-    let body = doc.getElementById("containerCreation-panel-body");
+-    body.replaceChildren();
+-    let editor = new ContainerEditor(body);
+-    editor.render();
+-
+-    let createButton = doc.getElementById("containerCreation-create-button");
+-    let cancelButton = doc.getElementById("containerCreation-cancel-button");
+-
+-    let updateValidity = () => {
+-      createButton.disabled = !editor.isValid;
+-    };
+-    editor.form.addEventListener("input", updateValidity);
+-    updateValidity();
+-
+-    let onCreate = () => {
+-      editor.commit();
+-      panel.hidePopup();
+-    };
+-    let onCancel = () => panel.hidePopup();
+-    createButton.addEventListener("click", onCreate);
+-    cancelButton.addEventListener("click", onCancel);
+-
+-    let anchor = doc.getElementById(ANCHOR_ID);
+-
+-    panel.addEventListener("popupshown", () => editor.focus(), { once: true });
+-    panel.addEventListener(
+-      "popuphidden",
+-      () => {
+-        createButton.removeEventListener("click", onCreate);
+-        cancelButton.removeEventListener("click", onCancel);
+-        body.replaceChildren();
+-        unpinAnchor(anchor);
+-      },
+-      { once: true }
+-    );
+-
+-    if (anchor.hidden) {
+-      anchor.classList.add(ANCHOR_PINNED_CLASS);
+-      anchor.hidden = false;
+-    }
+-
 -    panel.openPopup(anchor, "bottomright topright");
-+    panel.openPopup(anchor, win.gZenUIManager.panelUIPosition(panel, anchor));
++    ZenContainerPicker.open(win, { view: "create" });
    },
  };

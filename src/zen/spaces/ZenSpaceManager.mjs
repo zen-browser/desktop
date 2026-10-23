@@ -10,6 +10,8 @@ import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  ZenContainerPicker:
+    "chrome://browser/content/zen-components/ZenContainerPicker.mjs",
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
@@ -1320,10 +1322,6 @@ class nsZenWorkspaces {
       "context_zenWorkspacesOpenInContainerTab"
     );
     contextChangeContainerTabMenu.addEventListener(
-      "popupshowing",
-      this.updateWorkspaceActionsMenuContainer.bind(this)
-    );
-    contextChangeContainerTabMenu.addEventListener(
       "command",
       this.contextChangeContainerTab.bind(this)
     );
@@ -1425,29 +1423,6 @@ class nsZenWorkspaces {
       },
       { once: true }
     );
-  }
-
-  updateWorkspaceActionsMenuContainer(event) {
-    let workspace;
-    if (this.#contextMenuData?.workspaceId) {
-      workspace = this.getWorkspaceFromId(this.#contextMenuData.workspaceId);
-    } else {
-      workspace = this.getActiveWorkspaceFromCache();
-    }
-    let containerTabId = workspace.containerTabId;
-    window.createUserContextMenu(event, {
-      isContextMenu: true,
-      excludeUserContextId: containerTabId,
-      showDefaultTab: true,
-    });
-
-    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
-    if (defaultItem) {
-      defaultItem.removeAttribute("data-l10n-id");
-      defaultItem.label = lazy.l10n.formatValueSync(
-        "zen-workspace-default-profile"
-      );
-    }
   }
 
   saveWorkspace(workspaceData, { insertAfterId = null } = {}) {
@@ -3178,18 +3153,26 @@ class nsZenWorkspaces {
   }
 
   // Context menu management
-  async contextChangeContainerTab(event) {
-    this._organizingWorkspaceStrip = true;
-    let workspaces = this.getWorkspaces();
-    let workspace = workspaces.find(
-      w =>
-        w.uuid === (this.#contextMenuData?.workspaceId || this.activeWorkspace)
-    );
-    let userContextId = parseInt(
-      event.target.getAttribute("data-usercontextid")
-    );
-    workspace.containerTabId = userContextId + 0; // +0 to convert to number
-    this.saveWorkspace(workspace);
+  contextChangeContainerTab() {
+    const workspaceId =
+      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    const workspace = this.getWorkspaceFromId(workspaceId);
+    if (!workspace) {
+      return;
+    }
+    lazy.ZenContainerPicker.open(window, {
+      anchor: this.workspaceElement(workspaceId)?.indicator,
+      selectedId: workspace.containerTabId ?? 0,
+      onSelect: userContextId => {
+        const current = this.getWorkspaceFromId(workspaceId);
+        if (!current) {
+          return;
+        }
+        this._organizingWorkspaceStrip = true;
+        current.containerTabId = userContextId + 0; // +0 to convert to number
+        this.saveWorkspace(current);
+      },
+    });
   }
 
   async closeAllUnpinnedTabs() {

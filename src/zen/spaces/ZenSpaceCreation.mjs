@@ -4,6 +4,13 @@
 
 const lazy = {};
 
+ChromeUtils.defineESModuleGetters(lazy, {
+  ContextualIdentityService:
+    "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
+  ZenContainerPicker:
+    "chrome://browser/content/zen-components/ZenContainerPicker.mjs",
+});
+
 ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
   return new Localization(["browser/zen-workspaces.ftl"], true);
 });
@@ -61,7 +68,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
                 class="zen-workspace-creation-edit-theme-button"
                 data-l10n-id="zen-workspaces-change-theme"
                 command="cmd_zenOpenZenThemePicker" />
-              <menupopup class="zen-workspace-creation-profiles-popup" />
             </vbox>
             <vbox class="zen-workspace-creation-buttons">
               <html:div>
@@ -238,22 +244,10 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     this.inputIcon.addEventListener("command", this.onIconCommand.bind(this));
 
-    this.profilesPopup = this.querySelector(
-      ".zen-workspace-creation-profiles-popup"
-    );
-
     if (gZenWorkspaces.shouldShowContainers) {
       this.inputProfile.addEventListener(
         "command",
         this.onProfileCommand.bind(this)
-      );
-      this.profilesPopup.addEventListener(
-        "popupshowing",
-        this.onProfilePopupShowing.bind(this)
-      );
-      this.profilesPopup.addEventListener(
-        "command",
-        this.onProfilePopupCommand.bind(this)
       );
 
       this.currentProfile = {
@@ -325,36 +319,18 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   onProfileCommand(event) {
-    this.profilesPopup.openPopup(event.target, "after_start");
-  }
-
-  onProfilePopupShowing(event) {
-    window.createUserContextMenu(event, {
-      isContextMenu: true,
-      showDefaultTab: true,
-      showManageContainers: false,
+    lazy.ZenContainerPicker.open(window, {
+      anchor: event.target,
+      selectedId: this.currentProfile ?? 0,
+      onSelect: userContextId => {
+        this.currentProfile = {
+          id: userContextId,
+          name: userContextId
+            ? lazy.ContextualIdentityService.getUserContextLabel(userContextId)
+            : lazy.l10n.formatValueSync("zen-workspace-default-profile"),
+        };
+      },
     });
-
-    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
-    if (defaultItem) {
-      defaultItem.removeAttribute("data-l10n-id");
-      defaultItem.label = lazy.l10n.formatValueSync(
-        "zen-workspace-default-profile"
-      );
-    }
-  }
-
-  onProfilePopupCommand(event) {
-    let userContextId = parseInt(
-      event.target.getAttribute("data-usercontextid")
-    );
-    if (isNaN(userContextId)) {
-      return;
-    }
-    this.currentProfile = {
-      id: userContextId,
-      name: event.target.label,
-    };
   }
 
   finishSetup() {

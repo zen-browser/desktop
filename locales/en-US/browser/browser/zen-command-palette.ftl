@@ -12,6 +12,7 @@ zen-action-new-folder = New Folder
 zen-action-collapse-all-folders = Collapse All Folders
 zen-action-expand-all-folders = Expand All Folders
 zen-action-copy-current-url = Copy Current URL
+zen-action-copy-current-url-markdown = Copy Current URL as Markdown
 zen-action-settings = Settings
 zen-action-open-private-window = Open Private Window
 zen-action-open-new-window = Open New Window

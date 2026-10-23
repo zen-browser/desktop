@@ -101,6 +101,14 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/link.svg",
   },
   {
+    l10nId: "zen-action-copy-current-url-markdown",
+    command: "cmd_zenCopyCurrentURLMarkdown",
+    icon: "chrome://browser/skin/zen-icons/link.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
     l10nId: "zen-action-settings",
     command: window => window.openPreferences(),
     icon: "chrome://browser/skin/zen-icons/settings.svg",

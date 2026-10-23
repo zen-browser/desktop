@@ -5,8 +5,7 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
-  NetworkHelper:
-    "resource://devtools/shared/network-observer/NetworkHelper.sys.mjs",
+  NetworkHelper: "resource://devtools/shared/network-observer/NetworkHelper.sys.mjs",
 });
 
 export class nsZenLiveFolderProvider {
@@ -136,10 +135,7 @@ export class nsZenLiveFolderProvider {
         userContextId = space.containerTabId || 0;
       }
     }
-    const principal = Services.scriptSecurityManager.createContentPrincipal(
-      uri,
-      { userContextId }
-    );
+    const principal = Services.scriptSecurityManager.createContentPrincipal(uri, { userContextId });
 
     const channel = lazy.NetUtil.newChannel({
       uri,
@@ -150,13 +146,20 @@ export class nsZenLiveFolderProvider {
       contentPolicyType: Ci.nsIContentPolicy.TYPE_SAVEAS_DOWNLOAD,
       loadingPrincipal: principal,
       securityFlags:
-        Ci.nsILoadInfo.SEC_ALLOW_CROSS_ORIGIN_SEC_CONTEXT_IS_NULL |
-        Ci.nsILoadInfo.SEC_COOKIES_INCLUDE,
+        Ci.nsILoadInfo.SEC_REQUIRE_CORS_INHERITS_SEC_CONTEXT | Ci.nsILoadInfo.SEC_COOKIES_INCLUDE,
       triggeringPrincipal: principal,
     }).QueryInterface(Ci.nsIHttpChannel);
 
-    for (const [name, value] of Object.entries(headers)) {
-      channel.setRequestHeader(name, value, false);
+    if (headers && typeof headers === "object") {
+      for (const [key, value] of Object.entries(headers)) {
+        if (key && value != null && typeof value === "string") {
+          try {
+            channel.setRequestHeader(key, value, false);
+          } catch (ex) {
+            // Ignore invalid or forbidden headers
+          }
+        }
+      }
     }
 
     let httpStatus = null;
@@ -177,7 +180,7 @@ export class nsZenLiveFolderProvider {
           byteChunks.push(lazy.NetUtil.readInputStream(stream, count));
         }
       },
-      onStartRequest: request => {
+      onStartRequest: (request) => {
         const http = request.QueryInterface(Ci.nsIHttpChannel);
 
         try {
@@ -190,10 +193,7 @@ export class nsZenLiveFolderProvider {
           contentType = http.getResponseHeader("content-type");
         } catch (ex) {}
 
-        if (
-          contentType &&
-          !lazy.NetworkHelper.isTextMimeType(contentType.split(";")[0].trim())
-        ) {
+        if (contentType && !lazy.NetworkHelper.isTextMimeType(contentType.split(";")[0].trim())) {
           request.cancel(Cr.NS_ERROR_FILE_UNKNOWN_TYPE);
         }
 
@@ -226,9 +226,7 @@ export class nsZenLiveFolderProvider {
 
         let effectiveCharset = "utf-8";
 
-        const mimeType = contentType
-          ? contentType.split(";")[0].trim().toLowerCase()
-          : "";
+        const mimeType = contentType ? contentType.split(";")[0].trim().toLowerCase() : "";
         if (mimeType === "text/html") {
           effectiveCharset = this.sniffCharset(bytes, headerCharset);
         } else if (headerCharset) {
@@ -265,12 +263,7 @@ export class nsZenLiveFolderProvider {
    */
   sniffCharset(bytes, headerCharset = "") {
     // 1. BOM detection (highest priority)
-    if (
-      bytes.length >= 3 &&
-      bytes[0] === 0xef &&
-      bytes[1] === 0xbb &&
-      bytes[2] === 0xbf
-    ) {
+    if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) {
       return "utf-8";
     }
     if (bytes.length >= 2) {
@@ -287,9 +280,7 @@ export class nsZenLiveFolderProvider {
     // is more likely to be correct.
     try {
       const headLen = Math.min(bytes.length, 8192);
-      const head = new TextDecoder("windows-1252").decode(
-        bytes.subarray(0, headLen)
-      );
+      const head = new TextDecoder("windows-1252").decode(bytes.subarray(0, headLen));
 
       const metaCharsetRegex = /<meta\s+charset\s*=\s*["']?([a-z0-9_-]+)/i;
       let match = head.match(metaCharsetRegex);

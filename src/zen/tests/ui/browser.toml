@@ -13,6 +13,8 @@ support-files = [
   "slow_load.sjs",
 ]
 
+["browser_icon_picker.js"]
+
 ["browser_tab_loading_indicator.js"]
 
 ["browser_tab_renamer.js"]

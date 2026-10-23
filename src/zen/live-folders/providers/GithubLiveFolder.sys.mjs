@@ -7,6 +7,8 @@ import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.s
 export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "github";
 
+  #consecutiveEmptyFetches = 0;
+
   constructor({ id, state, manager }) {
     super({ id, state, manager });
 
@@ -104,7 +106,20 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         }
       }
 
-      this.state.repos = combinedActiveRepos;
+      // A 200 with an empty result set is indistinguishable from a session that
+      // lost access to the repositories, so only trust a second empty fetch.
+      if (combinedItems.size) {
+        this.#consecutiveEmptyFetches = 0;
+      } else if (this.state.repos.size && ++this.#consecutiveEmptyFetches < 2) {
+        return "zen-live-folder-failed-fetch";
+      }
+
+      // Never drop the known repositories on an empty fetch, or the repository
+      // filter submenu stays disabled until some later fetch returns items.
+      if (combinedActiveRepos.size) {
+        this.state.repos = combinedActiveRepos;
+      }
+
       return Array.from(combinedItems.values());
     } catch (error) {
       console.error("Error fetching or parsing GitHub issues:", error);

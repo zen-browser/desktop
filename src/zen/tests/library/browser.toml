@@ -9,6 +9,8 @@ prefs = [
 
 ["browser_library_closed_tab_icon.js"]
 
+["browser_library_customize_tabs.js"]
+
 ["browser_library_download_click.js"]
 
 ["browser_library_download_speed.js"]
@@ -18,5 +20,7 @@ prefs = [
 ["browser_library_rapid_toggle.js"]
 
 ["browser_library_sidebar_theme.js"]
+
+["browser_library_space_routing.js"]
 
 ["browser_library_toggle_sidebar_width.js"]

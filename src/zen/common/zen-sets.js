@@ -59,7 +59,7 @@
     cmd_zenUnloadAllOtherWorkspace: () =>
       gZenWorkspaces.unloadAllOtherWorkspaces(),
     cmd_zenOpenSpaceRoutingSettings: () =>
-      gZenSpaceRoutingManager.openSpaceRoutingDialog(window),
+      gZenSpaceRoutingManager.openSpaceRoutingSettings(window),
 
     // Split view
     cmd_zenSplitViewGrid: () => gZenViewSplitter.toggleShortcut("grid"),

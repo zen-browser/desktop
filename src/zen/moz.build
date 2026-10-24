@@ -15,6 +15,7 @@ DIRS += [
     "library",
     "live-folders",
     "media",
+    "migration",
     "mods",
     "tests",
     "urlbar",

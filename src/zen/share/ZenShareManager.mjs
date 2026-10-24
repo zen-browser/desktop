@@ -729,16 +729,21 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     if (item.icon && FOLDER_ICON_RE.test(item.icon)) {
       gZenFolders.setFolderUserIcon(folder, item.icon);
     }
-    for (const child of item.items) {
-      if (child.type === "tab") {
-        const tab = this.#importTab(child, workspaceId);
-        gBrowser.pinTab(tab);
-        folder.addTabs([tab]);
-      } else if (child.type === "folder") {
-        this.#importFolder(child, workspaceId, folder);
-      } else if (child.type === "splitView") {
-        this.#importSplitView(child, workspaceId, folder);
+    folder.creating = true;
+    try {
+      for (const child of item.items) {
+        if (child.type === "tab") {
+          const tab = this.#importTab(child, workspaceId);
+          gBrowser.pinTab(tab);
+          folder.addTabs([tab]);
+        } else if (child.type === "folder") {
+          this.#importFolder(child, workspaceId, folder);
+        } else if (child.type === "splitView") {
+          this.#importSplitView(child, workspaceId, folder);
+        }
       }
+    } finally {
+      folder.creating = false;
     }
     return folder;
   }
@@ -762,8 +767,6 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     gZenViewSplitter.splitTabs(tabs, "grid", -1);
   }
 
-  // Deterministic placement at the end of the right section;
-  // moveTabToWorkspace's anchor follows the new-tab-button position pref.
   #placeTab(tab, workspaceId, pinned) {
     const element = gZenWorkspaces.workspaceElement(workspaceId);
     const container = pinned
@@ -784,6 +787,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       inBackground: true,
       skipAnimation: true,
       skipBackgroundNotify: true,
+      noInitialLabel: true,
       lazyTabTitle: item.label || undefined,
       skipRoute: true,
     });

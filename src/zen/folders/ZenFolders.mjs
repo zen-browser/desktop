@@ -384,7 +384,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         ...new Set([...parentFolder.activeTabs, ...folder.tabs]),
       ].sort((a, b) => a.index - b.index);
     }
-    parentFolder.collapsed = isActiveFolder;
+    if (!parentFolder.creating) {
+      parentFolder.collapsed = isActiveFolder;
+    }
   }
 
   on_FolderUngrouped(event) {
@@ -510,6 +512,23 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     this.#collapsedRelayoutQueue.add(group);
   }
 
+  relayoutCollapsedFolders() {
+    const depth = group => {
+      let level = 0;
+      for (let owner = group.group; owner?.isZenFolder; owner = owner.group) {
+        level++;
+      }
+      return level;
+    };
+    // Deepest first, so a parent measures its children already collapsed.
+    const folders = gBrowser.tabGroups
+      .filter(group => group.isZenFolder && group.collapsed)
+      .sort((a, b) => depth(b) - depth(a));
+    for (const group of folders) {
+      this.#queueCollapsedRelayout(group);
+    }
+  }
+
   #flushCollapsedRelayout() {
     if (this.#animationCount) {
       // A collapse/expand animation is mid-flight and writes margins when it
@@ -530,16 +549,23 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       }
       const container = group.groupContainer;
       const groupStart = group.groupStartElement;
-      const wasHidden = container.hasAttribute("hidden");
-      container.removeAttribute("hidden");
+      // A folder inside a collapsed one measures nothing while any container
+      // up the chain is hidden.
+      const hiddenContainers = [];
+      for (let folder = group; folder?.isZenFolder; folder = folder.group) {
+        if (folder.groupContainer.hasAttribute("hidden")) {
+          hiddenContainers.push(folder.groupContainer);
+          folder.groupContainer.removeAttribute("hidden");
+        }
+      }
       groupStart.style.marginTop = "0px";
       let height = container.getBoundingClientRect().height;
       if (container.separatorElement) {
         height -= container.separatorElement.getBoundingClientRect().height;
       }
       groupStart.style.marginTop = `${-(height + this.collapsedMarginOffset)}px`;
-      if (wasHidden) {
-        container.setAttribute("hidden", true);
+      for (const hidden of hiddenContainers) {
+        hidden.setAttribute("hidden", true);
       }
     }
   }

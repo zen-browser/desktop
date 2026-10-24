@@ -64,6 +64,12 @@ class ZenStartup {
       // overlap and interaction issues with vertical tabs
       document.getElementById("browser").prepend(deckTemplate);
 
+      // global notifications (e.g. captive portal) live in this toolbar, keep it
+      // out of the sidebar so compact mode doesn't hide them along with it
+      document
+        .getElementById("browser")
+        .prepend(document.getElementById("notifications-toolbar"));
+
       gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
         this.#checkForWelcomePage();

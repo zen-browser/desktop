@@ -1535,6 +1535,21 @@ class nsZenWorkspaces {
         visibleWorkspaces[index - 1] ?? visibleWorkspaces[index + 1]
       );
     }
+    if (
+      Services.prefs.getStringPref("zen.workspaces.archive.normal-tabs") ===
+      "close"
+    ) {
+      const tabsToClose = this.allStoredTabs.filter(
+        tab =>
+          tab.getAttribute("zen-workspace-id") === aWorkspaceId &&
+          !tab.pinned &&
+          !tab.hasAttribute("zen-empty-tab") &&
+          !tab.hasAttribute("zen-essential")
+      );
+      gBrowser.removeTabs(tabsToClose, { closeWindowWithLastTab: false });
+    }
+    // Pinned tabs, and normal ones unless they were just closed, stay around
+    // without taking up memory.
     const tabsToUnload = this.#unloadableWorkspaceTabs(aWorkspaceId);
     if (tabsToUnload.length) {
       await gBrowser.explicitUnloadTabs(tabsToUnload);
@@ -1819,6 +1834,7 @@ class nsZenWorkspaces {
     return this.allStoredTabs.filter(
       tab =>
         tab.getAttribute("zen-workspace-id") === workspaceId &&
+        !tab.closing &&
         !tab.hasAttribute("zen-empty-tab") &&
         !tab.hasAttribute("zen-essential") &&
         !tab.hasAttribute("pending")

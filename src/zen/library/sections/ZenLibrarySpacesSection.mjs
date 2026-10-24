@@ -1087,16 +1087,83 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     `;
   }
 
+  #renderArchivedSpace(workspace) {
+    const hasIcon = gZenWorkspaces.workspaceHasIcon(workspace);
+    const icon = gZenWorkspaces.getWorkspaceIcon(workspace);
+    return html`
+      <div class="zen-library-archived-space" data-uuid=${workspace.uuid}>
+        <span class="zen-library-archived-space-icon" ?no-icon=${!hasIcon}>
+          ${
+            icon?.endsWith(".svg")
+              ? html`<img src=${icon} draggable="false" alt="" />`
+              : icon
+          }
+        </span>
+        <span class="zen-library-archived-space-name">${workspace.name}</span>
+        <toolbarbutton
+          class="toolbarbutton-1 zen-library-archived-space-restore"
+          data-l10n-id="library-spaces-archived-restore-button"
+          @click=${() => gZenWorkspaces.restoreWorkspace(workspace.uuid)}
+        >
+          <img
+            class="toolbarbutton-icon"
+            src="chrome://browser/skin/zen-icons/back.svg"
+            draggable="false"
+            alt=""
+          />
+        </toolbarbutton>
+        <toolbarbutton
+          class="toolbarbutton-1 zen-library-archived-space-delete"
+          data-l10n-id="library-spaces-archived-delete-button"
+          @click=${() =>
+            gZenWorkspaces.confirmAndRemoveWorkspace(workspace.uuid)}
+        >
+          <img
+            class="toolbarbutton-icon"
+            src="chrome://browser/skin/zen-icons/trash.svg"
+            draggable="false"
+            alt=""
+          />
+        </toolbarbutton>
+      </div>
+    `;
+  }
+
+  #renderArchived() {
+    const archived = gZenWorkspaces
+      .getWorkspaces()
+      .filter(workspace => gZenWorkspaces.isWorkspaceArchived(workspace));
+    if (!archived.length) {
+      return null;
+    }
+    return html`
+      <div class="zen-library-archived-spaces">
+        <h2
+          class="zen-library-archived-spaces-title"
+          data-l10n-id="library-spaces-archived-title"
+        ></h2>
+        <div class="zen-library-archived-spaces-list">
+          ${repeat(
+            archived,
+            workspace => workspace.uuid,
+            workspace => this.#renderArchivedSpace(workspace)
+          )}
+        </div>
+      </div>
+    `;
+  }
+
   render() {
     return html`
       <div class="zen-library-spaces">
         ${repeat(
-          gZenWorkspaces.getWorkspaces(),
+          gZenWorkspaces.getVisibleWorkspaces(),
           workspace => workspace.uuid,
           workspace => this.#renderSpace(workspace)
         )}
         ${this.#renderPlusButton()}
       </div>
+      ${this.#renderArchived()}
     `;
   }
 }

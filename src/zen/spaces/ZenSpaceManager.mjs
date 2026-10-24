@@ -3373,8 +3373,12 @@ class nsZenWorkspaces {
   }
 
   async contextDeleteWorkspace() {
-    const workspaceId =
-      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    await this.confirmAndRemoveWorkspace(
+      this.#contextMenuData?.workspaceId || this.activeWorkspace
+    );
+  }
+
+  async confirmAndRemoveWorkspace(workspaceId) {
     const [title, body] = await document.l10n.formatValues([
       { id: "zen-workspaces-delete-workspace-title" },
       {

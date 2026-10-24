@@ -183,6 +183,11 @@ library-spaces-icon-button =
     .title = Change icon
 library-spaces-name-button =
     .title = Rename space
+library-spaces-archived-title = Archived
+library-spaces-archived-restore-button =
+    .tooltiptext = Restore space
+library-spaces-archived-delete-button =
+    .tooltiptext = Delete space
 
 library-boosts-search-placeholder =
     .placeholder = Search Boosts…

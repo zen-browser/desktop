@@ -12,6 +12,8 @@ support-files = [
 
 ["browser_archive_basic.js"]
 
+["browser_archive_library.js"]
+
 ["browser_archive_navigation.js"]
 
 ["browser_archive_tab_policy.js"]

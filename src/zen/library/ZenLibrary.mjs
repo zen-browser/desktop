@@ -626,7 +626,7 @@ export class ZenLibrary extends MozLitElement {
    * @returns {boolean} True if library can be swiped
    */
   static readySwipeOpenLibrary() {
-    const spaces = gZenWorkspaces.getWorkspaces();
+    const spaces = gZenWorkspaces.getVisibleWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
     const libraryOnRight = this.libraryOnRight;

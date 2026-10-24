@@ -1,8 +1,34 @@
 diff --git a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-index 65bd41b2ea14c26d490632d4a5348d6cf33ee9dd..80fbd685156949b6c7e93ed9d0ef56350dd1a0fe 100644
+index 3bbff611a8542826980bb14a1560a61df382c3ee..3fd8c20fa92d0436510c4b03fd93325e6b962adf 100644
 --- a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
 +++ b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-@@ -925,11 +925,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -14,6 +14,7 @@ import {
+ const lazy = {};
+ 
+ ChromeUtils.defineESModuleGetters(lazy, {
++  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+   QuickSuggest: "moz-src:///browser/components/urlbar/QuickSuggest.sys.mjs",
+   SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
+   UrlbarPrefs: "moz-src:///browser/components/urlbar/UrlbarPrefs.sys.mjs",
+@@ -806,6 +807,17 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+       return false;
+     }
+ 
++    // Don't suggest switching to tabs that only archived spaces hold.
++    if (
++      result.type == lazy.UrlbarShared.RESULT_TYPE.TAB_SWITCH &&
++      lazy.BrowserWindowTracker.getTopWindow()?.gZenWorkspaces?.isUrlOnlyInArchivedSpaces?.(
++        result.payload.url,
++        result.payload.userContext?.id
++      )
++    ) {
++      return false;
++    }
++
+     // Typically the first visible Suggest result is always added.
+     if (result.providerName == lazy.UrlbarProviderQuickSuggest.name) {
+       if (result.isHiddenExposure) {
+@@ -922,11 +934,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
        result.providerName == "UrlbarProviderHeuristicFallback" &&
        state.context.heuristicResult?.providerName !=
          "UrlbarProviderHeuristicFallback"
@@ -19,7 +45,7 @@ index 65bd41b2ea14c26d490632d4a5348d6cf33ee9dd..80fbd685156949b6c7e93ed9d0ef5635
        // Discard the result if a tab-to-search result was added already.
        if (!state.canAddTabToSearch) {
          return false;
-@@ -1593,7 +1598,9 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -1585,7 +1602,9 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
        usedLimits.maxResultCount++;
      }
  

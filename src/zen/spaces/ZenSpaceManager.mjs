@@ -831,6 +831,37 @@ class nsZenWorkspaces {
     );
   }
 
+  /**
+   * Whether every open tab showing this URL lives in an archived space, so a
+   * switch-to-tab suggestion for it would only lead into the archive.
+   *
+   * @param {string} aUrl - The URL of the open tab
+   * @param {number} [aUserContextId] - The container the tab is open in
+   * @returns {boolean} True if only archived spaces hold such a tab
+   */
+  isUrlOnlyInArchivedSpaces(aUrl, aUserContextId = 0) {
+    let found = false;
+    for (const tab of this.allStoredTabs) {
+      if (
+        tab.linkedBrowser?.currentURI?.spec !== aUrl ||
+        (tab.userContextId ?? 0) !== (aUserContextId ?? 0)
+      ) {
+        continue;
+      }
+      const workspace = this.getWorkspaceFromId(
+        tab.getAttribute("zen-workspace-id")
+      );
+      if (
+        tab.hasAttribute("zen-essential") ||
+        !this.isWorkspaceArchived(workspace)
+      ) {
+        return false;
+      }
+      found = true;
+    }
+    return found;
+  }
+
   getWorkspacesForSessionStore() {
     const spaces = this.getWorkspaces();
     let spacesForSS = [];

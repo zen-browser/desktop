@@ -1562,3 +1562,12 @@ zen-library-history-section {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.zen-library-routing-archived {
+  padding: 1px 6px;
+  border-radius: var(--border-radius-small);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: 11px;
+  opacity: 0.7;
+  white-space: nowrap;
+}

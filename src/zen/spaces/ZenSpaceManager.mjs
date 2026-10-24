@@ -3478,7 +3478,7 @@ class nsZenWorkspaces {
       !fromExternal
     ) {
       // Find all workspaces that match the given userContextId
-      const matchingWorkspaces = this._workspaceCache.filter(
+      const matchingWorkspaces = this.getVisibleWorkspaces().filter(
         workspace => workspace.containerTabId === userContextId
       );
 

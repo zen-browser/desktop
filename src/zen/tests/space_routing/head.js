@@ -41,6 +41,9 @@ function makeFakeWindow({
       getWorkspaceFromId(id) {
         return workspaces.find(w => w.uuid === id) || null;
       },
+      isWorkspaceArchived(workspace) {
+        return !!workspace?.archived;
+      },
       moveTabToWorkspace(tab, uuid) {
         this.moveCalls.push({ tab, uuid });
       },

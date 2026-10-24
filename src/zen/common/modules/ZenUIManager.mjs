@@ -395,6 +395,10 @@ class nsZenUIManager {
     return this.#urlbar.handleNewTab(...args);
   }
 
+  switchUrlbarToCurrentTab() {
+    return this.#urlbar.switchToCurrentTab();
+  }
+
   matchesCloseToken(closeToken, event) {
     return this.#urlbar.matchesCloseToken(closeToken, event);
   }

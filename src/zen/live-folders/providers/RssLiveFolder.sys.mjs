@@ -49,7 +49,15 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
         .map(item => {
           const title = item.querySelector("title")?.textContent || "";
 
-          const linkNode = item.querySelector("link");
+          // Atom entries can have several links (replies, edit, self...),
+          // the page itself is the "alternate" one, which is also the default rel.
+          const linkNode = isAtom
+            ? (Array.from(item.children).find(
+                node =>
+                  node.localName === "link" &&
+                  (node.getAttribute("rel") || "alternate") === "alternate"
+              ) ?? item.querySelector("link"))
+            : item.querySelector("link");
           const url =
             isAtom && linkNode
               ? linkNode.getAttribute("href")
@@ -58,15 +66,19 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
           const guid = item.querySelector(isAtom ? "id" : "guid")?.textContent;
           const id = guid || url;
 
-          const dateStr = item.querySelector(
-            isAtom ? "updated" : "pubDate"
-          )?.textContent;
+          // RSS 1.0 (RDF) feeds use <dc:date>, Atom may only have <published>.
+          const dateNode = Array.from(item.children).find(node =>
+            (isAtom ? ["updated", "published"] : ["pubDate", "date"]).includes(
+              node.localName
+            )
+          );
+          const dateStr = dateNode?.textContent;
           const date = dateStr ? new Date(dateStr) : null;
 
           return { title, url, id, date };
         })
         .filter(item => {
-          if (!item.url || !item.date) {
+          if (!item.url) {
             return false;
           }
           try {
@@ -81,7 +93,9 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
             return true;
           }
           return (
-            !isNaN(item.date.getTime()) && item.date.getTime() >= cutoffTime
+            item.date &&
+            !isNaN(item.date.getTime()) &&
+            item.date.getTime() >= cutoffTime
           );
         })
         .slice(0, this.state.maxItems);

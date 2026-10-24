@@ -23,6 +23,7 @@ const MAX_PEEK_LEVELS = 2;
 class ZenMediaCard {
   #updateInterval = null;
   #tabTimeout = null;
+  #wasPlayingBeforeSeek = undefined;
   #controllerListeners = null;
 
   static supportedKeys = ["playpause", "previoustrack", "nexttrack"];
@@ -363,16 +364,26 @@ class ZenMediaCard {
   }
 
   onSeekDrag(event) {
-    this.controller?.pause("user");
+    if (!this.controller?.supportedKeys.includes("seekto")) {
+      return;
+    }
+    if (this.#wasPlayingBeforeSeek === undefined) {
+      this.#wasPlayingBeforeSeek = this.controller.isPlaying;
+    }
+    this.controller.pause("user");
     const newTime = (event.target.value / 100) * this.duration;
     this.currentTimeEl.textContent = this.formatSecondsToTime(newTime);
   }
 
   onSeekComplete(event) {
     const newPosition = (event.target.value / 100) * this.duration;
+    const wasPlaying = this.#wasPlayingBeforeSeek ?? this.controller?.isPlaying;
+    this.#wasPlayingBeforeSeek = undefined;
     if (this.controller?.supportedKeys.includes("seekto")) {
       this.controller.seekTo(newPosition);
-      this.controller.play();
+      if (wasPlaying) {
+        this.controller.play();
+      }
     }
   }
 

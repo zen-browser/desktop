@@ -116,8 +116,8 @@ export class nsZenToastManager {
         continue;
       }
       child.removeAttribute("button");
+      child.querySelector("button")?.remove();
       if (options.button) {
-        child.querySelector("button")?.remove();
         child.appendChild(createButton());
         child.setAttribute("button", true);
       }

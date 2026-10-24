@@ -119,7 +119,10 @@ class nsZenUIManager {
   async elementAnimate(element, rawKeyframes, ...args) {
     rawKeyframes = { ...rawKeyframes };
     if (
-      (rawKeyframes.y || rawKeyframes.x || rawKeyframes.scale) &&
+      (rawKeyframes.y ||
+        rawKeyframes.x ||
+        rawKeyframes.scaleX ||
+        rawKeyframes.scaleY) &&
       !rawKeyframes.transform
     ) {
       const yValues = rawKeyframes.y || [];
@@ -162,10 +165,9 @@ class nsZenUIManager {
       }
       keyframes.push(frame);
     }
-    return new Promise(resolve => {
-      const animation = element.animate(keyframes, ...args);
-      animation.onfinish = () => resolve();
-    });
+    // Resolve even if the animation gets cancelled (e.g. the element is
+    // removed), so callers awaiting it don't hang forever.
+    await element.animate(keyframes, ...args).finished.catch(() => {});
   }
 
   /**

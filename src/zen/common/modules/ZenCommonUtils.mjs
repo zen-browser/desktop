@@ -140,7 +140,12 @@ window.gZenCommonActions = {
       }
     } catch (e) {}
 
-    const markdownLink = `[${tabTitle}](${displaySpec})`;
+    const escapedTitle = tabTitle.replace(/([\\\[\]])/g, "\\$1");
+    const escapedURL = displaySpec.replace(
+      /[()\s]/g,
+      c => "%" + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0")
+    );
+    const markdownLink = `[${escapedTitle}](${escapedURL})`;
     ClipboardHelper.copyString(markdownLink);
 
     gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {

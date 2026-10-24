@@ -207,7 +207,8 @@ export class nsKeyShortcutModifiers {
   toDisplayString() {
     let str = "";
     const separation = AppConstants.platform == "macosx" ? " " : "+";
-    if (this.#control && !this.#accel) {
+    // Control is only kept on macOS, where it can be combined with accel (⌘).
+    if (this.#control) {
       str += AppConstants.platform == "macosx" ? "⌃" : "Ctrl";
       str += separation;
     }
@@ -584,7 +585,7 @@ class KeyShortcut {
   }
 
   setModifiers(modifiers) {
-    if ((!modifiers) instanceof nsKeyShortcutModifiers) {
+    if (!(modifiers instanceof nsKeyShortcutModifiers)) {
       throw new Error("Only nsKeyShortcutModifiers allowed");
     }
     this.#modifiers = modifiers;
@@ -640,7 +641,8 @@ class KeyShortcut {
               str += AppConstants.platform == "macosx" ? "↩" : "Enter";
               break;
             default:
-              str += normalizedKey;
+              // e.g. "F11", "Tab", "Num lock"
+              str += (k[0] + normalizedKey.slice(1)).replace(/_/g, " ");
           }
           break;
         }

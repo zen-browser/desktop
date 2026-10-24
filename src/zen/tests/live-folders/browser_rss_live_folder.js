@@ -368,3 +368,75 @@ add_task(async function test_error_page_is_a_failed_fetch() {
 
   sandbox.restore();
 });
+
+add_task(async function test_atom_alternate_link() {
+  info("should use the alternate link of an Atom entry, not the first one");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getRssProviderForTest(sandbox);
+
+  const date = new Date().toISOString();
+  const atomXml = `
+    <feed xmlns="http://www.w3.org/2005/Atom">
+      <entry>
+        <title>Post</title>
+        <link rel="replies" href="https://example.com/comments.xml"/>
+        <link rel="edit" href="https://example.com/edit/1"/>
+        <link rel="alternate" href="https://example.com/post"/>
+        <id>post-1</id>
+        <updated>${date}</updated>
+      </entry>
+    </feed>
+  `;
+
+  instance.fetch.resolves({ text: atomXml });
+
+  const items = await instance.fetchItems();
+  Assert.equal(items.length, 1, "Should parse the entry");
+  Assert.equal(
+    items[0].url,
+    "https://example.com/post",
+    "Should use the alternate link"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_alternative_date_elements() {
+  info("should read <dc:date> in RSS 1.0 and <published> in Atom");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getRssProviderForTest(sandbox);
+
+  const date = new Date().toISOString();
+  const rdfXml = `
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns="http://purl.org/rss/1.0/"
+             xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <item rdf:about="https://example.com/rdf">
+        <title>RDF Item</title>
+        <link>https://example.com/rdf</link>
+        <dc:date>${date}</dc:date>
+      </item>
+    </rdf:RDF>
+  `;
+  instance.fetch.resolves({ text: rdfXml });
+  let items = await instance.fetchItems();
+  Assert.equal(items.length, 1, "Should keep RSS 1.0 items dated with dc:date");
+
+  const atomXml = `
+    <feed xmlns="http://www.w3.org/2005/Atom">
+      <entry>
+        <title>Published only</title>
+        <link href="https://example.com/published"/>
+        <id>published-1</id>
+        <published>${date}</published>
+      </entry>
+    </feed>
+  `;
+  instance.fetch.resolves({ text: atomXml });
+  items = await instance.fetchItems();
+  Assert.equal(items.length, 1, "Should keep Atom entries with only published");
+
+  sandbox.restore();
+});

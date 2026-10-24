@@ -1,0 +1,12 @@
+diff --git a/toolkit/components/extensions/test/xpcshell/xpcshell-common.toml b/toolkit/components/extensions/test/xpcshell/xpcshell-common.toml
+--- a/toolkit/components/extensions/test/xpcshell/xpcshell-common.toml
++++ b/toolkit/components/extensions/test/xpcshell/xpcshell-common.toml
+@@ -648,6 +648,8 @@ skip-if = [
+   "os == 'android'",
+ ]
+ 
++["test_ext_startup_cache_uuid.js"]
++
+ ["test_ext_startup_perf.js"]
+ 
+ ["test_ext_startup_request_handler.js"]

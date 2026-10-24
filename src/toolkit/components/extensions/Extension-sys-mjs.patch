@@ -1,0 +1,16 @@
+diff --git a/toolkit/components/extensions/Extension.sys.mjs b/toolkit/components/extensions/Extension.sys.mjs
+--- a/toolkit/components/extensions/Extension.sys.mjs
++++ b/toolkit/components/extensions/Extension.sys.mjs
+@@ -3715,7 +3715,11 @@
+   }
+ 
+   get manifestCacheKey() {
+-    return [this.id, this.version, Services.locale.appLocaleAsBCP47];
++    // Parsed manifests contain absolute moz-extension URLs, so a changed
++    // profile UUID must not reuse a manifest cached for the previous origin.
++    // Insert the UUID before the locale: legacy cache entries at the locale
++    // key are manifest objects and cannot be traversed as CacheStore maps.
++    return [this.id, this.version, this.uuid, Services.locale.appLocaleAsBCP47];
+   }
+ 
+   saveStartupData() {

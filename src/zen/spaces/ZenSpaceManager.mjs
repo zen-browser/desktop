@@ -1726,22 +1726,34 @@ class nsZenWorkspaces {
       return;
     }
 
-    // Insert the workspace at the new position
-    if (newPosition < 0 || newPosition >= workspaces.length) {
+    // Positions count only the visible spaces, archived ones keep their place
+    // in between them.
+    const visibleWorkspaces = workspaces.filter(
+      w => !this.isWorkspaceArchived(w)
+    );
+    if (newPosition < 0 || newPosition >= visibleWorkspaces.length) {
       console.warn(
         `Invalid position ${newPosition} for reordering workspace with ID ${id}.`
       );
       return;
     }
-
-    workspaces.splice(currentIndex, 1);
-    workspaces.splice(newPosition, 0, workspace);
-
-    // Propagate the changes if the order has changed
-    if (currentIndex !== newPosition) {
-      this._workspaceCache = workspaces;
-      this.#propagateWorkspaceData(workspaces);
+    const target = visibleWorkspaces[newPosition];
+    if (target === workspace) {
+      return;
     }
+    const movingForward = visibleWorkspaces.indexOf(workspace) < newPosition;
+
+    // Insert the workspace at the new position
+    workspaces.splice(currentIndex, 1);
+    const targetIndex = workspaces.indexOf(target);
+    workspaces.splice(
+      movingForward ? targetIndex + 1 : targetIndex,
+      0,
+      workspace
+    );
+
+    this._workspaceCache = workspaces;
+    this.#propagateWorkspaceData(workspaces);
   }
 
   async openWorkspaceCreation() {

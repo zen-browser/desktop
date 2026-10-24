@@ -55,3 +55,24 @@ add_task(async function test_move_tab_menu_skips_archived() {
 
   await gZenWorkspaces.restoreWorkspace(second.uuid);
 });
+
+add_task(async function test_reorder_counts_visible_positions() {
+  const [first, second, third] = await createTestSpaces(3);
+  await gZenWorkspaces.archiveWorkspace(second.uuid);
+
+  // Drag and drop hands over positions among the visible spaces.
+  const thirdPosition = visibleIds().indexOf(third.uuid);
+  await gZenWorkspaces.reorderWorkspace(first.uuid, thirdPosition);
+
+  const order = gZenWorkspaces
+    .getWorkspaces()
+    .map(w => w.uuid)
+    .filter(id => [first.uuid, second.uuid, third.uuid].includes(id));
+  Assert.deepEqual(
+    order,
+    [second.uuid, third.uuid, first.uuid],
+    "Space lands after the visible target, archived one keeps its place"
+  );
+
+  await gZenWorkspaces.restoreWorkspace(second.uuid);
+});

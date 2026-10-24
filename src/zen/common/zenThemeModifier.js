@@ -30,8 +30,11 @@
     "zen.theme.accent-color",
     "zen.theme.border-radius",
     "zen.theme.content-element-separation",
+    "zen.theme.essentials-icon-size",
   ];
   const kZenMaxElementSeparation = 12;
+  const kZenMinEssentialsIconSize = 16;
+  const kZenMaxEssentialsIconSize = 32;
 
   /**
    * ZenThemeModifier controls the application of theme data to the browser,
@@ -107,6 +110,7 @@
       this.updateAccentColor();
       this.updateBorderRadius();
       this.updateElementSeparation();
+      this.updateEssentialsIconSize();
     },
 
     updateBorderRadius() {
@@ -196,6 +200,23 @@
 
     get elementSeparation() {
       return Math.min(lazy.elementSeparation, kZenMaxElementSeparation);
+    },
+
+    updateEssentialsIconSize() {
+      const iconSize = Math.min(
+        Math.max(
+          Services.prefs.getIntPref(
+            "zen.theme.essentials-icon-size",
+            kZenMinEssentialsIconSize
+          ),
+          kZenMinEssentialsIconSize
+        ),
+        kZenMaxEssentialsIconSize
+      );
+      document.documentElement.style.setProperty(
+        "--zen-essential-icon-size",
+        iconSize + "px"
+      );
     },
 
     /**

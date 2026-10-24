@@ -17,6 +17,9 @@
 - name: zen.theme.essentials-favicon-bg
   value: true
 
+- name: zen.theme.essentials-icon-size
+  value: 16
+
 - name: zen.theme.acrylic-urlbar
   value: "@IS_TWILIGHT@"
   cpptype: bool

@@ -440,6 +440,20 @@ groupbox h2 {
   }
 }
 
+#zenEssentialsIconSizeContainer {
+  gap: 8px;
+
+  & > #zenEssentialsIconSize {
+    flex: 1;
+    max-width: 200px;
+  }
+
+  & > #zenEssentialsIconSizeValue {
+    min-width: 4ch;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
 #zenLayoutList {
   display: flex;
   gap: 20px;

@@ -40,6 +40,18 @@
                 data-l10n-id="zen-vertical-tabs-newtab-top-button-up"
                 preference="zen.view.show-newtab-button-top"/>
     </vbox>
+    <hbox id="zenEssentialsIconSizeContainer" align="center">
+        <label id="zenEssentialsIconSizeLabel"
+               control="zenEssentialsIconSize"
+               data-l10n-id="zen-vertical-tabs-essentials-icon-size"/>
+        <html:input id="zenEssentialsIconSize"
+                    type="range"
+                    min="16"
+                    max="32"
+                    step="1"
+                    aria-labelledby="zenEssentialsIconSizeLabel"/>
+        <label id="zenEssentialsIconSizeValue"/>
+    </hbox>
     <html:div data-l10n-id="preferences-web-appearance-footer">
         <html:a id="web-appearance-manage-themes-link" class="text-link" data-l10n-name="themes-link" href="about:addons" target="_blank" />
     </html:div>

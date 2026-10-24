@@ -1200,6 +1200,14 @@ zen-library {
     margin-inline-end: 0 !important;
   }
 
+  & .tab-icon-image,
+  & .tab-icon-pending,
+  & .tab-throbber,
+  & .tab-sharing-icon-overlay {
+    width: var(--zen-essential-icon-size, 16px);
+    height: var(--zen-essential-icon-size, 16px);
+  }
+
   &:hover .tab-background {
     background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-background-color-selected));
   }

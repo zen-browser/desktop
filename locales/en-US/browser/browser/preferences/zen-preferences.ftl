@@ -130,6 +130,10 @@ zen-vertical-tabs-newtab-on-tab-list =
     .label = Show New Tab Button on Tab List
 zen-vertical-tabs-newtab-top-button-up =
     .label = Move the new tab button to the top
+zen-vertical-tabs-essentials-icon-size = Essentials icon size
+# Variables:
+#   $size (Number) - Icon size in pixels
+zen-vertical-tabs-essentials-icon-size-value = { $size }px
 
 zen-vertical-tabs-expand-tabs-by-default = Expand Tabs by Default
 zen-vertical-tabs-dont-expand-tabs-by-default = Don't Expand Tabs by Default

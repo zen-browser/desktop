@@ -654,6 +654,7 @@ var gZenMarketplaceManager = {
 
 const kZenExtendedSidebar = "zen.view.sidebar-expanded";
 const kZenSingleToolbar = "zen.view.use-single-toolbar";
+const kZenEssentialsIconSize = "zen.theme.essentials-icon-size";
 
 var gZenLooksAndFeel = {
   init() {
@@ -662,19 +663,44 @@ var gZenLooksAndFeel = {
     }
     this.__hasInitialized = true;
     gZenMarketplaceManager.init();
-    for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
+    for (const pref of [kZenExtendedSidebar, kZenSingleToolbar, kZenEssentialsIconSize]) {
       Services.prefs.addObserver(pref, this);
     }
     window.addEventListener("unload", () => {
-      for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
+      for (const pref of [kZenExtendedSidebar, kZenSingleToolbar, kZenEssentialsIconSize]) {
         Services.prefs.removeObserver(pref, this);
       }
     });
     this.applySidebarLayout();
+    this.initEssentialsIconSize();
   },
 
-  observe() {
+  observe(subject, topic, data) {
+    if (data == kZenEssentialsIconSize) {
+      this.updateEssentialsIconSize();
+      return;
+    }
     this.applySidebarLayout();
+  },
+
+  initEssentialsIconSize() {
+    const slider = document.getElementById("zenEssentialsIconSize");
+    slider.addEventListener("input", () => {
+      Services.prefs.setIntPref(kZenEssentialsIconSize, slider.valueAsNumber);
+    });
+    this.updateEssentialsIconSize();
+  },
+
+  updateEssentialsIconSize() {
+    const slider = document.getElementById("zenEssentialsIconSize");
+    const size = Services.prefs.getIntPref(kZenEssentialsIconSize, 16);
+    slider.value = size;
+    // The slider clamps out-of-range values, so show what it actually displays
+    document.l10n.setAttributes(
+      document.getElementById("zenEssentialsIconSizeValue"),
+      "zen-vertical-tabs-essentials-icon-size-value",
+      { size: slider.valueAsNumber }
+    );
   },
 
   applySidebarLayout() {

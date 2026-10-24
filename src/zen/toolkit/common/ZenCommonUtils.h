@@ -23,6 +23,12 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
  public:
   explicit ZenCommonUtils() = default;
 
+  /**
+   * @brief The browserId a tab capture started on aCapturedBrowserId should
+   * currently draw from. Main thread only.
+   */
+  static auto ResolveTabCaptureTarget(uint64_t aCapturedBrowserId) -> uint64_t;
+
  private:
   ~ZenCommonUtils() = default;
   /**

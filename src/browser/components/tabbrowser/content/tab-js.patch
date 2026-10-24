@@ -1,8 +1,16 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8c579171b 100644
+index 9395bcbb798112207861c63ff2707609d9d6c83f..42058cdfa2766f5c90b6ecf180d04f808846c56d 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
-@@ -21,7 +21,9 @@
+@@ -10,6 +10,7 @@
+   const lazy = {};
+   ChromeUtils.defineESModuleGetters(lazy, {
+     TabMetrics: "moz-src:///browser/components/tabbrowser/TabMetrics.sys.mjs",
++    ZenTabCapture: "resource:///modules/zen/media/ZenTabCapture.sys.mjs",
+   });
+ 
+   class MozTabbrowserTab extends MozElements.MozTab {
+@@ -21,9 +22,11 @@
            <hbox class="tab-group-line"/>
          </vbox>
          <hbox class="tab-content" align="center">
@@ -12,19 +20,22 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
              <hbox class="tab-icon-pending"/>
 +            <box class="zen-media-notes"/>
              <html:img class="tab-icon-image" role="presentation" decoding="sync" />
-@@ -35,9 +37,11 @@
+             <image class="tab-sharing-icon-overlay" role="presentation"/>
+             <image class="tab-icon-overlay" role="presentation"/>
+@@ -35,9 +38,12 @@
                  pack="center"
                  flex="1">
              <label class="tab-text tab-label" role="presentation"/>
 +            <label class="zen-tab-sublabel" data-l10n-id="zen-tab-sublabel" data-l10n-args='{"tabSubtitle": "zen-default-pinned"}' role="presentation"/>
            </vbox>
            <image class="tab-note-icon" role="presentation"/>
++          <image class="zen-tab-share-button" role="button" data-l10n-id="zen-tab-share-button" keyNav="false"/>
            <image class="tab-close-button close-icon" role="button" data-l10n-id="tabbrowser-close-tabs-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
 +          <image class="tab-reset-button reset-icon" role="button" data-l10n-id="tabbrowser-unload-tab-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
          </hbox>
        </stack>
        `;
-@@ -84,7 +88,7 @@
+@@ -84,7 +90,7 @@
          ".tab-content":
            "pinned,selected=visuallyselected,multiselected,titlechanged,attention",
          ".tab-icon-stack":
@@ -33,7 +44,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          ".tab-throbber":
            "fadein,pinned,busy,progress,selected=visuallyselected",
          ".tab-icon-pending":
-@@ -93,9 +97,9 @@
+@@ -93,9 +99,9 @@
            "src=image,requestcontextid,fadein,pinned,selected=visuallyselected,busy,crashed,sharing,pictureinpicture,pending,discarded",
          ".tab-sharing-icon-overlay": "sharing,selected=visuallyselected,pinned",
          ".tab-icon-overlay":
@@ -45,7 +56,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          ".tab-label-container":
            "pinned,selected=visuallyselected,labeldirection",
          ".tab-label":
-@@ -184,7 +188,7 @@
+@@ -194,7 +200,7 @@
      }
  
      set _visuallySelected(val) {
@@ -54,7 +65,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          return;
        }
  
-@@ -216,11 +220,25 @@
+@@ -226,11 +232,25 @@
      }
  
      get visible() {
@@ -85,7 +96,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      get hidden() {
-@@ -299,7 +317,7 @@
+@@ -315,7 +335,7 @@
          return false;
        }
  
@@ -94,7 +105,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      get lastAccessed() {
-@@ -384,7 +402,18 @@
+@@ -400,7 +420,18 @@
      }
  
      get group() {
@@ -114,7 +125,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      get splitview() {
-@@ -466,6 +495,10 @@
+@@ -482,6 +513,10 @@
          }
        }
  
@@ -125,7 +136,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
        // If the previous target wasn't part of this tab then this is a mouseenter event.
        if (!this.contains(event.relatedTarget)) {
          this._mouseenter();
-@@ -495,6 +528,7 @@
+@@ -511,6 +546,7 @@
        if (!this.contains(event.relatedTarget)) {
          this._mouseleave();
        }
@@ -133,7 +144,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      on_dragstart(event) {
-@@ -506,6 +540,7 @@
+@@ -522,6 +558,7 @@
        if (event.eventPhase == Event.CAPTURING_PHASE) {
          this.style.MozUserFocus = "";
        } else if (
@@ -141,16 +152,20 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          event.target.classList?.contains("tab-close-button") ||
          gSharedTabWarning.willShowSharedTabWarning(this)
        ) {
-@@ -529,6 +564,8 @@
+@@ -545,8 +582,11 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
 +        event.target.classList.contains("tab-reset-button") ||
 +        event.target.classList.contains("tab-reset-pin-button") ||
          event.target.classList.contains("tab-icon-overlay") ||
-         event.target.classList.contains("tab-audio-button")
+-        event.target.classList.contains("tab-audio-button")
++        event.target.classList.contains("tab-audio-button") ||
++        event.target.classList.contains("zen-tab-share-button")
        ) {
-@@ -563,7 +600,7 @@
+         eventMaySelectTab = false;
+       }
+@@ -579,7 +619,7 @@
            }
          } else if (
            event.altKey &&
@@ -159,7 +174,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          ) {
            eventMaySelectTab = false;
          } else if (!this.selected && this.multiselected) {
-@@ -600,6 +637,10 @@
+@@ -616,6 +656,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -170,7 +185,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -623,14 +664,31 @@
+@@ -639,14 +683,37 @@
              trigger: "alt_click",
            });
          }
@@ -190,11 +205,17 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
 +            });
 +          }
 +        }
++        return;
++      }
++
++      if (event.shiftKey) {
          return;
        }
  
 -      if (event.getModifierState("Accel") || event.shiftKey) {
-+      if (event.shiftKey) {
++      if (event.target.classList.contains("zen-tab-share-button")) {
++        lazy.ZenTabCapture.shareTab(this);
++        gBrowser.tabContainer._blockDblClick = true;
          return;
        }
  
@@ -203,7 +224,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -642,8 +700,9 @@
+@@ -658,8 +725,9 @@
        }
  
        if (
@@ -215,7 +236,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -661,7 +720,7 @@
+@@ -677,7 +745,7 @@
          return;
        }
  
@@ -224,7 +245,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          if (this.multiselected) {
            gBrowser.removeMultiSelectedTabs({
              metricsContext: lazy.TabMetrics.userTriggeredContext(
-@@ -681,6 +740,14 @@
+@@ -697,6 +765,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -239,7 +260,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      on_dblclick(event) {
-@@ -707,6 +774,8 @@
+@@ -723,6 +799,8 @@
              lazy.TabMetrics.METRIC_SOURCE.TAB_STRIP
            ),
          });

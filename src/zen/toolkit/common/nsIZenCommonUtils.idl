@@ -32,4 +32,12 @@ interface nsIZenCommonUtils : nsISupports {
    * @brief Play a single haptic feedback note if supported.
    */
   void playHapticFeedback();
+  /*
+   * @brief Make a running tab capture draw from another tab.
+   * @param capturedBrowserId The browserId the capture was started with.
+   * @param targetBrowserId The browserId to draw from. Passing
+   *        capturedBrowserId restores the original tab.
+   */
+  void setTabCaptureTarget(in unsigned long long capturedBrowserId,
+                           in unsigned long long targetBrowserId);
 };

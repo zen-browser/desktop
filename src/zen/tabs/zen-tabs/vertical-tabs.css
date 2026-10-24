@@ -994,10 +994,33 @@ zen-library {
   appearance: none;
 }
 
+.zen-tab-share-button {
+  display: none;
+  list-style-image: url("chrome://browser/skin/notification-icons/screen.svg");
+  -moz-context-properties: fill, fill-opacity;
+  border-radius: var(--tab-border-radius);
+  fill: currentColor;
+  padding: var(--tab-close-button-padding);
+  width: var(--size-item-medium);
+  height: var(--size-item-medium);
+}
+
+:root[zen-tab-capture-active][zen-sidebar-expanded="true"] #tabbrowser-tabs .tabbrowser-tab:not([zen-essential]) {
+  &[zen-tab-captured] .zen-tab-share-button {
+    display: block;
+    fill: var(--zen-primary-color);
+  }
+
+  &:not([zen-tab-captured], [pending]):hover .zen-tab-share-button {
+    display: block;
+  }
+}
+
 @media not (forced-colors) {
   .tab-reset-button:hover,
   .tab-close-button:hover,
-  .tab-reset-pin-button:hover {
+  .tab-reset-pin-button:hover,
+  .tabbrowser-tab:not([zen-tab-captured]) .zen-tab-share-button:hover {
     background-color: color-mix(in srgb, currentColor 10%, transparent);
   }
 

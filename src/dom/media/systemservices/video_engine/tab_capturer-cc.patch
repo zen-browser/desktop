@@ -1,0 +1,23 @@
+diff --git a/dom/media/systemservices/video_engine/tab_capturer.cc b/dom/media/systemservices/video_engine/tab_capturer.cc
+index d0c4dae224393578813a35fa7ebb044dc38c1a1e..f2db9ba298aa44ec44a56673eb871a317d03f413 100644
+--- a/dom/media/systemservices/video_engine/tab_capturer.cc
++++ b/dom/media/systemservices/video_engine/tab_capturer.cc
+@@ -16,6 +16,7 @@
+ #include "mozilla/Logging.h"
+ #include "mozilla/SpinEventLoopUntil.h"
+ #include "mozilla/TaskQueue.h"
++#include "mozilla/ZenCommonUtils.h"
+ #include "mozilla/dom/BrowsingContext.h"
+ #include "mozilla/dom/ImageBitmap.h"
+ #include "mozilla/dom/Promise.h"
+@@ -303,8 +304,8 @@ auto TabCapturerWebrtc::CaptureFrameNow() -> RefPtr<CapturePromise> {
+   LOG_FUNCV();
+ 
+   WindowGlobalParent* wgp = nullptr;
+-  RefPtr<BrowsingContext> context =
+-      BrowsingContext::GetCurrentTopByBrowserId(mBrowserId);
++  RefPtr<BrowsingContext> context = BrowsingContext::GetCurrentTopByBrowserId(
++      zen::ZenCommonUtils::ResolveTabCaptureTarget(mBrowserId));
+   if (context) {
+     wgp = context->Canonical()->GetCurrentWindowGlobal();
+   }

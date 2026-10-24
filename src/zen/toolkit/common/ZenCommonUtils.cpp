@@ -11,7 +11,10 @@
 #include "nsServiceManagerUtils.h"
 #include "nsISharePicker.h"
 
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StaticPrefs_zen.h"
+#include "mozilla/StaticPtr.h"
+#include "nsTHashMap.h"
 
 #if defined(XP_WIN)
 #  include "mozilla/WindowsVersion.h"
@@ -51,6 +54,10 @@ static nsCOMPtr<mozIDOMWindowProxy> GetMostRecentWindow() {
   }
   return aWindow;
 }
+
+// Keyed by the browserId a tab capture was started with, main thread only.
+static mozilla::StaticAutoPtr<nsTHashMap<nsUint64HashKey, uint64_t>>
+    sTabCaptureTargets;
 }  // namespace
 
 using mozilla::dom::WindowGlobalChild;
@@ -117,6 +124,34 @@ auto ZenCommonUtils::IsSharingSupported() -> bool {
 #else
   return false;
 #endif
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::SetTabCaptureTarget(uint64_t aCapturedBrowserId,
+                                    uint64_t aTargetBrowserId) {
+  MOZ_ASSERT(NS_IsMainThread());
+  if (aCapturedBrowserId == aTargetBrowserId) {
+    if (sTabCaptureTargets) {
+      sTabCaptureTargets->Remove(aCapturedBrowserId);
+    }
+    return NS_OK;
+  }
+  if (!sTabCaptureTargets) {
+    sTabCaptureTargets = new nsTHashMap<nsUint64HashKey, uint64_t>();
+    mozilla::ClearOnShutdown(&sTabCaptureTargets);
+  }
+  sTabCaptureTargets->InsertOrUpdate(aCapturedBrowserId, aTargetBrowserId);
+  return NS_OK;
+}
+
+auto ZenCommonUtils::ResolveTabCaptureTarget(uint64_t aCapturedBrowserId)
+    -> uint64_t {
+  MOZ_ASSERT(NS_IsMainThread());
+  if (!sTabCaptureTargets) {
+    return aCapturedBrowserId;
+  }
+  return sTabCaptureTargets->MaybeGet(aCapturedBrowserId)
+      .valueOr(aCapturedBrowserId);
 }
 
 }  // namespace zen

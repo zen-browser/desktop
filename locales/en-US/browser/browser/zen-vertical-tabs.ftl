@@ -53,3 +53,9 @@ zen-tab-sublabel =
         [zen-default-pinned-cmd] Separate from pinned tab
         *[other] { $tabSubtitle }
     }
+
+zen-tab-share-button =
+    .tooltiptext = Share this tab instead
+
+zen-tab-sharing-indicator =
+    .tooltiptext = This tab is being shared

@@ -1,8 +1,24 @@
 diff --git a/browser/actors/WebRTCParent.sys.mjs b/browser/actors/WebRTCParent.sys.mjs
-index 98b10b1d789c20b3463de4f703af102f6908318b..29534480fbeda6d66cb9dab81afdaed8d8a5c565 100644
+index a517455fe18d17b355d41d5c6e497bfdd120bb96..7b566d09f4cd5983ad05723146863296e910faf4 100644
 --- a/browser/actors/WebRTCParent.sys.mjs
 +++ b/browser/actors/WebRTCParent.sys.mjs
-@@ -152,6 +152,7 @@ export class WebRTCParent extends JSWindowActorParent {
+@@ -10,6 +10,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+   SitePermissions: "resource:///modules/SitePermissions.sys.mjs",
+   webrtcUI: "resource:///modules/webrtcUI.sys.mjs",
++  ZenTabCapture: "resource:///modules/zen/media/ZenTabCapture.sys.mjs",
+ });
+ 
+ XPCOMUtils.defineLazyServiceGetter(
+@@ -133,6 +134,7 @@ export class WebRTCParent extends JSWindowActorParent {
+           lazy.webrtcUI.streamAddedOrRemoved(this.browsingContext, data);
+         }
+         this.updateIndicators(data);
++        lazy.ZenTabCapture.update();
+         break;
+       }
+     }
+@@ -152,6 +154,7 @@ export class WebRTCParent extends JSWindowActorParent {
  
      let tabbrowser = browser.documentGlobal.gBrowser;
      if (tabbrowser) {

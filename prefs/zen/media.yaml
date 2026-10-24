@@ -4,3 +4,6 @@
 
 - name: media.eme.enabled
   value: true
+
+- name: media.getusermedia.browser.enabled
+  value: true

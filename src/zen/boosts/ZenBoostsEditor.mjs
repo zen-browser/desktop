@@ -116,6 +116,9 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-code")
       .addEventListener("click", this.onCodeButtonPressed.bind(this));
     this.doc
+      .getElementById("zen-boost-share")
+      .addEventListener("click", this.onShareBoostPressed.bind(this));
+    this.doc
       .getElementById("zen-boost-back")
       .addEventListener("click", this.onCodeBackButtonPressed.bind(this));
     this.doc
@@ -405,7 +408,7 @@ export class nsZenBoostEditor {
    * Handles the code editor button press, resizing and offsetting the window and enabling the code view
    */
   onCodeButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -435,10 +438,16 @@ export class nsZenBoostEditor {
   }
 
   /**
+   * Handles the share button press. Sharing boosts lands in steps; for now
+   * the button is only the entry point.
+   */
+  onShareBoostPressed() {}
+
+  /**
    * Handles the back button in the code view, resizing and offsetting the window and changing back to boost view
    */
   onCodeBackButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;

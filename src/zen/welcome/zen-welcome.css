@@ -311,7 +311,9 @@
 
     &[page="import"] {
       .zen-welcome-option {
+        gap: 2rem;
         min-height: 9rem;
+        padding: 0 0 0 2.5rem;
         border-radius: 24px;
       }
 

@@ -649,7 +649,7 @@ class nsZenBoostsManager {
     const width = parentWindow.outerWidth;
     const height = parentWindow.outerHeight;
     const editorWidth = 185;
-    const editorHeight = 629;
+    const editorHeight = 685;
     const pad = 20;
 
     let left = screenX + width + pad;

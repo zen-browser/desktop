@@ -89,7 +89,11 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #refreshTimer = null;
   /** @type {Set<string>|null} The spaces to rebuild, or null for every card */
   #pendingSpaces = new Set();
-  #resizeObserver = new ResizeObserver(() => this.#updateLibraryWidth());
+  // Deferred a frame: the width set here resizes the section again, which
+  // the archived list's wrapping turns into a resize loop otherwise.
+  #resizeObserver = new ResizeObserver(() =>
+    window.requestAnimationFrame(() => this.#updateLibraryWidth())
+  );
   /** @type {IntersectionObserver?} Fills a card once it is in view */
   #cardObserver = null;
   #onScroll = event => {

@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Gelap
 zen-menubar-new-blank-window = 
     .label = Jendela Kosong Baru
+
+zen-menubar-about = 
+    .label = Tentang { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Keluar dari { -brand-short-name }

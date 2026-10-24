@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Escuro
 zen-menubar-new-blank-window = 
     .label = Nova Janela em Branco
+
+zen-menubar-about = 
+    .label = Sobre o { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Encerrar { -brand-short-name }

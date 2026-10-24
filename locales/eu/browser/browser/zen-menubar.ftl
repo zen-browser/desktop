@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Iluna
 zen-menubar-new-blank-window = 
     .label = Leiho zuri berria
+
+zen-menubar-about = 
+    .label = { -brand-short-name }-(r)i buruz
+
+zen-menubar-quit-mac = 
+    .label = Itxi { -brand-short-name }

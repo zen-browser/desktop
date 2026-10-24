@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Dark
 zen-menubar-new-blank-window = 
     .label = New Blank Window
+
+zen-menubar-about = 
+    .label = O { -brand-short-name }u
+
+zen-menubar-quit-mac = 
+    .label = Zatvori { -brand-short-name }

@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Sötét
 zen-menubar-new-blank-window = 
     .label = Új üres ablak
+
+zen-menubar-about = 
+    .label = A { -brand-short-name } névjegye
+
+zen-menubar-quit-mac = 
+    .label = Kilépés a { -brand-short-name }ból

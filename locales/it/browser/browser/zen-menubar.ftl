@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Scuro
 zen-menubar-new-blank-window = 
     .label = Nuova Finestra Vuota
+
+zen-menubar-about = 
+    .label = Informazioni su { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Esci da { -brand-short-name }

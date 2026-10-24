@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = داكن
 zen-menubar-new-blank-window = 
     .label = نافذة فارغة جديدة
+
+zen-menubar-about = 
+    .label = عن { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = أغلق { -brand-short-name }

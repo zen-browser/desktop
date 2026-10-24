@@ -1,0 +1,7 @@
+diff --git a/browser/base/content/macWindow.inc.xhtml b/browser/base/content/macWindow.inc.xhtml
+--- a/browser/base/content/macWindow.inc.xhtml
++++ b/browser/base/content/macWindow.inc.xhtml
+@@ -19,2 +19,3 @@
+   <html:link rel="localization" href="toolkit/branding/brandings.ftl"/>
+   <html:link rel="localization" href="toolkit/global/textActions.ftl"/>
++  <html:link rel="localization" href="browser/zen-menubar.ftl"/>

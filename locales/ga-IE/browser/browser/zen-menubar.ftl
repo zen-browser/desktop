@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Dorcha
 zen-menubar-new-blank-window = 
     .label = Fuinneog Nua Bán
+
+zen-menubar-about = 
+    .label = Maidir le { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Scoir { -brand-short-name }

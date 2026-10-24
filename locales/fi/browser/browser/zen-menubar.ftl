@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Dark
 zen-menubar-new-blank-window = 
     .label = New Blank Window
+
+zen-menubar-about = 
+    .label = Tietoja { -brand-short-name }sta
+
+zen-menubar-quit-mac = 
+    .label = Lopeta { -brand-short-name }

@@ -106,6 +106,21 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/settings.svg",
   },
   {
+    l10nId: "zen-action-import-data",
+    command: window => {
+      if (window.gMainPane?.showMigrationWizardDialog) {
+        window.gMainPane.showMigrationWizardDialog();
+      } else {
+        const { MigrationUtils } = ChromeUtils.importESModule(
+          "resource:///modules/MigrationUtils.sys.mjs"
+        );
+        MigrationUtils.showMigrationWizard(window, {});
+      }
+    },
+    icon: "chrome://browser/skin/zen-icons/downloads.svg",
+    isAvailable: () => true,
+  },
+  {
     l10nId: "zen-action-open-private-window",
     command: "Tools:PrivateBrowsing",
     icon: "chrome://browser/skin/zen-icons/private-window.svg",
@@ -337,8 +352,16 @@ const globalActionsTemplate = [
   },
 ];
 
+const FALLBACK_LABELS = {
+  "zen-action-import-data": "Import from Another Browser",
+};
+
 export function formatValueSync(l10nId) {
-  return lazy.l10n.formatValueSync(l10nId);
+  try {
+    return lazy.l10n.formatValueSync(l10nId) || FALLBACK_LABELS[l10nId] || l10nId;
+  } catch {
+    return FALLBACK_LABELS[l10nId] || l10nId;
+  }
 }
 
 const labels = new Map();

@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Koyu
 zen-menubar-new-blank-window = 
     .label = Yeni boş pencere
+
+zen-menubar-about = 
+    .label = { -brand-short-name } hakkında
+
+zen-menubar-quit-mac = 
+    .label = { -brand-short-name } uygulamasından çık

@@ -8,6 +8,7 @@ zen-action-new-split-view = Nouvelle vue fractionnée
 zen-action-new-folder = Nouveau dossier
 zen-action-copy-current-url = Copier l’adresse actuelle
 zen-action-settings = Paramètres
+zen-action-import-data = Importer depuis un autre navigateur
 zen-action-open-private-window = Ouvrir une fenêtre privée
 zen-action-open-new-window = Ouvrir une nouvelle fenêtre
 zen-action-new-blank-window = Nouvelle fenêtre vide

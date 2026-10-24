@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Tywyll
 zen-menubar-new-blank-window = 
     .label = Ffenestr Wag Newydd
+
+zen-menubar-about = 
+    .label = Ynghylch { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Gadael { -brand-short-name }

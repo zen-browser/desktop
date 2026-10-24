@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Dökkt
 zen-menubar-new-blank-window = 
     .label = Nýr auður gluggi
+
+zen-menubar-about = 
+    .label = Um { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Hætta í { -brand-short-name }

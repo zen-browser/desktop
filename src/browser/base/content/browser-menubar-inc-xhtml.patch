@@ -1,0 +1,16 @@
+diff --git a/browser/base/content/browser-menubar.inc.xhtml b/browser/base/content/browser-menubar.inc.xhtml
+--- a/browser/base/content/browser-menubar.inc.xhtml
++++ b/browser/base/content/browser-menubar.inc.xhtml
+@@ -69,4 +69,4 @@
+       <menuitem id="menu_FileQuitItem"
+ #ifdef XP_MACOSX
+-                data-l10n-id="menu-quit-mac"
++                data-l10n-id="zen-menubar-quit-mac"
+ #else
+@@ -461,4 +461,4 @@
+       <menuseparator id="aboutSeparator"/>
+       <menuitem id="aboutName"
+-                data-l10n-id="menu-about"
+-                appmenu-data-l10n-id="appmenu-about"/>
++                data-l10n-id="zen-menubar-about"
++                appmenu-data-l10n-id="zen-menubar-about"/>

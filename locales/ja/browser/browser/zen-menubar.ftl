@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = ダークモード
 zen-menubar-new-blank-window = 
     .label = 新しい空のウィンドウ
+
+zen-menubar-about = 
+    .label = { -brand-short-name } について
+
+zen-menubar-quit-mac = 
+    .label = { -brand-short-name } を終了

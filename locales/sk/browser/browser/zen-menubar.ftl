@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Tmavý
 zen-menubar-new-blank-window = 
     .label = New Blank Window
+
+zen-menubar-about = 
+    .label = O aplikácii { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Ukončiť { -brand-short-name }

@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Dark
 zen-menubar-new-blank-window = 
     .label = New Blank Window
+
+zen-menubar-about = 
+    .label = เกี่ยวกับ { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = ออกจาก { -brand-short-name }

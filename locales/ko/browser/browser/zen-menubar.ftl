@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = 다크
 zen-menubar-new-blank-window = 
     .label = 새 빈 창
+
+zen-menubar-about = 
+    .label = { -brand-short-name } 정보
+
+zen-menubar-quit-mac = 
+    .label = { -brand-short-name } 종료

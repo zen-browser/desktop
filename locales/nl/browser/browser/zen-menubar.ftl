@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Donker
 zen-menubar-new-blank-window = 
     .label = Nieuw blanco venster
+
+zen-menubar-about = 
+    .label = Over { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = { -brand-short-name } afsluiten

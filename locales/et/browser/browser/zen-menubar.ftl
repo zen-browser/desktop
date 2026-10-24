@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Dark
 zen-menubar-new-blank-window = 
     .label = New Blank Window
+
+zen-menubar-about = 
+    .label = Teave { -brand-short-name }i kohta
+
+zen-menubar-quit-mac = 
+    .label = Välju { -brand-short-name }ist

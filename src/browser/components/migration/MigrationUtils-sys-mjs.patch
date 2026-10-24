@@ -1,0 +1,8 @@
+--- a/browser/components/migration/MigrationUtils.sys.mjs
++++ b/browser/components/migration/MigrationUtils.sys.mjs
+@@ -70,7 +70,7 @@ const MIGRATOR_MODULES = Object.freeze({
+   ArcProfileMigrator: {
+     moduleURI: "resource:///modules/zen/ArcProfileMigrator.sys.mjs",
+-    platforms: ["macosx"],
++    platforms: ["macosx", "win"],
+   },

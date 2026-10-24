@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Tối
 zen-menubar-new-blank-window = 
     .label = Cửa sổ trống mới
+
+zen-menubar-about = 
+    .label = Về { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Thoát { -brand-short-name }

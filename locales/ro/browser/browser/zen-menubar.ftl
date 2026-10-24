@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Întunecat
 zen-menubar-new-blank-window = 
     .label = Fereastră Nouă Goală
+
+zen-menubar-about = 
+    .label = Despre { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Ieși din { -brand-short-name }

@@ -21,10 +21,29 @@ export class nsZenMenuBar {
   }
 
   #init() {
+    this.#initAboutItem();
+    this.#initQuitItem();
     this.#initViewMenu();
     this.#initSpacesMenu();
     this.#initAppMenu();
     this.#hideWindowRestoreMenus();
+  }
+
+  #initAboutItem() {
+    const aboutItem = document.getElementById("aboutName");
+    if (aboutItem && aboutItem.getAttribute("data-l10n-id") !== "zen-menubar-about") {
+      aboutItem.setAttribute("data-l10n-id", "zen-menubar-about");
+      aboutItem.setAttribute("appmenu-data-l10n-id", "zen-menubar-about");
+    }
+  }
+
+  #initQuitItem() {
+    if (AppConstants.platform === "macosx") {
+      const quitItem = document.getElementById("menu_FileQuitItem");
+      if (quitItem && quitItem.getAttribute("data-l10n-id") !== "zen-menubar-quit-mac") {
+        quitItem.setAttribute("data-l10n-id", "zen-menubar-quit-mac");
+      }
+    }
   }
 
   #initViewMenu() {

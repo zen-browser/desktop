@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Mørk
 zen-menubar-new-blank-window = 
     .label = Nyt Tomt Vindue
+
+zen-menubar-about = 
+    .label = Om { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Afslut { -brand-short-name }

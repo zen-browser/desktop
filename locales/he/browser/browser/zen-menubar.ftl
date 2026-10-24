@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = כהה
 zen-menubar-new-blank-window = 
     .label = חלון ריק חדש
+
+zen-menubar-about = 
+    .label = על אودود { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = יציאה מ־{ -brand-short-name }

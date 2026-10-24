@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Fosca
 zen-menubar-new-blank-window = 
     .label = Nova finestra en blanc
+
+zen-menubar-about = 
+    .label = Quant al { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Surt del { -brand-short-name }

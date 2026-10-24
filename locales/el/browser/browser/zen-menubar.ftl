@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Σκοτεινό
 zen-menubar-new-blank-window = 
     .label = Νέο Κενό Παράθυρο
+
+zen-menubar-about = 
+    .label = Σχετικά με το { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Τερματισμός του { -brand-short-name }

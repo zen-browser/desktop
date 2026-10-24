@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Темну
 zen-menubar-new-blank-window = 
     .label = Нове несинхронізоване вікно
+
+zen-menubar-about = 
+    .label = Про { -brand-short-name }
+
+zen-menubar-quit-mac = 
+    .label = Вийти з { -brand-short-name }

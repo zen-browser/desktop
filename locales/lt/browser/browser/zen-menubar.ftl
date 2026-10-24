@@ -20,3 +20,9 @@ zen-menubar-appearance-dark =
     .label = Tamsų
 zen-menubar-new-blank-window = 
     .label = Naujas tuščias langas
+
+zen-menubar-about = 
+    .label = Apie „{ -brand-short-name }“
+
+zen-menubar-quit-mac = 
+    .label = Baigti „{ -brand-short-name }“ darbą

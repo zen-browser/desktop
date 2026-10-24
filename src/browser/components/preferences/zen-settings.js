@@ -743,6 +743,20 @@ var gZenWorkspacesSettings = {
 
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
 
+    const importBtn = document.getElementById("zenWorkspacesImportBrowserDataButton");
+    if (importBtn) {
+      importBtn.addEventListener("click", () => {
+        if (window.gMainPane?.showMigrationWizardDialog) {
+          window.gMainPane.showMigrationWizardDialog();
+        } else {
+          const { MigrationUtils } = ChromeUtils.importESModule(
+            "resource:///modules/MigrationUtils.sys.mjs"
+          );
+          MigrationUtils.showMigrationWizard(window, {});
+        }
+      });
+    }
+
     Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
     Services.prefs.addObserver("zen.window-sync.sync-only-pinned-tabs", tabsUnloaderPrefListener);

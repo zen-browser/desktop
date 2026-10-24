@@ -259,6 +259,12 @@ zen-library[customizing] .zen-library-tab {
   }
 }
 
+@media (max-height: 700px) {
+  .zen-library-tab {
+    margin-block: 0px;
+  }
+}
+
 @media (max-height: 575px) {
   .zen-library-tab {
     & label {

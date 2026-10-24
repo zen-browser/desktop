@@ -1,0 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: browser.migrate.arc.enabled
+  value: true
+
+- name: browser.migrate.dia.enabled
+  value: true
+
+- name: browser.migrate.content-modal.import-all.enabled
+  value: false
+
+- name: zen.migration.bookmarks-as-pinned-folders
+  value: true
+
+- name: zen.migration.bookmarks-as-pinned-folders.max-tabs
+  value: 250

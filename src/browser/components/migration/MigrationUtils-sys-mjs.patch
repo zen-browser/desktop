@@ -1,0 +1,52 @@
+diff --git a/browser/components/migration/MigrationUtils.sys.mjs b/browser/components/migration/MigrationUtils.sys.mjs
+index e366c09df3e7b54d24e0d84bb63b950cbda95110..11c056ab5ae747254495f5523fc3228a7d47614c 100644
+--- a/browser/components/migration/MigrationUtils.sys.mjs
++++ b/browser/components/migration/MigrationUtils.sys.mjs
+@@ -16,6 +16,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   setTimeout: "resource://gre/modules/Timer.sys.mjs",
+   MigrationWizardConstants:
+     "chrome://browser/content/migration/migration-wizard-constants.mjs",
++  ZenMigrationUtils: "resource:///modules/zen/ZenMigrationUtils.sys.mjs",
+ });
+ 
+ ChromeUtils.defineLazyGetter(
+@@ -116,6 +117,14 @@ const MIGRATOR_MODULES = Object.freeze({
+     moduleURI: "resource:///modules/ChromeProfileMigrator.sys.mjs",
+     platforms: ["macosx", "win"],
+   },
++  ArcProfileMigrator: {
++    moduleURI: "resource:///modules/zen/ZenProfileMigrators.sys.mjs",
++    platforms: ["macosx", "win"],
++  },
++  DiaProfileMigrator: {
++    moduleURI: "resource:///modules/zen/ZenProfileMigrators.sys.mjs",
++    platforms: ["macosx"],
++  },
+ 
+   InternalTestingProfileMigrator: {
+     moduleURI: "resource:///modules/InternalTestingProfileMigrator.sys.mjs",
+@@ -207,6 +216,7 @@ class MigrationUtils {
+     SESSION: 0x0080,
+     PAYMENT_METHODS: 0x0100,
+     EXTENSIONS: 0x0200,
++    ZEN_SPACES: 0x0400,
+   });
+ 
+   /**
+@@ -519,6 +529,8 @@ class MigrationUtils {
+       "Google Chrome": "chrome", // Windows, Linux
+       Chrome: "chrome", // OS X
+       Chromium: "chromium", // Windows, OS X
++      Arc: "arc",
++      Dia: "dia",
+       "Chromium Web Browser": "chromium", // Linux
+       "360\u5b89\u5168\u6d4f\u89c8\u5668": "chromium-360se",
+     };
+@@ -831,6 +843,7 @@ class MigrationUtils {
+             true /* aForceVisible */
+           ).catch(console.error);
+         }
++        return lazy.ZenMigrationUtils.onBookmarksImported(bookmarks);
+       },
+       ex => console.error(ex)
+     );

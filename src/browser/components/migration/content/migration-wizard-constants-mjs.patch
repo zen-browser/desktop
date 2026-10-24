@@ -1,0 +1,12 @@
+diff --git a/browser/components/migration/content/migration-wizard-constants.mjs b/browser/components/migration/content/migration-wizard-constants.mjs
+index e121466ad1e1ff8713d45dce63299a717c9b6ad1..c31ffa2725624f76210fad2ac3a632e7c72035d7 100644
+--- a/browser/components/migration/content/migration-wizard-constants.mjs
++++ b/browser/components/migration/content/migration-wizard-constants.mjs
+@@ -58,6 +58,7 @@ export const MigrationWizardConstants = Object.freeze({
+     BOOKMARKS: "BOOKMARKS",
+     PAYMENT_METHODS: "PAYMENT_METHODS",
+     EXTENSIONS: "EXTENSIONS",
++    ZEN_SPACES: "ZEN_SPACES",
+ 
+     COOKIES: "COOKIES",
+     SESSION: "SESSION",

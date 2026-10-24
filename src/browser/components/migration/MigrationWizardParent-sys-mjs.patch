@@ -1,0 +1,35 @@
+diff --git a/browser/components/migration/MigrationWizardParent.sys.mjs b/browser/components/migration/MigrationWizardParent.sys.mjs
+index 0a4b1a0191f3cfaec41f6597fa9be4d576145739..35c43f25d10a3db1c6a0f0bba3a089efaa70d470 100644
+--- a/browser/components/migration/MigrationWizardParent.sys.mjs
++++ b/browser/components/migration/MigrationWizardParent.sys.mjs
+@@ -12,6 +12,7 @@ ChromeUtils.defineLazyGetter(lazy, "gFluentStrings", function () {
+   return new Localization([
+     "branding/brand.ftl",
+     "browser/migrationWizard.ftl",
++    "browser/zen-migration.ftl",
+   ]);
+ });
+ 
+@@ -24,6 +25,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   MigrationWizardConstants:
+     "chrome://browser/content/migration/migration-wizard-constants.mjs",
+   PasswordFileMigrator: "resource:///modules/FileMigrators.sys.mjs",
++  ZenMigrationUtils: "resource:///modules/zen/ZenMigrationUtils.sys.mjs",
+ });
+ 
+ if (AppConstants.platform == "macosx") {
+@@ -789,6 +791,14 @@ export class MigrationWizardParent extends JSWindowActorParent {
+           }
+         );
+       }
++      case lazy.MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.ZEN_SPACES: {
++        return lazy.gFluentStrings.formatValue(
++          "migration-wizard-progress-success-zen-spaces",
++          {
++            quantity: lazy.ZenMigrationUtils.lastImportedSpaceCount,
++          }
++        );
++      }
+       default: {
+         return "";
+       }

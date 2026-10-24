@@ -1,0 +1,31 @@
+diff --git a/browser/components/migration/ChromeMigrationUtils.sys.mjs b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+index 6725827d700c07c01abd39303903c4bd3ea025f3..26d2dad99157abf28cd4df99409035683090bec3 100644
+--- a/browser/components/migration/ChromeMigrationUtils.sys.mjs
++++ b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+@@ -284,6 +284,17 @@ export var ChromeMigrationUtils = {
+         Opera: [["AppData", "Opera Software", "Opera Stable"]],
+         "Opera GX": [["AppData", "Opera Software", "Opera GX Stable"]],
+         Vivaldi: [["LocalAppData", "Vivaldi", "User Data"]],
++        Arc: [
++          [
++            "LocalAppData",
++            "Packages",
++            "TheBrowserCompany.Arc_ttt1ap7aakyb4",
++            "LocalCache",
++            "Local",
++            "Arc",
++            "User Data",
++          ],
++        ],
+       },
+       macosx: {
+         Brave: [
+@@ -301,6 +312,8 @@ export var ChromeMigrationUtils = {
+         ],
+         Opera: [["ULibDir", "Application Support", "com.operasoftware.Opera"]],
+         Vivaldi: [["ULibDir", "Application Support", "Vivaldi"]],
++        Arc: [["ULibDir", "Application Support", "Arc", "User Data"]],
++        Dia: [["ULibDir", "Application Support", "Dia", "User Data"]],
+       },
+       linux: {
+         Brave: [["Home", ".config", "BraveSoftware", "Brave-Browser"]],

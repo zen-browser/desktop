@@ -166,6 +166,7 @@ class ZenStartup {
 
   #checkForWelcomePage() {
     const kWelcomeScreenSeenPref = "zen.welcome-screen.seen";
+    const kWelcomeScreenAlwaysShowPref = "zen.welcome-screen.always-show";
     if (Services.env.get("MOZ_HEADLESS")) {
       Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
       return;
@@ -175,7 +176,10 @@ class ZenStartup {
     if (BrowserHandler.kiosk) {
       return;
     }
-    if (!Services.prefs.getBoolPref(kWelcomeScreenSeenPref, false)) {
+    if (
+      !Services.prefs.getBoolPref(kWelcomeScreenSeenPref, false) ||
+      Services.prefs.getBoolPref(kWelcomeScreenAlwaysShowPref, false)
+    ) {
       Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
       Services.prefs.setStringPref(
         "zen.updates.last-build-id",

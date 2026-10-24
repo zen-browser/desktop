@@ -405,7 +405,9 @@
         element.style.opacity = 0;
         element.style.removeProperty("display");
       }
-      gZenUIManager.updateTabsToolbar();
+      window.requestAnimationFrame(() => {
+        window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+      });
       gZenFolders.relayoutCollapsedFolders();
       let elementsToIgnore = kZenElementsToIgnore
         .map(id => `#${id}`)

@@ -22,6 +22,25 @@ index 5a562d6385855264fc3bfdc3df02365f91543534..ef0faea64fe0a0ed029e5a73b376225e
  
      // Search mode is active. Without results the view has nothing to show but
      // the one-offs, so open it only when they will show.
+@@ -1046,6 +1042,18 @@ export class UrlbarView {
+         // them, resembling tab-to-search. In that case, the input value is
+         // still associated with the first result.
+         this.input.setResultForCurrentValue(firstResult);
++      } else if (
++        this.input.searchMode?.source == UrlbarShared.RESULT_SOURCE.TABS
++      ) {
++        // In the tabs search mode results are never heuristic, so select the
++        // first one to let the user pick it right away. Keep the typed value
++        // intact in the input, otherwise further typing would edit it.
++        let firstSelectable = this.getFirstSelectableElement();
++        if (firstSelectable) {
++          this.#selectElement(firstSelectable, {
++            updateInput: false,
++          });
++        }
+       }
+     }
+ 
 @@ -3302,6 +3298,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);

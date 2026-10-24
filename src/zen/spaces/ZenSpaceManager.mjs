@@ -2893,12 +2893,17 @@ class nsZenWorkspaces {
     const workspaces = this.getVisibleWorkspaces().filter(
       w => w.uuid !== this.activeWorkspace
     );
-    const ctxCommand = document.getElementById("cmd_zenCtxDeleteWorkspace");
     const hasMultipleWorkspaces = !!workspaces.length;
-    if (!hasMultipleWorkspaces) {
-      ctxCommand.setAttribute("disabled", "true");
-    } else {
-      ctxCommand.removeAttribute("disabled");
+    for (const commandId of [
+      "cmd_zenCtxDeleteWorkspace",
+      "cmd_zenCtxArchiveWorkspace",
+    ]) {
+      const ctxCommand = document.getElementById(commandId);
+      if (!hasMultipleWorkspaces) {
+        ctxCommand.setAttribute("disabled", "true");
+      } else {
+        ctxCommand.removeAttribute("disabled");
+      }
     }
 
     let menuPopupID = "moveTabOptionsMenu";
@@ -3337,6 +3342,22 @@ class nsZenWorkspaces {
     const workspaceId =
       this.#contextMenuData?.workspaceId || this.activeWorkspace;
     gZenShareManager.shareSpace(workspaceId);
+  }
+
+  async contextArchiveWorkspace() {
+    const workspaceId =
+      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    const workspace = this.getWorkspaceFromId(workspaceId);
+    if (!(await this.archiveWorkspace(workspaceId))) {
+      return;
+    }
+    gZenUIManager.showToast("zen-workspace-archived-toast", {
+      l10nArgs: { name: workspace.name },
+      button: {
+        id: "zen-workspace-archived-undo-button",
+        command: () => this.restoreWorkspace(workspaceId),
+      },
+    });
   }
 
   async contextDeleteWorkspace() {

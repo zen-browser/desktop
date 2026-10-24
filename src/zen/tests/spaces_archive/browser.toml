@@ -17,3 +17,5 @@ support-files = [
 ["browser_archive_tab_policy.js"]
 
 ["browser_archive_tab_select.js"]
+
+["browser_archive_undo.js"]

@@ -1,0 +1,171 @@
+diff --git a/dom/notification/NotificationParent.cpp b/dom/notification/NotificationParent.cpp
+index 58a52493b4c9b88925576831fc6fa46da0647221..79613996442b257c3502563960f4c3f8bd1e4ba9 100644
+--- a/dom/notification/NotificationParent.cpp
++++ b/dom/notification/NotificationParent.cpp
+@@ -13,10 +13,91 @@
+ #include "nsIServiceWorkerManager.h"
+ #include "nsThreadUtils.h"
+ 
++#ifdef XP_MACOSX
++#  include "imgIContainer.h"
++#  include "mozilla/image/FetchDecodedImage.h"
++#  include "mozilla/places/nsFaviconService.h"
++#  include "nsContentUtils.h"
++#  include "nsITimer.h"
++#endif
++
+ namespace mozilla::dom::notification {
+ 
+ NS_IMPL_ISUPPORTS0(NotificationParent)
+ 
++#ifdef XP_MACOSX
++using NotificationIconPromise = MozPromise<Maybe<IPCImage>, nsresult, true>;
++
++static RefPtr<NotificationIconPromise> GetCachedNotificationIcon(
++    nsIPrincipal* aPrincipal) {
++  nsCOMPtr<nsIURI> uri;
++  aPrincipal->GetURI(getter_AddRefs(uri));
++  // Only web origins may consult the non-private Places cache.
++  if (!uri || (!uri->SchemeIs("https") && !uri->SchemeIs("http"))) {
++    return NotificationIconPromise::CreateAndResolve(Nothing(), __func__);
++  }
++  RefPtr<nsFaviconService> favicons = nsFaviconService::GetFaviconService();
++  if (!favicons) {
++    return NotificationIconPromise::CreateAndResolve(Nothing(), __func__);
++  }
++
++  RefPtr<NotificationIconPromise::Private> promise =
++      new NotificationIconPromise::Private(__func__);
++  nsCOMPtr<nsITimer> timer;
++  // Favicon lookup and decoding must not hold up delivery. MozPromise accepts
++  // only the first resolution, so a late result cannot show the alert twice.
++  nsresult rv = NS_NewTimerWithCallback(
++      getter_AddRefs(timer),
++      [promise](nsITimer*) { promise->Resolve(Nothing(), __func__); }, 200,
++      nsITimer::TYPE_ONE_SHOT, "Notification favicon timeout"_ns);
++  if (NS_FAILED(rv)) {
++    promise->Resolve(Nothing(), __func__);
++    return promise;
++  }
++
++  favicons->AsyncGetFaviconForPage(uri, 64)
++      ->Then(GetMainThreadSerialEventTarget(), __func__,
++             [principal = nsCOMPtr<nsIPrincipal>(aPrincipal)](
++                 const places::FaviconPromise::ResolveOrRejectValue& aResult) {
++               nsCOMPtr<nsIURI> dataURI;
++               if (aResult.IsReject() || !aResult.ResolveValue() ||
++                   NS_FAILED(aResult.ResolveValue()->GetDataURI(
++                       getter_AddRefs(dataURI)))) {
++                 return image::FetchDecodedImagePromise::CreateAndReject(
++                     NS_ERROR_NOT_AVAILABLE, __func__);
++               }
++               // Decode only the cached bytes, never the favicon's network URL.
++               return image::FetchDecodedImage(
++                   dataURI, gfx::IntSize{}, principal,
++                   nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_SEC_CONTEXT_IS_NULL,
++                   nsIContentPolicy::TYPE_INTERNAL_IMAGE_NOTIFICATION);
++             })
++      ->Then(
++          GetMainThreadSerialEventTarget(), __func__,
++          [promise, timer](already_AddRefed<imgIContainer> aImage) {
++            timer->Cancel();
++            nsCOMPtr<imgIContainer> image(std::move(aImage));
++            Maybe<IPCImage> icon;
++            // A fixed size also supports SVG favicons with only a viewBox.
++            if (RefPtr<gfx::SourceSurface> surface = image->GetFrameAtSize(
++                    gfx::IntSize(64, 64), imgIContainer::FRAME_FIRST,
++                    imgIContainer::FLAG_SYNC_DECODE |
++                        imgIContainer::FLAG_ASYNC_NOTIFY)) {
++              if (RefPtr<gfx::DataSourceSurface> dataSurface =
++                      surface->GetDataSurface()) {
++                icon = nsContentUtils::SurfaceToIPCImage(*dataSurface);
++              }
++            }
++            promise->Resolve(std::move(icon), __func__);
++          },
++          [promise, timer](nsresult) {
++            timer->Cancel();
++            promise->Resolve(Nothing(), __func__);
++          });
++  return promise;
++}
++#endif
++
+ class NotificationCallbacks final : public NotificationCallbacksCommon {
+  public:
+   NS_INLINE_DECL_REFCOUNTING_INHERITED(NotificationCallbacks,
+@@ -193,30 +274,19 @@ mozilla::ipc::IPCResult NotificationParent::RecvShow(Maybe<IPCImage>&& aIcon,
+   permissionPromise->Then(
+       GetMainThreadSerialEventTarget(), __func__,
+       [self = RefPtr(this), icon = std::move(aIcon)](Ok) mutable {
+-        self->mShowPending = false;
+-        // Always show first to register with the alert system, even if
+-        // close was requested while pending. This ensures platforms like
+-        // Android can properly trigger onCloseNotification callbacks.
+-
+-        // Step 4.2: Run the fetch steps for notification. (Already happened in
+-        // the child)
+-        //
+-        // Step 4.3: Run the show steps for notification.
+-        nsresult rv = self->Show(std::move(icon));
+-        // It's possible that we synchronously received a notification while in
+-        // Show, so mResolver may now be empty.
+-        if (NS_FAILED(rv) && self->mResolver) {
+-          self->mResolver.take().value()(CopyableErrorResult(rv));
+-        }
+-        // If not failed, the resolver will be called asynchronously by
+-        // NotificationCallbacks.
+-
+-        // Handle close() called while SafeBrowsing check was in progress.
+-        if (self->mClosePending) {
+-          self->mClosePending = false;
+-          self->Unregister();
+-          self->Close();
++#ifdef XP_MACOSX
++        if (!icon && !self->mArgs.mPrincipal->GetIsInPrivateBrowsing()) {
++          GetCachedNotificationIcon(self->mArgs.mPrincipal)
++              ->Then(
++                  GetMainThreadSerialEventTarget(), __func__,
++                  [self](Maybe<IPCImage>&& aImage) {
++                    self->FinishShow(std::move(aImage));
++                  },
++                  [self](nsresult) { self->FinishShow(Nothing()); });
++          return;
+         }
++#endif
++        self->FinishShow(std::move(icon));
+       },
+       [self = RefPtr(this)](nsresult) {
+         // Don't have permission or SafeBrowsing classification determined the
+@@ -233,6 +303,22 @@ mozilla::ipc::IPCResult NotificationParent::RecvShow(Maybe<IPCImage>&& aIcon,
+   return IPC_OK();
+ }
+ 
++void NotificationParent::FinishShow(Maybe<IPCImage>&& aIcon) {
++  mShowPending = false;
++  // Always register with the alert system before processing a pending close.
++  nsresult rv = Show(std::move(aIcon));
++  // Show may synchronously call NotificationCallbacks and consume mResolver.
++  if (NS_FAILED(rv) && mResolver) {
++    mResolver.take().value()(CopyableErrorResult(rv));
++  }
++  // Otherwise NotificationCallbacks resolves the show request.
++  if (mClosePending) {
++    mClosePending = false;
++    Unregister();
++    Close();
++  }
++}
++
+ nsresult NotificationParent::Show(Maybe<IPCImage>&& aIcon) {
+   auto result = CreateAlertForNotification(mArgs.mNotification.options(),
+                                            *mArgs.mPrincipal, std::move(aIcon));
+@@ -250,7 +336,7 @@ nsresult NotificationParent::Show(Maybe<IPCImage>&& aIcon) {
+ }
+ 
+ mozilla::ipc::IPCResult NotificationParent::RecvClose() {
+-  // If SafeBrowsing check is in progress, defer the close until it completes.
++  // If permission or favicon lookup is pending, defer close until it completes.
+   // We need to call Show() first to register with the alert system before
+   // Unregister() can properly trigger close callbacks (e.g.,
+   // onCloseNotification on Android).

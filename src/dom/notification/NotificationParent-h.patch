@@ -1,0 +1,23 @@
+diff --git a/dom/notification/NotificationParent.h b/dom/notification/NotificationParent.h
+index d97f018a6907386f804e198efe92dd3aa00a953b..46d5b8194d922438f69ad159e98b9cbf093d1b04 100644
+--- a/dom/notification/NotificationParent.h
++++ b/dom/notification/NotificationParent.h
+@@ -46,6 +46,7 @@ class NotificationParent final : public PNotificationParent,
+   ~NotificationParent() = default;
+ 
+   nsresult Show(Maybe<IPCImage>&& aIcon);
++  void FinishShow(Maybe<IPCImage>&& aIcon);
+ 
+   void Unregister();
+ 
+@@ -61,9 +62,7 @@ class NotificationParent final : public PNotificationParent,
+   // CloseAlert if this is the case.
+   bool mDangling = false;
+ 
+-  // State tracking for async SafeBrowsing checks (bug 1986300).
+-  // When a SafeBrowsing classification is in progress, we track whether a
+-  // close was requested before the check completes.
++  // Track close requests during async permission checks and favicon lookup.
+   bool mShowPending = false;
+   bool mClosePending = false;
+ };

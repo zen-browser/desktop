@@ -3,10 +3,6 @@
 
 "use strict";
 
-const { sinon } = ChromeUtils.importESModule(
-  "resource://testing-common/Sinon.sys.mjs"
-);
-
 const Library = customElements.get("zen-library");
 
 async function openSpacesSection() {
@@ -71,7 +67,16 @@ add_task(async function test_library_delete_asks_first() {
   await gZenWorkspaces.archiveWorkspace(second.uuid);
   const section = await openSpacesSection();
 
-  const confirm = sinon.stub(Services.prompt, "confirm").returns(true);
+  // XPCOM service methods can't be stubbed in place, so swap the service.
+  const original = Services.prompt;
+  let confirmCalls = 0;
+  Services.prompt = {
+    QueryInterface: ChromeUtils.generateQI([Ci.nsIPromptService]),
+    confirm() {
+      confirmCalls++;
+      return true;
+    },
+  };
   section
     .querySelector(
       `.zen-library-archived-space[data-uuid="${second.uuid}"] .zen-library-archived-space-delete`
@@ -81,8 +86,8 @@ add_task(async function test_library_delete_asks_first() {
     () => !gZenWorkspaces.getWorkspaceFromId(second.uuid),
     "Confirmed delete removes the space"
   );
-  ok(confirm.calledOnce, "Delete asks for confirmation first");
-  confirm.restore();
+  Services.prompt = original;
+  is(confirmCalls, 1, "Delete asks for confirmation first");
 
   await closeLibrary();
 });

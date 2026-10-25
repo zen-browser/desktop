@@ -1,0 +1,185 @@
+diff --git a/dom/media/mp4/MP4Decoder.cpp b/dom/media/mp4/MP4Decoder.cpp
+--- a/dom/media/mp4/MP4Decoder.cpp
++++ b/dom/media/mp4/MP4Decoder.cpp
+@@ -77,6 +77,17 @@
+               "audio/"_ns + c, aType));
+       continue;
+     }
++    if (codec.EqualsLiteral("alac") || codec.EqualsLiteral("ac-3") ||
++        codec.EqualsLiteral("ec-3")) {
++      const char* mime = codec.EqualsLiteral("alac")
++                             ? "audio/alac"
++                         : codec.EqualsLiteral("ac-3") ? "audio/ac3"
++                                                        : "audio/eac3";
++      tracks.AppendElement(
++          CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
++              nsDependentCString(mime), aType));
++      continue;
++    }
+     if (IsVP9CodecString(codec)) {
+       auto trackInfo =
+           CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
+diff --git a/dom/media/mp4/DecoderData.cpp b/dom/media/mp4/DecoderData.cpp
+--- a/dom/media/mp4/DecoderData.cpp
++++ b/dom/media/mp4/DecoderData.cpp
+@@ -251,6 +251,12 @@
+     mMimeType = "audio/mpeg"_ns;
+     // TODO(bug 1705812): parse the encoder delay values from the mp4.
+     mCodecSpecificConfig = AudioCodecSpecificVariant{Mp3CodecSpecificData{}};
++  } else if (codecType == MP4PARSE_CODEC_ALAC) {
++    mMimeType = "audio/alac"_ns;
++  } else if (codecType == MP4PARSE_CODEC_AC3) {
++    mMimeType = "audio/ac3"_ns;
++  } else if (codecType == MP4PARSE_CODEC_EC3) {
++    mMimeType = "audio/eac3"_ns;
+   }
+ 
+   mRate = aAudio->sample_info[0].sample_rate;
+diff --git a/dom/media/platforms/apple/AppleATDecoder.cpp b/dom/media/platforms/apple/AppleATDecoder.cpp
+--- a/dom/media/platforms/apple/AppleATDecoder.cpp
++++ b/dom/media/platforms/apple/AppleATDecoder.cpp
+@@ -169,8 +169,23 @@
+     } else {
+       mFormatID = kAudioFormatMPEG4AAC;
+     }
++  } else if (mConfig.mMimeType.EqualsLiteral("audio/alac")) {
++    mFormatID = kAudioFormatAppleLossless;
++  } else if (mConfig.mMimeType.EqualsLiteral("audio/ac3")) {
++    mFormatID = kAudioFormatAC3;
++  } else if (mConfig.mMimeType.EqualsLiteral("audio/eac3")) {
++    mFormatID = kAudioFormatEnhancedAC3;
+   } else {
+     mFormatID = 0;
++  }
++
++  if (mFormatID == kAudioFormatAppleLossless ||
++      mFormatID == kAudioFormatAC3 ||
++      mFormatID == kAudioFormatEnhancedAC3) {
++    RefPtr<MediaByteBuffer> codecSpecific =
++        ForceGetAudioCodecSpecificBlob(mConfig.mCodecSpecificConfig);
++    mMagicCookie.AppendElements(codecSpecific->Elements(),
++                                codecSpecific->Length());
+   }
+ }
+ 
+@@ -262,6 +277,12 @@
+       return "aac"_ns;
+     case kAudioFormatMPEGD_USAC:
+       return "xhe-aac"_ns;
++    case kAudioFormatAppleLossless:
++      return "alac"_ns;
++    case kAudioFormatAC3:
++      return "ac-3"_ns;
++    case kAudioFormatEnhancedAC3:
++      return "ec-3"_ns;
+     default:
+       return "unknown"_ns;
+   }
+@@ -480,8 +501,12 @@
+   UInt32 inputFormatSize = sizeof(aDesc);
+   OSStatus rv;
+ 
+-  if (mFormatID == kAudioFormatMPEGD_USAC && aExtraData.Length() > 0) {
+-    // For xHE-AAC/USAC, we need to use the magic cookie to get the format info
++  if ((mFormatID == kAudioFormatMPEGD_USAC ||
++       mFormatID == kAudioFormatAppleLossless ||
++       mFormatID == kAudioFormatAC3 ||
++       mFormatID == kAudioFormatEnhancedAC3) &&
++      aExtraData.Length() > 0) {
++    // A codec cookie may provide information needed to describe the stream.
+     aDesc.mFormatID = mFormatID;
+     aDesc.mChannelsPerFrame = mConfig.mChannels;
+     aDesc.mSampleRate = mConfig.mRate;
+@@ -755,8 +780,7 @@
+           RESULT_DETAIL("Error setting AudioConverter AAC cookie:%d",
+                         int32_t(status)));
+     }
+-  } else if (magicCookie.Length() &&
+-             mFormatID == kAudioFormatMPEGD_USAC) {
++  } else if (magicCookie.Length() && mFormatID == kAudioFormatMPEGD_USAC) {
+     auto maybeEsdsData = CreateEsds(magicCookie);
+     if (maybeEsdsData.isErr()) {
+       return MediaResult(NS_ERROR_FAILURE,
+@@ -771,6 +795,20 @@
+       return MediaResult(NS_ERROR_FAILURE,
+                          RESULT_DETAIL("AudioConverterSetProperty failed: %d",
+                                        int32_t(status)));
++    }
++  } else if (magicCookie.Length() &&
++             (mFormatID == kAudioFormatAppleLossless ||
++              mFormatID == kAudioFormatAC3 ||
++              mFormatID == kAudioFormatEnhancedAC3)) {
++    status = AudioConverterSetProperty(
++        mConverter, kAudioConverterDecompressionMagicCookie,
++        magicCookie.Length(), magicCookie.Elements());
++    if (status) {
++      LOG("AudioConverterSetProperty failed for cookie: {}", int32_t(status));
++      return MediaResult(
++          NS_ERROR_FAILURE,
++          RESULT_DETAIL("AudioConverterSetProperty failed: %d",
++                        int32_t(status)));
+     }
+   }
+ 
+diff --git a/dom/media/platforms/apple/AppleDecoderModule.cpp b/dom/media/platforms/apple/AppleDecoderModule.cpp
+--- a/dom/media/platforms/apple/AppleDecoderModule.cpp
++++ b/dom/media/platforms/apple/AppleDecoderModule.cpp
+@@ -4,6 +4,7 @@
+ 
+ #include "AppleDecoderModule.h"
+ 
++#include <AudioToolbox/AudioToolbox.h>
+ #include <dlfcn.h>
+ 
+ #include "AOMDecoder.h"
+@@ -30,6 +31,25 @@
+ using media::DecodeSupportSet;
+ using media::MCSInfo;
+ using media::MediaCodec;
++
++static bool IsAudioToolboxCodecAvailable(const nsACString& aMimeType) {
++  AudioFormatID formatID = 0;
++  if (aMimeType.EqualsLiteral("audio/alac")) {
++    formatID = kAudioFormatAppleLossless;
++  } else if (aMimeType.EqualsLiteral("audio/ac3")) {
++    formatID = kAudioFormatAC3;
++  } else if (aMimeType.EqualsLiteral("audio/eac3")) {
++    formatID = kAudioFormatEnhancedAC3;
++  } else {
++    return false;
++  }
++
++  UInt32 decoderListSize = 0;
++  return AudioFormatGetPropertyInfo(kAudioFormatProperty_Decoders,
++                                    sizeof(formatID), &formatID,
++                                    &decoderListSize) == noErr &&
++         decoderListSize >= sizeof(AudioClassDescription);
++}
+ 
+ static inline CMVideoCodecType GetCMVideoCodecType(const MediaCodec& aCodec) {
+   switch (aCodec) {
+@@ -109,6 +129,8 @@
+     const nsACString& aMimeType, DecoderDoctorDiagnostics* aDiagnostics) const {
+   bool checkSupport =
+       aMimeType.EqualsLiteral("audio/mp4a-latm") ||
++      (StaticPrefs::media_apple_audio_toolbox_extended_enabled() &&
++       IsAudioToolboxCodecAvailable(aMimeType)) ||
+       MP4Decoder::IsH264(aMimeType) || VPXDecoder::IsVP9(aMimeType) ||
+       AOMDecoder::IsAV1(aMimeType) || MP4Decoder::IsHEVC(aMimeType);
+   DecodeSupportSet supportType{};
+diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/StaticPrefList.yaml
+--- a/modules/libpref/init/StaticPrefList.yaml
++++ b/modules/libpref/init/StaticPrefList.yaml
+@@ -13214,6 +13214,12 @@
+   value: true
+   mirror: always
+ 
++# Enable AudioToolbox decoding for ALAC and Dolby Digital in MP4.
++- name: media.apple.audio-toolbox.extended.enabled
++  type: RelaxedAtomicBool
++  value: false
++  mirror: always
++
+ - name: media.decoder-doctor.testing
+   type: bool
+   value: false

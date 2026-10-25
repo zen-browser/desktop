@@ -22,6 +22,18 @@
     "path": "firefox/no_liquid_glass_icon.patch"
   },
   {
+    "type": "local",
+    "path": "firefox/apple_audio_toolbox_extended.patch"
+  },
+  {
+    "type": "local",
+    "path": "firefox/apple_imageio_decoders.patch"
+  },
+  {
+    "type": "local",
+    "path": "firefox/apple_prores_videotoolbox.patch"
+  },
+  {
     "type": "patch",
     "url": "https://codeberg.org/librewolf/source/raw/branch/main/patches/firefox-in-ua.patch",
     "dest": "librewolf",

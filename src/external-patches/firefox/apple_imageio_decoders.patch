@@ -1,0 +1,332 @@
+--- a/image/ImageUtils.h
++++ b/image/ImageUtils.h
+@@ -44,6 +44,7 @@
+   WEBP,
+   AVIF,
+   JXL,
++  IMAGEIO,
+   UNKNOWN
+ };
+ 
+--- a/image/DecoderFactory.cpp
++++ b/image/DecoderFactory.cpp
+@@ -17,6 +17,10 @@
+ #include "nsICODecoder.h"
+ #include "nsIconDecoder.h"
+ #include "nsJPEGDecoder.h"
++#ifdef XP_MACOSX
++#  include "nsImageIODecoder.h"
++#  include "mozilla/StaticPrefs_image.h"
++#endif
+ #include "nsMimeTypes.h"
+ #include "nsPNGDecoder.h"
+ #include "nsWebPDecoder.h"
+@@ -91,6 +95,15 @@
+     type = DecoderType::JXL;
+   }
+ #endif
++#ifdef XP_MACOSX
++  else if (StaticPrefs::image_apple_imageio_enabled() &&
++           (!strcmp(aMimeType, "image/heic") ||
++            !strcmp(aMimeType, "image/heif") ||
++            !strcmp(aMimeType, IMAGE_TIFF) ||
++            !strcmp(aMimeType, "image/jp2"))) {
++    type = DecoderType::IMAGEIO;
++  }
++#endif
+ 
+   return type;
+ }
+@@ -137,6 +150,11 @@
+ #ifdef MOZ_JXL
+     case DecoderType::JXL:
+       decoder = new nsJXLDecoder(aImage);
++      break;
++#endif
++#ifdef XP_MACOSX
++    case DecoderType::IMAGEIO:
++      decoder = new nsImageIODecoder(aImage);
+       break;
+ #endif
+     default:
+--- a/image/decoders/moz.build
++++ b/image/decoders/moz.build
+@@ -14,6 +14,8 @@
+ 
+ if toolkit == "cocoa":
+     DIRS += ["icon/mac", "icon"]
++    UNIFIED_SOURCES += ["nsImageIODecoder.cpp"]
++    OS_LIBS += ["-framework CoreGraphics", "-framework ImageIO"]
+ elif toolkit == "android":
+     DIRS += ["icon/android", "icon"]
+ 
+--- a/modules/libpref/init/StaticPrefList.yaml
++++ b/modules/libpref/init/StaticPrefList.yaml
+@@ -9285,6 +9285,11 @@
+   value: false
+   mirror: once
+ 
++- name: image.apple.imageio.enabled
++  type: RelaxedAtomicBool
++  value: false
++  mirror: always
++
+ #ifdef MOZ_JXL
+ # Whether we attempt to decode JXL images or not.
+ - name: image.jxl.enabled
+--- a/netwerk/mime/nsMimeTypes.h
++++ b/netwerk/mime/nsMimeTypes.h
+@@ -151,6 +151,9 @@
+ #define IMAGE_XBM3 "image/xbm"
+ #define IMAGE_ART "image/x-jg"
+ #define IMAGE_TIFF "image/tiff"
++#define IMAGE_HEIC "image/heic"
++#define IMAGE_HEIF "image/heif"
++#define IMAGE_JP2 "image/jp2"
+ #define IMAGE_BMP "image/bmp"
+ #define IMAGE_BMP_MS "image/x-ms-bmp"
+ // This is used internally to represent Windows clipboard BMPs which remove
+--- a/uriloader/exthandler/nsExternalHelperAppService.cpp
++++ b/uriloader/exthandler/nsExternalHelperAppService.cpp
+@@ -588,6 +588,9 @@
+     {IMAGE_PNG, "png", "PNG Image"},
+     {IMAGE_APNG, "apng", "APNG Image"},
+     {IMAGE_TIFF, "tiff,tif", "TIFF Image"},
++    {IMAGE_HEIC, "heic", "HEIC Image"},
++    {IMAGE_HEIF, "heif", "HEIF Image"},
++    {IMAGE_JP2, "jp2,j2k", "JPEG 2000 Image"},
+     {IMAGE_XBM, "xbm", "XBM Image"},
+     {IMAGE_SVG_XML, "svg", "Scalable Vector Graphics"},
+     {IMAGE_WEBP, "webp", "WebP Image"},
+--- a/image/decoders/nsImageIODecoder.h
++++ b/image/decoders/nsImageIODecoder.h
+@@ -0,0 +1,34 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++#ifndef mozilla_image_decoders_nsImageIODecoder_h
++#define mozilla_image_decoders_nsImageIODecoder_h
++
++#include "Decoder.h"
++#include "mozilla/Vector.h"
++#include "SurfacePipe.h"
++
++namespace mozilla::image {
++
++class nsImageIODecoder final : public Decoder {
++ public:
++  DecoderType GetType() const override { return DecoderType::IMAGEIO; }
++
++ protected:
++  LexerResult DoDecode(SourceBufferIterator& aIterator,
++                       IResumable* aOnResume) override;
++  Maybe<glean::impl::MemoryDistributionMetric> SpeedMetric() const override;
++
++ private:
++  friend class DecoderFactory;
++  explicit nsImageIODecoder(RasterImage* aImage) : Decoder(aImage) {}
++  LexerResult DecodeCompleteSource();
++
++  Vector<uint8_t> mEncodedData;
++  bool mSourceComplete = false;
++};
++
++}  // namespace mozilla::image
++
++#endif
+--- a/image/decoders/nsImageIODecoder.cpp
++++ b/image/decoders/nsImageIODecoder.cpp
+@@ -0,0 +1,192 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++#include "nsImageIODecoder.h"
++
++#include <algorithm>
++
++#include <CoreGraphics/CoreGraphics.h>
++#include <ImageIO/ImageIO.h>
++
++#include "RasterImage.h"
++#include "SurfacePipeFactory.h"
++
++namespace mozilla::image {
++
++static constexpr size_t kMaxEncodedBytes = 256 * 1024 * 1024;
++static constexpr size_t kMaxDecodedBytes = 512 * 1024 * 1024;
++static constexpr size_t kMaxImageDimension = 32768;
++
++Maybe<glean::impl::MemoryDistributionMetric> nsImageIODecoder::SpeedMetric()
++    const {
++  return Nothing();
++}
++
++LexerResult nsImageIODecoder::DoDecode(SourceBufferIterator& aIterator,
++                                       IResumable* aOnResume) {
++  while (!mSourceComplete) {
++    if (!aIterator.IsReady() || aIterator.Length() == 0) {
++      SourceBufferIterator::State state =
++          aIterator.AdvanceOrScheduleResume(SIZE_MAX, aOnResume);
++      if (state == SourceBufferIterator::WAITING) {
++        return LexerResult(Yield::NEED_MORE_DATA);
++      }
++      if (state == SourceBufferIterator::COMPLETE) {
++        if (NS_FAILED(aIterator.CompletionStatus())) {
++          return LexerResult(TerminalState::FAILURE);
++        }
++        mSourceComplete = true;
++        break;
++      }
++    }
++
++    const size_t length = aIterator.Length();
++    if (length > kMaxEncodedBytes - mEncodedData.length() ||
++        !mEncodedData.append(reinterpret_cast<const uint8_t*>(aIterator.Data()),
++                             length)) {
++      return LexerResult(TerminalState::FAILURE);
++    }
++    aIterator.MarkConsumed(length);
++  }
++  return DecodeCompleteSource();
++}
++
++LexerResult nsImageIODecoder::DecodeCompleteSource() {
++  if (mEncodedData.empty()) {
++    return LexerResult(TerminalState::FAILURE);
++  }
++
++  CFDataRef data = CFDataCreate(nullptr, mEncodedData.begin(),
++                                static_cast<CFIndex>(mEncodedData.length()));
++  if (!data) {
++    return LexerResult(TerminalState::FAILURE);
++  }
++  CGImageSourceRef source = CGImageSourceCreateWithData(data, nullptr);
++  CFRelease(data);
++  if (!source || CGImageSourceGetCount(source) == 0) {
++    if (source) {
++      CFRelease(source);
++    }
++    return LexerResult(TerminalState::FAILURE);
++  }
++
++  CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(source, 0,
++                                                                  nullptr);
++  if (!properties) {
++    CFRelease(source);
++    return LexerResult(TerminalState::FAILURE);
++  }
++  auto readDimension = [properties](CFStringRef key) -> size_t {
++    CFNumberRef value = static_cast<CFNumberRef>(CFDictionaryGetValue(
++        properties, key));
++    int64_t dimension = 0;
++    if (!value || !CFNumberGetValue(value, kCFNumberSInt64Type, &dimension) ||
++        dimension <= 0 || dimension > kMaxImageDimension) {
++      return 0;
++    }
++    return static_cast<size_t>(dimension);
++  };
++  const size_t sourceWidth = readDimension(kCGImagePropertyPixelWidth);
++  const size_t sourceHeight = readDimension(kCGImagePropertyPixelHeight);
++  CFRelease(properties);
++  if (!sourceWidth || !sourceHeight ||
++      sourceWidth > kMaxDecodedBytes / 4 / sourceHeight) {
++    CFRelease(source);
++    return LexerResult(TerminalState::FAILURE);
++  }
++
++  const void* keys[] = {kCGImageSourceCreateThumbnailFromImageAlways,
++                        kCGImageSourceCreateThumbnailWithTransform,
++                        kCGImageSourceThumbnailMaxPixelSize};
++  const int maxDimension = static_cast<int>(std::max(sourceWidth, sourceHeight));
++  CFNumberRef maxPixelSize = CFNumberCreate(kCFAllocatorDefault,
++                                             kCFNumberIntType, &maxDimension);
++  if (!maxPixelSize) {
++    CFRelease(source);
++    return LexerResult(TerminalState::FAILURE);
++  }
++  const void* values[] = {kCFBooleanTrue, kCFBooleanTrue, maxPixelSize};
++  CFDictionaryRef options = CFDictionaryCreate(
++      kCFAllocatorDefault, keys, values, 3, &kCFTypeDictionaryKeyCallBacks,
++      &kCFTypeDictionaryValueCallBacks);
++  CFRelease(maxPixelSize);
++  if (!options) {
++    CFRelease(source);
++    return LexerResult(TerminalState::FAILURE);
++  }
++  CGImageRef image = CGImageSourceCreateThumbnailAtIndex(source, 0, options);
++  CFRelease(options);
++  CFRelease(source);
++  if (!image) {
++    return LexerResult(TerminalState::FAILURE);
++  }
++
++  const size_t width = CGImageGetWidth(image);
++  const size_t height = CGImageGetHeight(image);
++  if (!width || !height || width > kMaxImageDimension ||
++      height > kMaxImageDimension || width > kMaxDecodedBytes / 4 / height) {
++    CGImageRelease(image);
++    return LexerResult(TerminalState::FAILURE);
++  }
++  PostSize(static_cast<int32_t>(width), static_cast<int32_t>(height));
++  if (WantsFrameCount()) {
++    PostFrameCount(1);
++  }
++  if (IsMetadataDecode()) {
++    CGImageRelease(image);
++    return LexerResult(TerminalState::SUCCESS);
++  }
++
++  const size_t bytesPerRow = width * 4;
++  Vector<uint8_t> pixels;
++  if (!pixels.resize(bytesPerRow * height)) {
++    CGImageRelease(image);
++    return LexerResult(TerminalState::FAILURE);
++  }
++  CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
++  if (!colorSpace) {
++    CGImageRelease(image);
++    return LexerResult(TerminalState::FAILURE);
++  }
++  CGContextRef context = CGBitmapContextCreate(
++      pixels.begin(), width, height, 8, bytesPerRow, colorSpace,
++      kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
++  CGColorSpaceRelease(colorSpace);
++  if (!context) {
++    CGImageRelease(image);
++    return LexerResult(TerminalState::FAILURE);
++  }
++  CGContextTranslateCTM(context, 0, height);
++  CGContextScaleCTM(context, 1, -1);
++  CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
++  CGContextRelease(context);
++  if (CGImageGetAlphaInfo(image) != kCGImageAlphaNone &&
++      CGImageGetAlphaInfo(image) != kCGImageAlphaNoneSkipFirst &&
++      CGImageGetAlphaInfo(image) != kCGImageAlphaNoneSkipLast) {
++    PostHasTransparency();
++  }
++  CGImageRelease(image);
++
++  Maybe<SurfacePipe> pipe = SurfacePipeFactory::CreateSurfacePipe(
++      this, Size(), OutputSize(), FullFrame(), SurfaceFormat::R8G8B8A8,
++      SurfaceFormat::OS_RGBA, Nothing(), nullptr, SurfacePipeFlags());
++  if (!pipe) {
++    return LexerResult(TerminalState::FAILURE);
++  }
++  const uint32_t* row = reinterpret_cast<const uint32_t*>(pixels.begin());
++  for (size_t y = 0; y < height; ++y) {
++    const WriteState state = pipe->WriteBuffer(row + y * width);
++    if (state == WriteState::FAILURE) {
++      return LexerResult(TerminalState::FAILURE);
++    }
++    if (state == WriteState::FINISHED) {
++      break;
++    }
++  }
++  PostFrameStop();
++  PostDecodeDone();
++  return LexerResult(TerminalState::SUCCESS);
++}
++
++}  // namespace mozilla::image

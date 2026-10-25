@@ -1,0 +1,368 @@
+--- a/third_party/rust/mp4parse/src/boxes.rs
++++ b/third_party/rust/mp4parse/src/boxes.rs
+@@ -150,6 +150,11 @@
+     H263SpecificBox                   0x6432_3633, // "d263"
+     HEV1SampleEntry                   0x6865_7631, // "hev1"
+     HVC1SampleEntry                   0x6876_6331, // "hvc1"
++    AppleProRes422ProxySampleEntry    0x6170_636f, // "apco"
++    AppleProRes422LTSampleEntry       0x6170_6373, // "apcs"
++    AppleProRes422SampleEntry         0x6170_636e, // "apcn"
++    AppleProRes422HQSampleEntry       0x6170_6368, // "apch"
++    AppleProRes4444SampleEntry        0x6170_3468, // "ap4h"
+     HEVCConfigurationBox              0x6876_6343, // "hvcC"
+     MP4AudioSampleEntry               0x6d70_3461, // "mp4a"
+     MP4VideoSampleEntry               0x6d70_3476, // "mp4v"
+--- a/third_party/rust/mp4parse/src/lib.rs
++++ b/third_party/rust/mp4parse/src/lib.rs
+@@ -1176,6 +1176,7 @@
+     ESDSConfig(TryVec<u8>),
+     H263Config(TryVec<u8>),
+     HEVCConfig(TryVec<u8>),
++    ProResConfig([u8; 4]),
+ }
+ 
+ /// Mastering display colour volume from an `mdcv` box (ISO 14496-12).
+@@ -2143,6 +2144,7 @@
+     ALAC,
+     H263,
+     HEVC, // 23008-2
++    ProRes,
+     #[cfg(feature = "3gpp")]
+     AMRNB,
+     #[cfg(feature = "3gpp")]
+@@ -5767,6 +5769,11 @@
+         BoxType::ProtectedVisualSampleEntry => CodecType::EncryptedVideo,
+         BoxType::H263SampleEntry => CodecType::H263,
+         BoxType::HEV1SampleEntry | BoxType::HVC1SampleEntry => CodecType::HEVC,
++        BoxType::AppleProRes422ProxySampleEntry
++        | BoxType::AppleProRes422LTSampleEntry
++        | BoxType::AppleProRes422SampleEntry
++        | BoxType::AppleProRes422HQSampleEntry
++        | BoxType::AppleProRes4444SampleEntry => CodecType::ProRes,
+         _ => {
+             debug!("Unsupported video codec, box {name:?} found");
+             CodecType::Unknown
+@@ -5788,7 +5795,11 @@
+     skip(src, 50)?;
+ 
+     // Skip clap/pasp/etc. for now.
+-    let mut codec_specific = None;
++    let mut codec_specific = if codec_type == CodecType::ProRes {
++        Some(VideoCodecSpecific::ProResConfig(FourCC::from(name).value))
++    } else {
++        None
++    };
+     let mut pixel_aspect_ratio = None;
+     let mut colour_info = None;
+     let mut colr_types_seen = TryVec::<FourCC>::new();
+--- a/third_party/rust/mp4parse_capi/src/lib.rs
++++ b/third_party/rust/mp4parse_capi/src/lib.rs
+@@ -103,6 +103,7 @@
+     Alac,
+     H263,
+     Hevc,
++    Prores,
+     #[cfg(feature = "3gpp")]
+     AMRNB,
+     #[cfg(feature = "3gpp")]
+@@ -1118,6 +1119,7 @@
+             VideoCodecSpecific::AVCConfig(_) => Mp4parseCodec::Avc,
+             VideoCodecSpecific::H263Config(_) => Mp4parseCodec::H263,
+             VideoCodecSpecific::HEVCConfig(_) => Mp4parseCodec::Hevc,
++            VideoCodecSpecific::ProResConfig(_) => Mp4parseCodec::Prores,
+             #[cfg(feature = "mp4v")]
+             VideoCodecSpecific::ESDSConfig(_) => Mp4parseCodec::Mp4v,
+             #[cfg(not(feature = "mp4v"))]
+@@ -1133,6 +1135,9 @@
+         match video.codec_specific {
+             VideoCodecSpecific::AV1Config(ref config) => {
+                 sample_info.extra_data.set_data(&config.raw_config);
++            }
++            VideoCodecSpecific::ProResConfig(ref fourcc) => {
++                sample_info.extra_data.set_data(fourcc);
+             }
+             VideoCodecSpecific::AVCConfig(ref data)
+             | VideoCodecSpecific::ESDSConfig(ref data)
+--- a/dom/media/mp4/MP4Metadata.cpp
++++ b/dom/media/mp4/MP4Metadata.cpp
+@@ -355,6 +355,9 @@
+       case MP4PARSE_CODEC_HEVC:
+         codecString = "hevc";
+         break;
++      case MP4PARSE_CODEC_PRORES:
++        codecString = "prores";
++        break;
+     }
+   }
+   MOZ_LOG_FMT(gMP4MetadataLog, LogLevel::Debug, "track codec {} ({})\n",
+--- a/dom/media/mp4/DecoderData.cpp
++++ b/dom/media/mp4/DecoderData.cpp
+@@ -332,6 +332,12 @@
+     mMimeType = "video/mp4v-es"_ns;
+   } else if (codecType == MP4PARSE_CODEC_HEVC) {
+     mMimeType = "video/hevc"_ns;
++  } else if (codecType == MP4PARSE_CODEC_PRORES) {
++    const auto& data = video->sample_info[0].extra_data;
++    if (data.length == 4) {
++      mMimeType.AssignLiteral("video/");
++      mMimeType.Append(reinterpret_cast<const char*>(data.data), data.length);
++    }
+   }
+   mTrackId = track->track_id;
+   if (track->duration > TimeUnit::MaxTicks()) {
+@@ -351,8 +357,9 @@
+   }
+   mRotation = ToSupportedRotation(video->rotation);
+   Mp4parseByteData extraData = video->sample_info[0].extra_data;
+-  // If length is 0 we append nothing
+-  mExtraData->AppendElements(extraData.data, extraData.length);
++  if (codecType != MP4PARSE_CODEC_PRORES) {
++    mExtraData->AppendElements(extraData.data, extraData.length);
++  }
+   const auto& si = video->sample_info[0];
+   if (si.has_colour_info) {
+     mTransferFunction = gfxUtils::CicpToTransferFunction(
+--- a/dom/media/mp4/MP4Decoder.h
++++ b/dom/media/mp4/MP4Decoder.h
+@@ -38,6 +38,7 @@
+   // identify HEVC. Does not parse general content type strings, i.e. white
+   // space matters.
+   static bool IsHEVC(const nsACString& aMimeType);
++  static bool IsProRes(const nsACString& aMimeType);
+ 
+   // Returns true if the MP4 backend is preffed on.
+   static bool IsEnabled();
+--- a/dom/media/mp4/MP4Decoder.cpp
++++ b/dom/media/mp4/MP4Decoder.cpp
+@@ -104,6 +104,17 @@
+       tracks.AppendElement(std::move(trackInfo));
+       continue;
+     }
++#ifdef XP_MACOSX
++    if (StaticPrefs::media_apple_prores_enabled() &&
++        (codec.EqualsLiteral("apch") || codec.EqualsLiteral("apcn") ||
++         codec.EqualsLiteral("apcs") || codec.EqualsLiteral("apco") ||
++         codec.EqualsLiteral("ap4h"))) {
++      tracks.AppendElement(
++          CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
++              "video/"_ns + NS_ConvertUTF16toUTF8(codec), aType));
++      continue;
++    }
++#endif
+     if (StaticPrefs::media_hevc_enabled() && IsH265CodecString(codec)) {
+       auto trackInfo =
+           CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
+@@ -211,6 +222,20 @@
+ }
+ 
+ /* static */
++bool MP4Decoder::IsProRes(const nsACString& aMimeType) {
++#ifdef XP_MACOSX
++  return StaticPrefs::media_apple_prores_enabled() &&
++         (aMimeType.EqualsLiteral("video/apch") ||
++          aMimeType.EqualsLiteral("video/apcn") ||
++          aMimeType.EqualsLiteral("video/apcs") ||
++          aMimeType.EqualsLiteral("video/apco") ||
++          aMimeType.EqualsLiteral("video/ap4h"));
++#else
++  return false;
++#endif
++}
++
++/* static */
+ bool MP4Decoder::IsEnabled() { return StaticPrefs::media_mp4_enabled(); }
+ 
+ /* static */
+--- a/dom/media/platforms/MediaCodecsSupport.h
++++ b/dom/media/platforms/MediaCodecsSupport.h
+@@ -21,6 +21,7 @@
+   X(VP9)           \
+   X(AV1)           \
+   X(HEVC)          \
++  X(ProRes)        \
+   X(AAC)           \
+   X(FLAC)          \
+   X(MP3)           \
+--- a/dom/media/platforms/MediaCodecsSupport.cpp
++++ b/dom/media/platforms/MediaCodecsSupport.cpp
+@@ -309,6 +309,9 @@
+   if (MP4Decoder::IsHEVC(aMimeType)) {
+     return MediaCodec::HEVC;
+   }
++  if (MP4Decoder::IsProRes(aMimeType)) {
++    return MediaCodec::ProRes;
++  }
+   if (AOMDecoder::IsAV1(aMimeType)) {
+     return MediaCodec::AV1;
+   }
+@@ -365,13 +368,14 @@
+ #define MEDIA_CODEC_DEF_ENTRY_LACKOFEXT(name, mimeType) \
+   MEDIA_CODEC_DEF_ENTRY_META(name, mimeType, name##LackOfExtension)
+ 
+-std::array<CodecDefinition, 13> MCSInfo::GetAllCodecDefinitions() {
+-  static constexpr std::array<CodecDefinition, 13> codecDefinitions = {
++std::array<CodecDefinition, 14> MCSInfo::GetAllCodecDefinitions() {
++  static constexpr std::array<CodecDefinition, 14> codecDefinitions = {
+       {MEDIA_CODEC_DEF_ENTRY(H264, "video/avc"),
+        MEDIA_CODEC_DEF_ENTRY(VP9, "video/vp9"),
+        MEDIA_CODEC_DEF_ENTRY(VP8, "video/vp8"),
+        MEDIA_CODEC_DEF_ENTRY_LACKOFEXT(AV1, "video/av1"),
+        MEDIA_CODEC_DEF_ENTRY_LACKOFEXT(HEVC, "video/hevc"),
++       MEDIA_CODEC_DEF_ENTRY(ProRes, "video/apch"),
+        MEDIA_CODEC_DEF_ENTRY(AAC, "audio/mp4a-latm"),
+        MEDIA_CODEC_DEF_ENTRY(MP3, "audio/mpeg"),
+        MEDIA_CODEC_DEF_ENTRY(Opus, "audio/opus"),
+--- a/dom/media/platforms/apple/AppleDecoderModule.cpp
++++ b/dom/media/platforms/apple/AppleDecoderModule.cpp
+@@ -61,6 +61,8 @@
+       return kCMVideoCodecType_VP9;
+     case MediaCodec::HEVC:
+       return kCMVideoCodecType_HEVC;
++    case MediaCodec::ProRes:
++      return kCMVideoCodecType_AppleProRes422HQ;
+     default:
+       return static_cast<CMVideoCodecType>(0);
+   }
+@@ -81,6 +83,7 @@
+   sCanUseHWDecoder[MediaCodec::H264] = CanCreateHWDecoder(MediaCodec::H264);
+   // HEVC HW is supported since 10.13.
+   sCanUseHWDecoder[MediaCodec::HEVC] = CanCreateHWDecoder(MediaCodec::HEVC);
++  sCanUseHWDecoder[MediaCodec::ProRes] = CanCreateHWDecoder(MediaCodec::ProRes);
+   // VP9 HW is supported since 11.0 on Apple silicon.
+   sCanUseHWDecoder[MediaCodec::VP9] =
+       RegisterSupplementalDecoder(MediaCodec::VP9) &&
+@@ -132,7 +135,8 @@
+       (StaticPrefs::media_apple_audio_toolbox_extended_enabled() &&
+        IsAudioToolboxCodecAvailable(aMimeType)) ||
+       MP4Decoder::IsH264(aMimeType) || VPXDecoder::IsVP9(aMimeType) ||
+-      AOMDecoder::IsAV1(aMimeType) || MP4Decoder::IsHEVC(aMimeType);
++      AOMDecoder::IsAV1(aMimeType) || MP4Decoder::IsHEVC(aMimeType) ||
++      MP4Decoder::IsProRes(aMimeType);
+   DecodeSupportSet supportType{};
+ 
+   if (checkSupport) {
+@@ -176,6 +180,8 @@
+         dss += DecodeSupport::SoftwareDecode;
+       }
+       break;
++    case MediaCodec::ProRes:
++      break;
+     default:
+       dss += DecodeSupport::SoftwareDecode;
+       break;
+@@ -191,6 +197,9 @@
+   }
+   if (MP4Decoder::IsHEVC(aConfig.mMimeType)) {
+     return StaticPrefs::media_hevc_enabled();
++  }
++  if (MP4Decoder::IsProRes(aConfig.mMimeType)) {
++    return true;
+   }
+   if (AOMDecoder::IsAV1(aConfig.mMimeType)) {
+     if (!sCanUseHWDecoder[MediaCodec::AV1] ||
+@@ -284,6 +293,10 @@
+   } else if (aCodec == MediaCodec::VP9) {
+     info.mMimeType = "video/vp9";
+     VPXDecoder::GetVPCCBox(info.mExtraData, VPXDecoder::VPXStreamInfo());
++  } else if (aCodec == MediaCodec::ProRes) {
++    info.mMimeType = "video/apch";
++    info.mExtraData = new MediaByteBuffer();
++    info.mExtraData->AppendElements("apch", 4);
+   } else if (aCodec == MediaCodec::HEVC) {
+     // Although HEVC hardware decoding is supported starting with macOS 10.13
+     // and we only support macOS 10.15+, Intel GPUs (Skylake and later, 2015)
+--- a/dom/media/platforms/apple/AppleVTDecoder.h
++++ b/dom/media/platforms/apple/AppleVTDecoder.h
+@@ -132,7 +132,9 @@
+ 
+   MOZ_DEFINE_ENUM_CLASS_WITH_TOSTRING_AT_CLASS_SCOPE(StreamType,
+                                                      (Unknown, H264, VP9, AV1,
+-                                                      HEVC));
++                                                      HEVC, ProRes422HQ,
++                                                      ProRes422, ProRes422LT,
++                                                      ProRes422Proxy, ProRes4444));
+ 
+   StreamType GetStreamType(const nsCString& aMimeType) const;
+   uint32_t GetMaxRefFrames(bool aIsLowLatency) const;
+--- a/dom/media/platforms/apple/AppleVTDecoder.cpp
++++ b/dom/media/platforms/apple/AppleVTDecoder.cpp
+@@ -731,6 +731,16 @@
+     streamType = CMVideoCodecType(AppleDecoderModule::kCMVideoCodecType_VP9);
+   } else if (mStreamType == StreamType::HEVC) {
+     streamType = kCMVideoCodecType_HEVC;
++  } else if (mStreamType == StreamType::ProRes422HQ) {
++    streamType = kCMVideoCodecType_AppleProRes422HQ;
++  } else if (mStreamType == StreamType::ProRes422) {
++    streamType = kCMVideoCodecType_AppleProRes422;
++  } else if (mStreamType == StreamType::ProRes422LT) {
++    streamType = kCMVideoCodecType_AppleProRes422LT;
++  } else if (mStreamType == StreamType::ProRes422Proxy) {
++    streamType = kCMVideoCodecType_AppleProRes422Proxy;
++  } else if (mStreamType == StreamType::ProRes4444) {
++    streamType = kCMVideoCodecType_AppleProRes4444;
+   } else {
+     streamType = kCMVideoCodecType_AV1;
+   }
+@@ -785,6 +795,26 @@
+ }
+ 
+ CFDictionaryRef AppleVTDecoder::CreateDecoderExtensions() {
++  if (mStreamType == StreamType::ProRes422HQ ||
++      mStreamType == StreamType::ProRes422 ||
++      mStreamType == StreamType::ProRes422LT ||
++      mStreamType == StreamType::ProRes422Proxy ||
++      mStreamType == StreamType::ProRes4444) {
++    AutoCFTypeRef<CFDictionaryRef> atoms(CFDictionaryCreate(
++        kCFAllocatorDefault, nullptr, nullptr, 0,
++        &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
++    const void* extensionKeys[] = {
++        kCVImageBufferChromaLocationBottomFieldKey,
++        kCVImageBufferChromaLocationTopFieldKey,
++        kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms};
++    const void* extensionValues[] = {kCVImageBufferChromaLocation_Left,
++                                     kCVImageBufferChromaLocation_Left, atoms};
++    return CFDictionaryCreate(
++        kCFAllocatorDefault, extensionKeys, extensionValues,
++        std::size(extensionKeys), &kCFTypeDictionaryKeyCallBacks,
++        &kCFTypeDictionaryValueCallBacks);
++  }
++
+   AutoCFTypeRef<CFDataRef> data(
+       CFDataCreate(kCFAllocatorDefault, mExtraData->Elements(),
+                    AssertedCast<CFIndex>(mExtraData->Length())));
+@@ -902,6 +932,21 @@
+   if (MP4Decoder::IsHEVC(aMimeType)) {
+     return StreamType::HEVC;
+   }
++  if (aMimeType.EqualsLiteral("video/apch")) {
++    return StreamType::ProRes422HQ;
++  }
++  if (aMimeType.EqualsLiteral("video/apcn")) {
++    return StreamType::ProRes422;
++  }
++  if (aMimeType.EqualsLiteral("video/apcs")) {
++    return StreamType::ProRes422LT;
++  }
++  if (aMimeType.EqualsLiteral("video/apco")) {
++    return StreamType::ProRes422Proxy;
++  }
++  if (aMimeType.EqualsLiteral("video/ap4h")) {
++    return StreamType::ProRes4444;
++  }
+   if (VPXDecoder::IsVP9(aMimeType)) {
+     return StreamType::VP9;
+   }
+--- a/modules/libpref/init/StaticPrefList.yaml
++++ b/modules/libpref/init/StaticPrefList.yaml
+@@ -13220,6 +13220,11 @@
+   mirror: always
+ 
+ # Enable AudioToolbox decoding for ALAC and Dolby Digital in MP4.
++- name: media.apple.prores.enabled
++  type: RelaxedAtomicBool
++  value: false
++  mirror: always
++
+ - name: media.apple.audio-toolbox.extended.enabled
+   type: RelaxedAtomicBool
+   value: false

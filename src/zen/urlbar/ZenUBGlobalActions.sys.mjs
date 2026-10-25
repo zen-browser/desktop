@@ -216,9 +216,9 @@ const globalActionsTemplate = [
     command: "History:RestoreLastClosedTabOrWindowOrSession",
     icon: "chrome://browser/skin/zen-icons/history.svg",
     isAvailable: window => {
-      return lazy.SessionStore.getClosedTabGroups({
+      return !!lazy.SessionStore.getClosedTabCount({
         sourceWindow: window,
-      }).length > 0;
+      }).length;
     },
   },
   {

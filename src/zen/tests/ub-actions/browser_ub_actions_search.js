@@ -52,7 +52,7 @@ add_task(async function test_Ub_Actions_Exact_Match_Ranks_First() {
   await TabStateFlusher.flush(tab.linkedBrowser);
   BrowserTestUtils.removeTab(tab);
   await TestUtils.waitForCondition(
-    () => SessionStore.getClosedTabCount(window) > 0,
+    () => SessionStore.getClosedTabCount({ sourceWindow: window }) > 0,
     "Waiting for the closed tab to be recorded"
   );
 

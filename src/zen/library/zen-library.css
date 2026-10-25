@@ -261,7 +261,7 @@ zen-library[customizing] .zen-library-tab {
 
 @media (max-height: 700px) {
   .zen-library-tab {
-    margin-block: 0px;
+    margin-block: 0;
   }
 }
 

@@ -375,3 +375,7 @@ zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-new-unsynced-window-shortcut = New Blank Window
 zen-duplicate-tab-shortcut = Duplicate Tab
 zen-key-find-selection = Find Selection
+
+zen-pinned-tab-manager-protect-pinned-essentials =
+    .label = Enable protection for Pinned and Essential tabs
+    .description = Add a browser-wide Lock/Unlock checkbox to the Pinned and Essential tab context menu.

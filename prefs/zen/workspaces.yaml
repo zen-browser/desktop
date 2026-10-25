@@ -56,3 +56,9 @@
 
 - name: zen.pinned-tab-manager.close-shortcut-behavior
   value: reset-unload-switch
+
+- name: zen.pinned-tab-manager.protect-pinned-essentials
+  value: false
+
+- name: zen.pinned-tab-manager.protected-tabs-locked
+  value: true

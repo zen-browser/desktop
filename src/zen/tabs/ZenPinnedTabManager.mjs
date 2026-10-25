@@ -75,6 +75,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this.observer = new ZenPinnedTabsObserver();
     this._initClosePinnedTabShortcut();
     this._insertItemsIntoTabContextMenu();
+    this._initTabProtection();
     this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
     this._zenClickEventListener = this._onTabClick.bind(this);
@@ -92,6 +93,321 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         }
       }
     });
+  }
+
+  get tabProtectionEnabled() {
+    return Services.prefs.getBoolPref(
+      "zen.pinned-tab-manager.protect-pinned-essentials",
+      false
+    );
+  }
+
+  get tabProtectionLocked() {
+    return (
+      this.tabProtectionEnabled &&
+      Services.prefs.getBoolPref(
+        "zen.pinned-tab-manager.protected-tabs-locked",
+        true
+      )
+    );
+  }
+
+  isProtectedTab(tab) {
+    return Boolean(tab?.pinned || tab?.hasAttribute?.("zen-essential"));
+  }
+
+  _protectionTabs(items) {
+    const tabs = [];
+    const seen = new Set();
+    const visit = item => {
+      if (!item || seen.has(item)) {
+        return;
+      }
+      seen.add(item);
+      if (gBrowser.isTab(item)) {
+        tabs.push(item);
+        return;
+      }
+      if (item.tabs && typeof item.tabs[Symbol.iterator] === "function") {
+        for (const tab of item.tabs) {
+          visit(tab);
+        }
+        return;
+      }
+      if (
+        item.group?.tabs &&
+        typeof item.group.tabs[Symbol.iterator] === "function"
+      ) {
+        for (const tab of item.group.tabs) {
+          visit(tab);
+        }
+        return;
+      }
+      if (item.splitview) {
+        visit(item.splitview);
+      }
+    };
+    for (const item of items ?? []) {
+      visit(item);
+    }
+    return tabs;
+  }
+
+  _isProtectionTeardown(tab) {
+    if (Services.startup?.shuttingDown) {
+      return true;
+    }
+    const ownerWindow = tab?.documentGlobal ?? window;
+    if (ownerWindow?.closed) {
+      return true;
+    }
+    if (ownerWindow?.skipNextCanClose) {
+      return true;
+    }
+    if (ownerWindow?.gZenWorkspaces?._isClosingWindow) {
+      return true;
+    }
+    if (tab?.closing) {
+      return true;
+    }
+    return false;
+  }
+
+  canPerformProtectedAction(item, action) {
+    if (!this.tabProtectionLocked) {
+      return true;
+    }
+    const tabs = this._protectionTabs([item]);
+    const protectedTabs = tabs.filter(tab => this.isProtectedTab(tab));
+    if (!protectedTabs.length) {
+      return true;
+    }
+    const authorization = this._protectionAuthorization;
+    return protectedTabs.every(
+      tab =>
+        this._isProtectionTeardown(tab) ||
+        (authorization?.tabs.has(tab) && authorization.actions.has(action))
+    );
+  }
+
+  withAuthorizedTabs(items, actions, callback) {
+    const previous = this._protectionAuthorization;
+    this._protectionAuthorization = {
+      tabs: new Set(this._protectionTabs(items)),
+      actions: new Set(actions),
+    };
+    try {
+      return callback();
+    } finally {
+      this._protectionAuthorization = previous;
+    }
+  }
+
+  _syncTabProtectionUI() {
+    if (window.closed) {
+      return true;
+    }
+    try {
+      if (!this.tabProtectionEnabled) {
+        document.documentElement.removeAttribute("zen-protected-tabs");
+      } else {
+        document.documentElement.setAttribute(
+          "zen-protected-tabs",
+          this.tabProtectionLocked ? "locked" : "unlocked"
+        );
+      }
+      const checkbox = document.getElementById(
+        "context_zen-protect-pinned-essentials"
+      );
+      if (checkbox) {
+        const locked = this.tabProtectionLocked;
+        checkbox.checked = locked;
+        checkbox.setAttribute("checked", String(locked));
+        const l10nId = locked
+          ? "tab-context-zen-protect-pinned-essentials"
+          : "tab-context-zen-protect-pinned-essentials-unlocked";
+        if (typeof document.l10n?.setAttributes === "function") {
+          document.l10n.setAttributes(checkbox, l10nId);
+        } else {
+          checkbox.setAttribute("data-l10n-id", l10nId);
+        }
+        if (!this.tabProtectionEnabled) {
+          checkbox.hidden = true;
+        }
+      }
+      if (window.TabContextMenu?.contextTab) {
+        this.updatePinnedTabContextMenu(window.TabContextMenu.contextTab);
+      }
+      return true;
+    } catch (error) {
+      console.error("Failed to update protected-tab UI:", error);
+      return false;
+    }
+  }
+
+  _syncAllTabProtectionWindows() {
+    let ok = true;
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      try {
+        const manager = win.gZenPinnedTabManager;
+        if (!manager) {
+          continue;
+        }
+        if (!manager._syncTabProtectionUI()) {
+          ok = false;
+        }
+      } catch (error) {
+        console.error("Failed to sync protected-tab UI:", error);
+        ok = false;
+      }
+    }
+    return ok;
+  }
+
+  setTabProtectionLocked(next) {
+    if (!this.tabProtectionEnabled) {
+      return false;
+    }
+    const pref = "zen.pinned-tab-manager.protected-tabs-locked";
+    const previous = Services.prefs.getBoolPref(pref, true);
+    const value = Boolean(next);
+    if (previous === value) {
+      return this._syncAllTabProtectionWindows();
+    }
+    try {
+      Services.prefs.setBoolPref(pref, value);
+    } catch (error) {
+      console.error("Failed to write protected-tab state:", error);
+      this._syncAllTabProtectionWindows();
+      return false;
+    }
+    if (this._syncAllTabProtectionWindows()) {
+      return true;
+    }
+    try {
+      Services.prefs.setBoolPref(pref, previous);
+    } catch (error) {
+      console.error("Failed to revert protected-tab state:", error);
+    }
+    this._syncAllTabProtectionWindows();
+    return false;
+  }
+
+  _initTabProtection() {
+    const prefs = [
+      "zen.pinned-tab-manager.protect-pinned-essentials",
+      "zen.pinned-tab-manager.protected-tabs-locked",
+    ];
+    const observer = {
+      observe: () => {
+        if (!this._syncTabProtectionUI()) {
+          console.error(
+            "Protected-tab state could not be applied to this window"
+          );
+        }
+      },
+    };
+    for (const pref of prefs) {
+      Services.prefs.addObserver(pref, observer);
+    }
+    const item = document.getElementById(
+      "context_zen-protect-pinned-essentials"
+    );
+    const onCommand = event => {
+      this.setTabProtectionLocked(Boolean(event.currentTarget.checked));
+    };
+    item?.addEventListener("command", onCommand);
+    window.addEventListener(
+      "unload",
+      () => {
+        for (const pref of prefs) {
+          Services.prefs.removeObserver(pref, observer);
+        }
+        item?.removeEventListener("command", onCommand);
+      },
+      { once: true }
+    );
+    this._syncTabProtectionUI();
+  }
+
+  // Reject unsafe category, workspace, container and cross-window drops
+  // before Zen adopts or mutates any source tab.
+  shouldBlockProtectedDrop(
+    event,
+    draggedTab,
+    movingTabs = [],
+    { splitDropReady = false } = {}
+  ) {
+    if (!this.tabProtectionLocked) {
+      return false;
+    }
+    const tabs = this._protectionTabs([draggedTab, ...(movingTabs || [])]);
+    const targetTab = event.target?.closest?.(".tabbrowser-tab");
+    const targetProtected = this._protectionTabs([targetTab]).some(tab =>
+      this.isProtectedTab(tab)
+    );
+    const sourceProtected = tabs.some(tab => this.isProtectedTab(tab));
+    if (!sourceProtected && !targetProtected) {
+      return false;
+    }
+    if (splitDropReady && (sourceProtected || targetProtected)) {
+      return true;
+    }
+    if (!sourceProtected) {
+      return false;
+    }
+    if (tabs.some(tab => tab?.documentGlobal !== window)) {
+      return true;
+    }
+    const targetWorkspace = event.target
+      ?.closest?.("[zen-workspace-id]")
+      ?.getAttribute?.("zen-workspace-id");
+    if (targetWorkspace && targetWorkspace !== gZenWorkspaces.activeWorkspace) {
+      return true;
+    }
+    const essentialZone = event.target?.closest?.(".zen-essentials-container");
+    const pinnedZone = event.target?.closest?.(
+      ":is(.zen-current-workspace-indicator, .zen-workspace-pinned-tabs-section)"
+    );
+    if (essentialZone) {
+      const contextId =
+        gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0;
+      return tabs.some(
+        tab =>
+          !tab?.hasAttribute?.("zen-essential") ||
+          (gZenWorkspaces.containerSpecificEssentials &&
+            (tab.getAttribute("usercontextid") || 0) != contextId)
+      );
+    }
+    if (pinnedZone) {
+      return tabs.some(
+        tab =>
+          !tab?.pinned ||
+          tab.hasAttribute("zen-essential") ||
+          tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
+      );
+    }
+    // Unknown targets are not assumed to be safe for protected tabs.
+    return true;
+  }
+
+  shouldBlockProtectedSplitComposition(sourceTabs = [], targetTab = null) {
+    if (!this.tabProtectionLocked) {
+      return false;
+    }
+    const items = Array.isArray(sourceTabs) ? [...sourceTabs] : [sourceTabs];
+    items.push(targetTab);
+    return this._protectionTabs(items).some(tab => this.isProtectedTab(tab));
+  }
+
+  shouldBlockProtectedDetach(contextTab, movingTabs = []) {
+    if (!this.tabProtectionLocked) {
+      return false;
+    }
+    const items = contextTab?.multiselected
+      ? [...(gBrowser.selectedElements ?? gBrowser.selectedTabs ?? [])]
+      : [contextTab, ...(movingTabs || [])];
+    return this._protectionTabs(items).some(tab => this.isProtectedTab(tab));
   }
 
   log(message) {
@@ -345,6 +661,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       event.stopPropagation();
       event.preventDefault();
 
+      if (
+        behavior === "close" &&
+        pinnedTabs.some(tab => !this.canPerformProtectedAction(tab, "close"))
+      ) {
+        return;
+      }
+
       if (noClose && behavior === "close") {
         behavior = "unload-switch";
       }
@@ -579,44 +902,53 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       : TabContextMenu.contextTab.multiselected
         ? gBrowser.selectedTabs
         : [TabContextMenu.contextTab];
-    for (let i = 0; i < tabs.length; i++) {
-      // eslint-disable-next-line no-shadow
-      const tab = tabs[i];
+    if (
+      tabs.some(
+        candidate =>
+          !this.canPerformProtectedAction(candidate, "remove-essential")
+      )
+    ) {
+      return false;
+    }
+    for (const targetTab of tabs) {
       if (this._canLog) {
         // eslint-disable-next-line no-console
         console.trace(
-          `ZenPinnedTabManager: removing tab ${tab.id} from essentials ` +
+          `ZenPinnedTabManager: removing tab ${targetTab.id} from essentials ` +
             `(unpin=${unpin})`
         );
       }
-      tab.removeAttribute("zen-essential");
+      targetTab.removeAttribute("zen-essential");
       if (
         gZenWorkspaces.workspaceEnabled &&
         gZenWorkspaces.getActiveWorkspaceFromCache().uuid
       ) {
-        tab.setAttribute(
+        targetTab.setAttribute(
           "zen-workspace-id",
           gZenWorkspaces.getActiveWorkspaceFromCache().uuid
         );
       }
       if (unpin) {
-        gBrowser.unpinTab(tab);
+        gBrowser.unpinTab(targetTab);
       } else {
-        gBrowser.zenHandleTabMove(tab, () => {
+        gBrowser.zenHandleTabMove(targetTab, () => {
           const pinContainer = gZenWorkspaces.pinnedTabsContainer;
-          pinContainer.prepend(tab);
+          pinContainer.prepend(targetTab);
         });
       }
       // Dispatch the event to update the UI
       const event = new CustomEvent("TabRemovedFromEssentials", {
-        detail: { tab },
+        detail: { tab: targetTab },
         bubbles: true,
         cancelable: false,
       });
-      tab.dispatchEvent(event);
+      targetTab.dispatchEvent(event);
     }
     gZenUIManager.updateTabsToolbar();
+    return true;
   }
+
+  static PROTECTED_BLOCKED_ATTR = "zen-protected-blocked";
 
   _insertItemsIntoTabContextMenu() {
     if (!this.enabled) {
@@ -656,6 +988,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                       data-lazy-l10n-id="tab-context-zen-remove-essential"
                       hidden="true"
                       command="cmd_contextZenRemoveFromEssentials"/>
+            <menuseparator id="context_zen-protection-separator" hidden="true"/>
+            <menuitem id="context_zen-protect-pinned-essentials"
+                      type="checkbox"
+                      data-l10n-id="tab-context-zen-protect-pinned-essentials"
+                      hidden="true"/>
             <menuseparator/>
             <menuitem id="context_zen-edit-tab-title"
                       data-lazy-l10n-id="tab-context-zen-edit-title"
@@ -700,6 +1037,27 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
     const isVisible = contextTab.pinned && !contextTab.multiselected;
+    const protectedSelection = contextTab.multiselected
+      ? gBrowser.selectedTabs.some(tab => this.isProtectedTab(tab))
+      : this.isProtectedTab(contextTab);
+    const isLocked = this.tabProtectionLocked && protectedSelection;
+    const showProtection = this.tabProtectionEnabled && protectedSelection;
+    const protectionItem = document.getElementById(
+      "context_zen-protect-pinned-essentials"
+    );
+    protectionItem.hidden = !showProtection;
+    protectionItem.checked = this.tabProtectionLocked;
+    protectionItem.setAttribute("checked", String(this.tabProtectionLocked));
+    const protectionL10nId = this.tabProtectionLocked
+      ? "tab-context-zen-protect-pinned-essentials"
+      : "tab-context-zen-protect-pinned-essentials-unlocked";
+    if (typeof document.l10n?.setAttributes === "function") {
+      document.l10n.setAttributes(protectionItem, protectionL10nId);
+    } else {
+      protectionItem.setAttribute("data-l10n-id", protectionL10nId);
+    }
+    document.getElementById("context_zen-protection-separator").hidden =
+      !showProtection;
     const isEssential = contextTab.getAttribute("zen-essential");
     const zenAddEssential = document.getElementById(
       "context_zen-add-essential"
@@ -737,6 +1095,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     document
       .getElementById("cmd_contextZenAddToEssentials")
       .toggleAttribute("disabled", !this.canEssentialBeAdded(contextTab));
+    // Keep Zen's original visibility decisions as the baseline. Protection
+    // adds a scoped CSS block on top; it must not overwrite these native
+    // hidden states.
     document.getElementById("context_closeTab").hidden =
       contextTab.hasAttribute("zen-essential");
     document.getElementById("context_zen-remove-essential").hidden =
@@ -746,6 +1107,28 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     document.getElementById("context_unpinSelectedTabs").hidden =
       document.getElementById("context_unpinSelectedTabs").hidden ||
       isEssential;
+    for (const id of [
+      "context_closeTab",
+      "context_unpinTab",
+      "context_unpinSelectedTabs",
+      "context_zen-remove-essential",
+    ]) {
+      document
+        .getElementById(id)
+        ?.removeAttribute(nsZenPinnedTabManager.PROTECTED_BLOCKED_ATTR);
+    }
+    if (isLocked) {
+      for (const id of [
+        "context_closeTab",
+        "context_unpinTab",
+        "context_unpinSelectedTabs",
+        "context_zen-remove-essential",
+      ]) {
+        document
+          .getElementById(id)
+          ?.setAttribute(nsZenPinnedTabManager.PROTECTED_BLOCKED_ATTR, "true");
+      }
+    }
     document.getElementById("context_zen-pinned-tab-separator").hidden =
       !isVisible;
     document.getElementById("context_zen-edit-tab-title").hidden =
@@ -761,6 +1144,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     movingTabs,
     dropIndex
   ) {
+    if (this.shouldBlockProtectedDrop(event, draggedTab, movingTabs)) {
+      return null;
+    }
     let newIndex = dropIndex;
     let fromDifferentWindow = false;
     let ownedTabs = Array.from(movingTabs || draggedTab)

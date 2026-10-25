@@ -167,3 +167,11 @@ zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window =
     .label = New Blank Window
 
+
+# Native, opt-in global protection for Pinned and Essential tabs.
+tab-context-zen-protect-pinned-essentials =
+    .label = Protect Pinned & Essentials
+    .accesskey = P
+tab-context-zen-protect-pinned-essentials-unlocked =
+    .label = Protect Pinned & Essentials (currently unlocked)
+    .accesskey = P

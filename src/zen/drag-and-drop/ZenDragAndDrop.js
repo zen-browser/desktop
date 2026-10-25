@@ -1145,6 +1145,25 @@
     }
 
     handle_drop(event) {
+      const sourceTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (
+        gZenPinnedTabManager.shouldBlockProtectedDrop(
+          event,
+          sourceTab,
+          sourceTab?._dragData?.movingTabs,
+          { splitDropReady: this._splitDropReady }
+        )
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.clearSpaceSwitchTimer();
+        this.clearDragOverVisuals();
+        this._clearDragOverSplit();
+        this._tabDropIndicator.hidden = true;
+        this._resetTabsAfterDrop(sourceTab);
+        gZenPinnedTabManager.removeTabContainersDragoverClass();
+        return;
+      }
       const ownerGlobal = event.dataTransfer.mozGetDataAt(
         TAB_DROP_TYPE,
         0
@@ -1475,7 +1494,16 @@
       ownerGlobal.gZenFolders.highlightGroupOnDragOver(null);
       this.ZenDragAndDropService.onDragEnd();
       try {
-        super.handle_dragend(event);
+        // A rejected out-of-window drop must not detach a locked protected tab.
+        if (!(
+          dt.dropEffect === "none" &&
+          ownerGlobal.gZenPinnedTabManager.shouldBlockProtectedDetach(
+            draggedTab,
+            draggedTab?._dragData?.movingTabs
+          )
+        )) {
+          super.handle_dragend(event);
+        }
       } catch (e) {
         console.error(e);
       }

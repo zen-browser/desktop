@@ -362,6 +362,14 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return;
     }
     if (
+      gZenPinnedTabManager.shouldBlockProtectedSplitComposition(
+        [draggedTab],
+        this._lastOpenedTab
+      )
+    ) {
+      return;
+    }
+    if (
       draggedTab.splitView ||
       draggedTab.hasAttribute("zen-live-folder-item-id")
     ) {
@@ -2206,6 +2214,16 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     let droppedOnTab = gZenGlanceManager.getTabOrGlanceParent(
       gBrowser.getTabForBrowser(browser)
     );
+    if (
+      gZenPinnedTabManager.shouldBlockProtectedSplitComposition(
+        [draggedTab],
+        droppedOnTab
+      )
+    ) {
+      this._draggingTab = null;
+      this._maybeRemoveFakeBrowser(false);
+      return false;
+    }
     if (droppedOnTab === this._draggingTab) {
       this.createEmptySplit(dropSide);
       return true;

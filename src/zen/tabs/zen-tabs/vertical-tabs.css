@@ -1381,3 +1381,15 @@ zen-library {
   pointer-events: none;
   background: var(--zen-primary-color);
 }
+
+/* Native opt-in protected-tab state. Locked enforces the native close-button
+ * hiding even if a theme/layout reveals it; Unlocked leaves Zen's original
+ * close affordances untouched. */
+:root[zen-protected-tabs="locked"] #tabbrowser-tabs .tabbrowser-tab[pinned] .tab-close-button,
+:root[zen-protected-tabs="locked"] #tabbrowser-tabs .tabbrowser-tab[zen-essential] .tab-close-button {
+  display: none !important;
+}
+
+#tabContextMenu [zen-protected-blocked="true"] {
+  display: none !important;
+}

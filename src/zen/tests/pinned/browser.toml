@@ -28,3 +28,5 @@ prefs = ["zen.workspaces.separate-essentials=false"]
 ["browser_pinned_unload_changed.js"]
 
 ["browser_pinned_unload_noreset.js"]
+
+["browser_protected_tabs.js"]

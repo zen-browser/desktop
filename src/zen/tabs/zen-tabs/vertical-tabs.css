@@ -534,7 +534,7 @@ zen-library {
   margin: 0;
   position: absolute;
   line-height: 1.2;
-  bottom: 0px;
+  bottom: 0;
 }
 
 .tabbrowser-tab[zen-show-sublabel] {

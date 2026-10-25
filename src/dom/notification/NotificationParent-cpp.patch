@@ -2,29 +2,40 @@ diff --git a/dom/notification/NotificationParent.cpp b/dom/notification/Notifica
 index 58a52493b4c9b88925576831fc6fa46da0647221..79613996442b257c3502563960f4c3f8bd1e4ba9 100644
 --- a/dom/notification/NotificationParent.cpp
 +++ b/dom/notification/NotificationParent.cpp
-@@ -13,10 +13,91 @@
+@@ -13,10 +13,102 @@
  #include "nsIServiceWorkerManager.h"
  #include "nsThreadUtils.h"
- 
+
 +#ifdef XP_MACOSX
 +#  include "imgIContainer.h"
 +#  include "mozilla/image/FetchDecodedImage.h"
 +#  include "mozilla/places/nsFaviconService.h"
 +#  include "nsContentUtils.h"
 +#  include "nsITimer.h"
++#  include "nsNetUtil.h"
 +#endif
 +
  namespace mozilla::dom::notification {
- 
+
  NS_IMPL_ISUPPORTS0(NotificationParent)
- 
+
 +#ifdef XP_MACOSX
 +using NotificationIconPromise = MozPromise<Maybe<IPCImage>, nsresult, true>;
 +
 +static RefPtr<NotificationIconPromise> GetCachedNotificationIcon(
-+    nsIPrincipal* aPrincipal) {
++    nsIPrincipal* aPrincipal, const nsAString& aScope) {
 +  nsCOMPtr<nsIURI> uri;
 +  aPrincipal->GetURI(getter_AddRefs(uri));
++
++  // Use the Service Worker scope for persistent notifications.
++  if (!aScope.IsEmpty()) {
++    nsCOMPtr<nsIURI> scopeURI;
++    if (NS_SUCCEEDED(NS_NewURI(getter_AddRefs(scopeURI), aScope)) &&
++        NS_SUCCEEDED(aPrincipal->CheckMayLoad(scopeURI, false))) {
++      uri = scopeURI;
++    }
++  }
++
 +  // Only web origins may consult the non-private Places cache.
 +  if (!uri || (!uri->SchemeIs("https") && !uri->SchemeIs("http"))) {
 +    return NotificationIconPromise::CreateAndResolve(Nothing(), __func__);
@@ -94,7 +105,7 @@ index 58a52493b4c9b88925576831fc6fa46da0647221..79613996442b257c3502563960f4c3f8
  class NotificationCallbacks final : public NotificationCallbacksCommon {
   public:
    NS_INLINE_DECL_REFCOUNTING_INHERITED(NotificationCallbacks,
-@@ -193,30 +274,19 @@ mozilla::ipc::IPCResult NotificationParent::RecvShow(Maybe<IPCImage>&& aIcon,
+@@ -193,30 +285,20 @@ mozilla::ipc::IPCResult NotificationParent::RecvShow(Maybe<IPCImage>&& aIcon,
    permissionPromise->Then(
        GetMainThreadSerialEventTarget(), __func__,
        [self = RefPtr(this), icon = std::move(aIcon)](Ok) mutable {
@@ -123,7 +134,8 @@ index 58a52493b4c9b88925576831fc6fa46da0647221..79613996442b257c3502563960f4c3f8
 -          self->Close();
 +#ifdef XP_MACOSX
 +        if (!icon && !self->mArgs.mPrincipal->GetIsInPrivateBrowsing()) {
-+          GetCachedNotificationIcon(self->mArgs.mPrincipal)
++          GetCachedNotificationIcon(
++              self->mArgs.mPrincipal, self->mArgs.mScope)
 +              ->Then(
 +                  GetMainThreadSerialEventTarget(), __func__,
 +                  [self](Maybe<IPCImage>&& aImage) {
@@ -137,10 +149,10 @@ index 58a52493b4c9b88925576831fc6fa46da0647221..79613996442b257c3502563960f4c3f8
        },
        [self = RefPtr(this)](nsresult) {
          // Don't have permission or SafeBrowsing classification determined the
-@@ -233,6 +303,22 @@ mozilla::ipc::IPCResult NotificationParent::RecvShow(Maybe<IPCImage>&& aIcon,
+@@ -233,6 +315,22 @@ mozilla::ipc::IPCResult NotificationParent::RecvShow(Maybe<IPCImage>&& aIcon,
    return IPC_OK();
  }
- 
+
 +void NotificationParent::FinishShow(Maybe<IPCImage>&& aIcon) {
 +  mShowPending = false;
 +  // Always register with the alert system before processing a pending close.
@@ -160,9 +172,9 @@ index 58a52493b4c9b88925576831fc6fa46da0647221..79613996442b257c3502563960f4c3f8
  nsresult NotificationParent::Show(Maybe<IPCImage>&& aIcon) {
    auto result = CreateAlertForNotification(mArgs.mNotification.options(),
                                             *mArgs.mPrincipal, std::move(aIcon));
-@@ -250,7 +336,7 @@ nsresult NotificationParent::Show(Maybe<IPCImage>&& aIcon) {
+@@ -250,7 +348,7 @@ nsresult NotificationParent::Show(Maybe<IPCImage>&& aIcon) {
  }
- 
+
  mozilla::ipc::IPCResult NotificationParent::RecvClose() {
 -  // If SafeBrowsing check is in progress, defer the close until it completes.
 +  // If permission or favicon lookup is pending, defer close until it completes.

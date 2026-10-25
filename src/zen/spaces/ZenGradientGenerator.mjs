@@ -1513,11 +1513,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const opacity = 0.9;
     let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
     if (accentColor) {
+      accentColor = accentColor
+        .replace(/^rgb\(|\s+|\)$/g, "")
+        .split(",")
+        .map(Number);
       // Blend a bit with the accent color to make it more visible
       baseColor = this.blendColors(
         accentColor,
         baseColor.slice(0, 3),
-        this.canBeTransparent ? 20 : 5
+        this.canBeTransparent ? 25 : 5
       ).concat(opacity);
     }
     return baseColor;
@@ -1800,7 +1804,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           docElement.style.setProperty("--zen-primary-color", primaryColor);
 
           // Set `--toolbox-textcolor` to have a contrast with the primary color
-          let textColor = this.getToolbarColor(isDarkMode, dominantColor);
+          let textColor = this.getToolbarColor(isDarkMode, primaryColor);
           docElement.style.setProperty(
             "--toolbox-textcolor",
             `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
@@ -2106,14 +2110,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       isDarkMode = this.shouldBeDarkMode(dominantColor);
       isExplicitMode = true;
     }
+    let primaryColor = this.getAccentColorForUI(dominantColor, isDarkMode);
     this.#gradientsCache[uuid] = {
       gradient,
       toolbarGradient,
       grain: theme.texture ?? 0,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
-      primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
+      toolbarColor: this.getToolbarColor(isDarkMode, primaryColor),
+      primaryColor: primaryColor,
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;

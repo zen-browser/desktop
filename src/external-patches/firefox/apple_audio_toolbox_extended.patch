@@ -1,3 +1,64 @@
+diff --git a/third_party/rust/mp4parse/src/boxes.rs b/third_party/rust/mp4parse/src/boxes.rs
+--- a/third_party/rust/mp4parse/src/boxes.rs
++++ b/third_party/rust/mp4parse/src/boxes.rs
+@@ -150,6 +150,8 @@
+     H263SpecificBox                   0x6432_3633, // "d263"
+     HEV1SampleEntry                   0x6865_7631, // "hev1"
+     HVC1SampleEntry                   0x6876_6331, // "hvc1"
++    AC3AudioSampleEntry               0x6163_2d33, // "ac-3"
++    EC3AudioSampleEntry               0x6563_2d33, // "ec-3"
+     HEVCConfigurationBox              0x6876_6343, // "hvcC"
+     MP4AudioSampleEntry               0x6d70_3461, // "mp4a"
+     MP4VideoSampleEntry               0x6d70_3476, // "mp4v"
+diff --git a/third_party/rust/mp4parse/src/lib.rs b/third_party/rust/mp4parse/src/lib.rs
+--- a/third_party/rust/mp4parse/src/lib.rs
++++ b/third_party/rust/mp4parse/src/lib.rs
+@@ -1145,6 +1145,8 @@
+     FLACSpecificBox(FLACSpecificBox),
+     OpusSpecificBox(OpusSpecificBox),
+     ALACSpecificBox(ALACSpecificBox),
++    AC3,
++    EC3,
+     MP3,
+     LPCM,
+     #[cfg(feature = "3gpp")]
+@@ -2143,6 +2145,8 @@
+     EncryptedAudio,
+     LPCM, // QT
+     ALAC,
++    AC3,
++    EC3,
+     H263,
+     HEVC, // 23008-2
+     #[cfg(feature = "3gpp")]
+@@ -6060,6 +6064,8 @@
+     }
+ 
+     let (mut codec_type, mut codec_specific) = match name {
++        BoxType::AC3AudioSampleEntry => (CodecType::AC3, Some(AudioCodecSpecific::AC3)),
++        BoxType::EC3AudioSampleEntry => (CodecType::EC3, Some(AudioCodecSpecific::EC3)),
+         BoxType::MP3AudioSampleEntry => (CodecType::MP3, Some(AudioCodecSpecific::MP3)),
+         BoxType::LPCMAudioSampleEntry => (CodecType::LPCM, Some(AudioCodecSpecific::LPCM)),
+         // Some mp4 file with AMR doesn't have AMRSpecificBox "damr" in followed while loop,
+diff --git a/third_party/rust/mp4parse_capi/src/lib.rs b/third_party/rust/mp4parse_capi/src/lib.rs
+--- a/third_party/rust/mp4parse_capi/src/lib.rs
++++ b/third_party/rust/mp4parse_capi/src/lib.rs
+@@ -881,6 +881,8 @@
+             AudioCodecSpecific::MP3 => Mp4parseCodec::Mp3,
+             AudioCodecSpecific::ALACSpecificBox(_) => Mp4parseCodec::Alac,
++            AudioCodecSpecific::AC3 => Mp4parseCodec::Ac3,
++            AudioCodecSpecific::EC3 => Mp4parseCodec::Ec3,
+             #[cfg(feature = "3gpp")]
+             AudioCodecSpecific::AMRSpecificBox(_) => {
+                 if audio.codec_type == CodecType::AMRNB {
+@@ -948,6 +950,7 @@
+             AudioCodecSpecific::ALACSpecificBox(ref alac) => {
+                 sample_info.codec_specific_config.set_data(&alac.data);
+             }
++            AudioCodecSpecific::AC3 | AudioCodecSpecific::EC3 => (),
+             AudioCodecSpecific::MP3 | AudioCodecSpecific::LPCM => (),
+             #[cfg(feature = "3gpp")]
+             AudioCodecSpecific::AMRSpecificBox(_) => (),
 diff --git a/dom/media/mp4/MP4Decoder.cpp b/dom/media/mp4/MP4Decoder.cpp
 --- a/dom/media/mp4/MP4Decoder.cpp
 +++ b/dom/media/mp4/MP4Decoder.cpp
@@ -198,7 +259,7 @@ diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/Sta
 +# Enable AudioToolbox decoding for ALAC and Dolby Digital in MP4.
 +- name: media.apple.audio-toolbox.extended.enabled
 +  type: RelaxedAtomicBool
-+  value: false
++  value: true
 +  mirror: always
 +
  - name: media.decoder-doctor.testing

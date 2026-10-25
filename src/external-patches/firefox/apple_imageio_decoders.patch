@@ -72,7 +72,7 @@
  
 +- name: image.apple.imageio.enabled
 +  type: RelaxedAtomicBool
-+  value: false
++  value: true
 +  mirror: always
 +
  #ifdef MOZ_JXL
@@ -126,12 +126,12 @@
 + public:
 +  DecoderType GetType() const override { return DecoderType::IMAGEIO; }
 +
-+ protected:
+ protected:
 +  LexerResult DoDecode(SourceBufferIterator& aIterator,
 +                       IResumable* aOnResume) override;
 +  Maybe<glean::impl::MemoryDistributionMetric> SpeedMetric() const override;
 +
-+ private:
+ private:
 +  friend class DecoderFactory;
 +  explicit nsImageIODecoder(RasterImage* aImage) : Decoder(aImage) {}
 +  LexerResult DecodeCompleteSource();

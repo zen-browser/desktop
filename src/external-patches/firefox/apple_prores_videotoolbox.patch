@@ -1,9 +1,9 @@
 --- a/third_party/rust/mp4parse/src/boxes.rs
 +++ b/third_party/rust/mp4parse/src/boxes.rs
-@@ -150,6 +150,12 @@
-     H263SpecificBox                   0x6432_3633, // "d263"
-     HEV1SampleEntry                   0x6865_7631, // "hev1"
+@@ -152,6 +152,12 @@
      HVC1SampleEntry                   0x6876_6331, // "hvc1"
+     AC3AudioSampleEntry               0x6163_2d33, // "ac-3"
+     EC3AudioSampleEntry               0x6563_2d33, // "ec-3"
 +    AppleProRes422ProxySampleEntry    0x6170_636f, // "apco"
 +    AppleProRes422LTSampleEntry       0x6170_6373, // "apcs"
 +    AppleProRes422SampleEntry         0x6170_636e, // "apcn"
@@ -15,7 +15,7 @@
      MP4VideoSampleEntry               0x6d70_3476, // "mp4v"
 --- a/third_party/rust/mp4parse/src/lib.rs
 +++ b/third_party/rust/mp4parse/src/lib.rs
-@@ -1176,6 +1176,7 @@
+@@ -1178,6 +1178,7 @@
      ESDSConfig(TryVec<u8>),
      H263Config(TryVec<u8>),
      HEVCConfig(TryVec<u8>),
@@ -23,15 +23,17 @@
  }
  
  /// Mastering display colour volume from an `mdcv` box (ISO 14496-12).
-@@ -2143,6 +2144,7 @@
+@@ -2145,6 +2146,7 @@
      ALAC,
+     AC3,
+     EC3,
      H263,
      HEVC, // 23008-2
 +    ProRes,
      #[cfg(feature = "3gpp")]
      AMRNB,
      #[cfg(feature = "3gpp")]
-@@ -5767,6 +5769,12 @@
+@@ -5771,6 +5773,12 @@
          BoxType::ProtectedVisualSampleEntry => CodecType::EncryptedVideo,
          BoxType::H263SampleEntry => CodecType::H263,
          BoxType::HEV1SampleEntry | BoxType::HVC1SampleEntry => CodecType::HEVC,
@@ -44,7 +46,7 @@
          _ => {
              debug!("Unsupported video codec, box {name:?} found");
              CodecType::Unknown
-@@ -5788,7 +5796,11 @@
+@@ -5792,7 +5800,11 @@
      skip(src, 50)?;
  
      // Skip clap/pasp/etc. for now.
@@ -67,7 +69,7 @@
      #[cfg(feature = "3gpp")]
      AMRNB,
      #[cfg(feature = "3gpp")]
-@@ -1118,6 +1119,7 @@
+@@ -1122,6 +1123,7 @@
              VideoCodecSpecific::AVCConfig(_) => Mp4parseCodec::Avc,
              VideoCodecSpecific::H263Config(_) => Mp4parseCodec::H263,
              VideoCodecSpecific::HEVCConfig(_) => Mp4parseCodec::Hevc,
@@ -75,7 +77,7 @@
              #[cfg(feature = "mp4v")]
              VideoCodecSpecific::ESDSConfig(_) => Mp4parseCodec::Mp4v,
              #[cfg(not(feature = "mp4v"))]
-@@ -1133,6 +1135,9 @@
+@@ -1137,6 +1139,9 @@
          match video.codec_specific {
              VideoCodecSpecific::AV1Config(ref config) => {
                  sample_info.extra_data.set_data(&config.raw_config);
@@ -372,9 +374,9 @@
  # Enable AudioToolbox decoding for ALAC and Dolby Digital in MP4.
 +- name: media.apple.prores.enabled
 +  type: RelaxedAtomicBool
-+  value: false
++  value: true
 +  mirror: always
 +
  - name: media.apple.audio-toolbox.extended.enabled
    type: RelaxedAtomicBool
-   value: false
+   value: true

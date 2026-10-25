@@ -28,14 +28,40 @@ zen-glance-trigger-label = Trigger method
 zen-glance-enabled =
     .label = Enable Glance
 
+# macOS labels use the names printed on Mac keyboards, with modifier symbols.
 zen-glance-trigger-ctrl-click =
-    .label = Ctrl + Click
+    .label = { PLATFORM() ->
+        [macos] Control (⌃) + Click
+       *[other] Ctrl + Click
+    }
+    .aria-label = { PLATFORM() ->
+        [macos] Control + Click
+       *[other] Ctrl + Click
+    }
 zen-glance-trigger-alt-click =
-    .label = Alt + Click
+    .label = { PLATFORM() ->
+        [macos] Option (⌥) + Click
+       *[other] Alt + Click
+    }
+    .aria-label = { PLATFORM() ->
+        [macos] Option + Click
+       *[other] Alt + Click
+    }
 zen-glance-trigger-shift-click =
-    .label = Shift + Click
+    .label = { PLATFORM() ->
+        [macos] Shift (⇧) + Click
+       *[other] Shift + Click
+    }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click =
-    .label = Meta (Command) + Click
+    .label = { PLATFORM() ->
+        [macos] Command (⌘) + Click
+       *[other] Meta (Command) + Click
+    }
+    .aria-label = { PLATFORM() ->
+        [macos] Command + Click
+       *[other] Meta (Command) + Click
+    }
 
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!

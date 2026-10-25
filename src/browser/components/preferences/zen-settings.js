@@ -1198,11 +1198,6 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: "zen.urlbar.behavior",
-    type: "string",
-    default: "float",
-  },
-  {
     id: "zen.workspaces.separate-essentials",
     type: "bool",
     default: false,

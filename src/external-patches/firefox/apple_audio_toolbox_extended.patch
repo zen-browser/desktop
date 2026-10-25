@@ -1,12 +1,14 @@
 diff --git a/dom/media/mp4/MP4Decoder.cpp b/dom/media/mp4/MP4Decoder.cpp
 --- a/dom/media/mp4/MP4Decoder.cpp
 +++ b/dom/media/mp4/MP4Decoder.cpp
-@@ -77,6 +77,17 @@
+@@ -77,6 +77,18 @@
                "audio/"_ns + c, aType));
        continue;
      }
-+    if (codec.EqualsLiteral("alac") || codec.EqualsLiteral("ac-3") ||
-+        codec.EqualsLiteral("ec-3")) {
++#ifdef XP_MACOSX
++    if (StaticPrefs::media_apple_audio_toolbox_extended_enabled() &&
++        (codec.EqualsLiteral("alac") || codec.EqualsLiteral("ac-3") ||
++         codec.EqualsLiteral("ec-3"))) {
 +      const char* mime = codec.EqualsLiteral("alac")
 +                             ? "audio/alac"
 +                         : codec.EqualsLiteral("ac-3") ? "audio/ac3"
@@ -16,29 +18,46 @@ diff --git a/dom/media/mp4/MP4Decoder.cpp b/dom/media/mp4/MP4Decoder.cpp
 +              nsDependentCString(mime), aType));
 +      continue;
 +    }
++#endif
      if (IsVP9CodecString(codec)) {
        auto trackInfo =
            CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
 diff --git a/dom/media/mp4/DecoderData.cpp b/dom/media/mp4/DecoderData.cpp
 --- a/dom/media/mp4/DecoderData.cpp
 +++ b/dom/media/mp4/DecoderData.cpp
-@@ -251,6 +251,12 @@
+@@ -251,6 +251,28 @@
      mMimeType = "audio/mpeg"_ns;
      // TODO(bug 1705812): parse the encoder delay values from the mp4.
      mCodecSpecificConfig = AudioCodecSpecificVariant{Mp3CodecSpecificData{}};
 +  } else if (codecType == MP4PARSE_CODEC_ALAC) {
 +    mMimeType = "audio/alac"_ns;
++    AudioCodecSpecificBinaryBlob alacBlob{};
++    alacBlob.mBinaryBlob->AppendElements(mp4ParseSampleCodecSpecific.data,
++                                         mp4ParseSampleCodecSpecific.length);
++    mCodecSpecificConfig = AudioCodecSpecificVariant{std::move(alacBlob)};
 +  } else if (codecType == MP4PARSE_CODEC_AC3) {
 +    mMimeType = "audio/ac3"_ns;
++    if (mp4ParseSampleCodecSpecific.length > 0) {
++      AudioCodecSpecificBinaryBlob ac3Blob{};
++      ac3Blob.mBinaryBlob->AppendElements(mp4ParseSampleCodecSpecific.data,
++                                          mp4ParseSampleCodecSpecific.length);
++      mCodecSpecificConfig = AudioCodecSpecificVariant{std::move(ac3Blob)};
++    }
 +  } else if (codecType == MP4PARSE_CODEC_EC3) {
 +    mMimeType = "audio/eac3"_ns;
++    if (mp4ParseSampleCodecSpecific.length > 0) {
++      AudioCodecSpecificBinaryBlob ec3Blob{};
++      ec3Blob.mBinaryBlob->AppendElements(mp4ParseSampleCodecSpecific.data,
++                                          mp4ParseSampleCodecSpecific.length);
++      mCodecSpecificConfig = AudioCodecSpecificVariant{std::move(ec3Blob)};
++    }
    }
  
    mRate = aAudio->sample_info[0].sample_rate;
 diff --git a/dom/media/platforms/apple/AppleATDecoder.cpp b/dom/media/platforms/apple/AppleATDecoder.cpp
 --- a/dom/media/platforms/apple/AppleATDecoder.cpp
 +++ b/dom/media/platforms/apple/AppleATDecoder.cpp
-@@ -169,8 +169,23 @@
+@@ -169,8 +169,25 @@
      } else {
        mFormatID = kAudioFormatMPEG4AAC;
      }
@@ -57,8 +76,10 @@ diff --git a/dom/media/platforms/apple/AppleATDecoder.cpp b/dom/media/platforms/
 +      mFormatID == kAudioFormatEnhancedAC3) {
 +    RefPtr<MediaByteBuffer> codecSpecific =
 +        ForceGetAudioCodecSpecificBlob(mConfig.mCodecSpecificConfig);
-+    mMagicCookie.AppendElements(codecSpecific->Elements(),
-+                                codecSpecific->Length());
++    if (codecSpecific && codecSpecific->Length() > 0) {
++      mMagicCookie.AppendElements(codecSpecific->Elements(),
++                                  codecSpecific->Length());
++    }
    }
  }
  

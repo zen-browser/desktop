@@ -21,23 +21,27 @@
  #include "nsMimeTypes.h"
  #include "nsPNGDecoder.h"
  #include "nsWebPDecoder.h"
-@@ -91,6 +95,15 @@
+@@ -91,6 +95,19 @@
      type = DecoderType::JXL;
    }
  #endif
 +#ifdef XP_MACOSX
 +  else if (StaticPrefs::image_apple_imageio_enabled() &&
-+           (!strcmp(aMimeType, "image/heic") ||
-+            !strcmp(aMimeType, "image/heif") ||
++           (!strcmp(aMimeType, IMAGE_HEIC) ||
++            !strcmp(aMimeType, IMAGE_HEIF) ||
++            !strcmp(aMimeType, IMAGE_HEIC_SEQUENCE) ||
++            !strcmp(aMimeType, IMAGE_HEIF_SEQUENCE) ||
 +            !strcmp(aMimeType, IMAGE_TIFF) ||
-+            !strcmp(aMimeType, "image/jp2"))) {
++            !strcmp(aMimeType, "image/x-tiff") ||
++            !strcmp(aMimeType, IMAGE_JP2) ||
++            !strcmp(aMimeType, "image/j2k"))) {
 +    type = DecoderType::IMAGEIO;
 +  }
 +#endif
  
    return type;
  }
-@@ -137,6 +150,11 @@
+@@ -137,6 +154,11 @@
  #ifdef MOZ_JXL
      case DecoderType::JXL:
        decoder = new nsJXLDecoder(aImage);
@@ -55,7 +59,7 @@
  
  if toolkit == "cocoa":
      DIRS += ["icon/mac", "icon"]
-+    UNIFIED_SOURCES += ["nsImageIODecoder.cpp"]
++    SOURCES += ["nsImageIODecoder.cpp"]
 +    OS_LIBS += ["-framework CoreGraphics", "-framework ImageIO"]
  elif toolkit == "android":
      DIRS += ["icon/android", "icon"]
@@ -76,24 +80,28 @@
  - name: image.jxl.enabled
 --- a/netwerk/mime/nsMimeTypes.h
 +++ b/netwerk/mime/nsMimeTypes.h
-@@ -151,6 +151,9 @@
+@@ -151,6 +151,11 @@
  #define IMAGE_XBM3 "image/xbm"
  #define IMAGE_ART "image/x-jg"
  #define IMAGE_TIFF "image/tiff"
 +#define IMAGE_HEIC "image/heic"
 +#define IMAGE_HEIF "image/heif"
++#define IMAGE_HEIC_SEQUENCE "image/heic-sequence"
++#define IMAGE_HEIF_SEQUENCE "image/heif-sequence"
 +#define IMAGE_JP2 "image/jp2"
  #define IMAGE_BMP "image/bmp"
  #define IMAGE_BMP_MS "image/x-ms-bmp"
  // This is used internally to represent Windows clipboard BMPs which remove
 --- a/uriloader/exthandler/nsExternalHelperAppService.cpp
 +++ b/uriloader/exthandler/nsExternalHelperAppService.cpp
-@@ -588,6 +588,9 @@
+@@ -588,6 +588,11 @@
      {IMAGE_PNG, "png", "PNG Image"},
      {IMAGE_APNG, "apng", "APNG Image"},
      {IMAGE_TIFF, "tiff,tif", "TIFF Image"},
 +    {IMAGE_HEIC, "heic", "HEIC Image"},
 +    {IMAGE_HEIF, "heif", "HEIF Image"},
++    {IMAGE_HEIC_SEQUENCE, "heics", "HEIC Image Sequence"},
++    {IMAGE_HEIF_SEQUENCE, "heifs", "HEIF Image Sequence"},
 +    {IMAGE_JP2, "jp2,j2k", "JPEG 2000 Image"},
      {IMAGE_XBM, "xbm", "XBM Image"},
      {IMAGE_SVG_XML, "svg", "Scalable Vector Graphics"},
@@ -197,8 +205,9 @@
 +    return LexerResult(TerminalState::FAILURE);
 +  }
 +
-+  CFDataRef data = CFDataCreate(nullptr, mEncodedData.begin(),
-+                                static_cast<CFIndex>(mEncodedData.length()));
++  CFDataRef data = CFDataCreateWithBytesNoCopy(
++      kCFAllocatorDefault, mEncodedData.begin(),
++      static_cast<CFIndex>(mEncodedData.length()), kCFAllocatorNull);
 +  if (!data) {
 +    return LexerResult(TerminalState::FAILURE);
 +  }
@@ -211,15 +220,15 @@
 +    return LexerResult(TerminalState::FAILURE);
 +  }
 +
-+  CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(source, 0,
-+                                                                  nullptr);
++  CFDictionaryRef properties =
++      CGImageSourceCopyPropertiesAtIndex(source, 0, nullptr);
 +  if (!properties) {
 +    CFRelease(source);
 +    return LexerResult(TerminalState::FAILURE);
 +  }
 +  auto readDimension = [properties](CFStringRef key) -> size_t {
-+    CFNumberRef value = static_cast<CFNumberRef>(CFDictionaryGetValue(
-+        properties, key));
++    CFNumberRef value =
++        static_cast<CFNumberRef>(CFDictionaryGetValue(properties, key));
 +    int64_t dimension = 0;
 +    if (!value || !CFNumberGetValue(value, kCFNumberSInt64Type, &dimension) ||
 +        dimension <= 0 || dimension > kMaxImageDimension) {
@@ -236,16 +245,30 @@
 +    return LexerResult(TerminalState::FAILURE);
 +  }
 +
-+  const void* keys[] = {kCGImageSourceCreateThumbnailFromImageAlways,
-+                        kCGImageSourceCreateThumbnailWithTransform,
-+                        kCGImageSourceThumbnailMaxPixelSize};
-+  const int maxDimension = static_cast<int>(std::max(sourceWidth, sourceHeight));
++  PostSize(static_cast<int32_t>(sourceWidth),
++           static_cast<int32_t>(sourceHeight));
++  if (WantsFrameCount()) {
++    PostFrameCount(1);
++  }
++  if (IsMetadataDecode()) {
++    CFRelease(source);
++    return LexerResult(TerminalState::SUCCESS);
++  }
++
++  const int targetMaxDimension =
++      OutputSize() != Size()
++          ? static_cast<int>(
++                std::max(OutputSize().width, OutputSize().height))
++          : static_cast<int>(std::max(sourceWidth, sourceHeight));
 +  CFNumberRef maxPixelSize = CFNumberCreate(kCFAllocatorDefault,
-+                                             kCFNumberIntType, &maxDimension);
++                                           kCFNumberIntType, &targetMaxDimension);
 +  if (!maxPixelSize) {
 +    CFRelease(source);
 +    return LexerResult(TerminalState::FAILURE);
 +  }
++  const void* keys[] = {kCGImageSourceCreateThumbnailFromImageAlways,
++                        kCGImageSourceCreateThumbnailWithTransform,
++                        kCGImageSourceThumbnailMaxPixelSize};
 +  const void* values[] = {kCFBooleanTrue, kCFBooleanTrue, maxPixelSize};
 +  CFDictionaryRef options = CFDictionaryCreate(
 +      kCFAllocatorDefault, keys, values, 3, &kCFTypeDictionaryKeyCallBacks,
@@ -269,13 +292,13 @@
 +    CGImageRelease(image);
 +    return LexerResult(TerminalState::FAILURE);
 +  }
-+  PostSize(static_cast<int32_t>(width), static_cast<int32_t>(height));
-+  if (WantsFrameCount()) {
-+    PostFrameCount(1);
-+  }
-+  if (IsMetadataDecode()) {
-+    CGImageRelease(image);
-+    return LexerResult(TerminalState::SUCCESS);
++
++  const CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(image);
++  const bool hasAlpha = (alphaInfo != kCGImageAlphaNone &&
++                         alphaInfo != kCGImageAlphaNoneSkipFirst &&
++                         alphaInfo != kCGImageAlphaNoneSkipLast);
++  if (hasAlpha) {
++    PostHasTransparency();
 +  }
 +
 +  const size_t bytesPerRow = width * 4;
@@ -301,16 +324,13 @@
 +  CGContextScaleCTM(context, 1, -1);
 +  CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
 +  CGContextRelease(context);
-+  if (CGImageGetAlphaInfo(image) != kCGImageAlphaNone &&
-+      CGImageGetAlphaInfo(image) != kCGImageAlphaNoneSkipFirst &&
-+      CGImageGetAlphaInfo(image) != kCGImageAlphaNoneSkipLast) {
-+    PostHasTransparency();
-+  }
 +  CGImageRelease(image);
 +
++  const SurfaceFormat outFormat =
++      hasAlpha ? SurfaceFormat::OS_RGBA : SurfaceFormat::OS_RGBX;
 +  Maybe<SurfacePipe> pipe = SurfacePipeFactory::CreateSurfacePipe(
 +      this, Size(), OutputSize(), FullFrame(), SurfaceFormat::R8G8B8A8,
-+      SurfaceFormat::OS_RGBA, Nothing(), nullptr, SurfacePipeFlags());
++      outFormat, Nothing(), nullptr, SurfacePipeFlags());
 +  if (!pipe) {
 +    return LexerResult(TerminalState::FAILURE);
 +  }
@@ -324,7 +344,7 @@
 +      break;
 +    }
 +  }
-+  PostFrameStop();
++  PostFrameStop(hasAlpha ? Opacity::SOME_TRANSPARENCY : Opacity::OPAQUE);
 +  PostDecodeDone();
 +  return LexerResult(TerminalState::SUCCESS);
 +}

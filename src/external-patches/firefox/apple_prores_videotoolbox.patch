@@ -1,6 +1,6 @@
 --- a/third_party/rust/mp4parse/src/boxes.rs
 +++ b/third_party/rust/mp4parse/src/boxes.rs
-@@ -150,6 +150,11 @@
+@@ -150,6 +150,12 @@
      H263SpecificBox                   0x6432_3633, // "d263"
      HEV1SampleEntry                   0x6865_7631, // "hev1"
      HVC1SampleEntry                   0x6876_6331, // "hvc1"
@@ -9,6 +9,7 @@
 +    AppleProRes422SampleEntry         0x6170_636e, // "apcn"
 +    AppleProRes422HQSampleEntry       0x6170_6368, // "apch"
 +    AppleProRes4444SampleEntry        0x6170_3468, // "ap4h"
++    AppleProRes4444XQSampleEntry      0x6170_3478, // "ap4x"
      HEVCConfigurationBox              0x6876_6343, // "hvcC"
      MP4AudioSampleEntry               0x6d70_3461, // "mp4a"
      MP4VideoSampleEntry               0x6d70_3476, // "mp4v"
@@ -30,7 +31,7 @@
      #[cfg(feature = "3gpp")]
      AMRNB,
      #[cfg(feature = "3gpp")]
-@@ -5767,6 +5769,11 @@
+@@ -5767,6 +5769,12 @@
          BoxType::ProtectedVisualSampleEntry => CodecType::EncryptedVideo,
          BoxType::H263SampleEntry => CodecType::H263,
          BoxType::HEV1SampleEntry | BoxType::HVC1SampleEntry => CodecType::HEVC,
@@ -38,11 +39,12 @@
 +        | BoxType::AppleProRes422LTSampleEntry
 +        | BoxType::AppleProRes422SampleEntry
 +        | BoxType::AppleProRes422HQSampleEntry
-+        | BoxType::AppleProRes4444SampleEntry => CodecType::ProRes,
++        | BoxType::AppleProRes4444SampleEntry
++        | BoxType::AppleProRes4444XQSampleEntry => CodecType::ProRes,
          _ => {
              debug!("Unsupported video codec, box {name:?} found");
              CodecType::Unknown
-@@ -5788,7 +5795,11 @@
+@@ -5788,7 +5796,11 @@
      skip(src, 50)?;
  
      // Skip clap/pasp/etc. for now.
@@ -97,7 +99,7 @@
    MOZ_LOG_FMT(gMP4MetadataLog, LogLevel::Debug, "track codec {} ({})\n",
 --- a/dom/media/mp4/DecoderData.cpp
 +++ b/dom/media/mp4/DecoderData.cpp
-@@ -332,6 +332,12 @@
+@@ -332,6 +332,13 @@
      mMimeType = "video/mp4v-es"_ns;
    } else if (codecType == MP4PARSE_CODEC_HEVC) {
      mMimeType = "video/hevc"_ns;
@@ -107,10 +109,11 @@
 +      mMimeType.AssignLiteral("video/");
 +      mMimeType.Append(reinterpret_cast<const char*>(data.data), data.length);
 +    }
++    mColorDepth = gfx::ColorDepth::COLOR_10;
    }
    mTrackId = track->track_id;
    if (track->duration > TimeUnit::MaxTicks()) {
-@@ -351,8 +357,9 @@
+@@ -351,8 +358,9 @@
    }
    mRotation = ToSupportedRotation(video->rotation);
    Mp4parseByteData extraData = video->sample_info[0].extra_data;
@@ -134,7 +137,7 @@
    static bool IsEnabled();
 --- a/dom/media/mp4/MP4Decoder.cpp
 +++ b/dom/media/mp4/MP4Decoder.cpp
-@@ -104,6 +104,17 @@
+@@ -104,6 +104,18 @@
        tracks.AppendElement(std::move(trackInfo));
        continue;
      }
@@ -142,7 +145,7 @@
 +    if (StaticPrefs::media_apple_prores_enabled() &&
 +        (codec.EqualsLiteral("apch") || codec.EqualsLiteral("apcn") ||
 +         codec.EqualsLiteral("apcs") || codec.EqualsLiteral("apco") ||
-+         codec.EqualsLiteral("ap4h"))) {
++         codec.EqualsLiteral("ap4h") || codec.EqualsLiteral("ap4x"))) {
 +      tracks.AppendElement(
 +          CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
 +              "video/"_ns + NS_ConvertUTF16toUTF8(codec), aType));
@@ -152,7 +155,7 @@
      if (StaticPrefs::media_hevc_enabled() && IsH265CodecString(codec)) {
        auto trackInfo =
            CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
-@@ -211,6 +222,20 @@
+@@ -211,6 +223,21 @@
  }
  
  /* static */
@@ -163,7 +166,8 @@
 +          aMimeType.EqualsLiteral("video/apcn") ||
 +          aMimeType.EqualsLiteral("video/apcs") ||
 +          aMimeType.EqualsLiteral("video/apco") ||
-+          aMimeType.EqualsLiteral("video/ap4h"));
++          aMimeType.EqualsLiteral("video/ap4h") ||
++          aMimeType.EqualsLiteral("video/ap4x"));
 +#else
 +  return false;
 +#endif
@@ -241,16 +245,17 @@
    DecodeSupportSet supportType{};
  
    if (checkSupport) {
-@@ -176,6 +180,8 @@
+@@ -176,6 +180,9 @@
          dss += DecodeSupport::SoftwareDecode;
        }
        break;
 +    case MediaCodec::ProRes:
++      dss += DecodeSupport::SoftwareDecode;
 +      break;
      default:
        dss += DecodeSupport::SoftwareDecode;
        break;
-@@ -191,6 +197,9 @@
+@@ -191,6 +198,9 @@
    }
    if (MP4Decoder::IsHEVC(aConfig.mMimeType)) {
      return StaticPrefs::media_hevc_enabled();
@@ -260,7 +265,7 @@
    }
    if (AOMDecoder::IsAV1(aConfig.mMimeType)) {
      if (!sCanUseHWDecoder[MediaCodec::AV1] ||
-@@ -284,6 +293,10 @@
+@@ -284,6 +294,10 @@
    } else if (aCodec == MediaCodec::VP9) {
      info.mMimeType = "video/vp9";
      VPXDecoder::GetVPCCBox(info.mExtraData, VPXDecoder::VPXStreamInfo());
@@ -273,20 +278,21 @@
      // and we only support macOS 10.15+, Intel GPUs (Skylake and later, 2015)
 --- a/dom/media/platforms/apple/AppleVTDecoder.h
 +++ b/dom/media/platforms/apple/AppleVTDecoder.h
-@@ -132,7 +132,9 @@
+@@ -132,7 +132,10 @@
  
    MOZ_DEFINE_ENUM_CLASS_WITH_TOSTRING_AT_CLASS_SCOPE(StreamType,
                                                       (Unknown, H264, VP9, AV1,
 -                                                      HEVC));
 +                                                      HEVC, ProRes422HQ,
 +                                                      ProRes422, ProRes422LT,
-+                                                      ProRes422Proxy, ProRes4444));
++                                                      ProRes422Proxy, ProRes4444,
++                                                      ProRes4444XQ));
  
    StreamType GetStreamType(const nsCString& aMimeType) const;
    uint32_t GetMaxRefFrames(bool aIsLowLatency) const;
 --- a/dom/media/platforms/apple/AppleVTDecoder.cpp
 +++ b/dom/media/platforms/apple/AppleVTDecoder.cpp
-@@ -731,6 +731,16 @@
+@@ -731,6 +731,18 @@
      streamType = CMVideoCodecType(AppleDecoderModule::kCMVideoCodecType_VP9);
    } else if (mStreamType == StreamType::HEVC) {
      streamType = kCMVideoCodecType_HEVC;
@@ -300,10 +306,12 @@
 +    streamType = kCMVideoCodecType_AppleProRes422Proxy;
 +  } else if (mStreamType == StreamType::ProRes4444) {
 +    streamType = kCMVideoCodecType_AppleProRes4444;
++  } else if (mStreamType == StreamType::ProRes4444XQ) {
++    streamType = kCMVideoCodecType_AppleProRes4444XQ;
    } else {
      streamType = kCMVideoCodecType_AV1;
    }
-@@ -785,6 +795,26 @@
+@@ -785,6 +797,27 @@
  }
  
  CFDictionaryRef AppleVTDecoder::CreateDecoderExtensions() {
@@ -311,7 +319,8 @@
 +      mStreamType == StreamType::ProRes422 ||
 +      mStreamType == StreamType::ProRes422LT ||
 +      mStreamType == StreamType::ProRes422Proxy ||
-+      mStreamType == StreamType::ProRes4444) {
++      mStreamType == StreamType::ProRes4444 ||
++      mStreamType == StreamType::ProRes4444XQ) {
 +    AutoCFTypeRef<CFDictionaryRef> atoms(CFDictionaryCreate(
 +        kCFAllocatorDefault, nullptr, nullptr, 0,
 +        &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
@@ -330,7 +339,7 @@
    AutoCFTypeRef<CFDataRef> data(
        CFDataCreate(kCFAllocatorDefault, mExtraData->Elements(),
                     AssertedCast<CFIndex>(mExtraData->Length())));
-@@ -902,6 +932,21 @@
+@@ -902,6 +935,24 @@
    if (MP4Decoder::IsHEVC(aMimeType)) {
      return StreamType::HEVC;
    }
@@ -348,6 +357,9 @@
 +  }
 +  if (aMimeType.EqualsLiteral("video/ap4h")) {
 +    return StreamType::ProRes4444;
++  }
++  if (aMimeType.EqualsLiteral("video/ap4x")) {
++    return StreamType::ProRes4444XQ;
 +  }
    if (VPXDecoder::IsVP9(aMimeType)) {
      return StreamType::VP9;

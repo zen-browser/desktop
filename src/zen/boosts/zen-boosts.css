@@ -29,14 +29,16 @@
 
   --zen-boosts-primary-border-color: light-dark(#ededef, #3a3a3a);
 
+  --zen-boosts-footer-background: light-dark(#f5f5f7, #1c1c1e);
+
   --zen-boosts-color-picker-background: light-dark(#fbfbfdea, #1c1c1eea);
   --zen-boosts-color-picker-pattern-color: light-dark(#e3e9e4, #3a3a3a);
 
   appearance: none;
   border: none;
 
-  min-height: 646px;
-  max-height: 646px;
+  min-height: 652px;
+  max-height: 652px;
 }
 
 #zenBoostWindow[editor="boost"] {
@@ -139,13 +141,13 @@ body {
   user-select: none;
 
   width: 100%;
-  min-height: 646px;
+  min-height: 652px;
   height: 100%;
   padding: 0;
   margin: 0;
 
   & button {
-    border-radius: 6px;
+    border-radius: 8px;
 
     padding: 0 !important;
     min-width: fit-content !important;
@@ -290,14 +292,14 @@ body {
 #zen-boost-footer-wrapper {
   -moz-window-dragging: drag;
 
-  height: 64px;
-  min-height: 64px;
-  max-height: 64px;
+  height: 70px;
+  min-height: 70px;
+  max-height: 70px;
   align-items: center;
-  padding: 13px 16px;
+  padding: 16px;
   box-sizing: border-box;
 
-  background-color: var(--zen-boosts-secondary-background);
+  background-color: var(--zen-boosts-footer-background);
   border-top: solid 1px var(--zen-boosts-primary-border-color);
 
   @media (-moz-windows-mica) {
@@ -598,11 +600,11 @@ body {
     height: 1px;
     width: auto;
 
-    margin-right: 12px;
-    margin-left: 12px;
+    margin-right: 6px;
+    margin-left: 6px;
     margin-top: 2px;
 
-    opacity: 0.25;
+    opacity: 0.15;
 
     border-top: solid 1px #9a9a9a;
   }

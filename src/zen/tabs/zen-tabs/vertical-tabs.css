@@ -522,24 +522,29 @@ zen-library {
   display: none;
 }
 
+.tab-label {
+  transition: transform 0.1s ease-in-out;
+}
+
 .zen-tab-sublabel {
   pointer-events: none;
-  transition:
-    opacity 0.1s ease-in-out,
-    margin 0.1s ease-in-out,
-    max-height 0.1s ease-in-out;
-  max-height: 0;
+  transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
   opacity: 0;
-  transform: translateY(-4px);
   font-size: x-small;
   margin: 0;
+  position: absolute;
+  line-height: 1.2;
+  bottom: 0;
 }
 
 .tabbrowser-tab[zen-show-sublabel] {
-  & .tab-label-container .zen-tab-sublabel {
-    max-height: 10px;
-    opacity: 0.5;
-    line-height: 1.2;
+  .tab-label {
+    transform: translateY(-6px);
+  }
+  
+  .zen-tab-sublabel {
+    opacity: 0.6;
+    transform: translateY(-6px);
   }
 }
 
@@ -653,6 +658,7 @@ zen-library {
       overflow: visible;
 
       & .tab-label-container {
+        height: 100%;
         opacity: 1;
         display: flex;
       }
@@ -682,10 +688,15 @@ zen-library {
       }
 
       &[zen-pinned-changed="true"]:not([zen-essential]) .tab-reset-pin-button:hover {
-        & ~ .tab-label-container .zen-tab-sublabel {
-          max-height: 10px;
-          opacity: 0.6;
-          line-height: 1.2;
+        & ~ .tab-label-container {
+          .tab-label {
+            transform: translateY(-6px);
+          }
+          
+          .zen-tab-sublabel {
+            opacity: 0.6;
+            transform: translateY(-6px);
+          } 
         }
 
         & ~ .tab-icon-stack .tab-icon-image {

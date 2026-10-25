@@ -405,7 +405,7 @@ export class nsZenBoostEditor {
    * Handles the code editor button press, resizing and offsetting the window and enabling the code view
    */
   onCodeButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -438,7 +438,7 @@ export class nsZenBoostEditor {
    * Handles the back button in the code view, resizing and offsetting the window and changing back to boost view
    */
   onCodeBackButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;

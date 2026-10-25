@@ -649,12 +649,12 @@ class nsZenBoostsManager {
     const width = parentWindow.outerWidth;
     const height = parentWindow.outerHeight;
     const editorWidth = 185;
-    const editorHeight = 629;
+    const editorHeight = 635;
     const pad = 20;
 
-    let left = screenX + width + pad;
+    let left = screenX + width - editorWidth / 2;
     if (this.#areTabsOnRightSide()) {
-      left = screenX - (editorWidth + pad);
+      left = screenX - editorWidth / 2;
     }
 
     let top = screenY + height / 2 - editorHeight / 2;

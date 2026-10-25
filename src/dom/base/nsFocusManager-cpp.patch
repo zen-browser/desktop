@@ -45,7 +45,7 @@ index 722f715e4593cd7ecc700a482b016c52be789edf..09c9661ecb3c179e64a4cc7811344224
      // ATOK, so we need to do it here.
      BrowserParent::UnsetTopLevelWebFocusAll();
      ActivateOrDeactivate(window, true);
-+    if (nsPIDOMWindowOuter* opener = ZenKeptActiveOpener(window);
++    if (nsCOMPtr<nsPIDOMWindowOuter> opener = ZenKeptActiveOpener(window);
 +        opener && !ZenIsActiveBrowserWindow(opener)) {
 +      ActivateOrDeactivate(opener, true);
 +    }
@@ -60,7 +60,7 @@ index 722f715e4593cd7ecc700a482b016c52be789edf..09c9661ecb3c179e64a4cc7811344224
 +    if (ZenKeptActiveOpener(mZenWindowBeingRaised) != window) {
 +      ActivateOrDeactivate(window, false);
 +    }
-+    if (nsPIDOMWindowOuter* opener = ZenKeptActiveOpener(window);
++    if (nsCOMPtr<nsPIDOMWindowOuter> opener = ZenKeptActiveOpener(window);
 +        opener && opener != mZenWindowBeingRaised &&
 +        ZenIsActiveBrowserWindow(opener)) {
 +      ActivateOrDeactivate(opener, false);

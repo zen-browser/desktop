@@ -124,6 +124,7 @@ prefs = ["signon.storage.rust.enabled=false"]
 ["test_enginemanager.js"]
 
 ["test_errorhandler_1.js"]
+disabled="Disabled by import_external_tests.py"
 run-sequentially = ["true"] # Frequent timeouts, bug 1395148
 skip-if = [
   "os == 'mac' && os_version == '15.30' && arch == 'aarch64' && opt", # Bug 1864117

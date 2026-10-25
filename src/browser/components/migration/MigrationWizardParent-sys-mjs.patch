@@ -1,5 +1,5 @@
 diff --git a/browser/components/migration/MigrationWizardParent.sys.mjs b/browser/components/migration/MigrationWizardParent.sys.mjs
-index 0a4b1a0191f3cfaec41f6597fa9be4d576145739..35c43f25d10a3db1c6a0f0bba3a089efaa70d470 100644
+index cea5d6b33c8f23c73afb799e5ebc7076b61de26c..2ac8960ad94f91bcc01a50569dce6d984c5a1320 100644
 --- a/browser/components/migration/MigrationWizardParent.sys.mjs
 +++ b/browser/components/migration/MigrationWizardParent.sys.mjs
 @@ -12,6 +12,7 @@ ChromeUtils.defineLazyGetter(lazy, "gFluentStrings", function () {
@@ -10,15 +10,15 @@ index 0a4b1a0191f3cfaec41f6597fa9be4d576145739..35c43f25d10a3db1c6a0f0bba3a089ef
    ]);
  });
  
-@@ -24,6 +25,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
-   MigrationWizardConstants:
+@@ -26,6 +27,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
      "chrome://browser/content/migration/migration-wizard-constants.mjs",
-   PasswordFileMigrator: "resource:///modules/FileMigrators.sys.mjs",
+   PasswordFileMigrator:
+     "moz-src:///browser/components/migration/FileMigrators.sys.mjs",
 +  ZenMigrationUtils: "resource:///modules/zen/ZenMigrationUtils.sys.mjs",
  });
  
  if (AppConstants.platform == "macosx") {
-@@ -789,6 +791,14 @@ export class MigrationWizardParent extends JSWindowActorParent {
+@@ -792,6 +794,14 @@ export class MigrationWizardParent extends JSWindowActorParent {
            }
          );
        }

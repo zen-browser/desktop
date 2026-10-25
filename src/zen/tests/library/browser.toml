@@ -11,6 +11,8 @@ prefs = [
 
 ["browser_library_customize_tabs.js"]
 
+["browser_library_download_badge_windows.js"]
+
 ["browser_library_download_click.js"]
 
 ["browser_library_download_speed.js"]

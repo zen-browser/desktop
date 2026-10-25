@@ -19,6 +19,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   RunState: "moz-src:///browser/components/sessionstore/RunState.sys.mjs",
+  SessionStore:
+    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -146,7 +148,7 @@ class nsZenWindowSync {
     *[Symbol.iterator]() {
       for (let window of lazy.BrowserWindowTracker.orderedWindows) {
         if (
-          window.__SSi &&
+          lazy.SessionStore.getWindowId(window) &&
           !window.closed &&
           !window.gZenWorkspaces?.privateWindowOrDisabled
         ) {

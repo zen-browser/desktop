@@ -96,7 +96,6 @@ export class ZenLibraryMediaPreview {
       element.appendChild(image);
       doc.l10n.setAttributes(element, l10nId);
       element.addEventListener("command", onClick);
-      element.addEventListener("click", onClick);
       return element;
     };
 
@@ -134,7 +133,6 @@ export class ZenLibraryMediaPreview {
     openText.className = "toolbarbutton-text";
     openButton.appendChild(openText);
     openButton.addEventListener("command", () => this.#launch());
-    openButton.addEventListener("click", () => this.#launch());
 
     const stage = make("div", "zen-library-media-preview-stage", panel);
     stage.addEventListener("contextmenu", event =>

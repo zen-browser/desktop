@@ -68,7 +68,7 @@ add_task(async function test_restoreClosedTabGroupWithManyTabs() {
     "closed tab group should not be in the tab strip"
   );
 
-  let closedTabGroups = ss.getClosedTabGroups(win);
+  let closedTabGroups = ss.getClosedTabGroups({ sourceWindow: win });
   Assert.equal(
     closedTabGroups.length,
     1,

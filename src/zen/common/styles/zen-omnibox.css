@@ -244,11 +244,6 @@
   margin-bottom: auto !important;
 }
 
-#tracking-protection-icon-container,
-#page-action-buttons {
-  order: 2 !important;
-}
-
 #urlbar[breakout-extend] {
   z-index: 2;
 
@@ -320,7 +315,7 @@
   }
 
   &:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) #identity-box {
-    order: 2;
+    order: 3;
   }
 
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */

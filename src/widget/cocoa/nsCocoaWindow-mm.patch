@@ -1,16 +1,8 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f099f26f3a 100644
+index cd1cbea4e..478bcb670 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -72,6 +72,7 @@
- #include "gfxPlatform.h"
- #include "qcms.h"
- 
-+#import <objc/runtime.h>
- #include <algorithm>
- #include "mozilla/AutoRestore.h"
- #include "mozilla/BasicEvents.h"
-@@ -87,9 +88,11 @@
+@@ -90,9 +90,11 @@
  #include "mozilla/StaticPrefs_mozilla.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
@@ -22,7 +14,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f0
  #include "mozilla/widget/Screen.h"
  
  #ifdef ACCESSIBILITY
-@@ -1333,6 +1336,115 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1420,6 +1422,115 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
  }
  @end
  
@@ -138,7 +130,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f0
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -3908,7 +4020,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+@@ -3990,7 +4101,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -149,7 +141,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f0
  }
  
  // NSDraggingDestination
-@@ -3924,6 +4038,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+@@ -4006,6 +4119,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -159,7 +151,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f0
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -4978,6 +5095,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -5060,6 +5176,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
@@ -170,7 +162,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f0
    RemoveAllChildren();
    if (mWindow && mWindowMadeHere) {
      CancelAllTransitions();
-@@ -5670,7 +5791,9 @@ static void SyncPopoverBounds(NSPopover* aPopover,
+@@ -5752,7 +5872,9 @@ static void SyncPopoverBounds(NSPopover* aPopover,
      } else {
        NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
        EnsureFrameIsOnScreen();
@@ -181,59 +173,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f0
            [mWindow respondsToSelector:@selector(setAnimationBehavior:)]) {
          NSWindowAnimationBehavior behavior;
          if (mIsAnimationSuppressed) {
-@@ -5791,7 +5914,6 @@ static void SyncPopoverBounds(NSPopover* aPopover,
-   nsMenuPopupFrame* popupFrame = GetPopupFrame();
-   return [mWindow isKindOfClass:[PopupWindow class]] &&
-          [(PopupWindow*)mWindow usePopover] && popupFrame &&
--         popupFrame->ShouldFollowAnchor() &&
-          !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
- }
- 
-@@ -7095,6 +7217,27 @@ static nsSizeMode GetWindowSizeMode(NSWindow* aWindow, bool aFullScreen) {
-   return nsSizeMode_Normal;
- }
- 
-+// The tiling state lives in a private NSWindow ivar "_tilingStateController"
-+// (an _NSWMWindowTilingStateController). That controller's -tilingState returns
-+// a non-nil _WMWindowTilingState only while the window is tiled by the system
-+// window manager. None of this is public API, so it is all guarded and degrades
-+// to false if the internals ever change.
-+static bool WindowIsTiled(NSWindow* aWindow) {
-+  if (!aWindow) {
-+    return false;
-+  }
-+  static Ivar sControllerIvar =
-+      class_getInstanceVariable([NSWindow class], "_tilingStateController");
-+  if (!sControllerIvar) {
-+    return false;
-+  }
-+  id controller = object_getIvar(aWindow, sControllerIvar);
-+  if (![controller respondsToSelector:@selector(tilingState)]) {
-+    return false;
-+  }
-+  return [controller performSelector:@selector(tilingState)] != nil;
-+}
-+
- void nsCocoaWindow::ReportMoveEvent() {
-   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
- 
-@@ -7108,6 +7251,7 @@ static nsSizeMode GetWindowSizeMode(NSWindow* aWindow, bool aFullScreen) {
-   mInReportMoveEvent = true;
- 
-   UpdateBounds();
-+  SetIsTiled(WindowIsTiled(mWindow));
- 
-   // The zoomed state can change when we're moving, in which case we need to
-   // update our internal mSizeMode. This can happen either if we're maximized
-@@ -7202,6 +7346,7 @@ static nsSizeMode GetWindowSizeMode(NSWindow* aWindow, bool aFullScreen) {
-   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
- 
-   UpdateBounds();
-+  SetIsTiled(WindowIsTiled(mWindow));
-   LayoutDeviceIntRect innerBounds = GetClientBounds();
-   if (mWidgetListener) {
-     mWidgetListener->WindowResized(this, innerBounds.Size());
-@@ -8201,6 +8346,17 @@ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
+@@ -8316,6 +8438,17 @@ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
    return [super _validateStyleMask:(aStyleMask & ~keep)] | keep;
  }
  
@@ -251,19 +191,3 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..a8f4819742141fce6773ec0764d724f0
  // The frame of a window is implemented using undocumented NSView subclasses.
  // We offset the window buttons by overriding the method _closeButtonOrigin on
  // these frame view classes. The class which is
-@@ -9164,6 +9320,15 @@ - (void)showPopoverRelativeToRect:(NSRect)positioningRect
-     return;
-   }
- 
-+  if (!positioningRect.size.width && !positioningRect.size.height &&
-+      mLastPopoverRect.size.width && mLastPopoverRect.size.height) {
-+    // Sometimes, specially when downloading addons from unofficial sources,
-+    // the popover is shown in a very fast motion and the positioningRect is
-+    // empty.
-+    positioningRect = mLastPopoverRect;
-+  }
-+  mLastPopoverRect = positioningRect;
-+
-   // Close existing popover if it's already shown
-   if (mPopover.shown) {
-     [mPopover close];

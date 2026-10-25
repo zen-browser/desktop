@@ -14,7 +14,6 @@ zen-boost-size = Size
 zen-boost-case = Case
 zen-boost-zap = Zap
 zen-boost-code = Code
-zen-boost-share = Share
 zen-boost-back = Back
 zen-boost-shuffle =
     .tooltiptext = Shuffle Boost Settings

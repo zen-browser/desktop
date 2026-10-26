@@ -417,17 +417,21 @@ export class nsZenBoostShareDialog {
   updatePaneButtonStyle() {
     const left = this.$(".zbs-pane-left");
     const right = this.$(".zbs-pane-right");
+    const describe = (button, icon, l10nId) => {
+      button.setAttribute("icon", icon);
+      this.doc.l10n.setAttributes(button, l10nId);
+    };
     right.removeAttribute("disabled");
     if (!this.isPaneFlipped) {
-      left.setAttribute("icon", "signature");
-      right.setAttribute("icon", "menu");
+      describe(left, "signature", "zen-boost-share-pane-sign");
+      describe(right, "menu", "zen-boost-share-pane-screenshot-menu");
       return;
     }
-    right.setAttribute("icon", "remove");
+    describe(right, "remove", "zen-boost-share-pane-clear");
     if (this.hasSignature) {
-      left.setAttribute("icon", "check");
+      describe(left, "check", "zen-boost-share-pane-done");
     } else {
-      left.setAttribute("icon", "back");
+      describe(left, "back", "zen-boost-share-pane-back");
       right.setAttribute("disabled", "true");
     }
   }

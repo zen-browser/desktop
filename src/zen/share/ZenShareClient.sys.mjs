@@ -229,10 +229,8 @@ class nsZenShareClient {
    *   keys sorted, so the same content always hashes the same.
    */
   async hashDocument(doc, { name } = {}) {
-    const shared = { ...doc.shared };
-    delete shared.preview;
     const canonical = JSON.stringify(
-      { ...doc, shared, name: name || "" },
+      { ...doc, name: name || "" },
       (key, value) =>
         value && typeof value === "object" && !Array.isArray(value)
           ? Object.fromEntries(

@@ -28,6 +28,22 @@ zen-boost-share-author-input =
 zen-boost-share-scribble-text = No great work of art is complete without a signature, so scribble your name, write a poem or draw something
 zen-boost-share-hide-screenshot =
     .label = Hide screenshot
+
+zen-boost-share-pane-sign =
+    .tooltiptext = Add a signature
+    .aria-label = Add a signature
+zen-boost-share-pane-screenshot-menu =
+    .tooltiptext = Screenshot options
+    .aria-label = Screenshot options
+zen-boost-share-pane-done =
+    .tooltiptext = Done signing
+    .aria-label = Done signing
+zen-boost-share-pane-back =
+    .tooltiptext = Back to the screenshot
+    .aria-label = Back to the screenshot
+zen-boost-share-pane-clear =
+    .tooltiptext = Clear the signature
+    .aria-label = Clear the signature
 zen-boost-shared-animation-copied-link = Copied Link
 
 zen-boost-receive-dialog =

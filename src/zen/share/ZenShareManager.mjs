@@ -402,7 +402,13 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       });
       return;
     }
-    if (preview.doc.shared.type !== "boost") {
+    if (
+      preview.doc.shared.type !== "boost" ||
+      !lazy.gZenBoostsManager.isValidSharedDomain(preview.doc.shared.domain)
+    ) {
+      gZenUIManager.showToast("zen-boost-receive-error-toast", {
+        timeout: 6000,
+      });
       return;
     }
     const tab = gBrowser.getTabForBrowser(browser);

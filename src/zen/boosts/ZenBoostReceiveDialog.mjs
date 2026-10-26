@@ -10,6 +10,9 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const KILL_TOPIC = "zen-boosts-kill-share";
 
+const SAFE_ICON_RE = /^(data:image\/|chrome:\/\/)/;
+const SAFE_PREVIEW_RE = /^data:image\//;
+
 /**
  * The dialog a shared boost arrives in.
  */
@@ -61,7 +64,10 @@ export class nsZenBoostReceiveDialog {
     const { domain, name: boostName, preview, signature, icon } = this.shared;
     this.$(".zbs-domain").textContent = domain;
     this.$(".zbs-name").textContent = boostName;
-    const favicon = icon ?? `page-icon:https://${domain}/#size=128`;
+    const favicon =
+      typeof icon === "string" && SAFE_ICON_RE.test(icon)
+        ? icon
+        : `page-icon:https://${domain}/#size=128`;
     this.$(".zbs-favicon").src = favicon;
     this.$(".zbs-screenshot-favicon").src = favicon;
     this.doc.l10n.setArgs(this.$("#zen-boost-receive-info-panel p"), {
@@ -72,7 +78,7 @@ export class nsZenBoostReceiveDialog {
     } else {
       this.$(".zbs-author").hidden = true;
     }
-    if (preview) {
+    if (typeof preview === "string" && SAFE_PREVIEW_RE.test(preview)) {
       this.$(".zbs-screenshot-image").src = preview;
     } else {
       this.$(".zbs-card").setAttribute("screenshot-hidden", "true");

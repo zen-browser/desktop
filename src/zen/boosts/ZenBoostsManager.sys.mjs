@@ -5,6 +5,12 @@
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
 import { nsZenBoostStyles } from "resource:///modules/zen/boosts/ZenBoostStyles.sys.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+});
+
 class nsZenBoostsManager {
   registeredDomains = new Map(); // <domain, { boosts: <id, boostEntry>, activeBoostID: null }>
   #stylesManager = new nsZenBoostStyles();
@@ -745,10 +751,38 @@ class nsZenBoostsManager {
    * @returns {Promise<void>} Resolves once the dialog closes
    */
   shareBoost(parentWindow, boost, browser = null) {
+    if (!this.canShareFrom(parentWindow)) {
+      return Promise.resolve();
+    }
     return parentWindow.gDialogBox.open(
       "chrome://browser/content/zen-components/windows/zen-boost-share.xhtml",
       { parentWindow, browser, boost }
     );
+  }
+
+  /**
+   * Sharing uploads a screenshot of the page, so it is off in private
+   * windows, like the other kinds of sharing.
+   *
+   * @param {Window} win - A browser window
+   * @returns {boolean}
+   */
+  canShareFrom(win) {
+    return !(
+      win.gZenWorkspaces?.privateWindowOrDisabled ||
+      lazy.PrivateBrowsingUtils.isWindowPrivate(win)
+    );
+  }
+
+  isValidSharedDomain(domain) {
+    if (typeof domain !== "string" || !/^[a-z0-9.-]{1,253}$/i.test(domain)) {
+      return false;
+    }
+    try {
+      return new URL(`https://${domain}/`).host === domain.toLowerCase();
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
@@ -761,6 +795,9 @@ class nsZenBoostsManager {
    * @returns {Promise<boolean>} Whether the boost was added
    */
   async receiveBoost(parentWindow, shared, author = null) {
+    if (!this.isValidSharedDomain(shared?.domain)) {
+      return false;
+    }
     const args = { parentWindow, shared, author, added: false };
     await parentWindow.gDialogBox.open(
       "chrome://browser/content/zen-components/windows/zen-boost-receive.xhtml",
@@ -794,18 +831,44 @@ class nsZenBoostsManager {
         continue;
       }
       if (Array.isArray(template)) {
-        result[key] = value.filter(
-          item => typeof item === "string" || typeof item === "object"
-        );
+        result[key] = value.filter(item => typeof item === "string");
       } else if (typeof template === "object" && template !== null) {
-        result[key] = { ...template, ...value };
+        const merged = { ...template };
+        for (const [field, fieldValue] of Object.entries(value)) {
+          if (
+            field in template &&
+            typeof fieldValue === typeof template[field]
+          ) {
+            merged[field] = fieldValue;
+          }
+        }
+        result[key] = merged;
+      } else if (typeof template === "number") {
+        result[key] = Number.isFinite(value) ? value : template;
       } else {
         result[key] = value;
       }
     }
+    result.customCSS = this.sanitizeSharedCSS(result.customCSS);
+    result.fontFamily = /^[\w\s,'"-]*$/.test(result.fontFamily)
+      ? result.fontFamily
+      : "";
+    if (
+      !["none", "uppercase", "lowercase", "capitalize"].includes(
+        result.textCaseOverride
+      )
+    ) {
+      result.textCaseOverride = "none";
+    }
     result.boostName = name || result.boostName;
     result.changeWasMade = true;
     return result;
+  }
+
+  sanitizeSharedCSS(css) {
+    return String(css || "")
+      .replace(/@import\b[^;{]*;?/gi, "")
+      .replace(/\b(?:url|image-set|image)\s*\([^)]*\)/gi, "none");
   }
 
   /**

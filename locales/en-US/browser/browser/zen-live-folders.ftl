@@ -20,6 +20,9 @@ zen-live-folder-github-option-assigned-self =
 zen-live-folder-github-option-review-requested =
     .label = Review Requests
 
+zen-live-folder-github-option-my-review-requests =
+    .label = My Review Requests
+
 zen-live-folder-github-option-include-drafts =
     .label = Include Draft Pull Requests
 

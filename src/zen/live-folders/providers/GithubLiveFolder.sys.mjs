@@ -26,7 +26,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const hasAnyFilterEnabled =
         (this.state.options.authorMe ?? false) ||
         (this.state.options.assignedMe ?? true) ||
-        (this.state.options.reviewRequested ?? false);
+        (this.state.options.reviewRequested ?? false) ||
+        (this.state.options.myReviewRequests ?? false);
 
       if (!hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";
@@ -277,6 +278,10 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         value: "review-requested:@me",
         enabled: this.state.options.reviewRequested ?? false,
       },
+      {
+        value: "user-review-requested:@me",
+        enabled: this.state.options.myReviewRequests ?? false,
+      },
     ];
 
     const excluded = this.state.options.repoExcludes;
@@ -345,6 +350,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nId: "zen-live-folder-github-option-review-requested",
         key: "reviewRequested",
         checked: this.state.options.reviewRequested ?? false,
+        hidden: this.state.type === "issues",
+      },
+      {
+        l10nId: "zen-live-folder-github-option-my-review-requests",
+        key: "myReviewRequests",
+        checked: this.state.options.myReviewRequests ?? false,
         hidden: this.state.type === "issues",
       },
       {

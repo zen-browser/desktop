@@ -14,6 +14,7 @@ function getGithubProviderForTest(sandbox, customOptions = {}) {
     authorMe: true,
     assignedMe: false,
     reviewRequested: false,
+    myReviewRequests: false,
     ...customOptions,
   };
 
@@ -78,6 +79,10 @@ add_task(async function test_fetch_items_url_construction() {
     "Should NOT include review-requested"
   );
   Assert.ok(
+    !query.includes("user-review-requested:@me"),
+    "Should NOT include user-review-requested"
+  );
+  Assert.ok(
     !query.includes("draft:false"),
     "Should include draft pull requests by default"
   );
@@ -95,6 +100,7 @@ add_task(async function test_fetch_items_url_complex_options() {
     assignedMe: true,
     includeDrafts: false,
     reviewRequested: true,
+    myReviewRequests: true,
     type: "pull-requests",
   });
 
@@ -113,8 +119,12 @@ add_task(async function test_fetch_items_url_complex_options() {
   Assert.ok(query.includes("author:@me"), "Should include author");
   Assert.ok(query.includes("assignee:@me"), "Should include assignee");
   Assert.ok(
-    query.includes("review-requested:@me"),
+    /(?:^|[\s(])review-requested:@me(?:$|[\s)])/.test(query),
     "Should include review-requested"
+  );
+  Assert.ok(
+    query.includes("user-review-requested:@me"),
+    "Should include user-review-requested"
   );
   Assert.ok(
     query.includes("draft:false"),
@@ -122,6 +132,42 @@ add_task(async function test_fetch_items_url_complex_options() {
   );
 
   Assert.ok(query.includes(" OR "), "Should contain OR operators");
+  sandbox.restore();
+});
+
+add_task(async function test_fetch_items_url_my_review_requests() {
+  info("should construct a query for reviews requested from the user");
+
+  let sandbox = sinon.createSandbox();
+
+  let instance = getGithubProviderForTest(sandbox, {
+    authorMe: false,
+    assignedMe: false,
+    reviewRequested: false,
+    myReviewRequests: true,
+    type: "pull-requests",
+  });
+
+  instance.state.isJsonApi = true;
+  instance.fetch.resolves({
+    status: 200,
+    text: "<html></html>",
+  });
+
+  await instance.fetchItems();
+
+  const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
+  const query = fetchedUrl.searchParams.get("q");
+
+  Assert.ok(
+    query.includes("user-review-requested:@me"),
+    "Should include user-review-requested"
+  );
+  Assert.ok(
+    !/(?:^|[\s(])review-requested:@me(?:$|[\s)])/.test(query),
+    "Should NOT include team review requests"
+  );
+
   sandbox.restore();
 });
 

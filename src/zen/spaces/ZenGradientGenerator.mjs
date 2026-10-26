@@ -1351,8 +1351,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           // On macOS (vibrancy) and Windows (Mica) a transparent light background
           // sits over a compositor material that keeps UI text readable. Linux has no
           // such material when zen.widget.linux.transparency is enabled, so a fully
-          // transparent light theme leaves dark UI text unreadable (#15334). Mirror the
-          // dark branch's translucent backing for Linux only, leaving macOS/Windows as-is.
+          // transparent light theme leaves dark UI text unreadable (gh-15334).
           return AppConstants.platform === "linux"
             ? "rgba(255, 255, 255, 0.4)"
             : "transparent";

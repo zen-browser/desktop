@@ -8,7 +8,7 @@ const { nsZenMultiWindowFeature } = ChromeUtils.importESModule(
   { global: "current" }
 );
 
-const { nsKeyShortcutModifiers, KeyShortcut } = ChromeUtils.importESModule(
+const { nsKeyShortcutModifiers, normalizeKey } = ChromeUtils.importESModule(
   "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
   {
     global: "current",
@@ -1080,7 +1080,7 @@ var gZenCKSSettings = {
     if (shortcut == "Dead" || shortcut == "Unidentified") {
       shortcut = this._getPhysicalKey(event);
     }
-    shortcut = KeyShortcut.normalizeKey(shortcut);
+    shortcut = normalizeKey(shortcut);
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ""); // Remove all modifiers
 

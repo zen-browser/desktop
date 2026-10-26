@@ -305,17 +305,17 @@ export class nsKeyShortcutModifiers {
   }
 }
 
-export class KeyShortcut {
-  // Lower cases a single character key. Key names such as "Escape" are left as
-  // they are. "İ" lower cases to "i" plus a combining dot by default, so it uses
-  // the Turkish mapping to "i" instead, which is also what Gecko matches it as.
-  static normalizeKey(key) {
-    if (key?.length != 1) {
-      return key;
-    }
-    return key == "İ" ? "i" : key.toLowerCase();
+// Lower cases a single character key. Key names such as "Escape" are left as
+// they are. "İ" lower cases to "i" plus a combining dot by default, so it uses
+// the Turkish mapping to "i" instead, which is also what Gecko matches it as.
+export function normalizeKey(key) {
+  if (key?.length != 1) {
+    return key;
   }
+  return key == "İ" ? "i" : key.toLowerCase();
+}
 
+class KeyShortcut {
   static SHIFTED_SYMBOLS = {
     1: "!",
     2: "@",
@@ -363,7 +363,7 @@ export class KeyShortcut {
     internal = false
   ) {
     this.#id = id;
-    this.#key = KeyShortcut.normalizeKey(key);
+    this.#key = normalizeKey(key);
     this.#keycode = keycode;
 
     if (!window.VALID_SHORTCUT_GROUPS.includes(group)) {

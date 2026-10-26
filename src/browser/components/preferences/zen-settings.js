@@ -8,7 +8,7 @@ const { nsZenMultiWindowFeature } = ChromeUtils.importESModule(
   { global: "current" }
 );
 
-const { nsKeyShortcutModifiers } = ChromeUtils.importESModule(
+const { nsKeyShortcutModifiers, KeyShortcut } = ChromeUtils.importESModule(
   "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
   {
     global: "current",
@@ -999,6 +999,40 @@ var gZenCKSSettings = {
     }
   },
 
+  // The upper case letter, or the digit when Shift isn't held, for a key code;
+  // "" for any other key. With Shift held, only the shifted character on a
+  // digit key can match (e.g. "@" for "2" on a U.S. layout).
+  _getAlphanumericKey(keyCode, isShiftHeld) {
+    const isLetter = keyCode >= KeyEvent.DOM_VK_A && keyCode <= KeyEvent.DOM_VK_Z;
+    const isDigit = !isShiftHeld && keyCode >= KeyEvent.DOM_VK_0 && keyCode <= KeyEvent.DOM_VK_9;
+    return isLetter || isDigit ? String.fromCharCode(keyCode) : "";
+  },
+
+  // Fallback for keys that produce no character (e.g. dead keys), based on
+  // the physical key position on a U.S. layout.
+  _getPhysicalKey(event) {
+    if (event.code.startsWith("Key")) {
+      return event.code.slice(3);
+    }
+    if (event.code.startsWith("Digit")) {
+      return event.code.slice(5);
+    }
+    const CODE_TO_KEY_MAP = {
+      Comma: ",",
+      Period: ".",
+      Slash: "/",
+      Semicolon: ";",
+      Quote: "'",
+      BracketLeft: "[",
+      BracketRight: "]",
+      Backslash: "\\",
+      Backquote: "`",
+      Minus: "-",
+      Equal: "=",
+    };
+    return CODE_TO_KEY_MAP[event.code] || event.key;
+  },
+
   _editDone(shortcut, modifiers) {
     // Check if we have a valid key
     if (!shortcut || !modifiers) {
@@ -1030,31 +1064,23 @@ var gZenCKSSettings = {
 
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
 
-    // First, try to read the *physical* key via event.code.
-    // If event.code is like "KeyS", "KeyA", ..., strip off "Key" → "S".
-    // Otherwise, fall back to event.key (e.g. "F5", "Enter", etc.).
-    let shortcut;
-    if (event.code && event.code.startsWith("Key")) {
-      shortcut = event.code.slice(3);
-    } else if (event.code && event.code.startsWith("Digit")) {
-      shortcut = event.code.slice(5);
-    } else {
-      // Use physical key mapping for common symbols
-      const CODE_TO_KEY_MAP = {
-        Comma: ",",
-        Period: ".",
-        Slash: "/",
-        Semicolon: ";",
-        Quote: "'",
-        BracketLeft: "[",
-        BracketRight: "]",
-        Backslash: "\\",
-        Backquote: "`",
-        Minus: "-",
-        Equal: "=",
-      };
-      shortcut = CODE_TO_KEY_MAP[event.code] || event.key;
+    // The key must be the character the shortcut will be matched against when
+    // pressed, which comes from the active keyboard layout with AltGraph
+    // excluded (same approach as Firefox's about:keyboard, see
+    // CustomKeysParent.sys.mjs). AltGraph is the Option key on macOS and AltGr
+    // elsewhere; with it held, event.key is the character it produced (e.g.
+    // Option+D gives "∂"), so the layout's letter or digit from event.keyCode
+    // is used instead.
+    let shortcut = event.getModifierState("AltGraph")
+      ? this._getAlphanumericKey(event.keyCode, event.shiftKey)
+      : "";
+    if (!shortcut) {
+      shortcut = event.key;
     }
+    if (shortcut == "Dead" || shortcut == "Unidentified") {
+      shortcut = this._getPhysicalKey(event);
+    }
+    shortcut = KeyShortcut.normalizeKey(shortcut);
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ""); // Remove all modifiers
 

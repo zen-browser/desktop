@@ -305,7 +305,18 @@ export class nsKeyShortcutModifiers {
   }
 }
 
-class KeyShortcut {
+export class KeyShortcut {
+  // Lower cases a single character key, unless that turns it into more than
+  // one character; e.g. "İ" lower cases to "i" plus a combining dot. Key names
+  // such as "Escape" are left as they are.
+  static normalizeKey(key) {
+    if (key?.length != 1) {
+      return key;
+    }
+    const lower = key.toLowerCase();
+    return lower.length == 1 ? lower : key;
+  }
+
   static SHIFTED_SYMBOLS = {
     1: "!",
     2: "@",
@@ -353,7 +364,7 @@ class KeyShortcut {
     internal = false
   ) {
     this.#id = id;
-    this.#key = key?.toLowerCase();
+    this.#key = KeyShortcut.normalizeKey(key);
     this.#keycode = keycode;
 
     if (!window.VALID_SHORTCUT_GROUPS.includes(group)) {
@@ -612,8 +623,12 @@ class KeyShortcut {
         case " ":
           str += AppConstants.platform == "macosx" ? "␣" : "Space";
           break;
-        default:
-          str += key.toUpperCase();
+        default: {
+          // Keep keys whose upper case form maps back to another character,
+          // e.g. Turkish "ı" upper cases to "I", which is the "i" key.
+          const upper = key.toUpperCase();
+          str += upper.toLowerCase() == key ? upper : key;
+        }
       }
     } else if (keycode) {
       // Get the key from the value

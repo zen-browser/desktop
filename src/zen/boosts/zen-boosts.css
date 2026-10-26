@@ -36,9 +36,6 @@
 
   appearance: none;
   border: none;
-
-  min-height: 652px;
-  max-height: 652px;
 }
 
 #zenBoostWindow[editor="boost"] {
@@ -121,6 +118,10 @@
   padding: 10px;
 }
 
+#zen-boost-code-editor-root {
+  height: 100vh;
+}
+
 #zen-boost-code-editor {
   width: 100%;
   height: calc(100% - 100px);
@@ -141,8 +142,7 @@ body {
   user-select: none;
 
   width: 100%;
-  min-height: 652px;
-  height: 100%;
+  height: auto;
   padding: 0;
   margin: 0;
 
@@ -282,11 +282,6 @@ body {
   & > * {
     -moz-window-dragging: no-drag;
   }
-
-  & #zen-boost-code {
-    background-color: #1d1b1b !important;
-    color: #d6d6d6;
-  }
 }
 
 #zen-boost-footer-wrapper {
@@ -324,6 +319,7 @@ body {
   & p {
     width: 75%;
     margin: auto;
+    font-weight: 500;
   }
 }
 
@@ -563,6 +559,13 @@ body {
   }
 }
 
+/* The editor hides both when custom fonts are off; the flex display below
+ * must not win over the hidden attribute. */
+#zen-boost-font-toolbar[hidden],
+#zen-boost-font-wrapper .visible-separator[hidden] {
+  display: none !important;
+}
+
 #zen-boost-font-toolbar {
   display: flex;
   flex-direction: row;
@@ -581,13 +584,10 @@ body {
 }
 
 #zen-boost-font-wrapper {
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  box-shadow: 0 0 6px rgba(0, 0, 0, .1);
   background-color: var(--zen-boosts-font-wrapper-background);
 
-  border-radius: 6px;
-  @media (-moz-platform: macos) {
-    border-radius: 8px;
-  }
+  border-radius: 10px;
 
   padding-top: 4px;
   padding-bottom: 4px;

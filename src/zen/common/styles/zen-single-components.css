@@ -336,7 +336,7 @@
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: var(--size-item-xlarge);
+      width: 44px;
       height: var(--size-item-large);
       margin: 0;
       justify-content: center;
@@ -624,12 +624,14 @@
       box-sizing: border-box;
     }
 
-    &:first-child::before {
-      border-top-right-radius: calc(var(--panel-border-radius) - 2px);
-    }
+    @media (-moz-platform: macos) {
+      &:first-child::before {
+        border-top-right-radius: calc(var(--panel-border-radius) - 2px);
+      }
 
-    &:last-child::before {
-      border-top-left-radius: calc(var(--panel-border-radius) - 2px);
+      &:last-child::before {
+        border-top-left-radius: calc(var(--panel-border-radius) - 2px);
+      }
     }
 
     &.active {

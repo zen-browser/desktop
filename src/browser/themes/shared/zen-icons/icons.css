@@ -1061,6 +1061,34 @@
   list-style-image: url("brackets-curly.svg");
 }
 
+#zen-boost-share {
+  list-style-image: url("share.svg");
+}
+
+.zbs-info-button {
+  list-style-image: url("info.svg");
+}
+
+.zbs-pane-left[icon="back"] {
+  list-style-image: url("arrow-left.svg") !important;
+}
+
+.zbs-pane-left[icon="check"] {
+  list-style-image: url("check.svg") !important;
+}
+
+.zbs-pane-left[icon="signature"] {
+  list-style-image: url("signature.svg") !important;
+}
+
+.zbs-pane-right[icon="menu"] {
+  list-style-image: url("menu.svg") !important;
+}
+
+.zbs-pane-right[icon="remove"] {
+  list-style-image: url("close.svg") !important;
+}
+
 #zen-boost-zap {
   list-style-image: url("bolt.svg");
 }

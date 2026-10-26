@@ -710,12 +710,16 @@ class nsZenWindowSync {
       }
       const relativeTab = this.getItemFromWindow(aWindow, originalSibling.id);
       if (relativeTab) {
-        gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(
-          relativeTab,
-          aTargetItem,
-          [aTargetItem],
-          false
-        );
+        try {
+          gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(
+            relativeTab,
+            aTargetItem,
+            [aTargetItem],
+            false
+          );
+        } catch (e) {
+          console.error("ZenWindowSync: failed to animate a synced move", e);
+        }
         relativeTab.after(aTargetItem);
       }
     });

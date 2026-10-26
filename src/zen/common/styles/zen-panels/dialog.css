@@ -20,4 +20,13 @@
     }
     transform: translateY(-10%);
   }
+
+  &[zen-closing] {
+    animation: zen-dialog-fade-out 0.2s ease-in forwards;
+    pointer-events: none;
+  }
+
+  .content-prompt-dialog &[zen-closing] {
+    animation: zen-dialog-fade-out-shifted 0.2s ease-in forwards;
+  }
 }

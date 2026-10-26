@@ -1,0 +1,711 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+.zbs-dialog {
+  --text-color: #060941;
+  --text-deco-color: #b4b4c2;
+
+  --share-header-background: #ededf0;
+  --share-header-border: #e0e0e5;
+  --share-header-text: #6b6b76;
+
+  --share-width: 450px;
+
+  --signature-container-outline: #e5e5e5;
+  --signature-container-shadow-color: #73747d10;
+
+  --footer-background: #f7fbfe;
+  --footer-outline: #bbbccb40;
+
+  --info-button-background-hover: #d5d6ed;
+  --info-button-background-active: #d5d6ed;
+  --share-content-pane-buttons-hover: #f1f1ff;
+
+  --favicon-background: rgba(0,0,0,.01);
+  --favicon-outline: #d4d6e6;
+  --favicon-border: #fff;
+
+  position: relative;
+  padding: 0 24px 24px;
+  color-scheme: light;
+  background-color: var(--footer-background);
+  color: var(--text-color);
+
+  &::part(dialog-button) {
+    margin: 20px 0 0;
+
+    &:is([dlgtype="cancel"]) {
+      --button-background-color: transparent !important;
+
+      padding-inline-end: 1.2rem !important;
+
+      &:hover {
+        --button-background-color: light-dark(
+          rgba(28, 28, 28, 0.1),
+          rgba(255, 255, 255, 0.1)
+        ) !important;
+      }
+
+      &::after {
+        content: none !important;
+        display: none !important;
+      }
+    }
+  }
+}
+
+.zbs-card {
+  position: static;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: var(--share-width);
+  min-width: var(--share-width);
+  max-width: var(--share-width);
+  margin: 0 -24px;
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0.03);
+
+  overflow: clip;
+
+  & button {
+    user-select: none !important;
+  }
+}
+
+/* Header strip of the receive dialog */
+
+.zbs-header {
+  display: flex;
+  height: 28px;
+  background-color: var(--share-header-background);
+  border-bottom: 1px solid var(--share-header-border);
+}
+
+.zbs-header-domain {
+  display: flex;
+  gap: 2pt;
+  margin: auto;
+  text-align: center;
+  font-size: small;
+  color: var(--share-header-text);
+
+  & p {
+    margin: 0;
+  }
+
+  & b {
+    font-weight: bold;
+  }
+}
+
+/* Name, author and site icon */
+
+.zbs-info {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+
+  & .zbs-favicon {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    padding: 12px;
+    box-sizing: border-box;
+    background-color: var(--favicon-background);
+    border: solid 4px var(--favicon-border);
+    border-radius: 14px;
+    outline: 1px solid var(--favicon-outline);
+  }
+}
+
+.zbs-info-text {
+  position: relative;
+  /* Own stacking context, so the signature's negative z-index puts it
+   * behind the name but still above the card's background. */
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 60px;
+  margin-top: auto;
+  margin-bottom: auto;
+  min-width: 0;
+
+  & input {
+    appearance: none;
+    border: none;
+    outline: none;
+    background: none;
+    border-radius: 2px;
+
+    &:focus,
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+  }
+
+  & .zbs-signature {
+    position: absolute;
+    inset: -50px -40px;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    stroke: currentColor;
+    stroke-width: 5;
+    pointer-events: none;
+    opacity: 0.1;
+  }
+}
+
+.zbs-name {
+  width: 224px;
+  margin: -4px 0 0;
+  padding: 0;
+  font-size: 20pt;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.dashed {
+    text-decoration: underline dashed var(--text-deco-color);
+    text-decoration-thickness: 2px;
+  }
+}
+
+.zbs-author {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-color);
+
+  &[hidden] {
+    display: none;
+  }
+
+  & i {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  & b {
+    font-weight: bold;
+  }
+
+  & input {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+  }
+}
+
+.zbs-info-button {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  min-width: 38px;
+  max-width: 38px;
+  aspect-ratio: 1;
+  margin: auto 0 auto auto;
+  padding: 0 !important;
+  border-radius: 10px;
+  color: #595b86;
+  opacity: 0.4;
+  scale: 1;
+  will-change: scale;
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  transition:
+    opacity 0.2s ease,
+    background-color 0.2s ease,
+    scale 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    background-color: var(--info-button-background-hover);
+  }
+
+  &:active {
+    opacity: 0.9;
+    scale: 0.95;
+    background-color: var(--info-button-background-active);
+  }
+
+  & .button-box {
+    margin: 0;
+    padding: 0;
+  }
+
+  & .button-icon {
+    margin: 0;
+  }
+
+  & .button-text {
+    display: none;
+  }
+}
+
+#zen-boost-receive-info-panel {
+  --panel-background-color: transparent;
+  --panel-border-color: transparent;
+  --panel-shadow: none;
+  --arrowpanel-background: transparent;
+  --arrowpanel-border-color: transparent;
+
+  &::part(content) {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  & p {
+    max-width: 365px;
+    margin: 0;
+    font-size: small;
+    color: #3a383a;
+  }
+}
+
+/* Screenshot and signature pane */
+
+.zbs-top {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  gap: 12px;
+}
+
+.zbs-content {
+  position: relative;
+  height: 210px;
+  padding: 0 24px 24px;
+  perspective: 600px;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.zbs-pane {
+  --spring-easing: linear(
+    0,
+    0.0018,
+    0.0069 1.15%,
+    0.026 2.3%,
+    0.0637,
+    0.1135 5.18%,
+    0.2229 7.78%,
+    0.5977 15.84%,
+    0.7014,
+    0.7904,
+    0.8641,
+    0.9228,
+    0.9676 28.8%,
+    1.0032 31.68%,
+    1.0225,
+    1.0352 36.29%,
+    1.0431 38.88%,
+    1.046 42.05%,
+    1.0448 44.35%,
+    1.0407 47.23%,
+    1.0118 61.63%,
+    1.0025 69.41%,
+    0.9981 80.35%,
+    0.9992 99.94%
+  );
+
+  height: 100%;
+  padding: 8px;
+  border-radius: 20px;
+  outline: 1px solid #fcfeff;
+  background-color: #f9f9f8;
+  box-shadow: 0 0 8px #73747d44;
+  transform-style: preserve-3d;
+  transform: rotate3d(0, 1, 0, 0);
+  transition: transform 1.2s var(--spring-easing);
+
+  &[flipped="true"] {
+    transform: rotate3d(0, 1, 0, 180deg);
+  }
+}
+
+.zbs-screenshot,
+.zbs-signature-pane {
+  position: absolute;
+  inset: 8px;
+  border-radius: 14px;
+  overflow: hidden;
+  outline: 1px solid var(--signature-container-outline);
+  filter: drop-shadow(0 0 4px var(--signature-container-shadow-color));
+  backface-visibility: hidden;
+}
+
+.zbs-screenshot {
+  background-color: #fff;
+  transform: translateZ(1px);
+
+  & .zbs-screenshot-favicon {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 64px;
+    height: 64px;
+    margin: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    object-fit: contain;
+    border-radius: 16px;
+    background-color: var(--favicon-background);
+    border: solid 4px var(--favicon-border);
+    outline: 1px solid var(--favicon-outline);
+  }
+
+  .zbs-card[screenshot-hidden] & {
+    background-color: #f1f1ff;
+  }
+
+  .zbs-card[screenshot-hidden] & canvas,
+  .zbs-card[screenshot-hidden] & .zbs-screenshot-image {
+    visibility: hidden;
+  }
+
+  .zbs-card[screenshot-hidden] & .zbs-screenshot-favicon {
+    display: block;
+  }
+
+  & canvas,
+  & img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  & img[hidden] {
+    display: none;
+  }
+}
+
+.zbs-signature-pane {
+  background-color: #fff;
+  transform: rotateY(180deg);
+
+  & p {
+    position: absolute;
+    inset: 0;
+    margin: 16px;
+    font-size: 10pt;
+    text-align: center;
+    color: #6c6a85;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  & .zbs-signature {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    stroke: #030340;
+    stroke-width: 6;
+  }
+}
+
+.zbs-pane-buttons-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  margin: -12px;
+  perspective: 400px;
+  transform-origin: top;
+  transform: translateZ(10px);
+  filter: drop-shadow(0 0 4px #73747d30);
+}
+
+.zbs-pane-buttons {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  margin: auto;
+  padding: 6px;
+  border-radius: 24px;
+  background-color: #fff;
+  translate: 0 -30px;
+  transform: rotate3d(0, 0, 0, 0);
+  transition:
+    transform cubic-bezier(0.03, 0.79, 0.46, 1) 0.4s,
+    scale cubic-bezier(0.03, 0.79, 0.46, 1) 0.4s;
+
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
+  &:has(button:last-child:hover) {
+    transform: rotate3d(0, 1, 0, 12deg);
+  }
+
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
+  &:has(button:first-child:hover) {
+    transform: rotate3d(0, 1, 0, -12deg);
+  }
+
+  &:active {
+    scale: 0.95;
+  }
+
+  & button {
+    appearance: none;
+    min-width: 42px;
+    height: 26px;
+    margin: -2px;
+    border: none;
+    background: none;
+    -moz-context-properties: fill, fill-opacity;
+    fill: #020131;
+
+    & .button-box {
+      scale: 0.85;
+    }
+
+    &:first-child {
+      border-radius: 20px 6px 6px 20px;
+    }
+
+    &:last-child {
+      border-radius: 6px 20px 20px 6px;
+    }
+
+    &:hover {
+      background-color: var(--share-content-pane-buttons-hover);
+    }
+
+    &[disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
+
+.zbs-vertical-sep {
+  width: 2px;
+  height: auto;
+  margin: 4px 5px;
+  border-radius: 4px;
+  background-color: #8d8e9d68;
+}
+
+.zbs-stroke-out {
+  stroke-dasharray: var(--stroke-length);
+  stroke-dashoffset: 0;
+  animation: zbs-stroke-out 1s ease forwards;
+}
+
+@keyframes zbs-stroke-out {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dashoffset: var(--stroke-offset);
+    opacity: 0;
+  }
+}
+
+/* Footer */
+
+.zbs-footer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 12px;
+  background-color: var(--footer-background);
+}
+
+.zbs-footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 24px 0;
+  color: #060941;
+
+  & h1 {
+    margin: 0;
+    font-size: large;
+    font-weight: bold;
+  }
+
+  & p {
+    margin: 0;
+    font-size: small;
+  }
+}
+
+/* Share success animation */
+
+.zbs-success {
+  position: absolute;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  transition: opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
+  flex-direction: column;
+
+  &[showing] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  background-color: #fffc;
+  color: #000078;
+  font-family: system-ui;
+  font-weight: bolder;
+  font-size: 12pt;
+
+  /* The text hangs below the heart so the heart itself sits dead center. */
+  & .zbs-success-copied {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(50% + 64px);
+    margin: 0;
+    text-align: center;
+    translate: 0 -6px;
+    scale: 0.8;
+    opacity: 0;
+    transition:
+      translate 1.2s cubic-bezier(0.19, 1, 0.22, 1),
+      scale 1.2s cubic-bezier(0.19, 1, 0.22, 1),
+      opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  & .zbs-success-heart-container {
+    position: relative;
+  }
+
+  & .zbs-success-heart {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    scale: 0;
+    will-change: scale;
+    filter: drop-shadow(-10px 10px 10px #2e2e2f15);
+    animation: heart-pulse-loop 0.95s cubic-bezier(0.175, 0.5, 0.4, 1.4)
+      infinite;
+
+    & img,
+    & svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    & img {
+      object-fit: contain;
+      object-position: center;
+    }
+
+    & svg {
+      scale: 0.65;
+      stroke-dasharray: 24;
+      stroke-dashoffset: -24;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+  }
+}
+
+.zbs-success-heart-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+
+  & path {
+    fill: none;
+    stroke: #4e50e1ac;
+    stroke-width: 42;
+    transform-box: fill-box;
+    transform-origin: center;
+    scale: 0;
+    will-change: scale, opacity;
+    filter: blur(20px);
+  }
+}
+
+.zbs-success[done] {
+  & .zbs-success-heart-svg path {
+    animation: heart-expand 1.2s cubic-bezier(0.15, 0.54, 0.01, 0.93);
+  }
+
+  & .zbs-success-heart {
+    animation: heart-pulse 0.7s cubic-bezier(0.11, 0.42, 0.41, 0.84) forwards;
+  }
+
+  & .zbs-success-heart-check {
+    stroke-dashoffset: 0;
+  }
+
+  & .zbs-success-copied {
+    opacity: 1;
+    scale: 1;
+    translate: 0;
+  }
+}
+
+@keyframes heart-pulse-loop {
+  0% {
+    scale: 0.7;
+  }
+
+  50% {
+    scale: 0.9;
+  }
+
+  100% {
+    scale: 0.7;
+  }
+}
+
+@keyframes heart-pulse {
+  0% {
+    scale: 0.8;
+  }
+
+  15% {
+    scale: 1.4;
+  }
+
+  100% {
+    scale: 1.2;
+  }
+}
+
+@keyframes heart-expand {
+  from {
+    opacity: 1;
+    scale: 0;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.2;
+  }
+}

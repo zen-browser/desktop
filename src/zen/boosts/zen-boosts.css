@@ -584,7 +584,7 @@ body {
 }
 
 #zen-boost-font-wrapper {
-  box-shadow: 0 0px 6px rgba(0, 0, 0, .1);
+  box-shadow: 0 0 6px rgba(0, 0, 0, .1);
   background-color: var(--zen-boosts-font-wrapper-background);
 
   border-radius: 10px;

@@ -306,15 +306,14 @@ export class nsKeyShortcutModifiers {
 }
 
 export class KeyShortcut {
-  // Lower cases a single character key, unless that turns it into more than
-  // one character; e.g. "İ" lower cases to "i" plus a combining dot. Key names
-  // such as "Escape" are left as they are.
+  // Lower cases a single character key. Key names such as "Escape" are left as
+  // they are. "İ" lower cases to "i" plus a combining dot by default, so it uses
+  // the Turkish mapping to "i" instead, which is also what Gecko matches it as.
   static normalizeKey(key) {
     if (key?.length != 1) {
       return key;
     }
-    const lower = key.toLowerCase();
-    return lower.length == 1 ? lower : key;
+    return key == "İ" ? "i" : key.toLowerCase();
   }
 
   static SHIFTED_SYMBOLS = {

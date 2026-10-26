@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/SubDialog.sys.mjs b/toolkit/modules/SubDialog.sys.mjs
-index b3ce915315a6c3009a2fa6a4c134db8c70e569a0..c2ca7f35d0eaf8affddf3b88d6d916f8ad4e58c2 100644
+index b3ce915315a6c3009a2fa6a4c134db8c70e569a0..22c31730934eb2402b735ae26ec3fbbe363afd37 100644
 --- a/toolkit/modules/SubDialog.sys.mjs
 +++ b/toolkit/modules/SubDialog.sys.mjs
 @@ -249,7 +249,41 @@ SubDialog.prototype = {
@@ -44,15 +44,18 @@ index b3ce915315a6c3009a2fa6a4c134db8c70e569a0..c2ca7f35d0eaf8affddf3b88d6d916f8
      if (this._closingCallback) {
        try {
          this._closingCallback.call(null, aEvent);
-@@ -504,6 +538,11 @@ SubDialog.prototype = {
+@@ -504,6 +538,14 @@ SubDialog.prototype = {
        })
      );
      this._overlay.style.visibility = "inherit";
-+    await new Promise(resolve =>
-+      this._window.requestAnimationFrame(() =>
-+        this._window.requestAnimationFrame(resolve)
-+      )
-+    );
++    await Promise.race([
++      new Promise(resolve =>
++        this._window.requestAnimationFrame(() =>
++          this._window.requestAnimationFrame(resolve)
++        )
++      ),
++      new Promise(resolve => this._window.setTimeout(resolve, 100)),
++    ]);
      this._overlay.style.opacity = ""; // XXX: focus hack continued from _onContentLoaded
  
      if (this._box.getAttribute("resizable") == "true") {

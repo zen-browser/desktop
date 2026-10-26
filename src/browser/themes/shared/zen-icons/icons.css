@@ -218,6 +218,10 @@
   list-style-image: url("plus.svg") !important;
 }
 
+#tabs-newtab-button[zen-paste-and-search] {
+  list-style-image: url("edit-paste.svg") !important;
+}
+
 #cut-button {
   list-style-image: url("edit-cut.svg") !important;
 }

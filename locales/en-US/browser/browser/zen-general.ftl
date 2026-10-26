@@ -38,7 +38,6 @@ tab-context-zen-edit-icon =
     .label = Change Icon…
 
 zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
 
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>

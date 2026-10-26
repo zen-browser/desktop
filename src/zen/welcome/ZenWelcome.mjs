@@ -566,12 +566,6 @@
             // Single profile browsers report no profile list.
             profiles = [null];
           }
-          if (key === "arc") {
-            profiles = [
-              profiles.find(profile => profile?.id === "Default") ??
-                profiles[0],
-            ];
-          }
           const nameId = migrator.constructor.displayNameL10nID;
           let displayName = nameId;
           try {
@@ -616,6 +610,12 @@
       profiles.className = "zen-welcome-import-profiles";
       const list = document.createElement("div");
       list.className = "zen-welcome-import-profiles-list";
+      // Chromium browsers list profiles in no guaranteed order, so the main
+      // one is picked by its id rather than by its position.
+      const checkedIndex = Math.max(
+        source.profiles.findIndex(profile => profile?.id === "Default"),
+        0
+      );
       source.profiles.forEach((profile, profileIndex) => {
         const row = document.createElement("label");
         row.className = "zen-welcome-import-profile";
@@ -623,7 +623,7 @@
         input.type = "radio";
         input.name = `zen-welcome-import-profile-${index}`;
         input.value = profileIndex;
-        input.checked = profileIndex === 0;
+        input.checked = profileIndex === checkedIndex;
         const check = document.createElement("span");
         check.className = "zen-welcome-import-profile-check no-squircles";
         const text = document.createElement("span");

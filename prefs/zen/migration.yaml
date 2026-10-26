@@ -16,3 +16,6 @@
 
 - name: zen.migration.bookmarks-as-pinned-folders.max-tabs
   value: 250
+
+- name: zen.migration.arc.import-unpinned-tabs
+  value: false

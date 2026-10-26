@@ -6,6 +6,7 @@
 prefs = [
   "zen.workspaces.separate-essentials=false",
   "zen.migration.bookmarks-as-pinned-folders=true",
+  "zen.migration.arc.import-unpinned-tabs=true",
   "browser.migrate.internal-testing.enabled=true",
   "browser.migrate.content-modal.import-all.enabled=false",
 ]

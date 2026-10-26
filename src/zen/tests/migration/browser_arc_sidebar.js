@@ -51,6 +51,13 @@ add_task(async function test_parse_arc_sidebar() {
     "Pinned items keep their order, split views are flattened and internal pages are skipped"
   );
 
+  Assert.deepEqual(
+    first.unpinned,
+    [{ type: "tab", url: "https://example.com/today", title: "Today" }],
+    "Unpinned tabs are read from the space's unpinned container"
+  );
+  Assert.deepEqual(second.unpinned, [], "A space can have no unpinned tabs");
+
   Assert.equal(second.title, "Space 2", "Untitled spaces get a name");
   Assert.equal(second.icon, undefined, "Spaces without an emoji get no icon");
   Assert.deepEqual(
@@ -176,7 +183,283 @@ add_task(async function test_apply_arc_sidebar() {
   Assert.equal(pinnedUrlOf(secondItems[0]), "https://example.com/6");
   ok(secondItems[0].hasAttribute("pending"), "Imported tabs are not loaded");
 
+  const unpinned = unpinnedTabsOf(original.uuid).filter(
+    tab => !original.tabs.has(tab)
+  );
+  Assert.equal(unpinned.length, 1, "The unpinned tab was opened");
+  Assert.equal(
+    (
+      unpinned[0].linkedBrowser.registeredOpenURI ??
+      unpinned[0].linkedBrowser.currentURI
+    ).spec,
+    "https://example.com/today",
+    "The unpinned tab will load Arc's url"
+  );
+  ok(unpinned[0].hasAttribute("pending"), "The unpinned tab is not loaded");
+
   await cleanupImportedState(original);
+});
+
+add_task(async function test_parse_arc_profiles() {
+  const sidebar = buildArcSidebar();
+  const container = sidebar.sidebar.containers[1];
+  container.spaces[3].profile = arcProfileOf("Profile 1");
+  container.items.push("top-apps-2", {
+    id: "top-apps-2",
+    parentID: null,
+    data: {
+      itemContainer: {
+        containerType: { topApps: { _0: arcProfileOf("Profile 1") } },
+      },
+    },
+    childrenIds: ["fav-2", "fav-3"],
+  });
+  for (const [id, url] of [
+    ["fav-2", "https://example.com/mail"],
+    ["fav-3", "https://example.com/mail"],
+  ]) {
+    container.items.push(id, {
+      id,
+      parentID: "top-apps-2",
+      childrenIds: [],
+      data: { tab: { savedURL: url, savedTitle: "Mail" } },
+    });
+  }
+  container.topAppsContainerIDs.push(arcProfileOf("Profile 1"), "top-apps-2");
+
+  const byProfile = profileId =>
+    ZenMigrationUtils.parseArcSidebar(sidebar, { profileId });
+
+  const main = byProfile("Default");
+  Assert.deepEqual(
+    main.spaces.map(space => space.id),
+    ["s1"],
+    "Spaces without a profile key belong to the default profile"
+  );
+  Assert.deepEqual(
+    main.favorites.map(favorite => favorite.url),
+    ["https://example.com/calendar"],
+    "The default profile keeps its own favorites"
+  );
+
+  const other = byProfile("Profile 1");
+  Assert.deepEqual(
+    other.spaces.map(space => space.id),
+    ["s2"],
+    "A custom profile gets its own spaces"
+  );
+  Assert.deepEqual(
+    other.favorites.map(favorite => favorite.url),
+    ["https://example.com/mail"],
+    "Favorites are per profile and repeated urls are kept once"
+  );
+
+  Assert.deepEqual(
+    byProfile("Profile 9"),
+    { favorites: [], spaces: [] },
+    "An unknown profile has nothing to import"
+  );
+  Assert.equal(
+    ZenMigrationUtils.parseArcSidebar(sidebar).spaces.length,
+    2,
+    "Without a profile every space is kept"
+  );
+});
+
+add_task(async function test_parse_arc_space_order() {
+  const sidebar = buildArcSidebar();
+  sidebar.sidebarSyncState = {
+    container: { value: { orderedSpaceIDs: ["s2", "s1"] } },
+  };
+  Assert.deepEqual(
+    ZenMigrationUtils.parseArcSidebar(sidebar).spaces.map(space => space.id),
+    ["s2", "s1"],
+    "Spaces follow Arc's sidebar order"
+  );
+});
+
+add_task(async function test_apply_arc_sidebar_twice() {
+  const original = snapshotActiveWorkspace();
+  const plan = ZenMigrationUtils.parseArcSidebar(buildArcSidebar());
+
+  await ZenMigrationUtils.applyArcSidebar(plan, window);
+  const second = gZenWorkspaces
+    .getWorkspaces()
+    .find(w => w.uuid !== original.uuid);
+  const count = await ZenMigrationUtils.applyArcSidebar(plan, window);
+  Assert.equal(count, 2, "Both spaces are reported on the second run");
+
+  Assert.equal(
+    gZenWorkspaces.getWorkspaces().length,
+    2,
+    "Importing again reuses the spaces it created"
+  );
+  const firstItems = pinnedItemsOf(original.uuid);
+  Assert.equal(firstItems.length, 2, "No pinned tab or folder was duplicated");
+  Assert.equal(
+    folderItemsOf(firstItems[1]).length,
+    4,
+    "The folder was merged instead of copied"
+  );
+  Assert.equal(
+    folderItemsOf(folderItemsOf(firstItems[1])[3]).length,
+    1,
+    "The subfolder was merged too"
+  );
+  Assert.equal(pinnedItemsOf(second.uuid).length, 1);
+  Assert.equal(
+    gBrowser.tabs.filter(tab => tab.hasAttribute("zen-essential")).length,
+    1,
+    "Favorites are not added twice"
+  );
+  Assert.equal(
+    unpinnedTabsOf(original.uuid).filter(tab => !original.tabs.has(tab)).length,
+    1,
+    "Unpinned tabs are not opened twice"
+  );
+
+  await cleanupImportedState(original);
+});
+
+add_task(async function test_apply_arc_sidebar_new_tab_on_second_run() {
+  const original = snapshotActiveWorkspace();
+  await ZenMigrationUtils.applyArcSidebar(
+    ZenMigrationUtils.parseArcSidebar(buildArcSidebar()),
+    window
+  );
+
+  const sidebar = buildArcSidebar();
+  const items = sidebar.sidebar.containers[1].items;
+  const folder = items[items.indexOf("folder-1") + 1];
+  folder.childrenIds.push("tab-new");
+  items.push("tab-new", {
+    id: "tab-new",
+    parentID: "folder-1",
+    childrenIds: [],
+    data: { tab: { savedURL: "https://example.com/new", savedTitle: "New" } },
+  });
+  await ZenMigrationUtils.applyArcSidebar(
+    ZenMigrationUtils.parseArcSidebar(sidebar),
+    window
+  );
+
+  const folderItems = folderItemsOf(pinnedItemsOf(original.uuid)[1]);
+  Assert.equal(folderItems.length, 5, "Only the new tab was added");
+  Assert.equal(
+    pinnedUrlOf(folderItems[4]),
+    "https://example.com/new",
+    "The new tab goes at the end of its folder"
+  );
+
+  await cleanupImportedState(original);
+});
+
+add_task(async function test_apply_arc_sidebar_after_space_removed() {
+  const original = snapshotActiveWorkspace();
+  const plan = ZenMigrationUtils.parseArcSidebar(buildArcSidebar());
+  await ZenMigrationUtils.applyArcSidebar(plan, window);
+
+  const removed = gZenWorkspaces
+    .getWorkspaces()
+    .find(w => w.uuid !== original.uuid);
+  await gZenWorkspaces.removeWorkspace(removed.uuid);
+  await ZenMigrationUtils.applyArcSidebar(plan, window);
+
+  const recreated = gZenWorkspaces
+    .getWorkspaces()
+    .find(w => w.uuid !== original.uuid);
+  Assert.equal(
+    gZenWorkspaces.getWorkspaces().length,
+    2,
+    "The removed space is created again"
+  );
+  Assert.notEqual(recreated.uuid, removed.uuid, "It is a new space");
+  Assert.equal(pinnedItemsOf(recreated.uuid).length, 1);
+  const imported = JSON.parse(
+    Services.prefs.getStringPref("zen.migration.arc.imported-spaces")
+  );
+  Assert.deepEqual(
+    Object.values(imported).sort(),
+    [original.uuid, recreated.uuid].sort(),
+    "The saved map points at the new space"
+  );
+
+  await cleanupImportedState(original);
+});
+
+add_task(async function test_apply_arc_sidebar_without_unpinned_tabs() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.migration.arc.import-unpinned-tabs", false]],
+  });
+  const original = snapshotActiveWorkspace();
+  await ZenMigrationUtils.applyArcSidebar(
+    ZenMigrationUtils.parseArcSidebar(buildArcSidebar()),
+    window
+  );
+  Assert.equal(
+    unpinnedTabsOf(original.uuid).filter(tab => !original.tabs.has(tab)).length,
+    0,
+    "Unpinned tabs are skipped when the pref is off"
+  );
+  await cleanupImportedState(original);
+  await SpecialPowers.popPrefEnv();
+});
+
+add_task(async function test_arc_migrator_resource_per_profile() {
+  const original = snapshotActiveWorkspace();
+  const dir = await IOUtils.createUniqueDirectory(
+    PathUtils.tempDir,
+    "zen-arc-migration"
+  );
+  const userData = PathUtils.join(dir, "User Data");
+  for (const profile of ["Default", "Profile 1"]) {
+    await IOUtils.makeDirectory(PathUtils.join(userData, profile), {
+      createAncestors: true,
+    });
+  }
+  await IOUtils.writeJSON(PathUtils.join(userData, "Local State"), {
+    profile: {
+      info_cache: {
+        Default: { name: "Person 1" },
+        "Profile 1": { name: "Work" },
+      },
+    },
+  });
+  const sidebar = buildArcSidebar();
+  sidebar.sidebar.containers[1].spaces[3].profile = arcProfileOf("Profile 1");
+  await IOUtils.writeJSON(PathUtils.join(dir, "StorableSidebar.json"), sidebar);
+
+  const migrator = new ArcProfileMigrator();
+  migrator._chromeUserDataPath = userData;
+  const profiles = await migrator.getSourceProfiles();
+  Assert.deepEqual(
+    profiles.map(profile => profile.id).sort(),
+    ["Default", "Profile 1"],
+    "Every Arc profile with spaces is listed"
+  );
+  const resources = await migrator.getResources(
+    profiles.find(profile => profile.id === "Profile 1")
+  );
+  const spaces = resources.find(
+    resource => resource.type === MigrationUtils.resourceTypes.ZEN_SPACES
+  );
+  ok(spaces, "The second profile offers its spaces");
+
+  const success = await new Promise(resolve => spaces.migrate(resolve));
+  ok(success, "The sidebar migrated");
+  Assert.equal(
+    ZenMigrationUtils.lastImportedSpaceCount,
+    1,
+    "Only the second profile's space was imported"
+  );
+  Assert.equal(
+    gZenWorkspaces.getWorkspaceFromId(original.uuid).name,
+    "Space 1",
+    "The profile's only space took over the empty active space"
+  );
+
+  await cleanupImportedState(original);
+  await IOUtils.remove(dir, { recursive: true });
 });
 
 add_task(async function test_apply_arc_sidebar_keeps_used_space() {

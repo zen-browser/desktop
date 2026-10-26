@@ -31,9 +31,22 @@ XPCOMUtils.defineLazyPreferenceGetter(
   5
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gImportArcUnpinnedTabs",
+  "zen.migration.arc.import-unpinned-tabs",
+  false
+);
+
 const kImportableSchemes = new Set(["http:", "https:", "file:", "ftp:"]);
 
 const kArcDefaultSpaceId = "thebrowser.company.defaultPersonalSpaceID";
+const kArcDefaultProfileId = "Default";
+
+// Remembers which Zen space each Arc space was imported into, as a JSON map
+// of Arc space id to Zen space uuid, so importing again updates those spaces
+// instead of creating copies.
+const kArcImportedSpacesPref = "zen.migration.arc.imported-spaces";
 
 const kMaxTreeDepth = 32;
 const kMaxSpaceColors = 3;
@@ -74,6 +87,54 @@ function normalizeUrl(url) {
   } catch {
     return null;
   }
+}
+
+/**
+ * @param {object} profile An Arc profile key, `{default: ...}` or
+ *   `{custom: {_0: {directoryBasename}}}`.
+ * @returns {string|null} The Chromium profile directory it belongs to. Files
+ *   written before Arc had profiles carry no key and belong to the default one.
+ */
+function arcProfileId(profile) {
+  if (!profile || typeof profile !== "object" || profile.default) {
+    return kArcDefaultProfileId;
+  }
+  const basename = profile.custom?._0?.directoryBasename;
+  return typeof basename === "string" && basename ? basename : null;
+}
+
+/**
+ * @param {Array<{space: object}>} entries Arc spaces with their context.
+ * @param {*} orderedIds Arc's space order, as shown in its sidebar.
+ * @returns {Array<{space: object}>} A copy in sidebar order. Spaces missing
+ *   from the order keep their stored position after the ordered ones.
+ */
+function sortArcSpaces(entries, orderedIds) {
+  if (!Array.isArray(orderedIds)) {
+    return entries;
+  }
+  const rank = ({ space }) => {
+    const index = orderedIds.indexOf(space.id);
+    return index === -1 ? orderedIds.length : index;
+  };
+  // Array.prototype.sort is stable, so unranked spaces keep their order.
+  return [...entries].sort((a, b) => rank(a) - rank(b));
+}
+
+/**
+ * @param {MozTabbrowserTab} tab
+ * @returns {string|null} The url a pinned tab is pinned to, or the url an
+ *   unloaded tab will load. A tab opened lazily with a url only knows it as
+ *   its registered open url until it loads.
+ */
+function urlOfTab(tab) {
+  const browser = tab.linkedBrowser;
+  return (
+    tab._zenPinnedInitialState?.entry?.url ||
+    browser?.registeredOpenURI?.spec ||
+    browser?.currentURI?.spec ||
+    null
+  );
 }
 
 function arcSpaceTitle(space, index) {
@@ -237,16 +298,25 @@ class ZenMigrationUtilsClass {
    * Converts Arc's StorableSidebar.json into an import plan.
    *
    * @param {object} sidebar The parsed JSON file.
+   * @param {object} [options]
+   * @param {string|null} [options.profileId] Keep only the spaces and
+   *   favorites of this Chromium profile directory, e.g. "Profile 1". All
+   *   profiles are kept when null.
    * @returns {{favorites: object[], spaces: object[]}}
-   *   `favorites` holds Arc's top apps (Zen essentials) and each space its
-   *   title, optional emoji icon, theme colors and pinned items tree.
+   *   `favorites` holds Arc's top apps (Zen essentials) and each space its Arc
+   *   id, title, optional emoji icon, theme colors, pinned items tree and its
+   *   unpinned tabs, in Arc's sidebar order.
    */
-  parseArcSidebar(sidebar) {
+  parseArcSidebar(sidebar, { profileId = null } = {}) {
     const plan = { favorites: [], spaces: [] };
     const containers = sidebar?.sidebar?.containers;
     if (!Array.isArray(containers)) {
       return plan;
     }
+    const inProfile = profile =>
+      profileId === null || arcProfileId(profile) === profileId;
+    const spaces = [];
+    const favoriteUrls = new Set();
     for (const container of containers) {
       if (
         !container ||
@@ -304,65 +374,165 @@ class ZenMigrationUtilsClass {
         }
         return result;
       };
-      for (const [, containerId] of pairs(container.topAppsContainerIDs)) {
-        if (typeof containerId === "string") {
-          plan.favorites.push(...this.#flattenTabs(convert(containerId, 0)));
+      const convertRoot = rootId =>
+        typeof rootId === "string" ? convert(rootId, 0) : [];
+      // A synced profile has one favorites root per machine, which usually
+      // hold the same sites.
+      for (const [profile, containerId] of pairs(
+        container.topAppsContainerIDs
+      )) {
+        if (!inProfile(profile)) {
+          continue;
+        }
+        for (const favorite of this.#flattenTabs(convertRoot(containerId))) {
+          if (!favoriteUrls.has(favorite.url)) {
+            favoriteUrls.add(favorite.url);
+            plan.favorites.push(favorite);
+          }
         }
       }
       for (const [, space] of pairs(container.spaces)) {
-        if (!space || typeof space !== "object") {
-          continue;
+        if (space && typeof space === "object" && inProfile(space.profile)) {
+          spaces.push({ space, convertRoot });
         }
-        const pinnedId = pairs(space.containerIDs).find(
-          ([kind]) => kind === "pinned"
-        )?.[1];
-        plan.spaces.push({
-          id: space.id,
-          title: arcSpaceTitle(space, plan.spaces.length),
-          icon: arcSpaceIcon(space),
-          theme: arcSpaceTheme(space),
-          items: typeof pinnedId === "string" ? convert(pinnedId, 0) : [],
-        });
       }
+    }
+    const orderedIds =
+      sidebar.sidebarSyncState?.container?.value?.orderedSpaceIDs;
+    for (const { space, convertRoot } of sortArcSpaces(spaces, orderedIds)) {
+      const roots = new Map(pairs(space.containerIDs));
+      plan.spaces.push({
+        id: space.id,
+        title: arcSpaceTitle(space, plan.spaces.length),
+        icon: arcSpaceIcon(space),
+        theme: arcSpaceTheme(space),
+        items: convertRoot(roots.get("pinned")),
+        unpinned: this.#flattenTabs(convertRoot(roots.get("unpinned"))),
+      });
     }
     return plan;
   }
 
+  /**
+   * Creates the spaces, essentials, pinned tabs, folders and unpinned tabs of
+   * an Arc plan. Spaces imported before are updated in place: only the tabs
+   * and folders they do not have yet are added.
+   *
+   * @param {{favorites: object[], spaces: object[]}} plan
+   * @param {Window} [win]
+   * @returns {Promise<number>} The number of spaces imported or updated.
+   */
   async applyArcSidebar(plan, win = this.browserWindow) {
     if (!win) {
       throw new Error("ZenMigrationUtils: no window to import spaces into");
     }
-    const { gZenWorkspaces, gZenPinnedTabManager } = win;
+    const { gZenWorkspaces, gZenPinnedTabManager, gBrowser } = win;
     await gZenWorkspaces.promiseInitialized;
 
+    const essentialUrls = new Set(
+      gBrowser.tabs
+        .filter(tab => tab.hasAttribute("zen-essential"))
+        .map(urlOfTab)
+    );
+    // Favorites that do not fit in the essentials are pinned in the first
+    // space instead, merged like any other pinned item so that importing again
+    // does not pin them twice.
     const leftovers = [];
     for (const favorite of plan.favorites) {
+      if (essentialUrls.has(favorite.url)) {
+        continue;
+      }
       const tab = this.#createLazyTab(win, favorite);
       if (
         !gZenPinnedTabManager.canEssentialBeAdded(tab) ||
         !gZenPinnedTabManager.addToEssentials(tab)
       ) {
-        leftovers.push(tab);
+        gBrowser.removeTab(tab, { animate: false });
+        leftovers.push(favorite);
       }
     }
 
+    const imported = this.#readImportedArcSpaces();
+    // A space an earlier import already fills is never taken over by another
+    // Arc space, even when it has no pinned tabs.
+    let canReuseActive = !Object.values(imported).includes(
+      gZenWorkspaces.activeWorkspace
+    );
     let count = 0;
     for (const space of plan.spaces) {
-      const uuid = await this.#ensureSpace(win, space, count === 0);
-      if (count === 0) {
-        for (const tab of leftovers.splice(0)) {
-          this.#pinTabInto(win, tab, uuid, null);
-        }
+      let uuid = imported[space.id];
+      if (!uuid || !gZenWorkspaces.getWorkspaceFromId(uuid)) {
+        uuid = await this.#ensureSpace(win, space, canReuseActive);
+        canReuseActive = false;
       }
-      this.#applyItems(win, space.items, uuid, null, 0, null);
+      if (typeof space.id === "string" && imported[space.id] !== uuid) {
+        imported[space.id] = uuid;
+        // Saved right away so that a later space failing does not make the
+        // next import create this space again.
+        Services.prefs.setStringPref(
+          kArcImportedSpacesPref,
+          JSON.stringify(imported)
+        );
+      }
+      if (count === 0) {
+        this.#applyItems(win, leftovers.splice(0), uuid, null, 0, null, true);
+      }
+      this.#applyItems(win, space.items, uuid, null, 0, null, true);
+      if (lazy.gImportArcUnpinnedTabs) {
+        this.#openUnpinnedTabs(win, space.unpinned ?? [], uuid);
+      }
       count++;
     }
-    for (const tab of leftovers.splice(0)) {
-      this.#pinTabInto(win, tab, gZenWorkspaces.activeWorkspace, null);
-    }
+    this.#applyItems(
+      win,
+      leftovers,
+      gZenWorkspaces.activeWorkspace,
+      null,
+      0,
+      null,
+      true
+    );
 
     this.lastImportedSpaceCount = count;
     return count;
+  }
+
+  #readImportedArcSpaces() {
+    try {
+      const map = JSON.parse(
+        Services.prefs.getStringPref(kArcImportedSpacesPref, "{}")
+      );
+      return map && typeof map === "object" && !Array.isArray(map) ? map : {};
+    } catch {
+      return {};
+    }
+  }
+
+  // Opens Arc's unpinned ("today") tabs as regular, unloaded tabs at the end
+  // of the space, skipping the ones the space already has open.
+  #openUnpinnedTabs(win, items, workspaceId) {
+    const { gBrowser, gZenWorkspaces } = win;
+    const openUrls = new Set(
+      gBrowser.tabs
+        .filter(
+          tab =>
+            !tab.pinned && tab.getAttribute("zen-workspace-id") === workspaceId
+        )
+        .map(urlOfTab)
+    );
+    const tabs = [];
+    for (const item of items) {
+      if (openUrls.has(item.url)) {
+        continue;
+      }
+      openUrls.add(item.url);
+      const tab = this.#addLazyTab(win, item);
+      tab.setAttribute("zen-workspace-id", workspaceId);
+      tabs.push(tab);
+    }
+    if (tabs.length) {
+      gZenWorkspaces.moveTabsToWorkspace(tabs, workspaceId);
+    }
   }
 
   /**
@@ -519,13 +689,26 @@ class ZenMigrationUtilsClass {
 
   // Walks a plan, creating pinned tabs and folders in order. Folders deeper
   // than Zen allows are flattened into their parent. `budget` is an optional
-  // `{ remaining }` counter decremented per pinned tab.
-  #applyItems(win, items, workspaceId, parentFolder, depth, budget) {
+  // `{ remaining }` counter decremented per pinned tab. With `merge`, tabs the
+  // parent already pins are skipped and folders with the same name are
+  // reused, so a repeated import only adds what is new.
+  #applyItems(win, items, workspaceId, parentFolder, depth, budget, merge) {
+    const existing = merge
+      ? this.#pinnedChildrenOf(win, workspaceId, parentFolder)
+      : [];
+    const pinnedUrls = new Set(
+      existing.filter(child => !child.isZenFolder).map(urlOfTab)
+    );
+    // Same-named sibling folders each merge into their own counterpart.
+    const unmatchedFolders = existing.filter(child => child.isZenFolder);
     for (const item of items) {
       if (budget && budget.remaining <= 0) {
         return;
       }
       if (item.type === "tab") {
+        if (pinnedUrls.has(item.url)) {
+          continue;
+        }
         if (budget) {
           budget.remaining--;
         }
@@ -539,33 +722,62 @@ class ZenMigrationUtilsClass {
             workspaceId,
             parentFolder,
             depth,
-            budget
+            budget,
+            merge
           );
           continue;
         }
-        const folder = win.gZenFolders.createFolder([], {
-          label: item.title || "Folder",
-          workspaceId,
-          renameFolder: false,
-          insertAfter: parentFolder?.groupContainer.lastElementChild,
-        });
+        const label = item.title || "Folder";
+        const matchIndex = unmatchedFolders.findIndex(
+          child => child.label === label
+        );
+        const [match] =
+          matchIndex === -1 ? [] : unmatchedFolders.splice(matchIndex, 1);
+        const folder =
+          match ??
+          win.gZenFolders.createFolder([], {
+            label,
+            workspaceId,
+            renameFolder: false,
+            insertAfter: parentFolder?.groupContainer.lastElementChild,
+          });
         this.#applyItems(
           win,
           item.items,
           workspaceId,
           folder,
           depth + 1,
-          budget
+          budget,
+          merge
         );
-        folder.collapsed = true;
+        if (!match) {
+          folder.collapsed = true;
+        }
       }
     }
   }
 
-  // Opens an unloaded tab that already knows its pinned url and title, so it
-  // shows up right away without loading anything.
-  #createLazyTab(win, item) {
-    const tab = win.gBrowser.addTrustedTab(item.url, {
+  // The tabs and folders directly inside a folder, or at the top of a space's
+  // pinned section when `parentFolder` is null.
+  #pinnedChildrenOf(win, workspaceId, parentFolder) {
+    const { gBrowser, gZenWorkspaces } = win;
+    const children = parentFolder
+      ? parentFolder.allItems
+      : [
+          ...(gZenWorkspaces.workspaceElement(workspaceId)?.pinnedTabsContainer
+            .children ?? []),
+        ];
+    return children.filter(
+      child =>
+        (gBrowser.isTab(child) && !child.hasAttribute("zen-empty-tab")) ||
+        child.isZenFolder
+    );
+  }
+
+  // Opens an unloaded tab that already knows its url and title, so it shows
+  // up right away without loading anything.
+  #addLazyTab(win, item) {
+    return win.gBrowser.addTrustedTab(item.url, {
       createLazyBrowser: true,
       inBackground: true,
       skipAnimation: true,
@@ -574,6 +786,11 @@ class ZenMigrationUtilsClass {
       lazyTabTitle: item.title || undefined,
       skipRoute: true,
     });
+  }
+
+  // A lazy tab that also remembers the url and title it is pinned to.
+  #createLazyTab(win, item) {
+    const tab = this.#addLazyTab(win, item);
     tab._zenPinnedInitialState = {
       entry: { url: item.url, title: item.title || "" },
     };

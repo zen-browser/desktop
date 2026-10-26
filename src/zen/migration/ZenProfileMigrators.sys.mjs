@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { MigrationUtils } from "resource:///modules/MigrationUtils.sys.mjs";
-import { ChromeProfileMigrator } from "resource:///modules/ChromeProfileMigrator.sys.mjs";
+import { MigrationUtils } from "moz-src:///browser/components/migration/MigrationUtils.sys.mjs";
+import { ChromeProfileMigrator } from "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs";
 
 const lazy = {};
 
@@ -35,19 +35,17 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
   _keychainAccountName = "Arc";
 
   /**
-   * The sidebar is shared by every Arc profile, so it is offered once, with
-   * the default profile.
+   * Every Arc profile shares one sidebar file, but each space and favorites
+   * list belongs to a profile, so each profile offers only its own.
    *
    * @param {object} aProfile
    * @returns {Promise<object[]>}
    */
   async getResources(aProfile) {
     const resources = await super.getResources(aProfile);
-    if (!aProfile || aProfile.id == "Default") {
-      const sidebar = await this._getSidebarResource();
-      if (sidebar) {
-        resources.push(sidebar);
-      }
+    const sidebar = await this._getSidebarResource(aProfile?.id ?? null);
+    if (sidebar) {
+      resources.push(sidebar);
     }
     return resources;
   }
@@ -72,13 +70,14 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
     return PathUtils.join(PathUtils.parent(dataPath), "StorableSidebar.json");
   }
 
-  async _readSidebarPlan() {
+  async _readSidebarPlan(profileId) {
     const sidebarPath = await this._getSidebarPath();
     if (!sidebarPath || !(await IOUtils.exists(sidebarPath))) {
       return null;
     }
     const plan = lazy.ZenMigrationUtils.parseArcSidebar(
-      await IOUtils.readJSON(sidebarPath)
+      await IOUtils.readJSON(sidebarPath),
+      { profileId }
     );
     if (!plan.spaces.length && !plan.favorites.length) {
       return null;
@@ -86,10 +85,10 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
     return plan;
   }
 
-  async _getSidebarResource() {
+  async _getSidebarResource(profileId) {
     let plan;
     try {
-      plan = await this._readSidebarPlan();
+      plan = await this._readSidebarPlan(profileId);
     } catch (ex) {
       console.error("Could not read the Arc sidebar", ex);
       return null;
@@ -105,7 +104,9 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
         (async () => {
           // Re-read so that changes made in Arc since the wizard listed its
           // data are picked up too.
-          const latest = await migrator._readSidebarPlan().catch(() => null);
+          const latest = await migrator
+            ._readSidebarPlan(profileId)
+            .catch(() => null);
           await lazy.ZenMigrationUtils.applyArcSidebar(latest ?? plan);
         })().then(
           () => aCallback(true),

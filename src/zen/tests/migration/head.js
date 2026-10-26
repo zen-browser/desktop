@@ -187,10 +187,12 @@ async function cleanupImportedState(original) {
     }
   }
   for (const tab of [...gBrowser.tabs]) {
-    if (tab.pinned && !tab.hasAttribute("zen-empty-tab")) {
+    const imported = tab.pinned || !original.tabs.has(tab);
+    if (imported && !tab.hasAttribute("zen-empty-tab")) {
       gBrowser.removeTab(tab);
     }
   }
+  Services.prefs.clearUserPref("zen.migration.arc.imported-spaces");
   for (const workspace of gZenWorkspaces.getWorkspaces()) {
     if (workspace.uuid !== original.uuid) {
       await gZenWorkspaces.removeWorkspace(workspace.uuid);
@@ -204,5 +206,23 @@ async function cleanupImportedState(original) {
 
 function snapshotActiveWorkspace() {
   const workspace = gZenWorkspaces.getActiveWorkspaceFromCache();
-  return { uuid: workspace.uuid, name: workspace.name, icon: workspace.icon };
+  return {
+    uuid: workspace.uuid,
+    name: workspace.name,
+    icon: workspace.icon,
+    tabs: new Set(gBrowser.tabs),
+  };
+}
+
+function unpinnedTabsOf(workspaceId) {
+  return gBrowser.tabs.filter(
+    tab =>
+      !tab.pinned &&
+      !tab.hasAttribute("zen-empty-tab") &&
+      tab.getAttribute("zen-workspace-id") === workspaceId
+  );
+}
+
+function arcProfileOf(directoryBasename) {
+  return { custom: { _0: { directoryBasename, machineID: "machine" } } };
 }

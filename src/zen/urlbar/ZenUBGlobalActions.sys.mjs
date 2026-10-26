@@ -223,7 +223,7 @@ const globalActionsTemplate = [
   },
   {
     l10nId: "zen-action-duplicate-tab",
-    command: "cmd_zenDuplicateTab",
+    command: "Browser:DuplicateTab",
     icon: "chrome://browser/skin/zen-icons/duplicate-tab.svg",
     isAvailable: window => {
       return isNotEmptyTab(window);

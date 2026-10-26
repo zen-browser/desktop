@@ -721,6 +721,11 @@
 
 /* Notification Stack */
 
+#notifications-toolbar {
+  /* only holds the fixed notification stack, so it shouldn't take up any space in #browser */
+  min-width: 0;
+}
+
 .notificationbox-stack {
   background: transparent;
 

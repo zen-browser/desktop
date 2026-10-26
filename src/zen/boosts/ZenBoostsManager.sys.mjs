@@ -649,7 +649,7 @@ class nsZenBoostsManager {
     const width = parentWindow.outerWidth;
     const height = parentWindow.outerHeight;
     const editorWidth = 185;
-    const editorHeight = 635;
+    const editorHeight = 685;
     const pad = 20;
 
     let left = screenX + width - editorWidth / 2;
@@ -734,6 +734,78 @@ class nsZenBoostsManager {
     this.makeBoostActiveForDomain(domain, boost.id);
 
     return editor;
+  }
+
+  /**
+   * Opens the dialog that shares a boost as a link.
+   *
+   * @param {Window} parentWindow - The browser window to show the dialog in
+   * @param {object} boost - The boost: { id, domain, boostEntry }
+   * @param {MozBrowser} [browser] - The browser showing the boosted page
+   * @returns {Promise<void>} Resolves once the dialog closes
+   */
+  shareBoost(parentWindow, boost, browser = null) {
+    return parentWindow.gDialogBox.open(
+      "chrome://browser/content/zen-components/windows/zen-boost-share.xhtml",
+      { parentWindow, browser, boost }
+    );
+  }
+
+  /**
+   * Opens the dialog that offers a shared boost and, once the user has added
+   * it, shows the boosted site in a new tab.
+   *
+   * @param {Window} parentWindow - The browser window to show the dialog in
+   * @param {object} shared - The shared boost, as in share.schema.json
+   * @param {string} [author] - The sharer's name from the share server
+   * @returns {Promise<boolean>} Whether the boost was added
+   */
+  async receiveBoost(parentWindow, shared, author = null) {
+    const args = { parentWindow, shared, author, added: false };
+    await parentWindow.gDialogBox.open(
+      "chrome://browser/content/zen-components/windows/zen-boost-receive.xhtml",
+      args
+    );
+    if (args.added) {
+      parentWindow.gZenUIManager.openAndChangeToTab(
+        `https://${shared.domain}/`
+      );
+    }
+    return args.added;
+  }
+
+  /**
+   * Turns shared boost data into boost data this version understands.
+   *
+   * @param {object} data - Boost data from a share
+   * @param {string} name - The shared boost's name
+   * @returns {object} Boost data for a new entry
+   */
+  boostDataFromShared(data, name) {
+    const result = this.getEmptyBoostEntry().boostData;
+    const sameShape = (value, template) =>
+      Array.isArray(template)
+        ? Array.isArray(value)
+        : typeof value === typeof template &&
+          (value !== null) === (template !== null);
+    for (const [key, template] of Object.entries(result)) {
+      const value = data?.[key];
+      if (!sameShape(value, template)) {
+        continue;
+      }
+      if (Array.isArray(template)) {
+        result[key] = value.filter(
+          item => typeof item === "string" || typeof item === "object"
+        );
+      } else if (typeof template === "object" && template !== null) {
+        result[key] = { ...template, ...value };
+      } else {
+        result[key] = value;
+      }
+    }
+    result.boostName = name || result.boostName;
+    result.changeWasMade = true;
+    return result;
   }
 
   /**

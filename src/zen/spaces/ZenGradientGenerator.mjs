@@ -2118,7 +2118,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       isDarkMode,
       isExplicitMode,
       toolbarColor: this.getToolbarColor(isDarkMode, primaryColor),
-      primaryColor: primaryColor,
+      primaryColor,
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;

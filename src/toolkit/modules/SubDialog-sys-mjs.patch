@@ -1,0 +1,58 @@
+diff --git a/toolkit/modules/SubDialog.sys.mjs b/toolkit/modules/SubDialog.sys.mjs
+index b3ce915315a6c3009a2fa6a4c134db8c70e569a0..c2ca7f35d0eaf8affddf3b88d6d916f8ad4e58c2 100644
+--- a/toolkit/modules/SubDialog.sys.mjs
++++ b/toolkit/modules/SubDialog.sys.mjs
+@@ -249,7 +249,41 @@ SubDialog.prototype = {
+     this._closingPromise = new Promise(resolve => {
+       this._resolveClosePromise = resolve;
+     });
++    if (!this._zenAnimateClose(() => this._zenFinishClose(aEvent))) {
++      this._zenFinishClose(aEvent);
++    }
++  },
++
++  _zenAnimateClose(aDone) {
++    let box = this._box;
++    if (
++      !box?.classList.contains("dialogBox") ||
++      !this._frame.contentWindow ||
++      this._window.matchMedia("(prefers-reduced-motion: reduce)").matches
++    ) {
++      return false;
++    }
++    let finished = false;
++    let onAnimationEnd = aEvent => {
++      if (aEvent.target == box) {
++        finish();
++      }
++    };
++    let finish = () => {
++      if (finished) {
++        return;
++      }
++      finished = true;
++      box.removeEventListener("animationend", onAnimationEnd);
++      aDone();
++    };
++    box.addEventListener("animationend", onAnimationEnd);
++    box.setAttribute("zen-closing", "true");
++    this._window.setTimeout(finish, 400);
++    return true;
++  },
+ 
++  _zenFinishClose(aEvent) {
+     if (this._closingCallback) {
+       try {
+         this._closingCallback.call(null, aEvent);
+@@ -504,6 +538,11 @@ SubDialog.prototype = {
+       })
+     );
+     this._overlay.style.visibility = "inherit";
++    await new Promise(resolve =>
++      this._window.requestAnimationFrame(() =>
++        this._window.requestAnimationFrame(resolve)
++      )
++    );
+     this._overlay.style.opacity = ""; // XXX: focus hack continued from _onContentLoaded
+ 
+     if (this._box.getAttribute("resizable") == "true") {

@@ -178,3 +178,55 @@ add_task(async function test_customized_zen_key_runs_command() {
     CustomKeys.resetAll();
   }
 });
+
+add_task(async function test_legacy_migration_keeps_customkeys_settings() {
+  const legacyPath = ZenKeyboardShortcuts.legacyFilePath;
+  const libraryKey = document.getElementById("zen-library-toggle");
+  const glanceKey = document.getElementById("zen-glance-expand");
+  try {
+    CustomKeys.resetAll();
+    CustomKeys.uninitWindow(window);
+    CustomKeys.changeKey("zen-library-toggle", {
+      modifiers: UNUSED_MODIFIERS,
+      key: UNUSED_KEY,
+    });
+    is(
+      CustomKeys.getDefaultKey("zen-library-toggle"),
+      null,
+      "Nothing is applied yet"
+    );
+    await IOUtils.writeJSON(legacyPath, {
+      shortcuts: [
+        {
+          id: "zen-library-toggle",
+          key: "Y",
+          modifiers: { accel: true, alt: true },
+        },
+        { id: "zen-glance-expand", key: "G", modifiers: { alt: true } },
+      ],
+    });
+
+    CustomKeys.initWindow(window);
+    await TestUtils.waitForCondition(
+      async () => !(await IOUtils.exists(legacyPath)),
+      "the legacy file to be migrated and removed"
+    );
+
+    Assert.deepEqual(
+      CustomKeys.getDefaultKey("zen-library-toggle"),
+      { modifiers: "alt,shift", key: "L" },
+      "The key's default is remembered"
+    );
+    is(
+      libraryKey.getAttribute("modifiers"),
+      UNUSED_MODIFIERS,
+      "The customKeys.json setting wins over the legacy file"
+    );
+    is(libraryKey.getAttribute("key"), UNUSED_KEY, "and is applied");
+    is(glanceKey.getAttribute("key"), "G", "Legacy values still migrate");
+    is(glanceKey.getAttribute("modifiers"), "alt", "and are applied at once");
+  } finally {
+    await IOUtils.remove(legacyPath, { ignoreAbsent: true });
+    CustomKeys.resetAll();
+  }
+});

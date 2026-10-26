@@ -1,5 +1,5 @@
 diff --git a/browser/components/customkeys/CustomKeys.sys.mjs b/browser/components/customkeys/CustomKeys.sys.mjs
-index 76f99381ab7011992b8f28f8d031ed41f73d6293..b444a16c1ec8f48ddd84bb2281956f3cdae688f3 100644
+index 76f99381ab7011992b8f28f8d031ed41f73d6293..070518c5aa3b3d77447f2ba63e288948af5a25ae 100644
 --- a/browser/components/customkeys/CustomKeys.sys.mjs
 +++ b/browser/components/customkeys/CustomKeys.sys.mjs
 @@ -4,6 +4,13 @@
@@ -16,11 +16,11 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..b444a16c1ec8f48ddd84bb2281956f3c
  // All the attributes for a <key> element that might specify the key to press.
  // We include data-l10n-id because keys are often specified using Fluent. Note
  // that we deliberately remove data-l10n-id when a key is customized because
-@@ -77,6 +84,7 @@ function resetKeyEl(window, keyId, keysets) {
- 
- async function applyToNewWindow(window) {
-   await config.load();
+@@ -83,6 +90,7 @@ async function applyToNewWindow(window) {
+   }
+   refreshKeysets(window, keysets);
+   observe(window);
 +  await lazy.ZenKeyboardShortcuts.migrateLegacyShortcuts(window);
-   const keysets = new Set();
-   for (const keyId in config.data) {
-     applyToKeyEl(window, keyId, keysets);
+ }
+ 
+ function refreshKeysets(window, keysets) {

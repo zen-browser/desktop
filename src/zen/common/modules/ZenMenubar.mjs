@@ -11,13 +11,7 @@ const WINDOW_SCHEME_MAPPING = {
 
 export class nsZenMenuBar {
   constructor() {
-    window.addEventListener(
-      "ZenKeyboardShortcutsReady",
-      () => {
-        this.#init();
-      },
-      { once: true }
-    );
+    this.#init();
   }
 
   #init() {

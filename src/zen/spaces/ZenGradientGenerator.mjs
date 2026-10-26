@@ -1345,7 +1345,16 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (themedColors.length === 0) {
       const getBrowserBg = () => {
         if (this.canBeTransparent) {
-          return this.isDarkMode ? "rgba(0, 0, 0, 0.4)" : "transparent";
+          if (this.isDarkMode) {
+            return "rgba(0, 0, 0, 0.4)";
+          }
+          // On macOS (vibrancy) and Windows (Mica) a transparent light background
+          // sits over a compositor material that keeps UI text readable. Linux has no
+          // such material when zen.widget.linux.transparency is enabled, so a fully
+          // transparent light theme leaves dark UI text unreadable (gh-15334).
+          return AppConstants.platform === "linux"
+            ? "rgba(255, 255, 255, 0.4)"
+            : "transparent";
         }
         return this.isDarkMode ? "#131313" : "#e9e9e9";
       };

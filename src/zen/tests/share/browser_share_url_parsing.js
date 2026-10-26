@@ -10,6 +10,7 @@ add_task(async function test_slugs_and_types() {
     ["split-view", "split-view"],
     // "split" is the canonical server slug for split views.
     ["split", "split-view"],
+    ["boost", "boost"],
   ]) {
     const share = ZenShareClient.parseShareUrl(
       `${SHARE_BASE}/${slug}/${SHARE_ID}`

@@ -1334,8 +1334,17 @@
         draggedTab = draggedTab.group;
       }
       for (let item of this._tabbrowserTabs.ariaFocusableItems) {
-        item = elementToMove(item);
-        item.style.transform = "";
+        // An item mid-move may have no element to move yet, and this runs
+        // for background windows too, where window sync is repositioning
+        // tabs that are not where the indexes say. See gh-16174.
+        try {
+          item = elementToMove(item);
+        } catch (e) {
+          continue;
+        }
+        if (item) {
+          item.style.transform = "";
+        }
       }
       let animations = [];
       try {
@@ -1408,6 +1417,11 @@
         );
         for (let i = startIndex; i <= endIndex; i++) {
           let item = items[i];
+          if (!item) {
+            // The indexes come from before the move, so they can fall
+            // outside the items of a window that has already changed.
+            continue;
+          }
           if (
             !movingTabs.includes(item) &&
             !(isTabGroupLabel(item) && i == startIndex)
@@ -1433,7 +1447,10 @@
         }
         // Animate tabs in between moving out of the way
         for (let item of tabsInBetween) {
-          animateElement(elementToMove(item), translateY);
+          const element = elementToMove(item);
+          if (element) {
+            animateElement(element, translateY);
+          }
         }
         let draggedTabTranslateY =
           focusableDraggedTab.elementIndex > focusableDropElement.elementIndex

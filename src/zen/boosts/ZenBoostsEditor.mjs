@@ -115,6 +115,9 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById("zen-boost-code")
       .addEventListener("click", this.onCodeButtonPressed.bind(this));
+    const shareButton = this.doc.getElementById("zen-boost-share");
+    shareButton.addEventListener("click", this.onShareBoostPressed.bind(this));
+    shareButton.hidden = !gZenBoostsManager.canShareFrom(this.openerWindow);
     this.doc
       .getElementById("zen-boost-back")
       .addEventListener("click", this.onCodeBackButtonPressed.bind(this));
@@ -316,29 +319,49 @@ export class nsZenBoostEditor {
   onCodeEditorChange() {
     this.currentBoostData.customCSS = this.editorWindow._editor.getText();
     this.currentBoostData.changeWasMade = true;
+    this.onUpdateCodeButtonVisual();
     this.updateCurrentBoost();
   }
 
-  get commonFonts() {
-    const cFonts = [
-      "Arial",
-      "Times New Roman",
-      "Courier New",
-      "Georgia",
-      "Comic Sans MS",
-      "Verdana",
-      "Trebuchet MS",
-      "Impact",
-      "Palatino Linotype",
-      "Tahoma",
-      "Helvetica",
-      "Garamond",
-      "Century Gothic",
-      "Arial Black",
-      "Papyrus",
-    ];
-    return cFonts;
+  /**
+   * Marks the code button as enabled only when the boost has custom CSS
+   */
+  onUpdateCodeButtonVisual() {
+    const button = this.doc.getElementById("zen-boost-code");
+    const hasCode = Boolean(this.currentBoostData?.customCSS?.trim());
+    button.setAttribute("enabled", hasCode ? "true" : "false");
   }
+
+  /**
+   * The curated fonts of the grid, four rows of five. "System" is the
+   * platform's UI font through the generic family, so it needs no install.
+   */
+  get commonFonts() {
+    return [
+      "system-ui",
+      "Helvetica Neue",
+      "Avenir",
+      "Futura",
+      "DIN Alternate",
+      "Arial Rounded MT Bold",
+      "PT Mono",
+      "Courier",
+      "Times New Roman",
+      "Charter",
+      "Baskerville",
+      "Hoefler Text",
+      "Palatino",
+      "Chalkboard",
+      "SignPainter",
+      "Snell Roundhand",
+      "Papyrus",
+      "Apple Chancery",
+      "Luminari",
+      "Wingdings",
+    ];
+  }
+
+  static GENERIC_FONT_LABELS = { "system-ui": "System" };
 
   /**
    * Initializes the font selection UI by creating font buttons and dropdown options
@@ -350,23 +373,32 @@ export class nsZenBoostEditor {
 
     const fontButtonGroup = this.doc.getElementById("zen-boost-font-grid");
     const fontList = this.doc.getElementById("zen-boost-font-select");
-    const buttonCount = 15;
+    const buttonCount = 20;
+    const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
 
     for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
       let font = fonts[i]; // Fallback
-      if (fonts.includes(commonFonts[i])) {
+      if (commonFonts[i] in genericLabels || fonts.includes(commonFonts[i])) {
         font = commonFonts[i];
       }
 
       const fontButton = this.doc.createElement("button");
       fontButton.setAttribute("font-data", `${font}`);
       fontButton.classList.add("subviewbutton", "no-squircles");
-      fontButton.style.fontFamily = `'${font}'`;
+      fontButton.style.fontFamily = font in genericLabels ? font : `'${font}'`;
       fontButton.innerHTML = "Aa";
-      fontButton.title = font;
+      fontButton.title = genericLabels[font] ?? font;
       fontButton.addEventListener("click", this.onFontButtonClick.bind(this));
 
       fontButtonGroup.appendChild(fontButton);
+    }
+
+    if (!Services.prefs.getBoolPref("zen.boosts.custom-fonts", false)) {
+      this.doc.getElementById("zen-boost-font-toolbar").hidden = true;
+      this.doc.querySelector(
+        "#zen-boost-font-wrapper .visible-separator"
+      ).hidden = true;
+      return;
     }
 
     // Add default value
@@ -432,6 +464,27 @@ export class nsZenBoostEditor {
       this.doc.getElementById("zen-boost-code-editor-root").style.display =
         "initial";
     });
+  }
+
+  onShareBoostPressed() {
+    if (!gZenBoostsManager.canShareFrom(this.openerWindow)) {
+      return;
+    }
+    if (!this.currentBoostData?.changeWasMade) {
+      this.openerWindow.gZenUIManager.showToast(
+        "zen-boost-share-nothing-toast"
+      );
+      return;
+    }
+    this.saveBoost();
+    const boost = gZenBoostsManager.loadBoostFromStore(
+      this.boostInfo.domain,
+      this.boostInfo.id
+    );
+    const browser =
+      this.editorWindow.browser ??
+      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    gZenBoostsManager.shareBoost(this.openerWindow, boost, browser);
   }
 
   /**
@@ -1660,6 +1713,7 @@ ${cssSelector} {
     this.updateCircleRadius();
     this.onUpdateZapValue();
     this.onUpdateZapButtonVisual();
+    this.onUpdateCodeButtonVisual();
   }
 
   /**

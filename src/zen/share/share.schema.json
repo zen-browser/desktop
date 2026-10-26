@@ -18,8 +18,36 @@
       "oneOf": [
         { "$ref": "#/$defs/space" },
         { "$ref": "#/$defs/folder" },
-        { "$ref": "#/$defs/splitView" }
+        { "$ref": "#/$defs/splitView" },
+        { "$ref": "#/$defs/boost" }
       ]
+    },
+
+    "boost": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "boost" },
+        "name": { "type": "string" },
+        "domain": { "type": "string" },
+        "author": { "type": "string" },
+        "icon": { "type": "string" },
+        "preview": { "type": "string" },
+        "signature": {
+          "type": "object",
+          "properties": {
+            "viewBox": { "type": "string" },
+            "paths": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["viewBox", "paths"],
+          "additionalProperties": false
+        },
+        "boostData": { "type": "object" }
+      },
+      "required": ["type", "name", "domain", "boostData"],
+      "additionalProperties": false
     },
 
     "space": {

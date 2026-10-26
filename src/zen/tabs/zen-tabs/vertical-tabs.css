@@ -1110,6 +1110,38 @@ zen-library {
       color: var(--tab-text-color-selected);
       box-shadow: var(--tab-box-shadow-selected);
     }
+
+    & .toolbarbutton-text {
+      transition: transform 0.1s ease-in-out;
+    }
+
+    & .zen-newtab-sublabel-anchor {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: block;
+    }
+
+    & .zen-tab-sublabel {
+      display: block;
+      inset-inline-start: 32px;
+      width: calc(100% - 32px) !important;
+      text-align: start;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &[zen-paste-and-search] {
+      & .toolbarbutton-text {
+        transform: translateY(-6px);
+      }
+
+      & .zen-tab-sublabel {
+        opacity: 0.6;
+        transform: translateY(-6px);
+      }
+    }
   }
 
   #tabbrowser-arrowscrollbox-periphery {

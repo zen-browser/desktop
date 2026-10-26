@@ -304,9 +304,11 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' }}
         env:
           INPUTS_HASH: ${{ hashFiles('src/zen/common/sys/ZenPGOTraining.sys.mjs', 'src/build/pgo/profileserver-py.patch', 'src/testing/profiles/profileserver/user-js.patch') }}
+          UPDATE_BRANCH: ${{ inputs.update_branch }}
         run: |
-          ff=$(node -p "require('./surfer.json').version.version")
+          ff=$(node -p "const v = require('./surfer.json').version; (process.env.UPDATE_BRANCH !== 'release' && v.candidate && v.candidate !== v.version) ? v.candidate : v.version")
           echo "prefix=pgo-profdata-v2-ff${ff}-${INPUTS_HASH:0:12}" >> "$GITHUB_OUTPUT"
+          echo "Firefox for the profile key: $ff (branch $UPDATE_BRANCH)"
 
       - name: Look up the macOS x86_64 profile
         id: mac-x86

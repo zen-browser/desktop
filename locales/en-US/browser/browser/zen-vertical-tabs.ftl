@@ -27,6 +27,9 @@ zen-toolbar-context-new-folder =
     .label = New Folder
     .accesskey = N
 
+zen-tabs-newtab-paste-and-search =
+    .label = Paste & Search
+
 sidebar-zen-expand =
   .label = Expand Sidebar
 

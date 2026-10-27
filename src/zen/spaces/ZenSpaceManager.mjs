@@ -10,6 +10,8 @@ import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  ZenKeyboardShortcuts:
+    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
@@ -3204,7 +3206,8 @@ class nsZenWorkspaces {
     this.#deleteAllUnpinnedTabsInWorkspace(closableTabs);
 
     const restoreClosedTabsShortcut =
-      gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
+      lazy.ZenKeyboardShortcuts.getShortcutDisplayFromCommand(
+        window,
         "History:RestoreLastClosedTabOrWindowOrSession"
       );
 

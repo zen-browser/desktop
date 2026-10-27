@@ -1,0 +1,24 @@
+diff --git a/devtools/client/shared/remote-debugging/version-checker.js b/devtools/client/shared/remote-debugging/version-checker.js
+index 8437408641a8db985d343b33314feffbec75888b..efa12f43ab5ae32eac3583c6315341c85f016ec2 100644
+--- a/devtools/client/shared/remote-debugging/version-checker.js
++++ b/devtools/client/shared/remote-debugging/version-checker.js
+@@ -4,10 +4,6 @@
+ 
+ "use strict";
+ 
+-const { AppConstants } = ChromeUtils.importESModule(
+-  "resource://gre/modules/AppConstants.sys.mjs"
+-);
+-
+ const MS_PER_DAY = 1000 * 60 * 60 * 24;
+ 
+ const COMPATIBILITY_STATUS = {
+@@ -83,7 +79,7 @@ function computeMinMaxVersion(localVersion) {
+ async function checkVersionCompatibility(devToolsClient) {
+   const localDescription = {
+     appbuildid: Services.appinfo.appBuildID,
+-    platformversion: AppConstants.MOZ_APP_VERSION,
++    platformversion: Services.appinfo.platformVersion,
+   };
+ 
+   try {

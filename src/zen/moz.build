@@ -14,6 +14,7 @@ DIRS += [
     "glance",
     "library",
     "live-folders",
+    "media",
     "mods",
     "tests",
     "urlbar",

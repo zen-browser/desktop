@@ -4,6 +4,11 @@
 
 [DEFAULT]
 
+["browser_compact_mode_edge_approach.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["browser_compact_mode_layout_event.js"]
 
 ["browser_compact_mode_width.js"]

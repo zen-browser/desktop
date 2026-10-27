@@ -5,6 +5,7 @@
 #include "ZenMouseTracker.h"
 #include "ZenMouseTrackerInternal.h"
 
+#include <algorithm>
 #include <atomic>
 
 #include "mozilla/Services.h"
@@ -62,9 +63,45 @@ NS_IMETHODIMP
 ZenMouseTracker::RegisterWindow(mozIDOMWindowProxy* aWindow,
                                 const nsACString& aScreenEdge,
                                 float aMaxEdgeOffset) {
-  MOZ_ASSERT(NS_IsMainThread());
   const auto edge = ParseEdge(aScreenEdge);
-  if (!aWindow || edge.isNothing() || aMaxEdgeOffset < 0.0f) {
+  if (edge.isNothing() || aMaxEdgeOffset < 0.0f) {
+    return NS_ERROR_INVALID_ARG;
+  }
+  return Track(aWindow, TrackedWindow{nullptr, Mode::Hold, *edge,
+                                      aMaxEdgeOffset, 0.0f, 0.0f});
+}
+
+NS_IMETHODIMP
+ZenMouseTracker::WatchEdgeApproach(mozIDOMWindowProxy* aWindow,
+                                   const nsACString& aScreenEdge,
+                                   float aStripWidth, float aBandWidth) {
+#ifdef XP_WIN
+  const auto edge = ParseEdge(aScreenEdge);
+  if (!aWindow || edge.isNothing() || aStripWidth < 0.0f ||
+      aBandWidth <= aStripWidth) {
+    return NS_ERROR_INVALID_ARG;
+  }
+  // The hook delays every pointer move on the system, so it only goes in
+  // while a foreign border covers the edge level with the pointer
+  RefPtr<nsIWidget> widget = mozilla::widget::WidgetUtils::DOMWindowToWidget(
+      nsPIDOMWindowOuter::From(aWindow));
+  int32_t x, y;
+  if (!widget || !ZenNativeMouseMonitor::GetCursorPosition(&x, &y) ||
+      !IsEdgeCovered(*edge, mozilla::DesktopPoint(float(x), float(y)),
+                     widget)) {
+    return NS_OK;
+  }
+  return Track(aWindow, TrackedWindow{nullptr, Mode::Approach, *edge, 0.0f,
+                                      aStripWidth, aBandWidth});
+#else
+  return NS_ERROR_NOT_AVAILABLE;
+#endif
+}
+
+nsresult ZenMouseTracker::Track(mozIDOMWindowProxy* aWindow,
+                                TrackedWindow aTracked) {
+  MOZ_ASSERT(NS_IsMainThread());
+  if (!aWindow) {
     return NS_ERROR_INVALID_ARG;
   }
   nsCOMPtr<nsPIDOMWindowOuter> window = nsPIDOMWindowOuter::From(aWindow);
@@ -77,14 +114,14 @@ ZenMouseTracker::RegisterWindow(mozIDOMWindowProxy* aWindow,
     return rv;
   }
 
+  aTracked.mWindow = window;
   for (auto& tracked : mTracked) {
     if (tracked.mWindow == window) {
-      tracked.mEdge = *edge;
-      tracked.mMaxEdgeOffset = aMaxEdgeOffset;
+      tracked = std::move(aTracked);
       return NS_OK;
     }
   }
-  mTracked.AppendElement(TrackedWindow{window, *edge, aMaxEdgeOffset});
+  mTracked.AppendElement(std::move(aTracked));
   AddObservers();
   return NS_OK;
 }
@@ -165,6 +202,7 @@ void ZenMouseTracker::OnNativePointerMove(const mozilla::DesktopPoint& aPoint) {
 
 void ZenMouseTracker::Evaluate(const mozilla::DesktopPoint& aPoint) {
   nsTArray<nsCOMPtr<nsPIDOMWindowOuter>> exited;
+  nsTArray<nsCOMPtr<nsPIDOMWindowOuter>> reached;
   for (size_t i = mTracked.Length(); i > 0; i--) {
     auto& tracked = mTracked[i - 1];
     RefPtr<nsIWidget> widget =
@@ -173,14 +211,24 @@ void ZenMouseTracker::Evaluate(const mozilla::DesktopPoint& aPoint) {
       mTracked.RemoveElementAt(i - 1);
       continue;
     }
-    if (!IsPointerWithinBounds(tracked, aPoint, widget)) {
-      exited.AppendElement(std::move(tracked.mWindow));
+    if (tracked.mMode == Mode::Hold) {
+      if (!IsPointerWithinBounds(tracked, aPoint, widget)) {
+        exited.AppendElement(std::move(tracked.mWindow));
+        mTracked.RemoveElementAt(i - 1);
+      }
+      continue;
+    }
+    const Approach approach = EvaluateApproach(tracked, aPoint, widget);
+    if (approach == Approach::Reached) {
+      reached.AppendElement(std::move(tracked.mWindow));
+    }
+    if (approach != Approach::Watching) {
       mTracked.RemoveElementAt(i - 1);
     }
   }
   OnTrackedListChanged();
 
-  if (exited.IsEmpty()) {
+  if (exited.IsEmpty() && reached.IsEmpty()) {
     return;
   }
   nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
@@ -190,22 +238,35 @@ void ZenMouseTracker::Evaluate(const mozilla::DesktopPoint& aPoint) {
   for (auto& window : exited) {
     obs->NotifyObservers(window, ZEN_MOUSE_TRACKER_EXITED_TOPIC, nullptr);
   }
+  for (auto& window : reached) {
+    obs->NotifyObservers(window, ZEN_MOUSE_TRACKER_EDGE_REACHED_TOPIC, nullptr);
+  }
+}
+
+// The pointer and the window's client area, in device pixels
+struct DeviceGeometry {
+  float x, y, left, top, right, bottom;
+};
+
+static DeviceGeometry GetDeviceGeometry(nsIWidget* aWidget,
+                                        const mozilla::DesktopPoint& aPoint) {
+  const auto scale = aWidget->GetDesktopToDeviceScale();
+  const auto origin = aWidget->WidgetToScreenOffset();
+  const auto size = aWidget->GetClientSize();
+  return {aPoint.x * scale.scale,
+          aPoint.y * scale.scale,
+          float(origin.x),
+          float(origin.y),
+          float(origin.x + size.width),
+          float(origin.y + size.height)};
 }
 
 // static
 bool ZenMouseTracker::IsPointerWithinBounds(const TrackedWindow& aTracked,
                                             const mozilla::DesktopPoint& aPoint,
                                             nsIWidget* aWidget) {
-  const auto scale = aWidget->GetDesktopToDeviceScale();
-  const float x = aPoint.x * scale.scale;
-  const float y = aPoint.y * scale.scale;
-
-  const auto origin = aWidget->WidgetToScreenOffset();
-  const auto size = aWidget->GetClientSize();
-  const float left = origin.x;
-  const float top = origin.y;
-  const float right = left + size.width;
-  const float bottom = top + size.height;
+  const auto [x, y, left, top, right, bottom] =
+      GetDeviceGeometry(aWidget, aPoint);
 
   if (x >= left && x <= right && y >= top && y <= bottom) {
     // Back inside the window; the in-window hover logic owns this case
@@ -223,6 +284,81 @@ bool ZenMouseTracker::IsPointerWithinBounds(const TrackedWindow& aTracked,
       return y >= top - maxOffset && y < top && x >= left && x <= right;
     case TrackedEdge::Bottom:
       return y > bottom && y <= bottom + maxOffset && x >= left && x <= right;
+  }
+  return false;
+}
+
+// static
+ZenMouseTracker::Approach ZenMouseTracker::EvaluateApproach(
+    const TrackedWindow& aTracked, const mozilla::DesktopPoint& aPoint,
+    nsIWidget* aWidget) {
+  const auto [x, y, left, top, right, bottom] =
+      GetDeviceGeometry(aWidget, aPoint);
+
+  // How far inside the window the pointer is (negative past the edge), and
+  // the edge pixel it is on or headed for
+  float inward = 0.0f;
+  bool inSpan = false;
+  float edgeX = x;
+  float edgeY = y;
+  switch (aTracked.mEdge) {
+    case TrackedEdge::Left:
+      inward = x - left;
+      inSpan = y >= top && y < bottom;
+      edgeX = std::max(x, left);
+      break;
+    case TrackedEdge::Right:
+      inward = right - 1 - x;
+      inSpan = y >= top && y < bottom;
+      edgeX = std::min(x, right - 1);
+      break;
+    case TrackedEdge::Top:
+      inward = y - top;
+      inSpan = x >= left && x < right;
+      edgeY = std::max(y, top);
+      break;
+    case TrackedEdge::Bottom:
+      inward = bottom - 1 - y;
+      inSpan = x >= left && x < right;
+      edgeY = std::min(y, bottom - 1);
+      break;
+  }
+
+  const float cssToDevice = float(aWidget->GetDefaultScale().scale);
+  const float band = aTracked.mBandWidth * cssToDevice;
+  if (!inSpan || inward >= band) {
+    return Approach::Gone;
+  }
+  if (inward >= aTracked.mStripWidth * cssToDevice) {
+    return Approach::Watching;
+  }
+  // Additional guard for a case where something pins the mouse to the desktop border
+  if (ZenNativeMouseMonitor::IsCoveredByForeignBorder(aWidget, int32_t(edgeX),
+                                                      int32_t(edgeY))) {
+    return Approach::Reached;
+  }
+  return inward <= -band ? Approach::Gone : Approach::Watching;
+}
+
+// static
+bool ZenMouseTracker::IsEdgeCovered(TrackedEdge aEdge,
+                                    const mozilla::DesktopPoint& aPoint,
+                                    nsIWidget* aWidget) {
+  const auto [x, y, left, top, right, bottom] =
+      GetDeviceGeometry(aWidget, aPoint);
+  switch (aEdge) {
+    case TrackedEdge::Left:
+      return ZenNativeMouseMonitor::IsCoveredByForeignBorder(
+          aWidget, int32_t(left), int32_t(y));
+    case TrackedEdge::Right:
+      return ZenNativeMouseMonitor::IsCoveredByForeignBorder(
+          aWidget, int32_t(right - 1), int32_t(y));
+    case TrackedEdge::Top:
+      return ZenNativeMouseMonitor::IsCoveredByForeignBorder(
+          aWidget, int32_t(x), int32_t(top));
+    case TrackedEdge::Bottom:
+      return ZenNativeMouseMonitor::IsCoveredByForeignBorder(
+          aWidget, int32_t(x), int32_t(bottom - 1));
   }
   return false;
 }

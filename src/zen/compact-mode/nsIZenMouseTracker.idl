@@ -7,12 +7,12 @@
 interface mozIDOMWindowProxy;
 
 /**
- * @brief Tracks the OS pointer for windows the pointer has left.
- *   Once the pointer either crosses the window bounds on the
- *   axis perpendicular to the registered edge, or moves further than the
- *   given offset past that edge, the "zen-mouse-tracker:exited" observer
- *   notification is fired with the window as subject and tracking for that
- *   window stops.
+ * @brief Tracks the OS pointer near the edges of registered windows.
+ *   For a window the pointer has left, once the pointer either crosses the
+ *   window bounds on the axis perpendicular to the registered edge, or moves
+ *   further than the given offset past that edge, the
+ *   "zen-mouse-tracker:exited" observer notification is fired with the window
+ *   as subject and tracking for that window stops.
  */
 [scriptable, uuid(023e85e6-44e1-46b3-9cfb-6f3c7fa075f8)]
 interface nsIZenMouseTracker : nsISupports {
@@ -32,6 +32,28 @@ interface nsIZenMouseTracker : nsISupports {
    */
   void registerWindow(in mozIDOMWindowProxy window, in ACString screenEdge,
                       in float maxEdgeOffset);
+
+  /**
+   * @brief Watches the pointer while it approaches a window edge from inside.
+   *   Once it is within stripWidth of the edge, or past it, at a point that
+   *   another window's invisible resize border owns, the
+   *   "zen-mouse-tracker:edge-reached" observer notification is fired with
+   *   the window as subject and watching for that window stops. Watching
+   *   also stops, without a notification, once the pointer is bandWidth or
+   *   further from the edge on either side, or leaves the window's span
+   *   along the edge.
+   *
+   * @param window The window to watch.
+   * @param screenEdge The edge being approached, one of "left", "right",
+   *   "top" or "bottom".
+   * @param stripWidth Width (in CSS pixels) of the hover strip along the edge.
+   * @param bandWidth Distance (in CSS pixels) from the edge within which the
+   *   pointer is watched; larger than stripWidth.
+   * @throws NS_ERROR_NOT_AVAILABLE on platforms without invisible resize
+   *   borders (anything but Windows), or when the pointer can't be watched.
+   */
+  void watchEdgeApproach(in mozIDOMWindowProxy window, in ACString screenEdge,
+                         in float stripWidth, in float bandWidth);
 
   /**
    * @brief Stop tracking the pointer for the given window. No-op if the

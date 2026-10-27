@@ -27,6 +27,11 @@ const LEGACY_VERSION_PREF = "zen.keyboard.shortcuts.version";
 // to the window later, so they cannot be compared to their defaults until
 // then.
 const LEGACY_DEVTOOLS_GROUP = "devTools";
+// The legacy system moved the inspector shortcuts to "L" by default, which
+// takes Cmd/Ctrl+Shift+L from password managers like Bitwarden. That was
+// Zen's default, not a user choice, so it is not carried over.
+const LEGACY_INSPECTOR_KEYS = ["key_inspector", "key_inspectorMac"];
+const LEGACY_INSPECTOR_KEY = "L";
 
 /**
  * Zen's own shortcuts, grouped the way about:keyboard shows them.
@@ -295,6 +300,12 @@ class nsZenKeyboardShortcuts {
         continue;
       }
       const binding = bindingFromLegacy(shortcut);
+      if (
+        LEGACY_INSPECTOR_KEYS.includes(id) &&
+        binding.key == LEGACY_INSPECTOR_KEY
+      ) {
+        continue;
+      }
       const keyEl = window.document.getElementById(id);
       if (!keyEl || keyEl.tagName != "key") {
         if (shortcut.group == LEGACY_DEVTOOLS_GROUP) {

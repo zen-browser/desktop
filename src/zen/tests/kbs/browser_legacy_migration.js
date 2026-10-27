@@ -161,6 +161,37 @@ add_task(async function test_unreadable_file_is_dropped() {
   );
 });
 
+add_task(async function test_legacy_inspector_l_is_not_migrated() {
+  const inspector = document.getElementById("key_inspector");
+  const inspectorDefault = inspector.getAttribute("key");
+  await writeLegacy([
+    legacyEntry("key_inspector", {
+      key: "l",
+      modifiers: Object.fromEntries(
+        inspector
+          .getAttribute("modifiers")
+          .split(",")
+          .map(m => [m, true])
+      ),
+      group: "devTools",
+    }),
+  ]);
+
+  await ZenKeyboardShortcuts.migrateLegacyShortcuts(window);
+
+  is(
+    CustomKeys.getDefaultKey("key_inspector"),
+    null,
+    "Zen's old inspector default is not kept as a customization"
+  );
+  is(
+    inspector.getAttribute("key"),
+    inspectorDefault,
+    "Inspector keeps the Firefox default"
+  );
+  ok(!(await IOUtils.exists(LEGACY_PATH)), "Legacy file is removed");
+});
+
 add_task(async function test_devtools_keys_wait_for_their_keyset() {
   const keyset = document.getElementById("devtoolsKeyset");
   ok(keyset, "DevTools keyset is present");

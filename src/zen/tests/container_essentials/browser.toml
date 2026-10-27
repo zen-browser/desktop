@@ -11,4 +11,6 @@ prefs = ["zen.workspaces.separate-essentials=true"]
 
 ["browser_issue_15588.js"]
 
+["browser_issue_15885.js"]
+
 ["browser_issue_15917.js"]

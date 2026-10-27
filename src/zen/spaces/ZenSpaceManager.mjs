@@ -357,6 +357,33 @@ class nsZenWorkspaces {
   }
 
   /**
+   * Whether no workspace claims `containerId` as its own default container.
+   * An essentials section for such a container has nowhere of its own to
+   * live: a container-specific essential can end up tagged with a
+   * userContextId that no local workspace owns, e.g. one synced in from
+   * another device ahead of (or without) its matching workspace/space
+   * record, or a workspace whose container was removed while its
+   * essentials were kept. Callers use this to fall back to showing that
+   * essentials section in a container-less workspace instead of letting it
+   * disappear from every workspace (see gh-15885).
+   *
+   * @param {number} containerId
+   * @param {Array<object>} [workspaces]
+   * @returns {boolean}
+   */
+  #isOrphanedEssentialsContainer(
+    containerId,
+    workspaces = this.getWorkspaces()
+  ) {
+    return (
+      containerId !== 0 &&
+      !workspaces.some(
+        workspace => (workspace.containerTabId || 0) === containerId
+      )
+    );
+  }
+
+  /**
    * The essentials section for a container.
    *
    * @param {number|string|Element} [container] - A userContextId, as a number
@@ -391,10 +418,16 @@ class nsZenWorkspaces {
 
     // Set a hidden state if the essentials section is not supposed
     // to be shown on the current workspace, else remove the hidden state
+    const activeContainerId =
+      (this.getActiveWorkspaceFromCache()?.containerTabId || 0) + 0;
+    const matchesActiveWorkspace = activeContainerId === container;
+    const isOrphanedFallback =
+      !activeContainerId && this.#isOrphanedEssentialsContainer(container);
     if (
       this.activeWorkspace === this.creatingWorkspaceId ||
       (this.containerSpecificEssentials &&
-        this.getActiveWorkspaceFromCache()?.containerTabId + 0 != container)
+        !matchesActiveWorkspace &&
+        !isOrphanedFallback)
     ) {
       essentialsContainer.setAttribute("hidden", "true");
     } else {
@@ -2151,11 +2184,22 @@ class nsZenWorkspaces {
     }
     // Hide other essentials with different containerTabId
     for (const container of otherContainersEssentials) {
+      const sectionContainerId =
+        parseInt(container.getAttribute("container"), 10) || 0;
+      const matchesActiveWorkspace =
+        sectionContainerId === (workspaceContextId || 0);
+      // A container with no workspace of its own has nowhere to live: fall
+      // back to showing it in a container-less workspace instead of
+      // letting it disappear from every workspace (see gh-15885).
+      const isOrphanedFallback =
+        !workspaceContextId &&
+        this.#isOrphanedEssentialsContainer(sectionContainerId, workspaces);
       // Get the next workspace contextId, if it's the same, dont apply offsetPixels
       // if it's not we do apply it
       if (
         isCreatingWorkspace ||
-        (container.getAttribute("container") != workspace.containerTabId &&
+        (!matchesActiveWorkspace &&
+          !isOrphanedFallback &&
           this.shouldAnimateEssentials)
       ) {
         container.setAttribute("hidden", "true");
@@ -2584,17 +2628,24 @@ class nsZenWorkspaces {
         return true; // Show all essential tabs when containerSpecificEssentials is false
       }
 
-      if (containerId) {
+      // containerId may arrive as a number (0 for "no default container")
+      // or that number's stringified form -- callers have passed both --
+      // and "0" is a non-empty, truthy string, so it must be parsed back to
+      // a number before being tested, or a container-less workspace is
+      // wrongly treated as having one (see gh-15885).
+      const normalizedContainerId = parseInt(containerId, 10) || 0;
+      if (normalizedContainerId) {
         // In workspaces with default container: Show essentials that match the container
-        return tabContextId == containerId;
+        return tabContextId == normalizedContainerId;
       }
       // In workspaces without a default container: Show essentials that aren't in container-specific workspaces
       // or have usercontextid="0" or no usercontextid
       return (
         !tabContextId ||
         tabContextId === "0" ||
-        !workspaces.some(
-          workspace => workspace.containerTabId === parseInt(tabContextId, 10)
+        this.#isOrphanedEssentialsContainer(
+          parseInt(tabContextId, 10) || 0,
+          workspaces
         )
       );
     }

@@ -129,6 +129,13 @@ export class nsZenWorkspace extends MozXULElement {
       "zen.view.show-newtab-button-top",
       false
     );
+
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "_showScrollToSelectedTab",
+      "zen.view.show-scroll-to-selected-tab",
+      true
+    );
   }
 
   connectedCallback() {
@@ -473,6 +480,7 @@ export class nsZenWorkspace extends MozXULElement {
 
   #canOfferScrollToTab(tab) {
     return (
+      this._showScrollToSelectedTab &&
       this.active &&
       !!tab &&
       !tab.hidden &&

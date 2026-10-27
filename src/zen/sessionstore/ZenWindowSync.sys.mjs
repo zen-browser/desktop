@@ -10,6 +10,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  isLibraryCopy: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   TabStateFlusher:
     "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs",
   // eslint-disable-next-line mozilla/valid-lazy
@@ -385,9 +386,10 @@ class nsZenWindowSync {
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
     // The library builds copies of tabs and folders that fire these same
-    // events while being built. Their ids are suffixed with "-copy" (see
-    // ZenLibrarySpacesSection#renameIds), so never sync anything from one.
-    if (aEvent.target?.id?.endsWith("-copy")) {
+    // events while being built, and this listens in the capture phase, ahead
+    // of anything the library could do to hold them back. Nothing a copy
+    // says is worth syncing.
+    if (lazy.isLibraryCopy(aEvent.target)) {
       return;
     }
     if (

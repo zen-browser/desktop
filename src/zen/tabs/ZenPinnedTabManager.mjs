@@ -493,6 +493,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     // which can be confusing for the user, especially if they have a long page.
     delete state.scroll;
 
+    // Session storage is restored along with the tab, and sites that route on
+    // the client read their last view back out of it, so the page would come
+    // back showing where the tab had got to rather than the URL being reset to.
+    delete state.storage;
+
     SessionStore.setTabState(tab, state);
     this.resetPinChangedUrl(tab);
   }

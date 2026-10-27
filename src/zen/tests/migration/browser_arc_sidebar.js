@@ -7,6 +7,82 @@ const { ArcProfileMigrator } = ChromeUtils.importESModule(
   "resource:///modules/zen/ZenProfileMigrators.sys.mjs"
 );
 
+add_task(async function test_find_packaged_user_data_path() {
+  const packages = await IOUtils.createUniqueDirectory(
+    PathUtils.tempDir,
+    "zen-arc-packages"
+  );
+  const userData = PathUtils.join(
+    packages,
+    "TheBrowserCompany.Arc_8wekyb3d8bbwe",
+    "LocalCache",
+    "Local",
+    "Arc",
+    "User Data"
+  );
+  for (const dir of [
+    PathUtils.join(packages, "TheBrowserCompany.Arc_abcdef", "LocalCache"),
+    PathUtils.join(
+      packages,
+      "TheBrowserCompany.Dia_8wekyb3d8bbwe",
+      "LocalCache",
+      "Local",
+      "Dia",
+      "User Data"
+    ),
+    PathUtils.join(packages, "TheBrowserCompany.ArcPreview_x", "LocalCache"),
+    userData,
+  ]) {
+    await IOUtils.makeDirectory(dir, { createAncestors: true });
+  }
+
+  Assert.equal(
+    await ZenMigrationUtils.findPackagedUserDataPath(
+      packages,
+      "TheBrowserCompany.Arc",
+      "Arc"
+    ),
+    userData,
+    "The package folder with Arc's data is found whatever its suffix"
+  );
+  Assert.equal(
+    await ZenMigrationUtils.findPackagedUserDataPath(
+      packages,
+      "TheBrowserCompany.Dia",
+      "Dia"
+    ),
+    PathUtils.join(
+      packages,
+      "TheBrowserCompany.Dia_8wekyb3d8bbwe",
+      "LocalCache",
+      "Local",
+      "Dia",
+      "User Data"
+    ),
+    "Other packages of the same publisher are told apart"
+  );
+  Assert.equal(
+    await ZenMigrationUtils.findPackagedUserDataPath(
+      packages,
+      "TheBrowserCompany.Nope",
+      "Nope"
+    ),
+    null,
+    "Nothing is found for a package that is not installed"
+  );
+  Assert.equal(
+    await ZenMigrationUtils.findPackagedUserDataPath(
+      PathUtils.join(packages, "missing"),
+      "TheBrowserCompany.Arc",
+      "Arc"
+    ),
+    null,
+    "A missing Packages directory is not an error"
+  );
+
+  await IOUtils.remove(packages, { recursive: true });
+});
+
 add_task(async function test_parse_arc_sidebar() {
   const plan = ZenMigrationUtils.parseArcSidebar(buildArcSidebar());
 
@@ -15,7 +91,11 @@ add_task(async function test_parse_arc_sidebar() {
     [{ type: "tab", url: "https://example.com/calendar", title: "Calendar" }],
     "Top apps become favorites"
   );
-  Assert.equal(plan.spaces.length, 2, "Both spaces are found");
+  Assert.equal(
+    plan.spaces.length,
+    2,
+    "Only the main sidebar's spaces are found, Little Arc windows are skipped"
+  );
 
   const [first, second] = plan.spaces;
   Assert.equal(first.title, "Work Space", "The space title is kept");
@@ -62,6 +142,37 @@ add_task(async function test_parse_arc_sidebar() {
     second.items,
     [{ type: "tab", url: "https://example.com/6", title: "Six" }],
     "Items are found through parent links when the container lists none"
+  );
+});
+
+add_task(async function test_parse_arc_sidebar_little_arc_windows() {
+  const sidebar = buildArcSidebar();
+  const [globalKind, main, littleKind, little] = sidebar.sidebar.containers;
+  sidebar.sidebar.containers = [
+    littleKind,
+    little,
+    { littleBrowser: { _0: "little-2" } },
+    buildLittleArcSidebar("little-2"),
+    globalKind,
+    main,
+  ];
+  const plan = ZenMigrationUtils.parseArcSidebar(sidebar);
+  Assert.deepEqual(
+    plan.spaces.map(space => space.id),
+    ["s1", "s2"],
+    "Little Arc sidebars are skipped wherever they appear"
+  );
+  Assert.equal(
+    plan.favorites.length,
+    1,
+    "Favorites still come from the main sidebar"
+  );
+
+  sidebar.sidebar.containers = [littleKind, little];
+  Assert.deepEqual(
+    ZenMigrationUtils.parseArcSidebar(sidebar),
+    { favorites: [], spaces: [] },
+    "A file with only Little Arc windows has nothing to import"
   );
 });
 

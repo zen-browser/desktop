@@ -867,8 +867,9 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
 
 .zen-library-routing-footer {
   flex: none;
-  padding: 10px 14px 14px;
-  border-top: 1px solid transparent;
+  margin-inline: 14px;
+  padding-block: 10px 14px;
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
   -moz-window-dragging: no-drag;
 
   & h3 {
@@ -876,10 +877,6 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
     font-size: 0.93em;
     font-weight: 600;
     opacity: 0.85;
-  }
-
-  .zen-library-section[list-overflowing] & {
-    border-top-color: color-mix(in srgb, currentColor 15%, transparent);
   }
 }
 

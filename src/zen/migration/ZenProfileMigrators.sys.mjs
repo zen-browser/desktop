@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { MigrationUtils } from "resource:///modules/MigrationUtils.sys.mjs";
-import { ChromeProfileMigrator } from "resource:///modules/ChromeProfileMigrator.sys.mjs";
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
+import { MigrationUtils } from "moz-src:///browser/components/migration/MigrationUtils.sys.mjs";
+import { ChromeProfileMigrator } from "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs";
 
 const lazy = {};
 
@@ -33,6 +34,32 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
   _chromeUserDataPathSuffix = "Arc";
   _keychainServiceName = "Arc Safe Storage";
   _keychainAccountName = "Arc";
+
+  #packagedDataPath = null;
+
+  /**
+   * On Windows Arc is an MSIX package, so when none of the fixed locations
+   * exist its data is looked for under whichever package folder it got.
+   *
+   * @param {boolean} [noRemapping=false]
+   * @returns {Promise<string|null>}
+   */
+  async _getChromeUserDataPathIfExists(noRemapping = false) {
+    const path = await super._getChromeUserDataPathIfExists(noRemapping);
+    if (path || AppConstants.platform != "win") {
+      return path;
+    }
+    this.#packagedDataPath ??= lazy.ZenMigrationUtils.findPackagedUserDataPath(
+      PathUtils.join(
+        Services.dirsvc.get("LocalAppData", Ci.nsIFile).path,
+        "Packages"
+      ),
+      "TheBrowserCompany.Arc",
+      this._chromeUserDataPathSuffix
+    );
+    this._chromeUserDataPath = await this.#packagedDataPath;
+    return this._chromeUserDataPath;
+  }
 
   /**
    * The sidebar is shared by every Arc profile, so it is offered once, with

@@ -51,7 +51,6 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
     this.draft = null;
   }
 
-  #overflowObserver = null;
   #draftTimer = null;
   #picker = null;
   #pickerOnPick = null;
@@ -67,32 +66,6 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
     this.#picker?.remove();
     this.#picker = null;
     this.#cancelDraftTimer();
-    this.#overflowObserver?.disconnect();
-    this.#overflowObserver = null;
-  }
-
-  firstUpdated() {
-    super.firstUpdated();
-    const results = this.querySelector(".zen-library-search-results");
-    this.#overflowObserver = new ResizeObserver(() => this.#checkOverflow());
-    this.#overflowObserver.observe(results);
-    this.#overflowObserver.observe(this);
-  }
-
-  updated(changedProperties) {
-    super.updated(changedProperties);
-    this.#checkOverflow();
-  }
-
-  #checkOverflow() {
-    const results = this.querySelector(".zen-library-search-results");
-    if (!results) {
-      return;
-    }
-    this.toggleAttribute(
-      "list-overflowing",
-      results.scrollHeight > results.clientHeight
-    );
   }
 
   get searchPlaceholderL10nId() {

@@ -54,8 +54,9 @@ export class nsZenBoostReceiveDialog {
 
   init() {
     const cancel = this.$("dialog").getButton("cancel");
+    cancel.classList.add("ghost");
     cancel.style.order = "-1";
-    cancel.style.marginInlineEnd = "auto";
+    cancel.style.setProperty("margin-inline-end", "auto", "important");
     this.doc.addEventListener("dialogaccept", () => this.onGetPressed());
     this.$(".zbs-info-button").addEventListener("click", event =>
       this.onBoostInfoButtonPressed(event)

@@ -58,6 +58,10 @@ skip-if = [
   "os == 'win' && os_version == '11.26200' && arch == 'x86_64'", # Bug 1727691
 ]
 
+["test_session_availability.py"]
+
+["test_session_decision.py"]
+
 ["test_set_browser_state_window_features_mismatch.py"]
 
 ["test_shutdown_flush_timeout.py"]

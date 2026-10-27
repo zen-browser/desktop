@@ -4,6 +4,9 @@
 
 import { nsZenFolder } from "chrome://browser/content/zen-components/ZenFolder.mjs";
 
+// Enough clipboard text to fill the preview, which crops what does not fit.
+const MAX_CLIPBOARD_PREVIEW = 200;
+
 // A helper class to manage collapsible pinned tabs in a workspace.
 
 class nsZenCollapsiblePins extends nsZenFolder {
@@ -49,6 +52,7 @@ class nsZenCollapsiblePins extends nsZenFolder {
 export class nsZenWorkspace extends MozXULElement {
   #initialPinnedElementChildrenCount;
   #hasConnected = false;
+  #newTabPasteAbort = null;
 
   static get markup() {
     return `
@@ -79,7 +83,11 @@ export class nsZenWorkspace extends MozXULElement {
                              class="toolbarbutton-1"
                              command="cmd_newNavigatorTab"
                              tooltip="dynamic-shortcut-tooltip"
-                             data-l10n-id="tabs-toolbar-new-tab"/>
+                             data-l10n-id="tabs-toolbar-new-tab">
+                <box class="zen-newtab-sublabel-anchor">
+                  <label class="zen-tab-sublabel" crop="end" role="presentation"/>
+                </box>
+              </toolbarbutton>
               <spacer class="closing-tabs-spacer" style="width: 0;"/>
             </hbox>
           </vbox>
@@ -272,6 +280,7 @@ export class nsZenWorkspace extends MozXULElement {
     this.prepend(this.collapsiblePins);
 
     this.#updateOverflow();
+    this.#setupNewTabPasteAndSearch();
 
     this.pinnedTabsContainer.addEventListener("TabPinned", () => {
       // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
@@ -385,6 +394,80 @@ export class nsZenWorkspace extends MozXULElement {
 
   get newTabButton() {
     return this.querySelector("#tabs-newtab-button");
+  }
+
+  /**
+   * Holding the accel key over the new tab button turns it into a shortcut for
+   * pasting the clipboard and searching it. Only the look belongs here, the
+   * click itself is read by gZenUIManager.newTabButtonWantsClipboard.
+   */
+  #setupNewTabPasteAndSearch() {
+    const button = this.newTabButton;
+    button.addEventListener("mouseenter", event => {
+      this.#watchNewTabPasteModifier(event);
+    });
+    button.addEventListener("mouseleave", () => {
+      this.#unwatchNewTabPasteModifier();
+    });
+  }
+
+  #watchNewTabPasteModifier(enterEvent) {
+    // The key may already be down by the time the pointer arrives.
+    this.#offerNewTabPasteAndSearch(enterEvent.getModifierState("Accel"));
+    if (this.#newTabPasteAbort) {
+      return;
+    }
+    this.#newTabPasteAbort = new AbortController();
+    const options = { signal: this.#newTabPasteAbort.signal };
+    const onKey = event => {
+      this.#offerNewTabPasteAndSearch(event.getModifierState("Accel"));
+    };
+    window.addEventListener("keydown", onKey, options);
+    window.addEventListener("keyup", onKey, options);
+    // No key release arrives when the window loses focus while still hovered.
+    window.addEventListener(
+      "blur",
+      () => {
+        this.#offerNewTabPasteAndSearch(false);
+      },
+      options
+    );
+  }
+
+  #unwatchNewTabPasteModifier() {
+    this.#newTabPasteAbort?.abort();
+    this.#newTabPasteAbort = null;
+    this.#offerNewTabPasteAndSearch(false);
+  }
+
+  #offerNewTabPasteAndSearch(shouldOffer) {
+    const button = this.newTabButton;
+    // Nothing to paste means nothing to offer, which also keeps the button
+    // honest about what the click is going to do.
+    const clipboard = shouldOffer ? gZenUIManager.clipboardForNewTab() : "";
+    shouldOffer = !!clipboard;
+    if (shouldOffer === button.hasAttribute("zen-paste-and-search")) {
+      return;
+    }
+    if (shouldOffer) {
+      button.querySelector(".zen-tab-sublabel").value =
+        this.#previewClipboard(clipboard);
+      button.setAttribute("zen-paste-and-search", "true");
+      document.l10n.setAttributes(button, "zen-tabs-newtab-paste-and-search");
+    } else {
+      button.removeAttribute("zen-paste-and-search");
+      document.l10n.setAttributes(button, "tabs-toolbar-new-tab");
+    }
+  }
+
+  /**
+   * Flattens clipboard text onto the single line the preview has room for.
+   *
+   * @param {string} clipboard - The text a new tab would be opened with.
+   * @returns {string}
+   */
+  #previewClipboard(clipboard) {
+    return clipboard.replace(/\s+/g, " ").substring(0, MAX_CLIPBOARD_PREVIEW);
   }
 
   onGradientCacheChanged() {

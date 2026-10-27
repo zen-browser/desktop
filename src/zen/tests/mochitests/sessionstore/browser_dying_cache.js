@@ -29,7 +29,7 @@ add_task(async function test() {
 
   // Make sure our window is still tracked by sessionstore
   // and the window state is as expected.
-  ok("__SSi" in win, "window is being tracked by sessionstore");
+  ok(ss.getWindowId(win), "window is being tracked by sessionstore");
   ss.setCustomWindowValue(win, "foo", "bar");
   checkWindowState(win);
 
@@ -38,7 +38,7 @@ add_task(async function test() {
 
   // SessionStore should no longer track our window
   // but it should still report the same state.
-  ok(!("__SSi" in win), "sessionstore does no longer track our window");
+  ok(!ss.getWindowId(win), "sessionstore does no longer track our window");
   checkWindowState(win);
 
   // Make sure we're not allowed to modify state data.

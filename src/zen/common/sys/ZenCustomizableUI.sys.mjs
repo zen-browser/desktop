@@ -6,6 +6,8 @@ import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
+  ZenKeyboardShortcuts:
+    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
   ZenLibraryWidget: "moz-src:///zen/library/ZenLibraryWidget.sys.mjs",
 });
 
@@ -246,7 +248,9 @@ export const ZenCustomizableUI = new (class {
         return;
       }
       toolbox.style.width = defaultWidth;
+      toolbox.style.setProperty("--zen-sidebar-width", defaultWidth);
       toolbox.setAttribute("width", defaultWidth);
+      this.#dispatchResizeEvent(window);
     });
   }
 
@@ -266,10 +270,10 @@ export const ZenCustomizableUI = new (class {
     if (Services.prefs.getBoolPref(kCompactModeHintPref, false)) {
       return;
     }
-    const shortcut =
-      window.gZenKeyboardShortcutsManager?.getShortcutDisplayFromCommand(
-        kCompactModeToggleCommand
-      );
+    const shortcut = lazy.ZenKeyboardShortcuts.getShortcutDisplayFromCommand(
+      window,
+      kCompactModeToggleCommand
+    );
     if (!shortcut) {
       return;
     }

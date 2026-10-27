@@ -59,7 +59,7 @@
     cmd_zenUnloadAllOtherWorkspace: () =>
       gZenWorkspaces.unloadAllOtherWorkspaces(),
     cmd_zenOpenSpaceRoutingSettings: () =>
-      gZenSpaceRoutingManager.openSpaceRoutingDialog(window),
+      gZenSpaceRoutingManager.openSpaceRoutingSettings(window),
 
     // Split view
     cmd_zenSplitViewGrid: () => gZenViewSplitter.toggleShortcut("grid"),
@@ -100,13 +100,6 @@
     },
 
     // Tabs
-    cmd_zenDuplicateTab: () => {
-      const selectedTabs = gBrowser.selectedTabs;
-      let insertAt = selectedTabs.at(-1).index + 1;
-      for (const tab of selectedTabs) {
-        gBrowser.duplicateTab(tab, true, { tabIndex: insertAt++ });
-      }
-    },
     cmd_zenCopyCurrentURL: () => gZenCommonActions.copyCurrentURLToClipboard(),
     cmd_zenCopyCurrentURLMarkdown: () =>
       gZenCommonActions.copyCurrentURLAsMarkdownToClipboard(),

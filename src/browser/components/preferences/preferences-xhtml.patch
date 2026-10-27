@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 1b8c38159314b6edee9e6f455beb2b63db1ad3f0..1308345db640dba6b2848b49ef7c11819f9f5727 100644
+index e8da75f2c27e312e0170520959d3daf883f56048..e1be6c694ab7d9d7268a48e3ae76154971ca939a 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -39,6 +39,8 @@
@@ -11,7 +11,7 @@ index 1b8c38159314b6edee9e6f455beb2b63db1ad3f0..1308345db640dba6b2848b49ef7c1181
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -118,6 +120,26 @@
+@@ -121,6 +123,26 @@
          iconsrc="chrome://browser/skin/preferences/category-general.svg"
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
@@ -26,7 +26,7 @@ index 1b8c38159314b6edee9e6f455beb2b63db1ad3f0..1308345db640dba6b2848b49ef7c1181
 +        data-l10n-id="pane-zen-tabs-title">
 +      </html:moz-page-nav-button>
 +      <html:moz-page-nav-button id="category-zen-CKS"
-+        view="paneZenCKS"
++        href="about:keyboard"
 +        iconsrc="chrome://browser/skin/preferences/category-accessibility.svg"
 +        data-l10n-id="pane-zen-CKS-title">
 +      </html:moz-page-nav-button>
@@ -38,12 +38,11 @@ index 1b8c38159314b6edee9e6f455beb2b63db1ad3f0..1308345db640dba6b2848b49ef7c1181
        <html:moz-page-nav-button id="category-sync"
          hidden="true"
          view="paneSync"
-@@ -248,6 +270,10 @@
+@@ -257,6 +279,9 @@
  #include privacy.inc.xhtml
  #include sync.inc.xhtml
  #include moreFromMozilla.inc.xhtml
 +#include zenLooksAndFeel.inc.xhtml
-+#include zenKeyboardShortcuts.inc.xhtml
 +#include zenTabsManagement.inc.xhtml
 +#include zenMarketplace.inc.xhtml
          </vbox>

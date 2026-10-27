@@ -45,7 +45,7 @@ Zen is an open-source project, and we welcome contributions from the community! 
 
 #### Partners
 
-Thanks to all the partners of Zen for their support and contributions:
+Thanks to all the [sponsors](https://zen-browser.app/#sponsors) of Zen for their support and contributions, including:
 
 <a href="https://blacksmith.sh">
   <img src="./docs/assets/blacksmith-yellow.png" width="350px"/>

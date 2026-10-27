@@ -540,6 +540,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
+    if: ${{ !failure() && !cancelled() }}
     needs: [build-data, mac-step-3]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -631,6 +632,7 @@ jobs:
   release:
     permissions: write-all
     name: Release
+    if: ${{ !failure() && !cancelled() }}
     needs:
       [
         build-data,

@@ -630,6 +630,7 @@ zen-library {
         height: var(--size-item-small);
         width: var(--size-item-small);
         padding: 0 !important;
+        margin-inline: 2px;
       }
 
       &:is([open], [checked]) {
@@ -1124,8 +1125,8 @@ zen-library {
 
     & .zen-tab-sublabel {
       display: block !important;
-      inset-inline-start: 32px;
-      width: calc(100% - 32px) !important;
+      inset-inline-start: 36px;
+      width: calc(100% - 38px) !important;
       text-align: start;
       white-space: nowrap;
       overflow: hidden;

@@ -1530,7 +1530,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       baseColor = this.blendColors(
         accentColor,
         baseColor.slice(0, 3),
-        this.canBeTransparent ? 25 : 5
+        this.canBeTransparent ? 20 : 5
       ).concat(opacity);
     }
     return baseColor;

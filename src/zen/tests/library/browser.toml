@@ -23,4 +23,6 @@ prefs = [
 
 ["browser_library_space_routing.js"]
 
+["browser_library_spaces_refresh.js"]
+
 ["browser_library_toggle_sidebar_width.js"]

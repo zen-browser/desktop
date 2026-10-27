@@ -28,6 +28,10 @@ zen-boost-share-author-input =
 zen-boost-share-scribble-text = No great work of art is complete without a signature, so scribble your name, write a poem or draw something
 zen-boost-share-hide-screenshot =
     .label = Hide screenshot
+zen-boost-share-info =
+    .tooltiptext = About sharing
+    .aria-label = About sharing
+zen-boost-share-info-text = Double-check this info because you won't be able to edit a shared Boost. Anyone with the link can install it, and any updates you make only apply to your own version.
 
 zen-boost-share-pane-sign =
     .tooltiptext = Add a signature

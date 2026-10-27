@@ -10,7 +10,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 const { InternalTestingProfileMigrator } = ChromeUtils.importESModule(
-  "resource:///modules/InternalTestingProfileMigrator.sys.mjs"
+  "moz-src:///browser/components/migration/InternalTestingProfileMigrator.sys.mjs"
 );
 
 const { MigrationWizardConstants } = ChromeUtils.importESModule(

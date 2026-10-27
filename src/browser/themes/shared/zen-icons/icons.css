@@ -1039,10 +1039,8 @@
   }
 }
 
-#zen-copy-url-button image,
-.sr-url-icon {
+#zen-copy-url-button image {
   list-style-image: url("link.svg");
-  fill-opacity: 0.65;
 }
 
 #zen-boost-case[case-mode="none"] {

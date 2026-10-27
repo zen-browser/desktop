@@ -333,35 +333,86 @@ export class nsZenBoostEditor {
   }
 
   /**
-   * The curated fonts of the grid, four rows of five. "System" is the
-   * platform's UI font through the generic family, so it needs no install.
+   * The curated fonts of the grid, four rows of five. Each slot lists the
+   * font it is meant for first, then look-alikes other platforms ship, and
+   * ends with a generic family so the slot always renders in the intended
+   * style instead of in whatever font happens to be installed.
    */
   get commonFonts() {
     return [
-      "system-ui",
-      "Helvetica Neue",
-      "Avenir",
-      "Futura",
-      "DIN Alternate",
-      "Arial Rounded MT Bold",
-      "PT Mono",
-      "Courier",
-      "Times New Roman",
-      "Charter",
-      "Baskerville",
-      "Hoefler Text",
-      "Palatino",
-      "Chalkboard",
-      "SignPainter",
-      "Snell Roundhand",
-      "Papyrus",
-      "Apple Chancery",
-      "Luminari",
-      "Wingdings",
+      ["system-ui"],
+      [
+        "Helvetica Neue",
+        "Segoe UI",
+        "Noto Sans",
+        "Liberation Sans",
+        "sans-serif",
+      ],
+      ["Avenir", "Nunito", "Century Gothic", "URW Gothic", "sans-serif"],
+      ["Futura", "Jost", "Century Gothic", "Trebuchet MS", "sans-serif"],
+      [
+        "DIN Alternate",
+        "Bahnschrift",
+        "Roboto Condensed",
+        "Arial Narrow",
+        "sans-serif",
+      ],
+      [
+        "Arial Rounded MT Bold",
+        "Varela Round",
+        "Nunito",
+        "Verdana",
+        "sans-serif",
+      ],
+      [
+        "PT Mono",
+        "Consolas",
+        "DejaVu Sans Mono",
+        "Liberation Mono",
+        "monospace",
+      ],
+      ["Courier", "Courier New", "Liberation Mono", "monospace"],
+      ["Times New Roman", "Liberation Serif", "Tinos", "serif"],
+      ["Charter", "Bitstream Charter", "Charis SIL", "Georgia", "serif"],
+      ["Baskerville", "Libre Baskerville", "Book Antiqua", "Georgia", "serif"],
+      ["Hoefler Text", "EB Garamond", "Garamond", "Cambria", "serif"],
+      ["Palatino", "Palatino Linotype", "Book Antiqua", "P052", "serif"],
+      ["Chalkboard", "Comic Neue", "Comic Sans MS", "Segoe Print", "cursive"],
+      [
+        "SignPainter",
+        "Segoe Script",
+        "Brush Script MT",
+        "URW Chancery L",
+        "cursive",
+      ],
+      [
+        "Snell Roundhand",
+        "Edwardian Script ITC",
+        "Monotype Corsiva",
+        "Z003",
+        "cursive",
+      ],
+      ["Papyrus", "Segoe Script", "cursive"],
+      [
+        "Apple Chancery",
+        "Monotype Corsiva",
+        "URW Chancery L",
+        "Z003",
+        "cursive",
+      ],
+      ["Luminari", "Algerian", "Old English Text MT", "Cinzel", "fantasy"],
+      ["Wingdings", "Dingbats", "Symbola", "fantasy"],
     ];
   }
 
-  static GENERIC_FONT_LABELS = { "system-ui": "System" };
+  static GENERIC_FONT_LABELS = {
+    "system-ui": "System",
+    "sans-serif": "Sans Serif",
+    serif: "Serif",
+    monospace: "Monospace",
+    cursive: "Cursive",
+    fantasy: "Fantasy",
+  };
 
   /**
    * Initializes the font selection UI by creating font buttons and dropdown options
@@ -377,10 +428,11 @@ export class nsZenBoostEditor {
     const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
 
     for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
-      let font = fonts[i]; // Fallback
-      if (commonFonts[i] in genericLabels || fonts.includes(commonFonts[i])) {
-        font = commonFonts[i];
-      }
+      // The first candidate that is installed, or the slot's generic family.
+      const font =
+        commonFonts[i].find(
+          candidate => candidate in genericLabels || fonts.includes(candidate)
+        ) ?? commonFonts[i].at(-1);
 
       const fontButton = this.doc.createElement("button");
       fontButton.setAttribute("font-data", `${font}`);

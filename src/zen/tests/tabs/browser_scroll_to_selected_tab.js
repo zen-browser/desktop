@@ -205,6 +205,25 @@ add_task(async function test_never_offered_while_the_sidebar_is_collapsed() {
   }
 });
 
+add_task(async function test_can_be_turned_off() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.view.show-scroll-to-selected-tab", false]],
+  });
+  try {
+    gBrowser.selectedTab = gBrowser.visibleTabs[1];
+    await TestUtils.waitForCondition(
+      () => selectedIsVisible(),
+      "The selected tab settles into view"
+    );
+    scrollbox.scrollbox.scrollTop = scrollbox.scrollbox.scrollTopMax;
+    /* eslint-disable-next-line mozilla/no-arbitrary-setTimeout */
+    await new Promise(resolve => setTimeout(resolve, 400));
+    Assert.ok(pill.hidden, "Nothing is offered once the pref is turned off");
+  } finally {
+    await SpecialPowers.popPrefEnv();
+  }
+});
+
 add_task(async function test_hidden_when_the_strip_does_not_overflow() {
   for (const tab of openedTabs) {
     if (tab.isConnected) {

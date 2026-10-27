@@ -30,6 +30,10 @@ zen-toolbar-context-new-folder =
 zen-tabs-newtab-paste-and-search =
     .label = Paste & Search
 
+zen-scroll-to-selected-tab =
+    .tooltiptext = Scroll to the selected tab
+    .aria-label = Scroll to the selected tab
+
 sidebar-zen-expand =
   .label = Expand Sidebar
 

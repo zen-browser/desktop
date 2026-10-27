@@ -1123,7 +1123,7 @@ zen-library {
     }
 
     & .zen-tab-sublabel {
-      display: block;
+      display: block !important;
       inset-inline-start: 32px;
       width: calc(100% - 32px) !important;
       text-align: start;

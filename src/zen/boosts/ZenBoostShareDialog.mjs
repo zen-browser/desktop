@@ -69,8 +69,9 @@ export class nsZenBoostShareDialog {
 
   init() {
     const cancel = this.$("dialog").getButton("cancel");
+    cancel.classList.add("ghost");
     cancel.style.order = "-1";
-    cancel.style.marginInlineEnd = "auto";
+    cancel.style.setProperty("margin-inline-end", "auto", "important");
     this.doc.addEventListener("dialogaccept", event => {
       event.preventDefault();
       this.onSharePressed();
@@ -80,6 +81,17 @@ export class nsZenBoostShareDialog {
     );
     this.$(".zbs-pane-right").addEventListener("click", event =>
       this.onRightPaneButtonClick(event)
+    );
+    this.$(".zbs-info-button").addEventListener("click", event =>
+      this.$("#zen-boost-share-info-panel").openPopup(
+        event.currentTarget,
+        "end_before",
+        4,
+        0,
+        false,
+        false,
+        event
+      )
     );
     this.$("#zbs-hide-screenshot").addEventListener("command", () =>
       this.setScreenshotHidden(!this.hideScreenshot)
@@ -138,7 +150,8 @@ export class nsZenBoostShareDialog {
   }
 
   /**
-   * Paints the boosted page into the preview, scaled to cover it.
+   * Captures the boosted page and shows it in the preview, where the user
+   * can zoom in with the wheel and drag it around to frame the share.
    */
   async initCapturedSite() {
     const canvas = this.$(".zbs-screenshot canvas");
@@ -150,31 +163,120 @@ export class nsZenBoostShareDialog {
     canvas.width = canvas.clientWidth * scale;
     canvas.height = canvas.clientHeight * scale;
     try {
-      const snapshot = await windowGlobal.drawSnapshot(
+      this.snapshot = await windowGlobal.drawSnapshot(
         null,
         scale,
         "rgb(255,255,255)"
       );
-      const ratio = Math.max(
-        canvas.width / snapshot.width,
-        canvas.height / snapshot.height
-      );
-      const width = snapshot.width * ratio;
-      const height = snapshot.height * ratio;
-      canvas
-        .getContext("2d")
-        .drawImage(
-          snapshot,
-          (canvas.width - width) / 2,
-          (canvas.height - height) / 2,
-          width,
-          height
-        );
-      snapshot.close();
-      this.hasScreenshot = true;
     } catch (ex) {
       console.error("ZenBoostShare: could not capture the page:", ex);
+      return;
     }
+    this.win.addEventListener("unload", () => this.snapshot?.close(), {
+      once: true,
+    });
+    this.hasScreenshot = true;
+    this.view = { zoom: 1, x: 0, y: 0 };
+    this.drawScreenshot();
+    this.initScreenshotFraming(canvas);
+  }
+
+  /**
+   * Draws the snapshot at the current zoom and offset. At zoom 1 the page
+   * covers the preview; zooming enlarges it from there and the offset
+   * slides it, never past its edges.
+   */
+  drawScreenshot() {
+    const canvas = this.$(".zbs-screenshot canvas");
+    const { snapshot, view } = this;
+    if (!canvas || !snapshot) {
+      return;
+    }
+    const cover = Math.max(
+      canvas.width / snapshot.width,
+      canvas.height / snapshot.height
+    );
+    const width = snapshot.width * cover * view.zoom;
+    const height = snapshot.height * cover * view.zoom;
+    view.x = Math.min(0, Math.max(canvas.width - width, view.x));
+    view.y = Math.min(0, Math.max(canvas.height - height, view.y));
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(snapshot, view.x, view.y, width, height);
+  }
+
+  static MAX_SCREENSHOT_ZOOM = 4;
+  static WHEEL_ZOOM_STEP = 1.1;
+
+  /**
+   * Pinching (a wheel event with the control or command key, which is how
+   * trackpad pinches arrive) and the notches of a mouse wheel zoom around
+   * the pointer.
+   *
+   * @param {HTMLCanvasElement} canvas
+   */
+  initScreenshotFraming(canvas) {
+    const scale = () => canvas.width / canvas.clientWidth;
+    canvas.addEventListener("wheel", event => {
+      event.preventDefault();
+      const { view } = this;
+      const isPinch = event.ctrlKey || event.metaKey;
+      const isMouseWheel = event.deltaMode !== WheelEvent.DOM_DELTA_PIXEL;
+      if (!isPinch && !isMouseWheel) {
+        // Trackpad scroll: slide, in canvas pixels.
+        view.x -= event.deltaX * scale();
+        view.y -= event.deltaY * scale();
+        this.drawScreenshot();
+        return;
+      }
+      let factor;
+      if (isPinch) {
+        factor = Math.exp(-event.deltaY * 0.01);
+      } else {
+        const step = nsZenBoostShareDialog.WHEEL_ZOOM_STEP;
+        factor = event.deltaY < 0 ? step : 1 / step;
+      }
+      factor = Math.min(1.25, Math.max(0.8, factor));
+      const zoom = Math.min(
+        nsZenBoostShareDialog.MAX_SCREENSHOT_ZOOM,
+        Math.max(1, view.zoom * factor)
+      );
+      if (zoom === view.zoom) {
+        return;
+      }
+      const rect = canvas.getBoundingClientRect();
+      const px = (event.clientX - rect.left) * scale();
+      const py = (event.clientY - rect.top) * scale();
+      // Keep the page point under the pointer where it is.
+      const ratio = zoom / view.zoom;
+      view.x = px - (px - view.x) * ratio;
+      view.y = py - (py - view.y) * ratio;
+      view.zoom = zoom;
+      this.drawScreenshot();
+    });
+
+    let drag = null;
+    canvas.addEventListener("mousedown", event => {
+      if (event.button !== 0) {
+        return;
+      }
+      event.preventDefault();
+      drag = { x: event.clientX, y: event.clientY };
+      canvas.setAttribute("dragging", "true");
+    });
+    this.doc.addEventListener("mousemove", event => {
+      if (!drag) {
+        return;
+      }
+      this.view.x += (event.clientX - drag.x) * scale();
+      this.view.y += (event.clientY - drag.y) * scale();
+      drag = { x: event.clientX, y: event.clientY };
+      this.drawScreenshot();
+    });
+    this.doc.addEventListener("mouseup", () => {
+      drag = null;
+      canvas.removeAttribute("dragging");
+    });
   }
 
   /**

@@ -22,6 +22,8 @@
       <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-theme.css" />
       <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-boosts-share.css" />
       <html:link rel="stylesheet" href="chrome://browser/skin/zen-icons/icons.css" />
+      <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-popup.css" />
+      <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-panel-ui.css" />
       <html:link rel="localization" href="browser/zen-boosts.ftl" />
     </linkset>
     <script src="chrome://browser/content/zen-components/windows/zen-boost-receive.js"></script>
@@ -69,7 +71,7 @@
     </html:div>
 
     <popupset>
-      <panel type="arrow" id="zen-boost-receive-info-panel">
+      <panel type="arrow" class="zbs-info-panel" id="zen-boost-receive-info-panel">
         <html:p data-l10n-id="zen-boost-receive-info-text" data-l10n-args='{"domain": ""}'></html:p>
       </panel>
     </popupset>

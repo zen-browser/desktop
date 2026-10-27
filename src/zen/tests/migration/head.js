@@ -122,8 +122,44 @@ function buildArcSidebar() {
       containers: [
         { global: {} },
         { items, spaces, topAppsContainerIDs: [{ default: {} }, "top-apps"] },
+        { littleBrowser: { _0: "little-1" } },
+        buildLittleArcSidebar("little-1"),
       ],
     },
+  };
+}
+
+function buildLittleArcSidebar(windowId) {
+  const unpinnedId = `unpinned-${windowId}`;
+  return {
+    items: [
+      unpinnedId,
+      {
+        id: unpinnedId,
+        parentID: null,
+        childrenIds: [`tab-${windowId}`],
+        data: { itemContainer: { containerType: { unpinned: {} } } },
+      },
+      `tab-${windowId}`,
+      {
+        id: `tab-${windowId}`,
+        parentID: unpinnedId,
+        childrenIds: [],
+        title: null,
+        data: {
+          tab: { savedURL: "https://example.com/little", savedTitle: "Little" },
+        },
+      },
+    ],
+    spaces: [
+      `space-${windowId}`,
+      {
+        id: `space-${windowId}`,
+        customInfo: {},
+        containerIDs: ["unpinned", unpinnedId],
+      },
+    ],
+    topAppsContainerIDs: [],
   };
 }
 

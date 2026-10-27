@@ -53,6 +53,11 @@ export class nsZenWorkspace extends MozXULElement {
   #initialPinnedElementChildrenCount;
   #hasConnected = false;
   #newTabPasteAbort = null;
+  #tabVisibilityObserver = null;
+  #scrollToTabListeners = null;
+  #watchedTab = null;
+  #scrollToTabShown = false;
+  #scrollToTabSeq = 0;
 
   static get markup() {
     return `
@@ -93,6 +98,11 @@ export class nsZenWorkspace extends MozXULElement {
           </vbox>
         </arrowscrollbox>
         <vbox class="zen-workspace-empty-space" flex="1" />
+        <hbox class="zen-workspace-scroll-to-tab no-squircles" hidden="true" role="button"
+              data-l10n-id="zen-scroll-to-selected-tab">
+          <image class="zen-workspace-scroll-to-tab-icon" />
+          <image class="zen-workspace-scroll-to-tab-arrow" />
+        </hbox>
       `;
   }
 
@@ -122,9 +132,13 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   connectedCallback() {
-    if (this.delayConnectedCallback() || this.#hasConnected) {
-      // If we are not ready yet, or if we have already connected, we
-      // don't need to do anything.
+    if (this.delayConnectedCallback()) {
+      return;
+    }
+    if (this.#hasConnected) {
+      if (!this.#scrollToTabListeners) {
+        this.#setupScrollToSelectedTab();
+      }
       return;
     }
 
@@ -281,6 +295,7 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.#updateOverflow();
     this.#setupNewTabPasteAndSearch();
+    this.#setupScrollToSelectedTab();
 
     this.pinnedTabsContainer.addEventListener("TabPinned", () => {
       // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
@@ -394,6 +409,181 @@ export class nsZenWorkspace extends MozXULElement {
 
   get newTabButton() {
     return this.querySelector("#tabs-newtab-button");
+  }
+
+  get #scrollToTabButton() {
+    return this.querySelector(".zen-workspace-scroll-to-tab");
+  }
+
+  #setupScrollToSelectedTab() {
+    this.#scrollToTabListeners = new AbortController();
+    const { signal } = this.#scrollToTabListeners;
+
+    this.#scrollToTabButton.addEventListener(
+      "click",
+      () => {
+        if (!this.#canOfferScrollToTab(gBrowser.selectedTab)) {
+          return;
+        }
+        gBrowser.tabContainer._handleTabSelect();
+      },
+      { signal }
+    );
+
+    this.#tabVisibilityObserver = new IntersectionObserver(
+      entries => this.#onSelectedTabVisibility(entries.at(-1)),
+      { root: this.scrollbox, threshold: 0 }
+    );
+
+    const follow = () => this.#watchSelectedTab();
+    gBrowser.tabContainer.addEventListener("TabSelect", follow, { signal });
+    this.scrollbox.addEventListener("overflow", follow, { signal });
+    this.scrollbox.addEventListener("underflow", follow, { signal });
+
+    follow();
+  }
+
+  disconnectedCallback() {
+    this.#scrollToTabListeners?.abort();
+    this.#scrollToTabListeners = null;
+    this.#tabVisibilityObserver?.disconnect();
+    this.#tabVisibilityObserver = null;
+    this.#watchedTab = null;
+  }
+
+  /** Points the observer at whichever tab this space currently has selected. */
+  #watchSelectedTab() {
+    if (!this.#tabVisibilityObserver) {
+      return;
+    }
+    const selected = gBrowser.selectedTab;
+    const tab = this.#canOfferScrollToTab(selected) ? selected : null;
+
+    if (this.#watchedTab && this.#watchedTab !== tab) {
+      this.#tabVisibilityObserver.unobserve(this.#watchedTab);
+    }
+    this.#watchedTab = tab;
+
+    if (tab) {
+      this.#tabVisibilityObserver.observe(tab);
+    } else {
+      this.#hideScrollToTab();
+    }
+  }
+
+  #canOfferScrollToTab(tab) {
+    return (
+      this.active &&
+      !!tab &&
+      !tab.hidden &&
+      tab.getAttribute("zen-workspace-id") === this.id &&
+      this.scrollbox._canScrollToElement(tab)
+    );
+  }
+
+  #onSelectedTabVisibility(entry) {
+    if (
+      !entry ||
+      entry.isIntersecting ||
+      !this.overflows ||
+      !this.#canOfferScrollToTab(this.#watchedTab)
+    ) {
+      this.#hideScrollToTab();
+      return;
+    }
+
+    const button = this.#scrollToTabButton;
+    const direction =
+      entry.boundingClientRect.bottom <= entry.rootBounds.top ? "up" : "down";
+    button.querySelector(".zen-workspace-scroll-to-tab-icon").src =
+      gBrowser.getIcon(this.#watchedTab) ?? "";
+    button.setAttribute("direction", direction);
+    this.#showScrollToTab(direction);
+  }
+
+  /**
+   * Springs the pill out of the edge it is anchored to.
+   *
+   * @param {string} direction - Which edge that is
+   */
+  #showScrollToTab(direction) {
+    const button = this.#scrollToTabButton;
+    this.#anchorScrollToTab(button);
+    const wasShown = this.#scrollToTabShown;
+    // Anything still on its way out belongs to an older state.
+    this.#scrollToTabSeq++;
+    this.#scrollToTabShown = true;
+    button.hidden = false;
+
+    if (wasShown) {
+      return;
+    }
+    if (gReduceMotion) {
+      button.style.removeProperty("transform");
+      button.style.removeProperty("opacity");
+      return;
+    }
+
+    const from = direction === "up" ? -10 : 10;
+    gZenUIManager.motion.animate(
+      button,
+      {
+        transform: [
+          `translateY(${from}px) scale(0.5)`,
+          "translateY(0px) scale(1)",
+        ],
+        opacity: [0, 1],
+      },
+      { type: "spring", bounce: 0.42, visualDuration: 0.2 }
+    );
+  }
+
+  #anchorScrollToTab(button) {
+    const space = window.windowUtils.getBoundsWithoutFlushing(this);
+    const port = this.scrollbox.scrollClientRect;
+    button.style.setProperty(
+      "--zen-scroll-to-tab-top",
+      `${Math.round(port.top - space.top)}px`
+    );
+    button.style.setProperty(
+      "--zen-scroll-to-tab-bottom",
+      `${Math.round(space.bottom - port.bottom)}px`
+    );
+  }
+
+  /** Takes the pill back into the edge it came from. */
+  #hideScrollToTab() {
+    const button = this.#scrollToTabButton;
+    if (!this.#scrollToTabShown) {
+      return;
+    }
+    this.#scrollToTabShown = false;
+    const seq = ++this.#scrollToTabSeq;
+
+    if (gReduceMotion) {
+      button.hidden = true;
+      return;
+    }
+
+    const to = button.getAttribute("direction") === "up" ? -10 : 10;
+    gZenUIManager.motion
+      .animate(
+        button,
+        {
+          transform: [
+            "translateY(0px) scale(1)",
+            `translateY(${to}px) scale(0.6)`,
+          ],
+          opacity: [1, 0],
+        },
+        { duration: 0.12, ease: "easeIn" }
+      )
+      .then(() => {
+        // It may have been asked back while this was running.
+        if (seq === this.#scrollToTabSeq) {
+          button.hidden = true;
+        }
+      });
   }
 
   /**

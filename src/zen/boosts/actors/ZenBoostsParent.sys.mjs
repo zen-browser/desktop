@@ -9,6 +9,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
+  #zapBar = null;
+
   static OBSERVERS = [
     "zen-boosts-update",
     "zen-space-gradient-update",
@@ -46,6 +48,35 @@ export class ZenBoostsParent extends JSWindowActorParent {
     ZenBoostsParent.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this._observe, observe);
     });
+    this.#setZapBarVisible(false);
+  }
+
+  /**
+   * Shows or removes the zap bar in the chrome of the zapped browser.
+   *
+   * @param {boolean} visible - Whether the bar should be shown.
+   */
+  #setZapBarVisible(visible) {
+    if (!visible) {
+      this.#zapBar?.remove();
+      this.#zapBar = null;
+      return;
+    }
+    if (this.#zapBar) {
+      return;
+    }
+
+    const browsingContext = this.browsingContext;
+    const browser = browsingContext?.top.embedderElement;
+    // Zap mode only runs on top-level documents.
+    if (!browser || browsingContext.parent) {
+      return;
+    }
+    const bar = browser.ownerDocument.createElement("zen-zap-bar");
+    bar.browser = browser;
+    bar.actor = this;
+    browser.parentNode.insertAdjacentElement("afterend", bar);
+    this.#zapBar = bar;
   }
 
   /**
@@ -141,18 +172,28 @@ export class ZenBoostsParent extends JSWindowActorParent {
           break;
         }
 
+        const mode = data.mode === "focus" ? "focus" : "zap";
         if (data.action == "add") {
           lazy.gZenBoostsManager.addZapSelectorToActive(
             data.selector,
-            data.domain
+            data.domain,
+            mode
           );
         } else if (data.action == "remove") {
           lazy.gZenBoostsManager.removeZapSelectorToActive(
             data.selector,
-            data.domain
+            data.domain,
+            mode
           );
         } else if (data.action == "clear") {
-          lazy.gZenBoostsManager.clearZapSelectorsForActive(data.domain);
+          const selectors = Array.isArray(data.selectors)
+            ? data.selectors.filter(entry => typeof entry === "string")
+            : null;
+          lazy.gZenBoostsManager.clearZapSelectorsForActive(
+            data.domain,
+            data.mode ? mode : null,
+            selectors
+          );
         }
         break;
       }
@@ -194,6 +235,22 @@ export class ZenBoostsParent extends JSWindowActorParent {
       case "ZenBoost:UpdateBoostSize": {
         const { sizeOverride } = message.data;
         this.updateBoostSizeOverride(sizeOverride);
+        break;
+      }
+      case "ZenBoost:ZapBarState": {
+        this.#setZapBarVisible(!!message.data?.visible);
+        break;
+      }
+      case "ZenBoost:ZapBarUpdate": {
+        const entries = (message.data?.entries ?? [])
+          .filter(entry => typeof entry?.selector === "string")
+          .map(({ selector, count }) => ({
+            selector,
+            count: Number.isFinite(count) ? count : 0,
+          }));
+        if (this.#zapBar) {
+          this.#zapBar.entries = entries;
+        }
         break;
       }
       default: {

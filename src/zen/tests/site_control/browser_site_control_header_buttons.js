@@ -11,8 +11,8 @@ function bookmarkButton() {
   return document.getElementById("zen-site-data-header-bookmark");
 }
 
-function readerButton() {
-  return document.getElementById("zen-site-data-header-reader-mode");
+function boostButton() {
+  return document.getElementById("zen-site-data-header-boost");
 }
 
 add_task(async function test_share_button_reflects_scheme() {
@@ -85,7 +85,7 @@ add_task(async function test_bookmark_button_reflects_starred_state() {
   }
 });
 
-add_task(async function test_reader_mode_button_disabled_when_unavailable() {
+add_task(async function test_boost_button_reflects_boostable_site() {
   const tab = BrowserTestUtils.addTab(gBrowser, HTTPS_PAGE, {
     skipAnimation: true,
   });
@@ -94,15 +94,10 @@ add_task(async function test_reader_mode_button_disabled_when_unavailable() {
 
   try {
     await openSiteDataPanel();
-    const urlbarReader = document.getElementById("reader-mode-button");
-    const expectedDisabled =
-      urlbarReader?.hidden && !urlbarReader?.hasAttribute("readeractive");
-    Assert.equal(
-      readerButton().disabled,
-      !!expectedDisabled,
-      "reader-mode header button mirrors the urlbar reader button availability"
+    ok(
+      !boostButton().hasAttribute("disabled"),
+      "create boost header button is enabled on boostable https pages"
     );
-    await closeSiteDataPanel();
   } finally {
     await closeSiteDataPanel();
     BrowserTestUtils.removeTab(tab);

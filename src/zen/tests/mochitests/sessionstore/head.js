@@ -376,7 +376,7 @@ function forgetSavedTabGroups() {
 }
 
 function forgetClosedTabGroups(win) {
-  const tabGroups = ss.getClosedTabGroups(win);
+  const tabGroups = ss.getClosedTabGroups({ sourceWindow: win });
   tabGroups.forEach(tabGroup => ss.forgetClosedTabGroup(win, tabGroup.id));
 }
 

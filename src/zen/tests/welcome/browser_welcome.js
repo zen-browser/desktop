@@ -9,6 +9,14 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
 });
 
+const { InternalTestingProfileMigrator } = ChromeUtils.importESModule(
+  "resource:///modules/InternalTestingProfileMigrator.sys.mjs"
+);
+
+const { MigrationWizardConstants } = ChromeUtils.importESModule(
+  "chrome://browser/content/migration/migration-wizard-constants.mjs"
+);
+
 /* eslint-disable mozilla/no-arbitrary-setTimeout */
 
 function wait(ms) {
@@ -42,13 +50,76 @@ add_task(async function test_Welcome_Steps() {
     backButton.hasAttribute("disabled"),
     "Back button should be hidden on the first page"
   );
-  Assert.equal(
-    currentPageContent().querySelectorAll(".zen-welcome-option").length,
-    2,
-    "Import page should offer two options"
+  const importOptions = currentPageContent().querySelectorAll(
+    ".zen-welcome-option"
   );
+  Assert.greaterOrEqual(
+    importOptions.length,
+    1,
+    "Import page should offer at least the start fresh option"
+  );
+  ok(
+    importOptions[0].querySelector("#zen-welcome-import-no").checked,
+    "Starting fresh should be selected by default"
+  );
+  for (const option of [...importOptions].slice(1)) {
+    ok(
+      option.querySelector("input").dataset.sourceIndex,
+      "Each browser option should know its source"
+    );
+    ok(
+      option.querySelector(".engine-icon").getAttribute("src"),
+      "Each browser option should show its brand image"
+    );
+  }
+  const multiProfile = currentPageContent().querySelector(
+    ".zen-welcome-import-source:has(.zen-welcome-import-profiles)"
+  );
+  if (multiProfile) {
+    ok(
+      !multiProfile.hasAttribute("expanded"),
+      "Profiles stay hidden until the browser is selected"
+    );
+    const expanded = BrowserTestUtils.waitForEvent(
+      multiProfile.querySelector(".zen-welcome-import-profiles"),
+      "transitionend"
+    );
+    await EventUtils.synthesizeMouseAtCenter(
+      multiProfile.querySelector(".zen-welcome-option"),
+      {}
+    );
+    ok(
+      multiProfile.hasAttribute("expanded"),
+      "Selecting the browser reveals its profiles"
+    );
+    await expanded;
+    const profileRadios = multiProfile.querySelectorAll(
+      ".zen-welcome-import-profile input"
+    );
+    Assert.greater(profileRadios.length, 1, "Several profiles are listed");
+    ok(profileRadios[0].checked, "The first profile is selected by default");
+    const secondProfile = profileRadios[1].closest(
+      ".zen-welcome-import-profile"
+    );
+    secondProfile.scrollIntoView({ block: "center" });
+    await EventUtils.synthesizeMouseAtCenter(secondProfile, {});
+    ok(profileRadios[1].checked, "Another profile can be picked");
+    importOptions[0].scrollIntoView({ block: "center" });
+    await EventUtils.synthesizeMouseAtCenter(importOptions[0], {});
+    ok(
+      !multiProfile.hasAttribute("expanded"),
+      "Choosing another option hides the profiles again"
+    );
+  }
 
+  let wizardOpened = false;
+  const windowObserver = () => {
+    wizardOpened = true;
+  };
+  Services.obs.addObserver(windowObserver, "domwindowopened");
   await goNextWelcomePage("zen-generic-next");
+  Services.obs.removeObserver(windowObserver, "domwindowopened");
+  ok(!wizardOpened, "Starting fresh should not open the migration wizard");
   ok(true, "Welcome Import Step Test Finished");
 
   ok(
@@ -61,7 +132,62 @@ add_task(async function test_Welcome_Steps() {
     backButton.hasAttribute("disabled"),
     "Going back should return to the first page"
   );
-  await goNextWelcomePage("zen-generic-next");
+
+  const importPage = currentPageContent();
+  await TestUtils.waitForCondition(
+    () =>
+      importPage.importSources?.some(
+        source => source.key === InternalTestingProfileMigrator.key
+      ),
+    "the testing migrator to be listed",
+    100,
+    300
+  );
+  const sourceIndex = importPage.importSources.findIndex(
+    source => source.key === InternalTestingProfileMigrator.key
+  );
+  const sourceOption = importPage.querySelector(
+    `label[for="zen-welcome-import-${sourceIndex}"]`
+  );
+  sourceOption.scrollIntoView({ block: "center" });
+  await EventUtils.synthesizeMouseAtCenter(sourceOption, {});
+  ok(
+    sourceOption.querySelector("input").checked,
+    "The browser to import from should be selected"
+  );
+  const wizardPromise = BrowserTestUtils.domWindowOpened();
+  const nextButton = document.querySelector(
+    "#zen-welcome-page-sidebar-buttons button[data-l10n-id='zen-generic-next']"
+  );
+  executeSoon(() => EventUtils.synthesizeMouseAtCenter(nextButton, {}));
+  const wizardWin = await wizardPromise;
+  await BrowserTestUtils.waitForEvent(wizardWin, "MigrationWizard:Ready");
+  const wizardShadow =
+    wizardWin.document.getElementById("wizard").openOrClosedShadowRoot;
+  Assert.equal(
+    wizardShadow.querySelector("#wizard-deck").getAttribute("selected-view"),
+    "page-" + MigrationWizardConstants.PAGES.SELECTION,
+    "The wizard should wait on its selection page"
+  );
+  const selectedSource = wizardShadow.querySelector(
+    "#browser-profile-selector"
+  ).selectedPanelItem;
+  Assert.equal(
+    selectedSource.getAttribute("key"),
+    InternalTestingProfileMigrator.key,
+    "The wizard should open on the browser picked in the onboarding"
+  );
+  Assert.equal(
+    selectedSource.profile?.id,
+    InternalTestingProfileMigrator.testProfile.id,
+    "The wizard should open on that browser's profile"
+  );
+  await BrowserTestUtils.closeWindow(wizardWin);
+  await TestUtils.waitForCondition(
+    () => currentPageContent()?.getAttribute("page") === "colors",
+    "the onboarding to move on once the wizard closes"
+  );
+  await wait(800); // Let the page transition settle.
 
   await goNextWelcomePage("zen-generic-next");
   ok(true, "Welcome Theme Step Test Finished");

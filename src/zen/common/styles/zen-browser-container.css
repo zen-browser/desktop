@@ -77,3 +77,7 @@
 browser[zen-pseudo-hidden="true"] {
   -moz-subtree-hidden-only-visually: 1 !important;
 }
+
+.browserSidebarContainer[zen-zapping] {
+  outline: 2px solid var(--zen-accent-button-background);
+}

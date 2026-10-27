@@ -110,8 +110,14 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-zap")
       .addEventListener("click", this.onZapButtonPressed.bind(this));
     this.doc
+      .getElementById("zen-boost-focus")
+      .addEventListener("click", this.onFocusButtonPressed.bind(this));
+    this.doc
       .getElementById("zen-boost-code")
       .addEventListener("click", this.onCodeButtonPressed.bind(this));
+    const shareButton = this.doc.getElementById("zen-boost-share");
+    shareButton.addEventListener("click", this.onShareBoostPressed.bind(this));
+    shareButton.hidden = !gZenBoostsManager.canShareFrom(this.openerWindow);
     this.doc
       .getElementById("zen-boost-back")
       .addEventListener("click", this.onCodeBackButtonPressed.bind(this));
@@ -313,29 +319,49 @@ export class nsZenBoostEditor {
   onCodeEditorChange() {
     this.currentBoostData.customCSS = this.editorWindow._editor.getText();
     this.currentBoostData.changeWasMade = true;
+    this.onUpdateCodeButtonVisual();
     this.updateCurrentBoost();
   }
 
-  get commonFonts() {
-    const cFonts = [
-      "Arial",
-      "Times New Roman",
-      "Courier New",
-      "Georgia",
-      "Comic Sans MS",
-      "Verdana",
-      "Trebuchet MS",
-      "Impact",
-      "Palatino Linotype",
-      "Tahoma",
-      "Helvetica",
-      "Garamond",
-      "Century Gothic",
-      "Arial Black",
-      "Papyrus",
-    ];
-    return cFonts;
+  /**
+   * Marks the code button as enabled only when the boost has custom CSS
+   */
+  onUpdateCodeButtonVisual() {
+    const button = this.doc.getElementById("zen-boost-code");
+    const hasCode = Boolean(this.currentBoostData?.customCSS?.trim());
+    button.setAttribute("enabled", hasCode ? "true" : "false");
   }
+
+  /**
+   * The curated fonts of the grid, four rows of five. "System" is the
+   * platform's UI font through the generic family, so it needs no install.
+   */
+  get commonFonts() {
+    return [
+      "system-ui",
+      "Helvetica Neue",
+      "Avenir",
+      "Futura",
+      "DIN Alternate",
+      "Arial Rounded MT Bold",
+      "PT Mono",
+      "Courier",
+      "Times New Roman",
+      "Charter",
+      "Baskerville",
+      "Hoefler Text",
+      "Palatino",
+      "Chalkboard",
+      "SignPainter",
+      "Snell Roundhand",
+      "Papyrus",
+      "Apple Chancery",
+      "Luminari",
+      "Wingdings",
+    ];
+  }
+
+  static GENERIC_FONT_LABELS = { "system-ui": "System" };
 
   /**
    * Initializes the font selection UI by creating font buttons and dropdown options
@@ -347,23 +373,32 @@ export class nsZenBoostEditor {
 
     const fontButtonGroup = this.doc.getElementById("zen-boost-font-grid");
     const fontList = this.doc.getElementById("zen-boost-font-select");
-    const buttonCount = 15;
+    const buttonCount = 20;
+    const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
 
     for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
       let font = fonts[i]; // Fallback
-      if (fonts.includes(commonFonts[i])) {
+      if (commonFonts[i] in genericLabels || fonts.includes(commonFonts[i])) {
         font = commonFonts[i];
       }
 
       const fontButton = this.doc.createElement("button");
       fontButton.setAttribute("font-data", `${font}`);
-      fontButton.classList.add("subviewbutton");
-      fontButton.style.fontFamily = `'${font}'`;
+      fontButton.classList.add("subviewbutton", "no-squircles");
+      fontButton.style.fontFamily = font in genericLabels ? font : `'${font}'`;
       fontButton.innerHTML = "Aa";
-      fontButton.title = font;
+      fontButton.title = genericLabels[font] ?? font;
       fontButton.addEventListener("click", this.onFontButtonClick.bind(this));
 
       fontButtonGroup.appendChild(fontButton);
+    }
+
+    if (!Services.prefs.getBoolPref("zen.boosts.custom-fonts", false)) {
+      this.doc.getElementById("zen-boost-font-toolbar").hidden = true;
+      this.doc.querySelector(
+        "#zen-boost-font-wrapper .visible-separator"
+      ).hidden = true;
+      return;
     }
 
     // Add default value
@@ -402,7 +437,7 @@ export class nsZenBoostEditor {
    * Handles the code editor button press, resizing and offsetting the window and enabling the code view
    */
   onCodeButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -431,11 +466,32 @@ export class nsZenBoostEditor {
     });
   }
 
+  onShareBoostPressed() {
+    if (!gZenBoostsManager.canShareFrom(this.openerWindow)) {
+      return;
+    }
+    if (!this.currentBoostData?.changeWasMade) {
+      this.openerWindow.gZenUIManager.showToast(
+        "zen-boost-share-nothing-toast"
+      );
+      return;
+    }
+    this.saveBoost();
+    const boost = gZenBoostsManager.loadBoostFromStore(
+      this.boostInfo.domain,
+      this.boostInfo.id
+    );
+    const browser =
+      this.editorWindow.browser ??
+      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    gZenBoostsManager.shareBoost(this.openerWindow, boost, browser);
+  }
+
   /**
    * Handles the back button in the code view, resizing and offsetting the window and changing back to boost view
    */
   onCodeBackButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -468,8 +524,15 @@ export class nsZenBoostEditor {
   }
 
   async onZapButtonPressed() {
-    this.zenBoostsParent.sendQuery("ZenBoost:ToggleZapMode");
+    this.zenBoostsParent.sendQuery("ZenBoost:ToggleZapMode", { mode: "zap" });
     // Focus the parent browser window
+    this.openerWindow.focus();
+  }
+
+  async onFocusButtonPressed() {
+    this.zenBoostsParent.sendQuery("ZenBoost:ToggleZapMode", {
+      mode: "focus",
+    });
     this.openerWindow.focus();
   }
 
@@ -504,13 +567,14 @@ ${cssSelector} {
 
   async onUpdateZapButtonVisual() {
     const actor = this.zenBoostsParent;
-    const zapButton = this.doc.getElementById("zen-boost-zap");
-
-    const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
-    // Checks if there are any zaps
-    const zapAny = await actor.sendQuery("ZenBoost:ZapModeAny");
-
-    zapButton.setAttribute("enabled", zapEnabled || zapAny ? "true" : "false");
+    for (const mode of ["zap", "focus"]) {
+      const button = this.doc.getElementById(`zen-boost-${mode}`);
+      const enabled = await actor.sendQuery("ZenBoost:ZapModeEnabled", {
+        mode,
+      });
+      const any = await actor.sendQuery("ZenBoost:ZapModeAny", { mode });
+      button.setAttribute("enabled", enabled || any ? "true" : "false");
+    }
   }
 
   async onUpdatePickerButtonVisual() {
@@ -535,16 +599,15 @@ ${cssSelector} {
   }
 
   onUpdateZapValue() {
-    const zapButton = this.doc.getElementById("zen-boost-zap");
-    const zapValueBox = this.doc.getElementById("zen-boost-zap-value");
-    const zapCount = this.currentBoostData.zapSelectors.length;
-
-    if (zapCount == 0) {
-      zapValueBox.textContent = "";
-      zapButton.setAttribute("hideicon", "false");
-    } else {
-      zapValueBox.textContent = zapCount;
-      zapButton.setAttribute("hideicon", "true");
+    const counts = {
+      zap: this.currentBoostData.zapSelectors.length,
+      focus: this.currentBoostData.focusSelectors?.length ?? 0,
+    };
+    for (const [mode, count] of Object.entries(counts)) {
+      const button = this.doc.getElementById(`zen-boost-${mode}`);
+      const valueBox = this.doc.getElementById(`zen-boost-${mode}-value`);
+      valueBox.textContent = count ? count : "";
+      button.setAttribute("hideicon", count ? "true" : "false");
     }
   }
 
@@ -1401,12 +1464,10 @@ ${cssSelector} {
     if (!success) {
       return;
     }
-    const newName = input.value;
-    const maxDisplayedNameChars = 10;
+    const newName = input.value.trim();
 
-    if (newName.trim().length !== 0) {
-      var truncatedName = newName.substring(0, maxDisplayedNameChars);
-      this.currentBoostData.boostName = truncatedName;
+    if (newName.length !== 0) {
+      this.currentBoostData.boostName = newName;
       nameText.textContent = this.currentBoostData.boostName;
       this.updateCurrentBoost();
     }
@@ -1652,6 +1713,7 @@ ${cssSelector} {
     this.updateCircleRadius();
     this.onUpdateZapValue();
     this.onUpdateZapButtonVisual();
+    this.onUpdateCodeButtonVisual();
   }
 
   /**

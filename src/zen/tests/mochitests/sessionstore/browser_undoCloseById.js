@@ -22,7 +22,7 @@ async function closeWindow(win) {
 }
 
 function getLastClosedTabData(win) {
-  const closedTabs = SessionStore.getClosedTabData(win);
+  const closedTabs = SessionStore.getClosedTabData({ sourceWindow: win });
   return closedTabs[closedTabs.length - 1];
 }
 

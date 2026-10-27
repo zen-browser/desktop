@@ -13,7 +13,7 @@ const lazy = XPCOMUtils.declareLazy({
   },
 });
 
-const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
+const BOOST_SHEET_TYPE = Ci.nsIStyleSheetService.USER_SHEET;
 
 export class nsZenBoostStyles {
   #stylesCache = new Map();
@@ -44,7 +44,7 @@ export class nsZenBoostStyles {
   invalidateStyleForDomain(domain) {
     if (this.#stylesCache.has(domain)) {
       const { uri } = this.#stylesCache.get(domain);
-      lazy.styleSheetService.unregisterSheet(uri, AGENT_SHEET);
+      lazy.styleSheetService.unregisterSheet(uri, BOOST_SHEET_TYPE);
       this.#stylesCache.delete(domain);
     }
   }
@@ -78,6 +78,44 @@ export class nsZenBoostStyles {
         style += `/* Zen-Zaps */\n`;
         style += `${zapBlocks}\n`;
       }
+    }
+
+    if (boostData.focusSelectors?.length) {
+      const focused = `:is(${boostData.focusSelectors.join(", ")})`;
+      style += `/* Zen-Focus */
+${focused} {
+  width: fit-content !important;
+  max-width: 70vw !important;
+  width: 100% !important;
+
+  html:has(&) {
+    overflow: auto !important;
+    height: auto !important;
+
+    body {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: safe center !important;
+      justify-content: safe center !important;
+      box-sizing: border-box !important;
+      min-height: 100vh !important;
+      height: auto !important;
+      overflow: visible !important;
+      margin: 0 !important;
+      padding: 48px 0 !important;
+    }
+  }
+
+  html:has(&) body *:has(&) {
+    display: contents !important;
+  }
+
+  html:has(&) body *:not(&, & *, :has(&)) {
+    display: none !important;
+  }
+}
+
+`;
     }
 
     if (fontCase != "" || fontFamily != "") {

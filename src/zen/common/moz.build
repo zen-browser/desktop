@@ -8,7 +8,7 @@ EXTRA_JS_MODULES += [
     "sys/ZenUIMigration.sys.mjs",
 ]
 
-if CONFIG["MOZ_PROFILE_GENERATE"]:
+if CONFIG["MOZ_PROFILE_GENERATE"] or CONFIG["MOZ_CS_PROFILE_GENERATE"]:
     EXTRA_JS_MODULES += [
         "sys/ZenPGOTraining.sys.mjs",
     ]

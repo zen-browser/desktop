@@ -19,9 +19,7 @@
     "chrome://browser/content/ZenUIManager.mjs",
     "resource:///modules/zen/ZenVerticalTabsManager.mjs",
     "chrome://browser/content/zen-components/ZenMods.mjs",
-    "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
     "chrome://browser/content/zen-components/ZenSessionStore.mjs",
-    "chrome://browser/content/zen-components/ZenMediaController.mjs",
     "chrome://browser/content/zen-components/ZenGlanceManager.mjs",
     "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",
     "resource:///modules/zen/ZenTabRenamer.mjs",
@@ -40,7 +38,8 @@
     ["zen-folder", "chrome://browser/content/zen-components/ZenFolder.mjs"],
     ["zen-workspace-creation", "resource:///modules/zen/ZenSpaceCreation.mjs"],
     ["zen-workspace", "resource:///modules/zen/ZenSpace.mjs"],
-    ["zen-workspace-icons", "resource:///modules/zen/ZenSpaceIcons.mjs"]
+    ["zen-workspace-icons", "resource:///modules/zen/ZenSpaceIcons.mjs"],
+    ["zen-zap-bar", "chrome://browser/content/zen-components/ZenZapBar.mjs"]
   ];
 
   document.addEventListener(

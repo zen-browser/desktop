@@ -205,10 +205,8 @@
 }
 
 .zen-interactive-button {
-  background: color-mix(in srgb, currentColor 6%, transparent) !important;
-  transition:
-    background-color 0.12s ease-in-out,
-    transform 0.12s ease-in-out;
+  background: color-mix(in srgb, currentColor 5%, transparent) !important;
+  transition: transform 0.12s ease-in-out;
 
   &:hover {
     background-color: color-mix(in srgb, currentColor 10%, transparent) !important;
@@ -289,7 +287,7 @@
 
 #zen-unified-site-data-panel {
   --panel-padding: 0px;
-  --panel-width: 234px;
+  --panel-width: 220px;
   --menu-panel-width-wide: calc(var(--panel-width) - var(--panel-padding) * 2);
   --uei-icon-size: 16px;
   --arrowpanel-menuitem-border-radius: calc(10px * var(--zen-squircle-value));
@@ -338,7 +336,7 @@
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: var(--size-item-xlarge);
+      width: 44px;
       height: var(--size-item-large);
       margin: 0;
       justify-content: center;
@@ -377,8 +375,8 @@
 }
 
 .zen-site-data-section-header {
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: 500;
+  font-size: 13px;
 
   & label {
     margin: 0;
@@ -460,6 +458,7 @@
 .permission-popup-permission-label,
 .permission-popup-boost-label {
   margin: 0;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -522,7 +521,7 @@
 .zen-permission-popup-permission-state-label,
 .zen-permission-popup-boost-state-label {
   opacity: 0.6;
-  font-size: smaller;
+  font-size: 10px;
   font-weight: 400;
   margin: 0;
 }
@@ -533,7 +532,7 @@
 }
 
 #zen-site-data-footer {
-  border-top: 1px solid color-mix(in srgb, currentColor 6%, transparent);
+  border-top: 1px solid color-mix(in srgb, currentColor 5%, transparent);
   padding-top: 8px;
   margin: 2px 8px 8px 8px;
 
@@ -608,10 +607,11 @@
         background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 
         box-shadow:
-          0 1px 2px rgba(0, 0, 0, 0.1),
+          0 2px 4px rgba(0, 0, 0, 0.1),
           inset 0 1px 0 light-dark(transparent, rgba(255, 255, 255, 0.15));
         border-radius: 6px;
-        --base-border-color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
+        corner-shape: superellipse(var(--zen-squircle-value));
+        --base-border-color: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.1));
         border: 0.5px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
       }
 
@@ -622,6 +622,16 @@
 
       transition: transform 0.12s ease-in-out;
       box-sizing: border-box;
+    }
+
+    @media (-moz-platform: macos) {
+      &:first-child::before {
+        border-top-right-radius: calc(var(--panel-border-radius) - 2px);
+      }
+
+      &:last-child::before {
+        border-top-left-radius: calc(var(--panel-border-radius) - 2px);
+      }
     }
 
     &.active {
@@ -710,6 +720,11 @@
 
 
 /* Notification Stack */
+
+#notifications-toolbar {
+  /* only holds the fixed notification stack, so it shouldn't take up any space in #browser */
+  min-width: 0;
+}
 
 .notificationbox-stack {
   background: transparent;

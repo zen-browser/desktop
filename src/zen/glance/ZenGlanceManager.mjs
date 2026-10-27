@@ -34,9 +34,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
-    ARC_STEPS: 80, // Browser interpolates between keyframes natively
-    MAX_ARC_HEIGHT: 20,
-    ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
+    ARC_STEPS: 90, // Browser interpolates between keyframes natively
+    MAX_ARC_HEIGHT: 30,
+    ARC_HEIGHT_RATIO: 0.4, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
 
   #GLANCE_ANIMATION_DURATION = Services.prefs.getIntPref(
@@ -426,11 +426,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #createNewOverlayButtons() {
     const template = document.getElementById("zen-glance-sidebar-template");
-    const newButtons = template.content.cloneNode(true);
-    const container = newButtons.querySelector(".zen-glance-sidebar-container");
-
+    const container = template.content
+      .querySelector(".zen-glance-sidebar-container")
+      .cloneNode(true);
     this.#animateOverlayButtons(container);
-    return newButtons;
+    return container;
   }
 
   /**
@@ -868,7 +868,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const arcDirection = shouldArcDownward ? 1 : -1;
 
     function easeOutBack(x) {
-      const c1 = 0.4;
+      const c1 = 0.6;
       const c3 = c1 + 1;
       return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2;
     }
@@ -1786,6 +1786,16 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     this.#handleZenFolderPinning();
     gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
+
+    if (this.#currentTab.hasAttribute("zen-workspace-id")) {
+      // the glance may have been opened in another space (e.g. from an essential,
+      // which is shared between spaces). the tab now lives in the current space,
+      // keep its id in sync
+      this.#currentTab.setAttribute(
+        "zen-workspace-id",
+        gZenWorkspaces.activeWorkspace
+      );
+    }
 
     this.#prepareTabForFullOpen();
 

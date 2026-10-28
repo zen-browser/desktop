@@ -1,0 +1,17 @@
+diff --git a/toolkit/xre/SafeMode.h b/toolkit/xre/SafeMode.h
+index cbac9764c7d5107a43d7be3a3ceee7d25092c239..9130f4a71bd822933b3b3473b503d2ce6c406080 100644
+--- a/toolkit/xre/SafeMode.h
++++ b/toolkit/xre/SafeMode.h
+@@ -63,8 +63,11 @@ inline Maybe<bool> IsSafeModeRequested(
+ #endif  // defined(XP_WIN)
+ 
+ #if defined(XP_MACOSX)
++  // Require Option without other shortcut modifiers so application launch
++  // shortcuts (such as Hyper) do not request safe mode. Ignore Caps Lock.
++  const UInt32 modifiers = GetCurrentEventKeyModifiers();
+   if (!(aFlags & SafeModeFlag::NoKeyPressCheck) &&
+-      (GetCurrentEventKeyModifiers() & optionKey) &&
++      (modifiers & (optionKey | cmdKey | controlKey | shiftKey)) == optionKey &&
+       !EnvHasValue("MOZ_DISABLE_SAFE_MODE_KEY")) {
+     result = true;
+   }

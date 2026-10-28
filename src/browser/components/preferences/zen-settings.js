@@ -869,6 +869,31 @@ Preferences.addAll([
     type: "bool",
     default: false,
   },
+  {
+    id: "zen.tab-intelligence.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.tab-intelligence.service.gmail",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.tab-intelligence.service.google-calendar",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.tab-intelligence.service.whatsapp",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.tab-intelligence.system-calendar.enabled",
+    type: "bool",
+    default: true,
+  },
 ]);
 
 Preferences.addSetting({

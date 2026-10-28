@@ -2,18 +2,37 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { ZenSystemCalendarProvider } from "resource:///modules/zen/intelligence/ZenSystemCalendarProvider.sys.mjs";
+
 class nsZenTabIntelligenceManager {
   #tabData = new WeakMap();
   #trackedTabs = new Set();
   #listeners = new Set();
   #isInitialized = false;
+  #systemCalendarProvider = null;
+  #systemImminentMeeting = null;
 
   init() {
     if (this.#isInitialized) return;
     this.#isInitialized = true;
+
+    try {
+      this.#systemCalendarProvider = new ZenSystemCalendarProvider(meeting => {
+        this.#systemImminentMeeting = meeting;
+        this.#checkImminentMeetings();
+      });
+      this.#systemCalendarProvider.init();
+    } catch {
+      // System calendar init silent fallback
+    }
   }
 
   uninit() {
+    if (this.#systemCalendarProvider) {
+      this.#systemCalendarProvider.uninit();
+      this.#systemCalendarProvider = null;
+    }
+    this.#systemImminentMeeting = null;
     this.#tabData = new WeakMap();
     this.#trackedTabs.clear();
     this.#listeners.clear();
@@ -42,6 +61,23 @@ class nsZenTabIntelligenceManager {
 
   isTargetTab(tab) {
     if (!tab) return false;
+    if (!Services.prefs.getBoolPref("zen.tab-intelligence.enabled", true)) {
+      return false;
+    }
+
+    const url = tab.linkedBrowser?.currentURI?.spec || "";
+    let serviceKey = null;
+    if (url.startsWith("https://mail.google.com/")) serviceKey = "gmail";
+    else if (url.startsWith("https://calendar.google.com/")) serviceKey = "google-calendar";
+    else if (url.startsWith("https://web.whatsapp.com/")) serviceKey = "whatsapp";
+
+    if (
+      serviceKey &&
+      !Services.prefs.getBoolPref("zen.tab-intelligence.service." + serviceKey, true)
+    ) {
+      return false;
+    }
+
     return (
       tab.pinned ||
       tab.hasAttribute("zen-essential") ||
@@ -75,19 +111,21 @@ class nsZenTabIntelligenceManager {
   }
 
   #checkImminentMeetings() {
-    let latestMeeting = null;
+    let latestMeeting = this.#systemImminentMeeting || null;
     let meetingTab = null;
 
-    for (const tab of this.#trackedTabs) {
-      if (!tab.isConnected) {
-        this.#trackedTabs.delete(tab);
-        continue;
-      }
-      const data = this.#tabData.get(tab);
-      if (data?.status?.hasImminentMeeting && data?.status?.imminentMeeting) {
-        latestMeeting = data.status.imminentMeeting;
-        meetingTab = tab;
-        break;
+    if (!latestMeeting) {
+      for (const tab of this.#trackedTabs) {
+        if (!tab.isConnected) {
+          this.#trackedTabs.delete(tab);
+          continue;
+        }
+        const data = this.#tabData.get(tab);
+        if (data?.status?.hasImminentMeeting && data?.status?.imminentMeeting) {
+          latestMeeting = data.status.imminentMeeting;
+          meetingTab = tab;
+          break;
+        }
       }
     }
 
@@ -188,6 +226,12 @@ class nsZenTabIntelligenceManager {
   }
 
   getActiveImminentMeeting() {
+    if (this.#systemImminentMeeting) {
+      return {
+        tab: null,
+        meeting: this.#systemImminentMeeting,
+      };
+    }
     for (const tab of this.#trackedTabs) {
       if (!tab.isConnected) continue;
       const data = this.#tabData.get(tab);

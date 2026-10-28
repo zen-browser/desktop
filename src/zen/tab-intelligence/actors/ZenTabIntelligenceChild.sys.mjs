@@ -121,39 +121,39 @@ export class ZenTabIntelligenceChild extends JSWindowActorChild {
 
     if (service === "calendar") {
       const events = doc.querySelectorAll(
-        "[data-eventid], [data-eventchip], div[role='button'][aria-label*=':']"
+        "div[data-eventid], div[data-eventchip], div[role='button'][aria-label*=':'], div[role='gridcell'] div[role='button'], div[jsaction*='click:'][aria-label*=':']"
       );
       let imminentMeeting = null;
       const now = Date.now();
 
       for (const el of events) {
         const aria = el.getAttribute("aria-label") || el.textContent || "";
+        const timeMatch = aria.match(/(\d{1,2})[:h](\d{2})(?:\s*([ap]\.?m\.?))?/i);
+        if (!timeMatch) continue;
+
+        let hours = parseInt(timeMatch[1], 10);
+        const minutes = parseInt(timeMatch[2], 10);
+        const meridiem = timeMatch[3]?.toLowerCase();
+        if (meridiem?.startsWith("p") && hours < 12) hours += 12;
+        if (meridiem?.startsWith("a") && hours === 12) hours = 0;
+
+        const evDate = new Date();
+        evDate.setHours(hours, minutes, 0, 0);
+        const diffMinutes = (evDate.getTime() - now) / 60000;
+
         const videoMatch =
           el.innerHTML?.match(VIDEO_CONFERENCE_REGEX) ||
-          el.querySelector("a[href*='meet.google.com'], a[href*='zoom.us']")?.href?.match(VIDEO_CONFERENCE_REGEX);
+          el.querySelector("a[href*='meet.google.com'], a[href*='zoom.us'], a[href*='teams.microsoft.com']")?.href?.match(VIDEO_CONFERENCE_REGEX) ||
+          doc.body?.innerHTML?.match(VIDEO_CONFERENCE_REGEX);
 
-        if (!videoMatch) continue;
-
-        const timeMatch = aria.match(/(\d{1,2})[:h](\d{2})(?:\s*([ap]\.?m\.?))?/i);
-        if (timeMatch) {
-          let hours = parseInt(timeMatch[1], 10);
-          const minutes = parseInt(timeMatch[2], 10);
-          const meridiem = timeMatch[3]?.toLowerCase();
-          if (meridiem?.startsWith("p") && hours < 12) hours += 12;
-          if (meridiem?.startsWith("a") && hours === 12) hours = 0;
-
-          const evDate = new Date();
-          evDate.setHours(hours, minutes, 0, 0);
-          const diffMinutes = (evDate.getTime() - now) / 60000;
-
-          if (diffMinutes >= -5 && diffMinutes <= 5) {
-            imminentMeeting = {
-              title: aria.split(",")[0]?.trim() || "Meeting",
-              videoUrl: videoMatch[0],
-              minutesLeft: Math.max(0, Math.ceil(diffMinutes)),
-            };
-            break;
-          }
+        if (videoMatch && diffMinutes >= -5 && diffMinutes <= 5) {
+          const parsed = this.#parseCalendarAria(aria);
+          imminentMeeting = {
+            title: parsed.title || "Meeting",
+            videoUrl: videoMatch[0],
+            minutesLeft: Math.max(0, Math.ceil(diffMinutes)),
+          };
+          break;
         }
       }
 
@@ -240,15 +240,23 @@ export class ZenTabIntelligenceChild extends JSWindowActorChild {
 
     if (service === "calendar") {
       const events = doc.querySelectorAll(
-        "[data-eventid], [data-eventchip], div[role='button'][aria-label*=':']"
+        "div[data-eventid], div[data-eventchip], div[role='button'][aria-label*=':'], div[role='gridcell'] div[role='button'], div[jsaction*='click:'][aria-label*=':']"
       );
-      for (let i = 0; i < Math.min(events.length, 5); i++) {
+      const seenTitles = new Set();
+      for (let i = 0; i < events.length && items.length < 5; i++) {
         const el = events[i];
         const aria = el.getAttribute("aria-label") || el.textContent || "";
-        const videoMatch = el.innerHTML?.match(VIDEO_CONFERENCE_REGEX);
+        const parsed = this.#parseCalendarAria(aria);
+        if (!parsed.title || seenTitles.has(parsed.title)) continue;
+        seenTitles.add(parsed.title);
+
+        const videoMatch =
+          el.innerHTML?.match(VIDEO_CONFERENCE_REGEX) ||
+          el.querySelector("a[href*='meet.google.com'], a[href*='zoom.us']")?.href?.match(VIDEO_CONFERENCE_REGEX);
+
         items.push({
-          title: aria.split(",")[0]?.trim() || "Calendar Event",
-          subtitle: aria.match(/\d{1,2}[:h]\d{2}(?:\s*[ap]\.?m\.?)?/i)?.[0] || "",
+          title: parsed.title,
+          subtitle: parsed.time || "",
           videoUrl: videoMatch ? videoMatch[0] : null,
           url: this.contentWindow.location.href,
         });
@@ -257,6 +265,30 @@ export class ZenTabIntelligenceChild extends JSWindowActorChild {
     }
 
     return { items: [] };
+  }
+
+  #parseCalendarAria(aria) {
+    if (!aria) return { title: "Calendar Event", time: "" };
+    const parts = aria.split(",").map(p => p.trim()).filter(Boolean);
+    const timeRegex = /\b\d{1,2}[:h](\d{2})?(?:\s*(?:[ap]\.?m\.?|à|to|-)\s*\d{1,2}[:h](\d{2})?)?(?:\s*[ap]\.?m\.?)?/i;
+    let timeStr = "";
+    let titleStr = "";
+
+    for (const part of parts) {
+      if (!timeStr && timeRegex.test(part)) {
+        timeStr = part;
+      } else if (
+        !titleStr &&
+        !/^(accepté|accepted|refusé|declined|peut-être|maybe|pas de rappel|no reminder|busy|occupé|calendar|calendrier)/i.test(part)
+      ) {
+        titleStr = part;
+      }
+    }
+
+    return {
+      title: titleStr || parts[0] || "Calendar Event",
+      time: timeStr || "",
+    };
   }
 
   didDestroy() {

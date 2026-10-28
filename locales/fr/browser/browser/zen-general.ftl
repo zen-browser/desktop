@@ -89,6 +89,7 @@ zen-site-data-setting-allow = Autorisé
 zen-site-data-setting-block = Bloqué
 zen-site-data-protections-enabled = Activé
 zen-site-data-protections-disabled = Désactivé
+zen-site-data-setting-tab-intelligence = Tab Intelligence
 zen-site-data-setting-cross-site = Cookie intersite
 zen-site-data-security-info-extension = 
     .label = Extension

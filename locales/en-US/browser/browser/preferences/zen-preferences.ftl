@@ -108,6 +108,20 @@ zen-pinned-tab-manager-reset-close-shortcut-option =
 zen-pinned-tab-manager-close-close-shortcut-option =
     .label = Close tab
 
+pane-zen-tab-intelligence-title = Tab Intelligence
+zen-tab-intelligence-header = Tab Intelligence Settings
+zen-tab-intelligence-description = Preview unread messages and get notified of upcoming meetings directly on pinned and essential tabs
+zen-tab-intelligence-enabled =
+    .label = Enable Tab Intelligence
+zen-tab-intelligence-service-gmail =
+    .label = Gmail unread messages
+zen-tab-intelligence-service-google-calendar =
+    .label = Google Calendar upcoming events
+zen-tab-intelligence-service-whatsapp =
+    .label = WhatsApp Web messages
+zen-tab-intelligence-system-calendar =
+    .label = Connect OS system calendar for imminent meetings
+
 pane-zen-workspaces-header = Workspaces
 zen-settings-workspaces-header = General settings for workspaces
 zen-settings-workspaces-description = With workspaces, you can have multiple browsing sessions at once!

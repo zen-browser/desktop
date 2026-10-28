@@ -77,6 +77,37 @@
       </hbox>
 </groupbox>
 
+<hbox id="zenTabIntelligenceCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-tab-intelligence-title"/>
+</hbox>
+
+<groupbox id="zenTabIntelligenceGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-tab-intelligence-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-description" />
+
+      <checkbox id="zenTabIntelligenceEnabled"
+                data-l10n-id="zen-tab-intelligence-enabled"
+                preference="zen.tab-intelligence.enabled"/>
+
+      <vbox id="zenTabIntelligenceOptions" class="indent">
+            <checkbox id="zenTabIntelligenceServiceGmail"
+                      data-l10n-id="zen-tab-intelligence-service-gmail"
+                      preference="zen.tab-intelligence.service.gmail"/>
+            <checkbox id="zenTabIntelligenceServiceGoogleCalendar"
+                      data-l10n-id="zen-tab-intelligence-service-google-calendar"
+                      preference="zen.tab-intelligence.service.google-calendar"/>
+            <checkbox id="zenTabIntelligenceServiceWhatsApp"
+                      data-l10n-id="zen-tab-intelligence-service-whatsapp"
+                      preference="zen.tab-intelligence.service.whatsapp"/>
+            <checkbox id="zenTabIntelligenceSystemCalendar"
+                      data-l10n-id="zen-tab-intelligence-system-calendar"
+                      preference="zen.tab-intelligence.system-calendar.enabled"/>
+      </vbox>
+</groupbox>
+
 </html:template>
 
 

@@ -475,6 +475,12 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         banner.onclick = () => {
           if (tab && tab.isConnected) {
             this.window.gBrowser.selectedTab = tab;
+          } else if (meeting.videoUrl) {
+            this.window.gBrowser.addTab(meeting.videoUrl, {
+              triggeringPrincipal:
+                Services.scriptSecurityManager.getSystemPrincipal(),
+              inBackground: false,
+            });
           }
         };
       } else {

@@ -74,6 +74,25 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.view.drag-window-from-content",
   },
+  ZenTabIntelligence: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenTabIntelligenceParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenTabIntelligenceChild.sys.mjs",
+      events: {
+        DOMContentLoaded: {},
+        DOMTitleChanged: {},
+        pageshow: {},
+      },
+    },
+    matches: [
+      "https://mail.google.com/*",
+      "https://calendar.google.com/*",
+    ],
+    remoteTypes: ["web"],
+    safeForUntrustedWebProcess: true,
+  },
 };
 
 if (!Services.appinfo.inSafeMode) {

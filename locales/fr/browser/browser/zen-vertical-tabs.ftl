@@ -45,3 +45,11 @@ zen-tab-sublabel =
         [zen-default-pinned-cmd] Séparer de l'onglet épinglé
        *[other] { $tabSubtitle }
     }
+
+zen-tab-intelligence-imminent-meeting =
+    .value = Visio imminente
+zen-tab-intelligence-join-meeting =
+    .label = Rejoindre
+    .tooltiptext = Rejoindre la réunion
+zen-tab-intelligence-unread-messages = Messages non lus
+zen-tab-intelligence-upcoming-events = Évènements à venir

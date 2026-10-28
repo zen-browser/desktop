@@ -532,3 +532,95 @@ zen-workspace {
     transform: rotate(0deg);
   }
 }
+
+/* Tab Intelligence: Imminent Meeting Banner */
+.zen-imminent-meeting-banner {
+  display: flex;
+  margin: 4px var(--zen-toolbox-padding, 8px);
+  padding: 6px 10px;
+  border-radius: var(--border-radius-medium, 8px);
+  background: light-dark(rgba(238, 242, 255, 0.95), rgba(30, 41, 59, 0.9));
+  border: 1px solid light-dark(rgba(99, 102, 241, 0.25), rgba(129, 140, 248, 0.3));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: light-dark(rgba(224, 231, 255, 1), rgba(49, 46, 129, 0.4));
+  }
+
+  &[hidden="true"] {
+    display: none !important;
+  }
+
+  .zen-imminent-meeting-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .zen-imminent-meeting-icon {
+    width: 16px;
+    height: 16px;
+    background: url("chrome://browser/skin/notification-icons.svg#camera") no-repeat center;
+    background-size: contain;
+    fill: var(--zen-primary-color, #4f46e5);
+    flex-shrink: 0;
+  }
+
+  .zen-imminent-meeting-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+  }
+
+  .zen-imminent-meeting-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--zen-primary-color, #4f46e5);
+  }
+
+  .zen-imminent-meeting-title {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .zen-imminent-meeting-join-button {
+    appearance: none;
+    border: none;
+    background: var(--zen-primary-color, #4f46e5);
+    color: white !important;
+    border-radius: calc(var(--border-radius-medium, 8px) / 1.5);
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+:root:not([zen-sidebar-expanded="true"]) .zen-imminent-meeting-banner {
+  padding: 4px;
+  margin: 4px auto;
+  justify-content: center;
+
+  .zen-imminent-meeting-info {
+    display: none;
+  }
+
+  .zen-imminent-meeting-join-button {
+    padding: 3px 6px;
+  }
+}

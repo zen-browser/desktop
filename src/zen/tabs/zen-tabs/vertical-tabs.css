@@ -1425,3 +1425,23 @@ zen-library {
   pointer-events: none;
   background: var(--zen-primary-color);
 }
+
+/* Tab Intelligence: Unread indicator badge for pinned and essential tabs */
+.tabbrowser-tab:is([pinned], [zen-essential="true"])[zen-has-unread="true"] .tab-icon-stack {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    inset-inline-end: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--zen-colors-badge-red, #ff3b30);
+    border: 2px solid var(--tab-background-color, var(--zen-surface, #ffffff));
+    z-index: 5;
+    pointer-events: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
+}

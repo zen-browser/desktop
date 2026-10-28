@@ -419,3 +419,120 @@ menuseparator {
 .tab-preview-thumbnail-container > canvas {
   border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
 }
+
+/* Tab Intelligence Hover Preview Panel */
+#zen-tab-intelligence-panel {
+  --panel-background: light-dark(rgba(255, 255, 255, 0.95), rgba(30, 30, 32, 0.95));
+  --panel-border-color: light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
+  --panel-border-radius: var(--border-radius-medium, 10px);
+  --panel-padding: 0;
+
+  & .zen-intelligence-container {
+    width: 280px;
+    max-width: 320px;
+    padding: 10px;
+    gap: 8px;
+    backdrop-filter: blur(20px);
+    border-radius: var(--panel-border-radius);
+  }
+
+  & .zen-intelligence-header {
+    padding-bottom: 6px;
+    border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+    gap: 8px;
+  }
+
+  & .zen-intelligence-service-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--toolbar-color, inherit);
+  }
+
+  & .zen-intelligence-count-badge {
+    background: var(--zen-colors-badge-red, #ff3b30);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  & .zen-intelligence-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  & .zen-intelligence-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+
+    &:hover {
+      background: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+    }
+  }
+
+  & .zen-intelligence-item-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  & .zen-intelligence-item-title {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .zen-intelligence-item-subtitle {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .zen-intelligence-item-snippet {
+    font-size: 11px;
+    opacity: 0.65;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .zen-intelligence-join-btn {
+    appearance: none;
+    border: none;
+    background: var(--zen-primary-color, #1a73e8);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  & .zen-intelligence-empty {
+    font-size: 12px;
+    opacity: 0.6;
+    justify-content: center;
+    padding: 12px;
+  }
+}

@@ -559,6 +559,11 @@ const globalActionsTemplate = [
       return isNotEmptyTab(window);
     },
   },
+  {
+    l10nId: "zen-action-quit-application",
+    command: "cmd_quitApplication",
+    icon: "chrome://browser/skin/zen-icons/close.svg",
+  },
 ];
 
 const FALLBACK_LABELS = {
@@ -585,6 +590,7 @@ const FALLBACK_LABELS = {
   "zen-action-zoom-reset": "Reset Zoom",
   "zen-action-open-inspector": "Toggle Developer Tools / Inspector",
   "zen-action-open-web-console": "Open Web Console",
+  "zen-action-quit-application": "Quit Browser",
 };
 
 export function formatValueSync(l10nId) {

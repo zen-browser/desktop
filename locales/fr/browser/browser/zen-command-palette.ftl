@@ -54,5 +54,6 @@ zen-action-zoom-out = Zoom arrière
 zen-action-zoom-reset = Réinitialiser le zoom
 zen-action-open-inspector = Ouvrir l'inspecteur / Outils de développement
 zen-action-open-web-console = Ouvrir la console Web
+zen-action-quit-application = Quitter le navigateur
 zen-action-focus-on = Focus sur
 zen-action-extension = Extension

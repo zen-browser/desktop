@@ -41,12 +41,23 @@ html|dialog {
 
 groupbox button {
   border-radius: calc(5px * var(--zen-squircle-value)) !important;
+  overflow: hidden;
 }
 
 groupbox button,
 groupbox menulist {
   background-color: light-dark(#f1f1f1, #363636);
   color: light-dark(black, white);
+}
+
+groupbox button:hover,
+groupbox menulist:hover {
+  background-color: light-dark(#e5e5e5, #444444) !important;
+}
+
+groupbox button:hover:active,
+groupbox menulist:hover:active {
+  background-color: light-dark(#d5d5d5, #505050) !important;
 }
 
 groupbox h2 {

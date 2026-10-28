@@ -266,14 +266,29 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.#panel = panel;
   }
 
-  #handleTabHover(tab) {
-    if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) return;
+  #isSupportedTab(tab) {
+    if (!tab || !tab.isConnected) return false;
+    if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) return false;
 
     const url = tab.linkedBrowser?.currentURI?.spec || "";
-    const isGmail = url.startsWith("https://mail.google.com/");
-    const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
-    const isGCal = url.startsWith("https://calendar.google.com/");
-    if (!isGmail && !isWhatsApp && !isGCal) return;
+    return (
+      url.startsWith("https://mail.google.com/") ||
+      url.startsWith("https://web.whatsapp.com/") ||
+      url.startsWith("https://calendar.google.com/")
+    );
+  }
+
+  #handleTabHover(tab) {
+    if (!this.#isSupportedTab(tab)) {
+      if (this.#hoverTimer) {
+        this.window.clearTimeout(this.#hoverTimer);
+        this.#hoverTimer = null;
+      }
+      if (this.#panel && (this.#panel.state === "open" || this.#panel.state === "showing")) {
+        this.#scheduleHide(100);
+      }
+      return;
+    }
 
     this.#currentHoverTab = tab;
 
@@ -286,9 +301,15 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       this.window.clearTimeout(this.#hoverTimer);
     }
 
+    // When the panel is already open/showing on a previous tab, chain immediately with minimal delay
+    const isChaining =
+      this.#panel &&
+      (this.#panel.state === "open" || this.#panel.state === "showing");
+    const delay = isChaining ? 40 : 180;
+
     this.#hoverTimer = this.window.setTimeout(() => {
       this.#showPreviewForTab(tab);
-    }, 180);
+    }, delay);
   }
 
   #handleTabLeave(tab) {
@@ -428,7 +449,35 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       yOffset = 0;
     }
 
-    this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+    if (this.#panel.state === "open") {
+      let moved = false;
+      try {
+        if (typeof this.#panel.moveToAnchor === "function") {
+          this.#panel.moveToAnchor(tab, position, xOffset, yOffset, false);
+          moved = true;
+        }
+      } catch {}
+      if (!moved) {
+        this.#panel.hidePopup();
+        this.window.requestAnimationFrame(() => {
+          if (tab === this.#currentHoverTab) {
+            this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+          }
+        });
+      }
+    } else if (this.#panel.state === "showing") {
+      this.window.requestAnimationFrame(() => {
+        if (tab === this.#currentHoverTab) {
+          try {
+            this.#panel.moveToAnchor(tab, position, xOffset, yOffset, false);
+          } catch {
+            this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+          }
+        }
+      });
+    } else {
+      this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+    }
   }
 
   #createItemRow(item, tab) {

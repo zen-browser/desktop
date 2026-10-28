@@ -27,7 +27,8 @@ ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
 ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore:
     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
-  SharingUtils: "resource:///modules/SharingUtils.sys.mjs",
+  SharingUtils:
+    "moz-src:///browser/components/sharing/SharingUtils.sys.mjs",
   Sanitizer: "resource:///modules/Sanitizer.sys.mjs",
   SiteDataManager: "resource:///modules/SiteDataManager.sys.mjs",
 });
@@ -347,7 +348,7 @@ const globalActionsTemplate = [
       if (Services.zen?.canShare?.()) {
         Services.zen.share(
           currentUrl,
-          window.gBrowser.selectedTab.label || "",
+          "",
           "",
           Math.round(window.innerWidth / 2),
           Math.round(window.innerHeight / 2),
@@ -442,7 +443,10 @@ const globalActionsTemplate = [
   },
   {
     l10nId: "zen-action-replace-pinned-url-with-current",
-    command: "cmd_zenReplacePinnedUrlWithCurrent",
+    command: window =>
+      window.gZenPinnedTabManager.replacePinnedUrlWithCurrent(
+        window.gBrowser.selectedTab
+      ),
     icon: "chrome://browser/skin/zen-icons/pin.svg",
     isAvailable: window => {
       const tab = window.gBrowser.selectedTab;
@@ -490,19 +494,30 @@ const globalActionsTemplate = [
   {
     l10nId: "zen-action-clear-current-site-data",
     command: window => {
-      const uri = window.gBrowser.currentURI;
-      if (!uri?.host) {
+      let host = "";
+      try {
+        host = window.gBrowser.currentURI?.host;
+      } catch {
         return;
       }
-      const baseDomain = lazy.SiteDataManager.getBaseDomainFromHost(uri.host);
+      if (!host) {
+        return;
+      }
+      const baseDomain = lazy.SiteDataManager.getBaseDomainFromHost(host);
       if (lazy.SiteDataManager.promptSiteDataRemoval(window, [baseDomain])) {
         lazy.SiteDataManager.remove(baseDomain);
       }
     },
     icon: "chrome://browser/skin/zen-icons/trash.svg",
     isAvailable: window => {
-      const uri = window.gBrowser.currentURI;
-      return isNotEmptyTab(window) && !!uri?.host;
+      if (!isNotEmptyTab(window)) {
+        return false;
+      }
+      try {
+        return !!window.gBrowser.currentURI?.host;
+      } catch {
+        return false;
+      }
     },
   },
   {

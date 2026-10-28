@@ -422,117 +422,155 @@ menuseparator {
 
 /* Tab Intelligence Hover Preview Panel */
 #zen-tab-intelligence-panel {
-  --panel-background: light-dark(rgba(255, 255, 255, 0.95), rgba(30, 30, 32, 0.95));
-  --panel-border-color: light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
-  --panel-border-radius: var(--border-radius-medium, 10px);
   --panel-padding: 0;
+  width: 260px;
+
+  & * {
+    max-width: -moz-available;
+  }
 
   & .zen-intelligence-container {
     display: flex;
     flex-direction: column;
-    width: max-content;
-    min-width: 200px;
-    max-width: 320px;
-    padding: 8px 10px;
-    gap: 6px;
-    backdrop-filter: blur(20px);
-    border-radius: var(--panel-border-radius);
+    width: 100%;
     box-sizing: border-box;
-    color: light-dark(#1c1c1e, #f2f2f7);
+    color: var(--toolbox-textcolor, light-dark(#1c1c1e, #f2f2f7));
   }
 
   & .zen-intelligence-counter-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid color-mix(in srgb, currentColor, transparent 90%);
     font-size: 11px;
     font-weight: 600;
-    color: light-dark(#6e6e73, #98989d);
+    opacity: 0.7;
+    letter-spacing: 0.3px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 2px 4px 6px 4px;
-    border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
   }
 
   & .zen-intelligence-items-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    max-height: 260px;
+    padding: 0 4px;
+    max-height: 263px;
     overflow-y: auto;
   }
 
-  & .zen-intelligence-item-row {
+  & .zen-intelligence-empty-state {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
+    justify-content: center;
+    text-align: center;
+    padding: 2em 1em;
+    font-size: 13px;
+    font-weight: 500;
+    color: light-dark(black, white);
+    opacity: 0.75;
+  }
+
+  & .folders-tabs-list-item {
+    position: relative;
+    border-radius: var(--zen-border-radius, 6px);
+    cursor: default;
+  }
+
+  & .folders-tabs-list-item-content {
+    position: relative;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    direction: ltr;
+    padding: 0 var(--tab-padding-inline, 8px);
     border-radius: 6px;
+    margin: 4px 0;
     cursor: pointer;
-    transition: background 0.12s ease;
+    transition: background-color 0.1s ease;
 
     &:hover {
-      background: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+      background-color: color-mix(in srgb, currentColor, transparent 90%);
+    }
+
+    &:last-child {
+      border-bottom-left-radius: max(calc(var(--panel-border-radius, 8px) - 2px), 4px);
+      border-bottom-right-radius: max(calc(var(--panel-border-radius, 8px) - 2px), 4px);
+    }
+
+    &:first-child {
+      border-top-left-radius: max(calc(var(--panel-border-radius, 8px) - 2px), 4px);
+      border-top-right-radius: max(calc(var(--panel-border-radius, 8px) - 2px), 4px);
     }
   }
 
-  & .zen-intelligence-item-main {
+  & .folders-tabs-list-item-icon {
+    width: var(--size-item-small, 16px);
+    height: var(--size-item-small, 16px);
+    flex-shrink: 0;
+    margin-inline-end: 10px;
+    margin-inline-start: 4px;
+    border-radius: 4px;
+  }
+
+  & .folders-tabs-list-item-labels {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     flex: 1;
     min-width: 0;
-    gap: 2px;
+    color: var(--toolbox-textcolor);
   }
 
-  & .zen-intelligence-item-title {
+  & .folders-tabs-list-item-label {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: light-dark(black, white);
     font-size: 12px;
-    font-weight: 600;
-    color: light-dark(#1c1c1e, #f2f2f7);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  & .zen-intelligence-item-subtitle {
-    font-size: 11px;
     font-weight: 500;
-    color: light-dark(#3a3a3c, #d1d1d6);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: auto;
+    max-width: 100%;
   }
 
-  & .zen-intelligence-item-snippet {
-    font-size: 11px;
-    color: light-dark(#6e6e73, #98989d);
+  & .tab-list-item-secondary-label {
+    position: relative;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    opacity: 0.6;
+    font-size: 0.75em;
+    font-weight: 500;
+    color: light-dark(black, white);
+    width: auto;
+    max-width: 100%;
   }
 
   & .zen-intelligence-join-btn {
     appearance: none;
-    border: none;
-    background: #007aff;
-    color: #ffffff;
+    border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.2));
+    background: light-dark(#ffffff, #000000);
+    color: light-dark(#000000, #ffffff) !important;
+    border-radius: 4px;
     font-size: 11px;
     font-weight: 600;
     padding: 3px 8px;
-    border-radius: 4px;
     cursor: pointer;
     flex-shrink: 0;
+    margin-inline-start: 6px;
+    transition: opacity 0.15s ease;
 
     &:hover {
-      opacity: 0.9;
+      opacity: 0.85;
     }
   }
+}
 
-  & .zen-intelligence-empty-state {
-    font-size: 13px;
-    font-weight: 500;
-    color: light-dark(#3a3a3c, #d1d1d6);
-    text-align: center;
-    padding: 8px 12px;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+:root[dark] #zen-tab-intelligence-panel .zen-intelligence-join-btn,
+:root[zen-theme-dark="true"] #zen-tab-intelligence-panel .zen-intelligence-join-btn {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+:root:not([dark]):not([zen-theme-dark="true"]) #zen-tab-intelligence-panel .zen-intelligence-join-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
 }

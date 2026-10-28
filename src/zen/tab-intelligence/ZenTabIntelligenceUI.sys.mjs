@@ -242,6 +242,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       panel.setAttribute("noautofocus", "true");
       panel.setAttribute("orient", "vertical");
       panel.setAttribute("level", "top");
+      panel.setAttribute("nonnative", "");
+      panel.setAttribute("type", "arrow");
       panel.setAttribute("norolluponanchor", "true");
       panel.setAttribute("consumeoutsideclicks", "never");
 
@@ -384,7 +386,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
           "http://www.w3.org/1999/xhtml",
           "div"
         );
-        header.className = "zen-intelligence-counter-header";
+        header.className = "tabs-list-header zen-intelligence-counter-header";
         header.textContent = `${items.length} upcoming event${items.length > 1 ? "s" : ""}`;
         wrapper.appendChild(header);
 
@@ -417,7 +419,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         "http://www.w3.org/1999/xhtml",
         "div"
       );
-      header.className = "zen-intelligence-counter-header";
+      header.className = "tabs-list-header zen-intelligence-counter-header";
       header.textContent = countText;
       wrapper.appendChild(header);
 
@@ -498,46 +500,89 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
   }
 
   #createItemRow(item, tab) {
-    const itemRow = this.document.createElementNS(
+    const itemEl = this.document.createElementNS(
       "http://www.w3.org/1999/xhtml",
       "div"
     );
-    itemRow.className = "zen-intelligence-item-row";
+    itemEl.className = "folders-tabs-list-item zen-intelligence-item-row";
 
-    let html = `
-      <div class="zen-intelligence-item-main">
-        <span class="zen-intelligence-item-title">${this.#escapeHtml(item.title)}</span>
-        ${item.subtitle && item.subtitle !== item.title ? `<span class="zen-intelligence-item-subtitle">${this.#escapeHtml(item.subtitle)}</span>` : ""}
-        ${item.snippet && item.snippet !== item.subtitle ? `<span class="zen-intelligence-item-snippet">${this.#escapeHtml(item.snippet)}</span>` : ""}
-      </div>
-    `;
+    const content = this.document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "div"
+    );
+    content.className = "folders-tabs-list-item-content";
 
-    if (item.videoUrl) {
-      html += `
-        <button class="zen-intelligence-join-btn" title="Join Meeting">Join</button>
-      `;
+    const icon = this.document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "img"
+    );
+    icon.className = "folders-tabs-list-item-icon";
+    icon.src =
+      this.window.gBrowser.getIcon(tab) ||
+      "chrome://global/skin/icons/defaultFavicon.svg";
+
+    const labelsContainer = this.document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "div"
+    );
+    labelsContainer.className = "folders-tabs-list-item-labels";
+
+    const mainLabel = this.document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "div"
+    );
+    mainLabel.className = "folders-tabs-list-item-label";
+    mainLabel.textContent = item.title || "";
+    labelsContainer.append(mainLabel);
+
+    const secondaryText = item.subtitle || item.snippet || item.time || "";
+    if (secondaryText && secondaryText !== item.title) {
+      const secondaryLabel = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "div"
+      );
+      secondaryLabel.className = "tab-list-item-secondary-label";
+      secondaryLabel.textContent = secondaryText;
+      labelsContainer.append(secondaryLabel);
     }
 
-    itemRow.innerHTML = html;
+    content.append(icon, labelsContainer);
 
-    itemRow.addEventListener("click", (e) => {
+    if (item.videoUrl) {
+      const joinBtn = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "button"
+      );
+      joinBtn.className = "zen-intelligence-join-btn";
+      joinBtn.textContent = "Join";
+      joinBtn.title = "Join Meeting";
+      content.append(joinBtn);
+    }
+
+    itemEl.append(content);
+
+    itemEl.addEventListener("click", (e) => {
       if (
         e.target.classList.contains("zen-intelligence-join-btn") &&
         item.videoUrl
       ) {
         e.stopPropagation();
-        this.window.gBrowser.addTab(item.videoUrl, {
+        const cleanUrl = item.videoUrl.replace(/[\s"'>.,;)\]]+$/, "");
+        const newTab = this.window.gBrowser.addTab(cleanUrl, {
           triggeringPrincipal:
             Services.scriptSecurityManager.getSystemPrincipal(),
           inBackground: false,
         });
+        if (newTab) {
+          this.window.gBrowser.selectedTab = newTab;
+        }
       } else {
         this.window.gBrowser.selectedTab = tab;
       }
       this.#panel.hidePopup();
     });
 
-    return itemRow;
+    return itemEl;
   }
 
   #escapeHtml(str) {

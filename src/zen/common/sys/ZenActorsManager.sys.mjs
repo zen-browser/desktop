@@ -81,16 +81,16 @@ let JSWINDOWACTORS = {
     child: {
       esModuleURI: "resource:///actors/ZenTabIntelligenceChild.sys.mjs",
       events: {
-        DOMContentLoaded: {},
-        DOMTitleChanged: {},
-        pageshow: {},
+        DOMContentLoaded: { capture: true },
+        pageshow: { capture: true },
       },
     },
     matches: [
       "https://mail.google.com/*",
       "https://calendar.google.com/*",
     ],
-    remoteTypes: ["web"],
+    messageManagerGroups: ["browsers"],
+    allFrames: true,
     safeForUntrustedWebProcess: true,
   },
 };

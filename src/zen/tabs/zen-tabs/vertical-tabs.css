@@ -1427,21 +1427,23 @@ zen-library {
 }
 
 /* Tab Intelligence: Unread indicator badge for pinned and essential tabs */
-.tabbrowser-tab:is([pinned], [zen-essential="true"])[zen-has-unread="true"] .tab-icon-stack {
-  position: relative;
+.tabbrowser-tab:is([pinned], [zen-essential])[zen-has-unread="true"] .tab-icon-stack {
+  position: relative !important;
+  overflow: visible !important;
 
   &::after {
-    content: "";
-    position: absolute;
-    bottom: -2px;
-    inset-inline-end: -2px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--zen-colors-badge-red, #ff3b30);
-    border: 2px solid var(--tab-background-color, var(--zen-surface, #ffffff));
-    z-index: 5;
-    pointer-events: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: -2px !important;
+    inset-inline-end: -2px !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background-color: var(--zen-colors-badge-red, #ff3b30) !important;
+    border: 2px solid var(--tab-background-color, var(--zen-surface, #ffffff)) !important;
+    z-index: 99 !important;
+    pointer-events: none !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
   }
 }

@@ -36,7 +36,9 @@ export class GmailProvider extends ZenBaseTabProvider {
       }
     }
 
-    const unreadRowsCount = document.querySelectorAll("tr.zE").length;
+    const unreadRowsCount = document.querySelectorAll(
+      "tr.zE, tr.zA:not(.yO), div[role='main'] tr.zE"
+    ).length;
     const hasUnread = unreadCount > 0 || unreadRowsCount > 0;
 
     return {
@@ -49,14 +51,16 @@ export class GmailProvider extends ZenBaseTabProvider {
 
   fetchDetails(document, window) {
     const items = [];
-    const rows = document.querySelectorAll("tr.zE");
+    const rows = document.querySelectorAll(
+      "tr.zE, tr.zA:not(.yO), div[role='main'] tr"
+    );
 
     for (let i = 0; i < Math.min(rows.length, 5); i++) {
       const row = rows[i];
-      const senderEl = row.querySelector(".yP, .zF, span[name]");
+      const senderEl = row.querySelector(".yP, .zF, span[name], span[email], .bA4");
       const sender = senderEl?.textContent?.trim() || "Google Mail";
 
-      const subjectEl = row.querySelector(".bog, .bqe");
+      const subjectEl = row.querySelector(".bog, .bqe, span[data-thread-id]");
       const subject = subjectEl?.textContent?.trim() || "(No subject)";
 
       const snippetEl = row.querySelector(".y2");
@@ -73,6 +77,18 @@ export class GmailProvider extends ZenBaseTabProvider {
         subtitle: subject,
         snippet,
         time,
+        url: window.location.href,
+      });
+    }
+
+    if (items.length === 0) {
+      const title = document.title || "";
+      const match = title.match(/\((\d+)\)/);
+      const count = match ? parseInt(match[1], 10) : 1;
+      items.push({
+        title: "Gmail",
+        subtitle: `${count} unread conversation${count > 1 ? "s" : ""}`,
+        snippet: "Click to view inbox",
         url: window.location.href,
       });
     }

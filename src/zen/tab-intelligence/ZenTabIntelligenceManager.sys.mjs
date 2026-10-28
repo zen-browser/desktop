@@ -2,12 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
-});
-
 class nsZenTabIntelligenceManager {
   #tabData = new WeakMap();
   #trackedTabs = new Set();
@@ -55,7 +49,7 @@ class nsZenTabIntelligenceManager {
     );
   }
 
-  onTabStatusUpdate(tab, status, actorParent) {
+  onTabStatusUpdate(tab, status, actorParent = null) {
     if (!tab || !tab.isConnected) return;
 
     this.#tabData.set(tab, { status, actorParent });
@@ -108,11 +102,61 @@ class nsZenTabIntelligenceManager {
   }
 
   async requestTabDetails(tab) {
-    const data = this.#tabData.get(tab);
-    if (!data?.actorParent) {
+    if (!tab || !tab.isConnected) {
       return { items: [] };
     }
-    return await data.actorParent.requestDetails();
+
+    const browser = tab.linkedBrowser;
+    const global = browser?.browsingContext?.currentWindowGlobal;
+
+    if (global) {
+      try {
+        const actor = global.getActor("ZenTabIntelligence");
+        if (actor) {
+          const details = await actor.requestDetails();
+          if (details?.items && details.items.length > 0) {
+            return details;
+          }
+        }
+      } catch (e) {
+        console.warn("[ZenTabIntelligenceManager] getActor failed:", e);
+      }
+    }
+
+    // Fallback: derive details from tab label
+    const label = tab.label || "";
+    const match = label.match(/\((\d+)\)/);
+    const count = match ? parseInt(match[1], 10) : 1;
+    const url = browser?.currentURI?.spec || "";
+    const isCalendar = url.startsWith("https://calendar.google.com/");
+
+    if (isCalendar) {
+      return {
+        type: "calendar",
+        service: "Google Calendar",
+        items: [
+          {
+            title: "Google Calendar",
+            subtitle: "Upcoming Schedule",
+            snippet: "Click to view events",
+            url,
+          },
+        ],
+      };
+    }
+
+    return {
+      type: "mail",
+      service: "Gmail",
+      items: [
+        {
+          title: "Gmail",
+          subtitle: `${count} unread conversation${count > 1 ? "s" : ""}`,
+          snippet: "Click to open inbox",
+          url,
+        },
+      ],
+    };
   }
 
   getActiveImminentMeeting() {

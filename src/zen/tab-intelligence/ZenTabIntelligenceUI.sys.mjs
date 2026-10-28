@@ -22,10 +22,22 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     lazy.ZenTabIntelligenceManager.addListener(this);
 
     this.#ensurePopupPanel();
-    this.#setupHoverListeners();
+
+    // Listen to tab title changes directly in the chrome window
+    this.window.addEventListener("TabAttrModified", this);
+    this.window.addEventListener("mouseover", this, { passive: true });
+    this.window.addEventListener("mouseout", this, { passive: true });
+
+    // Initial check of existing tabs
+    if (this.window.gBrowser?.tabs) {
+      for (const tab of this.window.gBrowser.tabs) {
+        this.evaluateTab(tab);
+      }
+    }
 
     // Check if there is already an active imminent meeting
-    const activeMeeting = lazy.ZenTabIntelligenceManager.getActiveImminentMeeting();
+    const activeMeeting =
+      lazy.ZenTabIntelligenceManager.getActiveImminentMeeting();
     if (activeMeeting) {
       this.onImminentMeetingChanged(activeMeeting);
     }
@@ -44,6 +56,58 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     if (this.#panel) {
       this.#panel.remove();
       this.#panel = null;
+    }
+  }
+
+  handleEvent(event) {
+    switch (event.type) {
+      case "TabAttrModified": {
+        if (event.detail?.changed?.includes("label")) {
+          this.evaluateTab(event.target);
+        }
+        break;
+      }
+      case "mouseover": {
+        const tab = event.target.closest?.(".tabbrowser-tab");
+        if (!tab) return;
+        this.#handleTabHover(tab);
+        break;
+      }
+      case "mouseout": {
+        const tab = event.target.closest?.(".tabbrowser-tab");
+        if (!tab || tab !== this.#currentHoverTab) return;
+        this.#handleTabLeave(tab);
+        break;
+      }
+    }
+  }
+
+  evaluateTab(tab) {
+    if (!tab || !tab.isConnected) return;
+
+    if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) {
+      tab.removeAttribute("zen-has-unread");
+      return;
+    }
+
+    const url = tab.linkedBrowser?.currentURI?.spec || "";
+    if (url.startsWith("https://mail.google.com/")) {
+      const label = tab.label || "";
+      const match = label.match(/\((\d+)\)/);
+      const unreadCount = match ? parseInt(match[1], 10) : 0;
+      const hasUnread = unreadCount > 0;
+
+      if (hasUnread) {
+        tab.setAttribute("zen-has-unread", "true");
+      } else {
+        tab.removeAttribute("zen-has-unread");
+      }
+
+      lazy.ZenTabIntelligenceManager.onTabStatusUpdate(tab, {
+        hasUnread,
+        unreadCount,
+        service: "Gmail",
+      });
     }
   }
 
@@ -86,61 +150,43 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     popupSet.appendChild(this.#panel);
   }
 
-  #setupHoverListeners() {
-    const tabsContainer = this.document.getElementById("tabbrowser-tabs");
-    const essentialsContainer = this.document.getElementById("zen-essentials");
+  #handleTabHover(tab) {
+    if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) return;
 
-    const onPointerOver = (event) => {
-      const tab = event.target.closest(".tabbrowser-tab");
-      if (!tab) return;
+    const url = tab.linkedBrowser?.currentURI?.spec || "";
+    const isGmail = url.startsWith("https://mail.google.com/");
+    const isGCal = url.startsWith("https://calendar.google.com/");
+    if (!isGmail && !isGCal) return;
 
-      if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) return;
+    const label = tab.label || "";
+    const hasUnread =
+      tab.hasAttribute("zen-has-unread") || !!label.match(/\((\d+)\)/);
 
-      const hasUnread = tab.hasAttribute("zen-has-unread");
-      const status = lazy.ZenTabIntelligenceManager.getTabStatus(tab);
+    // Only show for tabs with unread content or calendar tabs
+    if (!hasUnread && !isGCal) return;
 
-      // Only show preview if there are unread messages or calendar events
-      if (!hasUnread && !status?.hasImminentMeeting && (!status || status.unreadCount === 0)) {
-        return;
-      }
+    this.#currentHoverTab = tab;
 
-      this.#currentHoverTab = tab;
-
-      if (this.#hideTimer) {
-        this.window.clearTimeout(this.#hideTimer);
-        this.#hideTimer = null;
-      }
-
-      if (this.#hoverTimer) {
-        this.window.clearTimeout(this.#hoverTimer);
-      }
-
-      this.#hoverTimer = this.window.setTimeout(() => {
-        this.#showPreviewForTab(tab);
-      }, 250);
-    };
-
-    const onPointerOut = (event) => {
-      const tab = event.target.closest(".tabbrowser-tab");
-      if (!tab || tab !== this.#currentHoverTab) return;
-
-      if (this.#hoverTimer) {
-        this.window.clearTimeout(this.#hoverTimer);
-        this.#hoverTimer = null;
-      }
-
-      this.#scheduleHide(200);
-    };
-
-    if (tabsContainer) {
-      tabsContainer.addEventListener("pointerover", onPointerOver);
-      tabsContainer.addEventListener("pointerout", onPointerOut);
+    if (this.#hideTimer) {
+      this.window.clearTimeout(this.#hideTimer);
+      this.#hideTimer = null;
     }
 
-    if (essentialsContainer) {
-      essentialsContainer.addEventListener("pointerover", onPointerOver);
-      essentialsContainer.addEventListener("pointerout", onPointerOut);
+    if (this.#hoverTimer) {
+      this.window.clearTimeout(this.#hoverTimer);
     }
+
+    this.#hoverTimer = this.window.setTimeout(() => {
+      this.#showPreviewForTab(tab);
+    }, 200);
+  }
+
+  #handleTabLeave(tab) {
+    if (this.#hoverTimer) {
+      this.window.clearTimeout(this.#hoverTimer);
+      this.#hoverTimer = null;
+    }
+    this.#scheduleHide(200);
   }
 
   #scheduleHide(delayMs) {
@@ -202,10 +248,14 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         itemRow.innerHTML = html;
 
         itemRow.addEventListener("click", (e) => {
-          if (e.target.classList.contains("zen-intelligence-join-btn") && item.videoUrl) {
+          if (
+            e.target.classList.contains("zen-intelligence-join-btn") &&
+            item.videoUrl
+          ) {
             e.stopPropagation();
             this.window.gBrowser.addTab(item.videoUrl, {
-              triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+              triggeringPrincipal:
+                Services.scriptSecurityManager.getSystemPrincipal(),
               inBackground: false,
             });
           } else {
@@ -228,9 +278,9 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     const isRightSide =
       this.document.documentElement.getAttribute("zen-right-side") === "true";
-    const position = isRightSide ? "start_top" : "end_top";
+    const position = isRightSide ? "topleft topright" : "topright topleft";
 
-    this.#panel.openPopup(tab, position, 8, 0, false, false);
+    this.#panel.openPopup(tab, position, isRightSide ? -8 : 8, 0, false, false);
   }
 
   #escapeHtml(str) {
@@ -248,7 +298,9 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
   }
 
   onImminentMeetingChanged({ tab, meeting }) {
-    const banners = this.document.querySelectorAll(".zen-imminent-meeting-banner");
+    const banners = this.document.querySelectorAll(
+      ".zen-imminent-meeting-banner"
+    );
     if (!banners || banners.length === 0) return;
 
     for (const banner of banners) {
@@ -256,7 +308,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         banner.removeAttribute("hidden");
         const titleEl = banner.querySelector(".zen-imminent-meeting-title");
         if (titleEl) {
-          const timeText = meeting.minutesLeft <= 0 ? "Now" : `in ${meeting.minutesLeft}m`;
+          const timeText =
+            meeting.minutesLeft <= 0 ? "Now" : `in ${meeting.minutesLeft}m`;
           titleEl.textContent = `${meeting.title} (${timeText})`;
         }
 
@@ -265,7 +318,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
           joinBtn.onclick = (e) => {
             e.stopPropagation();
             this.window.gBrowser.addTab(meeting.videoUrl, {
-              triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+              triggeringPrincipal:
+                Services.scriptSecurityManager.getSystemPrincipal(),
               inBackground: false,
             });
           };

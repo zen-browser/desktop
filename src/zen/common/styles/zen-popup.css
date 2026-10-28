@@ -428,15 +428,20 @@ menuseparator {
   --panel-padding: 0;
 
   & .zen-intelligence-container {
+    display: flex;
+    flex-direction: column;
     width: 280px;
     max-width: 320px;
     padding: 10px;
     gap: 8px;
     backdrop-filter: blur(20px);
     border-radius: var(--panel-border-radius);
+    box-sizing: border-box;
   }
 
   & .zen-intelligence-header {
+    display: flex;
+    align-items: center;
     padding-bottom: 6px;
     border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
     gap: 8px;

@@ -115,42 +115,50 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
   }
 
   #ensurePopupPanel() {
-    if (this.#panel) return;
+    if (this.#panel?.isConnected) return;
 
     const popupSet = this.document.getElementById("mainPopupSet");
     if (!popupSet) return;
 
-    this.#panel = this.document.createXULElement("panel");
-    this.#panel.id = "zen-tab-intelligence-panel";
-    this.#panel.className = "zen-intelligence-panel";
-    this.#panel.setAttribute("type", "arrow");
-    this.#panel.setAttribute("noautofocus", "true");
-    this.#panel.setAttribute("orient", "vertical");
-    this.#panel.setAttribute("level", "top");
+    let panel = this.document.getElementById("zen-tab-intelligence-panel");
+    if (!panel) {
+      panel = this.document.createXULElement("panel");
+      panel.id = "zen-tab-intelligence-panel";
+      panel.className = "zen-intelligence-panel";
+      panel.setAttribute("type", "arrow");
+      panel.setAttribute("noautofocus", "true");
+      panel.setAttribute("orient", "vertical");
+      panel.setAttribute("level", "top");
 
-    this.#panel.innerHTML = `
-      <vbox class="zen-intelligence-container">
-        <hbox class="zen-intelligence-header" align="center">
-          <image class="zen-intelligence-service-icon" />
-          <label class="zen-intelligence-service-title" flex="1" />
-          <label class="zen-intelligence-count-badge" />
-        </hbox>
-        <vbox class="zen-intelligence-items-list" />
-      </vbox>
-    `;
+      const wrapper = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "div"
+      );
+      wrapper.className = "zen-intelligence-container";
+      wrapper.innerHTML = `
+        <div class="zen-intelligence-header">
+          <span class="zen-intelligence-service-title"></span>
+          <span class="zen-intelligence-count-badge"></span>
+        </div>
+        <div class="zen-intelligence-items-list"></div>
+      `;
+      panel.appendChild(wrapper);
 
-    this.#panel.addEventListener("mouseenter", () => {
-      if (this.#hideTimer) {
-        this.window.clearTimeout(this.#hideTimer);
-        this.#hideTimer = null;
-      }
-    });
+      panel.addEventListener("mouseenter", () => {
+        if (this.#hideTimer) {
+          this.window.clearTimeout(this.#hideTimer);
+          this.#hideTimer = null;
+        }
+      });
 
-    this.#panel.addEventListener("mouseleave", () => {
-      this.#scheduleHide(150);
-    });
+      panel.addEventListener("mouseleave", () => {
+        this.#scheduleHide(150);
+      });
 
-    popupSet.appendChild(this.#panel);
+      popupSet.appendChild(panel);
+    }
+
+    this.#panel = panel;
   }
 
   #handleTabHover(tab) {
@@ -209,24 +217,36 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     if (!tab || !tab.isConnected || tab !== this.#currentHoverTab) return;
 
     this.#ensurePopupPanel();
+    if (!this.#panel) return;
 
-    const titleEl = this.#panel.querySelector(".zen-intelligence-service-title");
-    const countEl = this.#panel.querySelector(".zen-intelligence-count-badge");
-    const listEl = this.#panel.querySelector(".zen-intelligence-items-list");
+    let listEl = this.#panel.querySelector(".zen-intelligence-items-list");
+    let titleEl = this.#panel.querySelector(".zen-intelligence-service-title");
+    let countEl = this.#panel.querySelector(".zen-intelligence-count-badge");
+
+    if (!listEl) {
+      this.#panel.remove();
+      this.#panel = null;
+      this.#ensurePopupPanel();
+      listEl = this.#panel?.querySelector(".zen-intelligence-items-list");
+      titleEl = this.#panel?.querySelector(".zen-intelligence-service-title");
+      countEl = this.#panel?.querySelector(".zen-intelligence-count-badge");
+    }
+
+    if (!listEl) return;
 
     listEl.innerHTML = "";
-    titleEl.textContent = tab.label || "Tab Preview";
-    countEl.textContent = "";
+    if (titleEl) titleEl.textContent = tab.label || "Tab Preview";
+    if (countEl) countEl.textContent = "";
 
     const details = await lazy.ZenTabIntelligenceManager.requestTabDetails(tab);
     if (!details || tab !== this.#currentHoverTab) return;
 
-    if (details.service) {
+    if (details.service && titleEl) {
       titleEl.textContent = details.service;
     }
 
     if (details.items && details.items.length > 0) {
-      countEl.textContent = `${details.items.length}`;
+      if (countEl) countEl.textContent = `${details.items.length}`;
 
       for (const item of details.items) {
         const itemRow = this.document.createElementNS(

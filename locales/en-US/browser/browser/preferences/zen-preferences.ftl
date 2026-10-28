@@ -121,6 +121,15 @@ zen-tab-intelligence-service-whatsapp =
     .label = WhatsApp Web messages
 zen-tab-intelligence-system-calendar =
     .label = Connect OS system calendar for imminent meetings
+zen-tab-intelligence-system-calendar-default-workspaces = Default workspaces for system meetings:
+zen-tab-intelligence-system-calendar-all-workspaces = All workspaces
+zen-tab-intelligence-system-calendar-routing-header = System Calendar Routing
+zen-tab-intelligence-system-calendar-routing-description = Route upcoming meetings from specific calendars to designated workspaces (browser video link required).
+zen-tab-intelligence-system-calendar-routing-use-default = (Default)
+zen-tab-intelligence-system-calendar-routing-add =
+    .label = Add Calendar Route
+zen-tab-intelligence-system-calendar-routing-placeholder =
+    .placeholder = Calendar name (e.g. Work)
 
 pane-zen-workspaces-header = Workspaces
 zen-settings-workspaces-header = General settings for workspaces

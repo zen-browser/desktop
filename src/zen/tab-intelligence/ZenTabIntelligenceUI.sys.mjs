@@ -16,6 +16,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
   #hoverTimer = null;
   #hideTimer = null;
   #currentHoverTab = null;
+  #prefObserver = null;
 
   init() {
     this.window.gZenTabIntelligenceUI = this;
@@ -29,6 +30,28 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.window.addEventListener("mouseout", this, { passive: true });
     this.window.addEventListener("mousedown", this, true);
     this.window.addEventListener("dragstart", this, true);
+    this.window.addEventListener("ZenWorkspacesUIUpdate", this);
+    this.window.addEventListener("ZenWorkspaceDataChanged", this);
+
+    this.#prefObserver = () => {
+      this.updateImminentMeetingBanners();
+    };
+    Services.prefs.addObserver(
+      "zen.tab-intelligence.system-calendar.default-workspaces",
+      this.#prefObserver
+    );
+    Services.prefs.addObserver(
+      "zen.tab-intelligence.system-calendar.routing",
+      this.#prefObserver
+    );
+    Services.prefs.addObserver(
+      "zen.tab-intelligence.system-calendar.enabled",
+      this.#prefObserver
+    );
+    Services.prefs.addObserver(
+      "zen.tab-intelligence.enabled",
+      this.#prefObserver
+    );
 
     // Initial check of existing tabs
     if (this.window.gBrowser?.tabs) {
@@ -37,12 +60,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       }
     }
 
-    // Check if there is already an active imminent meeting
-    const activeMeeting =
-      lazy.ZenTabIntelligenceManager.getActiveImminentMeeting();
-    if (activeMeeting) {
-      this.onImminentMeetingChanged(activeMeeting);
-    }
+    this.updateImminentMeetingBanners();
   }
 
   uninit() {
@@ -52,6 +70,27 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.window.removeEventListener("mouseout", this, { passive: true });
     this.window.removeEventListener("mousedown", this, true);
     this.window.removeEventListener("dragstart", this, true);
+    this.window.removeEventListener("ZenWorkspacesUIUpdate", this);
+    this.window.removeEventListener("ZenWorkspaceDataChanged", this);
+    if (this.#prefObserver) {
+      Services.prefs.removeObserver(
+        "zen.tab-intelligence.system-calendar.default-workspaces",
+        this.#prefObserver
+      );
+      Services.prefs.removeObserver(
+        "zen.tab-intelligence.system-calendar.routing",
+        this.#prefObserver
+      );
+      Services.prefs.removeObserver(
+        "zen.tab-intelligence.system-calendar.enabled",
+        this.#prefObserver
+      );
+      Services.prefs.removeObserver(
+        "zen.tab-intelligence.enabled",
+        this.#prefObserver
+      );
+      this.#prefObserver = null;
+    }
     if (this.#hoverTimer) {
       this.window.clearTimeout(this.#hoverTimer);
       this.#hoverTimer = null;
@@ -68,6 +107,11 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
   handleEvent(event) {
     switch (event.type) {
+      case "ZenWorkspacesUIUpdate":
+      case "ZenWorkspaceDataChanged": {
+        this.updateImminentMeetingBanners();
+        break;
+      }
       case "TabAttrModified": {
         if (event.detail?.changed?.includes("label")) {
           this.evaluateTab(event.target);
@@ -444,20 +488,35 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     // Managed centrally in TabIntelligenceManager
   }
 
-  onImminentMeetingChanged({ tab, meeting }) {
+  onImminentMeetingChanged() {
+    this.updateImminentMeetingBanners();
+  }
+
+  onImminentMeetingsChanged() {
+    this.updateImminentMeetingBanners();
+  }
+
+  updateImminentMeetingBanners() {
     const banners = this.document.querySelectorAll(
       ".zen-imminent-meeting-banner"
     );
     if (!banners || banners.length === 0) return;
 
     for (const banner of banners) {
-      if (meeting) {
+      const workspaceElement = banner.closest("zen-workspace");
+      const workspaceId = workspaceElement ? workspaceElement.id : null;
+
+      const meetingInfo = this.#resolveMeetingForWorkspace(workspaceId);
+      if (meetingInfo && meetingInfo.meeting) {
         banner.removeAttribute("hidden");
+        const { tab, meeting } = meetingInfo;
+
         const titleEl = banner.querySelector(".zen-imminent-meeting-title");
         if (titleEl) {
           const timeText =
             meeting.minutesLeft <= 0 ? "Now" : `in ${meeting.minutesLeft}m`;
-          titleEl.textContent = `${meeting.title} (${timeText})`;
+          const calPrefix = meeting.calendar ? `[${meeting.calendar}] ` : "";
+          titleEl.textContent = `${calPrefix}${meeting.title} (${timeText})`;
         }
 
         const joinBtn = banner.querySelector(".zen-imminent-meeting-join-button");
@@ -487,5 +546,105 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         banner.setAttribute("hidden", "true");
       }
     }
+  }
+
+  #resolveMeetingForWorkspace(workspaceId) {
+    if (!Services.prefs.getBoolPref("zen.tab-intelligence.enabled", true)) {
+      return null;
+    }
+
+    // 1. Check open tabs first
+    const trackedTabs = lazy.ZenTabIntelligenceManager.getTrackedTabs();
+    for (const tab of trackedTabs) {
+      if (!tab.isConnected) continue;
+      const status = lazy.ZenTabIntelligenceManager.getTabStatus(tab);
+      if (status?.hasImminentMeeting && status?.imminentMeeting) {
+        const tabWorkspace = tab.getAttribute("zen-workspace-id");
+        const isEssential = tab.hasAttribute("zen-essential");
+        if (
+          isEssential ||
+          !tabWorkspace ||
+          !workspaceId ||
+          tabWorkspace === workspaceId
+        ) {
+          return { tab, meeting: status.imminentMeeting };
+        }
+      }
+    }
+
+    // 2. Check system calendar meetings
+    if (
+      Services.prefs.getBoolPref(
+        "zen.tab-intelligence.system-calendar.enabled",
+        true
+      )
+    ) {
+      const systemMeetings =
+        lazy.ZenTabIntelligenceManager.getSystemImminentMeetings();
+      for (const meeting of systemMeetings) {
+        if (this.#isMeetingAllowedInWorkspace(meeting, workspaceId)) {
+          return { tab: null, meeting };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  #isMeetingAllowedInWorkspace(meeting, workspaceId) {
+    const calName = meeting.calendar || "";
+
+    // Read routing pref: JSON object mapping calendar name to array of workspace IDs
+    let routing = {};
+    try {
+      const routingStr = Services.prefs.getStringPref(
+        "zen.tab-intelligence.system-calendar.routing",
+        "{}"
+      );
+      routing = JSON.parse(routingStr);
+    } catch {}
+
+    let targetWorkspaces = null;
+    if (
+      calName &&
+      Array.isArray(routing[calName]) &&
+      routing[calName].length > 0
+    ) {
+      targetWorkspaces = routing[calName];
+    } else {
+      // Fallback to default workspaces pref
+      try {
+        const defStr = Services.prefs.getStringPref(
+          "zen.tab-intelligence.system-calendar.default-workspaces",
+          "*"
+        );
+        if (defStr === "*") {
+          targetWorkspaces = ["*"];
+        } else if (defStr.startsWith("[")) {
+          targetWorkspaces = JSON.parse(defStr);
+        } else {
+          targetWorkspaces = defStr
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+        }
+      } catch {
+        targetWorkspaces = ["*"];
+      }
+    }
+
+    if (!Array.isArray(targetWorkspaces) || targetWorkspaces.length === 0) {
+      targetWorkspaces = ["*"];
+    }
+
+    // If targetWorkspaces includes "*" (all workspaces), or matches workspaceId
+    if (
+      targetWorkspaces.includes("*") ||
+      (workspaceId && targetWorkspaces.includes(workspaceId))
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }

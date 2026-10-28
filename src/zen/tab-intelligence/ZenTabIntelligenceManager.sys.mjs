@@ -10,15 +10,17 @@ class nsZenTabIntelligenceManager {
   #listeners = new Set();
   #isInitialized = false;
   #systemCalendarProvider = null;
-  #systemImminentMeeting = null;
+  #systemImminentMeetings = [];
 
   init() {
     if (this.#isInitialized) return;
     this.#isInitialized = true;
 
     try {
-      this.#systemCalendarProvider = new ZenSystemCalendarProvider(meeting => {
-        this.#systemImminentMeeting = meeting;
+      this.#systemCalendarProvider = new ZenSystemCalendarProvider(meetings => {
+        this.#systemImminentMeetings = Array.isArray(meetings)
+          ? meetings
+          : meetings ? [meetings] : [];
         this.#checkImminentMeetings();
       });
       this.#systemCalendarProvider.init();
@@ -32,7 +34,7 @@ class nsZenTabIntelligenceManager {
       this.#systemCalendarProvider.uninit();
       this.#systemCalendarProvider = null;
     }
-    this.#systemImminentMeeting = null;
+    this.#systemImminentMeetings = [];
     this.#tabData = new WeakMap();
     this.#trackedTabs.clear();
     this.#listeners.clear();
@@ -111,21 +113,19 @@ class nsZenTabIntelligenceManager {
   }
 
   #checkImminentMeetings() {
-    let latestMeeting = this.#systemImminentMeeting || null;
+    let latestMeeting = this.#systemImminentMeetings[0] || null;
     let meetingTab = null;
 
-    if (!latestMeeting) {
-      for (const tab of this.#trackedTabs) {
-        if (!tab.isConnected) {
-          this.#trackedTabs.delete(tab);
-          continue;
-        }
-        const data = this.#tabData.get(tab);
-        if (data?.status?.hasImminentMeeting && data?.status?.imminentMeeting) {
-          latestMeeting = data.status.imminentMeeting;
-          meetingTab = tab;
-          break;
-        }
+    for (const tab of this.#trackedTabs) {
+      if (!tab.isConnected) {
+        this.#trackedTabs.delete(tab);
+        continue;
+      }
+      const data = this.#tabData.get(tab);
+      if (data?.status?.hasImminentMeeting && data?.status?.imminentMeeting) {
+        latestMeeting = data.status.imminentMeeting;
+        meetingTab = tab;
+        break;
       }
     }
 
@@ -133,6 +133,22 @@ class nsZenTabIntelligenceManager {
       tab: meetingTab,
       meeting: latestMeeting,
     });
+    this.#notify("onImminentMeetingsChanged", {
+      systemMeetings: this.#systemImminentMeetings,
+      trackedTabs: Array.from(this.#trackedTabs),
+    });
+  }
+
+  getSystemImminentMeetings() {
+    return [...this.#systemImminentMeetings];
+  }
+
+  getTrackedTabs() {
+    return Array.from(this.#trackedTabs);
+  }
+
+  getDetectedCalendars() {
+    return this.#systemCalendarProvider?.getDetectedCalendars() || [];
   }
 
   getTabStatus(tab) {
@@ -226,10 +242,10 @@ class nsZenTabIntelligenceManager {
   }
 
   getActiveImminentMeeting() {
-    if (this.#systemImminentMeeting) {
+    if (this.#systemImminentMeetings.length > 0) {
       return {
         tab: null,
-        meeting: this.#systemImminentMeeting,
+        meeting: this.#systemImminentMeetings[0],
       };
     }
     for (const tab of this.#trackedTabs) {

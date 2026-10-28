@@ -9,12 +9,16 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 const VIDEO_CONFERENCE_REGEX =
-  /https:\/\/(?:[a-zA-Z0-9-]+\.)?(?:meet\.google\.com\/[a-z0-9-]+|zoom\.us\/j\/\d+[^\s"'<>]*|teams\.microsoft\.com\/l\/meetup-join\/[^\s"'<>]+|webex\.com\/[^\s"'<>]+|meet\.jit\.si\/[^\s"'<>]+)/i;
+  /https:\/\/(?:[a-zA-Z0-9-]+\.)?(?:meet\.google\.com|zoom\.us|zoomgov\.com|teams\.microsoft\.com|teams\.live\.com|webex\.com|meet\.jit\.si|around\.co|whereby\.com|chime\.aws|gotomeeting\.com|bluejeans\.com|v\.ringcentral\.com|discord\.gg|discord\.com\/channels)\/[^\s"'<>]+/i;
+
+const GENERIC_VIDEO_URL_REGEX =
+  /https:\/\/[^\s"'<>]*(?:meet|zoom|teams|webex|jitsi|conference|call)[^\s"'<>]*/i;
 
 export class ZenSystemCalendarProvider {
   #timer = null;
   #onMeetingCallback = null;
-  #lastMeeting = null;
+  #lastMeetings = [];
+  detectedCalendars = new Set();
 
   constructor(onMeetingCallback) {
     this.#onMeetingCallback = onMeetingCallback;
@@ -22,10 +26,7 @@ export class ZenSystemCalendarProvider {
 
   init() {
     this.poll();
-    this.#timer = Services.tm.dispatch(
-      () => {},
-      Services.tm.DISPATCH_NORMAL
-    );
+    this.getSystemCalendars().catch(() => {});
     // Poll every 60 seconds
     this.#startPollingInterval();
   }
@@ -44,7 +45,24 @@ export class ZenSystemCalendarProvider {
       clearInterval(this.#timer);
       this.#timer = null;
     }
-    this.#lastMeeting = null;
+    this.#lastMeetings = [];
+  }
+
+  getDetectedCalendars() {
+    return Array.from(this.detectedCalendars);
+  }
+
+  #extractVideoUrl(...fields) {
+    for (const field of fields) {
+      if (!field || typeof field !== "string") continue;
+      const match =
+        field.match(VIDEO_CONFERENCE_REGEX) ||
+        field.match(GENERIC_VIDEO_URL_REGEX);
+      if (match) {
+        return match[0];
+      }
+    }
+    return null;
   }
 
   async poll() {
@@ -56,43 +74,124 @@ export class ZenSystemCalendarProvider {
       );
 
     if (!isEnabled) {
-      if (this.#lastMeeting) {
-        this.#lastMeeting = null;
-        this.#onMeetingCallback?.(null);
+      if (this.#lastMeetings.length > 0) {
+        this.#lastMeetings = [];
+        this.#onMeetingCallback?.([]);
       }
       return;
     }
 
     try {
-      const meeting = await this.getImminentMeeting();
-      const meetingJson = JSON.stringify(meeting);
-      const lastJson = JSON.stringify(this.#lastMeeting);
+      const meetings = await this.getImminentMeetings();
+      const meetingsJson = JSON.stringify(meetings);
+      const lastJson = JSON.stringify(this.#lastMeetings);
 
-      if (meetingJson !== lastJson) {
-        this.#lastMeeting = meeting;
-        this.#onMeetingCallback?.(meeting);
+      if (meetingsJson !== lastJson) {
+        this.#lastMeetings = meetings;
+        this.#onMeetingCallback?.(meetings);
       }
-    } catch (e) {
+    } catch {
       // Silent catch for OS calendar queries
     }
   }
 
   async getImminentMeeting() {
+    const meetings = await this.getImminentMeetings();
+    return meetings && meetings.length > 0 ? meetings[0] : null;
+  }
+
+  async getImminentMeetings() {
     const platform = Services.appinfo.OS;
 
     if (platform === "Darwin") {
-      return this.#getImminentMeetingMacOS();
+      return this.#getImminentMeetingsMacOS();
     } else if (platform === "WINNT") {
-      return this.#getImminentMeetingWindows();
+      return this.#getImminentMeetingsWindows();
     } else if (platform === "Linux") {
-      return this.#getImminentMeetingLinux();
+      return this.#getImminentMeetingsLinux();
     }
 
-    return null;
+    return [];
   }
 
-  async #getImminentMeetingMacOS() {
-    // AppleScript querying Calendar.app events starting today
+  async getSystemCalendars() {
+    const platform = Services.appinfo.OS;
+
+    try {
+      if (platform === "Darwin") {
+        const script = `
+          tell application "Calendar"
+            set out to ""
+            repeat with c in calendars
+              try
+                set out to out & (name of c as string) & "<||>"
+              end try
+            end repeat
+            return out
+          end tell
+        `;
+        const proc = await lazy.Subprocess.call({
+          command: "/usr/bin/osascript",
+          arguments: ["-e", script],
+        });
+        const stdout = await proc.stdout.readString();
+        await proc.wait();
+        if (stdout) {
+          const names = stdout.split("<||>").map(s => s.trim()).filter(Boolean);
+          for (const name of names) {
+            this.detectedCalendars.add(name);
+          }
+        }
+      } else if (platform === "WINNT") {
+        const psScript = `
+          try {
+            $ol = New-Object -ComObject Outlook.Application -ErrorAction Stop
+            $ns = $ol.GetNamespace("MAPI")
+            $cal = $ns.GetDefaultFolder(9)
+            $out = $cal.Name
+            foreach ($f in $cal.Folders) {
+              $out += "<||>" + $f.Name
+            }
+            Write-Output $out
+          } catch {}
+        `;
+        const proc = await lazy.Subprocess.call({
+          command: "powershell.exe",
+          arguments: ["-NoProfile", "-NonInteractive", "-Command", psScript],
+        });
+        const stdout = await proc.stdout.readString();
+        await proc.wait();
+        if (stdout) {
+          const names = stdout.split("<||>").map(s => s.trim()).filter(Boolean);
+          for (const name of names) {
+            this.detectedCalendars.add(name);
+          }
+        }
+      } else if (platform === "Linux") {
+        const khalPath = await lazy.Subprocess.pathSearch("khal").catch(() => null);
+        if (khalPath) {
+          const proc = await lazy.Subprocess.call({
+            command: khalPath,
+            arguments: ["printcalendars"],
+          });
+          const stdout = await proc.stdout.readString();
+          await proc.wait();
+          if (stdout) {
+            const lines = stdout.split("\n").map(s => s.trim()).filter(Boolean);
+            for (const name of lines) {
+              this.detectedCalendars.add(name);
+            }
+          }
+        }
+      }
+    } catch {
+      // Ignore discovery errors
+    }
+
+    return Array.from(this.detectedCalendars);
+  }
+
+  async #getImminentMeetingsMacOS() {
     const script = `
       set output to ""
       tell application "Calendar"
@@ -101,9 +200,10 @@ export class ZenSystemCalendarProvider {
         set timeWindowEnd to now + (6 * 60)
         repeat with c in calendars
           try
+            set cName to (name of c as string)
             set evs to (every event of c whose start date >= timeWindowStart and start date <= timeWindowEnd)
             repeat with e in evs
-              set evSummary to (summary of e)
+              set evSummary to (summary of e as string)
               set evStart to ((start date of e) - now)
               set evUrl to ""
               try
@@ -113,7 +213,11 @@ export class ZenSystemCalendarProvider {
               try
                 set evDesc to (description of e as string)
               end try
-              set output to output & evSummary & "<||>" & evStart & "<||>" & evUrl & "<||>" & evDesc & "<##>"
+              set evLoc to ""
+              try
+                set evLoc to (location of e as string)
+              end try
+              set output to output & evSummary & "<||>" & evStart & "<||>" & evUrl & "<||>" & evDesc & "<||>" & evLoc & "<||>" & cName & "<##>"
             end repeat
           end try
         end repeat
@@ -121,6 +225,7 @@ export class ZenSystemCalendarProvider {
       return output
     `;
 
+    const meetings = [];
     try {
       const proc = await lazy.Subprocess.call({
         command: "/usr/bin/osascript",
@@ -130,37 +235,38 @@ export class ZenSystemCalendarProvider {
       const stdout = await proc.stdout.readString();
       await proc.wait();
 
-      if (!stdout || !stdout.trim()) return null;
+      if (!stdout || !stdout.trim()) return [];
 
       const entries = stdout.split("<##>").map(e => e.trim()).filter(Boolean);
       for (const entry of entries) {
-        const [summary, secondsLeftStr, url, desc] = entry.split("<||>");
+        const [summary, secondsLeftStr, url, desc, loc, calName] = entry.split("<||>");
         const secondsLeft = parseFloat(secondsLeftStr);
         const minutesLeft = Math.ceil(secondsLeft / 60);
 
-        const videoMatch =
-          url?.match(VIDEO_CONFERENCE_REGEX) ||
-          desc?.match(VIDEO_CONFERENCE_REGEX) ||
-          summary?.match(VIDEO_CONFERENCE_REGEX);
+        if (calName) {
+          this.detectedCalendars.add(calName);
+        }
 
-        if (videoMatch && minutesLeft >= -5 && minutesLeft <= 5) {
-          return {
+        // Strictly verify that there is a browser-openable video conference URL
+        const videoUrl = this.#extractVideoUrl(url, desc, loc, summary);
+        if (videoUrl && minutesLeft >= -5 && minutesLeft <= 5) {
+          meetings.push({
             title: summary || "Meeting",
-            videoUrl: videoMatch[0],
+            videoUrl,
             minutesLeft: Math.max(0, minutesLeft),
+            calendar: calName || "",
             isSystemCalendar: true,
-          };
+          });
         }
       }
     } catch {
       // Permission denied or Calendar.app not available
     }
 
-    return null;
+    return meetings;
   }
 
-  async #getImminentMeetingWindows() {
-    // PowerShell querying Outlook.Application if available
+  async #getImminentMeetingsWindows() {
     const psScript = `
       $now = Get-Date
       $start = $now.AddMinutes(-5)
@@ -176,11 +282,14 @@ export class ZenSystemCalendarProvider {
         $filtered = $items.Restrict($filter)
         foreach ($e in $filtered) {
           $mins = [Math]::Ceiling(($e.Start - $now).TotalMinutes)
-          Write-Output "$($e.Subject)<||>$mins<||>$($e.Location)<||>$($e.Body)<##>"
+          $cName = $cal.Name
+          try { if ($e.Parent -and $e.Parent.Name) { $cName = $e.Parent.Name } } catch {}
+          Write-Output "$($e.Subject)<||>$mins<||>$($e.Location)<||>$($e.Body)<||>$cName<##>"
         }
       } catch {}
     `;
 
+    const meetings = [];
     try {
       const proc = await lazy.Subprocess.call({
         command: "powershell.exe",
@@ -190,42 +299,50 @@ export class ZenSystemCalendarProvider {
       const stdout = await proc.stdout.readString();
       await proc.wait();
 
-      if (!stdout || !stdout.trim()) return null;
+      if (!stdout || !stdout.trim()) return [];
 
       const entries = stdout.split("<##>").map(e => e.trim()).filter(Boolean);
       for (const entry of entries) {
-        const [summary, minutesLeftStr, location, body] = entry.split("<||>");
+        const [summary, minutesLeftStr, location, body, calName] = entry.split("<||>");
         const minutesLeft = parseInt(minutesLeftStr, 10);
 
-        const videoMatch =
-          location?.match(VIDEO_CONFERENCE_REGEX) ||
-          body?.match(VIDEO_CONFERENCE_REGEX) ||
-          summary?.match(VIDEO_CONFERENCE_REGEX);
+        if (calName) {
+          this.detectedCalendars.add(calName);
+        }
 
-        if (videoMatch && minutesLeft >= -5 && minutesLeft <= 5) {
-          return {
+        // Strictly verify browser-openable video URL
+        const videoUrl = this.#extractVideoUrl(location, body, summary);
+        if (videoUrl && minutesLeft >= -5 && minutesLeft <= 5) {
+          meetings.push({
             title: summary || "Meeting",
-            videoUrl: videoMatch[0],
+            videoUrl,
             minutesLeft: Math.max(0, minutesLeft),
+            calendar: calName || "",
             isSystemCalendar: true,
-          };
+          });
         }
       }
     } catch {
       // Not on Windows or Outlook not present
     }
 
-    return null;
+    return meetings;
   }
 
-  async #getImminentMeetingLinux() {
-    // Linux: check via khal or gdbus if available
+  async #getImminentMeetingsLinux() {
+    const meetings = [];
     try {
       const khalPath = await lazy.Subprocess.pathSearch("khal").catch(() => null);
       if (khalPath) {
         const proc = await lazy.Subprocess.call({
           command: khalPath,
-          arguments: ["list", "now", "10m", "--format", "{title}<||>{start-time}<||>{description}<##>"],
+          arguments: [
+            "list",
+            "now",
+            "10m",
+            "--format",
+            "{title}<||>{start-time}<||>{description}<||>{location}<||>{calendar}<##>",
+          ],
         });
 
         const stdout = await proc.stdout.readString();
@@ -234,15 +351,20 @@ export class ZenSystemCalendarProvider {
         if (stdout && stdout.trim()) {
           const entries = stdout.split("<##>").map(e => e.trim()).filter(Boolean);
           for (const entry of entries) {
-            const [title, startTime, desc] = entry.split("<||>");
-            const videoMatch = desc?.match(VIDEO_CONFERENCE_REGEX) || title?.match(VIDEO_CONFERENCE_REGEX);
-            if (videoMatch) {
-              return {
+            const [title, startTime, desc, loc, calName] = entry.split("<||>");
+            if (calName) {
+              this.detectedCalendars.add(calName);
+            }
+
+            const videoUrl = this.#extractVideoUrl(desc, loc, title);
+            if (videoUrl) {
+              meetings.push({
                 title: title || "Meeting",
-                videoUrl: videoMatch[0],
+                videoUrl,
                 minutesLeft: 5,
+                calendar: calName || "",
                 isSystemCalendar: true,
-              };
+              });
             }
           }
         }
@@ -251,6 +373,6 @@ export class ZenSystemCalendarProvider {
       // khal not installed
     }
 
-    return null;
+    return meetings;
   }
 }

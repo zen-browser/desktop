@@ -430,3 +430,70 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
     display: none !important;
   }
 }
+
+.zen-intelligence-pref-block {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
+  border-radius: 8px;
+}
+
+.zen-intelligence-route-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+}
+
+.zen-intelligence-route-item:last-child {
+  border-bottom: none;
+}
+
+.zen-workspace-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.zen-workspace-pill {
+  appearance: none;
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
+  background: light-dark(#f2f2f7, #2c2c2e) !important;
+  color: light-dark(#1c1c1e, #f2f2f7) !important;
+  border-radius: 9999px !important;
+  padding: 3px 10px !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  user-select: none !important;
+}
+
+.zen-workspace-pill:hover {
+  background: light-dark(#e5e5ea, #3a3a3c) !important;
+}
+
+.zen-workspace-pill[selected="true"] {
+  background: #007aff !important;
+  color: #ffffff !important;
+  border-color: #007aff !important;
+}
+
+.zen-intelligence-add-route-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.zen-intelligence-add-route-row html|input {
+  flex: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid light-dark(#ccc, #555);
+  background: light-dark(#fff, #2c2c2e);
+  color: inherit;
+}
+

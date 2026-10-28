@@ -731,7 +731,8 @@
 #reader-mode-button,
 .urlbar-go-button,
 #star-button-box,
-#pageActionButton:not([open]) {
+#pageActionButton:not([open]),
+.searchmode-switcher {
   display: none !important;
 }
 

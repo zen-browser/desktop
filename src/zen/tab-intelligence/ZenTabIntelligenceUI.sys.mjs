@@ -103,8 +103,25 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       }
       case "mouseover": {
         const tab = event.target.closest?.(".tabbrowser-tab");
-        if (!tab) return;
-        if (tab === this.#currentHoverTab) return;
+        if (!tab) {
+          if (!this.#panel?.contains(event.target)) {
+            if (this.#hoverTimer) {
+              this.window.clearTimeout(this.#hoverTimer);
+              this.#hoverTimer = null;
+            }
+            this.#scheduleHide(150);
+          }
+          return;
+        }
+
+        if (tab === this.#currentHoverTab) {
+          if (this.#hideTimer) {
+            this.window.clearTimeout(this.#hideTimer);
+            this.#hideTimer = null;
+          }
+          return;
+        }
+
         this.#handleTabHover(tab);
         break;
       }
@@ -192,7 +209,10 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         }
       });
 
-      panel.addEventListener("mouseleave", () => {
+      panel.addEventListener("mouseleave", (e) => {
+        if (this.#currentHoverTab?.contains(e.relatedTarget)) {
+          return;
+        }
         this.#scheduleHide(150);
       });
 
@@ -350,16 +370,16 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     if (isEssential) {
       // Essential tab:
-      // - Sidebar on left: deployed right at the bottom-right corner of the tab (topleft bottomright)
-      // - Sidebar on right: deployed right at the bottom-left corner of the tab (topright bottomleft)
-      position = isRightSide ? "topright bottomleft" : "topleft bottomright";
-      xOffset = isRightSide ? -2 : 2;
-      yOffset = 2;
+      // - Sidebar on left: anchor bottom-right of tab, popup top-left -> "bottomright topleft"
+      // - Sidebar on right: anchor bottom-left of tab, popup top-right -> "bottomleft topright"
+      position = isRightSide ? "bottomleft topright" : "bottomright topleft";
+      xOffset = isRightSide ? -1 : 1;
+      yOffset = 1;
     } else {
       // Pinned tab:
-      // - Deployed towards the window interior from the vertical center of the tab
-      // - Anchored on the side of the tab closest to the inner edge of the sidebar
-      position = isRightSide ? "rightcenter leftcenter" : "leftcenter rightcenter";
+      // - Sidebar on left: anchor right-center of tab, popup left-center -> "rightcenter leftcenter"
+      // - Sidebar on right: anchor left-center of tab, popup right-center -> "leftcenter rightcenter"
+      position = isRightSide ? "leftcenter rightcenter" : "rightcenter leftcenter";
       xOffset = isRightSide ? -6 : 6;
       yOffset = 0;
     }
@@ -377,8 +397,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     let html = `
       <div class="zen-intelligence-item-main">
         <span class="zen-intelligence-item-title">${this.#escapeHtml(item.title)}</span>
-        ${item.subtitle ? `<span class="zen-intelligence-item-subtitle">${this.#escapeHtml(item.subtitle)}</span>` : ""}
-        ${item.snippet ? `<span class="zen-intelligence-item-snippet">${this.#escapeHtml(item.snippet)}</span>` : ""}
+        ${item.subtitle && item.subtitle !== item.title ? `<span class="zen-intelligence-item-subtitle">${this.#escapeHtml(item.subtitle)}</span>` : ""}
+        ${item.snippet && item.snippet !== item.subtitle ? `<span class="zen-intelligence-item-snippet">${this.#escapeHtml(item.snippet)}</span>` : ""}
       </div>
     `;
 

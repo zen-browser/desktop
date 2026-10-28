@@ -230,8 +230,8 @@ export class ZenTabIntelligenceChild extends JSWindowActorChild {
 
         items.push({
           title: name,
-          subtitle: "Unread message",
-          snippet,
+          subtitle: snippet || "",
+          snippet: "",
           url: this.contentWindow.location.href,
         });
       }

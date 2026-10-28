@@ -1435,8 +1435,8 @@ zen-library {
     content: "" !important;
     display: block !important;
     position: absolute !important;
-    bottom: -2px !important;
-    inset-inline-end: -2px !important;
+    bottom: -3.5px !important;
+    inset-inline-end: -3.5px !important;
     width: 6.5px !important;
     height: 6.5px !important;
     border-radius: 50% !important;

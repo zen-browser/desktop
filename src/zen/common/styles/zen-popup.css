@@ -438,13 +438,13 @@ menuseparator {
     backdrop-filter: blur(20px);
     border-radius: var(--panel-border-radius);
     box-sizing: border-box;
+    color: light-dark(#1c1c1e, #f2f2f7);
   }
 
   & .zen-intelligence-counter-header {
     font-size: 11px;
     font-weight: 600;
-    color: var(--toolbar-color, inherit);
-    opacity: 0.7;
+    color: light-dark(#6e6e73, #98989d);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 2px 4px 6px 4px;
@@ -484,6 +484,7 @@ menuseparator {
   & .zen-intelligence-item-title {
     font-size: 12px;
     font-weight: 600;
+    color: light-dark(#1c1c1e, #f2f2f7);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -492,7 +493,7 @@ menuseparator {
   & .zen-intelligence-item-subtitle {
     font-size: 11px;
     font-weight: 500;
-    opacity: 0.85;
+    color: light-dark(#3a3a3c, #d1d1d6);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -500,7 +501,7 @@ menuseparator {
 
   & .zen-intelligence-item-snippet {
     font-size: 11px;
-    opacity: 0.65;
+    color: light-dark(#6e6e73, #98989d);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -509,8 +510,8 @@ menuseparator {
   & .zen-intelligence-join-btn {
     appearance: none;
     border: none;
-    background: var(--zen-primary-color, #1a73e8);
-    color: white;
+    background: #007aff;
+    color: #ffffff;
     font-size: 11px;
     font-weight: 600;
     padding: 3px 8px;
@@ -526,8 +527,7 @@ menuseparator {
   & .zen-intelligence-empty-state {
     font-size: 13px;
     font-weight: 500;
-    color: var(--toolbar-color, inherit);
-    opacity: 0.85;
+    color: light-dark(#3a3a3c, #d1d1d6);
     text-align: center;
     padding: 8px 12px;
     white-space: nowrap;

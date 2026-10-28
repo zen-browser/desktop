@@ -166,9 +166,8 @@ class nsZenTabIntelligenceManager {
         service: "WhatsApp",
         items: [
           {
-            title: "WhatsApp",
-            subtitle: `${countToUse} unread conversation${countToUse > 1 ? "s" : ""}`,
-            snippet: "Click to open chat",
+            title: "WhatsApp Web",
+            subtitle: "Click to open chat",
             url,
           },
         ],
@@ -180,9 +179,8 @@ class nsZenTabIntelligenceManager {
       service: "Gmail",
       items: [
         {
-          title: "Gmail",
-          subtitle: `${countToUse} unread email${countToUse > 1 ? "s" : ""}`,
-          snippet: "Click to open inbox",
+          title: "Gmail Inbox",
+          subtitle: "Click to open inbox",
           url,
         },
       ],

@@ -88,8 +88,15 @@ add_task(async function test_parse_arc_sidebar() {
 
   Assert.deepEqual(
     plan.favorites,
-    [{ type: "tab", url: "https://example.com/calendar", title: "Calendar" }],
-    "Top apps become favorites"
+    [
+      {
+        type: "tab",
+        url: "https://example.com/calendar",
+        title: "Calendar",
+        profile: "Default",
+      },
+    ],
+    "Top apps become favorites and remember their Arc profile"
   );
   Assert.equal(
     plan.spaces.length,
@@ -98,6 +105,12 @@ add_task(async function test_parse_arc_sidebar() {
   );
 
   const [first, second] = plan.spaces;
+  Assert.equal(first.profile, "Default", "The main profile's space is tagged");
+  Assert.equal(
+    second.profile,
+    "Profile 1",
+    "A custom profile's space is tagged with its directory"
+  );
   Assert.equal(first.title, "Work Space", "The space title is kept");
   Assert.equal(first.icon, "\u{1F9EA}", "The emoji icon is kept");
   Assert.deepEqual(
@@ -142,6 +155,34 @@ add_task(async function test_parse_arc_sidebar() {
     second.items,
     [{ type: "tab", url: "https://example.com/6", title: "Six" }],
     "Items are found through parent links when the container lists none"
+  );
+});
+
+add_task(async function test_filter_arc_plan() {
+  const plan = ZenMigrationUtils.parseArcSidebar(buildArcSidebar());
+  Assert.strictEqual(
+    ZenMigrationUtils.filterArcPlan(plan),
+    plan,
+    "Without a profile the whole plan is kept"
+  );
+  const main = ZenMigrationUtils.filterArcPlan(plan, "Default");
+  Assert.deepEqual(
+    main.spaces.map(space => space.id),
+    ["s1"],
+    "The main profile only gets its own spaces"
+  );
+  Assert.equal(main.favorites.length, 1, "and its own favorites");
+  const custom = ZenMigrationUtils.filterArcPlan(plan, "Profile 1");
+  Assert.deepEqual(
+    custom.spaces.map(space => space.id),
+    ["s2"],
+    "A custom profile only gets its own spaces"
+  );
+  Assert.deepEqual(custom.favorites, [], "and none of the main favorites");
+  Assert.deepEqual(
+    ZenMigrationUtils.filterArcPlan(plan, "Profile 9"),
+    { favorites: [], spaces: [] },
+    "An unknown profile has nothing to import"
   );
 });
 
@@ -323,11 +364,19 @@ add_task(async function test_arc_migrator_resource() {
     "zen-arc-migration"
   );
   const userData = PathUtils.join(dir, "User Data");
-  await IOUtils.makeDirectory(PathUtils.join(userData, "Default"), {
-    createAncestors: true,
-  });
+  for (const profile of ["Default", "Profile 1", "Profile 2"]) {
+    await IOUtils.makeDirectory(PathUtils.join(userData, profile), {
+      createAncestors: true,
+    });
+  }
   await IOUtils.writeJSON(PathUtils.join(userData, "Local State"), {
-    profile: { info_cache: { Default: { name: "Person 1" } } },
+    profile: {
+      info_cache: {
+        Default: { name: "Person 1" },
+        "Profile 1": { name: "Arc Work" },
+        "Profile 2": { name: "Empty" },
+      },
+    },
   });
   await IOUtils.writeJSON(
     PathUtils.join(dir, "StorableSidebar.json"),
@@ -339,24 +388,90 @@ add_task(async function test_arc_migrator_resource() {
   const profiles = await migrator.getSourceProfiles();
   Assert.deepEqual(
     profiles.map(profile => profile.id),
-    ["Default"],
-    "The profile is listed because the sidebar can be imported"
+    ["zen-all-profiles", "Default", "Profile 1"],
+    "Profiles with something to import are listed, after an all-profiles entry"
   );
-  const resources = await migrator.getResources(profiles[0]);
-  const spaces = resources.find(
-    resource => resource.type === MigrationUtils.resourceTypes.ZEN_SPACES
-  );
-  ok(spaces, "The sidebar is offered as a resource");
+  Assert.equal(profiles[0].name, "All profiles", "The entry is localized");
+  const spacesResourceOf = async profile =>
+    (await migrator.getResources(profile)).find(
+      resource => resource.type === MigrationUtils.resourceTypes.ZEN_SPACES
+    );
+  const [all, mainProfile, workProfile] = profiles;
 
-  const success = await new Promise(resolve => spaces.migrate(resolve));
-  ok(success, "The sidebar migrated");
+  const mainSpaces = await spacesResourceOf(mainProfile);
+  ok(mainSpaces, "The sidebar is offered for the main profile");
+
+  ok(
+    await new Promise(resolve => mainSpaces.migrate(resolve)),
+    "The main profile's sidebar migrated"
+  );
+  Assert.equal(
+    ZenMigrationUtils.lastImportedSpaceCount,
+    1,
+    "Only the main profile's space was imported"
+  );
+  Assert.equal(
+    gZenWorkspaces.getWorkspaces().length,
+    1,
+    "The empty active space was reused for it"
+  );
+  Assert.equal(
+    gZenWorkspaces.getWorkspaceFromId(original.uuid).containerTabId,
+    0,
+    "The main profile gets no container"
+  );
+
+  const workSpaces = await spacesResourceOf(workProfile);
+  ok(workSpaces, "The sidebar is offered for the custom profile too");
+  ok(
+    await new Promise(resolve => workSpaces.migrate(resolve)),
+    "The custom profile's sidebar migrated"
+  );
+  Assert.equal(ZenMigrationUtils.lastImportedSpaceCount, 1);
+  const workspaces = gZenWorkspaces.getWorkspaces();
+  Assert.equal(workspaces.length, 2, "The custom profile got its own space");
+  const work = workspaces.find(workspace => workspace.uuid !== original.uuid);
+  Assert.equal(work.name, "Space 2", "with the Arc space's name");
+  Assert.greater(work.containerTabId, 0, "and a container");
+  Assert.equal(
+    ContextualIdentityService.getUserContextLabel(work.containerTabId),
+    "Arc Work",
+    "The container is named after the Arc profile"
+  );
+  const workItems = pinnedItemsOf(work.uuid);
+  Assert.equal(workItems.length, 1, "The profile's pinned tab was imported");
+  Assert.equal(
+    workItems[0].userContextId,
+    work.containerTabId,
+    "and opens in the profile's container"
+  );
+  Assert.equal(
+    ZenMigrationUtils.containerIdForArcProfile(workProfile),
+    work.containerTabId,
+    "Importing the profile again reuses its container"
+  );
+  await cleanupImportedState(original);
+
+  const allSpaces = await spacesResourceOf(all);
+  ok(allSpaces, "The sidebar is offered for all profiles at once");
+  ok(
+    await new Promise(resolve => allSpaces.migrate(resolve)),
+    "Every profile's sidebar migrated"
+  );
   Assert.equal(
     ZenMigrationUtils.lastImportedSpaceCount,
     2,
-    "The wizard can report how many spaces were imported"
+    "The count covers every profile"
   );
-  Assert.equal(gZenWorkspaces.getWorkspaces().length, 2);
+  const allWorkspaces = gZenWorkspaces.getWorkspaces();
+  Assert.equal(allWorkspaces.length, 2, "Both profiles' spaces were created");
+  Assert.deepEqual(
+    allWorkspaces.map(workspace => workspace.containerTabId),
+    [0, work.containerTabId],
+    "The main profile's space has no container, the other keeps its own"
+  );
 
   await cleanupImportedState(original);
+  ContextualIdentityService.remove(work.containerTabId);
   await IOUtils.remove(dir, { recursive: true });
 });

@@ -163,7 +163,13 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
             this.window.clearTimeout(this.#hideTimer);
             this.#hideTimer = null;
           }
-          return;
+          if (
+            this.#hoverTimer ||
+            (this.#panel &&
+              (this.#panel.state === "open" || this.#panel.state === "showing"))
+          ) {
+            return;
+          }
         }
 
         this.#handleTabHover(tab);
@@ -260,6 +266,14 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         this.#scheduleHide(150);
       });
 
+      panel.addEventListener("popuphidden", () => {
+        this.#currentHoverTab = null;
+        if (this.#hoverTimer) {
+          this.window.clearTimeout(this.#hoverTimer);
+          this.#hoverTimer = null;
+        }
+      });
+
       popupSet.appendChild(panel);
     }
 
@@ -325,7 +339,10 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       this.window.clearTimeout(this.#hideTimer);
     }
     this.#hideTimer = this.window.setTimeout(() => {
-      if (this.#panel && this.#panel.state === "open") {
+      if (
+        this.#panel &&
+        (this.#panel.state === "open" || this.#panel.state === "showing")
+      ) {
         this.#panel.hidePopup();
       }
       this.#currentHoverTab = null;

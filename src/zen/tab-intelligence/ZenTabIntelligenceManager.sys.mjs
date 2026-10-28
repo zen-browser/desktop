@@ -168,8 +168,13 @@ class nsZenTabIntelligenceManager {
         const actor = global.getActor("ZenTabIntelligence");
         if (actor) {
           const details = await actor.requestDetails();
-          if (details?.items && details.items.length > 0) {
-            return details;
+          if (details) {
+            if (details.type === "calendar") {
+              return details;
+            }
+            if (details.items && details.items.length > 0) {
+              return details;
+            }
           }
         }
       } catch (e) {

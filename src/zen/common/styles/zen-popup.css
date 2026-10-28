@@ -430,43 +430,32 @@ menuseparator {
   & .zen-intelligence-container {
     display: flex;
     flex-direction: column;
-    width: 280px;
+    width: max-content;
+    min-width: 200px;
     max-width: 320px;
-    padding: 10px;
-    gap: 8px;
+    padding: 8px 10px;
+    gap: 6px;
     backdrop-filter: blur(20px);
     border-radius: var(--panel-border-radius);
     box-sizing: border-box;
   }
 
-  & .zen-intelligence-header {
-    display: flex;
-    align-items: center;
-    padding-bottom: 6px;
-    border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
-    gap: 8px;
-  }
-
-  & .zen-intelligence-service-title {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--toolbar-color, inherit);
-  }
-
-  & .zen-intelligence-count-badge {
-    background: var(--zen-colors-badge-red, #ff3b30);
-    color: white;
+  & .zen-intelligence-counter-header {
     font-size: 11px;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 10px;
+    font-weight: 600;
+    color: var(--toolbar-color, inherit);
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 4px 6px 4px;
+    border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
   }
 
   & .zen-intelligence-items-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    max-height: 240px;
+    gap: 4px;
+    max-height: 260px;
     overflow-y: auto;
   }
 
@@ -534,10 +523,16 @@ menuseparator {
     }
   }
 
-  & .zen-intelligence-empty {
-    font-size: 12px;
-    opacity: 0.6;
+  & .zen-intelligence-empty-state {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--toolbar-color, inherit);
+    opacity: 0.85;
+    text-align: center;
+    padding: 8px 12px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 12px;
   }
 }

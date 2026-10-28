@@ -1427,15 +1427,16 @@ zen-library {
 }
 
 /* Tab Intelligence: Unread indicator badge for essential tabs */
-.tabbrowser-tab[zen-essential][zen-has-unread="true"] .tab-stack {
+.tabbrowser-tab[zen-essential][zen-has-unread="true"] .tab-icon-stack {
   position: relative !important;
+  overflow: visible !important;
 
   &::after {
     content: "" !important;
     display: block !important;
     position: absolute !important;
-    bottom: 4px !important;
-    inset-inline-end: 4px !important;
+    bottom: -2px !important;
+    inset-inline-end: -2px !important;
     width: 6.5px !important;
     height: 6.5px !important;
     border-radius: 50% !important;

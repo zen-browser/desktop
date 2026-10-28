@@ -2,42 +2,32 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { GmailProvider } from "resource:///modules/zen/intelligence/GmailProvider.sys.mjs";
-import { GoogleCalendarProvider } from "resource:///modules/zen/intelligence/GoogleCalendarProvider.sys.mjs";
-import { WhatsAppProvider } from "resource:///modules/zen/intelligence/WhatsAppProvider.sys.mjs";
-
-const PROVIDERS = [
-  new GmailProvider(),
-  new GoogleCalendarProvider(),
-  new WhatsAppProvider(),
-];
+const VIDEO_CONFERENCE_REGEX =
+  /https:\/\/(?:[a-zA-Z0-9-]+\.)?(?:meet\.google\.com\/[a-z0-9-]+|zoom\.us\/j\/\d+[^\s"'<>]*|teams\.microsoft\.com\/l\/meetup-join\/[^\s"'<>]+|webex\.com\/[^\s"'<>]+|meet\.jit\.si\/[^\s"'<>]+)/i;
 
 export class ZenTabIntelligenceChild extends JSWindowActorChild {
-  #activeProvider = null;
   #observer = null;
   #debounceTimer = null;
   #lastStatusJson = null;
 
   handleEvent(event) {
+    if (this.contentWindow !== this.contentWindow?.top) {
+      return;
+    }
     switch (event.type) {
       case "DOMContentLoaded":
       case "pageshow":
-      case "DOMTitleChanged":
-        this.#scheduleUpdate(250);
+        this.#scheduleUpdate(300);
         break;
     }
   }
 
-  #getProvider() {
-    if (this.#activeProvider) {
-      return this.#activeProvider;
-    }
-
-    const url = this.document?.documentURI;
-    if (!url) return null;
-
-    this.#activeProvider = PROVIDERS.find(p => p.matches(url)) || null;
-    return this.#activeProvider;
+  #getServiceType() {
+    const url = this.document?.documentURI || "";
+    if (url.startsWith("https://mail.google.com/")) return "gmail";
+    if (url.startsWith("https://web.whatsapp.com/")) return "whatsapp";
+    if (url.startsWith("https://calendar.google.com/")) return "calendar";
+    return null;
   }
 
   #scheduleUpdate(delayMs = 300) {
@@ -57,7 +47,8 @@ export class ZenTabIntelligenceChild extends JSWindowActorChild {
       this.#scheduleUpdate(500);
     });
 
-    const targetNode = this.document.querySelector("title") || this.document.documentElement;
+    const targetNode =
+      this.document.querySelector("title") || this.document.documentElement;
     if (targetNode) {
       this.#observer.observe(targetNode, {
         childList: true,
@@ -68,13 +59,13 @@ export class ZenTabIntelligenceChild extends JSWindowActorChild {
   }
 
   #runUpdate() {
-    const provider = this.#getProvider();
-    if (!provider || !this.document || !this.contentWindow) return;
+    const service = this.#getServiceType();
+    if (!service || !this.document || !this.contentWindow) return;
 
     this.#setupObserver();
 
     try {
-      const status = provider.checkQuickStatus(this.document, this.contentWindow);
+      const status = this.#checkStatus(service);
       const statusJson = JSON.stringify(status);
 
       if (statusJson !== this.#lastStatusJson) {
@@ -82,25 +73,190 @@ export class ZenTabIntelligenceChild extends JSWindowActorChild {
         this.sendAsyncMessage("ZenTabIntelligence:StatusUpdate", status);
       }
     } catch (e) {
-      console.error("[ZenTabIntelligenceChild] Update error:", e);
+      // Content process silent catch
     }
+  }
+
+  #checkStatus(service) {
+    const doc = this.document;
+    const title = doc.title || "";
+    const titleMatch = title.match(/\((\d+)\)/);
+    let unreadCount = titleMatch ? parseInt(titleMatch[1], 10) : 0;
+
+    if (service === "gmail") {
+      if (unreadCount === 0) {
+        const badge = doc.querySelector(".J-N-Jz .bsU, .bsU");
+        const num = parseInt(badge?.textContent?.trim(), 10);
+        if (!isNaN(num)) unreadCount = num;
+      }
+      const unreadRows = doc.querySelectorAll(
+        "tr.zE, tr.zA:not(.yO), div[role='main'] tr.zE"
+      ).length;
+      const hasUnread = unreadCount > 0 || unreadRows > 0;
+      return {
+        hasUnread,
+        unreadCount: unreadCount || unreadRows,
+        hasImminentMeeting: false,
+        imminentMeeting: null,
+      };
+    }
+
+    if (service === "whatsapp") {
+      if (unreadCount === 0) {
+        const badges = doc.querySelectorAll(
+          "span[data-icon='unread-count'], span[aria-label*='unread' i], span[aria-label*='non lu' i]"
+        );
+        for (const b of badges) {
+          const num = parseInt(b.textContent?.trim(), 10);
+          unreadCount += !isNaN(num) ? num : 1;
+        }
+      }
+      return {
+        hasUnread: unreadCount > 0,
+        unreadCount,
+        hasImminentMeeting: false,
+        imminentMeeting: null,
+      };
+    }
+
+    if (service === "calendar") {
+      const events = doc.querySelectorAll(
+        "[data-eventid], [data-eventchip], div[role='button'][aria-label*=':']"
+      );
+      let imminentMeeting = null;
+      const now = Date.now();
+
+      for (const el of events) {
+        const aria = el.getAttribute("aria-label") || el.textContent || "";
+        const videoMatch =
+          el.innerHTML?.match(VIDEO_CONFERENCE_REGEX) ||
+          el.querySelector("a[href*='meet.google.com'], a[href*='zoom.us']")?.href?.match(VIDEO_CONFERENCE_REGEX);
+
+        if (!videoMatch) continue;
+
+        const timeMatch = aria.match(/(\d{1,2})[:h](\d{2})(?:\s*([ap]\.?m\.?))?/i);
+        if (timeMatch) {
+          let hours = parseInt(timeMatch[1], 10);
+          const minutes = parseInt(timeMatch[2], 10);
+          const meridiem = timeMatch[3]?.toLowerCase();
+          if (meridiem?.startsWith("p") && hours < 12) hours += 12;
+          if (meridiem?.startsWith("a") && hours === 12) hours = 0;
+
+          const evDate = new Date();
+          evDate.setHours(hours, minutes, 0, 0);
+          const diffMinutes = (evDate.getTime() - now) / 60000;
+
+          if (diffMinutes >= -5 && diffMinutes <= 5) {
+            imminentMeeting = {
+              title: aria.split(",")[0]?.trim() || "Meeting",
+              videoUrl: videoMatch[0],
+              minutesLeft: Math.max(0, Math.ceil(diffMinutes)),
+            };
+            break;
+          }
+        }
+      }
+
+      return {
+        hasUnread: false,
+        unreadCount: 0,
+        hasImminentMeeting: !!imminentMeeting,
+        imminentMeeting,
+      };
+    }
+
+    return { hasUnread: false, unreadCount: 0, hasImminentMeeting: false, imminentMeeting: null };
   }
 
   receiveMessage(message) {
     if (message.name === "ZenTabIntelligence:RequestDetails") {
-      const provider = this.#getProvider();
-      if (!provider || !this.document || !this.contentWindow) {
-        return { items: [] };
-      }
+      const service = this.#getServiceType();
+      if (!service || !this.document) return { items: [] };
 
       try {
-        return provider.fetchDetails(this.document, this.contentWindow);
+        return this.#fetchDetails(service);
       } catch (e) {
-        console.error("[ZenTabIntelligenceChild] Details error:", e);
         return { items: [] };
       }
     }
     return null;
+  }
+
+  #fetchDetails(service) {
+    const doc = this.document;
+    const items = [];
+
+    if (service === "gmail") {
+      const rows = doc.querySelectorAll(
+        "tr.zE, tr.zA:not(.yO), div[role='main'] tr.zE"
+      );
+      for (let i = 0; i < Math.min(rows.length, 5); i++) {
+        const row = rows[i];
+        const sender =
+          row.querySelector(".yP, .zF, span[name], span[email], .bA4")?.textContent?.trim() ||
+          "Sender";
+        const subject =
+          row.querySelector(".bog, .bqe, span[data-thread-id]")?.textContent?.trim() ||
+          "(No subject)";
+        let snippet = row.querySelector(".y2")?.textContent?.trim() || "";
+        if (snippet.startsWith("-") || snippet.startsWith("–")) {
+          snippet = snippet.substring(1).trim();
+        }
+
+        items.push({
+          title: sender,
+          subtitle: subject,
+          snippet,
+          url: this.contentWindow.location.href,
+        });
+      }
+      return { type: "mail", service: "Gmail", items };
+    }
+
+    if (service === "whatsapp") {
+      const badges = doc.querySelectorAll(
+        "span[data-icon='unread-count'], span[aria-label*='unread' i], span[aria-label*='non lu' i]"
+      );
+      for (let i = 0; i < Math.min(badges.length, 5); i++) {
+        const badge = badges[i];
+        const chatRow = badge.closest(
+          "div[role='listitem'], div[role='row'], div[tabindex='-1']"
+        );
+        const nameEl = chatRow?.querySelector("span[title]");
+        const name =
+          nameEl?.getAttribute("title") || nameEl?.textContent?.trim() || "Chat";
+        const snippetEl = chatRow?.querySelector("span[dir='ltr'], span.matched-text");
+        const snippet = snippetEl?.textContent?.trim() || "";
+
+        items.push({
+          title: name,
+          subtitle: "Unread message",
+          snippet,
+          url: this.contentWindow.location.href,
+        });
+      }
+      return { type: "chat", service: "WhatsApp", items };
+    }
+
+    if (service === "calendar") {
+      const events = doc.querySelectorAll(
+        "[data-eventid], [data-eventchip], div[role='button'][aria-label*=':']"
+      );
+      for (let i = 0; i < Math.min(events.length, 5); i++) {
+        const el = events[i];
+        const aria = el.getAttribute("aria-label") || el.textContent || "";
+        const videoMatch = el.innerHTML?.match(VIDEO_CONFERENCE_REGEX);
+        items.push({
+          title: aria.split(",")[0]?.trim() || "Calendar Event",
+          subtitle: aria.match(/\d{1,2}[:h]\d{2}(?:\s*[ap]\.?m\.?)?/i)?.[0] || "",
+          videoUrl: videoMatch ? videoMatch[0] : null,
+          url: this.contentWindow.location.href,
+        });
+      }
+      return { type: "calendar", service: "Google Calendar", items };
+    }
+
+    return { items: [] };
   }
 
   didDestroy() {

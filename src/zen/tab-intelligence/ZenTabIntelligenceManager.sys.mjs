@@ -130,7 +130,8 @@ class nsZenTabIntelligenceManager {
       tab.label ||
       "";
     const match = pageTitle.match(/\((\d+)\)/);
-    const count = match ? parseInt(match[1], 10) : 1;
+    const count = match ? parseInt(match[1], 10) : 0;
+    const hasUnread = count > 0 || tab.hasAttribute("zen-has-unread");
     const url = browser?.currentURI?.spec || "";
     const isCalendar = url.startsWith("https://calendar.google.com/");
     const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
@@ -150,6 +151,15 @@ class nsZenTabIntelligenceManager {
       };
     }
 
+    if (!hasUnread) {
+      return {
+        type: isWhatsApp ? "chat" : "mail",
+        service: isWhatsApp ? "WhatsApp" : "Gmail",
+        items: [],
+      };
+    }
+
+    const countToUse = count || 1;
     if (isWhatsApp) {
       return {
         type: "chat",
@@ -157,7 +167,7 @@ class nsZenTabIntelligenceManager {
         items: [
           {
             title: "WhatsApp",
-            subtitle: `${count} unread conversation${count > 1 ? "s" : ""}`,
+            subtitle: `${countToUse} unread conversation${countToUse > 1 ? "s" : ""}`,
             snippet: "Click to open chat",
             url,
           },
@@ -171,7 +181,7 @@ class nsZenTabIntelligenceManager {
       items: [
         {
           title: "Gmail",
-          subtitle: `${count} unread conversation${count > 1 ? "s" : ""}`,
+          subtitle: `${countToUse} unread email${countToUse > 1 ? "s" : ""}`,
           snippet: "Click to open inbox",
           url,
         },

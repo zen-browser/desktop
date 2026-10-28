@@ -70,12 +70,15 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       case "mouseover": {
         const tab = event.target.closest?.(".tabbrowser-tab");
         if (!tab) return;
+        if (tab === this.#currentHoverTab) return;
         this.#handleTabHover(tab);
         break;
       }
       case "mouseout": {
         const tab = event.target.closest?.(".tabbrowser-tab");
         if (!tab || tab !== this.#currentHoverTab) return;
+        if (event.relatedTarget && tab.contains(event.relatedTarget)) return;
+        if (event.relatedTarget && this.#panel?.contains(event.relatedTarget)) return;
         this.#handleTabLeave(tab);
         break;
       }
@@ -135,7 +138,6 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       panel = this.document.createXULElement("panel");
       panel.id = "zen-tab-intelligence-panel";
       panel.className = "zen-intelligence-panel";
-      panel.setAttribute("type", "arrow");
       panel.setAttribute("noautofocus", "true");
       panel.setAttribute("orient", "vertical");
       panel.setAttribute("level", "top");
@@ -145,13 +147,6 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         "div"
       );
       wrapper.className = "zen-intelligence-container";
-      wrapper.innerHTML = `
-        <div class="zen-intelligence-header">
-          <span class="zen-intelligence-service-title"></span>
-          <span class="zen-intelligence-count-badge"></span>
-        </div>
-        <div class="zen-intelligence-items-list"></div>
-      `;
       panel.appendChild(wrapper);
 
       panel.addEventListener("mouseenter", () => {
@@ -180,13 +175,6 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     const isGCal = url.startsWith("https://calendar.google.com/");
     if (!isGmail && !isWhatsApp && !isGCal) return;
 
-    const pageTitle = this.getTabContentTitle(tab);
-    const hasUnread =
-      tab.hasAttribute("zen-has-unread") || !!pageTitle.match(/\((\d+)\)/);
-
-    // Only show for tabs with unread content or calendar tabs
-    if (!hasUnread && !isGCal) return;
-
     this.#currentHoverTab = tab;
 
     if (this.#hideTimer) {
@@ -200,7 +188,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     this.#hoverTimer = this.window.setTimeout(() => {
       this.#showPreviewForTab(tab);
-    }, 200);
+    }, 180);
   }
 
   #handleTabLeave(tab) {
@@ -208,7 +196,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       this.window.clearTimeout(this.#hoverTimer);
       this.#hoverTimer = null;
     }
-    this.#scheduleHide(200);
+    this.#scheduleHide(180);
   }
 
   #scheduleHide(delayMs) {
@@ -229,92 +217,139 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.#ensurePopupPanel();
     if (!this.#panel) return;
 
-    let listEl = this.#panel.querySelector(".zen-intelligence-items-list");
-    let titleEl = this.#panel.querySelector(".zen-intelligence-service-title");
-    let countEl = this.#panel.querySelector(".zen-intelligence-count-badge");
-
-    if (!listEl) {
-      this.#panel.remove();
-      this.#panel = null;
-      this.#ensurePopupPanel();
-      listEl = this.#panel?.querySelector(".zen-intelligence-items-list");
-      titleEl = this.#panel?.querySelector(".zen-intelligence-service-title");
-      countEl = this.#panel?.querySelector(".zen-intelligence-count-badge");
-    }
-
-    if (!listEl) return;
-
-    listEl.innerHTML = "";
-    if (titleEl) titleEl.textContent = tab.label || "Tab Preview";
-    if (countEl) countEl.textContent = "";
+    const wrapper = this.#panel.querySelector(".zen-intelligence-container");
+    if (!wrapper) return;
 
     const details = await lazy.ZenTabIntelligenceManager.requestTabDetails(tab);
-    if (!details || tab !== this.#currentHoverTab) return;
+    if (!tab || !tab.isConnected || tab !== this.#currentHoverTab) return;
 
-    if (details.service && titleEl) {
-      titleEl.textContent = details.service;
-    }
+    const status = lazy.ZenTabIntelligenceManager.getTabStatus(tab);
+    const pageTitle = this.getTabContentTitle(tab);
+    const titleMatch = pageTitle.match(/\((\d+)\)/);
+    const unreadCount =
+      status?.unreadCount ||
+      (titleMatch ? parseInt(titleMatch[1], 10) : 0) ||
+      (tab.hasAttribute("zen-has-unread") ? 1 : 0);
 
-    if (details.items && details.items.length > 0) {
-      if (countEl) countEl.textContent = `${details.items.length}`;
+    const hasUnread =
+      unreadCount > 0 ||
+      tab.hasAttribute("zen-has-unread") ||
+      (details?.items && details.items.length > 0 && details.type !== "calendar");
 
-      for (const item of details.items) {
-        const itemRow = this.document.createElementNS(
+    const items = details?.items || [];
+
+    wrapper.innerHTML = "";
+
+    if (details?.type === "calendar") {
+      if (items.length > 0) {
+        const header = this.document.createElementNS(
           "http://www.w3.org/1999/xhtml",
           "div"
         );
-        itemRow.className = "zen-intelligence-item-row";
+        header.className = "zen-intelligence-counter-header";
+        header.textContent = `${items.length} upcoming event${items.length > 1 ? "s" : ""}`;
+        wrapper.appendChild(header);
 
-        let html = `
-          <div class="zen-intelligence-item-main">
-            <span class="zen-intelligence-item-title">${this.#escapeHtml(item.title)}</span>
-            ${item.subtitle ? `<span class="zen-intelligence-item-subtitle">${this.#escapeHtml(item.subtitle)}</span>` : ""}
-            ${item.snippet ? `<span class="zen-intelligence-item-snippet">${this.#escapeHtml(item.snippet)}</span>` : ""}
-          </div>
-        `;
-
-        if (item.videoUrl) {
-          html += `
-            <button class="zen-intelligence-join-btn" title="Join Meeting">Join</button>
-          `;
+        const listEl = this.document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div"
+        );
+        listEl.className = "zen-intelligence-items-list";
+        for (const item of items) {
+          listEl.appendChild(this.#createItemRow(item, tab));
         }
-
-        itemRow.innerHTML = html;
-
-        itemRow.addEventListener("click", (e) => {
-          if (
-            e.target.classList.contains("zen-intelligence-join-btn") &&
-            item.videoUrl
-          ) {
-            e.stopPropagation();
-            this.window.gBrowser.addTab(item.videoUrl, {
-              triggeringPrincipal:
-                Services.scriptSecurityManager.getSystemPrincipal(),
-              inBackground: false,
-            });
-          } else {
-            this.window.gBrowser.selectedTab = tab;
-          }
-          this.#panel.hidePopup();
-        });
-
-        listEl.appendChild(itemRow);
+        wrapper.appendChild(listEl);
+      } else {
+        const emptyEl = this.document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div"
+        );
+        emptyEl.className = "zen-intelligence-empty-state";
+        emptyEl.textContent = "No upcoming events";
+        wrapper.appendChild(emptyEl);
       }
-    } else {
-      const emptyRow = this.document.createElementNS(
+    } else if (hasUnread && items.length > 0) {
+      const count = Math.max(unreadCount, items.length);
+      const isChat = details?.type === "chat";
+      const countText = isChat
+        ? `${count} unread message${count > 1 ? "s" : ""}`
+        : `${count} unread email${count > 1 ? "s" : ""}`;
+
+      const header = this.document.createElementNS(
         "http://www.w3.org/1999/xhtml",
         "div"
       );
-      emptyRow.className = "zen-intelligence-item-row zen-intelligence-empty";
-      emptyRow.textContent = "No recent items";
-      listEl.appendChild(emptyRow);
+      header.className = "zen-intelligence-counter-header";
+      header.textContent = countText;
+      wrapper.appendChild(header);
+
+      const listEl = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "div"
+      );
+      listEl.className = "zen-intelligence-items-list";
+      for (const item of items) {
+        listEl.appendChild(this.#createItemRow(item, tab));
+      }
+      wrapper.appendChild(listEl);
+    } else {
+      const emptyEl = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "div"
+      );
+      emptyEl.className = "zen-intelligence-empty-state";
+      emptyEl.textContent = "No unread, breathe! 🍃";
+      wrapper.appendChild(emptyEl);
     }
 
     const isRightSide =
       this.document.documentElement.getAttribute("zen-right-side") === "true";
-    const position = isRightSide ? "topleft topright" : "topright topleft";
+    const position = isRightSide ? "topright topleft" : "topleft topright";
 
-    this.#panel.openPopup(tab, position, isRightSide ? -8 : 8, 0, false, false);
+    this.#panel.openPopup(tab, position, isRightSide ? -6 : 6, 0, false, false);
+  }
+
+  #createItemRow(item, tab) {
+    const itemRow = this.document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "div"
+    );
+    itemRow.className = "zen-intelligence-item-row";
+
+    let html = `
+      <div class="zen-intelligence-item-main">
+        <span class="zen-intelligence-item-title">${this.#escapeHtml(item.title)}</span>
+        ${item.subtitle ? `<span class="zen-intelligence-item-subtitle">${this.#escapeHtml(item.subtitle)}</span>` : ""}
+        ${item.snippet ? `<span class="zen-intelligence-item-snippet">${this.#escapeHtml(item.snippet)}</span>` : ""}
+      </div>
+    `;
+
+    if (item.videoUrl) {
+      html += `
+        <button class="zen-intelligence-join-btn" title="Join Meeting">Join</button>
+      `;
+    }
+
+    itemRow.innerHTML = html;
+
+    itemRow.addEventListener("click", (e) => {
+      if (
+        e.target.classList.contains("zen-intelligence-join-btn") &&
+        item.videoUrl
+      ) {
+        e.stopPropagation();
+        this.window.gBrowser.addTab(item.videoUrl, {
+          triggeringPrincipal:
+            Services.scriptSecurityManager.getSystemPrincipal(),
+          inBackground: false,
+        });
+      } else {
+        this.window.gBrowser.selectedTab = tab;
+      }
+      this.#panel.hidePopup();
+    });
+
+    return itemRow;
   }
 
   #escapeHtml(str) {

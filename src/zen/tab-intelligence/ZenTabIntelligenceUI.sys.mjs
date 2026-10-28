@@ -304,9 +304,31 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     const isRightSide =
       this.document.documentElement.getAttribute("zen-right-side") === "true";
-    const position = isRightSide ? "topright topleft" : "topleft topright";
+    const isEssential =
+      tab.hasAttribute("zen-essential") ||
+      tab.getAttribute("zen-essential") === "true";
 
-    this.#panel.openPopup(tab, position, isRightSide ? -6 : 6, 0, false, false);
+    let position;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    if (isEssential) {
+      // Essential tab:
+      // - Sidebar on left: deployed right at the bottom-right corner of the tab (topleft bottomright)
+      // - Sidebar on right: deployed right at the bottom-left corner of the tab (topright bottomleft)
+      position = isRightSide ? "topright bottomleft" : "topleft bottomright";
+      xOffset = isRightSide ? -2 : 2;
+      yOffset = 2;
+    } else {
+      // Pinned tab:
+      // - Deployed towards the window interior from the vertical center of the tab
+      // - Anchored on the side of the tab closest to the inner edge of the sidebar
+      position = isRightSide ? "rightcenter leftcenter" : "leftcenter rightcenter";
+      xOffset = isRightSide ? -6 : 6;
+      yOffset = 0;
+    }
+
+    this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
   }
 
   #createItemRow(item, tab) {

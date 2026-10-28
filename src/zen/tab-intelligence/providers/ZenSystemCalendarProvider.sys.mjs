@@ -59,7 +59,7 @@ export class ZenSystemCalendarProvider {
         field.match(VIDEO_CONFERENCE_REGEX) ||
         field.match(GENERIC_VIDEO_URL_REGEX);
       if (match) {
-        return match[0];
+        return match[0].replace(/[\s"'>.,;)\]]+$/, "");
       }
     }
     return null;
@@ -192,12 +192,16 @@ export class ZenSystemCalendarProvider {
   }
 
   async #getImminentMeetingsMacOS() {
+    const notifyMinutes = Services.prefs.getIntPref(
+      "zen.tab-intelligence.system-calendar.notify-minutes-before",
+      10
+    );
     const script = `
       set output to ""
       tell application "Calendar"
         set now to current date
         set timeWindowStart to now - (10 * 60)
-        set timeWindowEnd to now + (6 * 60)
+        set timeWindowEnd to now + (${notifyMinutes + 1} * 60)
         repeat with c in calendars
           try
             set cName to (name of c as string)
@@ -249,7 +253,7 @@ export class ZenSystemCalendarProvider {
 
         // Strictly verify that there is a browser-openable video conference URL
         const videoUrl = this.#extractVideoUrl(url, desc, loc, summary);
-        if (videoUrl && minutesLeft >= -5 && minutesLeft <= 5) {
+        if (videoUrl && minutesLeft >= -5 && minutesLeft <= notifyMinutes) {
           meetings.push({
             title: summary || "Meeting",
             videoUrl,
@@ -267,10 +271,14 @@ export class ZenSystemCalendarProvider {
   }
 
   async #getImminentMeetingsWindows() {
+    const notifyMinutes = Services.prefs.getIntPref(
+      "zen.tab-intelligence.system-calendar.notify-minutes-before",
+      10
+    );
     const psScript = `
       $now = Get-Date
       $start = $now.AddMinutes(-5)
-      $end = $now.AddMinutes(5)
+      $end = $now.AddMinutes(${notifyMinutes + 1})
       try {
         $ol = New-Object -ComObject Outlook.Application -ErrorAction Stop
         $ns = $ol.GetNamespace("MAPI")
@@ -312,7 +320,7 @@ export class ZenSystemCalendarProvider {
 
         // Strictly verify browser-openable video URL
         const videoUrl = this.#extractVideoUrl(location, body, summary);
-        if (videoUrl && minutesLeft >= -5 && minutesLeft <= 5) {
+        if (videoUrl && minutesLeft >= -5 && minutesLeft <= notifyMinutes) {
           meetings.push({
             title: summary || "Meeting",
             videoUrl,
@@ -330,6 +338,10 @@ export class ZenSystemCalendarProvider {
   }
 
   async #getImminentMeetingsLinux() {
+    const notifyMinutes = Services.prefs.getIntPref(
+      "zen.tab-intelligence.system-calendar.notify-minutes-before",
+      10
+    );
     const meetings = [];
     try {
       const khalPath = await lazy.Subprocess.pathSearch("khal").catch(() => null);
@@ -339,7 +351,7 @@ export class ZenSystemCalendarProvider {
           arguments: [
             "list",
             "now",
-            "10m",
+            `${notifyMinutes}m`,
             "--format",
             "{title}<||>{start-time}<||>{description}<||>{location}<||>{calendar}<##>",
           ],

@@ -497,3 +497,20 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
   color: inherit;
 }
 
+.zen-intelligence-minutes-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+#zenTabIntelligenceNotifyMinutes {
+  width: 70px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid light-dark(#ccc, #555);
+  background: light-dark(#fff, #2c2c2e);
+  color: inherit;
+}
+

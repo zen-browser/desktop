@@ -107,6 +107,17 @@
                       preference="zen.tab-intelligence.system-calendar.enabled"/>
 
             <vbox id="zenTabIntelligenceSystemCalendarSettings" class="indent">
+                  <hbox align="center" class="zen-intelligence-pref-block zen-intelligence-minutes-row">
+                        <label id="zenTabIntelligenceNotifyMinutesLabel"
+                               data-l10n-id="zen-tab-intelligence-system-calendar-notify-minutes"/>
+                        <html:input id="zenTabIntelligenceNotifyMinutes"
+                                    type="number"
+                                    min="1"
+                                    max="120"
+                                    class="input-inline"
+                                    preference="zen.tab-intelligence.system-calendar.notify-minutes-before"/>
+                  </hbox>
+
                   <vbox class="zen-intelligence-pref-block">
                         <label id="zenTabIntelligenceDefaultWorkspacesLabel"
                                data-l10n-id="zen-tab-intelligence-system-calendar-default-workspaces"/>

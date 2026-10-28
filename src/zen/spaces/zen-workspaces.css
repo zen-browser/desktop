@@ -537,17 +537,11 @@ zen-workspace {
 .zen-imminent-meeting-banner {
   display: flex;
   margin: 4px var(--zen-toolbox-padding, 8px);
-  padding: 6px 10px;
-  border-radius: var(--border-radius-medium, 8px);
-  background: light-dark(rgba(238, 242, 255, 0.95), rgba(30, 41, 59, 0.9));
-  border: 1px solid light-dark(rgba(99, 102, 241, 0.25), rgba(129, 140, 248, 0.3));
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  padding: 6px 8px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-
-  &:hover {
-    background: light-dark(rgba(224, 231, 255, 1), rgba(49, 46, 129, 0.4));
-  }
 
   &[hidden="true"] {
     display: none !important;
@@ -557,36 +551,39 @@ zen-workspace {
     display: flex;
     align-items: center;
     width: 100%;
-    gap: 8px;
+    gap: 10px;
   }
 
   .zen-imminent-meeting-icon {
-    width: 16px;
-    height: 16px;
-    background: url("chrome://browser/skin/notification-icons.svg#camera") no-repeat center;
-    background-size: contain;
-    fill: var(--zen-primary-color, #4f46e5);
-    flex-shrink: 0;
+    display: none;
   }
 
   .zen-imminent-meeting-info {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    gap: 1px;
+    flex: 1;
+    gap: 2px;
   }
 
+  .zen-imminent-meeting-header,
   .zen-imminent-meeting-badge {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--zen-primary-color, #4f46e5);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  .zen-imminent-meeting-subtitle,
   .zen-imminent-meeting-title {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: inherit;
+    opacity: 0.72;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -594,25 +591,40 @@ zen-workspace {
 
   .zen-imminent-meeting-join-button {
     appearance: none;
-    border: none;
-    background: var(--zen-primary-color, #4f46e5);
-    color: white !important;
-    border-radius: calc(var(--border-radius-medium, 8px) / 1.5);
-    padding: 3px 10px;
+    border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.2));
+    background: light-dark(#ffffff, #000000);
+    color: light-dark(#000000, #ffffff) !important;
+    border-radius: 5px;
+    padding: 4px 10px;
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     flex-shrink: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease, transform 0.1s ease;
 
     &:hover {
-      opacity: 0.9;
+      opacity: 0.85;
+    }
+
+    &:active {
+      transform: scale(0.97);
     }
   }
 }
 
+:root[dark] .zen-imminent-meeting-join-button,
+:root[zen-theme-dark="true"] .zen-imminent-meeting-join-button {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+:root:not([dark]):not([zen-theme-dark="true"]) .zen-imminent-meeting-join-button {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
 :root:not([zen-sidebar-expanded="true"]) .zen-imminent-meeting-banner {
-  padding: 4px;
+  padding: 4px 2px;
   margin: 4px auto;
   justify-content: center;
 
@@ -621,6 +633,6 @@ zen-workspace {
   }
 
   .zen-imminent-meeting-join-button {
-    padding: 3px 6px;
+    padding: 4px 6px;
   }
 }

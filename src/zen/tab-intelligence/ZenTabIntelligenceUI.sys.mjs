@@ -577,37 +577,62 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         banner.removeAttribute("hidden");
         const { tab, meeting } = meetingInfo;
 
-        const titleEl = banner.querySelector(".zen-imminent-meeting-title");
-        if (titleEl) {
-          const timeText =
-            meeting.minutesLeft <= 0 ? "Now" : `in ${meeting.minutesLeft}m`;
-          const calPrefix = meeting.calendar ? `[${meeting.calendar}] ` : "";
-          titleEl.textContent = `${calPrefix}${meeting.title} (${timeText})`;
+        const headerEl =
+          banner.querySelector(".zen-imminent-meeting-header") ||
+          banner.querySelector(".zen-imminent-meeting-badge");
+        const subtitleEl =
+          banner.querySelector(".zen-imminent-meeting-subtitle") ||
+          banner.querySelector(".zen-imminent-meeting-title");
+
+        const minutes =
+          meeting.minutesLeft !== undefined ? meeting.minutesLeft : 0;
+        let timeText;
+        if (minutes <= 0) {
+          timeText = "Upcoming Meeting now";
+        } else if (minutes === 1) {
+          timeText = "Upcoming Meeting in 1 minute";
+        } else {
+          timeText = `Upcoming Meeting in ${minutes} minutes`;
         }
+
+        if (headerEl) {
+          headerEl.textContent = timeText;
+        }
+
+        if (subtitleEl) {
+          const calPrefix = meeting.calendar ? `[${meeting.calendar}] ` : "";
+          subtitleEl.textContent = `${calPrefix}${meeting.title || "Meeting"}`;
+        }
+
+        const cleanUrl = meeting.videoUrl
+          ? meeting.videoUrl.replace(/[\s"'>.,;)\]]+$/, "")
+          : null;
+
+        const openMeeting = (e) => {
+          if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+          }
+          if (tab && tab.isConnected) {
+            this.window.gBrowser.selectedTab = tab;
+          } else if (cleanUrl) {
+            const newTab = this.window.gBrowser.addTab(cleanUrl, {
+              triggeringPrincipal:
+                Services.scriptSecurityManager.getSystemPrincipal(),
+              inBackground: false,
+            });
+            if (newTab) {
+              this.window.gBrowser.selectedTab = newTab;
+            }
+          }
+        };
 
         const joinBtn = banner.querySelector(".zen-imminent-meeting-join-button");
         if (joinBtn) {
-          joinBtn.onclick = (e) => {
-            e.stopPropagation();
-            this.window.gBrowser.addTab(meeting.videoUrl, {
-              triggeringPrincipal:
-                Services.scriptSecurityManager.getSystemPrincipal(),
-              inBackground: false,
-            });
-          };
+          joinBtn.onclick = openMeeting;
         }
 
-        banner.onclick = () => {
-          if (tab && tab.isConnected) {
-            this.window.gBrowser.selectedTab = tab;
-          } else if (meeting.videoUrl) {
-            this.window.gBrowser.addTab(meeting.videoUrl, {
-              triggeringPrincipal:
-                Services.scriptSecurityManager.getSystemPrincipal(),
-              inBackground: false,
-            });
-          }
-        };
+        banner.onclick = openMeeting;
       } else {
         banner.setAttribute("hidden", "true");
       }

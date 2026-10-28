@@ -1207,6 +1207,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.tab-intelligence.system-calendar.notify-minutes-before",
+    type: "int",
+    default: 10,
+  },
+  {
     id: "zen.tab-intelligence.system-calendar.default-workspaces",
     type: "string",
     default: "*",

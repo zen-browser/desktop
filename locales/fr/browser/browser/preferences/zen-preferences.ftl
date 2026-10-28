@@ -95,6 +95,7 @@ zen-tab-intelligence-service-whatsapp =
     .label = Messages WhatsApp Web
 zen-tab-intelligence-system-calendar =
     .label = Connecter le calendrier système de l'OS pour les visios imminentes
+zen-tab-intelligence-system-calendar-notify-minutes = Afficher le rappel (en minutes avant le meeting) :
 zen-tab-intelligence-system-calendar-default-workspaces = Espaces par défaut pour les réunions :
 zen-tab-intelligence-system-calendar-all-workspaces = Tous les espaces
 zen-tab-intelligence-system-calendar-routing-header = Routage des calendriers système

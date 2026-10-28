@@ -121,6 +121,7 @@ zen-tab-intelligence-service-whatsapp =
     .label = WhatsApp Web messages
 zen-tab-intelligence-system-calendar =
     .label = Connect OS system calendar for imminent meetings
+zen-tab-intelligence-system-calendar-notify-minutes = Show meeting reminder minutes before:
 zen-tab-intelligence-system-calendar-default-workspaces = Default workspaces for system meetings:
 zen-tab-intelligence-system-calendar-all-workspaces = All workspaces
 zen-tab-intelligence-system-calendar-routing-header = System Calendar Routing

@@ -102,9 +102,13 @@ export class GoogleCalendarProvider extends ZenBaseTabProvider {
       if (ev.time) {
         const diffMs = ev.time.getTime() - now;
         const diffMinutes = diffMs / (60 * 1000);
+        const notifyMinutes = Services.prefs.getIntPref(
+          "zen.tab-intelligence.system-calendar.notify-minutes-before",
+          10
+        );
 
-        // Within 5 minutes before start, or up to 5 minutes after start
-        if (diffMinutes >= -5 && diffMinutes <= 5) {
+        // Within notifyMinutes before start, or up to 5 minutes after start
+        if (diffMinutes >= -5 && diffMinutes <= notifyMinutes) {
           imminentMeeting = {
             title: ev.title,
             videoUrl: ev.videoUrl,

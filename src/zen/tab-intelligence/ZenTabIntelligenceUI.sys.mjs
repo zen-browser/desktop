@@ -27,6 +27,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.window.addEventListener("TabAttrModified", this);
     this.window.addEventListener("mouseover", this, { passive: true });
     this.window.addEventListener("mouseout", this, { passive: true });
+    this.window.addEventListener("mousedown", this, true);
+    this.window.addEventListener("dragstart", this, true);
 
     // Initial check of existing tabs
     if (this.window.gBrowser?.tabs) {
@@ -45,6 +47,11 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
   uninit() {
     lazy.ZenTabIntelligenceManager.removeListener(this);
+    this.window.removeEventListener("TabAttrModified", this);
+    this.window.removeEventListener("mouseover", this, { passive: true });
+    this.window.removeEventListener("mouseout", this, { passive: true });
+    this.window.removeEventListener("mousedown", this, true);
+    this.window.removeEventListener("dragstart", this, true);
     if (this.#hoverTimer) {
       this.window.clearTimeout(this.#hoverTimer);
       this.#hoverTimer = null;
@@ -65,6 +72,33 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         if (event.detail?.changed?.includes("label")) {
           this.evaluateTab(event.target);
         }
+        break;
+      }
+      case "mousedown": {
+        if (
+          event.target.closest?.(".tabbrowser-tab") ||
+          !this.#panel?.contains(event.target)
+        ) {
+          if (this.#hoverTimer) {
+            this.window.clearTimeout(this.#hoverTimer);
+            this.#hoverTimer = null;
+          }
+          if (this.#panel && this.#panel.state === "open") {
+            this.#panel.hidePopup();
+          }
+          this.#currentHoverTab = null;
+        }
+        break;
+      }
+      case "dragstart": {
+        if (this.#hoverTimer) {
+          this.window.clearTimeout(this.#hoverTimer);
+          this.#hoverTimer = null;
+        }
+        if (this.#panel && this.#panel.state === "open") {
+          this.#panel.hidePopup();
+        }
+        this.#currentHoverTab = null;
         break;
       }
       case "mouseover": {
@@ -141,6 +175,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       panel.setAttribute("noautofocus", "true");
       panel.setAttribute("orient", "vertical");
       panel.setAttribute("level", "top");
+      panel.setAttribute("norolluponanchor", "true");
+      panel.setAttribute("consumeoutsideclicks", "never");
 
       const wrapper = this.document.createElementNS(
         "http://www.w3.org/1999/xhtml",

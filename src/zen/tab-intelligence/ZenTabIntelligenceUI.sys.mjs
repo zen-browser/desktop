@@ -91,7 +91,10 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     }
 
     const url = tab.linkedBrowser?.currentURI?.spec || "";
-    if (url.startsWith("https://mail.google.com/")) {
+    const isGmail = url.startsWith("https://mail.google.com/");
+    const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
+
+    if (isGmail || isWhatsApp) {
       const label = tab.label || "";
       const match = label.match(/\((\d+)\)/);
       const unreadCount = match ? parseInt(match[1], 10) : 0;
@@ -106,7 +109,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       lazy.ZenTabIntelligenceManager.onTabStatusUpdate(tab, {
         hasUnread,
         unreadCount,
-        service: "Gmail",
+        service: isWhatsApp ? "WhatsApp" : "Gmail",
       });
     }
   }
@@ -155,8 +158,9 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     const url = tab.linkedBrowser?.currentURI?.spec || "";
     const isGmail = url.startsWith("https://mail.google.com/");
+    const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
     const isGCal = url.startsWith("https://calendar.google.com/");
-    if (!isGmail && !isGCal) return;
+    if (!isGmail && !isWhatsApp && !isGCal) return;
 
     const label = tab.label || "";
     const hasUnread =

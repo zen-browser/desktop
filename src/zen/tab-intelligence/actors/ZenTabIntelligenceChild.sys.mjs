@@ -4,8 +4,13 @@
 
 import { GmailProvider } from "resource:///modules/zen/intelligence/GmailProvider.sys.mjs";
 import { GoogleCalendarProvider } from "resource:///modules/zen/intelligence/GoogleCalendarProvider.sys.mjs";
+import { WhatsAppProvider } from "resource:///modules/zen/intelligence/WhatsAppProvider.sys.mjs";
 
-const PROVIDERS = [new GmailProvider(), new GoogleCalendarProvider()];
+const PROVIDERS = [
+  new GmailProvider(),
+  new GoogleCalendarProvider(),
+  new WhatsAppProvider(),
+];
 
 export class ZenTabIntelligenceChild extends JSWindowActorChild {
   #activeProvider = null;

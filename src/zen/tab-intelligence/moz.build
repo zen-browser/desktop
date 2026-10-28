@@ -5,6 +5,7 @@
 EXTRA_JS_MODULES.zen.intelligence += [
     "providers/GmailProvider.sys.mjs",
     "providers/GoogleCalendarProvider.sys.mjs",
+    "providers/WhatsAppProvider.sys.mjs",
     "providers/ZenBaseTabProvider.sys.mjs",
     "ZenTabIntelligenceManager.sys.mjs",
     "ZenTabIntelligenceUI.sys.mjs",

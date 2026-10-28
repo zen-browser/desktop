@@ -88,6 +88,7 @@ let JSWINDOWACTORS = {
     matches: [
       "https://mail.google.com/*",
       "https://calendar.google.com/*",
+      "https://web.whatsapp.com/*",
     ],
     messageManagerGroups: ["browsers"],
     allFrames: true,

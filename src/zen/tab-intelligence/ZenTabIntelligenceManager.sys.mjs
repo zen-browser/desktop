@@ -129,6 +129,7 @@ class nsZenTabIntelligenceManager {
     const count = match ? parseInt(match[1], 10) : 1;
     const url = browser?.currentURI?.spec || "";
     const isCalendar = url.startsWith("https://calendar.google.com/");
+    const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
 
     if (isCalendar) {
       return {
@@ -139,6 +140,21 @@ class nsZenTabIntelligenceManager {
             title: "Google Calendar",
             subtitle: "Upcoming Schedule",
             snippet: "Click to view events",
+            url,
+          },
+        ],
+      };
+    }
+
+    if (isWhatsApp) {
+      return {
+        type: "chat",
+        service: "WhatsApp",
+        items: [
+          {
+            title: "WhatsApp",
+            subtitle: `${count} unread conversation${count > 1 ? "s" : ""}`,
+            snippet: "Click to open chat",
             url,
           },
         ],

@@ -123,9 +123,13 @@ class nsZenTabIntelligenceManager {
       }
     }
 
-    // Fallback: derive details from tab label
-    const label = tab.label || "";
-    const match = label.match(/\((\d+)\)/);
+    // Fallback: derive details from web page title (handles renamed tabs with zenStaticLabel)
+    const pageTitle =
+      browser?.contentTitle ||
+      browser?.browsingContext?.currentWindowGlobal?.documentTitle ||
+      tab.label ||
+      "";
+    const match = pageTitle.match(/\((\d+)\)/);
     const count = match ? parseInt(match[1], 10) : 1;
     const url = browser?.currentURI?.spec || "";
     const isCalendar = url.startsWith("https://calendar.google.com/");

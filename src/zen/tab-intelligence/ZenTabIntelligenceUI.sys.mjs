@@ -82,6 +82,16 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     }
   }
 
+  getTabContentTitle(tab) {
+    if (!tab) return "";
+    return (
+      tab.linkedBrowser?.contentTitle ||
+      tab.linkedBrowser?.browsingContext?.currentWindowGlobal?.documentTitle ||
+      tab.label ||
+      ""
+    );
+  }
+
   evaluateTab(tab) {
     if (!tab || !tab.isConnected) return;
 
@@ -95,8 +105,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
 
     if (isGmail || isWhatsApp) {
-      const label = tab.label || "";
-      const match = label.match(/\((\d+)\)/);
+      const pageTitle = this.getTabContentTitle(tab);
+      const match = pageTitle.match(/\((\d+)\)/);
       const unreadCount = match ? parseInt(match[1], 10) : 0;
       const hasUnread = unreadCount > 0;
 
@@ -170,9 +180,9 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     const isGCal = url.startsWith("https://calendar.google.com/");
     if (!isGmail && !isWhatsApp && !isGCal) return;
 
-    const label = tab.label || "";
+    const pageTitle = this.getTabContentTitle(tab);
     const hasUnread =
-      tab.hasAttribute("zen-has-unread") || !!label.match(/\((\d+)\)/);
+      tab.hasAttribute("zen-has-unread") || !!pageTitle.match(/\((\d+)\)/);
 
     // Only show for tabs with unread content or calendar tabs
     if (!hasUnread && !isGCal) return;

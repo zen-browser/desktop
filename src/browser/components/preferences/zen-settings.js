@@ -769,12 +769,27 @@ var gZenTabIntelligenceSettings = {
   _workspaces: [],
   _routing: {},
   _defaultWorkspaces: "*",
+  _initted: false,
 
   async init() {
+    const template = document.getElementById("template-paneZenTabManagement");
+    if (template) {
+      template.replaceWith(template.content);
+      Preferences.queueUpdateOfAllElements();
+    }
+
     const container = document.getElementById(
       "zenTabIntelligenceSystemCalendarSettings"
     );
     if (!container) return;
+
+    if (this._initted) {
+      this._readPrefs();
+      this._renderDefaultWorkspaces();
+      await this._renderRoutingList();
+      return;
+    }
+    this._initted = true;
 
     // Load workspaces
     try {
@@ -819,7 +834,13 @@ var gZenTabIntelligenceSettings = {
       "zenTabIntelligenceSystemCalendar"
     );
     const updateVisibility = () => {
-      container.hidden = !sysCalCheckbox?.checked;
+      let isChecked = sysCalCheckbox
+        ? sysCalCheckbox.checked
+        : Services.prefs.getBoolPref(
+            "zen.tab-intelligence.system-calendar.enabled",
+            true
+          );
+      container.hidden = !isChecked;
     };
     sysCalCheckbox?.addEventListener("command", updateVisibility);
     updateVisibility();
@@ -1200,4 +1221,17 @@ Preferences.addAll([
 Preferences.addSetting({
   id: "zenWorkspaceContinueWhereLeftOff",
   pref: "zen.workspaces.continue-where-left-off",
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  gZenTabIntelligenceSettings.init();
+});
+
+document.addEventListener("paneshown", (e) => {
+  if (
+    e.detail?.category === "paneTabsBrowsing" ||
+    e.detail?.category === "paneZenTabManagement"
+  ) {
+    gZenTabIntelligenceSettings.init();
+  }
 });

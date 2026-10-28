@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da707d37822 100644
+index b7fbb8b9dc..2f61a935e9 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
 @@ -131,6 +131,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
@@ -10,7 +10,7 @@ index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da7
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -470,6 +471,8 @@ const CONFIG_PANES = Object.freeze({
+@@ -469,6 +470,8 @@ const CONFIG_PANES = Object.freeze({
    tabsBrowsing: {
      l10nId: "tabs-browsing-section",
      groupIds: [
@@ -19,7 +19,7 @@ index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da7
        "browserLayout",
        "tabs",
        "pageNavigation",
-@@ -523,7 +526,7 @@ function register_module(categoryName, categoryObject) {
+@@ -522,7 +525,7 @@ function register_module(categoryName, categoryObject) {
        }
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
@@ -28,7 +28,7 @@ index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da7
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -566,6 +569,9 @@ function init_all() {
+@@ -565,6 +568,9 @@ function init_all() {
    }
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
@@ -38,3 +38,25 @@ index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da7
  
    // Restore the cached Firefox Labs nav button visibility so it shows
    // immediately when recipes are expected to be available, before
+@@ -924,6 +930,9 @@ async function gotoPref(
+     throw err;
+   }
+   categoryInfo.init();
++  if (category === "paneTabsBrowsing") {
++    gCategoryInits.get("paneZenTabManagement")?.init();
++  }
+ 
+   if (document.hasPendingL10nMutations) {
+     await new Promise(r =>
+@@ -995,7 +1004,10 @@ function search(aQuery, aAttribute) {
+       element.getAttribute("data-subpanel") == "true"
+     ) {
+       let attributeValue = element.getAttribute(aAttribute);
+-      if (attributeValue == aQuery) {
++      let isMatch =
++        attributeValue == aQuery ||
++        (attributeValue && attributeValue.split(/\s+/).includes(aQuery));
++      if (isMatch) {
+         element.hidden = false;
+       } else {
+         element.hidden = true;

@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarResult.mjs b/browser/components/urlbar/content/UrlbarResult.mjs
-index 30662cbb0551a5efe12926eb1524719ece24ee48..1ed598c8b8c0836759b5af10e6cc9f5e334744ef 100644
+index febdaae5818d21b142ba1d5968875133b6f3adb9..3a69e4d62e453c25b9e8f6d057e5f90d1740ab5b 100644
 --- a/browser/components/urlbar/content/UrlbarResult.mjs
 +++ b/browser/components/urlbar/content/UrlbarResult.mjs
-@@ -184,6 +184,10 @@ export class UrlbarResult {
+@@ -253,6 +253,10 @@ export class UrlbarResult {
      return this.#heuristic;
    }
  
@@ -10,6 +10,6 @@ index 30662cbb0551a5efe12926eb1524719ece24ee48..1ed598c8b8c0836759b5af10e6cc9f5e
 +    this.#heuristic = value;
 +  }
 +
-   get hideRowLabel() {
-     return this.#hideRowLabel;
-   }
+   /**
+    * Whether the view hides the group label above the result's row.
+    *

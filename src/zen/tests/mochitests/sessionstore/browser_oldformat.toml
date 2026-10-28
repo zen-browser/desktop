@@ -89,9 +89,6 @@ skip-if = [
 ["browser_350525.js"]
 
 ["browser_354894_perwindowpb.js"]
-skip-if = [
-  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
-]
 
 ["browser_367052.js"]
 
@@ -219,9 +216,6 @@ https_first_disabled = true
 ["browser_590268.js"]
 
 ["browser_590563.js"]
-skip-if = [
-  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'",
-]
 
 ["browser_595601-restore_hidden.js"]
 

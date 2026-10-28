@@ -165,7 +165,7 @@
   align-self: start;
   transform: translateX(-2px);
 
-  background-color: color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%);
+  background-color: color-mix(in srgb, var(--zen-primary-color), white 80%);
   border: 3px solid transparent;
   box-shadow: 0 0 6px 2px rgba(0,0,0,.1);
   color: var(--progress);

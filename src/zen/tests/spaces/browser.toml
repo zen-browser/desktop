@@ -26,6 +26,8 @@ support-files = [
 
 ["browser_issue_9900.js"]
 
+["browser_newtab_paste_and_search.js"]
+
 ["browser_overflow_scrollbox.js"]
 
 ["browser_private_mode.js"]

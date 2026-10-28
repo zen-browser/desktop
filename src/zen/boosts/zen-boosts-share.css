@@ -1,0 +1,721 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+.zbs-dialog {
+  --text-color: light-dark(#060941, #e6e6f0);
+  --text-deco-color: light-dark(#b4b4c2, #5a5a66);
+
+  --share-header-background: light-dark(#ededf0, #2a2a30);
+  --share-header-border: light-dark(#e0e0e5, #38383f);
+  --share-header-text: light-dark(#6b6b76, #a0a0ab);
+
+  --share-width: 470px;
+
+  --signature-container-outline: light-dark(#e5e5e5, #3a3a42);
+  --signature-container-shadow-color: light-dark(#73747d10, #00000040);
+
+  --footer-background: light-dark(#f7fbfe, #1f1f24);
+  --footer-outline: light-dark(#bbbccb40, #ffffff1a);
+
+  --info-button-background-hover: light-dark(#d5d6ed, #3a3a44);
+  --info-button-background-active: light-dark(#d5d6ed, #44444f);
+  --share-content-pane-buttons-hover: light-dark(#f1f1ff, #3a3a44);
+
+  --favicon-background: light-dark(rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.04));
+  --favicon-outline: light-dark(#d4d6e6, #45454f);
+  --favicon-border: light-dark(#fff, #2c2c33);
+
+  --pane-background: light-dark(#f9f9f8, #2a2a30);
+  --pane-outline: light-dark(#fcfeff, #3a3a42);
+  --pane-shadow: light-dark(#73747d44, #00000066);
+  --surface-background: light-dark(#fff, #1c1c21);
+  --surface-muted-background: light-dark(#f1f1ff, #2f2f36);
+  --surface-text: light-dark(#6c6a85, #a9a9b8);
+  --ink: light-dark(#030340, #e6e6f0);
+  --separator: light-dark(#8d8e9d68, #ffffff2e);
+
+  position: relative;
+  padding: 0 28px 28px;
+  background-color: var(--footer-background);
+  color: var(--text-color);
+
+  /* Close carries the theme's "ghost" dialog button class. */
+  &::part(dialog-button) {
+    margin: 24px 0 0;
+  }
+}
+
+.zbs-card {
+  position: static;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: var(--share-width);
+  min-width: var(--share-width);
+  max-width: var(--share-width);
+  margin: 0 -28px;
+  padding: 0;
+  background-color: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+
+  overflow: clip;
+
+  & button {
+    user-select: none !important;
+  }
+}
+
+/* Header strip of the receive dialog */
+
+.zbs-header {
+  display: flex;
+  height: 34px;
+  background-color: var(--share-header-background);
+  border-bottom: 1px solid var(--share-header-border);
+}
+
+.zbs-header-domain {
+  display: flex;
+  gap: 2pt;
+  margin: auto;
+  text-align: center;
+  font-size: small;
+  color: var(--share-header-text);
+
+  & p {
+    margin: 0;
+  }
+
+  & b {
+    font-weight: bold;
+  }
+}
+
+/* Name, author and site icon */
+
+.zbs-info {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+
+  & .zbs-favicon {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    padding: 12px;
+    box-sizing: border-box;
+    background-color: var(--favicon-background);
+    border: solid 4px var(--favicon-border);
+    border-radius: 14px;
+    outline: 1px solid var(--favicon-outline);
+  }
+}
+
+.zbs-info-text {
+  position: relative;
+  /* Own stacking context, so the signature's negative z-index puts it
+   * behind the name but still above the card's background. */
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 60px;
+  margin-top: auto;
+  margin-bottom: auto;
+  min-width: 0;
+  gap: 4px;
+
+  & input {
+    appearance: none;
+    border: none;
+    outline: none;
+    background: none;
+    border-radius: 2px;
+
+    &:focus,
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+  }
+
+  & .zbs-signature {
+    position: absolute;
+    inset: -50px -40px;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    stroke: currentColor;
+    stroke-width: 5;
+    pointer-events: none;
+    opacity: 0.1;
+  }
+}
+
+.zbs-name {
+  width: 236px;
+  margin: 0;
+  padding: 0;
+  font-size: 20pt;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.dashed {
+    text-decoration: underline dashed var(--text-deco-color);
+    text-decoration-thickness: 2px;
+  }
+}
+
+.zbs-author {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-color);
+
+  &[hidden] {
+    display: none;
+  }
+
+  & i {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  & b {
+    font-weight: bold;
+  }
+
+  & input {
+    --input-min-height: 20px;
+
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+  }
+}
+
+.zbs-info-button {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  min-width: 38px;
+  max-width: 38px;
+  aspect-ratio: 1;
+  margin: auto 0 auto auto;
+  padding: 0 !important;
+  border-radius: 10px;
+  color: light-dark(#595b86, #b3b3c4);
+  opacity: 0.4;
+  scale: 1;
+  will-change: scale;
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  transition:
+    opacity 0.2s ease,
+    background-color 0.2s ease,
+    scale 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    background-color: var(--info-button-background-hover);
+  }
+
+  &:active {
+    opacity: 0.9;
+    scale: 0.95;
+    background-color: var(--info-button-background-active);
+  }
+
+  & .button-box {
+    margin: 0;
+    padding: 0;
+  }
+
+  & .button-icon {
+    margin: 0;
+  }
+
+  & .button-text {
+    display: none;
+  }
+}
+
+.zbs-info-panel {
+  & p {
+    max-width: 365px;
+    margin: 0;
+    font-size: small;
+  }
+}
+
+/* Screenshot and signature pane */
+
+.zbs-top {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  gap: 12px;
+}
+
+.zbs-content {
+  position: relative;
+  height: 240px;
+  padding: 0 24px 32px;
+  perspective: 600px;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.zbs-pane {
+  --spring-easing: linear(
+    0,
+    0.0018,
+    0.0069 1.15%,
+    0.026 2.3%,
+    0.0637,
+    0.1135 5.18%,
+    0.2229 7.78%,
+    0.5977 15.84%,
+    0.7014,
+    0.7904,
+    0.8641,
+    0.9228,
+    0.9676 28.8%,
+    1.0032 31.68%,
+    1.0225,
+    1.0352 36.29%,
+    1.0431 38.88%,
+    1.046 42.05%,
+    1.0448 44.35%,
+    1.0407 47.23%,
+    1.0118 61.63%,
+    1.0025 69.41%,
+    0.9981 80.35%,
+    0.9992 99.94%
+  );
+
+  height: 100%;
+  padding: 8px;
+  border-radius: 20px;
+  outline: 1px solid var(--pane-outline);
+  background-color: var(--pane-background);
+  box-shadow: 0 0 8px var(--pane-shadow);
+  transform-style: preserve-3d;
+  transform: rotate3d(0, 1, 0, 0);
+  transition: transform 1.2s var(--spring-easing);
+
+  &[flipped="true"] {
+    transform: rotate3d(0, 1, 0, 180deg);
+  }
+}
+
+.zbs-screenshot,
+.zbs-signature-pane {
+  position: absolute;
+  inset: 8px;
+  border-radius: 14px;
+  overflow: hidden;
+  outline: 1px solid var(--signature-container-outline);
+  filter: drop-shadow(0 0 4px var(--signature-container-shadow-color));
+  backface-visibility: hidden;
+}
+
+.zbs-screenshot {
+  background-color: var(--surface-background);
+  transform: translateZ(1px);
+
+  & .zbs-screenshot-favicon {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 64px;
+    height: 64px;
+    margin: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    object-fit: contain;
+    border-radius: 16px;
+    background-color: var(--favicon-background);
+    border: solid 4px var(--favicon-border);
+    outline: 1px solid var(--favicon-outline);
+  }
+
+  .zbs-card[screenshot-hidden] & {
+    background-color: var(--surface-muted-background);
+  }
+
+  .zbs-card[screenshot-hidden] & canvas,
+  .zbs-card[screenshot-hidden] & .zbs-screenshot-image {
+    visibility: hidden;
+  }
+
+  .zbs-card[screenshot-hidden] & .zbs-screenshot-favicon {
+    display: block;
+  }
+
+  & canvas,
+  & img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The sender frames the screenshot by dragging and zooming it. */
+  & canvas {
+    cursor: grab;
+
+    &[dragging] {
+      cursor: grabbing;
+    }
+  }
+
+  & img[hidden] {
+    display: none;
+  }
+}
+
+.zbs-signature-pane {
+  background-color: var(--surface-background);
+  transform: rotateY(180deg);
+
+  & p {
+    position: absolute;
+    inset: 0;
+    margin: 16px;
+    font-size: 10pt;
+    text-align: center;
+    color: var(--surface-text);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  & .zbs-signature {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    stroke: var(--ink);
+    stroke-width: 6;
+  }
+}
+
+.zbs-pane-buttons-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  margin: -12px;
+  perspective: 400px;
+  transform-origin: top;
+  transform: translateZ(10px);
+  filter: drop-shadow(0 0 4px var(--pane-shadow));
+}
+
+.zbs-pane-buttons {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  margin: auto;
+  padding: 6px;
+  border-radius: 24px;
+  background-color: var(--surface-background);
+  translate: 0 -35px;
+  transform: rotate3d(0, 0, 0, 0);
+  transition:
+    transform cubic-bezier(0.03, 0.79, 0.46, 1) 0.4s,
+    scale cubic-bezier(0.03, 0.79, 0.46, 1) 0.4s;
+
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
+  &:has(button:last-child:hover) {
+    transform: rotate3d(0, 1, 0, 12deg);
+  }
+
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
+  &:has(button:first-child:hover) {
+    transform: rotate3d(0, 1, 0, -12deg);
+  }
+
+  &:active {
+    scale: 0.95;
+  }
+
+  & button {
+    appearance: none;
+    min-width: 42px;
+    height: 26px;
+    margin: -2px;
+    border: none;
+    background: none;
+    -moz-context-properties: fill, fill-opacity;
+    fill: var(--ink);
+
+    & .button-box {
+      scale: 0.85;
+    }
+
+    &:first-child {
+      border-radius: 20px 6px 6px 20px;
+    }
+
+    &:last-child {
+      border-radius: 6px 20px 20px 6px;
+    }
+
+    &:hover {
+      background-color: var(--share-content-pane-buttons-hover);
+    }
+
+    &[disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
+
+.zbs-vertical-sep {
+  width: 2px;
+  height: auto;
+  margin: 4px 5px;
+  border-radius: 4px;
+  background-color: var(--separator);
+}
+
+.zbs-stroke-out {
+  stroke-dasharray: var(--stroke-length);
+  stroke-dashoffset: 0;
+  animation: zbs-stroke-out 1s ease forwards;
+}
+
+@keyframes zbs-stroke-out {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dashoffset: var(--stroke-offset);
+    opacity: 0;
+  }
+}
+
+/* Footer */
+
+.zbs-footer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 12px;
+  background-color: var(--footer-background);
+}
+
+.zbs-footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px 24px 4px;
+  color: var(--text-color);
+
+  & h1 {
+    margin: 0;
+    font-size: large;
+    font-weight: bold;
+  }
+
+  & p {
+    margin: 0;
+    font-size: small;
+  }
+
+  & .zbs-library {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: text-bottom;
+    font-weight: 600;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      background: url("chrome://browser/skin/zen-icons/library/library-sprite.svg")
+        0 0 / calc(36 * 100%) 100% no-repeat;
+      -moz-context-properties: fill, fill-opacity;
+      fill: currentColor;
+    }
+  }
+}
+
+/* Share success animation */
+
+.zbs-success {
+  position: absolute;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  transition: opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
+  flex-direction: column;
+
+  &[showing] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  background-color: light-dark(#fffc, #1c1c21e6);
+  color: light-dark(#4f5c3a, #b9c9a0);
+  font-family: system-ui;
+  font-weight: bolder;
+  font-size: 12pt;
+
+  /* The text hangs below the heart so the heart itself sits dead center. */
+  & .zbs-success-copied {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(50% + 64px);
+    margin: 0;
+    text-align: center;
+    translate: 0 -6px;
+    scale: 0.8;
+    opacity: 0;
+    transition:
+      translate 1.2s cubic-bezier(0.19, 1, 0.22, 1),
+      scale 1.2s cubic-bezier(0.19, 1, 0.22, 1),
+      opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  & .zbs-success-heart-container {
+    position: relative;
+  }
+
+  & .zbs-success-heart {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    scale: 0;
+    will-change: scale;
+    filter: drop-shadow(-10px 10px 10px #2e2e2f15);
+    animation: heart-pulse-loop 0.95s cubic-bezier(0.175, 0.5, 0.4, 1.4)
+      infinite;
+
+    & img,
+    & svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    & img {
+      object-fit: contain;
+      object-position: center;
+    }
+
+    & svg {
+      scale: 0.65;
+      stroke-dasharray: 24;
+      stroke-dashoffset: -24;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+  }
+}
+
+.zbs-success-heart-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+
+  & path {
+    fill: none;
+    stroke: rgba(130, 147, 100, 0.67);
+    stroke-width: 42;
+    transform-box: fill-box;
+    transform-origin: center;
+    scale: 0;
+    will-change: scale, opacity;
+    filter: blur(20px);
+  }
+}
+
+.zbs-success[done] {
+  & .zbs-success-heart-svg path {
+    animation: heart-expand 1.2s cubic-bezier(0.15, 0.54, 0.01, 0.93);
+  }
+
+  & .zbs-success-heart {
+    animation: heart-pulse 0.7s cubic-bezier(0.11, 0.42, 0.41, 0.84) forwards;
+  }
+
+  & .zbs-success-heart-check {
+    stroke-dashoffset: 0;
+  }
+
+  & .zbs-success-copied {
+    opacity: 1;
+    scale: 1;
+    translate: 0;
+  }
+}
+
+@keyframes heart-pulse-loop {
+  0% {
+    scale: 0.7;
+  }
+
+  50% {
+    scale: 0.9;
+  }
+
+  100% {
+    scale: 0.7;
+  }
+}
+
+@keyframes heart-pulse {
+  0% {
+    scale: 0.8;
+  }
+
+  15% {
+    scale: 1.4;
+  }
+
+  100% {
+    scale: 1.2;
+  }
+}
+
+@keyframes heart-expand {
+  from {
+    opacity: 1;
+    scale: 0;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.2;
+  }
+}

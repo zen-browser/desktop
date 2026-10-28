@@ -115,6 +115,9 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById("zen-boost-code")
       .addEventListener("click", this.onCodeButtonPressed.bind(this));
+    const shareButton = this.doc.getElementById("zen-boost-share");
+    shareButton.addEventListener("click", this.onShareBoostPressed.bind(this));
+    shareButton.hidden = !gZenBoostsManager.canShareFrom(this.openerWindow);
     this.doc
       .getElementById("zen-boost-back")
       .addEventListener("click", this.onCodeBackButtonPressed.bind(this));
@@ -316,29 +319,100 @@ export class nsZenBoostEditor {
   onCodeEditorChange() {
     this.currentBoostData.customCSS = this.editorWindow._editor.getText();
     this.currentBoostData.changeWasMade = true;
+    this.onUpdateCodeButtonVisual();
     this.updateCurrentBoost();
   }
 
-  get commonFonts() {
-    const cFonts = [
-      "Arial",
-      "Times New Roman",
-      "Courier New",
-      "Georgia",
-      "Comic Sans MS",
-      "Verdana",
-      "Trebuchet MS",
-      "Impact",
-      "Palatino Linotype",
-      "Tahoma",
-      "Helvetica",
-      "Garamond",
-      "Century Gothic",
-      "Arial Black",
-      "Papyrus",
-    ];
-    return cFonts;
+  /**
+   * Marks the code button as enabled only when the boost has custom CSS
+   */
+  onUpdateCodeButtonVisual() {
+    const button = this.doc.getElementById("zen-boost-code");
+    const hasCode = Boolean(this.currentBoostData?.customCSS?.trim());
+    button.setAttribute("enabled", hasCode ? "true" : "false");
   }
+
+  /**
+   * The curated fonts of the grid, four rows of five. Each slot lists the
+   * font it is meant for first, then look-alikes other platforms ship, and
+   * ends with a generic family so the slot always renders in the intended
+   * style instead of in whatever font happens to be installed.
+   */
+  get commonFonts() {
+    return [
+      ["system-ui"],
+      [
+        "Helvetica Neue",
+        "Segoe UI",
+        "Noto Sans",
+        "Liberation Sans",
+        "sans-serif",
+      ],
+      ["Avenir", "Nunito", "Century Gothic", "URW Gothic", "sans-serif"],
+      ["Futura", "Jost", "Century Gothic", "Trebuchet MS", "sans-serif"],
+      [
+        "DIN Alternate",
+        "Bahnschrift",
+        "Roboto Condensed",
+        "Arial Narrow",
+        "sans-serif",
+      ],
+      [
+        "Arial Rounded MT Bold",
+        "Varela Round",
+        "Nunito",
+        "Verdana",
+        "sans-serif",
+      ],
+      [
+        "PT Mono",
+        "Consolas",
+        "DejaVu Sans Mono",
+        "Liberation Mono",
+        "monospace",
+      ],
+      ["Courier", "Courier New", "Liberation Mono", "monospace"],
+      ["Times New Roman", "Liberation Serif", "Tinos", "serif"],
+      ["Charter", "Bitstream Charter", "Charis SIL", "Georgia", "serif"],
+      ["Baskerville", "Libre Baskerville", "Book Antiqua", "Georgia", "serif"],
+      ["Hoefler Text", "EB Garamond", "Garamond", "Cambria", "serif"],
+      ["Palatino", "Palatino Linotype", "Book Antiqua", "P052", "serif"],
+      ["Chalkboard", "Comic Neue", "Comic Sans MS", "Segoe Print", "cursive"],
+      [
+        "SignPainter",
+        "Segoe Script",
+        "Brush Script MT",
+        "URW Chancery L",
+        "cursive",
+      ],
+      [
+        "Snell Roundhand",
+        "Edwardian Script ITC",
+        "Monotype Corsiva",
+        "Z003",
+        "cursive",
+      ],
+      ["Papyrus", "Segoe Script", "cursive"],
+      [
+        "Apple Chancery",
+        "Monotype Corsiva",
+        "URW Chancery L",
+        "Z003",
+        "cursive",
+      ],
+      ["Luminari", "Algerian", "Old English Text MT", "Cinzel", "fantasy"],
+      ["Wingdings", "Dingbats", "Symbola", "fantasy"],
+    ];
+  }
+
+  static GENERIC_FONT_LABELS = {
+    "system-ui": "System",
+    "sans-serif": "Sans Serif",
+    serif: "Serif",
+    monospace: "Monospace",
+    cursive: "Cursive",
+    fantasy: "Fantasy",
+  };
 
   /**
    * Initializes the font selection UI by creating font buttons and dropdown options
@@ -350,23 +424,33 @@ export class nsZenBoostEditor {
 
     const fontButtonGroup = this.doc.getElementById("zen-boost-font-grid");
     const fontList = this.doc.getElementById("zen-boost-font-select");
-    const buttonCount = 15;
+    const buttonCount = 20;
+    const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
 
     for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
-      let font = fonts[i]; // Fallback
-      if (fonts.includes(commonFonts[i])) {
-        font = commonFonts[i];
-      }
+      // The first candidate that is installed, or the slot's generic family.
+      const font =
+        commonFonts[i].find(
+          candidate => candidate in genericLabels || fonts.includes(candidate)
+        ) ?? commonFonts[i].at(-1);
 
       const fontButton = this.doc.createElement("button");
       fontButton.setAttribute("font-data", `${font}`);
       fontButton.classList.add("subviewbutton", "no-squircles");
-      fontButton.style.fontFamily = `'${font}'`;
+      fontButton.style.fontFamily = font in genericLabels ? font : `'${font}'`;
       fontButton.innerHTML = "Aa";
-      fontButton.title = font;
+      fontButton.title = genericLabels[font] ?? font;
       fontButton.addEventListener("click", this.onFontButtonClick.bind(this));
 
       fontButtonGroup.appendChild(fontButton);
+    }
+
+    if (!Services.prefs.getBoolPref("zen.boosts.custom-fonts", false)) {
+      this.doc.getElementById("zen-boost-font-toolbar").hidden = true;
+      this.doc.querySelector(
+        "#zen-boost-font-wrapper .visible-separator"
+      ).hidden = true;
+      return;
     }
 
     // Add default value
@@ -405,7 +489,7 @@ export class nsZenBoostEditor {
    * Handles the code editor button press, resizing and offsetting the window and enabling the code view
    */
   onCodeButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -434,11 +518,32 @@ export class nsZenBoostEditor {
     });
   }
 
+  onShareBoostPressed() {
+    if (!gZenBoostsManager.canShareFrom(this.openerWindow)) {
+      return;
+    }
+    if (!this.currentBoostData?.changeWasMade) {
+      this.openerWindow.gZenUIManager.showToast(
+        "zen-boost-share-nothing-toast"
+      );
+      return;
+    }
+    this.saveBoost();
+    const boost = gZenBoostsManager.loadBoostFromStore(
+      this.boostInfo.domain,
+      this.boostInfo.id
+    );
+    const browser =
+      this.editorWindow.browser ??
+      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    gZenBoostsManager.shareBoost(this.openerWindow, boost, browser);
+  }
+
   /**
    * Handles the back button in the code view, resizing and offsetting the window and changing back to boost view
    */
   onCodeBackButtonPressed() {
-    const offset = 265;
+    const offset = this._codeEditorWidth - this._boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -1660,6 +1765,7 @@ ${cssSelector} {
     this.updateCircleRadius();
     this.onUpdateZapValue();
     this.onUpdateZapButtonVisual();
+    this.onUpdateCodeButtonVisual();
   }
 
   /**

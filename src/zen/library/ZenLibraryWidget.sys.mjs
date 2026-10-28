@@ -414,6 +414,8 @@ class ZenLibraryDownloadStack {
         "--download-image",
         `${preview ? `url('${preview}'), ` : ""}url('${this.#iconUrl(download)}')`
       );
+    } else {
+      badge.style.removeProperty("--download-image");
     }
     badge.querySelector(
       ".zen-library-download-progress-arc"
@@ -462,6 +464,9 @@ class ZenLibraryDownloadStack {
     const index = this.#downloads.indexOf(download);
     if (index !== -1) {
       this.#downloads.splice(index, 1);
+    }
+    if (!this.#downloads.length) {
+      this.#recentNewDownload = false;
     }
     this.#update();
   }

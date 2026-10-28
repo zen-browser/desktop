@@ -372,7 +372,9 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
     const cutoff = Date.now() - this.#activeDaysOld * MS_PER_DAY;
     const query = this.searchQuery.toLowerCase();
     const tabs = [];
-    for (const tab of lazy.SessionStore.getClosedTabData(window)) {
+    for (const tab of lazy.SessionStore.getClosedTabData({
+      sourceWindow: window,
+    })) {
       const entry = tab.state?.entries?.[tab.state.index - 1];
       if (!entry?.url || tab.closedAt < cutoff) {
         continue;

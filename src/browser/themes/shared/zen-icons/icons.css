@@ -218,6 +218,10 @@
   list-style-image: url("plus.svg") !important;
 }
 
+#tabs-newtab-button[zen-paste-and-search] {
+  list-style-image: url("edit-paste.svg") !important;
+}
+
 #cut-button {
   list-style-image: url("edit-cut.svg") !important;
 }
@@ -728,8 +732,39 @@
 }
 
 #reader-mode-button > .urlbar-icon,
-#zen-site-data-header-reader-mode {
+#zen-site-data-reader-mode {
   list-style-image: url("reader-mode.svg") !important;
+}
+
+#zen-site-data-reader-mode {
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  & .toolbarbutton-icon {
+    width: 16px;
+  }
+
+  & .toolbarbutton-text {
+    display: none;
+  }
+
+  &.active {
+    fill: var(--zen-primary-color);
+  }
+}
+
+#zen-site-data-header-boost {
+  list-style-image: url("paintbrush.svg") !important;
+
+  @media -moz-pref("zen.boosts.enabled", false) {
+    display: none;
+  }
 }
 
 #unified-extensions-manage-extensions {
@@ -944,31 +979,6 @@
   fill: currentColor;
 }
 
-#zen-site-data-boost {
-  border-radius: 6px;
-  appearance: none;
-  padding: 6px 10px 6px 10px;
-
-  position: relative;
-
-  list-style-image: url("boost.svg");
-
-  & .toolbarbutton-text {
-    display: none;
-  }
-
-  @media -moz-pref("zen.boosts.enabled", false) {
-    display: none;
-  }
-
-  & image {
-    -moz-context-properties: fill, fill-opacity;
-    fill: currentColor;
-    width: 14px;
-    fill-opacity: 0.7;
-  }
-}
-
 .boost-brush {
   list-style-image: url("boost.svg") !important;
   padding: 10px;
@@ -982,11 +992,11 @@
   padding: 6px 10px 6px 8px;
 
   &[identity="secure"] {
-    list-style-image: url("security.svg");
+    list-style-image: url("security-fill.svg");
   }
 
   &[identity="not-secure"] {
-    list-style-image: url("security-broken.svg");
+    list-style-image: url("security-broken-fill.svg");
   }
 
   &[identity="extension"] {
@@ -1029,10 +1039,8 @@
   }
 }
 
-#zen-copy-url-button image,
-.sr-url-icon {
+#zen-copy-url-button image {
   list-style-image: url("link.svg");
-  fill-opacity: 0.65;
 }
 
 #zen-boost-case[case-mode="none"] {
@@ -1053,6 +1061,34 @@
 
 #zen-boost-code {
   list-style-image: url("brackets-curly.svg");
+}
+
+#zen-boost-share {
+  list-style-image: url("share.svg");
+}
+
+.zbs-info-button {
+  list-style-image: url("info.svg");
+}
+
+.zbs-pane-left[icon="back"] {
+  list-style-image: url("arrow-left.svg") !important;
+}
+
+.zbs-pane-left[icon="check"] {
+  list-style-image: url("check.svg") !important;
+}
+
+.zbs-pane-left[icon="signature"] {
+  list-style-image: url("signature.svg") !important;
+}
+
+.zbs-pane-right[icon="menu"] {
+  list-style-image: url("menu.svg") !important;
+}
+
+.zbs-pane-right[icon="remove"] {
+  list-style-image: url("close.svg") !important;
 }
 
 #zen-boost-zap {

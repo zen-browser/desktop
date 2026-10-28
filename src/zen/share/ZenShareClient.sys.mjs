@@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  JSONFile: "resource://gre/modules/JSONFile.sys.mjs",
   JsonSchema: "resource://gre/modules/JsonSchema.sys.mjs",
   clearTimeout: "resource://gre/modules/Timer.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
@@ -31,6 +32,9 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 const SCHEMA_URL = "resource:///modules/zen/share/share.schema.json";
 
+const CACHE_FILE = "zen-share-cache.json";
+const MAX_CACHE_ENTRIES = 200;
+
 // The server rejects bigger bodies at 25 MiB.
 const MAX_SHARE_BYTES = 25 * 1024 * 1024;
 const MAX_NAME_LENGTH = 200;
@@ -41,7 +45,7 @@ const READ_TIMEOUT_MS = 30000;
 
 // Public share page paths: /{slug}/{XXXX-XXXX-XXXX-XXXX id}.
 const SHARE_PATH_RE =
-  /^\/(space|folder|split-view|split)\/([0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4})\/?$/;
+  /^\/(space|folder|split-view|split|boost)\/([0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4})\/?$/;
 
 export class ZenShareError extends Error {
   /**
@@ -58,6 +62,7 @@ export class ZenShareError extends Error {
 
 class nsZenShareClient {
   #validatorPromise = null;
+  #cacheFile = null;
 
   get #baseUrl() {
     return lazy.gBaseUrl;
@@ -178,6 +183,95 @@ class nsZenShareClient {
     );
     const created = await response.json();
     return { ...created, link: base + created.webUrl };
+  }
+
+  /**
+   * Shares a document, reusing the link of an earlier identical share when
+   * the server still has it.
+   *
+   * @param {object} doc - A document conforming to share.schema.json.
+   * @param {{name?: string}} options - Optional sharer display name.
+   * @returns {Promise<object>} As createShare, plus `reused`: whether an
+   *   existing link was handed back.
+   */
+  async findOrCreateShare(doc, { name } = {}) {
+    const hash = await this.hashDocument(doc, { name });
+    const cache = await this.#cache();
+    const cached = cache.data.shares[hash];
+    if (
+      cached?.link &&
+      (!cached.expiresAt || Date.parse(cached.expiresAt) > Date.now())
+    ) {
+      try {
+        await this.getShare(cached.id);
+        return { ...cached, reused: true };
+      } catch (e) {
+        delete cache.data.shares[hash];
+      }
+    }
+    const created = await this.createShare(doc, { name });
+    const entry = {
+      id: created.id ?? this.parseShareUrl(created.link)?.id,
+      link: created.link,
+      expiresAt: created.expiresAt ?? null,
+      createdAt: Date.now(),
+    };
+    cache.data.shares[hash] = entry;
+    this.#pruneCache(cache.data.shares);
+    cache.saveSoon();
+    return { ...created, ...entry, reused: false };
+  }
+
+  /**
+   * @param {object} doc - A share document.
+   * @param {{name?: string}} options - The sharer name, part of the identity.
+   * @returns {Promise<string>} A SHA-256 hex digest of the document with its
+   *   keys sorted, so the same content always hashes the same.
+   */
+  async hashDocument(doc, { name } = {}) {
+    const canonical = JSON.stringify(
+      { ...doc, name: name || "" },
+      (key, value) =>
+        value && typeof value === "object" && !Array.isArray(value)
+          ? Object.fromEntries(
+              Object.entries(value).sort(([a], [b]) => (a < b ? -1 : 1))
+            )
+          : value
+    );
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(canonical)
+    );
+    return Array.from(new Uint8Array(digest), byte =>
+      byte.toString(16).padStart(2, "0")
+    ).join("");
+  }
+
+  async #cache() {
+    if (!this.#cacheFile) {
+      this.#cacheFile = new lazy.JSONFile({
+        path: PathUtils.join(PathUtils.profileDir, CACHE_FILE),
+      });
+      await this.#cacheFile.load();
+      this.#cacheFile.data.shares ??= {};
+    }
+    return this.#cacheFile;
+  }
+
+  // Drops expired links and keeps only the newest entries.
+  #pruneCache(shares) {
+    const now = Date.now();
+    const entries = Object.entries(shares)
+      .filter(
+        ([, entry]) => !entry.expiresAt || Date.parse(entry.expiresAt) > now
+      )
+      .sort(([, a], [, b]) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+    for (const key of Object.keys(shares)) {
+      delete shares[key];
+    }
+    for (const [key, entry] of entries.slice(0, MAX_CACHE_ENTRIES)) {
+      shares[key] = entry;
+    }
   }
 
   /**

@@ -19,6 +19,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
   #hideTimer = null;
   #currentHoverTab = null;
   #prefObserver = null;
+  #tabMutationObserver = null;
 
   init() {
     this.window.gZenTabIntelligenceUI = this;
@@ -28,6 +29,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     // Listen to tab events in the chrome window and on tab container
     this.window.addEventListener("TabAttrModified", this);
+    this.window.addEventListener("TabPinned", this);
+    this.window.addEventListener("TabUnpinned", this);
     this.window.addEventListener("mouseover", this, { passive: true });
     this.window.addEventListener("mouseout", this, { passive: true });
     this.window.addEventListener("mousemove", this, { passive: true });
@@ -43,6 +46,27 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       tabContainer.addEventListener("mouseover", this, { passive: true });
       tabContainer.addEventListener("mouseout", this, { passive: true });
       tabContainer.addEventListener("mousemove", this, { passive: true });
+    }
+
+    // Direct DOM observer for essential/pinned changes across workspaces and containers
+    try {
+      this.#tabMutationObserver = new this.window.MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (
+            mutation.type === "attributes" &&
+            mutation.target?.classList?.contains("tabbrowser-tab")
+          ) {
+            this.evaluateTab(mutation.target);
+          }
+        }
+      });
+      this.#tabMutationObserver.observe(this.document.documentElement, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ["zen-essential", "pinned"],
+      });
+    } catch (e) {
+      console.warn("[ZenTabIntelligenceUI] Failed to start tab MutationObserver:", e);
     }
 
     this.#prefObserver = () => {
@@ -62,7 +86,13 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
   uninit() {
     lazy.ZenTabIntelligenceManager.removeListener(this);
+    if (this.#tabMutationObserver) {
+      this.#tabMutationObserver.disconnect();
+      this.#tabMutationObserver = null;
+    }
     this.window.removeEventListener("TabAttrModified", this);
+    this.window.removeEventListener("TabPinned", this);
+    this.window.removeEventListener("TabUnpinned", this);
     this.window.removeEventListener("mouseover", this, { passive: true });
     this.window.removeEventListener("mouseout", this, { passive: true });
     this.window.removeEventListener("mousemove", this, { passive: true });
@@ -101,11 +131,27 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     switch (event.type) {
       case "ZenWorkspacesUIUpdate":
       case "ZenWorkspaceDataChanged": {
+        this.reEvaluateAllTabs();
         this.updateImminentMeetingBanners();
         break;
       }
+      case "TabPinned":
+      case "TabUnpinned": {
+        const tab = event.target?.closest?.(".tabbrowser-tab") || event.target;
+        if (tab?.classList?.contains("tabbrowser-tab")) {
+          this.evaluateTab(tab);
+        }
+        break;
+      }
       case "TabAttrModified": {
-        if (event.detail?.changed?.includes("label")) {
+        const changed = event.detail?.changed;
+        if (
+          !changed ||
+          changed.includes("label") ||
+          changed.includes("zen-essential") ||
+          changed.includes("pinned") ||
+          changed.includes("image")
+        ) {
           this.evaluateTab(event.target);
         }
         break;
@@ -242,8 +288,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     const service = lazy.ZenTabIntelligenceManager.getTabService(tab);
     if (service === "gmail" || service === "whatsapp") {
       const pageTitle = this.getTabContentTitle(tab);
-      const match = pageTitle.match(/\((\d+)\)/);
-      const unreadCount = match ? parseInt(match[1], 10) : 0;
+      const match = pageTitle.match(/\(([0-9+]+)\)/);
+      const unreadCount = match ? parseInt(match[1], 10) || 1 : 0;
       const hasUnread = unreadCount > 0;
 
       if (hasUnread && isPinnedOrEssential) {

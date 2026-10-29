@@ -731,9 +731,29 @@
 #reader-mode-button,
 .urlbar-go-button,
 #star-button-box,
-#pageActionButton:not([open]),
-.searchmode-switcher {
+#pageActionButton:not([open]) {
   display: none !important;
+}
+
+/* In scotch bonnet / search mode switcher, hide the dropmarker and the dropdown panel
+ * while preserving the search mode badge / chiclet (e.g. Command). */
+.searchmode-switcher-dropmarker,
+.searchmode-switcher-panel,
+.searchmode-switcher-panel-list {
+  display: none !important;
+}
+
+.searchmode-switcher {
+  cursor: default !important;
+  pointer-events: auto !important;
+
+  &:not([searchmode]):not([open]) {
+    display: none !important;
+  }
+}
+
+#urlbar[searchmode] > .urlbar-input-container > #urlbar-search-mode-indicator {
+  display: flex !important;
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */

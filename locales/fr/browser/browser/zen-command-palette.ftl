@@ -39,7 +39,6 @@ zen-action-copy-current-url-markdown = Copier l'URL au format Markdown
 zen-action-close-unpinned-tabs = Fermer les onglets non épinglés
 zen-action-unload-workspace = Mettre l'espace en veille
 zen-action-toggle-split-view-direction = Basculer l'orientation de la vue scindée
-zen-action-new-live-folder = Nouveau dossier dynamique (Live Folder)
 zen-action-manage-spaces = Gérer les espaces
 zen-action-replace-pinned-url-with-current = Remplacer l'URL de l'onglet épinglé par l'actuelle
 zen-action-mute-tab = Couper le son de l'onglet

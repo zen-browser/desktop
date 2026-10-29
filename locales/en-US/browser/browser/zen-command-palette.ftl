@@ -47,7 +47,6 @@ zen-action-copy-current-url-markdown = Copy Current URL as Markdown
 zen-action-close-unpinned-tabs = Close Unpinned Tabs
 zen-action-unload-workspace = Unload Workspace
 zen-action-toggle-split-view-direction = Toggle Split View Direction
-zen-action-new-live-folder = New Live Folder
 zen-action-manage-spaces = Manage Spaces
 zen-action-replace-pinned-url-with-current = Replace Pinned Tab URL with Current
 zen-action-mute-tab = Mute Tab

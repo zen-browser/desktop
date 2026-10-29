@@ -429,11 +429,6 @@ const globalActionsTemplate = [
     },
   },
   {
-    l10nId: "zen-action-new-live-folder",
-    command: "cmd_zenNewLiveFolder",
-    icon: "chrome://browser/skin/zen-icons/selectable/logo-rss.svg",
-  },
-  {
     l10nId: "zen-action-manage-spaces",
     command: "cmd_zenManageWorkspaces",
     icon: "chrome://browser/skin/zen-icons/manage.svg",
@@ -591,7 +586,6 @@ const FALLBACK_LABELS = {
   "zen-action-close-unpinned-tabs": "Close Unpinned Tabs",
   "zen-action-unload-workspace": "Unload Workspace",
   "zen-action-toggle-split-view-direction": "Toggle Split View Direction",
-  "zen-action-new-live-folder": "New Live Folder",
   "zen-action-manage-spaces": "Manage Spaces",
   "zen-action-replace-pinned-url-with-current":
     "Replace Pinned Tab URL with Current",

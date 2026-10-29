@@ -20,8 +20,22 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [popup-window]) #navigator-toolbox {
+:root[popup-window] #navigator-toolbox {
   visibility: collapse;
+}
+
+:root[inDOMFullscreen="true"] #navigator-toolbox {
+  visibility: hidden;
+  color-scheme: dark !important;
+  --toolbox-non-lwt-bgcolor: #0f0f11 !important;
+  --zen-colors-tertiary: #141416 !important;
+  --toolbar-bgcolor: #0f0f11 !important;
+  --zen-browser-generic-background: #000000 !important;
+  background-color: #000000 !important;
+
+  & .zen-toolbar-background {
+    background: #0d0d0f !important;
+  }
 }
 
 :root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),

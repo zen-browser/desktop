@@ -97,6 +97,7 @@ class ZenStartup {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;
       gZenCompactModeManager.init();
+      gZenFullscreenManager?.init();
       // Fix for https://github.com/zen-browser/desktop/issues/7605, specially in compact mode
       if (gURLBar.hasAttribute("breakout-extend")) {
         gURLBar.focus();

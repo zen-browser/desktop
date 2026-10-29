@@ -36,7 +36,7 @@
   }
 }
 
-:root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
+:root:is([zen-compact-mode='true'], [inDOMFullscreen='true']):not([customizing]) {
 
 %include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css
 

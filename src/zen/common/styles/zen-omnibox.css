@@ -742,3 +742,52 @@
     display: none !important;
   }
 }
+
+/* In DOM Fullscreen: Exit Full Screen button & text inside the urlbar */
+:root[inDOMFullscreen="true"] {
+  #urlbar-input-container {
+    visibility: hidden !important;
+  }
+
+  #zen-fullscreen-exit-button {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    background: transparent;
+    border-radius: var(--urlbar-icon-border-radius, 8px);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    user-select: none;
+    z-index: 10;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    &:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    & #zen-fullscreen-exit-icon {
+      width: 16px;
+      height: 16px;
+      list-style-image: url("chrome://browser/skin/zen-icons/fullscreen-exit.svg");
+      -moz-context-properties: fill, fill-opacity;
+      fill: currentColor;
+    }
+
+    & #zen-fullscreen-exit-label {
+      pointer-events: none;
+    }
+  }
+}
+
+:root:not([inDOMFullscreen="true"]) #zen-fullscreen-exit-button {
+  display: none !important;
+}

@@ -10,9 +10,8 @@ ChromeUtils.defineESModuleGetters(this, {
 });
 
 function getGithubProviderForTest(sandbox, customOptions = {}) {
-  const defaultOptions = {
+  const defaultOptions = customOptions.options ?? {
     authorMe: true,
-    assignedMe: false,
     reviewRequested: false,
     myReviewRequests: false,
     ...customOptions,
@@ -49,7 +48,6 @@ add_task(async function test_fetch_items_url_construction() {
 
   let instance = getGithubProviderForTest(sandbox, {
     authorMe: true,
-    assignedMe: false,
     reviewRequested: false,
     type: "pull-requests",
   });
@@ -90,6 +88,111 @@ add_task(async function test_fetch_items_url_construction() {
   sandbox.restore();
 });
 
+add_task(async function test_default_pull_request_filter() {
+  info("should replace the assigned filter for new and existing folders");
+
+  let sandbox = sinon.createSandbox();
+
+  const cases = [
+    { options: {}, personalReviewsEnabled: true },
+    { options: { assignedMe: true }, personalReviewsEnabled: true },
+    {
+      options: { assignedMe: false, authorMe: true },
+      personalReviewsEnabled: false,
+    },
+    {
+      options: { assignedMe: false, reviewRequested: true },
+      personalReviewsEnabled: false,
+    },
+  ];
+
+  for (const { options, personalReviewsEnabled } of cases) {
+    let instance = getGithubProviderForTest(sandbox, {
+      type: "pull-requests",
+      options,
+    });
+
+    instance.state.isJsonApi = true;
+    instance.fetch.resolves({
+      status: 200,
+      text: "<html></html>",
+    });
+
+    await instance.fetchItems();
+
+    const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
+    const query = fetchedUrl.searchParams.get("q");
+    const assignedOption = instance.options.find(
+      option => option.key === "assignedMe"
+    );
+    const personalReviewsOption = instance.options.find(
+      option => option.key === "myReviewRequests"
+    );
+
+    Assert.equal(
+      query.includes("user-review-requested:@me"),
+      personalReviewsEnabled,
+      "Should preserve the replaced assigned filter state"
+    );
+    Assert.ok(
+      !query.includes("assignee:@me"),
+      "Should not query assigned pull requests"
+    );
+    Assert.ok(
+      assignedOption.hidden,
+      "Should hide the assigned option for pull requests"
+    );
+    Assert.equal(
+      personalReviewsOption.checked,
+      personalReviewsEnabled,
+      "Should show the migrated personal review filter state"
+    );
+  }
+
+  sandbox.restore();
+});
+
+add_task(async function test_default_issue_filter() {
+  info("should preserve the assigned filter for new and existing folders");
+
+  let sandbox = sinon.createSandbox();
+
+  for (const options of [{}, { assignedMe: true }]) {
+    let instance = getGithubProviderForTest(sandbox, {
+      type: "issues",
+      options,
+    });
+
+    instance.fetch.resolves({
+      status: 200,
+      text: "<html></html>",
+    });
+
+    await instance.fetchItems();
+
+    const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
+    const query = fetchedUrl.searchParams.get("q");
+    const assignedOption = instance.options.find(
+      option => option.key === "assignedMe"
+    );
+
+    Assert.ok(
+      query.includes("assignee:@me"),
+      "Should default to assigned issues"
+    );
+    Assert.ok(
+      !query.includes("user-review-requested:@me"),
+      "Should not query review requests for issues"
+    );
+    Assert.ok(
+      !assignedOption.hidden,
+      "Should show the assigned option for issues"
+    );
+  }
+
+  sandbox.restore();
+});
+
 add_task(async function test_fetch_items_url_complex_options() {
   info("should construct query with multiple enabled options");
 
@@ -97,7 +200,6 @@ add_task(async function test_fetch_items_url_complex_options() {
 
   let instance = getGithubProviderForTest(sandbox, {
     authorMe: true,
-    assignedMe: true,
     includeDrafts: false,
     reviewRequested: true,
     myReviewRequests: true,
@@ -117,7 +219,6 @@ add_task(async function test_fetch_items_url_complex_options() {
   const query = fetchedUrl.searchParams.get("q");
 
   Assert.ok(query.includes("author:@me"), "Should include author");
-  Assert.ok(query.includes("assignee:@me"), "Should include assignee");
   Assert.ok(
     /(?:^|[\s(])review-requested:@me(?:$|[\s)])/.test(query),
     "Should include review-requested"
@@ -142,7 +243,6 @@ add_task(async function test_fetch_items_url_my_review_requests() {
 
   let instance = getGithubProviderForTest(sandbox, {
     authorMe: false,
-    assignedMe: false,
     reviewRequested: false,
     myReviewRequests: true,
     type: "pull-requests",
@@ -252,7 +352,6 @@ add_task(async function test_no_filter_enabled_returns_error() {
   let instance = getGithubProviderForTest(sandbox, {
     type: "pull-requests",
     authorMe: false,
-    assignedMe: false,
     reviewRequested: false,
   });
 
@@ -330,7 +429,6 @@ add_task(async function test_repo_excludes_emit_negative_repo_filters() {
   let instance = getGithubProviderForTest(sandbox, {
     type: "pull-requests",
     authorMe: true,
-    assignedMe: false,
     reviewRequested: false,
     repoExcludes: ["zen-browser/desktop", "foo/bar"],
   });

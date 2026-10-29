@@ -793,13 +793,15 @@ var gZenTabIntelligenceSettings = {
     const disconnectBtn = document.getElementById("zenTabIntelligenceGoogleDisconnectBtn");
 
     if (connectBtn) {
-      connectBtn.onclick = () => {
+      connectBtn.onclick = (e) => {
+        e.preventDefault();
         this._auth?.login(window);
       };
     }
 
     if (disconnectBtn) {
-      disconnectBtn.onclick = () => {
+      disconnectBtn.onclick = (e) => {
+        e.preventDefault();
         this._auth?.logout();
       };
     }

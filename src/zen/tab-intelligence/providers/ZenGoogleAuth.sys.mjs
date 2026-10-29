@@ -157,9 +157,10 @@ class nsZenGoogleAuth {
   }
 
   async login(browserWindow = null) {
-    if (!browserWindow) {
-      browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-    }
+    let chromeWin = browserWindow?.gBrowser
+      ? browserWindow
+      : browserWindow?.browsingContext?.topChromeWindow ||
+        Services.wm.getMostRecentWindow("navigator:browser");
 
     this.#cleanupActiveAuth();
 
@@ -188,11 +189,15 @@ class nsZenGoogleAuth {
     authUrl.searchParams.set("prompt", "consent");
 
     // Open tab for authorization
-    if (browserWindow?.gBrowser) {
-      this.#activeAuthTab = browserWindow.gBrowser.addTrustedTab(authUrl.toString(), {
+    if (chromeWin?.gBrowser) {
+      this.#activeAuthTab = chromeWin.gBrowser.addTrustedTab(authUrl.toString(), {
         triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
       });
-      browserWindow.gBrowser.selectedTab = this.#activeAuthTab;
+      chromeWin.gBrowser.selectedTab = this.#activeAuthTab;
+      chromeWin.focus();
+    } else {
+      console.error("[ZenGoogleAuth] No chrome browser window found to open auth tab");
+      return false;
     }
 
     return true;

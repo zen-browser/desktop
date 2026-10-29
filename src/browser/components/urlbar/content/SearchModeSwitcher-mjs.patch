@@ -1,0 +1,23 @@
+diff --git a/browser/components/urlbar/content/SearchModeSwitcher.mjs b/browser/components/urlbar/content/SearchModeSwitcher.mjs
+index a60982ef10..12d6b9a776 100644
+--- a/browser/components/urlbar/content/SearchModeSwitcher.mjs
++++ b/browser/components/urlbar/content/SearchModeSwitcher.mjs
+@@ -794,6 +794,9 @@ export class SearchModeSwitcher {
+ 
+   async #getSearchModeLabel(source) {
+     let mode = UrlbarShared.LOCAL_SEARCH_MODES.find(m => m.source == source);
++    if (!mode?.uiLabel) {
++      return "";
++    }
+     let [str] = await getL10n().formatMessages([{ id: mode.uiLabel }]);
+     return str.value;
+   }
+@@ -821,7 +824,7 @@ export class SearchModeSwitcher {
+     );
+     return {
+       label: await this.#getSearchModeLabel(searchMode.source),
+-      icon: mode.icon,
++      icon: mode?.icon ?? SearchModeSwitcher.ICON_GLASS,
+     };
+   }
+ 

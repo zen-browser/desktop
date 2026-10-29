@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
-index 47a65042c26ead0b2715c0b11699be2e242f6bd0..b194fc9c798e44cfc35f289d0e39411f442ea3ba 100644
+index 47a65042c2..32634052c0 100644
 --- a/browser/components/urlbar/content/UrlbarShared.mjs
 +++ b/browser/components/urlbar/content/UrlbarShared.mjs
 @@ -176,6 +176,7 @@ export const UrlbarShared = {
@@ -36,10 +36,18 @@ index 47a65042c26ead0b2715c0b11699be2e242f6bd0..b194fc9c798e44cfc35f289d0e39411f
    }),
  
    // Defines provider types.
-@@ -465,6 +471,14 @@ export const UrlbarShared = {
+@@ -465,6 +471,22 @@ export const UrlbarShared = {
          telemetryLabel: "actions",
          uiLabel: "urlbar-searchmode-actions4",
        },
++      {
++        source: this.RESULT_SOURCE.ZEN_ACTIONS,
++        restrict: this.RESTRICT_TOKENS.ACTION,
++        icon: "chrome://browser/skin/lightning-bolt.svg",
++        pref: "shortcuts.actions",
++        telemetryLabel: "actions",
++        uiLabel: "urlbar-searchmode-actions4",
++      },
 +      {
 +        source: this.RESULT_SOURCE.WORKSPACES,
 +        restrict: this.RESTRICT_TOKENS.WORKSPACE,
@@ -51,7 +59,7 @@ index 47a65042c26ead0b2715c0b11699be2e242f6bd0..b194fc9c798e44cfc35f289d0e39411f
      ]);
    },
  
-@@ -482,6 +496,7 @@ export const UrlbarShared = {
+@@ -482,6 +504,7 @@ export const UrlbarShared = {
      if (UrlbarPrefs.get("scotchBonnet.enableOverride")) {
        keys.push(this.RESTRICT_TOKENS.ACTION);
      }
@@ -59,7 +67,7 @@ index 47a65042c26ead0b2715c0b11699be2e242f6bd0..b194fc9c798e44cfc35f289d0e39411f
      return new Set(keys);
    },
  
-@@ -1072,6 +1087,11 @@ export const UrlbarShared = {
+@@ -1072,6 +1095,11 @@ export const UrlbarShared = {
            return UrlbarShared.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return UrlbarShared.RESULT_GROUP.HEURISTIC_HISTORY_URL;
@@ -71,7 +79,7 @@ index 47a65042c26ead0b2715c0b11699be2e242f6bd0..b194fc9c798e44cfc35f289d0e39411f
          case "UrlbarProviderOmnibox":
            return UrlbarShared.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":
-@@ -1100,6 +1120,7 @@ export const UrlbarShared = {
+@@ -1100,6 +1128,7 @@ export const UrlbarShared = {
        case "UrlbarProviderAboutPages":
          return UrlbarShared.RESULT_GROUP.ABOUT_PAGES;
        case "UrlbarProviderInputHistory":

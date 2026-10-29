@@ -4,3 +4,5 @@
 
         content/browser/zen-components/ZenGlanceManager.mjs                     (../../zen/glance/ZenGlanceManager.mjs)
         content/browser/zen-styles/zen-glance.css                               (../../zen/glance/zen-glance.css)
+        actors/ZenGlanceChild.sys.mjs                                           (../../zen/glance/actors/ZenGlanceChild.sys.mjs)
+        actors/ZenGlanceParent.sys.mjs                                          (../../zen/glance/actors/ZenGlanceParent.sys.mjs)

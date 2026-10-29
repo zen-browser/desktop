@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarChildController.mjs b/browser/components/urlbar/content/UrlbarChildController.mjs
-index dd073b0540..5833d648ca 100644
+index dd073b0540..cb01d42819 100644
 --- a/browser/components/urlbar/content/UrlbarChildController.mjs
 +++ b/browser/components/urlbar/content/UrlbarChildController.mjs
 @@ -387,7 +387,6 @@ export class UrlbarChildController {
@@ -10,81 +10,128 @@ index dd073b0540..5833d648ca 100644
        this.view.isOpen &&
        event.ctrlKey &&
        (event.key == "n" || event.key == "p")
-@@ -557,6 +556,82 @@ export class UrlbarChildController {
+@@ -557,6 +556,129 @@ export class UrlbarChildController {
            }
          }
  
 +        if (!event.ctrlKey && !event.altKey && !event.shiftKey) {
-+          let typed = this.input.value?.trim().toLowerCase();
++          let typed = this.input.value?.trim();
 +          if (typed && !this.input.searchMode?.engineName) {
 +            let matchedEngineName = null;
++
++            // 1. Only accept a TabToSearch result specifically from UrlbarProviderTabToSearch
 +            let tabToSearchResult =
-+              this.view.selectedElement?.result?.payload?.engine
++              this.view.selectedElement?.result?.providerName ===
++              "UrlbarProviderTabToSearch"
 +                ? this.view.selectedElement.result
 +                : this.view.visibleResults?.find(
-+                    r =>
-+                      r.providerName === "UrlbarProviderTabToSearch" ||
-+                      r.payload?.engine
++                    r => r.providerName === "UrlbarProviderTabToSearch"
 +                  );
 +            if (tabToSearchResult?.payload?.engine) {
 +              matchedEngineName = tabToSearchResult.payload.engine;
 +            }
 +
-+            if (!matchedEngineName && this.engineStore?.initialized) {
-+              let engines = this.engineStore.getEngines();
-+              let nonDefault = engines.filter(
-+                e => e.id !== this.engineStore.default?.id
-+              );
-+              let candidates = [...nonDefault, ...engines];
-+              let cleanTyped = typed.replace(/\.(com|org|net|io|co|fr|de|uk)$/, "").trim();
-+
-+              let engine =
-+                candidates.find(e =>
-+                  e.aliases?.some(
-+                    a =>
-+                      a.toLowerCase() === typed ||
-+                      a.toLowerCase() === "@" + typed ||
-+                      a.toLowerCase() === cleanTyped ||
-+                      a.toLowerCase() === "@" + cleanTyped
-+                  )
-+                ) ||
-+                candidates.find(e =>
-+                  e.aliases?.some(
-+                    a =>
-+                      a.toLowerCase().startsWith(typed) ||
-+                      a.toLowerCase().replace(/^@/, "").startsWith(typed) ||
-+                      a.toLowerCase().startsWith(cleanTyped) ||
-+                      a.toLowerCase().replace(/^@/, "").startsWith(cleanTyped)
-+                  )
-+                ) ||
-+                candidates.find(
-+                  e =>
-+                    e.name.toLowerCase() === typed ||
-+                    e.name.toLowerCase() === cleanTyped
-+                ) ||
-+                candidates.find(
-+                  e =>
-+                    e.name.toLowerCase().startsWith(typed) ||
-+                    (cleanTyped && e.name.toLowerCase().startsWith(cleanTyped))
++            // 2. If not found via TabToSearch result, query the engine store
++            if (!matchedEngineName) {
++              this.maybeInitEngineStore();
++              if (this.engineStore?.initialized) {
++                let engines = this.engineStore.getEngines();
++                let defaultEngine = this.engineStore.default;
++                let nonDefaultEngines = engines.filter(
++                  e => e.id !== defaultEngine?.id
 +                );
 +
-+              if (engine) {
-+                matchedEngineName = engine.name;
++                let normalize = str =>
++                  (str || "")
++                    .toLowerCase()
++                    .normalize("NFD")
++                    .replace(/[\u0300-\u036f]/g, "");
++
++                let normTyped = normalize(typed);
++                let cleanTyped = normTyped
++                  .replace(/^@/, "")
++                  .replace(/\.(com|org|net|io|co|fr|de|uk)$/, "")
++                  .trim();
++
++                let matchesEngine = e => {
++                  let name = normalize(e.name);
++                  let id = normalize(e.id);
++                  let aliases = (e.aliases || []).map(normalize);
++                  let cleanAliases = aliases.map(a => a.replace(/^@/, ""));
++
++                  if (
++                    aliases.includes(normTyped) ||
++                    cleanAliases.includes(normTyped) ||
++                    cleanAliases.includes(cleanTyped)
++                  ) {
++                    return true;
++                  }
++                  if (
++                    name === normTyped ||
++                    name === cleanTyped ||
++                    name.startsWith(cleanTyped + " ") ||
++                    name.startsWith(cleanTyped + "(")
++                  ) {
++                    return true;
++                  }
++                  if (
++                    id === normTyped ||
++                    id === cleanTyped ||
++                    id.startsWith(cleanTyped)
++                  ) {
++                    return true;
++                  }
++                  if (cleanAliases.some(a => a.startsWith(cleanTyped))) {
++                    return true;
++                  }
++                  if (
++                    name.startsWith(normTyped) ||
++                    (cleanTyped.length >= 2 && name.startsWith(cleanTyped))
++                  ) {
++                    return true;
++                  }
++                  return false;
++                };
++
++                let matched = nonDefaultEngines.find(matchesEngine);
++
++                if (!matched && defaultEngine) {
++                  let defaultAliases = (defaultEngine.aliases || []).map(normalize);
++                  let cleanDefaultAliases = defaultAliases.map(a =>
++                    a.replace(/^@/, "")
++                  );
++                  let defaultName = normalize(defaultEngine.name);
++                  if (
++                    defaultAliases.includes(normTyped) ||
++                    cleanDefaultAliases.includes(normTyped) ||
++                    defaultName === normTyped ||
++                    defaultName === cleanTyped
++                  ) {
++                    matched = defaultEngine;
++                  }
++                }
++
++                if (matched) {
++                  matchedEngineName = matched.name;
++                }
 +              }
 +            }
 +
 +            if (matchedEngineName) {
 +              event.preventDefault();
-+              this.input.searchMode = {
-+                engineName: matchedEngineName,
-+                entry: "tabtosearch",
-+              };
-+              this.input.setValue("");
-+              this.input.userTypedValue = "";
-+              this.input.startQuery({
-+                allowAutofill: false,
-+                event,
-+              });
++              if (executeAction) {
++                this.input.searchMode = {
++                  engineName: matchedEngineName,
++                  entry: "tabtosearch",
++                  isPreview: false,
++                };
++                this.input.setValue("");
++                this.input.userTypedValue = "";
++                this.input.startQuery({
++                  allowAutofill: false,
++                  event,
++                });
++              }
 +              break;
 +            }
 +          }
@@ -93,7 +140,7 @@ index dd073b0540..5833d648ca 100644
          // It's always possible to tab through results when the urlbar was
          // focused with the mouse or has a search string, or when the view
          // already has a selection.
-@@ -569,6 +644,7 @@ export class UrlbarChildController {
+@@ -569,6 +691,7 @@ export class UrlbarChildController {
            this.input.focusedViaMousedown ||
            this.input.searchMode?.isPreview ||
            this.input.searchMode?.source == UrlbarShared.RESULT_SOURCE.ACTIONS ||
@@ -101,7 +148,7 @@ index dd073b0540..5833d648ca 100644
            this.view.selectedElement ||
            (this.input.value &&
              this.input.getAttribute("pageproxystate") != "valid");
-@@ -588,6 +664,8 @@ export class UrlbarChildController {
+@@ -588,6 +711,8 @@ export class UrlbarChildController {
              });
            }
            event.preventDefault();
@@ -110,7 +157,7 @@ index dd073b0540..5833d648ca 100644
          }
          break;
        }
-@@ -825,6 +903,10 @@ export class UrlbarChildController {
+@@ -825,6 +950,10 @@ export class UrlbarChildController {
        }
        reuseEmpty = true;
      }
@@ -121,7 +168,7 @@ index dd073b0540..5833d648ca 100644
      // The browser window exists only in chrome; a content-process input has no
      // tab to reuse, so `gBrowser` is absent and the reuse is skipped.
      if (
-@@ -834,6 +916,10 @@ export class UrlbarChildController {
+@@ -834,6 +963,10 @@ export class UrlbarChildController {
      ) {
        where = "current";
      }

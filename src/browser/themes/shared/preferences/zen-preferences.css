@@ -438,66 +438,17 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
   margin-block: 6px;
 }
 
+.zen-intelligence-config-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block: 6px;
+}
+
 #zenTabIntelligenceNotifyMinutes {
   width: 5em;
   padding: 4px 6px;
   border-radius: var(--border-radius-small, 4px);
   text-align: center;
-}
-
-.zen-workspace-pills-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  margin-top: 6px;
-  margin-bottom: 8px;
-}
-
-.zen-workspace-pill {
-  appearance: none;
-  border: 1px solid var(--in-content-border-color, rgba(0, 0, 0, 0.2)) !important;
-  background: var(--in-content-box-background, light-dark(#f2f2f7, #2c2c2e)) !important;
-  color: var(--in-content-text-color, inherit) !important;
-  border-radius: var(--border-radius-small, 4px) !important;
-  padding: 3px 8px !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-  user-select: none !important;
-  min-height: 26px !important;
-}
-
-.zen-workspace-pill:hover {
-  background: var(--in-content-button-background-hover, light-dark(#e5e5ea, #3a3a3c)) !important;
-}
-
-.zen-workspace-pill[selected="true"] {
-  background: var(--in-content-primary-button-background, #0060df) !important;
-  color: var(--in-content-primary-button-text-color, #ffffff) !important;
-  border-color: var(--in-content-primary-button-background, #0060df) !important;
-}
-
-.zen-intelligence-route-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--in-content-border-color, rgba(0, 0, 0, 0.08));
-}
-
-.zen-intelligence-route-item:last-child {
-  border-bottom: none;
-}
-
-.zen-intelligence-add-route-row {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.zen-intelligence-add-route-row html|input {
-  flex: 1;
 }
 

@@ -2,39 +2,32 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ZenSystemCalendarProvider } from "resource:///modules/zen/intelligence/ZenSystemCalendarProvider.sys.mjs";
+import { ZenGoogleConnector } from "resource:///modules/zen/intelligence/ZenGoogleConnector.sys.mjs";
 
 class nsZenTabIntelligenceManager {
   #tabData = new WeakMap();
   #trackedTabs = new Set();
   #listeners = new Set();
   #isInitialized = false;
-  #systemCalendarProvider = null;
-  #systemImminentMeetings = [];
+  #currentImminentMeeting = null;
 
   init() {
     if (this.#isInitialized) return;
     this.#isInitialized = true;
 
     try {
-      this.#systemCalendarProvider = new ZenSystemCalendarProvider(meetings => {
-        this.#systemImminentMeetings = Array.isArray(meetings)
-          ? meetings
-          : meetings ? [meetings] : [];
-        this.#checkImminentMeetings();
-      });
-      this.#systemCalendarProvider.init();
-    } catch {
-      // System calendar init silent fallback
+      ZenGoogleConnector.init();
+      ZenGoogleConnector.addListener(this);
+      this.refreshImminentMeeting();
+    } catch (e) {
+      console.warn("[ZenTabIntelligenceManager] Failed to init ZenGoogleConnector:", e);
     }
   }
 
   uninit() {
-    if (this.#systemCalendarProvider) {
-      this.#systemCalendarProvider.uninit();
-      this.#systemCalendarProvider = null;
-    }
-    this.#systemImminentMeetings = [];
+    ZenGoogleConnector.removeListener(this);
+    ZenGoogleConnector.uninit();
+    this.#currentImminentMeeting = null;
     this.#tabData = new WeakMap();
     this.#trackedTabs.clear();
     this.#listeners.clear();
@@ -59,6 +52,25 @@ class nsZenTabIntelligenceManager {
         console.error(`[ZenTabIntelligenceManager] Listener error on ${event}:`, e);
       }
     }
+  }
+
+  async refreshImminentMeeting() {
+    if (!ZenGoogleConnector.isConfigured()) {
+      this.#currentImminentMeeting = null;
+      this.#notify("onImminentMeetingChanged", { tab: null, meeting: null });
+      return;
+    }
+
+    try {
+      const meeting = await ZenGoogleConnector.getImminentMeeting();
+      this.#currentImminentMeeting = meeting;
+      this.#notify("onImminentMeetingChanged", { tab: null, meeting });
+    } catch {}
+  }
+
+  onImminentMeetingUpdated(meeting) {
+    this.#currentImminentMeeting = meeting;
+    this.#notify("onImminentMeetingChanged", { tab: null, meeting });
   }
 
   isTargetTab(tab) {
@@ -102,54 +114,10 @@ class nsZenTabIntelligenceManager {
     }
 
     this.#notify("onTabStatusChanged", { tab, status });
-
-    if (status.hasImminentMeeting && status.imminentMeeting) {
-      this.#notify("onImminentMeetingChanged", {
-        tab,
-        meeting: status.imminentMeeting,
-      });
-    } else {
-      this.#checkImminentMeetings();
-    }
-  }
-
-  #checkImminentMeetings() {
-    let latestMeeting = this.#systemImminentMeetings[0] || null;
-    let meetingTab = null;
-
-    for (const tab of this.#trackedTabs) {
-      if (!tab.isConnected) {
-        this.#trackedTabs.delete(tab);
-        continue;
-      }
-      const data = this.#tabData.get(tab);
-      if (data?.status?.hasImminentMeeting && data?.status?.imminentMeeting) {
-        latestMeeting = data.status.imminentMeeting;
-        meetingTab = tab;
-        break;
-      }
-    }
-
-    this.#notify("onImminentMeetingChanged", {
-      tab: meetingTab,
-      meeting: latestMeeting,
-    });
-    this.#notify("onImminentMeetingsChanged", {
-      systemMeetings: this.#systemImminentMeetings,
-      trackedTabs: Array.from(this.#trackedTabs),
-    });
-  }
-
-  getSystemImminentMeetings() {
-    return [...this.#systemImminentMeetings];
   }
 
   getTrackedTabs() {
     return Array.from(this.#trackedTabs);
-  }
-
-  getDetectedCalendars() {
-    return this.#systemCalendarProvider?.getDetectedCalendars() || [];
   }
 
   getTabStatus(tab) {
@@ -161,108 +129,58 @@ class nsZenTabIntelligenceManager {
       return { items: [] };
     }
 
-    const browser = tab.linkedBrowser;
-    const global = browser?.browsingContext?.currentWindowGlobal;
+    const url = tab.linkedBrowser?.currentURI?.spec || "";
+    const isGmail = url.startsWith("https://mail.google.com/");
+    const isCalendar = url.startsWith("https://calendar.google.com/");
 
-    if (global) {
-      try {
-        const actor = global.getActor("ZenTabIntelligence");
-        if (actor) {
-          const details = await actor.requestDetails();
-          if (details) {
-            if (details.type === "calendar") {
-              return details;
-            }
-            if (details.items && details.items.length > 0) {
-              return details;
-            }
-          }
-        }
-      } catch (e) {
-        console.warn("[ZenTabIntelligenceManager] getActor failed:", e);
+    if (isGmail) {
+      if (!ZenGoogleConnector.isConfigured()) {
+        return {
+          type: "mail",
+          service: "Gmail",
+          configured: false,
+          items: [],
+          totalUnread: 0,
+        };
       }
+      const data = await ZenGoogleConnector.getUnreadEmails();
+      return {
+        type: "mail",
+        service: "Gmail",
+        configured: data.configured,
+        items: data.items || [],
+        totalUnread: data.totalUnread || 0,
+      };
     }
 
-    // Fallback: derive details from web page title (handles renamed tabs with zenStaticLabel)
-    const pageTitle =
-      browser?.contentTitle ||
-      browser?.browsingContext?.currentWindowGlobal?.documentTitle ||
-      tab.label ||
-      "";
-    const match = pageTitle.match(/\((\d+)\)/);
-    const count = match ? parseInt(match[1], 10) : 0;
-    const hasUnread = count > 0 || tab.hasAttribute("zen-has-unread");
-    const url = browser?.currentURI?.spec || "";
-    const isCalendar = url.startsWith("https://calendar.google.com/");
-    const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
-
     if (isCalendar) {
+      if (!ZenGoogleConnector.isConfigured()) {
+        return {
+          type: "calendar",
+          service: "Google Calendar",
+          configured: false,
+          items: [],
+        };
+      }
+      const data = await ZenGoogleConnector.getTodayEvents();
       return {
         type: "calendar",
         service: "Google Calendar",
-        items: [
-          {
-            title: "Google Calendar",
-            subtitle: "Upcoming Schedule",
-            snippet: "Click to view events",
-            url,
-          },
-        ],
+        configured: data.configured,
+        items: data.items || [],
       };
     }
 
-    if (!hasUnread) {
-      return {
-        type: isWhatsApp ? "chat" : "mail",
-        service: isWhatsApp ? "WhatsApp" : "Gmail",
-        items: [],
-      };
-    }
-
-    const countToUse = count || 1;
-    if (isWhatsApp) {
-      return {
-        type: "chat",
-        service: "WhatsApp",
-        items: [
-          {
-            title: "WhatsApp Web",
-            subtitle: "Click to open chat",
-            url,
-          },
-        ],
-      };
-    }
-
-    return {
-      type: "mail",
-      service: "Gmail",
-      items: [
-        {
-          title: "Gmail Inbox",
-          subtitle: "Click to open inbox",
-          url,
-        },
-      ],
-    };
+    // WhatsApp: no hover popup (user requested: unread badge remains, hover removed)
+    return { items: [] };
   }
 
   getActiveImminentMeeting() {
-    if (this.#systemImminentMeetings.length > 0) {
+    if (this.#currentImminentMeeting) {
       return {
         tab: null,
-        meeting: this.#systemImminentMeetings[0],
+        meeting: this.#currentImminentMeeting,
       };
-    }
-    for (const tab of this.#trackedTabs) {
-      if (!tab.isConnected) continue;
-      const data = this.#tabData.get(tab);
-      if (data?.status?.hasImminentMeeting && data?.status?.imminentMeeting) {
-        return {
-          tab,
-          meeting: data.status.imminentMeeting,
-        };
-      }
     }
     return null;
   }

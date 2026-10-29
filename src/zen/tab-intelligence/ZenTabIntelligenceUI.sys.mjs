@@ -301,9 +301,9 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) return false;
 
     const url = tab.linkedBrowser?.currentURI?.spec || "";
+    // User requested: hover preview strictly for Gmail and Google Calendar. WhatsApp hover removed!
     return (
       url.startsWith("https://mail.google.com/") ||
-      url.startsWith("https://web.whatsapp.com/") ||
       url.startsWith("https://calendar.google.com/")
     );
   }
@@ -394,7 +394,15 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     wrapper.innerHTML = "";
 
-    if (details?.type === "calendar") {
+    if (details?.configured === false) {
+      const emptyEl = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "div"
+      );
+      emptyEl.className = "zen-intelligence-empty-state";
+      emptyEl.textContent = "Connecteur Google Zen non configuré (ajoutez l'URL dans les réglages)";
+      wrapper.appendChild(emptyEl);
+    } else if (details?.type === "calendar") {
       if (items.length > 0) {
         const header = this.document.createElementNS(
           "http://www.w3.org/1999/xhtml",
@@ -422,30 +430,37 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         emptyEl.textContent = "No upcoming events";
         wrapper.appendChild(emptyEl);
       }
-    } else if (hasUnread && items.length > 0) {
-      const count = Math.max(unreadCount, items.length);
-      const isChat = details?.type === "chat";
-      const countText = isChat
-        ? `${count} unread message${count > 1 ? "s" : ""}`
-        : `${count} unread email${count > 1 ? "s" : ""}`;
+    } else if (details?.type === "mail") {
+      if (items.length > 0) {
+        const count = details.totalUnread || items.length;
+        const countText = `${count} unread email${count > 1 ? "s" : ""}`;
 
-      const header = this.document.createElementNS(
-        "http://www.w3.org/1999/xhtml",
-        "div"
-      );
-      header.className = "tabs-list-header zen-intelligence-counter-header";
-      header.textContent = countText;
-      wrapper.appendChild(header);
+        const header = this.document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div"
+        );
+        header.className = "tabs-list-header zen-intelligence-counter-header";
+        header.textContent = countText;
+        wrapper.appendChild(header);
 
-      const listEl = this.document.createElementNS(
-        "http://www.w3.org/1999/xhtml",
-        "div"
-      );
-      listEl.className = "zen-intelligence-items-list";
-      for (const item of items) {
-        listEl.appendChild(this.#createItemRow(item, tab));
+        const listEl = this.document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div"
+        );
+        listEl.className = "zen-intelligence-items-list";
+        for (const item of items) {
+          listEl.appendChild(this.#createItemRow(item, tab));
+        }
+        wrapper.appendChild(listEl);
+      } else {
+        const emptyEl = this.document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div"
+        );
+        emptyEl.className = "zen-intelligence-empty-state";
+        emptyEl.textContent = "No unread, breathe! 🍃";
+        wrapper.appendChild(emptyEl);
       }
-      wrapper.appendChild(listEl);
     } else {
       const emptyEl = this.document.createElementNS(
         "http://www.w3.org/1999/xhtml",
@@ -703,105 +718,6 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       return null;
     }
 
-    // 1. Check open tabs first
-    const trackedTabs = lazy.ZenTabIntelligenceManager.getTrackedTabs();
-    for (const tab of trackedTabs) {
-      if (!tab.isConnected) continue;
-      const status = lazy.ZenTabIntelligenceManager.getTabStatus(tab);
-      if (status?.hasImminentMeeting && status?.imminentMeeting) {
-        const tabWorkspace = tab.getAttribute("zen-workspace-id");
-        const isEssential = tab.hasAttribute("zen-essential");
-        if (
-          isEssential ||
-          !tabWorkspace ||
-          !workspaceId ||
-          tabWorkspace === workspaceId
-        ) {
-          return { tab, meeting: status.imminentMeeting };
-        }
-      }
-    }
-
-    // 2. Check system calendar meetings
-    if (
-      Services.prefs.getBoolPref(
-        "zen.tab-intelligence.system-calendar.enabled",
-        true
-      )
-    ) {
-      const systemMeetings =
-        lazy.ZenTabIntelligenceManager.getSystemImminentMeetings();
-      for (const meeting of systemMeetings) {
-        if (this.#isMeetingAllowedInWorkspace(meeting, workspaceId)) {
-          return { tab: null, meeting };
-        }
-      }
-    }
-
-    return null;
-  }
-
-  #isMeetingAllowedInWorkspace(meeting, workspaceId) {
-    const calName = meeting.calendar || "";
-    const customRoutingEnabled = Services.prefs.getBoolPref(
-      "zen.tab-intelligence.system-calendar.custom-routing-enabled",
-      false
-    );
-
-    // Read routing pref: JSON object mapping calendar name to array of workspace IDs
-    let routing = {};
-    if (customRoutingEnabled) {
-      try {
-        const routingStr = Services.prefs.getStringPref(
-          "zen.tab-intelligence.system-calendar.routing",
-          "{}"
-        );
-        routing = JSON.parse(routingStr);
-      } catch {}
-    }
-
-    let targetWorkspaces = null;
-    if (
-      customRoutingEnabled &&
-      calName &&
-      Array.isArray(routing[calName]) &&
-      routing[calName].length > 0
-    ) {
-      targetWorkspaces = routing[calName];
-    } else {
-      // Fallback to default workspaces pref
-      try {
-        const defStr = Services.prefs.getStringPref(
-          "zen.tab-intelligence.system-calendar.default-workspaces",
-          "*"
-        );
-        if (defStr === "*") {
-          targetWorkspaces = ["*"];
-        } else if (defStr.startsWith("[")) {
-          targetWorkspaces = JSON.parse(defStr);
-        } else {
-          targetWorkspaces = defStr
-            .split(",")
-            .map(s => s.trim())
-            .filter(Boolean);
-        }
-      } catch {
-        targetWorkspaces = ["*"];
-      }
-    }
-
-    if (!Array.isArray(targetWorkspaces) || targetWorkspaces.length === 0) {
-      targetWorkspaces = ["*"];
-    }
-
-    // If targetWorkspaces includes "*" (all workspaces), or matches workspaceId
-    if (
-      targetWorkspaces.includes("*") ||
-      (workspaceId && targetWorkspaces.includes(workspaceId))
-    ) {
-      return true;
-    }
-
-    return false;
+    return lazy.ZenTabIntelligenceManager.getActiveImminentMeeting();
   }
 }

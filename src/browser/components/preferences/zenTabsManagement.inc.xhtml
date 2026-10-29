@@ -102,49 +102,47 @@
             <checkbox id="zenTabIntelligenceServiceWhatsApp"
                       data-l10n-id="zen-tab-intelligence-service-whatsapp"
                       preference="zen.tab-intelligence.service.whatsapp"/>
-            <checkbox id="zenTabIntelligenceSystemCalendar"
-                      data-l10n-id="zen-tab-intelligence-system-calendar"
-                      preference="zen.tab-intelligence.system-calendar.enabled"/>
 
-            <vbox id="zenTabIntelligenceSystemCalendarSettings" class="indent">
+            <vbox id="zenTabIntelligenceGoogleSettings" class="indent">
+                  <label><html:h3 data-l10n-id="zen-tab-intelligence-google-connector-header"/></label>
+                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-google-connector-desc"/>
+
+                  <hbox align="center" class="zen-intelligence-config-row">
+                        <label id="zenTabIntelligenceGoogleUrlLabel"
+                               data-l10n-id="zen-tab-intelligence-google-url-label"
+                               style="min-width: 130px;"/>
+                        <html:input id="zenTabIntelligenceGoogleUrl"
+                                    type="url"
+                                    class="input-inline"
+                                    style="flex: 1;"
+                                    placeholder="https://script.google.com/macros/s/.../exec"
+                                    preference="zen.tab-intelligence.google.webapp-url"/>
+                  </hbox>
+
+                  <hbox align="center" class="zen-intelligence-config-row">
+                        <label id="zenTabIntelligenceGoogleKeyLabel"
+                               data-l10n-id="zen-tab-intelligence-google-key-label"
+                               style="min-width: 130px;"/>
+                        <html:input id="zenTabIntelligenceGoogleKey"
+                                    type="password"
+                                    class="input-inline"
+                                    style="flex: 1;"
+                                    placeholder="Clé secrète / token (optionnel)"
+                                    preference="zen.tab-intelligence.google.api-key"/>
+                  </hbox>
+
                   <hbox align="center" class="zen-intelligence-minutes-row">
                         <label id="zenTabIntelligenceNotifyMinutesBefore"
-                               data-l10n-id="zen-tab-intelligence-system-calendar-notify-minutes-before"/>
+                               data-l10n-id="zen-tab-intelligence-google-notify-minutes-before"/>
                         <html:input id="zenTabIntelligenceNotifyMinutes"
                                     type="number"
                                     min="1"
                                     max="120"
                                     class="input-inline"
-                                    preference="zen.tab-intelligence.system-calendar.notify-minutes-before"/>
+                                    preference="zen.tab-intelligence.google.notify-minutes-before"/>
                         <label id="zenTabIntelligenceNotifyMinutesAfter"
-                               data-l10n-id="zen-tab-intelligence-system-calendar-notify-minutes-after"/>
+                               data-l10n-id="zen-tab-intelligence-google-notify-minutes-after"/>
                   </hbox>
-
-                  <vbox>
-                        <label id="zenTabIntelligenceDefaultWorkspacesLabel"
-                               data-l10n-id="zen-tab-intelligence-system-calendar-default-workspaces"/>
-                        <hbox id="zenTabIntelligenceDefaultWorkspacesPills"
-                              class="zen-workspace-pills-container"></hbox>
-                  </vbox>
-
-                  <checkbox id="zenTabIntelligenceSystemCalendarCustomRoutingToggle"
-                            data-l10n-id="zen-tab-intelligence-system-calendar-enable-routing"
-                            preference="zen.tab-intelligence.system-calendar.custom-routing-enabled"/>
-
-                  <vbox id="zenTabIntelligenceRoutingContainer" class="indent" hidden="true">
-                        <description class="description-deemphasized"
-                                     data-l10n-id="zen-tab-intelligence-system-calendar-routing-description"/>
-                        <vbox id="zenTabIntelligenceRoutingList"></vbox>
-                        <hbox align="center" class="zen-intelligence-add-route-row">
-                              <html:input id="zenTabIntelligenceNewCalendarName"
-                                          type="text"
-                                          data-l10n-id="zen-tab-intelligence-system-calendar-routing-placeholder"
-                                          class="input-inline" />
-                              <button id="zenTabIntelligenceAddRouteButton"
-                                      class="accessory-button"
-                                      data-l10n-id="zen-tab-intelligence-system-calendar-routing-add" />
-                        </hbox>
-                  </vbox>
             </vbox>
       </vbox>
 </groupbox>

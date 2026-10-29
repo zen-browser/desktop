@@ -1,0 +1,35 @@
+diff --git a/browser/components/preferences/config/search.mjs b/browser/components/preferences/config/search.mjs
+index c5b6df39b6a131dfa87685261e2ddab0e3b0cef1..90c3cad1719a3c1a4f8c743fd291649b5b89858c 100644
+--- a/browser/components/preferences/config/search.mjs
++++ b/browser/components/preferences/config/search.mjs
+@@ -59,6 +59,7 @@ Preferences.addAll([
+   { id: "browser.urlbar.suggest.quicksuggest.all", type: "bool" },
+   { id: "browser.urlbar.suggest.quicksuggest.sponsored", type: "bool" },
+   { id: "browser.urlbar.quicksuggest.online.enabled", type: "bool" },
++  { id: "zen.urlbar.always-open-empty", type: "bool" },
+ ]);
+ 
+ /**
+@@ -524,6 +525,11 @@ Preferences.addSetting({
+   pref: "browser.urlbar.quickactions.showPrefs",
+ });
+ 
++Preferences.addSetting({
++  id: "zenUrlbarAlwaysOpenEmpty",
++  pref: "zen.urlbar.always-open-empty",
++});
++
+ Preferences.addSetting({
+   id: "enableQuickActions",
+   pref: "browser.urlbar.suggest.quickactions",
+@@ -1228,6 +1234,10 @@ SettingGroupManager.registerGroups({
+             l10nId: "addressbar-locbar-quickactions-option",
+             supportPage: "quick-actions-firefox-search-bar",
+           },
++          {
++            id: "zenUrlbarAlwaysOpenEmpty",
++            l10nId: "zen-addressbar-always-open-empty",
++          },
+           {
+             id: "firefoxSuggestAll",
+             l10nId: "addressbar-locbar-suggest-all-option-2",

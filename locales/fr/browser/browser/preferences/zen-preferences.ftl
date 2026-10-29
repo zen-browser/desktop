@@ -325,3 +325,6 @@ zen-close-all-unpinned-tabs-shortcut = Fermer tous les onglets non épinglés
 zen-new-unsynced-window-shortcut = Nouvelle fenêtre vierge
 zen-duplicate-tab-shortcut = Dupliquer l'onglet
 zen-key-find-selection = Rechercher dans la sélection
+
+zen-addressbar-always-open-empty =
+    .label = Toujours ouvrir une barre de recherche vide

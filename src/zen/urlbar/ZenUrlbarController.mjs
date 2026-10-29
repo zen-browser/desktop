@@ -31,6 +31,12 @@ export class nsZenUrlbarController {
     );
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
+      "alwaysOpenEmpty",
+      "zen.urlbar.always-open-empty",
+      true
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
       "showDomainOnly",
       "zen.urlbar.show-domain-only-in-sidebar",
       true
@@ -219,7 +225,7 @@ export class nsZenUrlbarController {
           button.removeAttribute("in-urlbar");
         }
 
-        if (onSwitch) {
+        if (onSwitch || this.alwaysOpenEmpty) {
           this.#clearSessionData();
         } else {
           this.#lastSearch = gURLBar._untrimmedValue || "";

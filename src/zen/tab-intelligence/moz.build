@@ -5,6 +5,8 @@
 EXTRA_JS_MODULES.zen.intelligence += [
     "providers/ZenGoogleAuth.sys.mjs",
     "providers/ZenGoogleConnector.sys.mjs",
+    "providers/ZenOutlookAuth.sys.mjs",
+    "providers/ZenOutlookConnector.sys.mjs",
     "ZenTabIntelligenceManager.sys.mjs",
     "ZenTabIntelligenceUI.sys.mjs",
 ]

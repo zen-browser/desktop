@@ -102,6 +102,9 @@
             <checkbox id="zenTabIntelligenceServiceWhatsApp"
                       data-l10n-id="zen-tab-intelligence-service-whatsapp"
                       preference="zen.tab-intelligence.service.whatsapp"/>
+            <checkbox id="zenTabIntelligenceServiceOutlook"
+                      data-l10n-id="zen-tab-intelligence-service-outlook"
+                      preference="zen.tab-intelligence.service.outlook"/>
 
             <vbox id="zenTabIntelligenceGoogleSettings" class="indent">
                   <label><html:h3 data-l10n-id="zen-tab-intelligence-google-account-header"/></label>
@@ -135,6 +138,7 @@
                                     type="number"
                                     min="1"
                                     max="120"
+                                    value="5"
                                     class="input-inline"
                                     preference="zen.tab-intelligence.google.notify-minutes-before"/>
                         <label id="zenTabIntelligenceNotifyMinutesAfter"
@@ -164,6 +168,58 @@
                                           style="flex: 1;"
                                           placeholder="Optionnel"
                                           preference="zen.tab-intelligence.google.oauth.client-secret"/>
+                        </hbox>
+                  </html:details>
+            </vbox>
+
+            <vbox id="zenTabIntelligenceOutlookSettings" class="indent">
+                  <label><html:h3 data-l10n-id="zen-tab-intelligence-outlook-account-header"/></label>
+                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-outlook-account-desc"/>
+
+                  <!-- Disconnected state -->
+                  <hbox id="zenTabIntelligenceOutlookStatusDisconnectedRow" align="center" class="zen-intelligence-account-row">
+                        <description data-l10n-id="zen-tab-intelligence-outlook-status-disconnected" style="flex: 1;"/>
+                        <html:button id="zenTabIntelligenceOutlookConnectBtn"
+                                     type="button"
+                                     class="primary-button"
+                                     data-l10n-id="zen-tab-intelligence-outlook-connect-button"/>
+                  </hbox>
+
+                  <!-- Connected state -->
+                  <hbox id="zenTabIntelligenceOutlookStatusConnectedRow" align="center" class="zen-intelligence-account-row" hidden="true">
+                        <html:div class="zen-intelligence-connected-badge">
+                              <html:span class="zen-intelligence-badge-dot">●</html:span>
+                              <html:span id="zenTabIntelligenceOutlookUserDesc" class="zen-intelligence-user-email"/>
+                        </html:div>
+                        <html:button id="zenTabIntelligenceOutlookDisconnectBtn"
+                                     type="button"
+                                     class="subtle-button"
+                                     data-l10n-id="zen-tab-intelligence-outlook-disconnect-button"/>
+                  </hbox>
+
+                  <html:details class="zen-intelligence-advanced-details">
+                        <html:summary data-l10n-id="zen-tab-intelligence-outlook-advanced-auth" class="zen-intelligence-advanced-summary"/>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceOutlookClientIdLabel"
+                                     data-l10n-id="zen-tab-intelligence-outlook-client-id-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceOutlookClientId"
+                                          type="text"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Par défaut (laisser vide)"
+                                          preference="zen.tab-intelligence.outlook.oauth.client-id"/>
+                        </hbox>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceOutlookClientSecretLabel"
+                                     data-l10n-id="zen-tab-intelligence-outlook-client-secret-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceOutlookClientSecret"
+                                          type="password"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Optionnel"
+                                          preference="zen.tab-intelligence.outlook.oauth.client-secret"/>
                         </hbox>
                   </html:details>
             </vbox>

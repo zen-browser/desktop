@@ -490,3 +490,11 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
   user-select: none;
 }
 
+#zenTabIntelligenceOptions[disabled="true"],
+.zen-settings-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: grayscale(0.5);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+

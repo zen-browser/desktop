@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { ZenGoogleConnector } from "resource:///modules/zen/intelligence/ZenGoogleConnector.sys.mjs";
+import { ZenOutlookConnector } from "resource:///modules/zen/intelligence/ZenOutlookConnector.sys.mjs";
 
 class nsZenTabIntelligenceManager {
   #tabData = new WeakMap();
@@ -18,15 +19,25 @@ class nsZenTabIntelligenceManager {
     try {
       ZenGoogleConnector.init();
       ZenGoogleConnector.addListener(this);
-      this.refreshImminentMeeting();
     } catch (e) {
       console.warn("[ZenTabIntelligenceManager] Failed to init ZenGoogleConnector:", e);
     }
+
+    try {
+      ZenOutlookConnector.init();
+      ZenOutlookConnector.addListener(this);
+    } catch (e) {
+      console.warn("[ZenTabIntelligenceManager] Failed to init ZenOutlookConnector:", e);
+    }
+
+    this.refreshImminentMeeting();
   }
 
   uninit() {
     ZenGoogleConnector.removeListener(this);
     ZenGoogleConnector.uninit();
+    ZenOutlookConnector.removeListener(this);
+    ZenOutlookConnector.uninit();
     this.#currentImminentMeeting = null;
     this.#tabData = new WeakMap();
     this.#trackedTabs.clear();
@@ -55,22 +66,26 @@ class nsZenTabIntelligenceManager {
   }
 
   async refreshImminentMeeting() {
-    if (!ZenGoogleConnector.isConfigured()) {
-      this.#currentImminentMeeting = null;
-      this.#notify("onImminentMeetingChanged", { tab: null, meeting: null });
-      return;
+    let meeting = null;
+
+    if (ZenGoogleConnector.isConfigured()) {
+      try {
+        meeting = await ZenGoogleConnector.getImminentMeeting();
+      } catch {}
     }
 
-    try {
-      const meeting = await ZenGoogleConnector.getImminentMeeting();
-      this.#currentImminentMeeting = meeting;
-      this.#notify("onImminentMeetingChanged", { tab: null, meeting });
-    } catch {}
-  }
+    if (!meeting && ZenOutlookConnector.isConfigured()) {
+      try {
+        meeting = await ZenOutlookConnector.getImminentMeeting();
+      } catch {}
+    }
 
-  onImminentMeetingUpdated(meeting) {
     this.#currentImminentMeeting = meeting;
     this.#notify("onImminentMeetingChanged", { tab: null, meeting });
+  }
+
+  onImminentMeetingUpdated() {
+    this.refreshImminentMeeting();
   }
 
   getTabService(tab) {
@@ -119,6 +134,19 @@ class nsZenTabIntelligenceManager {
       /whatsapp/i.test(image)
     ) {
       return "whatsapp";
+    }
+
+    // Check Outlook / Microsoft 365
+    if (
+      url.includes("outlook.live.com") ||
+      url.includes("outlook.office.com") ||
+      url.includes("outlook.office365.com") ||
+      url.includes("mail.live.com") ||
+      /outlook/i.test(label) ||
+      /outlook/i.test(tooltip) ||
+      /outlook/i.test(image)
+    ) {
+      return "outlook";
     }
 
     return null;
@@ -210,6 +238,30 @@ class nsZenTabIntelligenceManager {
         service: "Google Calendar",
         configured: data.configured,
         items: data.items || [],
+      };
+    }
+
+    if (service === "outlook") {
+      if (!ZenOutlookConnector.isConfigured()) {
+        return {
+          type: "outlook",
+          service: "Outlook",
+          configured: false,
+          items: [],
+          totalUnread: 0,
+        };
+      }
+      const [emailData, calData] = await Promise.all([
+        ZenOutlookConnector.getUnreadEmails(),
+        ZenOutlookConnector.getTodayEvents(),
+      ]);
+      return {
+        type: "outlook",
+        service: "Outlook",
+        configured: true,
+        items: emailData.items || [],
+        totalUnread: emailData.totalUnread || 0,
+        calendarItems: calData.items || [],
       };
     }
 

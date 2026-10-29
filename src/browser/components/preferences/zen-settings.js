@@ -767,6 +767,8 @@ var gZenWorkspacesSettings = {
 
 var gZenTabIntelligenceSettings = {
   _authModule: null,
+  _outlookAuthModule: null,
+  _hasPrefObserver: false,
 
   get _auth() {
     if (!this._authModule) {
@@ -782,6 +784,20 @@ var gZenTabIntelligenceSettings = {
     return this._authModule;
   },
 
+  get _outlookAuth() {
+    if (!this._outlookAuthModule) {
+      try {
+        const { ZenOutlookAuth } = ChromeUtils.importESModule(
+          "resource:///modules/zen/intelligence/ZenOutlookAuth.sys.mjs"
+        );
+        this._outlookAuthModule = ZenOutlookAuth;
+      } catch (e) {
+        console.warn("[gZenTabIntelligenceSettings] Failed to import ZenOutlookAuth:", e);
+      }
+    }
+    return this._outlookAuthModule;
+  },
+
   init() {
     const template = document.getElementById("template-paneZenTabManagement");
     if (template) {
@@ -789,6 +805,7 @@ var gZenTabIntelligenceSettings = {
       Preferences.queueUpdateOfAllElements();
     }
 
+    // Google buttons
     const connectBtn = document.getElementById("zenTabIntelligenceGoogleConnectBtn");
     const disconnectBtn = document.getElementById("zenTabIntelligenceGoogleDisconnectBtn");
 
@@ -811,7 +828,46 @@ var gZenTabIntelligenceSettings = {
       this._auth.addListener(this);
     }
 
+    // Outlook buttons
+    const outlookConnectBtn = document.getElementById("zenTabIntelligenceOutlookConnectBtn");
+    const outlookDisconnectBtn = document.getElementById("zenTabIntelligenceOutlookDisconnectBtn");
+
+    if (outlookConnectBtn) {
+      outlookConnectBtn.onclick = (e) => {
+        e.preventDefault();
+        this._outlookAuth?.login(window);
+      };
+    }
+
+    if (outlookDisconnectBtn) {
+      outlookDisconnectBtn.onclick = (e) => {
+        e.preventDefault();
+        this._outlookAuth?.logout();
+      };
+    }
+
+    if (this._outlookAuth) {
+      this._outlookAuth.removeListener(this);
+      this._outlookAuth.addListener(this);
+    }
+
+    const masterCheckbox = document.getElementById("zenTabIntelligenceEnabled");
+    if (masterCheckbox && !masterCheckbox._hasIntelligenceListener) {
+      masterCheckbox._hasIntelligenceListener = true;
+      masterCheckbox.addEventListener("command", () => {
+        setTimeout(() => this.updateDisabledState(), 0);
+      });
+    }
+
+    if (!this._hasPrefObserver) {
+      this._hasPrefObserver = true;
+      Services.prefs.addObserver("zen.tab-intelligence.enabled", () => {
+        this.updateDisabledState();
+      });
+    }
+
     this.updateAuthUI();
+    this.updateDisabledState();
   },
 
   onAuthStateChanged() {
@@ -822,25 +878,72 @@ var gZenTabIntelligenceSettings = {
     this.updateAuthUI();
   },
 
+  updateDisabledState() {
+    const isEnabled = Services.prefs.getBoolPref("zen.tab-intelligence.enabled", true);
+    const optionsBox = document.getElementById("zenTabIntelligenceOptions");
+    if (!optionsBox) return;
+
+    if (isEnabled) {
+      optionsBox.removeAttribute("disabled");
+      optionsBox.classList.remove("zen-settings-disabled");
+    } else {
+      optionsBox.setAttribute("disabled", "true");
+      optionsBox.classList.add("zen-settings-disabled");
+    }
+
+    const controls = optionsBox.querySelectorAll("checkbox, button, input, details, summary");
+    for (const ctrl of controls) {
+      if (isEnabled) {
+        ctrl.removeAttribute("disabled");
+        ctrl.disabled = false;
+      } else {
+        ctrl.setAttribute("disabled", "true");
+        ctrl.disabled = true;
+      }
+    }
+  },
+
   updateAuthUI() {
+    // Google status
     const statusDisconnectedRow = document.getElementById("zenTabIntelligenceStatusDisconnectedRow");
     const statusConnectedRow = document.getElementById("zenTabIntelligenceStatusConnectedRow");
     const userDesc = document.getElementById("zenTabIntelligenceGoogleUserDesc");
 
-    if (!statusDisconnectedRow || !statusConnectedRow) return;
+    if (statusDisconnectedRow && statusConnectedRow) {
+      const isAuthed = this._auth?.isAuthenticated() || false;
+      const email = this._auth?.getUserEmail() || "";
 
-    const isAuthed = this._auth?.isAuthenticated() || false;
-    const email = this._auth?.getUserEmail() || "";
-
-    if (isAuthed) {
-      statusDisconnectedRow.hidden = true;
-      statusConnectedRow.hidden = false;
-      if (userDesc) {
-        userDesc.textContent = email ? `${email}` : "Compte connecté";
+      if (isAuthed) {
+        statusDisconnectedRow.hidden = true;
+        statusConnectedRow.hidden = false;
+        if (userDesc) {
+          userDesc.textContent = email ? `${email}` : "Compte connecté";
+        }
+      } else {
+        statusDisconnectedRow.hidden = false;
+        statusConnectedRow.hidden = true;
       }
-    } else {
-      statusDisconnectedRow.hidden = false;
-      statusConnectedRow.hidden = true;
+    }
+
+    // Outlook status
+    const outlookDisconnectedRow = document.getElementById("zenTabIntelligenceOutlookStatusDisconnectedRow");
+    const outlookConnectedRow = document.getElementById("zenTabIntelligenceOutlookStatusConnectedRow");
+    const outlookUserDesc = document.getElementById("zenTabIntelligenceOutlookUserDesc");
+
+    if (outlookDisconnectedRow && outlookConnectedRow) {
+      const isOutlookAuthed = this._outlookAuth?.isAuthenticated() || false;
+      const outlookEmail = this._outlookAuth?.getUserEmail() || "";
+
+      if (isOutlookAuthed) {
+        outlookDisconnectedRow.hidden = true;
+        outlookConnectedRow.hidden = false;
+        if (outlookUserDesc) {
+          outlookUserDesc.textContent = outlookEmail ? `${outlookEmail}` : "Compte connecté";
+        }
+      } else {
+        outlookDisconnectedRow.hidden = false;
+        outlookConnectedRow.hidden = true;
+      }
     }
   },
 };
@@ -971,6 +1074,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.tab-intelligence.service.outlook",
+    type: "bool",
+    default: true,
+  },
+  {
     id: "zen.tab-intelligence.google.oauth.client-id",
     type: "string",
     default: "",
@@ -981,9 +1089,19 @@ Preferences.addAll([
     default: "",
   },
   {
+    id: "zen.tab-intelligence.outlook.oauth.client-id",
+    type: "string",
+    default: "",
+  },
+  {
+    id: "zen.tab-intelligence.outlook.oauth.client-secret",
+    type: "string",
+    default: "",
+  },
+  {
     id: "zen.tab-intelligence.google.notify-minutes-before",
     type: "int",
-    default: 10,
+    default: 5,
   },
 ]);
 

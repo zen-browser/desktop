@@ -11,6 +11,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
     "resource:///modules/zen/intelligence/ZenTabIntelligenceManager.sys.mjs",
   ZenGoogleAuth:
     "resource:///modules/zen/intelligence/ZenGoogleAuth.sys.mjs",
+  ZenOutlookAuth:
+    "resource:///modules/zen/intelligence/ZenOutlookAuth.sys.mjs",
+  ZenOutlookConnector:
+    "resource:///modules/zen/intelligence/ZenOutlookConnector.sys.mjs",
 });
 
 export class ZenTabIntelligenceUI extends ZenUIComponent {
@@ -286,7 +290,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       tab.getAttribute("zen-essential") === "true";
 
     const service = lazy.ZenTabIntelligenceManager.getTabService(tab);
-    if (service === "gmail" || service === "whatsapp") {
+    if (service === "gmail" || service === "whatsapp" || service === "outlook") {
       const pageTitle = this.getTabContentTitle(tab);
       const match = pageTitle.match(/\(([0-9+]+)\)/);
       const unreadCount = match ? parseInt(match[1], 10) || 1 : 0;
@@ -301,7 +305,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       lazy.ZenTabIntelligenceManager.onTabStatusUpdate(tab, {
         hasUnread,
         unreadCount,
-        service: service === "whatsapp" ? "WhatsApp" : "Gmail",
+        service: service === "whatsapp" ? "WhatsApp" : (service === "outlook" ? "Outlook" : "Gmail"),
       });
     }
   }
@@ -365,8 +369,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) return false;
 
     const service = lazy.ZenTabIntelligenceManager.getTabService(tab);
-    // User requested: hover preview strictly for Gmail and Google Calendar. WhatsApp hover removed!
-    return service === "gmail" || service === "google-calendar";
+    // Hover preview enabled for Gmail, Google Calendar, and Microsoft Outlook
+    return service === "gmail" || service === "google-calendar" || service === "outlook";
   }
 
   #handleTabHover(tab) {
@@ -473,31 +477,91 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         "div"
       );
       titleEl.className = "zen-intelligence-connect-title";
-      titleEl.textContent = "Google Tab Intelligence";
+      const isOutlook = details?.service === "Outlook";
+      titleEl.textContent = isOutlook ? "Outlook Tab Intelligence" : "Google Tab Intelligence";
 
       const descEl = this.document.createElementNS(
         "http://www.w3.org/1999/xhtml",
         "div"
       );
       descEl.className = "zen-intelligence-connect-desc";
-      descEl.textContent = "Connectez votre compte Google pour prévisualiser vos 3 derniers emails et réunions du jour au survol.";
+      descEl.textContent = isOutlook
+        ? "Connectez votre compte Microsoft pour prévisualiser vos emails et réunions du jour au survol."
+        : "Connectez votre compte Google pour prévisualiser vos 3 derniers emails et réunions du jour au survol.";
 
       const btn = this.document.createElementNS(
         "http://www.w3.org/1999/xhtml",
         "button"
       );
       btn.className = "zen-intelligence-connect-btn";
-      btn.textContent = "Se connecter avec Google";
+      btn.textContent = isOutlook ? "Se connecter avec Microsoft" : "Se connecter avec Google";
       btn.onclick = (e) => {
         e.stopPropagation();
         this.hidePreview();
-        lazy.ZenGoogleAuth.login(this.window);
+        if (isOutlook) {
+          lazy.ZenOutlookAuth.login(this.window);
+        } else {
+          lazy.ZenGoogleAuth.login(this.window);
+        }
       };
 
       connectCard.appendChild(titleEl);
       connectCard.appendChild(descEl);
       connectCard.appendChild(btn);
       wrapper.appendChild(connectCard);
+    } else if (details?.type === "outlook") {
+      const unreadCount = details.totalUnread || items.length;
+      const calItems = details.calendarItems || [];
+
+      if (items.length > 0 || calItems.length > 0) {
+        if (items.length > 0) {
+          const header = this.document.createElementNS(
+            "http://www.w3.org/1999/xhtml",
+            "div"
+          );
+          header.className = "tabs-list-header zen-intelligence-counter-header";
+          header.textContent = `${unreadCount} unread email${unreadCount > 1 ? "s" : ""}`;
+          wrapper.appendChild(header);
+
+          const listEl = this.document.createElementNS(
+            "http://www.w3.org/1999/xhtml",
+            "div"
+          );
+          listEl.className = "zen-intelligence-items-list";
+          for (const item of items) {
+            listEl.appendChild(this.#createItemRow(item, tab));
+          }
+          wrapper.appendChild(listEl);
+        }
+
+        if (calItems.length > 0) {
+          const header = this.document.createElementNS(
+            "http://www.w3.org/1999/xhtml",
+            "div"
+          );
+          header.className = "tabs-list-header zen-intelligence-counter-header";
+          header.textContent = `${calItems.length} upcoming event${calItems.length > 1 ? "s" : ""}`;
+          wrapper.appendChild(header);
+
+          const listEl = this.document.createElementNS(
+            "http://www.w3.org/1999/xhtml",
+            "div"
+          );
+          listEl.className = "zen-intelligence-items-list";
+          for (const item of calItems) {
+            listEl.appendChild(this.#createItemRow(item, tab));
+          }
+          wrapper.appendChild(listEl);
+        }
+      } else {
+        const emptyEl = this.document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div"
+        );
+        emptyEl.className = "zen-intelligence-empty-state";
+        emptyEl.textContent = "Aucun nouveau message ou événement";
+        wrapper.appendChild(emptyEl);
+      }
     } else if (details?.type === "calendar") {
       if (items.length > 0) {
         const header = this.document.createElementNS(

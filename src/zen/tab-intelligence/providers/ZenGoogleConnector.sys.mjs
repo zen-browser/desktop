@@ -284,7 +284,7 @@ class nsZenGoogleConnector {
     const eventsData = await this.getTodayEvents();
     if (!eventsData?.items) return null;
 
-    const notifyMinutes = Services.prefs.getIntPref(PREF_NOTIFY_MINUTES, 10);
+    const notifyMinutes = Services.prefs.getIntPref(PREF_NOTIFY_MINUTES, 5);
     const now = Date.now();
 
     for (const ev of eventsData.items) {

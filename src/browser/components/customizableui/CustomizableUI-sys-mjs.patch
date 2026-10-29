@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index 93be435e7b7ebfb1cfc80c6532701740a2d50b29..aaaeac10c45d72b8f8b24961e780c255e93e26e7 100644
+index 93be435e7b7ebfb1cfc80c6532701740a2d50b29..f808de8b97d443a4626e1f5adc0cd88667f65a5f 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
 @@ -13,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -286,7 +286,47 @@ index 93be435e7b7ebfb1cfc80c6532701740a2d50b29..aaaeac10c45d72b8f8b24961e780c255
      }
      return this.#webExtListRef;
    }
-@@ -8534,7 +8582,7 @@ class OverflowableToolbar {
+@@ -8341,6 +8389,16 @@ class OverflowableToolbar {
+     return aNode == this.#defaultList || aNode == this.#webExtList;
+   }
+ 
++  // In single toolbar mode the nav-bar buttons live in zen-sidebar-top-buttons,
++  // which shares this overflow list. Let that toolbar handle it, otherwise the
++  // nav-bar would take its overflowed items and move them next to the URL bar.
++  #isZenSingleToolbarNavBar() {
++    return (
++      this.#toolbar.id == "nav-bar" &&
++      this.#toolbar.documentGlobal.gZenVerticalTabsManager._hasSetSingleToolbar
++    );
++  }
++
+   /**
+    * Private event handlers start here.
+    */
+@@ -8411,7 +8469,11 @@ class OverflowableToolbar {
+     // moved or removed from an area via the CustomizableUI API while
+     // overflowed. It reorganizes the internal state of this OverflowableToolbar
+     // to handle that change.
+-    if (!this.#enabled || !this.#isOverflowList(aContainer)) {
++    if (
++      !this.#enabled ||
++      !this.#isOverflowList(aContainer) ||
++      this.#isZenSingleToolbarNavBar()
++    ) {
+       return;
+     }
+     // When we (re)move an item, update all the items that come after it in the list
+@@ -8440,7 +8502,8 @@ class OverflowableToolbar {
+     // causes overflow or underflow of the toolbar.
+     if (
+       !this.#enabled ||
+-      (aContainer != this.#target && !this.#isOverflowList(aContainer))
++      (aContainer != this.#target && !this.#isOverflowList(aContainer)) ||
++      this.#isZenSingleToolbarNavBar()
+     ) {
+       return;
+     }
+@@ -8534,7 +8597,7 @@ class OverflowableToolbar {
          break;
        }
        case "mousedown": {

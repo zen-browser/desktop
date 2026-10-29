@@ -163,6 +163,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     super.connectedCallback();
     window.addEventListener("ZenWorkspaceDataChanged", this.#onDataChanged);
     window.addEventListener("ZenWorkspacesUIUpdate", this.#onDataChanged);
+    window.addEventListener("ZenCompactMode:Toggled", this.#onDataChanged);
     Services.obs.addObserver(this.#observer, GRADIENT_TOPIC);
     this.#resizeObserver.observe(this);
     window.addEventListener("dragend", this.#onDragEnd);
@@ -179,6 +180,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     super.disconnectedCallback();
     window.removeEventListener("ZenWorkspaceDataChanged", this.#onDataChanged);
     window.removeEventListener("ZenWorkspacesUIUpdate", this.#onDataChanged);
+    window.removeEventListener("ZenCompactMode:Toggled", this.#onDataChanged);
     Services.obs.removeObserver(this.#observer, GRADIENT_TOPIC);
     this.#resizeObserver.disconnect();
     window.removeEventListener("dragend", this.#onDragEnd);
@@ -779,14 +781,24 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   // Theme
 
   #themeStyles(workspace) {
-    const { gradient, isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
-      gZenThemePicker.getGradientForWorkspace(workspace);
+    const {
+      gradient,
+      toolbarGradient,
+      grain,
+      isDarkMode,
+      isExplicitMode,
+      toolbarColor,
+      primaryColor,
+    } = gZenThemePicker.getGradientForWorkspace(workspace);
     let colorScheme = "";
     if (isExplicitMode) {
       colorScheme = isDarkMode ? "dark" : "light";
     }
     return {
-      "--zen-library-space-gradient": gradient,
+      "--zen-main-browser-background": gradient,
+      "--zen-main-browser-background-toolbar": toolbarGradient,
+      "--zen-background-opacity": 1,
+      "--zen-grainy-background-opacity": grain,
       "--zen-primary-color": primaryColor,
       "--toolbox-textcolor": `rgba(${toolbarColor.join(",")})`,
       colorScheme,
@@ -1009,6 +1021,12 @@ export class ZenLibrarySpacesSection extends MozLitElement {
         style=${styleMap(this.#themeStyles(workspace))}
         ?active=${workspace.uuid === gZenWorkspaces.activeWorkspace}
       >
+        <div
+          class="zen-library-space-background zen-browser-generic-background ${gZenCompactModeManager.preference ? "zen-toolbar-background" : ""}"
+          zen-show-grainy-background=${workspace.theme?.texture > 0 ? "true" : "false"}
+        >
+          <div class="zen-browser-grain"></div>
+        </div>
         <div class="zen-library-space-header zen-squircle-before">
           ${this.#renderIcon(workspace)} ${this.#renderName(workspace)}
           <toolbarbutton

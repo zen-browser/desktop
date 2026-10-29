@@ -21,7 +21,7 @@ add_task(async function test_closed_tab_keeps_its_icon() {
     "the tab is remembered as closed"
   );
   is(
-    SessionStore.getClosedTabData(window)[0].image,
+    SessionStore.getClosedTabData({ sourceWindow: window })[0].image,
     ICON,
     "session store kept the tab's icon"
   );

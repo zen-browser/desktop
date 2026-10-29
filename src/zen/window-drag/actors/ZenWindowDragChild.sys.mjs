@@ -20,18 +20,8 @@ XPCOMUtils.defineLazyServiceGetter(
   Ci.nsIZenWindowDragUtils
 );
 
-// Movement below this is considered a click, not a window drag. Fast
-// clicks commonly slide a few pixels (especially on trackpads), and once
-// the native move starts the OS swallows the mouseup — so keep this
-// comfortably above click jitter or clicks in the region get lost.
 const DRAG_START_THRESHOLD_PX = 4;
-
-// Un-snapping a maximized or tiled window is more disruptive, so those
-// need a firmer gesture, mirroring how native titlebars behave.
 const SNAPPED_DRAG_START_THRESHOLD_PX = 50;
-
-// Content that drives its own mouse interaction without being
-// interactive HTML content in the spec sense.
 const kAppContentTags = new Set(["audio", "canvas", "video"]);
 
 const kInteractiveRoles = new Set([
@@ -67,8 +57,6 @@ export class ZenWindowDragChild extends JSWindowActorChild {
   #dragging = false;
   #startScreenX = 0;
   #startScreenY = 0;
-  // 0 while waiting for the ZenWindowDrag:IsSnapped answer; no drag can
-  // start until the proper threshold is known.
   #dragThresholdPx = 0;
 
   handleEvent(event) {
@@ -87,7 +75,6 @@ export class ZenWindowDragChild extends JSWindowActorChild {
         this.#onMouseUp(event);
         break;
       case "dragstart":
-        // The gesture turned out to be a real content drag. Let it win.
         this.#reset();
         break;
       case "unload":
@@ -251,8 +238,6 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     }
     let target = event.explicitOriginalTarget;
     if (target?.nodeType === Node.TEXT_NODE) {
-      // The hit-test landed on rendered text; a drag here should select
-      // it instead, unless it isn't selectable.
       if (this.#isSelectableText(target)) {
         return true;
       }
@@ -269,7 +254,6 @@ export class ZenWindowDragChild extends JSWindowActorChild {
         return true;
       }
     }
-    // The effective cursor, resolved the same way it is shown to the user.
     return lazy.zenWindowDragUtils.isInteractiveCursor(
       event.composedTarget,
       event.clientX,
@@ -286,15 +270,12 @@ export class ZenWindowDragChild extends JSWindowActorChild {
   }
 
   #isInteractiveElement(element) {
-    // Gecko's own notion of interactive, editable or draggable content.
     if (lazy.zenWindowDragUtils.isInteractiveContent(element)) {
       return true;
     }
     if (kAppContentTags.has(element.localName)) {
       return true;
     }
-    // Declarative signals the engine check doesn't cover: ARIA widget
-    // roles and explicit tab stops.
     if (
       element.tabIndex >= 0 &&
       element !== this.document.body &&

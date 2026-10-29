@@ -4,6 +4,9 @@
 
 import { nsZenFolder } from "chrome://browser/content/zen-components/ZenFolder.mjs";
 
+// Enough clipboard text to fill the preview, which crops what does not fit.
+const MAX_CLIPBOARD_PREVIEW = 200;
+
 // A helper class to manage collapsible pinned tabs in a workspace.
 
 class nsZenCollapsiblePins extends nsZenFolder {
@@ -49,6 +52,12 @@ class nsZenCollapsiblePins extends nsZenFolder {
 export class nsZenWorkspace extends MozXULElement {
   #initialPinnedElementChildrenCount;
   #hasConnected = false;
+  #newTabPasteAbort = null;
+  #tabVisibilityObserver = null;
+  #scrollToTabListeners = null;
+  #watchedTab = null;
+  #scrollToTabShown = false;
+  #scrollToTabSeq = 0;
 
   static get markup() {
     return `
@@ -79,12 +88,21 @@ export class nsZenWorkspace extends MozXULElement {
                              class="toolbarbutton-1"
                              command="cmd_newNavigatorTab"
                              tooltip="dynamic-shortcut-tooltip"
-                             data-l10n-id="tabs-toolbar-new-tab"/>
+                             data-l10n-id="tabs-toolbar-new-tab">
+                <box class="zen-newtab-sublabel-anchor">
+                  <label class="zen-tab-sublabel" crop="end" role="presentation"/>
+                </box>
+              </toolbarbutton>
               <spacer class="closing-tabs-spacer" style="width: 0;"/>
             </hbox>
           </vbox>
         </arrowscrollbox>
         <vbox class="zen-workspace-empty-space" flex="1" />
+        <hbox class="zen-workspace-scroll-to-tab no-squircles" hidden="true" role="button"
+              data-l10n-id="zen-scroll-to-selected-tab">
+          <image class="zen-workspace-scroll-to-tab-icon" />
+          <image class="zen-workspace-scroll-to-tab-arrow" />
+        </hbox>
       `;
   }
 
@@ -111,12 +129,23 @@ export class nsZenWorkspace extends MozXULElement {
       "zen.view.show-newtab-button-top",
       false
     );
+
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "_showScrollToSelectedTab",
+      "zen.view.show-scroll-to-selected-tab",
+      true
+    );
   }
 
   connectedCallback() {
-    if (this.delayConnectedCallback() || this.#hasConnected) {
-      // If we are not ready yet, or if we have already connected, we
-      // don't need to do anything.
+    if (this.delayConnectedCallback()) {
+      return;
+    }
+    if (this.#hasConnected) {
+      if (!this.#scrollToTabListeners) {
+        this.#setupScrollToSelectedTab();
+      }
       return;
     }
 
@@ -272,6 +301,8 @@ export class nsZenWorkspace extends MozXULElement {
     this.prepend(this.collapsiblePins);
 
     this.#updateOverflow();
+    this.#setupNewTabPasteAndSearch();
+    this.#setupScrollToSelectedTab();
 
     this.pinnedTabsContainer.addEventListener("TabPinned", () => {
       // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
@@ -385,6 +416,256 @@ export class nsZenWorkspace extends MozXULElement {
 
   get newTabButton() {
     return this.querySelector("#tabs-newtab-button");
+  }
+
+  get #scrollToTabButton() {
+    return this.querySelector(".zen-workspace-scroll-to-tab");
+  }
+
+  #setupScrollToSelectedTab() {
+    this.#scrollToTabListeners = new AbortController();
+    const { signal } = this.#scrollToTabListeners;
+
+    this.#scrollToTabButton.addEventListener(
+      "click",
+      () => {
+        if (!this.#canOfferScrollToTab(gBrowser.selectedTab)) {
+          return;
+        }
+        gBrowser.tabContainer._handleTabSelect();
+      },
+      { signal }
+    );
+
+    this.#tabVisibilityObserver = new IntersectionObserver(
+      entries => this.#onSelectedTabVisibility(entries.at(-1)),
+      { root: this.scrollbox, threshold: 0 }
+    );
+
+    const follow = () => this.#watchSelectedTab();
+    gBrowser.tabContainer.addEventListener("TabSelect", follow, { signal });
+    this.scrollbox.addEventListener("overflow", follow, { signal });
+    this.scrollbox.addEventListener("underflow", follow, { signal });
+
+    follow();
+  }
+
+  disconnectedCallback() {
+    this.#scrollToTabListeners?.abort();
+    this.#scrollToTabListeners = null;
+    this.#tabVisibilityObserver?.disconnect();
+    this.#tabVisibilityObserver = null;
+    this.#watchedTab = null;
+  }
+
+  /** Points the observer at whichever tab this space currently has selected. */
+  #watchSelectedTab() {
+    if (!this.#tabVisibilityObserver) {
+      return;
+    }
+    const selected = gBrowser.selectedTab;
+    const tab = this.#canOfferScrollToTab(selected) ? selected : null;
+
+    if (this.#watchedTab && this.#watchedTab !== tab) {
+      this.#tabVisibilityObserver.unobserve(this.#watchedTab);
+    }
+    this.#watchedTab = tab;
+
+    if (tab) {
+      this.#tabVisibilityObserver.observe(tab);
+    } else {
+      this.#hideScrollToTab();
+    }
+  }
+
+  #canOfferScrollToTab(tab) {
+    return (
+      this._showScrollToSelectedTab &&
+      this.active &&
+      !!tab &&
+      !tab.hidden &&
+      tab.getAttribute("zen-workspace-id") === this.id &&
+      this.scrollbox._canScrollToElement(tab)
+    );
+  }
+
+  #onSelectedTabVisibility(entry) {
+    if (
+      !entry ||
+      entry.isIntersecting ||
+      !this.overflows ||
+      !this.#canOfferScrollToTab(this.#watchedTab)
+    ) {
+      this.#hideScrollToTab();
+      return;
+    }
+
+    const button = this.#scrollToTabButton;
+    const direction =
+      entry.boundingClientRect.bottom <= entry.rootBounds.top ? "up" : "down";
+    button.querySelector(".zen-workspace-scroll-to-tab-icon").src =
+      gBrowser.getIcon(this.#watchedTab) ?? "";
+    button.setAttribute("direction", direction);
+    this.#showScrollToTab(direction);
+  }
+
+  /**
+   * Springs the pill out of the edge it is anchored to.
+   *
+   * @param {string} direction - Which edge that is
+   */
+  #showScrollToTab(direction) {
+    const button = this.#scrollToTabButton;
+    this.#anchorScrollToTab(button);
+    const wasShown = this.#scrollToTabShown;
+    // Anything still on its way out belongs to an older state.
+    this.#scrollToTabSeq++;
+    this.#scrollToTabShown = true;
+    button.hidden = false;
+
+    if (wasShown) {
+      return;
+    }
+    if (gReduceMotion) {
+      button.style.removeProperty("transform");
+      button.style.removeProperty("opacity");
+      return;
+    }
+
+    const from = direction === "up" ? -10 : 10;
+    gZenUIManager.motion.animate(
+      button,
+      {
+        transform: [
+          `translateY(${from}px) scale(0.5)`,
+          "translateY(0px) scale(1)",
+        ],
+        opacity: [0, 1],
+      },
+      { type: "spring", bounce: 0.42, visualDuration: 0.2 }
+    );
+  }
+
+  #anchorScrollToTab(button) {
+    const space = window.windowUtils.getBoundsWithoutFlushing(this);
+    const port = this.scrollbox.scrollClientRect;
+    button.style.setProperty(
+      "--zen-scroll-to-tab-top",
+      `${Math.round(port.top - space.top)}px`
+    );
+    button.style.setProperty(
+      "--zen-scroll-to-tab-bottom",
+      `${Math.round(space.bottom - port.bottom)}px`
+    );
+  }
+
+  /** Takes the pill back into the edge it came from. */
+  #hideScrollToTab() {
+    const button = this.#scrollToTabButton;
+    if (!this.#scrollToTabShown) {
+      return;
+    }
+    this.#scrollToTabShown = false;
+    const seq = ++this.#scrollToTabSeq;
+
+    if (gReduceMotion) {
+      button.hidden = true;
+      return;
+    }
+
+    const to = button.getAttribute("direction") === "up" ? -10 : 10;
+    gZenUIManager.motion
+      .animate(
+        button,
+        {
+          transform: [
+            "translateY(0px) scale(1)",
+            `translateY(${to}px) scale(0.6)`,
+          ],
+          opacity: [1, 0],
+        },
+        { duration: 0.12, ease: "easeIn" }
+      )
+      .then(() => {
+        // It may have been asked back while this was running.
+        if (seq === this.#scrollToTabSeq) {
+          button.hidden = true;
+        }
+      });
+  }
+
+  /**
+   * Holding the accel key over the new tab button turns it into a shortcut for
+   * pasting the clipboard and searching it. Only the look belongs here, the
+   * click itself is read by gZenUIManager.newTabButtonWantsClipboard.
+   */
+  #setupNewTabPasteAndSearch() {
+    const button = this.newTabButton;
+    button.addEventListener("mouseenter", event => {
+      this.#watchNewTabPasteModifier(event);
+    });
+    button.addEventListener("mouseleave", () => {
+      this.#unwatchNewTabPasteModifier();
+    });
+  }
+
+  #watchNewTabPasteModifier(enterEvent) {
+    // The key may already be down by the time the pointer arrives.
+    this.#offerNewTabPasteAndSearch(enterEvent.getModifierState("Accel"));
+    if (this.#newTabPasteAbort) {
+      return;
+    }
+    this.#newTabPasteAbort = new AbortController();
+    const options = { signal: this.#newTabPasteAbort.signal };
+    const onKey = event => {
+      this.#offerNewTabPasteAndSearch(event.getModifierState("Accel"));
+    };
+    window.addEventListener("keydown", onKey, options);
+    window.addEventListener("keyup", onKey, options);
+    // No key release arrives when the window loses focus while still hovered.
+    window.addEventListener(
+      "blur",
+      () => {
+        this.#offerNewTabPasteAndSearch(false);
+      },
+      options
+    );
+  }
+
+  #unwatchNewTabPasteModifier() {
+    this.#newTabPasteAbort?.abort();
+    this.#newTabPasteAbort = null;
+    this.#offerNewTabPasteAndSearch(false);
+  }
+
+  #offerNewTabPasteAndSearch(shouldOffer) {
+    const button = this.newTabButton;
+    // Nothing to paste means nothing to offer, which also keeps the button
+    // honest about what the click is going to do.
+    const clipboard = shouldOffer ? gZenUIManager.clipboardForNewTab() : "";
+    shouldOffer = !!clipboard;
+    if (shouldOffer === button.hasAttribute("zen-paste-and-search")) {
+      return;
+    }
+    if (shouldOffer) {
+      button.querySelector(".zen-tab-sublabel").value =
+        this.#previewClipboard(clipboard);
+      button.setAttribute("zen-paste-and-search", "true");
+      document.l10n.setAttributes(button, "zen-tabs-newtab-paste-and-search");
+    } else {
+      button.removeAttribute("zen-paste-and-search");
+      document.l10n.setAttributes(button, "tabs-toolbar-new-tab");
+    }
+  }
+
+  /**
+   * Flattens clipboard text onto the single line the preview has room for.
+   *
+   * @param {string} clipboard - The text a new tab would be opened with.
+   * @returns {string}
+   */
+  #previewClipboard(clipboard) {
+    return clipboard.replace(/\s+/g, " ").substring(0, MAX_CLIPBOARD_PREVIEW);
   }
 
   onGradientCacheChanged() {

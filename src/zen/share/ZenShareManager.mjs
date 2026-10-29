@@ -8,6 +8,7 @@ import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.m
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
   TabStateCache:
     "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenShareClient: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
@@ -87,9 +88,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     }
     const item = this.#serializeSplitGroup(group);
     if (!item) {
-      this.#showCreateError(
-        new lazy.ZenShareError("empty", "nothing to share")
-      );
+      this.showCreateError(new lazy.ZenShareError("empty", "nothing to share"));
       return;
     }
     await this.#createAndCopyLink(item);
@@ -113,7 +112,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       return;
     }
     try {
-      const created = await lazy.ZenShareClient.createShare(
+      const created = await lazy.ZenShareClient.findOrCreateShare(
         { version: SHARE_DOCUMENT_VERSION, shared: item },
         { name: this.#displayName() }
       );
@@ -131,7 +130,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         timeout: 6000,
       });
     } catch (e) {
-      this.#showCreateError(e);
+      this.showCreateError(e);
     }
   }
 
@@ -164,7 +163,12 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     return args.accepted;
   }
 
-  #showCreateError(error) {
+  /**
+   * Tells the user why a share could not be created.
+   *
+   * @param {Error} error - A ZenShareError or anything else that was thrown.
+   */
+  showCreateError(error) {
     console.error("ZenShare: could not create share:", error);
     const descriptions = {
       auth: "zen-share-error-auth-description",
@@ -380,9 +384,48 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     if (share.type === "split-view") {
       // Split views are light enough to open right away, no preview step.
       this.#openSharedSplitView(browser, share);
+    } else if (share.type === "boost") {
+      this.#openSharedBoost(browser, share);
     } else {
       this.#showImportOverlay(browser, share);
     }
+  }
+
+  async #openSharedBoost(browser, share) {
+    let preview;
+    try {
+      preview = await lazy.ZenShareClient.fetchSharePreview(share);
+    } catch (e) {
+      console.error("ZenShare: could not load shared boost:", e);
+      gZenUIManager.showToast("zen-boost-receive-error-toast", {
+        timeout: 6000,
+      });
+      return;
+    }
+    if (
+      preview.doc.shared.type !== "boost" ||
+      !lazy.gZenBoostsManager.isValidSharedDomain(preview.doc.shared.domain)
+    ) {
+      gZenUIManager.showToast("zen-boost-receive-error-toast", {
+        timeout: 6000,
+      });
+      return;
+    }
+    const tab = gBrowser.getTabForBrowser(browser);
+    if (!tab?.hasAttribute("zen-empty-tab")) {
+      gZenWorkspaces.selectEmptyTab();
+      if (tab) {
+        gBrowser.removeTab(tab, {
+          closeWindowWithLastTab: false,
+          skipSessionStore: true,
+        });
+      }
+    }
+    lazy.gZenBoostsManager.receiveBoost(
+      window,
+      preview.doc.shared,
+      preview.name
+    );
   }
 
   async #openSharedSplitView(browser, share) {
@@ -729,16 +772,21 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     if (item.icon && FOLDER_ICON_RE.test(item.icon)) {
       gZenFolders.setFolderUserIcon(folder, item.icon);
     }
-    for (const child of item.items) {
-      if (child.type === "tab") {
-        const tab = this.#importTab(child, workspaceId);
-        gBrowser.pinTab(tab);
-        folder.addTabs([tab]);
-      } else if (child.type === "folder") {
-        this.#importFolder(child, workspaceId, folder);
-      } else if (child.type === "splitView") {
-        this.#importSplitView(child, workspaceId, folder);
+    folder.creating = true;
+    try {
+      for (const child of item.items) {
+        if (child.type === "tab") {
+          const tab = this.#importTab(child, workspaceId);
+          gBrowser.pinTab(tab);
+          folder.addTabs([tab]);
+        } else if (child.type === "folder") {
+          this.#importFolder(child, workspaceId, folder);
+        } else if (child.type === "splitView") {
+          this.#importSplitView(child, workspaceId, folder);
+        }
       }
+    } finally {
+      folder.creating = false;
     }
     return folder;
   }
@@ -762,8 +810,6 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     gZenViewSplitter.splitTabs(tabs, "grid", -1);
   }
 
-  // Deterministic placement at the end of the right section;
-  // moveTabToWorkspace's anchor follows the new-tab-button position pref.
   #placeTab(tab, workspaceId, pinned) {
     const element = gZenWorkspaces.workspaceElement(workspaceId);
     const container = pinned
@@ -784,6 +830,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       inBackground: true,
       skipAnimation: true,
       skipBackgroundNotify: true,
+      noInitialLabel: true,
       lazyTabTitle: item.label || undefined,
       skipRoute: true,
     });

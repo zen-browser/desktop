@@ -10,6 +10,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  isLibraryCopy: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   TabStateFlusher:
     "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs",
   // eslint-disable-next-line mozilla/valid-lazy
@@ -19,6 +20,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   RunState: "moz-src:///browser/components/sessionstore/RunState.sys.mjs",
+  SessionStore:
+    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -146,7 +149,7 @@ class nsZenWindowSync {
     *[Symbol.iterator]() {
       for (let window of lazy.BrowserWindowTracker.orderedWindows) {
         if (
-          window.__SSi &&
+          lazy.SessionStore.getWindowId(window) &&
           !window.closed &&
           !window.gZenWorkspaces?.privateWindowOrDisabled
         ) {
@@ -383,9 +386,10 @@ class nsZenWindowSync {
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
     // The library builds copies of tabs and folders that fire these same
-    // events while being built. Their ids are suffixed with "-copy" (see
-    // ZenLibrarySpacesSection#renameIds), so never sync anything from one.
-    if (aEvent.target?.id?.endsWith("-copy")) {
+    // events while being built, and this listens in the capture phase, ahead
+    // of anything the library could do to hold them back. Nothing a copy
+    // says is worth syncing.
+    if (lazy.isLibraryCopy(aEvent.target)) {
       return;
     }
     if (
@@ -708,12 +712,16 @@ class nsZenWindowSync {
       }
       const relativeTab = this.getItemFromWindow(aWindow, originalSibling.id);
       if (relativeTab) {
-        gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(
-          relativeTab,
-          aTargetItem,
-          [aTargetItem],
-          false
-        );
+        try {
+          gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(
+            relativeTab,
+            aTargetItem,
+            [aTargetItem],
+            false
+          );
+        } catch (e) {
+          console.error("ZenWindowSync: failed to animate a synced move", e);
+        }
         relativeTab.after(aTargetItem);
       }
     });

@@ -1,0 +1,82 @@
+diff --git a/browser/components/migration/content/migration-wizard.mjs b/browser/components/migration/content/migration-wizard.mjs
+index f6ada525e6f4fdb0a5ab311d0d47f8bb87d00ccc..b88780ceef6c6df9959f0a7ae95969ed9d12d8ed 100644
+--- a/browser/components/migration/content/migration-wizard.mjs
++++ b/browser/components/migration/content/migration-wizard.mjs
+@@ -108,6 +108,9 @@ export class MigrationWizard extends HTMLElement {
+                 <label id="payment-methods" class="resource-type-label" data-resource-type="PAYMENT_METHODS">
+                   <input type="checkbox"/><span data-l10n-id="migration-payment-methods-option-label"></span>
+                 </label>
++                <label id="zen-spaces" class="resource-type-label" data-resource-type="ZEN_SPACES">
++                  <input type="checkbox"/><span data-l10n-id="migration-zen-spaces-option-label"></span>
++                </label>
+               </fieldset>
+             </details>
+ 
+@@ -170,6 +173,13 @@ export class MigrationWizard extends HTMLElement {
+                 <a class="support-text text-deemphasized"></a>
+               </div>
+ 
++              <div data-resource-type="ZEN_SPACES" class="resource-progress-group">
++                <span class="progress-icon-parent"><span class="progress-icon" role="img"></span></span>
++                <span data-l10n-id="migration-zen-spaces-option-label"></span>
++                <span class="message-text text-deemphasized">&nbsp;</span>
++                <a class="support-text text-deemphasized"></a>
++              </div>
++
+               <div data-resource-type="COOKIES" class="resource-progress-group">
+                 <span class="progress-icon-parent"><span class="progress-icon" role="img"></span></span>
+                 <span data-l10n-id="migration-cookies-option-label"></span>
+@@ -330,6 +340,7 @@ export class MigrationWizard extends HTMLElement {
+     if (window.MozXULElement) {
+       window.MozXULElement.insertFTLIfNeeded("branding/brand.ftl");
+       window.MozXULElement.insertFTLIfNeeded("browser/migrationWizard.ftl");
++      window.MozXULElement.insertFTLIfNeeded("browser/zen-migration.ftl");
+     }
+     document.l10n.connectRoot(shadow);
+ 
+@@ -416,9 +427,12 @@ export class MigrationWizard extends HTMLElement {
+     }
+   }
+ 
+-  requestState() {
++  requestState(detail) {
+     this.dispatchEvent(
+-      new CustomEvent("MigrationWizard:RequestState", { bubbles: true })
++      new CustomEvent("MigrationWizard:RequestState", {
++        bubbles: true,
++        detail,
++      })
+     );
+   }
+ 
+@@ -720,10 +734,17 @@ export class MigrationWizard extends HTMLElement {
+     }
+ 
+     if (state.migratorKey) {
+-      let panelItem = this.#browserProfileSelectorList.querySelector(
+-        `panel-item[key="${state.migratorKey}"]`
+-      );
+-      this.#onBrowserProfileSelectionChanged(panelItem);
++      let panelItems = [
++        ...this.#browserProfileSelectorList.querySelectorAll(
++          `panel-item[key="${state.migratorKey}"]`
++        ),
++      ];
++      let panelItem =
++        panelItems.find(item => item.profile?.id == state.profileId) ||
++        panelItems[0];
++      if (panelItem) {
++        this.#onBrowserProfileSelectionChanged(panelItem);
++      }
+     }
+ 
+     let fileImportErrorMessageEl = selectionPage.querySelector(
+@@ -1287,6 +1308,8 @@ export class MigrationWizard extends HTMLElement {
+         "migration-list-autofill-label",
+       [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.PAYMENT_METHODS]:
+         "migration-list-payment-methods-label",
++      [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.ZEN_SPACES]:
++        "migration-list-zen-spaces-label",
+     };
+ 
+     if (MigrationWizardConstants.USES_FAVORITES.includes(key)) {

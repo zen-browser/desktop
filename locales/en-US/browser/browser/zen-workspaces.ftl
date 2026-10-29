@@ -39,7 +39,7 @@ zen-workspaces-panel-unload-others =
     .label = Unload All Other Spaces
 
 zen-workspaces-change-theme =
-    .label = Edit Theme…
+    .label = Theme…
 
 zen-workspaces-panel-context-open =
     .label = Open Workspace

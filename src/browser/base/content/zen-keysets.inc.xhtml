@@ -4,4 +4,43 @@
 
 #include zen-commands.inc.xhtml
 
-<keyset id="zenKeyset" />
+<keyset id="zenKeyset">
+  <key id="zen-compact-mode-toggle" key="S" modifiers="accel" command="cmd_toggleCompactModeIgnoreHover"/>
+  <key id="zen-compact-mode-show-sidebar" key="S" modifiers="accel,alt" command="cmd_zenCompactModeShowSidebar"/>
+
+#ifdef XP_MACOSX
+#define ZEN_WORKSPACE_SWITCH_MODIFIER control
+#else
+#define ZEN_WORKSPACE_SWITCH_MODIFIER alt
+#endif
+#expand  <key id="zen-workspace-switch-1" key="1" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch1"/>
+#expand  <key id="zen-workspace-switch-2" key="2" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch2"/>
+#expand  <key id="zen-workspace-switch-3" key="3" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch3"/>
+#expand  <key id="zen-workspace-switch-4" key="4" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch4"/>
+#expand  <key id="zen-workspace-switch-5" key="5" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch5"/>
+#expand  <key id="zen-workspace-switch-6" key="6" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch6"/>
+#expand  <key id="zen-workspace-switch-7" key="7" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch7"/>
+#expand  <key id="zen-workspace-switch-8" key="8" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch8"/>
+#expand  <key id="zen-workspace-switch-9" key="9" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch9"/>
+#expand  <key id="zen-workspace-switch-10" key="0" modifiers="__ZEN_WORKSPACE_SWITCH_MODIFIER__" command="cmd_zenWorkspaceSwitch10"/>
+  <key id="zen-workspace-forward" keycode="VK_RIGHT" modifiers="accel,alt" command="cmd_zenWorkspaceForward"/>
+  <key id="zen-workspace-backward" keycode="VK_LEFT" modifiers="accel,alt" command="cmd_zenWorkspaceBackward"/>
+  <key id="zen-workspace-create" command="cmd_zenOpenWorkspaceCreation"/>
+  <key id="zen-close-all-unpinned-tabs" key="K" modifiers="accel,shift" command="cmd_zenCloseUnpinnedTabs"/>
+
+  <key id="zen-split-view-grid" key="G" modifiers="accel,alt" command="cmd_zenSplitViewGrid"/>
+  <key id="zen-split-view-vertical" key="V" modifiers="accel,alt" command="cmd_zenSplitViewVertical"/>
+  <key id="zen-split-view-horizontal" key="H" modifiers="accel,alt" command="cmd_zenSplitViewHorizontal"/>
+  <key id="zen-split-view-unsplit" key="U" modifiers="accel,alt" command="cmd_zenSplitViewUnsplit"/>
+  <key id="zen-new-empty-split-view" key="*" modifiers="accel,shift" command="cmd_zenNewEmptySplit"/>
+
+  <key id="zen-toggle-sidebar" command="cmd_zenToggleSidebar"/>
+  <key id="zen-library-toggle" key="L" modifiers="alt,shift" command="cmd_zenToggleLibrary"/>
+  <key id="zen-glance-expand" key="O" modifiers="accel" command="cmd_zenGlanceExpand"/>
+  <key id="zen-toggle-pin-tab" key="D" modifiers="accel,shift" command="cmd_zenTogglePinTab"/>
+  <key id="zen-pinned-tab-reset-shortcut" command="cmd_zenPinnedTabReset"/>
+  <key id="zen-duplicate-tab" command="Browser:DuplicateTab"/>
+  <key id="zen-new-unsynced-window" key="N" modifiers="accel,shift" command="cmd_zenNewNavigatorUnsynced"/>
+  <key id="zen-copy-url" key="C" modifiers="accel,shift" command="cmd_zenCopyCurrentURL"/>
+  <key id="zen-copy-url-markdown" key="C" modifiers="accel,alt,shift" command="cmd_zenCopyCurrentURLMarkdown"/>
+</keyset>

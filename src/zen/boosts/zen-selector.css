@@ -4,17 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-@keyframes select-component-in {
-  0% {
-    scale: 0;
-    opacity: 0;
-  }
-  100% {
-    scale: 1;
-    opacity: 1;
-  }
-}
-
 #select-component {
   --zen-boosts-selector-background: light-dark(#f5f7fb, #27272a);
   --zen-boosts-selector-preview-background: light-dark(#e0e2e63d, #27272a3d);
@@ -45,15 +34,6 @@
 
   scale: 1;
   opacity: 1;
-
-  @media not (-moz-platform: windows) {
-    &[is-appearing="true"] {
-      scale: 0;
-      opacity: 0;
-
-      animation: 0.4s select-component-in cubic-bezier(0.14, 1.43, 0.56, 1.01) forwards;
-    }
-  }
 
   & input {
     width: fit-content;

@@ -26,7 +26,7 @@ async function closeWindow(win) {
 function forgetTabsAndWindows() {
   // Clear the lists of closed windows and tabs.
   forgetClosedWindows();
-  while (SessionStore.getClosedTabCount(window)) {
+  while (SessionStore.getClosedTabCount({ sourceWindow: window })) {
     SessionStore.forgetClosedTab(window, 0);
   }
 }
@@ -47,7 +47,8 @@ add_task(async function test_undoCloseById_with_targetWindow() {
     "The last closed object is a tab"
   );
   // Record the first closedId created.
-  const closedId = SessionStore.getClosedTabData(winB)[0].closedId;
+  const closedId = SessionStore.getClosedTabData({ sourceWindow: winB })[0]
+    .closedId;
   let tabRestored = BrowserTestUtils.waitForNewTab(
     winA.gBrowser,
     "about:mozilla"
@@ -60,7 +61,7 @@ add_task(async function test_undoCloseById_with_targetWindow() {
 
   // Verify the closed tab data is removed from the source window
   is(
-    SessionStore.getClosedTabData(winB).length,
+    SessionStore.getClosedTabData({ sourceWindow: winB }).length,
     0,
     "Record removed from the source window's closed tab data"
   );
@@ -79,7 +80,8 @@ add_task(async function test_undoCloseById_with_nonExistent_targetWindow() {
     "The last closed object is a tab"
   );
   // Record the first closedId created.
-  const closedId = SessionStore.getClosedTabData(window)[0].closedId;
+  const closedId = SessionStore.getClosedTabData({ sourceWindow: window })[0]
+    .closedId;
 
   // get a reference to a window that will be closed
   const newWin = await BrowserTestUtils.openNewBrowserWindow();

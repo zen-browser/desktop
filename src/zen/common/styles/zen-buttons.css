@@ -65,6 +65,30 @@ dialog::part(dialog-button) {
   }
 }
 
+dialog::part(dialog-button) {
+  &:is(.ghost) {
+    --button-background-color: transparent !important;
+
+    background-color: transparent !important;
+    box-shadow: none !important;
+    padding-inline-end: 1.2rem !important;
+
+    &:hover {
+      --button-background-color: light-dark(
+        rgba(28, 28, 28, 0.1),
+        rgba(255, 255, 255, 0.1)
+      ) !important;
+
+      background-color: var(--button-background-color) !important;
+    }
+
+    &::after {
+      content: none !important;
+      display: none !important;
+    }
+  }
+}
+
 xul|button:not(#zen-workspaces-button):active {
   transform: scale(0.98);
 }

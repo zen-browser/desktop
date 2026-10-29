@@ -1,8 +1,67 @@
 diff --git a/browser/base/content/browser-sets.inc.xhtml b/browser/base/content/browser-sets.inc.xhtml
-index 65ee617216d8a69f29b06fb48078f53a42bd9da7..3373d1a44281496555ab5a256020dd16afa4b823 100644
+index 9190c6e7f871b078c8bce86a998f81a8b27589de..2fd01ca9c75d675649ccbd750aacb2bdc61b1cc6 100644
 --- a/browser/base/content/browser-sets.inc.xhtml
 +++ b/browser/base/content/browser-sets.inc.xhtml
-@@ -420,3 +420,4 @@
+@@ -186,8 +186,8 @@
+ #endif
+          command="Tools:Downloads"/>
+     <key id="key_openAddons" data-l10n-id="addons-shortcut-2" command="Tools:Addons" modifiers="accel,shift"/>
+-    <key id="openFileKb" data-l10n-id="file-open-shortcut" command="Browser:OpenFile"  modifiers="accel"/>
+-    <key id="key_savePage" data-l10n-id="save-page-shortcut" command="Browser:SavePage" modifiers="accel"/>
++    <key id="openFileKb" command="Browser:OpenFile"/>
++    <key id="key_savePage" data-l10n-id="save-page-shortcut" command="Browser:SavePage" modifiers="accel,alt,shift"/>
+     <key id="printKb" data-l10n-id="print-shortcut" command="cmd_print"  modifiers="accel"/>
+     <key id="key_close" data-l10n-id="close-shortcut" command="cmd_close" modifiers="accel" reserved="true"/>
+     <key id="key_closeWindow" data-l10n-id="close-shortcut" command="cmd_closeWindow" modifiers="accel,shift" reserved="true"/>
+@@ -285,9 +285,7 @@
+     <key id="key_findPrevious2" data-l10n-id="search-find-again-shortcut-alt" command="cmd_findPrevious" modifiers="shift"/>
+ 
+     <key id="addBookmarkAsKb" data-l10n-id="bookmark-this-page-shortcut" command="Browser:AddBookmarkAs" modifiers="accel"/>
+-    <key id="bookmarkAllTabsKb"
+-         data-l10n-id="bookmark-this-page-shortcut"
+-         modifiers="accel,shift"/>
++    <key id="bookmarkAllTabsKb"/>
+     <key id="manBookmarkKb" data-l10n-id="bookmark-show-library-shortcut" command="Browser:ShowAllBookmarks" modifiers="accel,shift"/>
+     <key id="viewBookmarksSidebarKb"
+          data-l10n-id="bookmark-show-sidebar-shortcut"
+@@ -296,7 +294,7 @@
+          data-l10n-id="bookmark-show-toolbar-shortcut"
+          modifiers="accel,shift"/>
+ 
+-    <key id="key_stop" keycode="VK_ESCAPE" command="Browser:Stop"/>
++    <key id="key_stop" command="Browser:Stop"/>
+ 
+ #ifdef XP_MACOSX
+     <key id="key_stop_mac" modifiers="accel" data-l10n-id="nav-stop-shortcut" command="Browser:Stop"/>
+@@ -308,14 +306,6 @@
+          modifiers="control"
+ #else
+          modifiers="accel,alt"
+-#endif
+-         />
+-    <key id="viewOpenTabsSidebarKb"
+-         data-l10n-id="open-tabs-sidebar-shortcut2"
+-#ifdef XP_MACOSX
+-         modifiers="control"
+-#else
+-         modifiers="accel,alt"
+ #endif
+          />
+     <key id="toggleSidebarKb"
+@@ -373,11 +363,7 @@
+          reserved="true"/>
+ 
+     <key id="key_restoreLastClosedTabOrWindowOrSession" command="History:RestoreLastClosedTabOrWindowOrSession" data-l10n-id="tab-new-shortcut" modifiers="accel,shift"/>
+-    <key id="key_undoCloseWindow" command="History:UndoCloseWindow" data-l10n-id="window-new-shortcut" modifiers="accel,shift"/>
+-
+-    <key id="key_addTabSplitView" command="Browser:AddTabSplitView"/>
+-    <key id="key_separateTabSplitView" command="Browser:SeparateTabSplitView"/>
+-    <key id="key_duplicateTab" command="Browser:DuplicateTab"/>
++    <key id="key_undoCloseWindow" command="History:UndoCloseWindow"/>
+ 
+ #ifdef XP_GNOME
+ #define NUM_SELECT_TAB_MODIFIER alt
+@@ -425,3 +411,4 @@
           internal="true"/>
  #endif
    </keyset>

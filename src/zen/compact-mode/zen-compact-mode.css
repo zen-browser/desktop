@@ -36,6 +36,14 @@
   }
 }
 
+/* Keep the sidebar and its space previews on the same acrylic paint path. */
+@media -moz-pref('zen.theme.acrylic-sidebar') and (not (prefers-reduced-transparency: reduce)) {
+  :root:not([zen-no-acrylic='true']) :is(#navigator-toolbox, .zen-library-space) .zen-toolbar-background:not(:-moz-window-inactive) {
+    background: transparent;
+    backdrop-filter: blur(42px) !important;
+  }
+}
+
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
 
 %include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css

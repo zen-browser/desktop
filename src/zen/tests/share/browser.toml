@@ -11,6 +11,10 @@ support-files = [
   "head.js",
 ]
 
+["browser_share_boost_document.js"]
+
+["browser_share_boost_receive.js"]
+
 ["browser_share_client.js"]
 
 ["browser_share_import.js"]

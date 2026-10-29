@@ -245,7 +245,8 @@
       padding: 3rem 0 0 6rem;
     }
 
-    &[page="search"] {
+    &[page="search"],
+    &[page="import"] {
       justify-content: safe center;
       overflow-y: auto;
       padding-top: 6rem;
@@ -305,6 +306,115 @@
 
       .zen-welcome-option-radio {
         order: -2;
+      }
+    }
+
+    &[page="import"] {
+      .zen-welcome-option {
+        gap: 2rem;
+        min-height: 9rem;
+        padding: 0 0 0 2.5rem;
+        border-radius: 24px;
+      }
+
+      .zen-welcome-import-source {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 24rem;
+
+        .zen-welcome-option {
+          max-width: none;
+        }
+      }
+
+      .zen-welcome-import-profiles {
+        display: grid;
+        grid-template-rows: 0fr;
+        overflow: hidden;
+        transition: grid-template-rows 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+
+      .zen-welcome-import-source[expanded] .zen-welcome-import-profiles {
+        grid-template-rows: 1fr;
+      }
+
+      .zen-welcome-import-profiles-list {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+        margin: 0 0.6rem;
+        border-radius: 0 0 18px 18px;
+        background: var(--zen-welcome-surface-bg);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .zen-welcome-import-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem 1.3rem;
+        font-size: 1.05rem;
+        font-weight: 500;
+        cursor: pointer;
+
+        &:not(:last-child) {
+          border-bottom: 1px solid var(--zen-welcome-border);
+        }
+
+        & input {
+          display: none;
+        }
+
+        .zen-welcome-import-profile-name {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .zen-welcome-import-profile-check {
+          position: relative;
+          flex-shrink: 0;
+          width: 22px;
+          height: 22px;
+          box-sizing: border-box;
+          border-radius: 50%;
+          border: 1.5px solid
+            light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.4));
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            opacity: 0;
+          }
+        }
+
+        /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
+        &:has(:checked) .zen-welcome-import-profile-check {
+          background: var(--zen-welcome-accent);
+          border-color: var(--zen-welcome-accent);
+
+          &::after {
+            opacity: 1;
+          }
+        }
+      }
+
+      .engine-icon-wrapper {
+        width: 40%;
+      }
+
+      .engine-icon {
+        width: 42px;
+        height: 42px;
       }
     }
   }

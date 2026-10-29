@@ -1,0 +1,91 @@
+#filter substitution
+<?xml version="1.0"?>
+# -*- Mode: HTML -*-
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<!DOCTYPE window>
+
+<window
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  id="zenBoostShareDialog">
+  <dialog
+    class="zbs-dialog"
+    buttons="accept,cancel"
+    data-l10n-id="zen-boost-share-dialog"
+    data-l10n-attrs="buttonlabelaccept,buttonlabelcancel">
+    <linkset>
+      <html:link rel="stylesheet" href="chrome://global/skin/global.css" />
+      <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-theme.css" />
+      <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-boosts-share.css" />
+      <html:link rel="stylesheet" href="chrome://browser/skin/zen-icons/icons.css" />
+      <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-popup.css" />
+      <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-panel-ui.css" />
+      <html:link rel="localization" href="browser/zen-boosts.ftl" />
+    </linkset>
+    <script src="chrome://browser/content/zen-components/windows/zen-boost-share.js"></script>
+
+    <html:div class="zbs-card">
+      <html:div class="zbs-success">
+        <svg xmlns="http://www.w3.org/2000/svg" class="zbs-success-heart-svg" viewBox="-100 -100 904 867">
+          <path d="M351.968 105.408c.003 5.521.03 5.512.032 0C405.811-9.623 565.654-4.242 637.447 78.552 732.581 167.64 688.13 339.334 627.592 417 489.014 594.786 399.896 636.064 366.608 647.146a46.9 46.9 0 0 1-29.775-.05C303.039 635.722 213.78 593.28 76.377 417c-60.538-77.665-104.99-249.361-9.856-338.448C138.315-4.24 298.157-9.623 351.968 105.408"/>
+        </svg>
+        <html:div class="zbs-success-heart-container">
+          <html:div class="zbs-success-heart">
+            <html:img src="chrome://browser/content/zen-images/boost-share-heart.png" draggable="false" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="zbs-success-heart-check" viewBox="0 0 24 24" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+              <path d="M20 5 10 17l-4-4"/>
+            </svg>
+          </html:div>
+        </html:div>
+        <html:p class="zbs-success-copied" data-l10n-id="zen-boost-shared-animation-copied-link"></html:p>
+      </html:div>
+
+      <html:div class="zbs-top">
+        <html:div class="zbs-info">
+          <html:img class="zbs-favicon" draggable="false" />
+          <html:div class="zbs-info-text">
+            <html:input class="zbs-name dashed" type="text" noinitialfocus="true" data-l10n-id="zen-boost-share-name-input" />
+            <html:div class="zbs-author">
+              <html:i data-l10n-id="zen-boost-share-shared-by"></html:i>
+              <html:input class="zbs-author-name" type="text" noinitialfocus="true" data-l10n-id="zen-boost-share-author-input" />
+            </html:div>
+          </html:div>
+          <button class="zbs-info-button" noinitialfocus="true" data-l10n-id="zen-boost-share-info" />
+        </html:div>
+
+        <html:div class="zbs-content">
+          <html:div class="zbs-pane">
+            <html:div class="zbs-screenshot">
+              <html:canvas></html:canvas>
+              <html:img class="zbs-screenshot-favicon" draggable="false" />
+            </html:div>
+            <html:div class="zbs-signature-pane">
+              <html:p data-l10n-id="zen-boost-share-scribble-text"></html:p>
+              <svg xmlns="http://www.w3.org/2000/svg" class="zbs-signature"></svg>
+            </html:div>
+          </html:div>
+        </html:div>
+        <html:div class="zbs-pane-buttons-container">
+          <html:div class="zbs-pane-buttons">
+            <button class="zbs-pane-left" noinitialfocus="true" />
+            <html:div class="zbs-vertical-sep"></html:div>
+            <button class="zbs-pane-right" noinitialfocus="true" />
+          </html:div>
+        </html:div>
+      </html:div>
+    </html:div>
+
+    <popupset>
+      <menupopup id="zbs-screenshot-menu">
+        <menuitem id="zbs-hide-screenshot" type="checkbox" autocheck="false" data-l10n-id="zen-boost-share-hide-screenshot" />
+      </menupopup>
+      <panel type="arrow" class="zbs-info-panel" id="zen-boost-share-info-panel">
+        <html:p data-l10n-id="zen-boost-share-info-text"></html:p>
+      </panel>
+    </popupset>
+  </dialog>
+</window>

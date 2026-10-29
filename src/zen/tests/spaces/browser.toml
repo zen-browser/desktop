@@ -12,6 +12,8 @@ support-files = [
 
 ["browser_bookmark_workspace_storage.js"]
 
+["browser_default_containers.js"]
+
 ["browser_double_click_newtab.js"]
 
 ["browser_issue_10455.js"]
@@ -25,6 +27,8 @@ support-files = [
 ["browser_issue_8699.js"]
 
 ["browser_issue_9900.js"]
+
+["browser_newtab_paste_and_search.js"]
 
 ["browser_overflow_scrollbox.js"]
 

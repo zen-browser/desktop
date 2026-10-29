@@ -51,7 +51,7 @@ function getActor(browser) {
 
 async function enableZapMode(browser) {
   await getActor(browser).sendQuery("ZenBoost:ToggleZapMode");
-  const bar = await BrowserTestUtils.waitForCondition(
+  const bar = await TestUtils.waitForCondition(
     () => getZapBar(browser),
     "The zap bar should be inserted into the chrome"
   );
@@ -92,11 +92,11 @@ add_task(async function test_zap_bar_renders_in_chrome() {
     );
 
     gZenBoostsManager.addZapSelectorToActive("body", DOMAIN);
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => getUnzapButtons(bar).length === 1,
       "An unzap button should appear for the new zap"
     );
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => isBodyHidden(browser),
       "The zapped element should be hidden by the boost styles"
     );
@@ -113,7 +113,7 @@ add_task(async function test_zap_bar_renders_in_chrome() {
     );
 
     EventUtils.synthesizeMouseAtCenter(button, { type: "mousemove" }, window);
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () =>
         SpecialPowers.spawn(browser, [], () =>
           content.document.body.hasAttribute("zen-zap-unhide")
@@ -132,7 +132,7 @@ add_task(async function test_zap_bar_renders_in_chrome() {
       { type: "mousemove" },
       window
     );
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       async () =>
         !(await SpecialPowers.spawn(browser, [], () =>
           content.document.body.hasAttribute("zen-zap-unhide")
@@ -143,18 +143,18 @@ add_task(async function test_zap_bar_renders_in_chrome() {
     Assert.equal(button.textContent.trim(), "1", "The index is shown again");
 
     EventUtils.synthesizeMouseAtCenter(button, {}, window);
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => getUnzapButtons(bar).length === 0,
       "Clicking the unzap button should remove the zap from the bar"
     );
     Assert.deepEqual(getZapSelectors(), [], "The zap was removed");
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       async () => !(await isBodyHidden(browser)),
       "The unzapped element should be shown again by the updated styles"
     );
 
     EventUtils.synthesizeMouseAtCenter(getDoneButton(bar), {}, window);
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => !getZapBar(browser),
       "Done should remove the bar"
     );
@@ -173,20 +173,20 @@ add_task(async function test_zap_bar_hides_focus_entries() {
 
     gZenBoostsManager.addZapSelectorToActive("body", DOMAIN, "focus");
     gZenBoostsManager.addZapSelectorToActive("html", DOMAIN);
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => getUnzapButtons(bar).length === 1,
       "Only the zap entry should get a button"
     );
 
     gZenBoostsManager.removeZapSelectorToActive("body", DOMAIN, "focus");
     gZenBoostsManager.removeZapSelectorToActive("html", DOMAIN);
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => getUnzapButtons(bar).length === 0,
       "The zap entry is gone again"
     );
 
     await getActor(browser).sendQuery("ZenBoost:ToggleZapMode");
-    await BrowserTestUtils.waitForCondition(() => !getZapBar(browser));
+    await TestUtils.waitForCondition(() => !getZapBar(browser));
   });
 });
 
@@ -197,7 +197,7 @@ add_task(async function test_zap_bar_removed_on_navigation() {
     BrowserTestUtils.startLoadingURIString(browser, PAGE + "?navigated");
     await BrowserTestUtils.browserLoaded(browser);
 
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => !getZapBar(browser),
       "Navigating away should remove the bar"
     );
@@ -214,7 +214,7 @@ add_task(async function test_zap_bar_closes_find_bar() {
     ok(findBar.hidden, "Opening the zap bar closes the find bar");
 
     await getActor(browser).sendQuery("ZenBoost:ToggleZapMode");
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => !getZapBar(browser),
       "Toggling again removes the bar"
     );

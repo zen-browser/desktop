@@ -25,13 +25,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     try {
       const hasAnyFilterEnabled =
         (this.state.options.authorMe ?? false) ||
-        (this.state.type === "issues" &&
-          (this.state.options.assignedMe ?? true)) ||
-        (this.state.options.reviewRequested ?? false) ||
-        (this.state.type === "pull-requests" &&
-          (this.state.options.myReviewRequests ??
-            this.state.options.assignedMe ??
-            true));
+        (this.state.options.assignedMe ?? true) ||
+        (this.state.options.reviewRequested ?? false);
 
       if (!hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";
@@ -276,21 +271,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       },
       {
         value: "assignee:@me",
-        enabled:
-          this.state.type === "issues" &&
-          (this.state.options.assignedMe ?? true),
-      },
-      {
-        value: "review-requested:@me",
-        enabled: this.state.options.reviewRequested ?? false,
+        enabled: this.state.options.assignedMe ?? true,
       },
       {
         value: "user-review-requested:@me",
-        enabled:
-          this.state.type === "pull-requests" &&
-          (this.state.options.myReviewRequests ??
-            this.state.options.assignedMe ??
-            true),
+        enabled: this.state.options.reviewRequested ?? false,
       },
     ];
 
@@ -355,21 +340,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nId: "zen-live-folder-github-option-assigned-self",
         key: "assignedMe",
         checked: this.state.options.assignedMe ?? true,
-        hidden: this.state.type === "pull-requests",
       },
       {
         l10nId: "zen-live-folder-github-option-review-requested",
         key: "reviewRequested",
         checked: this.state.options.reviewRequested ?? false,
-        hidden: this.state.type === "issues",
-      },
-      {
-        l10nId: "zen-live-folder-github-option-my-review-requests",
-        key: "myReviewRequests",
-        checked:
-          this.state.options.myReviewRequests ??
-          this.state.options.assignedMe ??
-          true,
         hidden: this.state.type === "issues",
       },
       {

@@ -151,10 +151,69 @@ export class nsZenUrlbarController {
     const prevDisplayUrl =
       (this.#prevUrlbarLabel ? this.trimURL(this.#prevUrlbarLabel) : "") ||
       gURLBar.value;
-    if (prevDisplayUrl) {
-      document
-        .getElementById("urlbar-container")
-        ?.setAttribute("zen-newtab-url", prevDisplayUrl);
+    const container = document.getElementById("urlbar-container");
+    if (container && prevDisplayUrl) {
+      container.setAttribute("zen-newtab-url", prevDisplayUrl);
+      try {
+        const inputField = gURLBar.inputField;
+        if (inputField) {
+          const inputStyle = window.getComputedStyle(inputField);
+          const inputRect = inputField.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          const isRTL = window.getComputedStyle(container).direction === "rtl";
+          const startOffset = isRTL
+            ? containerRect.right - inputRect.right
+            : inputRect.left - containerRect.left;
+          const endOffset = isRTL
+            ? inputRect.left - containerRect.left
+            : containerRect.right - inputRect.right;
+
+          if (inputStyle.fontFamily) {
+            container.style.setProperty(
+              "--zen-newtab-url-font-family",
+              inputStyle.fontFamily
+            );
+          }
+          if (inputStyle.fontSize) {
+            container.style.setProperty(
+              "--zen-newtab-url-font-size",
+              inputStyle.fontSize
+            );
+          }
+          if (inputStyle.fontWeight) {
+            container.style.setProperty(
+              "--zen-newtab-url-font-weight",
+              inputStyle.fontWeight
+            );
+          }
+          if (inputStyle.letterSpacing && inputStyle.letterSpacing !== "normal") {
+            container.style.setProperty(
+              "--zen-newtab-url-letter-spacing",
+              inputStyle.letterSpacing
+            );
+          }
+          if (inputStyle.color) {
+            container.style.setProperty(
+              "--zen-newtab-url-color",
+              inputStyle.color
+            );
+          }
+          if (startOffset > 0) {
+            container.style.setProperty(
+              "--zen-newtab-url-offset-left",
+              `${Math.round(startOffset)}px`
+            );
+          }
+          if (endOffset > 0) {
+            container.style.setProperty(
+              "--zen-newtab-url-offset-right",
+              `${Math.round(endOffset)}px`
+            );
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to get urlbar input computed styles:", e);
+      }
     }
 
     gURLBar._zenHandleUrlbarClose = (onSwitch, onElementPicked) =>
@@ -171,13 +230,25 @@ export class nsZenUrlbarController {
       document.getElementById("Browser:OpenLocation").doCommand();
     } catch (e) {
       console.error("Error opening location in new tab:", e);
-      document
-        .getElementById("urlbar-container")
-        ?.removeAttribute("zen-newtab-url");
+      this.#clearNewTabUrl();
       this.handleUrlbarClose(closeSeq, false, false);
       return false;
     }
     return true;
+  }
+
+  #clearNewTabUrl() {
+    const container = document.getElementById("urlbar-container");
+    if (container) {
+      container.removeAttribute("zen-newtab-url");
+      container.style.removeProperty("--zen-newtab-url-font-family");
+      container.style.removeProperty("--zen-newtab-url-font-size");
+      container.style.removeProperty("--zen-newtab-url-font-weight");
+      container.style.removeProperty("--zen-newtab-url-letter-spacing");
+      container.style.removeProperty("--zen-newtab-url-color");
+      container.style.removeProperty("--zen-newtab-url-offset-left");
+      container.style.removeProperty("--zen-newtab-url-offset-right");
+    }
   }
 
   /**
@@ -198,9 +269,7 @@ export class nsZenUrlbarController {
   #clearSessionData() {
     this.#prevUrlbarLabel = null;
     this.#lastSearch = "";
-    document
-      .getElementById("urlbar-container")
-      ?.removeAttribute("zen-newtab-url");
+    this.#clearNewTabUrl();
   }
 
   /**
@@ -215,9 +284,7 @@ export class nsZenUrlbarController {
     if (gURLBar._zenHandleUrlbarClose) {
       gURLBar._zenHandleUrlbarClose = null;
     }
-    document
-      .getElementById("urlbar-container")
-      ?.removeAttribute("zen-newtab-url");
+    this.#clearNewTabUrl();
 
     const isFocusedBefore = gURLBar.focused;
     setTimeout(() => {
@@ -226,9 +293,7 @@ export class nsZenUrlbarController {
       if (this.isOwner(closeSeq)) {
         // We use this attribute on Tabbrowser::addTab
         gURLBar.removeAttribute("zen-newtab");
-        document
-          .getElementById("urlbar-container")
-          ?.removeAttribute("zen-newtab-url");
+        this.#clearNewTabUrl();
 
         const lastTab = this.#lastTab;
         if (

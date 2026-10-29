@@ -15,6 +15,12 @@ window.gZenOperatingSystemCommonUtils = {
   },
 };
 
+let lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
+});
+
 export class nsZenMultiWindowFeature {
   constructor() {}
 
@@ -85,19 +91,75 @@ export class nsZenPreloadedFeature {
 }
 
 window.gZenCommonActions = {
-  copyCurrentURLToClipboard() {
-    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    let displaySpec = currentUrl.displaySpec;
-
+  getDisplaySpec(uri) {
+    let displaySpec = uri.displaySpec;
     try {
       if (
         Services.prefs.getBoolPref("browser.urlbar.decodeURLsOnCopy", false) &&
-        !currentUrl.schemeIs("data")
+        !uri.schemeIs("data")
       ) {
         displaySpec = decodeURI(displaySpec);
       }
     } catch (e) {}
+    return displaySpec;
+  },
 
+  getCurrentURL() {
+    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
+    const currentTabURL = {
+      uri: currentUrl,
+      displaySpec: this.getDisplaySpec(currentUrl),
+      title: gBrowser.selectedTab.label,
+    };
+    if (gBrowser.selectedTabs.length < 2) {
+      return [[currentTabURL], ClipboardHelper, false];
+    }
+
+    const QueryStringStripper = Cc[
+      "@mozilla.org/url-query-string-stripper;1"
+    ].getService(Ci.nsIURLQueryStringStripper);
+    const selectedURLs = [];
+    for (const tab of gBrowser.selectedTabs) {
+      let uri = lazy.BrowserUtils.getShareableURL(tab.linkedBrowser.currentURI);
+      if (!uri) {
+        continue;
+      }
+
+      try {
+        uri = gURLBar.makeURIReadable(
+          QueryStringStripper.stripForCopyOrShare(uri) ?? uri
+        );
+      } catch (e) {
+        console.warn(`stripForCopyOrShare: ${e.message}`);
+      }
+
+      selectedURLs.push({
+        uri,
+        displaySpec: this.getDisplaySpec(uri),
+        title: tab.label,
+      });
+    }
+
+    if (!selectedURLs.length) {
+      return [[currentTabURL], ClipboardHelper, false];
+    }
+    return [selectedURLs, ClipboardHelper, true];
+  },
+
+  copyCurrentURLToClipboard() {
+    const [selectedURLs, ClipboardHelper, isMultiple] = this.getCurrentURL();
+    if (isMultiple) {
+      ClipboardHelper.copyString(
+        selectedURLs.map(selectedURL => selectedURL.displaySpec).join("\n")
+      );
+      gZenUIManager.showToast("zen-copy-multi-urls-confirmation", {
+        l10nArgs: { count: selectedURLs.length },
+        timeout: 3000,
+      });
+      return;
+    }
+
+    const [{ uri: currentUrl, displaySpec }] = selectedURLs;
     ClipboardHelper.copyString(displaySpec);
 
     let button;
@@ -127,20 +189,24 @@ window.gZenCommonActions = {
   },
 
   copyCurrentURLAsMarkdownToClipboard() {
-    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    const tabTitle = gBrowser.selectedTab.label;
-    let displaySpec = currentUrl.displaySpec;
+    const [selectedURLs, ClipboardHelper, isMultiple] = this.getCurrentURL();
+    if (isMultiple) {
+      ClipboardHelper.copyString(
+        selectedURLs
+          .map(
+            selectedURL => `[${selectedURL.title}](${selectedURL.displaySpec})`
+          )
+          .join("\n")
+      );
+      gZenUIManager.showToast("zen-copy-multi-urls-as-markdown-confirmation", {
+        l10nArgs: { count: selectedURLs.length },
+        timeout: 3000,
+      });
+      return;
+    }
 
-    try {
-      if (
-        Services.prefs.getBoolPref("browser.urlbar.decodeURLsOnCopy", false) &&
-        !currentUrl.schemeIs("data")
-      ) {
-        displaySpec = decodeURI(displaySpec);
-      }
-    } catch (e) {}
-
-    const markdownLink = `[${tabTitle}](${displaySpec})`;
+    const [{ displaySpec, title }] = selectedURLs;
+    const markdownLink = `[${title}](${displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
 
     gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {

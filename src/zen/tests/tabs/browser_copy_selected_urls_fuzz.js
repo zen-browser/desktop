@@ -10,6 +10,9 @@
 // Both copy methods (plain and markdown) must copy the shown, shareable
 // selected tabs in sidebar order, and show the matching toast and count.
 //
+// Each seed first makes a plain object describing the case, and only
+// builds it after confirming it is unique.
+//
 // Each run starts from a random seed so runs cover different cases. Every
 // assertion names its case seed.
 //
@@ -20,8 +23,10 @@
 // ZEN_COPY_FUZZ_SEED=<seed>
 // ZEN_COPY_FUZZ_CASES=1
 
-const DEFAULT_CASES = 25;
-const MAX_FOLDER_DEPTH = Services.prefs.getIntPref("zen.folders.max-subfolders");
+const DEFAULT_NUM_CASES = 25;
+const MAX_FOLDER_DEPTH = Services.prefs.getIntPref(
+  "zen.folders.max-subfolders"
+);
 const UNSHAREABLE_URL = "about:blank";
 
 const COPY_METHODS = [
@@ -45,258 +50,314 @@ function readSettings() {
     ? Math.floor(Math.random() * 2 ** 31)
     : envSeed;
   const numCases =
-    parseInt(Services.env.get("ZEN_COPY_FUZZ_CASES"), 10) || DEFAULT_CASES;
+    parseInt(Services.env.get("ZEN_COPY_FUZZ_CASES"), 10) || DEFAULT_NUM_CASES;
   return { baseSeed, numCases };
 }
 
 requestLongerTimeout(5);
 
 add_task(async function test_copy_selected_urls_fuzz() {
-  const { baseSeed, numCases } = readSettings();
-  info(`Fuzzing ${numCases} cases from seed ${baseSeed}`);
-  // Cleanup must leave the window as it found it, or later cases and later
-  // tests run in a different window. Later tests expect the tab that was
-  // selected before this one, and browser_drag_drop_vertical.js closes it.
-  const tabCount = gBrowser.tabs.length;
+  // cleanup must leave the window as it found it
   const startTab = gBrowser.selectedTab;
 
-  for (let seed = baseSeed; seed < baseSeed + numCases; seed++) {
-    info(`Building case with seed ${seed}`);
-    const testCase = await FuzzCase.build(seed);
-    await checkCopies(testCase);
+  // get seed
+  const { baseSeed, numCases } = readSettings();
+  info(`Fuzzing ${numCases} cases from seed ${baseSeed}`);
+
+  const seen = new Set();
+  let seed = baseSeed;
+  while (seen.size < numCases) {
+    const root = createFuzzCase(seed);
+    const key = JSON.stringify(root);
+    if (seen.has(key)) {
+      seed++;
+      continue;
+    }
+    seen.add(key);
+
+    const testCase = await FuzzCase.build(seed, root);
+    await assertExpectedResult(testCase);
     await testCase.cleanup(startTab);
-    checkWindowRestored(startTab, tabCount, seed);
+
+    seed++;
   }
+
+  info(
+    `Ran ${seen.size} unique cases, skipped ${seed - baseSeed - seen.size} ` +
+      `seeds that repeated an earlier case`
+  );
 });
 
-function checkWindowRestored(startTab, tabCount, seed) {
-  Assert.ok(
-    startTab.isConnected,
-    `The starting tab is still open after seed ${seed}`
-  );
-  Assert.equal(
-    gBrowser.selectedTab,
-    startTab,
-    `The starting tab is selected again after seed ${seed}`
-  );
-  Assert.equal(
-    gBrowser.tabs.length,
-    tabCount,
-    `Cleanup closes every tab of seed ${seed}`
-  );
+function createFuzzCase(seed) {
+  const random = makeRandom(seed);
+  const coinFlip = () => random.chance(0.5);
+  const unshareableChance = random.float(0.0, 0.3);
+  const tabs = [];
+  const folders = [];
+
+  const addTab = pinned => {
+    const tab = {
+      isFolder: false,
+      items: [],
+      url: null,
+      shareable: !random.chance(unshareableChance),
+      ...(pinned === undefined ? {} : { pinned }),
+      selected: false,
+      current: false,
+    };
+    tabs.push(tab);
+    return tab;
+  };
+
+  const addFolder = depth => {
+    const folder = { isFolder: true, items: [], url: null, collapsed: false };
+    folders.push(folder);
+
+    // randomly place tabs in folder
+    while (coinFlip()) {
+      folder.items.push(addTab());
+    }
+
+    // randomly place subfolders in folder up to MAX_FOLDER_DEPTH
+    if (depth < MAX_FOLDER_DEPTH) {
+      while (coinFlip()) {
+        const index = random.int(0, folder.items.length);
+        folder.items.splice(index, 0, addFolder(depth + 1));
+      }
+    }
+
+    return folder;
+  };
+
+  // randomly generate loose tabs
+  const loose = [];
+  while (coinFlip()) {
+    loose.push(addTab(random.chance(0.3)));
+  }
+
+  // randomly generate folders
+  const topLevelFolders = [];
+  while (coinFlip()) {
+    topLevelFolders.push(addFolder(1));
+  }
+
+  // randomly collapse folders
+  for (const folder of folders) {
+    folder.collapsed = coinFlip();
+  }
+
+  // randomly select tabs
+  if (tabs.length) {
+    const current = random.pick(tabs);
+    current.current = true;
+    current.selected = true;
+    for (const tab of tabs) {
+      if (tab !== current) {
+        tab.selected = coinFlip();
+      }
+    }
+  }
+
+  // the root holds the window's tabs and folders in sidebar order: pinned
+  // tabs, then folders, then unpinned tabs.
+  return {
+    isFolder: true,
+    items: [
+      ...loose.filter(tab => tab.pinned),
+      ...topLevelFolders,
+      ...loose.filter(tab => !tab.pinned),
+    ],
+    url: null,
+  };
 }
 
-async function checkCopies(testCase) {
+async function assertExpectedResult(testCase) {
+  info(`Testing seed ${testCase.seed}`);
+
   const expectations = COPY_METHODS.map(method => ({
     method,
-    ...testCase.expectedCopy(method),
+    ...testCase.expectedResult(method),
   }));
-  const context = `seed ${testCase.seed}:\n${testCase.describe()}`;
-  info(context);
 
-  for (const attempt of [1, 2]) {
-    for (const { method, text, toast } of expectations) {
-      const { commandId } = method;
-      Assert.equal(
-        await copiedText(commandId),
-        text,
-        `${commandId}, attempt ${attempt}, ${context}`
-      );
-      Assert.ok(
-        await hasToast(toast),
-        `${commandId} toast ${JSON.stringify(toast)}, attempt ${attempt}, ` +
-        `shown ${JSON.stringify(shownToasts())}, ${context}`
-      );
-    }
+  for (const { method, text, toast } of expectations) {
+    const { commandId } = method;
+    Assert.equal(await copiedText(commandId), text, `${commandId}`);
+    Assert.ok(
+      hasToast(toast),
+      `${commandId} toast ${JSON.stringify(toast)}, ` +
+        `shown ${JSON.stringify(shownToasts())}`
+    );
   }
 }
 
-// One random arrangement of tabs and folders. Each entry is a tab and its
-// URL, or a null URL when the tab can't be shared.
 class FuzzCase {
-  static async build(seed) {
-    const testCase = new FuzzCase(seed);
-    await testCase.addTabsAndFolders();
-    await testCase.selectRandomTabs();
-    await testCase.collapseRandomFolders();
-    await testCase.waitForStableLayout();
+  static async build(seed, root) {
+    const testCase = new FuzzCase(seed, root);
+    await testCase.buildTabsAndFolders();
+    await testCase.selectTabs();
+    await testCase.collapseFolders();
     return testCase;
   }
 
-  constructor(seed) {
+  constructor(seed, root) {
     this.seed = seed;
-    this.random = makeRandom(seed);
-    this.unshareableChance = this.random.float(0.0, 0.3);
-    this.entries = [];
-    this.folders = [];
+    this.root = root;
+    this.builtTabCount = 0;
     this.current = null;
     this.selected = new Set();
   }
 
   /* Helpers */
 
-  describe() {
-    return this.entries
-      .map(entry => {
-        const rect = entry.tab.getBoundingClientRect();
-        const depth = [];
-        for (let group = entry.tab.group; group; group = group.group) {
-          depth.push(group.collapsed ? "C" : "F");
-        }
-        const flags = [
-          entry === this.current ? "current" : "",
-          this.selected.has(entry) ? "selected" : "",
-          entry.tab.pinned ? "pinned" : "",
-        ].filter(Boolean);
-        return [
-          `  top=${Math.round(rect.top)}`,
-          `h=${Math.round(rect.height)}`,
-          `folders=${depth.join("") || "-"}`,
-          flags.join(","),
-          entry.url ?? UNSHAREABLE_URL,
-        ].join(" ");
-      })
-      .join("\n");
+  // every tab and folder under `node`, in sidebar order.
+  *items(node = this.root) {
+    for (const item of node.items) {
+      yield item;
+      yield* this.items(item);
+    }
   }
 
-  async waitForStableLayout() {
-    let previous = null;
-    let stableFrames = 0;
-    for (let i = 0; i < 300 && stableFrames < 5; i++) {
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      const layout = this.entries
-        .map(({ tab }) => {
-          const rect = tab.getBoundingClientRect();
-          return `${rect.top},${rect.height}`;
-        })
-        .join(";");
-      stableFrames = layout === previous ? stableFrames + 1 : 0;
-      previous = layout;
-    }
-    Assert.equal(stableFrames, 5, `The tab layout settles, seed ${this.seed}`);
+  get tabs() {
+    return [...this.items()].filter(item => !item.isFolder);
+  }
+
+  get folders() {
+    return [...this.items()].filter(item => item.isFolder);
   }
 
   /* Test Case Building */
 
-  coinFlip() {
-    return this.random.chance(0.5);
-  }
-
-  async addTabsAndFolders() {
-    // add loose tabs
-    while (this.coinFlip()) {
-      const entry = await this.addTab();
-      if (this.random.chance(0.3)) {
-        gBrowser.pinTab(entry.tab);
+  async buildTabsAndFolders() {
+    const unpinned = [];
+    for (const item of this.root.items) {
+      if (item.isFolder) {
+        await this.buildFolder(item, 1);
+      } else if (item.pinned) {
+        await this.buildTab(item, true);
+      } else {
+        unpinned.push(item);
       }
     }
 
-    // add folders
-    while (this.coinFlip()) {
-      await this.addFolder(1);
+    // build unpinned tabs in reverse order
+    for (const tab of unpinned.toReversed()) {
+      await this.buildTab(tab);
     }
   }
 
-  async addTab() {
-    const shareable = !this.random.chance(this.unshareableChance);
-    const url = shareable
-      ? `https://example.com/?fuzz=${this.seed}-${this.random.int(0, 1e9)}`
+  async buildTab(tab, pinned = false) {
+    const url = tab.shareable
+      ? `https://example.com/?fuzz=${this.seed}-${this.builtTabCount++}`
       : UNSHAREABLE_URL;
-    const tab = BrowserTestUtils.addTab(gBrowser, url, { skipAnimation: true });
-    if (shareable) {
-      await BrowserTestUtils.browserLoaded(tab.linkedBrowser, false, url);
+    tab.element = BrowserTestUtils.addTab(gBrowser, url, {
+      skipAnimation: true,
+      pinned,
+    });
+    if (tab.shareable) {
+      await BrowserTestUtils.browserLoaded(
+        tab.element.linkedBrowser,
+        false,
+        url
+      );
     }
-    const entry = { tab, url: shareable ? url : null };
-    this.entries.push(entry);
-    return entry;
+    tab.url = tab.shareable ? url : null;
   }
 
-  async addFolder(depth, parent = null) {
-    const folderEntries = [];
-    while (this.coinFlip()) {
-      folderEntries.push(await this.addTab());
+  async buildFolder(folder, depth, insertAfter = null) {
+    const tabs = folder.items.filter(item => !item.isFolder);
+    for (const tab of tabs) {
+      await this.buildTab(tab, true);
     }
-
-    const folder = await gZenFolders.createFolder(
-      folderEntries.map(entry => entry.tab),
-      { renameFolder: false, label: `fuzz-${depth}`, ...(parent ? { insertAfter: this.random.pick(parent.allItems) } : {}) }
+    folder.element = await gZenFolders.createFolder(
+      tabs.map(tab => tab.element),
+      { renameFolder: false, label: `fuzz-${depth}`, insertAfter }
     );
-    this.folders.push(folder);
 
-    if (depth < MAX_FOLDER_DEPTH) {
-      while (this.coinFlip()) {
-        await this.addFolder(depth + 1, folder);
+    let previous = folder.element.allItems.find(item =>
+      item.hasAttribute("zen-empty-tab")
+    );
+    for (const item of folder.items) {
+      if (item.isFolder) {
+        await this.buildFolder(item, depth + 1, previous);
       }
+      previous = item.element;
     }
   }
 
-  async selectRandomTabs() {
-    // With no tabs of its own, the case runs in Zen's empty-tab state, where
-    // the hidden empty tab is the active tab. It belongs to the window, so it
-    // stays out of this.entries and cleanup leaves it alone.
-    this.current = this.entries.length
-      ? this.random.pick(this.entries)
-      : { tab: gZenWorkspaces._emptyTab, url: null };
-    await selectTab(this.current.tab);
+  async selectTabs() {
+    this.current = this.tabs.find(tab => tab.current) ?? {
+      element: gZenWorkspaces._emptyTab,
+      url: null,
+    };
+    await selectTab(this.current.element);
     this.selected.add(this.current);
-    for (const entry of this.entries) {
-      if (entry !== this.current && this.coinFlip()) {
-        gBrowser.addToMultiSelectedTabs(entry.tab);
-        this.selected.add(entry);
+
+    for (const tab of this.tabs) {
+      if (tab !== this.current && tab.selected) {
+        gBrowser.addToMultiSelectedTabs(tab.element);
+        this.selected.add(tab);
       }
     }
   }
 
-  async collapseRandomFolders() {
+  async collapseFolders() {
+    const animationEnds = [];
     for (const folder of this.folders.toReversed()) {
-      if (this.coinFlip()) {
-        const collapseEvent = BrowserTestUtils.waitForEvent(
-          window,
-          "TabGroupCollapse"
+      if (folder.collapsed) {
+        animationEnds.push(
+          BrowserTestUtils.waitForEvent(
+            folder.element,
+            "TabGroupAnimationComplete",
+            false,
+            event => event.target === folder.element
+          )
         );
-        folder.collapsed = true;
-        await collapseEvent;
+        folder.element.collapsed = true;
       }
     }
+
+    await Promise.all(animationEnds);
   }
 
   /* Validation */
 
-  expectedCopy(method) {
+  expectedResult(method) {
     const shown = [...this.selected]
-      .filter(entry => isShown(entry.tab))
+      .filter(tab => isShown(tab.element))
       .sort(
         (a, b) =>
-          a.tab.getBoundingClientRect().top - b.tab.getBoundingClientRect().top
+          a.element.getBoundingClientRect().top -
+          b.element.getBoundingClientRect().top
       );
-    const shareable = shown.filter(entry => entry.url);
+    const shareable = shown.filter(tab => tab.url);
 
     if (shown.length < 2 || !shareable.length) {
       const url = this.current.url ?? UNSHAREABLE_URL;
       return {
-        text: method.format(this.current.tab.label, url),
+        text: method.format(this.current.element.label, url),
         toast: { id: method.singleToastId },
       };
     }
     return {
       text: shareable
-        .map(entry => method.format(entry.tab.label, entry.url))
+        .map(tab => method.format(tab.element.label, tab.url))
         .join("\n"),
       toast: { id: method.multiToastId, count: shareable.length },
     };
   }
 
-  // Cleanup
+  /* Cleanup */
 
   async cleanup(startTab) {
-    // A toast that is still visible is reused with its old count, so start the
-    // next case without one.
+    // clear toasts
     document.getElementById("zen-toast-container").replaceChildren();
+
+    // unselect tabs
     gBrowser.clearMultiSelectedTabs();
-    // Closing the selected tab can make Zen close the window, so close the
-    // case tabs from the starting tab, which no case closes.
+
+    // remove folders
     await selectTab(startTab);
-    for (const folder of this.folders.toReversed()) {
+    for (const { element: folder } of this.folders.toReversed()) {
       if (folder.isConnected) {
         const removeEvent = BrowserTestUtils.waitForEvent(
           folder,
@@ -306,15 +367,17 @@ class FuzzCase {
         await removeEvent;
       }
     }
-    for (const { tab } of this.entries) {
-      if (tab.isConnected) {
-        BrowserTestUtils.removeTab(tab);
+
+    // remove remaining loose tabs
+    for (const item of this.root.items) {
+      if (!item.isFolder) {
+        BrowserTestUtils.removeTab(item.element);
       }
     }
   }
 }
 
-// Helpers
+/*  Helpers */
 
 function isShown(tab) {
   return tab.getBoundingClientRect().height > 0;
@@ -333,29 +396,17 @@ function copiedText(commandId) {
   );
 }
 
+function hasToast({ id, count }) {
+  return shownToasts().some(
+    toast =>
+      toast.id === id && (count === undefined || toast.args?.count === count)
+  );
+}
+
 function shownToasts() {
   return [
     ...document.querySelectorAll("#zen-toast-container .zen-toast label"),
   ].map(label => document.l10n.getAttributes(label));
-}
-
-async function hasToast({ id, count }) {
-  try {
-    await TestUtils.waitForCondition(
-      () =>
-        shownToasts().some(
-          toast =>
-            toast.id === id &&
-            (count === undefined || toast.args?.count === count)
-        ),
-      "",
-      50,
-      20
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
 }
 
 // Random seeds

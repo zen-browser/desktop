@@ -12,6 +12,8 @@ support-files = [
 
 ["browser_bookmark_workspace_storage.js"]
 
+["browser_default_containers.js"]
+
 ["browser_double_click_newtab.js"]
 
 ["browser_issue_10455.js"]

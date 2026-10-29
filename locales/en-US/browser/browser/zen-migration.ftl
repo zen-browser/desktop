@@ -6,6 +6,7 @@ migration-wizard-migrator-display-name-arc = Arc
 migration-wizard-migrator-display-name-dia = Dia
 
 migration-zen-spaces-option-label = Spaces and pinned tabs
+migration-zen-all-profiles-label = All profiles
 
 # Lowercase form shown in the sentence listing the selected data.
 migration-list-zen-spaces-label = spaces and pinned tabs

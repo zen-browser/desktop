@@ -35,6 +35,7 @@ window.gZenVerticalTabsManager = {
       this._updateEvent()
     );
     this.initRightSideOrderContextMenu();
+    this.initSetProfileContextMenu();
 
     window.addEventListener(
       "customizationstarting",
@@ -76,6 +77,33 @@ window.gZenVerticalTabsManager = {
         />
     `);
     document.getElementById("toolbar-context-customize").before(fragment);
+  },
+
+  initSetProfileContextMenu() {
+    const fragment = window.MozXULElement.parseXULToFragment(`
+      <menu id="zen-toolbar-context-set-profile"
+            data-lazy-l10n-id="zen-workspaces-panel-context-default-profile">
+        <menupopup />
+      </menu>
+      <menuseparator/>
+    `);
+    const menu = fragment.firstElementChild;
+    menu.addEventListener("popupshowing", event =>
+      gZenWorkspaces.updateWorkspaceActionsMenuContainer(event)
+    );
+    menu.addEventListener("command", event =>
+      gZenWorkspaces.contextChangeContainerTab(event)
+    );
+
+    const contextMenu = document.getElementById("toolbar-context-menu");
+    contextMenu.addEventListener("popupshowing", event => {
+      if (event.target === contextMenu) {
+        menu.hidden = !gZenWorkspaces.shouldShowContainers;
+      }
+    });
+    document
+      .getElementById("toolbar-context-reloadSelectedTab")
+      .before(fragment);
   },
 
   get _topButtonsSeparatorElement() {

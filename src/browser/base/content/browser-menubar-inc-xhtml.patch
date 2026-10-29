@@ -1,0 +1,24 @@
+diff --git a/browser/base/content/browser-menubar.inc.xhtml b/browser/base/content/browser-menubar.inc.xhtml
+index ea461ff47202e536021909a6ba5f6374617556c5..5221991e77af6a84c70eeedf262a7563b27f0071 100644
+--- a/browser/base/content/browser-menubar.inc.xhtml
++++ b/browser/base/content/browser-menubar.inc.xhtml
+@@ -68,7 +68,7 @@
+                 data-l10n-id="menu-file-go-offline"/>
+       <menuitem id="menu_FileQuitItem"
+ #ifdef XP_MACOSX
+-                data-l10n-id="menu-quit-mac"
++                data-l10n-id="zen-menubar-quit-mac"
+ #else
+                 data-l10n-id="menu-quit"
+ #endif
+@@ -460,8 +460,8 @@
+                 appmenu-data-l10n-id="appmenu-help-switch-device"/>
+       <menuseparator id="aboutSeparator"/>
+       <menuitem id="aboutName"
+-                data-l10n-id="menu-about"
+-                appmenu-data-l10n-id="appmenu-about"/>
++                data-l10n-id="zen-menubar-about"
++                appmenu-data-l10n-id="zen-menubar-about"/>
+ #ifndef XP_MACOSX
+       <menuitem id="menu_referralsPage"
+                 image="chrome://browser/content/logos/share-firefox.svg"

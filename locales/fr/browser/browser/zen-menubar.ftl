@@ -20,3 +20,10 @@ zen-menubar-appearance-dark =
     .label = Sombre
 zen-menubar-new-blank-window = 
     .label = Nouvelle fenêtre vide
+
+zen-menubar-about =
+    .label = À propos de { -brand-short-name }
+    .accesskey = A
+
+zen-menubar-quit-mac =
+    .label = Quitter { -brand-short-name }

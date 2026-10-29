@@ -24,3 +24,10 @@ zen-menubar-appearance-dark =
 
 zen-menubar-new-blank-window =
     .label = New Blank Window
+
+zen-menubar-about =
+    .label = About { -brand-short-name }
+    .accesskey = A
+
+zen-menubar-quit-mac =
+    .label = Quit { -brand-short-name }

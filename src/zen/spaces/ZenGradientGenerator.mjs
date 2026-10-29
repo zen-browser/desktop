@@ -215,7 +215,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
                   data-lazy-l10n-id="zen-workspaces-change-theme"
                   command="cmd_zenOpenZenThemePicker"/>
       `);
-    document.getElementById("toolbar-context-customize").before(menu);
+    document.getElementById("zen-toolbar-context-set-profile").before(menu);
   }
 
   openThemePicker(event) {

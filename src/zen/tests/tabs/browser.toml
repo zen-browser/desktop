@@ -9,6 +9,8 @@ support-files = [
 
 ["browser_copy_selected_urls.js"]
 
+["browser_copy_selected_urls_fuzz.js"]
+
 ["browser_drag_drop_vertical.js"]
 tags = [
   "drag-drop",

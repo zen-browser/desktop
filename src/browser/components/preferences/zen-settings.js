@@ -851,6 +851,26 @@ var gZenTabIntelligenceSettings = {
       this._outlookAuth.addListener(this);
     }
 
+    // Meeting notification minutes input
+    const notifyInput = document.getElementById("zenTabIntelligenceNotifyMinutes");
+    if (notifyInput) {
+      let currentVal = 5;
+      try {
+        currentVal = Services.prefs.getIntPref("zen.tab-intelligence.notify-minutes-before", 5);
+      } catch (e) {
+        currentVal = 5;
+      }
+      notifyInput.value = currentVal;
+
+      notifyInput.addEventListener("change", () => {
+        let val = parseInt(notifyInput.value, 10);
+        if (isNaN(val) || val < 1) val = 1;
+        if (val > 120) val = 120;
+        notifyInput.value = val;
+        Services.prefs.setIntPref("zen.tab-intelligence.notify-minutes-before", val);
+      });
+    }
+
     const masterCheckbox = document.getElementById("zenTabIntelligenceEnabled");
     if (masterCheckbox && !masterCheckbox._hasIntelligenceListener) {
       masterCheckbox._hasIntelligenceListener = true;
@@ -1099,7 +1119,7 @@ Preferences.addAll([
     default: "",
   },
   {
-    id: "zen.tab-intelligence.google.notify-minutes-before",
+    id: "zen.tab-intelligence.notify-minutes-before",
     type: "int",
     default: 5,
   },

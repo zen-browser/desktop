@@ -106,6 +106,26 @@
                       data-l10n-id="zen-tab-intelligence-service-outlook"
                       preference="zen.tab-intelligence.service.outlook"/>
 
+            <!-- Global Calendar Settings -->
+            <vbox id="zenTabIntelligenceCalendarSettings" class="indent">
+                  <label><html:h3 data-l10n-id="zen-tab-intelligence-calendar-settings-header"/></label>
+                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-calendar-settings-desc"/>
+
+                  <hbox align="center" class="zen-intelligence-minutes-row">
+                        <label id="zenTabIntelligenceNotifyMinutesBefore"
+                               data-l10n-id="zen-tab-intelligence-notify-minutes-before"/>
+                        <html:input id="zenTabIntelligenceNotifyMinutes"
+                                    type="number"
+                                    min="1"
+                                    max="120"
+                                    value="5"
+                                    class="input-inline"
+                                    preference="zen.tab-intelligence.notify-minutes-before"/>
+                        <label id="zenTabIntelligenceNotifyMinutesAfter"
+                               data-l10n-id="zen-tab-intelligence-notify-minutes-after"/>
+                  </hbox>
+            </vbox>
+
             <vbox id="zenTabIntelligenceGoogleSettings" class="indent">
                   <label><html:h3 data-l10n-id="zen-tab-intelligence-google-account-header"/></label>
                   <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-google-account-desc"/>
@@ -129,20 +149,6 @@
                                      type="button"
                                      class="subtle-button"
                                      data-l10n-id="zen-tab-intelligence-google-disconnect-button"/>
-                  </hbox>
-
-                  <hbox align="center" class="zen-intelligence-minutes-row">
-                        <label id="zenTabIntelligenceNotifyMinutesBefore"
-                               data-l10n-id="zen-tab-intelligence-google-notify-minutes-before"/>
-                        <html:input id="zenTabIntelligenceNotifyMinutes"
-                                    type="number"
-                                    min="1"
-                                    max="120"
-                                    value="5"
-                                    class="input-inline"
-                                    preference="zen.tab-intelligence.google.notify-minutes-before"/>
-                        <label id="zenTabIntelligenceNotifyMinutesAfter"
-                               data-l10n-id="zen-tab-intelligence-google-notify-minutes-after"/>
                   </hbox>
 
                   <html:details class="zen-intelligence-advanced-details">

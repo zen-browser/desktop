@@ -4,7 +4,7 @@
 
 import { ZenGoogleAuth } from "resource:///modules/zen/intelligence/ZenGoogleAuth.sys.mjs";
 
-const PREF_NOTIFY_MINUTES = "zen.tab-intelligence.google.notify-minutes-before";
+const PREF_NOTIFY_MINUTES = "zen.tab-intelligence.notify-minutes-before";
 
 const GMAIL_MESSAGES_ENDPOINT = "https://gmail.googleapis.com/gmail/v1/users/me/messages";
 const GMAIL_LABELS_ENDPOINT = "https://gmail.googleapis.com/gmail/v1/users/me/labels/INBOX";

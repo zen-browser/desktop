@@ -4,7 +4,7 @@
 
 import { ZenOutlookAuth } from "resource:///modules/zen/intelligence/ZenOutlookAuth.sys.mjs";
 
-const PREF_NOTIFY_MINUTES = "zen.tab-intelligence.google.notify-minutes-before";
+const PREF_NOTIFY_MINUTES = "zen.tab-intelligence.notify-minutes-before";
 
 const GRAPH_API_BASE = "https://graph.microsoft.com/v1.0";
 

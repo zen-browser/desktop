@@ -148,6 +148,15 @@ export class nsZenUrlbarController {
 
     this.#prevUrlbarLabel = gURLBar._untrimmedValue || "";
 
+    const prevDisplayUrl =
+      (this.#prevUrlbarLabel ? this.trimURL(this.#prevUrlbarLabel) : "") ||
+      gURLBar.value;
+    if (prevDisplayUrl) {
+      document
+        .getElementById("urlbar-container")
+        ?.setAttribute("zen-newtab-url", prevDisplayUrl);
+    }
+
     gURLBar._zenHandleUrlbarClose = (onSwitch, onElementPicked) =>
       this.handleUrlbarClose(closeSeq, onSwitch, onElementPicked);
     this.#owner = closeSeq;
@@ -162,6 +171,9 @@ export class nsZenUrlbarController {
       document.getElementById("Browser:OpenLocation").doCommand();
     } catch (e) {
       console.error("Error opening location in new tab:", e);
+      document
+        .getElementById("urlbar-container")
+        ?.removeAttribute("zen-newtab-url");
       this.handleUrlbarClose(closeSeq, false, false);
       return false;
     }
@@ -186,6 +198,9 @@ export class nsZenUrlbarController {
   #clearSessionData() {
     this.#prevUrlbarLabel = null;
     this.#lastSearch = "";
+    document
+      .getElementById("urlbar-container")
+      ?.removeAttribute("zen-newtab-url");
   }
 
   /**
@@ -200,6 +215,9 @@ export class nsZenUrlbarController {
     if (gURLBar._zenHandleUrlbarClose) {
       gURLBar._zenHandleUrlbarClose = null;
     }
+    document
+      .getElementById("urlbar-container")
+      ?.removeAttribute("zen-newtab-url");
 
     const isFocusedBefore = gURLBar.focused;
     setTimeout(() => {
@@ -208,6 +226,9 @@ export class nsZenUrlbarController {
       if (this.isOwner(closeSeq)) {
         // We use this attribute on Tabbrowser::addTab
         gURLBar.removeAttribute("zen-newtab");
+        document
+          .getElementById("urlbar-container")
+          ?.removeAttribute("zen-newtab-url");
 
         const lastTab = this.#lastTab;
         if (

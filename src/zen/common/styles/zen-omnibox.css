@@ -482,6 +482,7 @@
 
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #urlbar-container:has(&) {
+    position: relative;
     border-radius: var(--border-radius-medium);
     background: var(--toolbarbutton-background-color-hover);
     height: var(--urlbar-height) !important;
@@ -491,6 +492,22 @@
       min-height: unset !important;
       margin-block: -1px !important;
     }
+  }
+
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
+  :root:not([inDOMFullscreen="true"]) #urlbar-container[zen-newtab-url]:has(&)::after {
+    content: attr(zen-newtab-url);
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 10px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--input-color, FieldText) 70%, transparent);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
   }
 }
 
@@ -765,8 +782,12 @@
 
 /* In DOM Fullscreen: Exit Full Screen button & text inside the urlbar */
 :root[inDOMFullscreen="true"] {
-  #urlbar-input-container {
+  #urlbar:not([zen-floating-urlbar="true"]) #urlbar-input-container {
     visibility: hidden !important;
+  }
+
+  #urlbar[zen-floating-urlbar="true"] #zen-fullscreen-exit-button {
+    display: none !important;
   }
 
   #zen-fullscreen-exit-button {

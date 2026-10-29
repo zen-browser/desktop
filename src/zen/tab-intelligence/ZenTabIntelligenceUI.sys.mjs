@@ -26,7 +26,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     this.#ensurePopupPanel();
 
-    // Listen to tab title changes directly in the chrome window
+    // Listen to tab events in the chrome window and on tab container
     this.window.addEventListener("TabAttrModified", this);
     this.window.addEventListener("mouseover", this, { passive: true });
     this.window.addEventListener("mouseout", this, { passive: true });
@@ -35,6 +35,15 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.window.addEventListener("dragstart", this, true);
     this.window.addEventListener("ZenWorkspacesUIUpdate", this);
     this.window.addEventListener("ZenWorkspaceDataChanged", this);
+
+    const tabContainer =
+      this.window.gBrowser?.tabContainer ||
+      this.document.getElementById("tabbrowser-tabs");
+    if (tabContainer) {
+      tabContainer.addEventListener("mouseover", this, { passive: true });
+      tabContainer.addEventListener("mouseout", this, { passive: true });
+      tabContainer.addEventListener("mousemove", this, { passive: true });
+    }
 
     this.#prefObserver = () => {
       this.reEvaluateAllTabs();
@@ -61,6 +70,15 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.window.removeEventListener("dragstart", this, true);
     this.window.removeEventListener("ZenWorkspacesUIUpdate", this);
     this.window.removeEventListener("ZenWorkspaceDataChanged", this);
+
+    const tabContainer =
+      this.window.gBrowser?.tabContainer ||
+      this.document.getElementById("tabbrowser-tabs");
+    if (tabContainer) {
+      tabContainer.removeEventListener("mouseover", this, { passive: true });
+      tabContainer.removeEventListener("mouseout", this, { passive: true });
+      tabContainer.removeEventListener("mousemove", this, { passive: true });
+    }
     if (this.#prefObserver) {
       Services.prefs.removeObserver("zen.tab-intelligence.", this.#prefObserver);
       this.#prefObserver = null;
@@ -152,19 +170,20 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       case "mouseout": {
         const tab = event.target.closest?.(".tabbrowser-tab");
         if (!tab || tab !== this.#currentHoverTab) return;
-        if (event.relatedTarget && tab.contains(event.relatedTarget)) return;
-        if (event.relatedTarget && this.#panel?.contains(event.relatedTarget)) return;
+        const rel = event.relatedTarget;
+        if (rel && (tab.contains(rel) || this.#panel?.contains(rel))) return;
         this.#handleTabLeave(tab);
         break;
       }
       case "mousemove": {
-        if (
-          !this.#currentHoverTab &&
-          !this.#hoverTimer &&
-          (!this.#panel || (this.#panel.state !== "open" && this.#panel.state !== "showing"))
-        ) {
-          const tab = event.target.closest?.(".tabbrowser-tab");
-          if (tab && this.#isSupportedTab(tab)) {
+        const tab = event.target.closest?.(".tabbrowser-tab");
+        if (tab && this.#isSupportedTab(tab)) {
+          if (
+            this.#currentHoverTab !== tab ||
+            (!this.#hoverTimer &&
+              (!this.#panel ||
+                (this.#panel.state !== "open" && this.#panel.state !== "showing")))
+          ) {
             this.#handleTabHover(tab);
           }
         }
@@ -220,11 +239,8 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       tab.hasAttribute("zen-essential") ||
       tab.getAttribute("zen-essential") === "true";
 
-    const url = tab.linkedBrowser?.currentURI?.spec || "";
-    const isGmail = url.startsWith("https://mail.google.com/");
-    const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
-
-    if (isGmail || isWhatsApp) {
+    const service = lazy.ZenTabIntelligenceManager.getTabService(tab);
+    if (service === "gmail" || service === "whatsapp") {
       const pageTitle = this.getTabContentTitle(tab);
       const match = pageTitle.match(/\((\d+)\)/);
       const unreadCount = match ? parseInt(match[1], 10) : 0;
@@ -239,7 +255,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       lazy.ZenTabIntelligenceManager.onTabStatusUpdate(tab, {
         hasUnread,
         unreadCount,
-        service: isWhatsApp ? "WhatsApp" : "Gmail",
+        service: service === "whatsapp" ? "WhatsApp" : "Gmail",
       });
     }
   }
@@ -302,12 +318,9 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     if (!tab || !tab.isConnected) return false;
     if (!lazy.ZenTabIntelligenceManager.isTargetTab(tab)) return false;
 
-    const url = tab.linkedBrowser?.currentURI?.spec || "";
+    const service = lazy.ZenTabIntelligenceManager.getTabService(tab);
     // User requested: hover preview strictly for Gmail and Google Calendar. WhatsApp hover removed!
-    return (
-      url.startsWith("https://mail.google.com/") ||
-      url.startsWith("https://calendar.google.com/")
-    );
+    return service === "gmail" || service === "google-calendar";
   }
 
   #handleTabHover(tab) {
@@ -322,6 +335,10 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       return;
     }
 
+    if (this.#currentHoverTab === tab && (this.#hoverTimer || this.#panel?.state === "open")) {
+      return;
+    }
+
     this.#currentHoverTab = tab;
 
     if (this.#hideTimer) {
@@ -331,15 +348,17 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
     if (this.#hoverTimer) {
       this.window.clearTimeout(this.#hoverTimer);
+      this.#hoverTimer = null;
     }
 
     // When the panel is already open/showing on a previous tab, chain immediately with minimal delay
     const isChaining =
       this.#panel &&
       (this.#panel.state === "open" || this.#panel.state === "showing");
-    const delay = isChaining ? 40 : 180;
+    const delay = isChaining ? 40 : 120;
 
     this.#hoverTimer = this.window.setTimeout(() => {
+      this.#hoverTimer = null;
       this.#showPreviewForTab(tab);
     }, delay);
   }
@@ -513,20 +532,23 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     let yOffset = 0;
 
     if (isEssential) {
-      // Essential tab:
-      // - Sidebar on left: anchor bottom-right of tab, popup top-left -> "bottomright topleft"
-      // - Sidebar on right: anchor bottom-left of tab, popup top-right -> "bottomleft topright"
       position = isRightSide ? "bottomleft topright" : "bottomright topleft";
       xOffset = isRightSide ? -1 : 1;
       yOffset = 1;
     } else {
-      // Pinned tab:
-      // - Sidebar on left: anchor right-center of tab, popup left-center -> "rightcenter leftcenter"
-      // - Sidebar on right: anchor left-center of tab, popup right-center -> "leftcenter rightcenter"
-      position = isRightSide ? "leftcenter rightcenter" : "rightcenter leftcenter";
-      xOffset = isRightSide ? -6 : 6;
+      // Matches Zen folder popup positioning (anchored to tab edge)
+      position = isRightSide ? "topleft topright" : "topright topleft";
+      xOffset = isRightSide ? -8 : 8;
       yOffset = 0;
     }
+
+    this.#panel.setAttribute("side", isRightSide ? "right" : "left");
+
+    const popupOptions = {
+      position,
+      x: xOffset,
+      y: yOffset,
+    };
 
     if (this.#panel.state === "open") {
       let moved = false;
@@ -540,7 +562,11 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         this.#panel.hidePopup();
         this.window.requestAnimationFrame(() => {
           if (tab === this.#currentHoverTab) {
-            this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+            try {
+              this.#panel.openPopup(tab, popupOptions);
+            } catch {
+              this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+            }
           }
         });
       }
@@ -550,12 +576,20 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
           try {
             this.#panel.moveToAnchor(tab, position, xOffset, yOffset, false);
           } catch {
-            this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+            try {
+              this.#panel.openPopup(tab, popupOptions);
+            } catch {
+              this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+            }
           }
         }
       });
     } else {
-      this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+      try {
+        this.#panel.openPopup(tab, popupOptions);
+      } catch {
+        this.#panel.openPopup(tab, position, xOffset, yOffset, false, false);
+      }
     }
   }
 

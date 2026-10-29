@@ -73,26 +73,70 @@ class nsZenTabIntelligenceManager {
     this.#notify("onImminentMeetingChanged", { tab: null, meeting });
   }
 
+  getTabService(tab) {
+    if (!tab || !tab.isConnected) return null;
+
+    const url =
+      tab.linkedBrowser?.currentURI?.spec ||
+      tab.getAttribute("zen-pinned-url") ||
+      tab.getAttribute("zen-url") ||
+      tab._zenPinnedInitialState?.entry?.url ||
+      tab.linkedBrowser?.userTypedValue ||
+      tab.getAttribute("userTypedValue") ||
+      "";
+
+    const label = tab.label || tab.getAttribute("label") || "";
+    const tooltip = tab.getAttribute("tooltiptext") || "";
+    const image = tab.getAttribute("image") || "";
+
+    // Check Gmail
+    if (
+      url.includes("mail.google.com") ||
+      url.includes("google.com/mail") ||
+      /gmail/i.test(label) ||
+      /gmail/i.test(tooltip) ||
+      /gmail|mail\.google/i.test(image)
+    ) {
+      return "gmail";
+    }
+
+    // Check Google Calendar
+    if (
+      url.includes("calendar.google.com") ||
+      url.includes("google.com/calendar") ||
+      /calendar|agenda/i.test(label) ||
+      /calendar|agenda/i.test(tooltip) ||
+      /calendar\.google/i.test(image)
+    ) {
+      return "google-calendar";
+    }
+
+    // Check WhatsApp
+    if (
+      url.includes("web.whatsapp.com") ||
+      /whatsapp/i.test(label) ||
+      /whatsapp/i.test(tooltip) ||
+      /whatsapp/i.test(image)
+    ) {
+      return "whatsapp";
+    }
+
+    return null;
+  }
+
   isTargetTab(tab) {
     if (!tab) return false;
     if (!Services.prefs.getBoolPref("zen.tab-intelligence.enabled", true)) {
       return false;
     }
 
-    const url = tab.linkedBrowser?.currentURI?.spec || "";
-    let serviceKey = null;
-    if (url.startsWith("https://mail.google.com/")) serviceKey = "gmail";
-    else if (url.startsWith("https://calendar.google.com/")) serviceKey = "google-calendar";
-    else if (url.startsWith("https://web.whatsapp.com/")) serviceKey = "whatsapp";
+    const serviceKey = this.getTabService(tab);
+    if (!serviceKey) return false;
 
-    if (
-      serviceKey &&
-      !Services.prefs.getBoolPref("zen.tab-intelligence.service." + serviceKey, true)
-    ) {
-      return false;
-    }
-
-    return true;
+    return Services.prefs.getBoolPref(
+      "zen.tab-intelligence.service." + serviceKey,
+      true
+    );
   }
 
   onTabStatusUpdate(tab, status, actorParent = null) {
@@ -129,11 +173,9 @@ class nsZenTabIntelligenceManager {
       return { items: [] };
     }
 
-    const url = tab.linkedBrowser?.currentURI?.spec || "";
-    const isGmail = url.startsWith("https://mail.google.com/");
-    const isCalendar = url.startsWith("https://calendar.google.com/");
+    const service = this.getTabService(tab);
 
-    if (isGmail) {
+    if (service === "gmail") {
       if (!ZenGoogleConnector.isConfigured()) {
         return {
           type: "mail",
@@ -153,7 +195,7 @@ class nsZenTabIntelligenceManager {
       };
     }
 
-    if (isCalendar) {
+    if (service === "google-calendar") {
       if (!ZenGoogleConnector.isConfigured()) {
         return {
           type: "calendar",

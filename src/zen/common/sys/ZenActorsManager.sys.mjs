@@ -91,7 +91,6 @@ let JSWINDOWACTORS = {
       "https://web.whatsapp.com/*",
     ],
     messageManagerGroups: ["browsers"],
-    remoteTypes: ["web", "file"],
     safeForUntrustedWebProcess: true,
   },
 };

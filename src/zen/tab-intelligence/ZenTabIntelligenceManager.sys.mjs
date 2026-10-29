@@ -80,11 +80,7 @@ class nsZenTabIntelligenceManager {
       return false;
     }
 
-    return (
-      tab.pinned ||
-      tab.hasAttribute("zen-essential") ||
-      tab.getAttribute("zen-essential") === "true"
-    );
+    return true;
   }
 
   onTabStatusUpdate(tab, status, actorParent = null) {
@@ -94,7 +90,12 @@ class nsZenTabIntelligenceManager {
     this.#trackedTabs.add(tab);
 
     const isTarget = this.isTargetTab(tab);
-    if (isTarget && status.hasUnread) {
+    const isPinnedOrEssential =
+      tab.pinned ||
+      tab.hasAttribute("zen-essential") ||
+      tab.getAttribute("zen-essential") === "true";
+
+    if (isTarget && isPinnedOrEssential && status.hasUnread) {
       tab.setAttribute("zen-has-unread", "true");
     } else {
       tab.removeAttribute("zen-has-unread");

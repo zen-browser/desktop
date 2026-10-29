@@ -844,6 +844,27 @@ var gZenTabIntelligenceSettings = {
     };
     sysCalCheckbox?.addEventListener("command", updateVisibility);
     updateVisibility();
+
+    // Toggle routing container visibility based on custom routing checkbox
+    const routingToggle = document.getElementById(
+      "zenTabIntelligenceSystemCalendarCustomRoutingToggle"
+    );
+    const routingContainer = document.getElementById(
+      "zenTabIntelligenceRoutingContainer"
+    );
+    const updateRoutingVisibility = () => {
+      let isEnabled = routingToggle
+        ? routingToggle.checked
+        : Services.prefs.getBoolPref(
+            "zen.tab-intelligence.system-calendar.custom-routing-enabled",
+            false
+          );
+      if (routingContainer) {
+        routingContainer.hidden = !isEnabled;
+      }
+    };
+    routingToggle?.addEventListener("command", updateRoutingVisibility);
+    updateRoutingVisibility();
   },
 
   _readPrefs() {
@@ -1205,6 +1226,11 @@ Preferences.addAll([
     id: "zen.tab-intelligence.system-calendar.enabled",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.tab-intelligence.system-calendar.custom-routing-enabled",
+    type: "bool",
+    default: false,
   },
   {
     id: "zen.tab-intelligence.system-calendar.notify-minutes-before",

@@ -107,26 +107,31 @@
                       preference="zen.tab-intelligence.system-calendar.enabled"/>
 
             <vbox id="zenTabIntelligenceSystemCalendarSettings" class="indent">
-                  <hbox align="center" class="zen-intelligence-pref-block zen-intelligence-minutes-row">
-                        <label id="zenTabIntelligenceNotifyMinutesLabel"
-                               data-l10n-id="zen-tab-intelligence-system-calendar-notify-minutes"/>
+                  <hbox align="center" class="zen-intelligence-minutes-row">
+                        <label id="zenTabIntelligenceNotifyMinutesBefore"
+                               data-l10n-id="zen-tab-intelligence-system-calendar-notify-minutes-before"/>
                         <html:input id="zenTabIntelligenceNotifyMinutes"
                                     type="number"
                                     min="1"
                                     max="120"
                                     class="input-inline"
                                     preference="zen.tab-intelligence.system-calendar.notify-minutes-before"/>
+                        <label id="zenTabIntelligenceNotifyMinutesAfter"
+                               data-l10n-id="zen-tab-intelligence-system-calendar-notify-minutes-after"/>
                   </hbox>
 
-                  <vbox class="zen-intelligence-pref-block">
+                  <vbox>
                         <label id="zenTabIntelligenceDefaultWorkspacesLabel"
                                data-l10n-id="zen-tab-intelligence-system-calendar-default-workspaces"/>
                         <hbox id="zenTabIntelligenceDefaultWorkspacesPills"
                               class="zen-workspace-pills-container"></hbox>
                   </vbox>
 
-                  <vbox id="zenTabIntelligenceRoutingContainer" class="zen-intelligence-pref-block">
-                        <label><html:h3 data-l10n-id="zen-tab-intelligence-system-calendar-routing-header"/></label>
+                  <checkbox id="zenTabIntelligenceSystemCalendarCustomRoutingToggle"
+                            data-l10n-id="zen-tab-intelligence-system-calendar-enable-routing"
+                            preference="zen.tab-intelligence.system-calendar.custom-routing-enabled"/>
+
+                  <vbox id="zenTabIntelligenceRoutingContainer" class="indent" hidden="true">
                         <description class="description-deemphasized"
                                      data-l10n-id="zen-tab-intelligence-system-calendar-routing-description"/>
                         <vbox id="zenTabIntelligenceRoutingList"></vbox>
@@ -136,6 +141,7 @@
                                           data-l10n-id="zen-tab-intelligence-system-calendar-routing-placeholder"
                                           class="input-inline" />
                               <button id="zenTabIntelligenceAddRouteButton"
+                                      class="accessory-button"
                                       data-l10n-id="zen-tab-intelligence-system-calendar-routing-add" />
                         </hbox>
                   </vbox>

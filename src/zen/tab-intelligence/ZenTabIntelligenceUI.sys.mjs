@@ -28,30 +28,16 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.window.addEventListener("TabAttrModified", this);
     this.window.addEventListener("mouseover", this, { passive: true });
     this.window.addEventListener("mouseout", this, { passive: true });
+    this.window.addEventListener("mousemove", this, { passive: true });
     this.window.addEventListener("mousedown", this, true);
     this.window.addEventListener("dragstart", this, true);
     this.window.addEventListener("ZenWorkspacesUIUpdate", this);
     this.window.addEventListener("ZenWorkspaceDataChanged", this);
 
     this.#prefObserver = () => {
-      this.updateImminentMeetingBanners();
+      this.reEvaluateAllTabs();
     };
-    Services.prefs.addObserver(
-      "zen.tab-intelligence.system-calendar.default-workspaces",
-      this.#prefObserver
-    );
-    Services.prefs.addObserver(
-      "zen.tab-intelligence.system-calendar.routing",
-      this.#prefObserver
-    );
-    Services.prefs.addObserver(
-      "zen.tab-intelligence.system-calendar.enabled",
-      this.#prefObserver
-    );
-    Services.prefs.addObserver(
-      "zen.tab-intelligence.enabled",
-      this.#prefObserver
-    );
+    Services.prefs.addObserver("zen.tab-intelligence.", this.#prefObserver);
 
     // Initial check of existing tabs
     if (this.window.gBrowser?.tabs) {
@@ -68,27 +54,13 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     this.window.removeEventListener("TabAttrModified", this);
     this.window.removeEventListener("mouseover", this, { passive: true });
     this.window.removeEventListener("mouseout", this, { passive: true });
+    this.window.removeEventListener("mousemove", this, { passive: true });
     this.window.removeEventListener("mousedown", this, true);
     this.window.removeEventListener("dragstart", this, true);
     this.window.removeEventListener("ZenWorkspacesUIUpdate", this);
     this.window.removeEventListener("ZenWorkspaceDataChanged", this);
     if (this.#prefObserver) {
-      Services.prefs.removeObserver(
-        "zen.tab-intelligence.system-calendar.default-workspaces",
-        this.#prefObserver
-      );
-      Services.prefs.removeObserver(
-        "zen.tab-intelligence.system-calendar.routing",
-        this.#prefObserver
-      );
-      Services.prefs.removeObserver(
-        "zen.tab-intelligence.system-calendar.enabled",
-        this.#prefObserver
-      );
-      Services.prefs.removeObserver(
-        "zen.tab-intelligence.enabled",
-        this.#prefObserver
-      );
+      Services.prefs.removeObserver("zen.tab-intelligence.", this.#prefObserver);
       this.#prefObserver = null;
     }
     if (this.#hoverTimer) {
@@ -183,7 +155,44 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
         this.#handleTabLeave(tab);
         break;
       }
+      case "mousemove": {
+        if (
+          !this.#currentHoverTab &&
+          !this.#hoverTimer &&
+          (!this.#panel || (this.#panel.state !== "open" && this.#panel.state !== "showing"))
+        ) {
+          const tab = event.target.closest?.(".tabbrowser-tab");
+          if (tab && this.#isSupportedTab(tab)) {
+            this.#handleTabHover(tab);
+          }
+        }
+        break;
+      }
     }
+  }
+
+  reEvaluateAllTabs() {
+    const isGloballyEnabled = Services.prefs.getBoolPref(
+      "zen.tab-intelligence.enabled",
+      true
+    );
+    if (this.window.gBrowser?.tabs) {
+      for (const tab of this.window.gBrowser.tabs) {
+        if (!isGloballyEnabled) {
+          tab.removeAttribute("zen-has-unread");
+        } else {
+          this.evaluateTab(tab);
+        }
+      }
+    }
+    if (
+      !isGloballyEnabled &&
+      this.#panel &&
+      (this.#panel.state === "open" || this.#panel.state === "showing")
+    ) {
+      this.#panel.hidePopup();
+    }
+    this.updateImminentMeetingBanners();
   }
 
   getTabContentTitle(tab) {
@@ -204,6 +213,11 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       return;
     }
 
+    const isPinnedOrEssential =
+      tab.pinned ||
+      tab.hasAttribute("zen-essential") ||
+      tab.getAttribute("zen-essential") === "true";
+
     const url = tab.linkedBrowser?.currentURI?.spec || "";
     const isGmail = url.startsWith("https://mail.google.com/");
     const isWhatsApp = url.startsWith("https://web.whatsapp.com/");
@@ -214,7 +228,7 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
       const unreadCount = match ? parseInt(match[1], 10) : 0;
       const hasUnread = unreadCount > 0;
 
-      if (hasUnread) {
+      if (hasUnread && isPinnedOrEssential) {
         tab.setAttribute("zen-has-unread", "true");
       } else {
         tab.removeAttribute("zen-has-unread");
@@ -729,19 +743,26 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
 
   #isMeetingAllowedInWorkspace(meeting, workspaceId) {
     const calName = meeting.calendar || "";
+    const customRoutingEnabled = Services.prefs.getBoolPref(
+      "zen.tab-intelligence.system-calendar.custom-routing-enabled",
+      false
+    );
 
     // Read routing pref: JSON object mapping calendar name to array of workspace IDs
     let routing = {};
-    try {
-      const routingStr = Services.prefs.getStringPref(
-        "zen.tab-intelligence.system-calendar.routing",
-        "{}"
-      );
-      routing = JSON.parse(routingStr);
-    } catch {}
+    if (customRoutingEnabled) {
+      try {
+        const routingStr = Services.prefs.getStringPref(
+          "zen.tab-intelligence.system-calendar.routing",
+          "{}"
+        );
+        routing = JSON.parse(routingStr);
+      } catch {}
+    }
 
     let targetWorkspaces = null;
     if (
+      customRoutingEnabled &&
       calName &&
       Array.isArray(routing[calName]) &&
       routing[calName].length > 0

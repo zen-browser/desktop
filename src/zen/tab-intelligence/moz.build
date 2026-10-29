@@ -3,10 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 EXTRA_JS_MODULES.zen.intelligence += [
-    "providers/GmailProvider.sys.mjs",
-    "providers/GoogleCalendarProvider.sys.mjs",
-    "providers/WhatsAppProvider.sys.mjs",
-    "providers/ZenBaseTabProvider.sys.mjs",
+    "providers/ZenGoogleAuth.sys.mjs",
     "providers/ZenGoogleConnector.sys.mjs",
     "ZenTabIntelligenceManager.sys.mjs",
     "ZenTabIntelligenceUI.sys.mjs",

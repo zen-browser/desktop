@@ -104,31 +104,26 @@
                       preference="zen.tab-intelligence.service.whatsapp"/>
 
             <vbox id="zenTabIntelligenceGoogleSettings" class="indent">
-                  <label><html:h3 data-l10n-id="zen-tab-intelligence-google-connector-header"/></label>
-                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-google-connector-desc"/>
+                  <label><html:h3 data-l10n-id="zen-tab-intelligence-google-account-header"/></label>
+                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-google-account-desc"/>
 
-                  <hbox align="center" class="zen-intelligence-config-row">
-                        <label id="zenTabIntelligenceGoogleUrlLabel"
-                               data-l10n-id="zen-tab-intelligence-google-url-label"
-                               style="min-width: 130px;"/>
-                        <html:input id="zenTabIntelligenceGoogleUrl"
-                                    type="url"
-                                    class="input-inline"
-                                    style="flex: 1;"
-                                    placeholder="https://script.google.com/macros/s/.../exec"
-                                    preference="zen.tab-intelligence.google.webapp-url"/>
+                  <!-- Disconnected state -->
+                  <hbox id="zenTabIntelligenceStatusDisconnectedRow" align="center" class="zen-intelligence-account-row">
+                        <description data-l10n-id="zen-tab-intelligence-google-status-disconnected" style="flex: 1;"/>
+                        <html:button id="zenTabIntelligenceGoogleConnectBtn"
+                                     class="primary-button"
+                                     data-l10n-id="zen-tab-intelligence-google-connect-button"/>
                   </hbox>
 
-                  <hbox align="center" class="zen-intelligence-config-row">
-                        <label id="zenTabIntelligenceGoogleKeyLabel"
-                               data-l10n-id="zen-tab-intelligence-google-key-label"
-                               style="min-width: 130px;"/>
-                        <html:input id="zenTabIntelligenceGoogleKey"
-                                    type="password"
-                                    class="input-inline"
-                                    style="flex: 1;"
-                                    placeholder="Clé secrète / token (optionnel)"
-                                    preference="zen.tab-intelligence.google.api-key"/>
+                  <!-- Connected state -->
+                  <hbox id="zenTabIntelligenceStatusConnectedRow" align="center" class="zen-intelligence-account-row" hidden="true">
+                        <html:div class="zen-intelligence-connected-badge">
+                              <html:span class="zen-intelligence-badge-dot">●</html:span>
+                              <html:span id="zenTabIntelligenceGoogleUserDesc" class="zen-intelligence-user-email"/>
+                        </html:div>
+                        <html:button id="zenTabIntelligenceGoogleDisconnectBtn"
+                                     class="subtle-button"
+                                     data-l10n-id="zen-tab-intelligence-google-disconnect-button"/>
                   </hbox>
 
                   <hbox align="center" class="zen-intelligence-minutes-row">
@@ -143,6 +138,32 @@
                         <label id="zenTabIntelligenceNotifyMinutesAfter"
                                data-l10n-id="zen-tab-intelligence-google-notify-minutes-after"/>
                   </hbox>
+
+                  <html:details class="zen-intelligence-advanced-details">
+                        <html:summary data-l10n-id="zen-tab-intelligence-google-advanced-auth" class="zen-intelligence-advanced-summary"/>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceGoogleClientIdLabel"
+                                     data-l10n-id="zen-tab-intelligence-google-client-id-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceGoogleClientId"
+                                          type="text"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Par défaut (laisser vide)"
+                                          preference="zen.tab-intelligence.google.oauth.client-id"/>
+                        </hbox>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceGoogleClientSecretLabel"
+                                     data-l10n-id="zen-tab-intelligence-google-client-secret-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceGoogleClientSecret"
+                                          type="password"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Optionnel"
+                                          preference="zen.tab-intelligence.google.oauth.client-secret"/>
+                        </hbox>
+                  </html:details>
             </vbox>
       </vbox>
 </groupbox>

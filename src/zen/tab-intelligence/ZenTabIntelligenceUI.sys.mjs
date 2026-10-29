@@ -9,6 +9,8 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenTabIntelligenceManager:
     "resource:///modules/zen/intelligence/ZenTabIntelligenceManager.sys.mjs",
+  ZenGoogleAuth:
+    "resource:///modules/zen/intelligence/ZenGoogleAuth.sys.mjs",
 });
 
 export class ZenTabIntelligenceUI extends ZenUIComponent {
@@ -395,13 +397,42 @@ export class ZenTabIntelligenceUI extends ZenUIComponent {
     wrapper.innerHTML = "";
 
     if (details?.configured === false) {
-      const emptyEl = this.document.createElementNS(
+      const connectCard = this.document.createElementNS(
         "http://www.w3.org/1999/xhtml",
         "div"
       );
-      emptyEl.className = "zen-intelligence-empty-state";
-      emptyEl.textContent = "Connecteur Google Zen non configuré (ajoutez l'URL dans les réglages)";
-      wrapper.appendChild(emptyEl);
+      connectCard.className = "zen-intelligence-connect-card";
+
+      const titleEl = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "div"
+      );
+      titleEl.className = "zen-intelligence-connect-title";
+      titleEl.textContent = "Google Tab Intelligence";
+
+      const descEl = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "div"
+      );
+      descEl.className = "zen-intelligence-connect-desc";
+      descEl.textContent = "Connectez votre compte Google pour prévisualiser vos 3 derniers emails et réunions du jour au survol.";
+
+      const btn = this.document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "button"
+      );
+      btn.className = "zen-intelligence-connect-btn";
+      btn.textContent = "Se connecter avec Google";
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        this.hidePreview();
+        lazy.ZenGoogleAuth.login(this.window);
+      };
+
+      connectCard.appendChild(titleEl);
+      connectCard.appendChild(descEl);
+      connectCard.appendChild(btn);
+      wrapper.appendChild(connectCard);
     } else if (details?.type === "calendar") {
       if (items.length > 0) {
         const header = this.document.createElementNS(

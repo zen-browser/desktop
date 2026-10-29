@@ -468,6 +468,50 @@ menuseparator {
     opacity: 0.75;
   }
 
+  & .zen-intelligence-connect-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 12px;
+    gap: 6px;
+  }
+
+  & .zen-intelligence-connect-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: light-dark(black, white);
+  }
+
+  & .zen-intelligence-connect-desc {
+    font-size: 11.5px;
+    line-height: 1.4;
+    color: light-dark(rgba(0, 0, 0, 0.65), rgba(255, 255, 255, 0.65));
+    margin-bottom: 4px;
+  }
+
+  & .zen-intelligence-connect-btn {
+    appearance: none;
+    border: none;
+    background: var(--zen-primary-color, #0060df);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: var(--zen-border-radius, 6px);
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
   & .folders-tabs-list-item {
     position: relative;
     border-radius: var(--zen-border-radius, 6px);

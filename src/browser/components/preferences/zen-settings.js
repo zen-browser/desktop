@@ -766,11 +766,79 @@ var gZenWorkspacesSettings = {
 };
 
 var gZenTabIntelligenceSettings = {
+  _authModule: null,
+
+  get _auth() {
+    if (!this._authModule) {
+      try {
+        const { ZenGoogleAuth } = ChromeUtils.importESModule(
+          "resource:///modules/zen/intelligence/ZenGoogleAuth.sys.mjs"
+        );
+        this._authModule = ZenGoogleAuth;
+      } catch (e) {
+        console.warn("[gZenTabIntelligenceSettings] Failed to import ZenGoogleAuth:", e);
+      }
+    }
+    return this._authModule;
+  },
+
   init() {
     const template = document.getElementById("template-paneZenTabManagement");
     if (template) {
       template.replaceWith(template.content);
       Preferences.queueUpdateOfAllElements();
+    }
+
+    const connectBtn = document.getElementById("zenTabIntelligenceGoogleConnectBtn");
+    const disconnectBtn = document.getElementById("zenTabIntelligenceGoogleDisconnectBtn");
+
+    if (connectBtn) {
+      connectBtn.onclick = () => {
+        this._auth?.login(window);
+      };
+    }
+
+    if (disconnectBtn) {
+      disconnectBtn.onclick = () => {
+        this._auth?.logout();
+      };
+    }
+
+    if (this._auth) {
+      this._auth.removeListener(this);
+      this._auth.addListener(this);
+    }
+
+    this.updateAuthUI();
+  },
+
+  onAuthStateChanged() {
+    this.updateAuthUI();
+  },
+
+  onAuthFailed(data) {
+    this.updateAuthUI();
+  },
+
+  updateAuthUI() {
+    const statusDisconnectedRow = document.getElementById("zenTabIntelligenceStatusDisconnectedRow");
+    const statusConnectedRow = document.getElementById("zenTabIntelligenceStatusConnectedRow");
+    const userDesc = document.getElementById("zenTabIntelligenceGoogleUserDesc");
+
+    if (!statusDisconnectedRow || !statusConnectedRow) return;
+
+    const isAuthed = this._auth?.isAuthenticated() || false;
+    const email = this._auth?.getUserEmail() || "";
+
+    if (isAuthed) {
+      statusDisconnectedRow.hidden = true;
+      statusConnectedRow.hidden = false;
+      if (userDesc) {
+        userDesc.textContent = email ? `${email}` : "Compte connecté";
+      }
+    } else {
+      statusDisconnectedRow.hidden = false;
+      statusConnectedRow.hidden = true;
     }
   },
 };
@@ -901,12 +969,12 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: "zen.tab-intelligence.google.webapp-url",
+    id: "zen.tab-intelligence.google.oauth.client-id",
     type: "string",
     default: "",
   },
   {
-    id: "zen.tab-intelligence.google.api-key",
+    id: "zen.tab-intelligence.google.oauth.client-secret",
     type: "string",
     default: "",
   },

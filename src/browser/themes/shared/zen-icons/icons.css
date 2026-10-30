@@ -9,7 +9,8 @@
 .zen-toast button,
 .zen-current-workspace-indicator-chevron,
 .pinned-tabs-container-separator toolbarbutton,
-.zen-permission-popup-boost-editor-button {
+.zen-permission-popup-boost-editor-button,
+.zen-move-tabs-to-workspace-button {
   -moz-context-properties: fill, fill-opacity !important;
   fill: currentColor !important;
 }
@@ -144,6 +145,10 @@
 .zen-workspaces-actions,
 #zen-workspace-actions-menu-icon {
   list-style-image: url("menu.svg") !important;
+}
+
+.zen-move-tabs-to-workspace-button {
+  list-style-image: url("arrow-corner-down-right.svg") !important;
 }
 
 #appMenu-help-button2 {

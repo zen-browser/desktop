@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Rediger Essential nettadresse
+           *[false] Rediger Festet nettadresse
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Erstatt med gjeldende nettadresse
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Rediger...
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Endre etikett...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekreft
 zen-pinned-tab-replaced = Festet fanes nettadresse har blit erstattet med gjeldende nettadresse!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Festet fane-nettadresse har blitt oppdatert!
+zen-pinned-tab-url-invalid = Det ser ikke ut som en gyldig nettadresse.
+zen-pinned-tab-edit-url-title = Rediger festet nettadresse
+zen-pinned-tab-edit-url-label = Skriv inn nettadressen som denne festede fanen skal peke til:
 zen-tabs-renamed = Fanen har fått nytt navn!
 zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
 zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ikoner
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Søk emojier
 urlbar-search-mode-zen_actions = Handlinger
 zen-site-data-settings = Innstillinger
 zen-generic-manage = Behandle
@@ -128,9 +128,9 @@ zen-sidebar-notification-updated-heading = Oppdatering fullført!
 zen-sidebar-notification-updated-label = Hva er nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Se versjonsnotater
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Støtt { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Donér til prosjektet
 zen-sidebar-notification-restart-safe-mode-label = Er noe ødelagt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Start på nytt i sikker modus

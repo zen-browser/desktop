@@ -123,7 +123,7 @@ zen-sidebar-notification-updated-heading = 更新完成！
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = 了解 { -brand-short-name } 的新版变化
+zen-sidebar-notification-updated-label = 了解 { -brand-short-name } 的新变化
 zen-sidebar-notification-updated-tooltip = 
     .title = 查看更新日志
 zen-sidebar-notification-donate-label = 支持 { -brand-short-name }

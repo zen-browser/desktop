@@ -358,12 +358,17 @@
 
 %include zen-buttons.css
 
+/* The settings window sticks to plain rounded corners. */
+@-moz-document url-prefix("about:preferences"), url-prefix("about:settings"), url("about:keyboard") {
+  :root {
+    --zen-squircle-value: 1;
+  }
+}
+
 @media (-moz-pref('layout.css.corner-shape.enabled')) {
   *:not(.no-squircles),
   .zen-squircle-before::before,
-  .zen-squircle-after::after,
-  /* Lives in a shadow root, so the rule above can't reach it. */
-  moz-card::part(summary) {
+  .zen-squircle-after::after {
     corner-shape: superellipse(var(--zen-squircle-value));
   }
 

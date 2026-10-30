@@ -361,7 +361,9 @@
 @media (-moz-pref('layout.css.corner-shape.enabled')) {
   *:not(.no-squircles),
   .zen-squircle-before::before,
-  .zen-squircle-after::after {
+  .zen-squircle-after::after,
+  /* Lives in a shadow root, so the rule above can't reach it. */
+  moz-card::part(summary) {
     corner-shape: superellipse(var(--zen-squircle-value));
   }
 

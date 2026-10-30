@@ -3,28 +3,28 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = Innstillinger for område routing
+zen-space-routing-rulepanel-placeholder = Routes lar deg bestemme hvor spesifikke sider åpnes innenfor Zen. For eksempel kan du route YouTube-lenker til å alltid åpne i ditt Personlige område.
+zen-space-routing-dialog-title = Innstillinger for område routing
+zen-space-routing-external-default = Standard route for eksterne lenker
+zen-space-routing-new-route = Ny route
+zen-space-routing-open-in-space = Åpne i område
+zen-space-routing-most-recent-space = Mest nylige område
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = Lukk
+    .tooltiptext = Lukk
 zen-space-routing-contains = 
-    .label = Contains
+    .label = Inneholder
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = Er lik
 zen-space-routing-regex = 
     .label = RegEx
-zen-space-routing-open-in = Open In
-zen-space-routing-url = URL
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
+zen-space-routing-open-in = Åpne i
+zen-space-routing-url = Nettadresse
+zen-space-routing-tab-routed-toast = Ny fane åpnet i {$targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
+            [one] Legg til route for domene
+           *[other] Legg til route for domener
         }

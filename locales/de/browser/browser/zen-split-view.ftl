@@ -5,8 +5,8 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Tab abtrennen
-            [1] Geteilte Ansicht hinzufügen…
+            [-1] Tab herauslösen
+            [1] Geteilte Ansicht hinzufügen...
            *[other] { $tabCount } Tabs zusammenführen
         }
     .accesskey = S

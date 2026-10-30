@@ -6,6 +6,8 @@
 
 ["browser_compact_mode_layout_event.js"]
 
+["browser_compact_mode_toggle_position.js"]
+
 ["browser_compact_mode_width.js"]
 
 ["browser_issue_15814.js"]

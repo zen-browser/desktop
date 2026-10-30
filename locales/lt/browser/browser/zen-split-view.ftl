@@ -6,7 +6,7 @@ tab-zen-split-tabs =
     .label =
         { $tabCount ->
             [-1] Išskaidyti kortelę
-            [1] Įtraukti skaidymo rodinį
+            [1] Pridėti skaidymo rodinį
             [one] Sujungti { $tabCount } kortelę
             [few] Sujungti { $tabCount } korteles
             [many] Sujungti { $tabCount } kortelės

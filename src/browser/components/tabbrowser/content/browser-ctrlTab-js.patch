@@ -1,18 +1,48 @@
 diff --git a/browser/components/tabbrowser/content/browser-ctrlTab.js b/browser/components/tabbrowser/content/browser-ctrlTab.js
-index 727e21f1754b0842080d8f3e29060baad445df66..ee9df3a311fc72954e064a2cbc56b716d116314a 100644
+index 6b835b336e39de4b4b514aff0caacfa01558e9b1..8a956acaf055fa457df982ce1b38d58100007a4b 100644
 --- a/browser/components/tabbrowser/content/browser-ctrlTab.js
 +++ b/browser/components/tabbrowser/content/browser-ctrlTab.js
-@@ -252,7 +252,8 @@ var ctrlTab = {
+@@ -262,7 +262,15 @@ var ctrlTab = {
    },
  
    get tabList() {
 -    return this._recentlyUsedTabs;
 +    const canShowPending = Services.prefs.getBoolPref("zen.ctrlTab.show-pending-tabs", false);
 +    return this._recentlyUsedTabs.filter(tab => !tab.hasAttribute("pending") || canShowPending);
++  },
++
++  get _includeAllSpaces() {
++    return (
++      Services.prefs.getBoolPref("zen.ctrlTab.include-all-spaces", false) &&
++      !gZenWorkspaces.privateWindowOrDisabled
++    );
    },
  
    init: function ctrlTab_init() {
-@@ -457,7 +458,7 @@ var ctrlTab = {
+@@ -283,11 +291,13 @@ var ctrlTab = {
+ 
+   observePref: function ctrlTab_observePref() {
+     Services.prefs.addObserver(this.prefName, this);
++    Services.prefs.addObserver("zen.ctrlTab.include-all-spaces", this);
+     this.readPref();
+   },
+ 
+   stopObservingPref: function ctrlTab_stopObservingPref() {
+     Services.prefs.removeObserver(this.prefName, this);
++    Services.prefs.removeObserver("zen.ctrlTab.include-all-spaces", this);
+     this.uninit();
+   },
+ 
+@@ -306,6 +316,8 @@ var ctrlTab = {
+     }
+   },
+   observe() {
++    // Rebuild the list so a change to zen.ctrlTab.include-all-spaces applies right away.
++    this.uninit();
+     this.readPref();
+   },
+ 
+@@ -483,7 +495,7 @@ var ctrlTab = {
      // If the tab is hidden, don't add it to the list unless it's selected
      // (Normally hidden tabs would be unhidden when selected, but that doesn't
      // happen for Firefox View).
@@ -21,7 +51,7 @@ index 727e21f1754b0842080d8f3e29060baad445df66..ee9df3a311fc72954e064a2cbc56b716
        return;
      }
  
-@@ -481,7 +482,7 @@ var ctrlTab = {
+@@ -507,7 +519,7 @@ var ctrlTab = {
    },
  
    open: function ctrlTab_open() {
@@ -30,11 +60,28 @@ index 727e21f1754b0842080d8f3e29060baad445df66..ee9df3a311fc72954e064a2cbc56b716
        return;
      }
  
-@@ -759,7 +760,7 @@ var ctrlTab = {
+@@ -611,7 +623,7 @@ var ctrlTab = {
+ 
+     document.addEventListener("keyup", this, { mozSystemGroup: true });
+ 
+-    let tabs = gBrowser.visibleTabs;
++    let tabs = this._includeAllSpaces ? this.tabList : gBrowser.visibleTabs;
+     if (tabs.length > 2) {
+       this.open();
+     } else if (tabs.length == 2) {
+@@ -797,9 +809,14 @@ var ctrlTab = {
+     );
+   },
    _initRecentlyUsedTabs() {
++    // gBrowser.tabs only holds the active space. allStoredTabs also lists the
++    // glance tabs nested inside their parent tab, so drop those.
++    const tabs = this._includeAllSpaces
++      ? gZenWorkspaces.allStoredTabs.filter(tab => !gBrowser.isTab(tab.parentNode))
++      : gBrowser.tabs;
      this._recentlyUsedTabs = Array.prototype.filter.call(
-       gBrowser.tabs,
+-      gBrowser.tabs,
 -      tab => !tab.closing && !tab.hidden
++      tabs,
 +      tab => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
      );
      this._sortRecentlyUsedTabs();

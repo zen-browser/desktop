@@ -50,11 +50,8 @@
           --margin-top-fix: calc(-1 * var(--zen-toolbar-height-with-bookmarks) + var(--zen-element-separation));
         }
 
-        /* stylelint-disable-next-line media-query-no-invalid */
-        @media -moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("browser.tabs.inTitlebar")) {
-          :root:not([zen-has-bookmarks])[zen-single-toolbar="true"] & {
-            --margin-top-fix: 0px;
-          }
+        :root:not([zen-has-bookmarks])[zen-single-toolbar="true"][zen-has-window-controls="false"] & {
+          --margin-top-fix: 0px;
         }
 
         margin-top: var(--margin-top-fix);

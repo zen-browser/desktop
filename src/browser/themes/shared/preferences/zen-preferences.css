@@ -365,6 +365,7 @@ groupbox h2 {
 
 #zenLayoutList {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 10px;
 

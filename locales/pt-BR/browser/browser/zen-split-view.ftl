@@ -6,12 +6,12 @@ tab-zen-split-tabs =
     .label =
         { $tabCount ->
             [-1] Dividir Aba
-            [1] Adicionar divisão...
+            [1] Adicionar tela dividida...
            *[other] Juntar { $tabCount } Abas
         }
     .accesskey = S.O.
 zen-split-link = 
-    .label = Dividir link para uma nova aba
+    .label = Dividir Link para Nova Aba
     .accesskey = S.O.
 zen-split-view-modifier-header = Visão dividida
 zen-split-view-modifier-activate-reallocation = 

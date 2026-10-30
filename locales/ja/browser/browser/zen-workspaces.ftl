@@ -61,9 +61,11 @@ zen-workspace-creation-profile = プロファイル
     .tooltiptext = プロファイルはスペース間でクッキーとサイトデータを分離するために使用されます。
 zen-workspace-creation-header = スペースを作成する
 zen-workspace-creation-label = スペースはタブやセッションを整理するために使用されます。
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = デフォルト
 zen-workspaces-delete-workspace-title = スペースを削除しますか？
 zen-workspaces-delete-workspace-body = { $name }を削除してもよろしいですか？この操作は元に戻せません。
+zen-workspaces-remote-delete-title = 同期しているスペースを削除しますか？
+zen-workspaces-remote-delete-body = { $name } は別のデバイスで削除されました。ここにでも削除しますか？他のデバイスでも復元されます。
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = タブを閉じました！元に戻すには、 <span>{ $shortcut }</span>を使用してください。

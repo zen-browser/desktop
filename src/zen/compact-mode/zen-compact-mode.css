@@ -39,7 +39,10 @@
 /* Keep the sidebar and its space previews on the same acrylic paint path. */
 @media -moz-pref('zen.theme.acrylic-sidebar') and (not (prefers-reduced-transparency: reduce)) {
   :root:not([zen-no-acrylic='true']) :is(#navigator-toolbox, .zen-library-space) .zen-toolbar-background:not(:-moz-window-inactive) {
-    background: transparent;
+    /* Limit backdrop bleed so toolbar text stays readable over bright pages. */
+    background: light-dark(rgb(233 233 233 / 80%), rgb(19 19 19 / 80%));
+    /* Generic backgrounds otherwise follow the window's scheme directly. */
+    color-scheme: inherit;
     backdrop-filter: blur(42px) !important;
   }
 }

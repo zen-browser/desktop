@@ -479,13 +479,16 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   #canOfferScrollToTab(tab) {
+    // A glance tab is drawn inside the tab it was opened from, so that parent
+    // decides whether the strip can scroll to it at all.
+    const owner = gZenGlanceManager.getTabOrGlanceParent(tab);
     return (
       this._showScrollToSelectedTab &&
       this.active &&
-      !!tab &&
-      !tab.hidden &&
-      tab.getAttribute("zen-workspace-id") === this.id &&
-      this.scrollbox._canScrollToElement(tab)
+      !!owner &&
+      !owner.hidden &&
+      owner.getAttribute("zen-workspace-id") === this.id &&
+      this.scrollbox._canScrollToElement(owner)
     );
   }
 

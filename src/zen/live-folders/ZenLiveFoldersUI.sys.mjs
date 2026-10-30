@@ -15,6 +15,12 @@ ChromeUtils.defineLazyGetter(
     })
 );
 
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "l10n",
+  () => new Localization(["browser/zen-live-folders.ftl"])
+);
+
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenLiveFoldersManager:
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
@@ -97,18 +103,81 @@ export class ZenLiveFoldersUI extends ZenUIComponent {
     btn.removeAttribute("live-folder-action");
   }
 
+  #escapeXULAttribute(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;");
+  }
+
+  #createMenuItem(option) {
+    // Only bake in label when not using Fluent (avoids empty data-l10n-id overwrite).
+    if (option.label && !option.l10nId) {
+      const label = this.#escapeXULAttribute(option.label);
+      return this.window.MozXULElement.parseXULToFragment(
+        `<menuitem label="${label}" />`
+      ).firstElementChild;
+    }
+    return this.document.createXULElement("menuitem");
+  }
+
+  async #setMenuLabel(element, option) {
+    element.removeAttribute("data-l10n-id");
+    element.removeAttribute("data-l10n-args");
+
+    if (option.label && !option.l10nId) {
+      element.setAttribute("label", option.label);
+      return;
+    }
+
+    if (option.l10nId) {
+      try {
+        const [message] = await lazy.l10n.formatMessages([
+          { id: option.l10nId, args: option.l10nArgs ?? undefined },
+        ]);
+        const labelAttr = message?.attributes?.find(
+          attr => attr.name === "label"
+        );
+        if (labelAttr?.value) {
+          element.setAttribute("label", labelAttr.value);
+          return;
+        }
+      } catch (ex) {
+        console.error("Live folder menu l10n failed:", option.l10nId, ex);
+      }
+
+      // Fallback to data-l10n attributes if formatMessages did not yield a label.
+      element.setAttribute("data-l10n-id", option.l10nId);
+      if (option.l10nArgs) {
+        element.setAttribute(
+          "data-l10n-args",
+          JSON.stringify(option.l10nArgs)
+        );
+      }
+      return;
+    }
+
+    if (option.label) {
+      element.setAttribute("label", option.label);
+    }
+  }
+
   #applyMenuItemAttributes(menuItem, option, folderId) {
-    menuItem.setAttribute("data-l10n-id", option.l10nId);
+    if (option.type) {
+      menuItem.setAttribute("type", option.type);
+    }
 
     if (option.checked !== undefined) {
-      menuItem.setAttribute("type", option.type ?? "checkbox");
-      if (option.checked === true) {
+      // XUL treats any present "checked" attribute as on — remove it when false.
+      if (option.checked) {
         menuItem.setAttribute("checked", "true");
+      } else {
+        menuItem.removeAttribute("checked");
       }
     }
 
-    if (option.l10nArgs) {
-      menuItem.setAttribute("data-l10n-args", JSON.stringify(option.l10nArgs));
+    if (option.type === "radio" && option.key) {
+      menuItem.setAttribute("name", option.key);
     }
 
     menuItem.setAttribute("option-folder", folderId);
@@ -121,7 +190,7 @@ export class ZenLiveFoldersUI extends ZenUIComponent {
     }
   }
 
-  #appendOptions(parentPopup, options, folderId) {
+  async #appendOptions(parentPopup, options, folderId) {
     for (const option of options) {
       if (option.type === "separator") {
         parentPopup.appendChild(
@@ -131,19 +200,23 @@ export class ZenLiveFoldersUI extends ZenUIComponent {
       }
 
       if (option.options) {
-        const menu = this.document.createXULElement("menu");
+        const menuFragment = this.window.MozXULElement.parseXULToFragment(
+          "<menu><menupopup></menupopup></menu>"
+        );
+        const menu = menuFragment.firstElementChild;
+        const subPopup = menu.querySelector("menupopup");
         this.#applyMenuItemAttributes(menu, option, folderId);
+        await this.#setMenuLabel(menu, option);
 
-        const subPopup = this.document.createXULElement("menupopup");
-        this.#appendOptions(subPopup, option.options, folderId);
+        await this.#appendOptions(subPopup, option.options, folderId);
 
-        menu.appendChild(subPopup);
         parentPopup.appendChild(menu);
         continue;
       }
 
-      const menuItem = this.document.createXULElement("menuitem");
+      const menuItem = this.#createMenuItem(option);
       this.#applyMenuItemAttributes(menuItem, option, folderId);
+      await this.#setMenuLabel(menuItem, option);
 
       if (option.value !== undefined) {
         menuItem.setAttribute("option-value", option.value);
@@ -188,7 +261,7 @@ export class ZenLiveFoldersUI extends ZenUIComponent {
     });
   }
 
-  buildContextMenu(folder) {
+  async buildContextMenu(folder) {
     const optionsElement = this.#optionsElement;
 
     let hidden = true;
@@ -219,7 +292,7 @@ export class ZenLiveFoldersUI extends ZenUIComponent {
 
       popup.innerHTML = "";
 
-      this.#appendOptions(popup, contextMenuItems, folder.id);
+      await this.#appendOptions(popup, contextMenuItems, folder.id);
       hidden = false;
     }
 

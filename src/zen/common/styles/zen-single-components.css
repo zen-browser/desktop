@@ -964,3 +964,5 @@
     fill: var(--zen-primary-color) !important;
   }
 }
+
+%include zen-ctrltab-panel.css

@@ -21,22 +21,21 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] URL van Essential aanpassen
+           *[false] URL van vastgezette tab aanpassen
         }
-    .accesskey = P
+    .accesskey = V
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Vervang door huidige URL
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
+    .label = Bewerken…
+    .accesskey = B
 tab-context-zen-edit-title = 
     .label = Naam veranderen...
 tab-context-zen-edit-icon = 
     .label = Icoon veranderen...
 zen-themes-corrupted = Je { -brand-short-name } mods bestand is beschadigd. Ze zijn gereset naar het standaard thema.
-zen-shortcuts-corrupted = Je { -brand-short-name } snelkoppelingsbestand is beschadigd. Ze zijn gereset naar de standaard snelkoppelingen.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     De nieuwe URL-balk is ingeschakeld, waardoor nieuwe tabbladen niet meer nodig zijn.<br/><br/>
@@ -53,14 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bevestigen
 zen-pinned-tab-replaced = Vastgemaakte tabblad URL is vervangen met de huidige URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = URL van vastgezette tab is bijgewerkt!
+zen-pinned-tab-url-invalid = Dat lijkt niet op een geldige URL.
+zen-pinned-tab-edit-url-title = Vastgezette URL bewerken
+zen-pinned-tab-edit-url-label = Voer de URL in waar dit vastgezette tabblad naar moet verwijzen:
 zen-tabs-renamed = Tabblad is succesvol hernoemd!
 zen-background-tab-opened-toast = Nieuw achtergrondtabblad geopend!
 zen-workspace-renamed-toast = Werkruimte succesvol is hernoemd!
 zen-split-view-limit-toast = Kan geen panelen meer toevoegen aan de gesplitste weergave!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Compacte modus
     .tooltiptext = Compacte modus togglen
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Iconen
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Emoji zoeken
 urlbar-search-mode-zen_actions = Acties
 zen-site-data-settings = Instellingen
 zen-generic-manage = Beheren
@@ -89,7 +89,6 @@ zen-site-data-setting-allow = Toegestaan
 zen-site-data-setting-block = Geblokkeerd
 zen-site-data-protections-enabled = Ingeschakeld
 zen-site-data-protections-disabled = Uitgeschakeld
-zen-site-data-setting-cross-site = Cross-site cookie
 zen-site-data-security-info-extension = 
     .label = Extensie
 zen-site-data-security-info-secure = 
@@ -104,6 +103,8 @@ zen-site-data-site-settings =
     .label = Alle site-instellingen
 zen-site-data-header-share = 
     .tooltiptext = Deze pagina delen
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Leesmodus openen
 zen-site-data-header-screenshot = 
@@ -128,9 +129,9 @@ zen-sidebar-notification-updated-heading = Update voltooid!
 zen-sidebar-notification-updated-label = Wat is er veranderd in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Versie-informatie bekijken
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Steun { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Doneer aan het project
 zen-sidebar-notification-restart-safe-mode-label = Werkt er iets niet?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Herstarten in veilige modus

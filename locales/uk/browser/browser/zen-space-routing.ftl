@@ -4,27 +4,11 @@
 
 zen-space-routing-settings = 
     .label = Налаштування маршрутизації в просторі
-zen-space-routing-rulepanel-placeholder = За допомогою маршрутів ви можете вибрати, де саме в Zen будуть відкриватися певні сайти. Наприклад, ви можете налаштувати, щоби посилання на YouTube завжди відкривалися у вашому особистому просторі.
-zen-space-routing-dialog-title = Налаштування маршрутизації в просторі
-zen-space-routing-external-default = Типовий маршрут для зовнішніх посилань
-zen-space-routing-new-route = Новий маршрут
-zen-space-routing-open-in-space = Відкрити в просторі
-zen-space-routing-most-recent-space = Останній простір
-zen-space-routing-close-button = 
-    .aria-label = Закрити
-    .tooltiptext = Закрити
-zen-space-routing-contains = 
-    .label = Містить
-zen-space-routing-equal-to = 
-    .label = Це дорівнює
-zen-space-routing-regex = 
-    .label = Регулярний вираз
-zen-space-routing-open-in = Відкрити в
-zen-space-routing-url = URL-адреса
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
+zen-space-routing-tab-routed-toast = Нову вкладку відкрито у { $targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
+            [one] Додати маршрут для домену
+            [few] Додати маршрут для доменів
+           *[other] Додати маршрут для доменів
         }

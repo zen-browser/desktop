@@ -7,7 +7,7 @@
 @namespace html "http://www.w3.org/1999/xhtml";
 
 .pane-container {
-  margin: auto;
+  margin: 0 auto;
 }
 
 description {

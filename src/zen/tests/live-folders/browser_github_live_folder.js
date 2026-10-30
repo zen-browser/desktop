@@ -113,8 +113,8 @@ add_task(async function test_fetch_items_url_complex_options() {
   Assert.ok(query.includes("author:@me"), "Should include author");
   Assert.ok(query.includes("assignee:@me"), "Should include assignee");
   Assert.ok(
-    query.includes("review-requested:@me"),
-    "Should include review-requested"
+    query.includes("user-review-requested:@me"),
+    "Should include user-review-requested"
   );
   Assert.ok(
     query.includes("draft:false"),

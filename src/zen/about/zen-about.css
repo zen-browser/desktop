@@ -1,0 +1,296 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+:root {
+  --zen-about-width: 280px;
+  --zen-about-text-color: light-dark(#1c1c1e, #f2f2f4);
+  --zen-about-muted-color: light-dark(rgba(28, 28, 30, 0.6), rgba(242, 242, 244, 0.6));
+  --zen-about-button-background: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+  --zen-about-button-background-hover: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.16));
+  --zen-about-primary-background: light-dark(#1c1c1e, #e8e8ea);
+  --zen-about-primary-color: light-dark(#ffffff, #1c1c1e);
+  --zen-about-success-color: light-dark(#2e9e44, #4ad466);
+  --zen-about-warning-color: light-dark(#c47a00, #f0b429);
+
+  color-scheme: light dark;
+  appearance: none;
+  background: -moz-Dialog;
+  color: var(--zen-about-text-color);
+  font: message-box;
+  font-size: 11px;
+  /* The root bounds are what size the window. */
+  min-width: var(--zen-about-width);
+  max-width: var(--zen-about-width);
+}
+
+#zen-about-content {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 18px 24px 10px;
+  gap: 2px;
+}
+
+#zen-about-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
+#zen-about-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.zen-about-muted {
+  margin: 0;
+  font-size: 10px;
+  color: var(--zen-about-muted-color);
+}
+
+#zen-about-version {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+
+  &:hover {
+    background: var(--zen-about-button-background);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+  }
+}
+
+#zen-about-copied {
+  font-size: 9px;
+  font-weight: 500;
+  color: AccentColor;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+#zen-about-update {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+#zen-about-update-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 18px;
+}
+
+#zen-about-update-text {
+  margin: 0;
+  font-size: 10px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+#zen-about-update-icon {
+  display: none;
+  width: 16px;
+  height: 16px;
+  -moz-context-properties: fill;
+  fill: currentColor;
+
+  #zen-about-update:is(
+    [data-state="checking"],
+    [data-state="downloading"],
+    [data-state="applying"],
+    [data-state="restarting"]
+  ) & {
+    display: block;
+    content: url("chrome://global/skin/icons/loading.svg");
+  }
+
+  #zen-about-update[data-state="up-to-date"] & {
+    display: block;
+    content: url("chrome://global/skin/icons/check.svg");
+    fill: var(--zen-about-success-color);
+  }
+
+  #zen-about-update[data-state="available"] & {
+    display: block;
+    content: url("chrome://browser/skin/zen-icons/sparkles.svg");
+  }
+
+  #zen-about-update[data-state="ready"] & {
+    display: block;
+    content: url("chrome://browser/skin/zen-icons/reload.svg");
+  }
+
+  #zen-about-update:is([data-state="failed"], [data-state="blocked"]) & {
+    display: block;
+    content: url("chrome://global/skin/icons/warning.svg");
+    fill: var(--zen-about-warning-color);
+  }
+}
+
+#zen-about-update-progress {
+  appearance: none;
+  width: 180px;
+  height: 4px;
+  border: none;
+  border-radius: 2px;
+  background: var(--zen-about-button-background);
+  overflow: hidden;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &::-moz-progress-bar {
+    background: AccentColor;
+    border-radius: 2px;
+  }
+
+  &:indeterminate::-moz-progress-bar {
+    width: 30%;
+    animation: zen-about-progress-slide 1.2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes zen-about-progress-slide {
+  from {
+    margin-inline-start: 0;
+  }
+
+  to {
+    margin-inline-start: 70%;
+  }
+}
+
+#zen-about-update-button {
+  appearance: none;
+  margin: 0;
+  user-select: none;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 6px;
+  background: var(--zen-about-button-background);
+  color: inherit;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  transition:
+    background 0.1s,
+    transform 0.1s;
+
+  &:hover {
+    background: var(--zen-about-button-background-hover);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: 2px;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  &.primary {
+    background: var(--zen-about-primary-background);
+    color: var(--zen-about-primary-color);
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  @media (prefers-contrast) {
+    border: 1px solid currentColor;
+  }
+}
+
+#zen-about-content a {
+  color: -moz-nativehyperlinktext;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    border-radius: 2px;
+  }
+}
+
+#zen-about-links,
+#zen-about-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 10px;
+
+  /* Inline-block keeps the link underline off the separator. */
+  & a + a::before {
+    content: "·";
+    display: inline-block;
+    margin-inline-end: 6px;
+    color: var(--zen-about-muted-color);
+  }
+}
+
+#zen-about-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+#zen-about-link-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#zen-about-community {
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #zen-about-update-button,
+  #zen-about-update-progress::-moz-progress-bar {
+    transition: none;
+    animation: none;
+  }
+}

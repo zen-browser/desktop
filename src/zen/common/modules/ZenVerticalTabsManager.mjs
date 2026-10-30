@@ -34,6 +34,18 @@ window.gZenVerticalTabsManager = {
     window.addEventListener("ZenCompactMode:LayoutUpdate", () =>
       this._updateEvent()
     );
+    // DOM fullscreen (e.g. videos) uses the compact mode layout, even if compact mode is disabled
+    for (const eventName of [
+      "MozDOMFullscreen:Entered",
+      "MozDOMFullscreen:Exited",
+    ]) {
+      window.addEventListener(eventName, event => {
+        this._inDOMFullscreen = event.type === "MozDOMFullscreen:Entered";
+        if (!gZenCompactModeManager.preference) {
+          this._updateEvent();
+        }
+      });
+    }
     this.initRightSideOrderContextMenu();
     this.initSetProfileContextMenu();
 
@@ -408,7 +420,8 @@ window.gZenVerticalTabsManager = {
 
       const topButtons = document.getElementById("zen-sidebar-top-buttons");
       const isCompactMode =
-        gZenCompactModeManager.preference && !forCustomizableMode;
+        (gZenCompactModeManager.preference || this._inDOMFullscreen) &&
+        !forCustomizableMode;
       const isVerticalTabs = this._prefsVerticalTabs || forCustomizableMode;
       const isSidebarExpanded = this._prefsSidebarExpanded || !isVerticalTabs;
       const isRightSide = this._prefsRightSide && isVerticalTabs;

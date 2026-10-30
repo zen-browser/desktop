@@ -129,6 +129,19 @@ window.gZenCompactModeManager = {
 
     this.addHasPolyfillObserver();
 
+    // The sidebar behaves like in compact mode during DOM fullscreen, even if it's disabled
+    window.addEventListener("MozDOMFullscreen:Entered", () => {
+      if (!this.preference) {
+        ZenHasPolyfill.connectObserver(this.sidebarObserverId);
+      }
+    });
+    window.addEventListener("MozDOMFullscreen:Exited", () => {
+      if (!this.preference) {
+        ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
+        this._clearAllHoverStates();
+      }
+    });
+
     // Clear hover states when window state changes (minimize, maximize, etc.)
     window.addEventListener("sizemodechange", () =>
       this._clearAllHoverStates()

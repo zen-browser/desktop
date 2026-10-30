@@ -64,6 +64,8 @@ zen-workspace-creation-label = Arbeitsbereiche helfen dir, deine Tabs und Sitzun
 zen-workspace-default-profile = Standard
 zen-workspaces-delete-workspace-title = Arbeitsbereich löschen?
 zen-workspaces-delete-workspace-body = Möchtest du { $name } wirklich löschen? Das lässt sich nicht rückgängig machen.
+zen-workspaces-remote-delete-title = Synchronisierten Arbeitsbereich löschen?
+zen-workspaces-remote-delete-body = { $name } wurde auf einem anderen Gerät gelöscht. Auch hier löschen? Wenn du den Arbeitsbereich behältst, wird er auf deinen anderen Geräten wiederhergestellt.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Tabs geschlossen! Nutze <span>{ $shortcut }</span>, um das rückgängig zu machen.

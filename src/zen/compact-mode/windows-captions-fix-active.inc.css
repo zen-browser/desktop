@@ -5,6 +5,6 @@
  */
 
 & .titlebar-buttonbox-container {
-  max-height: 100%;
+  display: flex;
   transition: none;
 }

@@ -5,11 +5,11 @@
  */
 
 & .titlebar-buttonbox-container {
-  max-height: 0px;
+  display: none;
   /* We need to hide them since on Windows the native
    * panels when hovering over them can interfere with the
-   * web content */
-  transition: max-height 0s;
+   * web content. See gh-16267 */
+  transition: display 0s;
   transition-delay: calc(var(--zen-hidden-toolbar-transition-duration) + 0.2s);
 
   & .titlebar-button {

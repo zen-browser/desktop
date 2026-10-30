@@ -61,9 +61,11 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profiler er brukt til å separere informasjonskapsler og nettstedsdata mellom områder.
 zen-workspace-creation-header = Opprett et område
 zen-workspace-creation-label = Områder er brukt til å organisere fanene og øktene dine.
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = Standard
 zen-workspaces-delete-workspace-title = Slett Område?
 zen-workspaces-delete-workspace-body = Er du sikker på at du vil slette { $name }? Denne handlingen kan ikke angres.
+zen-workspaces-remote-delete-title = Slett synkronisert område?
+zen-workspaces-remote-delete-body = { $name } ble slettet på en annen enhet. Vil du slette den her også? Velger du å beholde den vil det bringe den tilbake på dine andre enheter.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Faner lukket! Bruk <span>{ $shortcut }</span> for å angre.

@@ -4,27 +4,10 @@
 
 zen-space-routing-settings = 
     .label = Környezet útválasztási beállítások
-zen-space-routing-rulepanel-placeholder = Az útvonalakkal meghatározhatja, hogy az egyes webhelyek hol nyíljanak meg a Zen-ben. Beállíthatod például, hogy a YouTube-linkek mindig a Személyes környezetben nyíljanak meg.
-zen-space-routing-dialog-title = Környezet útválasztási beállítások
-zen-space-routing-external-default = Külső hivatkozások alapértelmezett útvonala
-zen-space-routing-new-route = Új útvonal
-zen-space-routing-open-in-space = Megnyitás környezetben
-zen-space-routing-most-recent-space = Legutóbbi környezet
-zen-space-routing-close-button = 
-    .aria-label = Bezárás
-    .tooltiptext = Bezárás
-zen-space-routing-contains = 
-    .label = Tartalmazza
-zen-space-routing-equal-to = 
-    .label = Megegyezik ezzel
-zen-space-routing-regex = 
-    .label = RegEx
-zen-space-routing-open-in = Megnyitás itt
-zen-space-routing-url = URL
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
+zen-space-routing-tab-routed-toast = Új lap nyílt meg a(z) { $targetWorkspace } környezetben
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
+            [one] Útvonal hozzáadása egy domainhez
+           *[other] Útvonal hozzáadása domainekhez
         }

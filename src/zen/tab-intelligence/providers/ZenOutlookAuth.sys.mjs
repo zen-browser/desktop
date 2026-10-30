@@ -177,7 +177,7 @@ class nsZenOutlookAuth {
       return false;
     }
 
-    const redirectUri = `http://127.0.0.1:${this.#currentPort}`;
+    const redirectUri = `http://localhost:${this.#currentPort}`;
     const clientId = this.getClientId();
 
     const authUrl = new URL(OAUTH_AUTH_ENDPOINT);
@@ -300,7 +300,7 @@ class nsZenOutlookAuth {
   async #exchangeCodeForTokens(code) {
     const clientId = this.getClientId();
     const clientSecret = this.getClientSecret();
-    const redirectUri = `http://127.0.0.1:${this.#currentPort}`;
+    const redirectUri = `http://localhost:${this.#currentPort}`;
 
     const params = new URLSearchParams();
     params.set("client_id", clientId);

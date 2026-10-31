@@ -34,14 +34,20 @@ window.gZenVerticalTabsManager = {
     window.addEventListener("ZenCompactMode:LayoutUpdate", () =>
       this._updateEvent()
     );
-    // DOM fullscreen (e.g. videos) uses the compact mode layout, even if compact mode is disabled
+    // The fullscreen sidebar uses the compact mode layout, even if compact mode is disabled
     for (const eventName of [
       "MozDOMFullscreen:Entered",
       "MozDOMFullscreen:Exited",
     ]) {
       window.addEventListener(eventName, event => {
-        this._inDOMFullscreen = event.type === "MozDOMFullscreen:Entered";
-        if (!gZenCompactModeManager.preference) {
+        const wasInDOMFullscreen = this._inDOMFullscreen;
+        this._inDOMFullscreen =
+          event.type === "MozDOMFullscreen:Entered" &&
+          this._showSidebarInFullscreen;
+        if (
+          wasInDOMFullscreen !== this._inDOMFullscreen &&
+          !gZenCompactModeManager.preference
+        ) {
           this._updateEvent();
         }
       });
@@ -763,6 +769,13 @@ window.gZenVerticalTabsManager = {
     }
   },
 };
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenVerticalTabsManager,
+  "_showSidebarInFullscreen",
+  "zen.view.compact.show-sidebar-in-fullscreen",
+  false
+);
 
 XPCOMUtils.defineLazyPreferenceGetter(
   gZenVerticalTabsManager,

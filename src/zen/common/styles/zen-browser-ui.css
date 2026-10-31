@@ -20,8 +20,8 @@ body,
   position: inherit;
 }
 
-/* In DOM fullscreen the sidebar stays reachable from the screen edge, see zen-compact-mode.css */
-:root[popup-window] #navigator-toolbox {
+/* With zen-fullscreen-sidebar, the sidebar stays reachable from the screen edge, see zen-compact-mode.css */
+:root:is([inDOMFullscreen="true"]:not([zen-fullscreen-sidebar="true"]), [popup-window]) #navigator-toolbox {
   visibility: collapse;
 }
 

@@ -29,6 +29,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
+  "COMPACT_MODE_SHOW_SIDEBAR_IN_FULLSCREEN",
+  "zen.view.compact.show-sidebar-in-fullscreen",
+  false
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
   "COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER",
   "zen.view.compact.show-sidebar-and-toolbar-on-hover",
   true
@@ -129,13 +136,21 @@ window.gZenCompactModeManager = {
 
     this.addHasPolyfillObserver();
 
-    // The sidebar behaves like in compact mode during DOM fullscreen, even if it's disabled
+    // The sidebar can behave like in compact mode during DOM fullscreen, even if it's disabled
     window.addEventListener("MozDOMFullscreen:Entered", () => {
+      if (!lazy.COMPACT_MODE_SHOW_SIDEBAR_IN_FULLSCREEN) {
+        return;
+      }
+      document.documentElement.setAttribute("zen-fullscreen-sidebar", "true");
       if (!this.preference) {
         ZenHasPolyfill.connectObserver(this.sidebarObserverId);
       }
     });
     window.addEventListener("MozDOMFullscreen:Exited", () => {
+      if (!document.documentElement.hasAttribute("zen-fullscreen-sidebar")) {
+        return;
+      }
+      document.documentElement.removeAttribute("zen-fullscreen-sidebar");
       if (!this.preference) {
         ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
         this._clearAllHoverStates();

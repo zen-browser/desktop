@@ -27,6 +27,7 @@
     "chrome://browser/content/zen-components/ZenFolders.mjs",
     "chrome://browser/content/zen-components/ZenEmojiPicker.mjs",
     "chrome://browser/content/zen-components/ZenDownloadAnimation.mjs",
+    "chrome://browser/content/zen-components/ZenCtrlTabPanel.mjs",
     "resource:///modules/zen/share/ZenShareManager.mjs",
   ];
 

@@ -6,3 +6,5 @@
 *.d.ts linguist-language=TypeScript
 
 src/zen/tests/** linguist-language=C++
+
+*.patch text eol=lf

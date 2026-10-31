@@ -4,36 +4,26 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-// prettier-ignore
-const SVG_ICONS = [
-  "airplane.svg", "american-football.svg", "baseball.svg", "basket.svg",
-  "bed.svg", "bell.svg", "bookmark.svg", "book.svg",
-  "briefcase.svg", "brush.svg", "bug.svg", "build.svg",
-  "cafe.svg", "call.svg", "card.svg", "chat.svg",
-  "checkbox.svg", "circle.svg", "cloud.svg", "code.svg",
-  "coins.svg", "construct.svg", "cutlery.svg", "egg.svg",
-  "extension-puzzle.svg", "eye.svg", "fast-food.svg", "fish.svg",
-  "flag.svg", "flame.svg", "flask.svg", "folder.svg",
-  "game-controller.svg", "globe-1.svg", "globe.svg", "grid-2x2.svg",
-  "grid-3x3.svg", "heart.svg", "ice-cream.svg", "image.svg",
-  "inbox.svg", "key.svg", "layers.svg", "leaf.svg",
-  "lightning.svg", "location.svg", "lock-closed.svg", "logo-rss.svg",
-  "logo-usd.svg", "mail.svg", "map.svg", "megaphone.svg",
-  "moon.svg", "music.svg", "navigate.svg", "nuclear.svg",
-  "page.svg", "palette.svg", "paw.svg", "people.svg",
-  "pizza.svg", "planet.svg", "present.svg", "rocket.svg",
-  "school.svg", "shapes.svg", "shirt.svg", "skull.svg",
-  "squares.svg", "square.svg", "star-1.svg", "star.svg",
-  "stats-chart.svg", "sun.svg", "tada.svg", "terminal.svg",
-  "ticket.svg", "time.svg", "trash.svg", "triangle.svg",
-  "video.svg", "volume-high.svg", "wallet.svg", "warning.svg",
-  "water.svg", "weight.svg",
-];
+import SelectableIcons from "chrome://browser/content/zen-components/SelectableIcons.mjs";
+
+function title(name) {
+  return name
+    .split("-")
+    .map(word => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+const SVG_ICONS = Object.entries(SelectableIcons).map(([name, tags]) => ({
+  file: `${name}.svg`,
+  name: title(name),
+  tags,
+}));
 
 class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #panel;
 
   #anchor;
+  #searchTerms = new WeakMap();
   #emojiAsSVG = false;
   #closeOnSelect = true;
   #onSelect = null;
@@ -133,6 +123,11 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     );
     button.classList.add("selected");
     otherButton.classList.remove("selected");
+    document.l10n.setAttributes(
+      this.searchInput,
+      toSvg ? "zen-icons-picker-search" : "zen-emojis-picker-search"
+    );
+    this.searchInput.focus({ preventScroll: true });
   }
 
   #clearEmojis() {
@@ -148,36 +143,22 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   }
 
   #onSearchInput(event) {
-    const input = event.target;
-    const value = input.value.trim().toLowerCase();
-    // search for emojis.tags and order by emojis.order
-    const filteredEmojis = this.#emojis
-      .filter(emoji => {
-        return emoji.tags.some(tag => tag.toLowerCase().includes(value));
-      })
-      .sort((a, b) => a.order - b.order);
-    for (const button of this.emojiList.children) {
-      const buttonEmoji = button.getAttribute("label");
-      const emojiObject = filteredEmojis.find(
-        emoji => emoji.emoji === buttonEmoji
-      );
-      if (emojiObject) {
-        button.hidden = !emojiObject.tags.some(tag =>
-          tag.toLowerCase().includes(value)
-        );
-        button.style.order = emojiObject.order;
-      } else {
-        button.hidden = true;
+    const terms = event.target.value.trim().toLowerCase().split(/\s+/);
+    for (const list of [this.emojiList, this.svgList]) {
+      for (const button of list.children) {
+        const keywords = this.#searchTerms.get(button);
+        button.hidden = !terms.every(term => keywords.includes(term));
       }
+      list.scrollTop = 0;
     }
   }
 
-  // note: It's async on purpose so we can render the popup before processing the emojis
-  async #onPopupShowing(event) {
+  #onPopupShowing(event) {
     if (event.target !== this.#panel) {
       return;
     }
     this.searchInput.value = "";
+    this.#searchTerms = new WeakMap();
     const allowEmojis = !this.#panel.hasAttribute("only-svg-icons");
     if (allowEmojis) {
       const emojis = document.createDocumentFragment();
@@ -186,6 +167,11 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
         item.className = "toolbarbutton-1 zen-emojis-picker-emoji";
         item.setAttribute("label", emoji.emoji);
         item.setAttribute("tooltiptext", "");
+        item.style.order = emoji.order;
+        this.#searchTerms.set(
+          item,
+          [emoji.emoji, ...emoji.tags].join(" ").toLowerCase()
+        );
         emojis.appendChild(item);
       }
       this.emojiList.replaceChildren(emojis);
@@ -194,10 +180,14 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     for (const icon of SVG_ICONS) {
       const item = document.createXULElement("toolbarbutton");
       item.className = "toolbarbutton-1 zen-emojis-picker-svg";
-      item.setAttribute("label", icon);
-      item.setAttribute("tooltiptext", "");
-      item.style.listStyleImage = `url(${this.getSVGURL(icon)})`;
-      item.setAttribute("icon", icon);
+      item.setAttribute("label", icon.name);
+      item.setAttribute("tooltiptext", icon.name);
+      item.style.listStyleImage = `url(${this.getSVGURL(icon.file)})`;
+      item.setAttribute("icon", icon.file);
+      this.#searchTerms.set(
+        item,
+        [icon.name, ...icon.tags].join(" ").toLowerCase()
+      );
       icons.appendChild(item);
     }
     this.svgList.replaceChildren(icons);
@@ -207,11 +197,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     if (event.target !== this.#panel) {
       return;
     }
-    const allowEmojis = !this.#panel.hasAttribute("only-svg-icons");
-    if (allowEmojis) {
-      this.searchInput.focus({ preventScroll: true });
-    }
-    this.#changePage(false, { animate: false });
+    this.#changePage(this.#panel.hasAttribute("only-svg-icons"), {
+      animate: false,
+    });
   }
 
   #onPopupHidden(event) {
@@ -219,6 +207,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       return;
     }
     this.#clearEmojis();
+    this.#searchTerms = new WeakMap();
 
     this.emojiList.replaceChildren();
     this.svgList.replaceChildren();

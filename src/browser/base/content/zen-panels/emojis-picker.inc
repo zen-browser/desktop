@@ -11,11 +11,11 @@
     </hbox>
     <toolbarbutton id="PanelUI-zen-emojis-picker-none" class="toolbarbutton-1" />
   </hbox>
+  <hbox id="PanelUI-zen-emojis-picker-header">
+    <html:input type="search" id="PanelUI-zen-emojis-picker-search" data-l10n-id="zen-emojis-picker-search" />
+  </hbox>
   <hbox id="PanelUI-zen-emojis-picker-pages">
     <vbox emojis="true">
-      <hbox id="PanelUI-zen-emojis-picker-header">
-        <html:input type="search" id="PanelUI-zen-emojis-picker-search" data-l10n-id="zen-emojis-picker-search" />
-      </hbox>
       <hbox id="PanelUI-zen-emojis-picker-list" />
     </vbox>
     <hbox svgs="true" id="PanelUI-zen-emojis-picker-svgs" />

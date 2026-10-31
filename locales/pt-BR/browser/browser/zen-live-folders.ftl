@@ -3,78 +3,78 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Opções de Pasta Dinâmica
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Última busca: { $time}
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Atualizar
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Criado por Mim
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Assinado para Mim
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Minhas Solicitações de Revisão
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Incluir Pull Requests de Rascunhos
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = Feed RSS
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Intervalo de busca
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 minuto
+           *[other] { $mins } minutos
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 hora
+           *[other] { $hours } horas
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Intervalo de Tempo
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] Última hora
+           *[other] Última { $hours } horas
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = Todo o tempo
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] Último dia
+           *[other] Último { $days } dias
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Limite do Itens
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = URL do Feed
+zen-live-folder-rss-prompt-feed-url = Por favor, insira a URL do feed
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } itens
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Falha ao atualizar
+    .tooltiptext = Falha ao atualizar. Tente novamente.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Não está conectado ao GitHub
+    .tooltiptext = Conectar-se novamente ao GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = Filtro não está definido
+    .tooltiptext = Nenhum filtro definido, nada será buscado.
+zen-live-folder-rss-invalid-url-title = Falha ao criar a Pasta Dinâmica
+zen-live-folder-rss-invalid-url-description = A URL do feed é inválida. Verifique o endereço e tente novamente
 zen-live-folder-github-option-repo-filter = 
-    .label = Repositories
+    .label = Repositórios
 zen-live-folder-github-option-repo = 
-    .label = { $repo }
+    .label = { $repo}
 zen-live-folder-github-pull-requests = 
     .label = Pull Requests
 zen-live-folder-github-issues = 
     .label = Issues
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+    .label = Esta lista é gerada com base em suas pull requests atualmente ativas.
+zen-live-folders-promotion-title = Pasta Dinâmica Criada!
+zen-live-folders-promotion-description = O conteúdo mais recente de seus feeds RSS ou pull requests do GitHub aparecerão aqui automaticamente.

@@ -9,8 +9,7 @@ zen-welcome-back = Back
 zen-welcome-skip = Skip for now
 
 zen-welcome-import-title = Bring your stuff along.
-zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
-zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-description = Pick a browser to import your bookmarks, history and passwords from and pick up right where you left off.
 zen-welcome-import-no = <strong>NO</strong>, start fresh.
 
 zen-welcome-default-browser-title = Make { -brand-short-name } your default?
@@ -23,6 +22,11 @@ zen-welcome-default-search-description = Choose your default search engine. You 
 
 zen-welcome-essentials-title = Choose the apps you use most.
 zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+
+zen-welcome-block-ads-title = Block ads and trackers?
+zen-welcome-block-ads-description = { -brand-short-name } can install uBlock Origin for you, so pages load cleaner and faster. You can remove it any time.
+zen-welcome-block-ads-yes = <strong>YES</strong>, block ads for me.
+zen-welcome-block-ads-no = <strong>NO</strong>, show me everything.
 
 zen-welcome-workspace-colors-title = Your space, your colors.
 zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.

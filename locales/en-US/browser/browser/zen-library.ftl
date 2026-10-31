@@ -189,5 +189,7 @@ library-boosts-search-placeholder =
 library-boosts-empty = No boosts yet
 library-boosts-toggle =
     .aria-label = Enable boost
+library-boosts-delete-button =
+    .title = Delete boost
 library-boosts-menu-edit =
     .label = Edit Boost

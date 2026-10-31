@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
-index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002f49e2bd3 100644
+index 9bf6ad33a0f777638ee5929526978cb801d245ef..e2a0da2783808441805fb31521f75474626d6058 100644
 --- a/browser/components/urlbar/content/UrlbarInputBase.mjs
 +++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
 @@ -118,6 +118,12 @@ if (lazy) {
@@ -189,17 +189,92 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
    }
  
    /**
-@@ -1430,6 +1508,9 @@ ${
-       where,
-       query: searchString,
+@@ -1390,8 +1468,8 @@ ${
+   /**
+-   * Records the engagement and a search against an engine, adds it to form
+-   * history, and opens its SERP through the parent controller, which builds the
+-   * submission URL and annotates the load as a search visit. Shared by the
+-   * one-off and search-mode Enter paths, which return once it's done. The engine
++   * Records engagement and opens an engine page through the parent controller.
++   * Search submissions also record a search, add form history, and annotate the
++   * load as a search visit. Shared by the one-off and search-mode Enter paths.
++   * The engine
+    * only needs to carry an id and name -- the parent resolves the full engine
+    * from the id -- so this stays content-safe for a message-path `<moz-urlbar>`.
+    *
+@@ -1405,12 +1483,21 @@ ${
+    * @param {string} details.typedValue The value the engagement records.
+    * @param {?UrlbarResult} details.result The result Enter acted on, if any.
+    * @param {boolean} [details.inBackground] Whether to open in a background tab.
++   * @param {boolean} [details.openHomepage] Whether to open the engine homepage.
+    */
+   #openEngineSearch(
+     engine,
+     searchString,
+     where,
+-    { event, element, selType, typedValue, result, inBackground }
++    {
++      event,
++      element,
++      selType,
++      typedValue,
++      result,
++      inBackground,
++      openHomepage = false,
++    }
+   ) {
+     this.controller.engagementEvent.record(event, {
+       element,
+@@ -1424,12 +1511,26 @@ ${
+       searchSource: this.getSearchSource(event),
+       windowMode: this.windowMode,
      });
+-    this._recordSearch({
+-      engine,
+-      event,
+-      where,
+-      query: searchString,
+-    });
++    if (!openHomepage) {
++      this._recordSearch({
++        engine,
++        event,
++        where,
++        query: searchString,
++      });
++    }
 +    if (where != "current" && this.sapName != "searchbar") {
 +      this.handleRevert();
++    }
++    if (openHomepage) {
++      this.parentController.openSearchForm(
++        engine.id,
++        where,
++        inBackground,
++        this.#selectedBrowserId
++      );
++      return;
 +    }
      this.parentController.openSERP(
        engine.id,
        searchString,
-@@ -1914,7 +1995,11 @@ ${
+@@ -1549,7 +1650,14 @@ ${
+         searchModeEngine,
+         typedValue,
+         this.controller.whereToOpen(event),
+-        { event, element, selType, typedValue, result }
++        {
++          event,
++          element,
++          selType,
++          typedValue,
++          result,
++          openHomepage: !typedValue.trim(),
++        }
+       );
+       return;
+     }
+@@ -1914,7 +2022,11 @@ ${
      openParams.avoidBrowserFocus = keepViewOpen;
  
      if (!this.#providesSearchMode(result) && !keepViewOpen) {
@@ -212,7 +287,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      }
  
      if (isCanonized) {
-@@ -3177,20 +3262,131 @@ ${
+@@ -3177,20 +3289,131 @@ ${
      return state;
    }
  
@@ -348,7 +423,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
    }
  
    /**
-@@ -3199,7 +3395,9 @@ ${
+@@ -3199,7 +3422,9 @@ ${
     * sheet the background paints is bigger than the input.
     */
    updatePopover() {
@@ -359,7 +434,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      if (popoverOpen) {
        this.#openPopover();
      } else {
-@@ -3234,7 +3432,7 @@ ${
+@@ -3234,7 +3459,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -368,7 +443,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3467,6 +3665,91 @@ ${
+@@ -3467,6 +3692,91 @@ ${
      this.view.close();
    }
  
@@ -460,7 +535,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
    /**
     * Sets the input field value.
     *
-@@ -3808,6 +4091,52 @@ ${
+@@ -3808,6 +4118,52 @@ ${
      );
    }
  
@@ -513,7 +588,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
    _updateUrlTooltip() {
      if (this.focused || !this._overflowing) {
        this.inputField.removeAttribute("title");
-@@ -3918,6 +4247,7 @@ ${
+@@ -3918,6 +4274,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -521,7 +596,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -4016,9 +4346,10 @@ ${
+@@ -4016,9 +4373,10 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -535,7 +610,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
      return UrlbarContentUtils.isTextDirectionRTL(trimmedValue, window) ||
-@@ -4213,6 +4544,11 @@ ${
+@@ -4213,6 +4571,11 @@ ${
      keepViewOpen = false,
      browserId = null,
    }) {
@@ -547,7 +622,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      let keyDownEnterDeferred;
      if (
        this._keyDownEnterDeferred &&
-@@ -4547,6 +4883,7 @@ ${
+@@ -4547,6 +4910,7 @@ ${
            this.setResultForCurrentValue(null);
            this.handleCommand();
            this.parentController.clearLastQueryContextCache();
@@ -555,7 +630,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
  
            this._suppressStartQuery = false;
          });
-@@ -4558,7 +4895,6 @@ ${
+@@ -4558,7 +4922,6 @@ ${
          // Close the results pane, because paste and go doesn't want a result
          // selection. This has to happen before the menu opens: hiding the
          // popover once it's open keeps it from showing (bug 2037468).
@@ -563,7 +638,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
  
          // The edit context menu is shared with other inputs in chrome, and
          // only the items we add here conflict, so mark it for this opening
-@@ -4852,7 +5188,11 @@ ${
+@@ -4852,7 +5215,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -576,7 +651,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5166,6 +5506,7 @@ ${
+@@ -5166,6 +5533,7 @@ ${
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -584,7 +659,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5216,6 +5557,12 @@ ${
+@@ -5216,6 +5584,12 @@ ${
      }
  
      logger().debug("Blur Event");
@@ -597,7 +672,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      // We cannot count every blur events after a missed engagement as abandoment
      // because the user may have clicked on some view element that executes
      // a command causing a focus change. For example opening preferences from
-@@ -5270,6 +5617,7 @@ ${
+@@ -5270,6 +5644,7 @@ ${
      if (!UrlbarPrefs.get("ui.popup.disable_autohide")) {
        this.view.close();
      }
@@ -605,7 +680,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
  
      // We may have hidden popup notifications, show them again if necessary.
      if (
-@@ -5295,6 +5643,11 @@ ${
+@@ -5295,6 +5670,11 @@ ${
    }
  
    _on_click(event) {
@@ -617,7 +692,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5355,6 +5708,7 @@ ${
+@@ -5355,6 +5735,7 @@ ${
      if (!this._hideFocus) {
        this.toggleAttribute("focused", true);
      }
@@ -625,7 +700,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
  
      // If the value was trimmed, check whether we should untrim it.
      // This is necessary when a protocol was typed, but the whole url has
-@@ -5389,10 +5743,11 @@ ${
+@@ -5389,10 +5770,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -638,7 +713,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5436,9 +5791,16 @@ ${
+@@ -5436,9 +5818,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -656,7 +731,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
          if (
            event.target != this.inputField &&
            event.target != this._inputContainer &&
-@@ -5449,6 +5811,10 @@ ${
+@@ -5449,6 +5838,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -667,7 +742,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5484,7 +5850,7 @@ ${
+@@ -5484,7 +5877,7 @@ ${
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -676,7 +751,7 @@ index 9bf6ad33a0f777638ee5929526978cb801d245ef..4a168047b1b085ee1ffeffe6e2374002
            break;
          }
  
-@@ -5778,7 +6144,7 @@ ${
+@@ -5778,7 +6171,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

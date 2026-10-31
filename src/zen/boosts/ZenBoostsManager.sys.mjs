@@ -5,11 +5,6 @@
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
 import { nsZenBoostStyles } from "resource:///modules/zen/boosts/ZenBoostStyles.sys.mjs";
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
-});
 
 class nsZenBoostsManager {
   registeredDomains = new Map(); // <domain, { boosts: <id, boostEntry>, activeBoostID: null }>
@@ -751,26 +746,9 @@ class nsZenBoostsManager {
    * @returns {Promise<void>} Resolves once the dialog closes
    */
   shareBoost(parentWindow, boost, browser = null) {
-    if (!this.canShareFrom(parentWindow)) {
-      return Promise.resolve();
-    }
     return parentWindow.gDialogBox.open(
       "chrome://browser/content/zen-components/windows/zen-boost-share.xhtml",
       { parentWindow, browser, boost }
-    );
-  }
-
-  /**
-   * Sharing uploads a screenshot of the page, so it is off in private
-   * windows, like the other kinds of sharing.
-   *
-   * @param {Window} win - A browser window
-   * @returns {boolean}
-   */
-  canShareFrom(win) {
-    return !(
-      win.gZenWorkspaces?.privateWindowOrDisabled ||
-      lazy.PrivateBrowsingUtils.isWindowPrivate(win)
     );
   }
 

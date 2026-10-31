@@ -6,6 +6,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   ZenShareClient: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
 });
 
@@ -111,6 +112,10 @@ export class nsZenBoostShareDialog {
     this.initSignature();
     this.updatePaneButtonStyle();
     this.win.requestAnimationFrame(() => this.initCapturedSite());
+
+    if (lazy.PrivateBrowsingUtils.isWindowPrivate(this.openerWindow)) {
+      this.setScreenshotHidden(true);
+    }
   }
 
   observe(subject, topic) {

@@ -5,58 +5,58 @@
 # The engine this build is based on, not meant to be translated.
 -zen-engine-name = Firefox
 zen-about-dialog-title = 
-    .title = About { -brand-full-name }
-zen-about-app-name = { -brand-full-name }
+    .title = Apie „{ -brand-full-name }“
+zen-about-app-name = „{ -brand-full-name }“
 # Variables:
 #   $version (String): Zen version, e.g. 1.24b
 #   $arch (String): CPU architecture, e.g. 64-bit or aarch64
-zen-about-version = Version { $version } ({ $arch })
+zen-about-version = Versija { $version } ({ $arch }).
 # Variables:
 #   $version (String): Zen version, e.g. 1.25t
 #   $isodate (String): build date in ISO format, e.g. 2026-10-29
 #   $arch (String): CPU architecture, e.g. 64-bit or aarch64
-zen-about-version-twilight = Version { $version } ({ $isodate }) ({ $arch })
+zen-about-version-twilight = Versija { $version } ({ $isodate }) ({ $arch }).
 zen-about-version-button = 
-    .title = Copy build information
-zen-about-copied = Copied
+    .title = Kopijuoti darinio informaciją
+zen-about-copied = Nukopijuota.
 # Variables:
 #   $firefoxVersion (String): engine version this build is based on, e.g. 159.0
-zen-about-firefox-version = Based on { -zen-engine-name } { $firefoxVersion }
+zen-about-firefox-version = Remiantis „{ -zen-engine-name }“ { $firefoxVersion }.
 
 ## Update status
 
-zen-about-update-check = Check for updates
-zen-about-update-check-again = Check again
-zen-about-update-try-again = Try again
-zen-about-update-checking = Checking for updates…
-zen-about-update-up-to-date = { -brand-short-name } is up to date
+zen-about-update-check = Tikrinti dėl atnaujinimų
+zen-about-update-check-again = Tikrinti dar kartą
+zen-about-update-try-again = Bandyti dar kartą
+zen-about-update-checking = Tikrinama dėl atnaujinimų…
+zen-about-update-up-to-date = „{ -brand-short-name }“ yra atnaujinta.
 # Variables:
 #   $version (String): the version that can be downloaded, e.g. 1.25b
-zen-about-update-available = { -brand-short-name } { $version } is available
-zen-about-update-download = Download and install
+zen-about-update-available = „{ -brand-short-name }“ { $version } pasiekiama.
+zen-about-update-download = Atsisiųsti ir įdiegti
 # Variables:
 #   $transfer (String): download progress, e.g. 12.3 of 90.1 MB
-zen-about-update-downloading = Downloading update — { $transfer }
-zen-about-update-applying = Applying update…
-zen-about-update-ready = The update is ready to install
-zen-about-update-restart = Restart to update
-zen-about-update-restarting = Restarting…
-zen-about-update-download-failed = The update could not be downloaded
-zen-about-update-checking-failed = Could not check for updates
-zen-about-update-internal-error = Updates are unavailable because of an internal error
-zen-about-update-download-manually = Download manually
-zen-about-update-manual = A new version is available on the download page
-zen-about-update-policy-disabled = Updates are disabled by your organization
-zen-about-update-other-instance = { -brand-short-name } is being updated by another instance
-zen-about-update-unsupported = This system can no longer receive updates
-zen-about-update-learn-more = Learn more
+zen-about-update-downloading = Atsisiunčiamas atnaujinimas – { $transfer }
+zen-about-update-applying = Taikomas atnaujinimas…
+zen-about-update-ready = Atnaujinimas parengtas įdiegti.
+zen-about-update-restart = Paleiskite iš naujo, kad atnaujintumėte.
+zen-about-update-restarting = Paleidžiama iš naujo…
+zen-about-update-download-failed = Nepavyko atsisiųsti atnaujinimo.
+zen-about-update-checking-failed = Nepavyko patikrinti atnaujinimų.
+zen-about-update-internal-error = Atnaujinimai nepasiekiami dėl vidinės klaidos.
+zen-about-update-download-manually = Atsisiųsti rankiniu būdu
+zen-about-update-manual = Nauja versija pasiekiama atsisiuntimo puslapyje.
+zen-about-update-policy-disabled = Jūsų organizacija išjungė atnaujinimus.
+zen-about-update-other-instance = „{ -brand-short-name }“ šiuo metu atnaujinamas kito serverio.
+zen-about-update-unsupported = Ši sistema nebegali gauti atnaujinimų
+zen-about-update-learn-more = Sužinoti daugiau
 
 ## Links
 
-zen-about-release-notes = What’s new
-zen-about-donate = Donate
-zen-about-report-issue = Report an issue
-zen-about-community = { -brand-short-name } is free and open source, built on { -zen-engine-name } by a <a data-l10n-name="github-link">community of contributors</a>.
-zen-about-license = License
-zen-about-rights = Your rights
-zen-about-privacy = Privacy
+zen-about-release-notes = Kas naujo
+zen-about-donate = Aukoti
+zen-about-report-issue = Pranešti apie problemą
+zen-about-community = „{ -brand-short-name }“ yra nemokama ir atvirojo kodo, sukurta „{ -zen-engine-name }“ pagrindu <a data-l10n-name="github-link">talkininkų bendruomenės</a>.
+zen-about-license = Licencija
+zen-about-rights = Jūsų teisės
+zen-about-privacy = Privatumas

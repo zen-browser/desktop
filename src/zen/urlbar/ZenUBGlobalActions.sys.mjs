@@ -27,6 +27,10 @@ ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
 ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore:
     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
+  SharingUtils:
+    "moz-src:///browser/components/sharing/SharingUtils.sys.mjs",
+  Sanitizer: "resource:///modules/Sanitizer.sys.mjs",
+  SiteDataManager: "resource:///modules/SiteDataManager.sys.mjs",
 });
 
 function isNotEmptyTab(window) {
@@ -337,10 +341,275 @@ const globalActionsTemplate = [
       return isNotEmptyTab(window);
     },
   },
+  {
+    l10nId: "zen-action-share-tab",
+    command: window => {
+      const currentUrl = window.gBrowser.currentURI;
+      if (Services.zen?.canShare?.()) {
+        Services.zen.share(
+          currentUrl,
+          "",
+          "",
+          Math.round(window.innerWidth / 2),
+          Math.round(window.innerHeight / 2),
+          0,
+          0
+        );
+      } else {
+        window.gZenCommonActions.copyCurrentURLToClipboard();
+      }
+    },
+    icon: "chrome://browser/skin/zen-icons/share.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-page-qr-code",
+    command: window => {
+      lazy.SharingUtils.showQRCodePanel(
+        window,
+        window.gBrowser.selectedBrowser,
+        window.gBrowser.currentURI.spec
+      );
+    },
+    icon: "chrome://browser/skin/qrcode.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window) && !!window.gBrowser.currentURI?.spec;
+    },
+  },
+  {
+    l10nId: "zen-action-toggle-reader-mode",
+    command: "View:ReaderView",
+    icon: "chrome://browser/skin/zen-icons/reader-mode.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-copy-current-url-markdown",
+    command: "cmd_zenCopyCurrentURLMarkdown",
+    icon: "chrome://browser/skin/zen-icons/link.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-close-unpinned-tabs",
+    command: "cmd_zenCloseUnpinnedTabs",
+    icon: "chrome://browser/skin/zen-icons/close.svg",
+    isAvailable: window => {
+      return window.gBrowser.tabs.some(
+        tab => !tab.pinned && !tab.hasAttribute("zen-empty-tab")
+      );
+    },
+  },
+  {
+    l10nId: "zen-action-unload-workspace",
+    command: "cmd_zenUnloadWorkspace",
+    icon: "chrome://browser/skin/zen-icons/selectable/bed.svg",
+    isAvailable: window => {
+      return !window.gZenWorkspaces?.privateWindowOrDisabled;
+    },
+  },
+  {
+    l10nId: "zen-action-toggle-split-view-direction",
+    command: window => {
+      const splitter = window.gZenViewSplitter;
+      if (!splitter?.splitViewActive || splitter.currentView < 0) {
+        return;
+      }
+      const group = splitter._data[splitter.currentView];
+      const nextGridType = group.gridType === "hsep" ? "vsep" : "hsep";
+      splitter.splitTabs(group.tabs, nextGridType);
+    },
+    icon: "chrome://browser/skin/zen-icons/split.svg",
+    isAvailable: window => {
+      return !!window.gZenViewSplitter?.splitViewActive;
+    },
+  },
+  {
+    l10nId: "zen-action-manage-spaces",
+    command: "cmd_zenManageWorkspaces",
+    icon: "chrome://browser/skin/zen-icons/manage.svg",
+    isAvailable: () => {
+      return lazy.libraryEnabled;
+    },
+  },
+  {
+    l10nId: "zen-action-replace-pinned-url-with-current",
+    command: window =>
+      window.gZenPinnedTabManager.replacePinnedUrlWithCurrent(
+        window.gBrowser.selectedTab
+      ),
+    icon: "chrome://browser/skin/zen-icons/pin.svg",
+    isAvailable: window => {
+      const tab = window.gBrowser.selectedTab;
+      return tab?.pinned && tab.hasAttribute("zen-pinned-changed");
+    },
+  },
+  {
+    l10nId: "zen-action-mute-tab",
+    command: window => window.gBrowser.selectedTab.toggleMuteAudio(),
+    icon: "chrome://browser/skin/zen-icons/media-mute.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window) && !window.gBrowser.selectedTab.muted;
+    },
+  },
+  {
+    l10nId: "zen-action-unmute-tab",
+    command: window => window.gBrowser.selectedTab.toggleMuteAudio(),
+    icon: "chrome://browser/skin/zen-icons/media-unmute.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window) && window.gBrowser.selectedTab.muted;
+    },
+  },
+  {
+    l10nId: "zen-action-open-downloads",
+    command: "Tools:Downloads",
+    icon: "chrome://browser/skin/zen-icons/downloads.svg",
+  },
+  {
+    l10nId: "zen-action-open-history",
+    command: "Browser:ShowAllHistory",
+    icon: "chrome://browser/skin/zen-icons/history.svg",
+  },
+  {
+    l10nId: "zen-action-clear-history",
+    command: "Tools:Sanitize",
+    icon: "chrome://browser/skin/zen-icons/trash.svg",
+  },
+  {
+    l10nId: "zen-action-clear-browsing-data",
+    command: window => {
+      lazy.Sanitizer.showUI(window, "clearSiteData");
+    },
+    icon: "chrome://browser/skin/zen-icons/forget.svg",
+  },
+  {
+    l10nId: "zen-action-clear-current-site-data",
+    command: window => {
+      let host = "";
+      try {
+        host = window.gBrowser.currentURI?.host;
+      } catch {
+        return;
+      }
+      if (!host) {
+        return;
+      }
+      const baseDomain = lazy.SiteDataManager.getBaseDomainFromHost(host);
+      if (lazy.SiteDataManager.promptSiteDataRemoval(window, [baseDomain])) {
+        lazy.SiteDataManager.remove(baseDomain);
+      }
+    },
+    icon: "chrome://browser/skin/zen-icons/trash.svg",
+    isAvailable: window => {
+      if (!isNotEmptyTab(window)) {
+        return false;
+      }
+      try {
+        return !!window.gBrowser.currentURI?.host;
+      } catch {
+        return false;
+      }
+    },
+  },
+  {
+    l10nId: "zen-action-zoom-in",
+    command: "cmd_fullZoomEnlarge",
+    icon: "chrome://browser/skin/zen-icons/plus.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-zoom-out",
+    command: "cmd_fullZoomReduce",
+    icon: "chrome://browser/skin/zen-icons/zoom-out.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-zoom-reset",
+    command: "cmd_fullZoomReset",
+    icon: "chrome://browser/skin/zen-icons/arrow-rotate-anticlockwise.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-open-inspector",
+    command: window => {
+      const { require } = ChromeUtils.importESModule(
+        "resource://devtools/shared/loader/Loader.sys.mjs"
+      );
+      const { gDevToolsBrowser } = require(
+        "resource://devtools/client/framework/devtools-browser.js"
+      );
+      gDevToolsBrowser.selectToolCommand(window, "inspector");
+    },
+    icon: "chrome://browser/skin/zen-icons/developer.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-open-web-console",
+    command: window => {
+      const { require } = ChromeUtils.importESModule(
+        "resource://devtools/shared/loader/Loader.sys.mjs"
+      );
+      const { gDevToolsBrowser } = require(
+        "resource://devtools/client/framework/devtools-browser.js"
+      );
+      gDevToolsBrowser.selectToolCommand(window, "webconsole");
+    },
+    icon: "chrome://browser/skin/zen-icons/brackets-curly.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-quit-application",
+    command: "cmd_quitApplication",
+    icon: "chrome://browser/skin/zen-icons/close.svg",
+  },
 ];
 
+const FALLBACK_LABELS = {
+  "zen-action-share-tab": "Share Tab",
+  "zen-action-page-qr-code": "Generate Page QR Code",
+  "zen-action-toggle-reader-mode": "Toggle Reader Mode",
+  "zen-action-copy-current-url-markdown": "Copy Current URL as Markdown",
+  "zen-action-close-unpinned-tabs": "Close Unpinned Tabs",
+  "zen-action-unload-workspace": "Unload Workspace",
+  "zen-action-toggle-split-view-direction": "Toggle Split View Direction",
+  "zen-action-manage-spaces": "Manage Spaces",
+  "zen-action-replace-pinned-url-with-current":
+    "Replace Pinned Tab URL with Current",
+  "zen-action-mute-tab": "Mute Tab",
+  "zen-action-unmute-tab": "Unmute Tab",
+  "zen-action-open-downloads": "Open Downloads",
+  "zen-action-open-history": "Open History",
+  "zen-action-clear-history": "Clear Recent History",
+  "zen-action-clear-browsing-data": "Clear Cookies and Site Data",
+  "zen-action-clear-current-site-data": "Clear Data for This Site",
+  "zen-action-zoom-in": "Zoom In",
+  "zen-action-zoom-out": "Zoom Out",
+  "zen-action-zoom-reset": "Reset Zoom",
+  "zen-action-open-inspector": "Toggle Developer Tools / Inspector",
+  "zen-action-open-web-console": "Open Web Console",
+  "zen-action-quit-application": "Quit Browser",
+};
+
 export function formatValueSync(l10nId) {
-  return lazy.l10n.formatValueSync(l10nId);
+  try {
+    return lazy.l10n.formatValueSync(l10nId) || FALLBACK_LABELS[l10nId] || l10nId;
+  } catch {
+    return FALLBACK_LABELS[l10nId] || l10nId;
+  }
 }
 
 const labels = new Map();

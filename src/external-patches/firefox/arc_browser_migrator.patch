@@ -1,0 +1,1246 @@
+diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
+index 0f4b2915ad211349c424d1db2bd91c38f140782f..7485e7d537618ac17f1552197ef7fbd245950a1c 100644
+--- a/browser/app/profile/firefox.js
++++ b/browser/app/profile/firefox.js
+@@ -2974,6 +2974,7 @@ pref("browser.migrate.opera.enabled", true);
+ pref("browser.migrate.opera-gx.enabled", true);
+ pref("browser.migrate.safari.enabled", true);
+ pref("browser.migrate.vivaldi.enabled", true);
++pref("browser.migrate.arc.enabled", true);
+ 
+ pref("browser.migrate.content-modal.import-all.enabled", true);
+ 
+diff --git a/browser/components/migration/ArcMigrationUtils.sys.mjs b/browser/components/migration/ArcMigrationUtils.sys.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..bc21ad7167505b75946e04a6dcee0b2e4769f870
+--- /dev/null
++++ b/browser/components/migration/ArcMigrationUtils.sys.mjs
+@@ -0,0 +1,193 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++import { MigrationUtils } from "moz-src:///browser/components/migration/MigrationUtils.sys.mjs";
++
++const lazy = {};
++
++ChromeUtils.defineESModuleGetters(lazy, {
++  PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
++});
++
++export var ArcMigrationUtils = {
++  /**
++   * Converts the contents of Arc's StorableSidebar.json into bookmark trees
++   * that can be passed to PlacesUtils.bookmarks.insertTree: the profile's
++   * Favorites as bookmarks, followed by one folder per space. Only the pinned
++   * section of each space is converted; unpinned tabs are transient and Arc
++   * archives them automatically. Entries that are malformed or have URLs that
++   * cannot be bookmarked are skipped.
++   *
++   * @param {object} sidebarJSON
++   *   The parsed contents of StorableSidebar.json.
++   * @param {string} profileId
++   *   The Chromium profile directory name (e.g. "Default", "Profile 1") whose
++   *   Favorites and spaces should be returned.
++   * @returns {Promise<object[]>}
++   */
++  async convertSidebar(sidebarJSON, profileId) {
++    let asArray = value => (Array.isArray(value) ? value : []);
++    let asString = value => (typeof value === "string" ? value : "");
++
++    // Arc encodes ordered dictionaries as flat [key, value, key, value] arrays.
++    // The containers are keyed by window type; only the main "global" sidebar
++    // is imported, not "littleBrowser" windows.
++    let containers = asArray(sidebarJSON?.sidebar?.containers);
++    let globalIndex = containers.findIndex(
++      c => c && typeof c === "object" && "global" in c
++    );
++    let container = globalIndex === -1 ? null : containers[globalIndex + 1];
++    if (!Array.isArray(container?.spaces) || !Array.isArray(container?.items)) {
++      return [];
++    }
++
++    let toMap = list =>
++      new Map(
++        list
++          .filter(v => v && typeof v === "object" && typeof v.id === "string")
++          .map(v => [v.id, v])
++      );
++    let spaces = toMap(container.spaces);
++    let items = toMap(container.items);
++
++    let toBookmarkURL = value => {
++      let url = URL.parse(asString(value).trim());
++      if (
++        !url ||
++        !["http:", "https:", "ftp:", "file:"].includes(url.protocol)
++      ) {
++        return null;
++      }
++      return url.href;
++    };
++
++    let convertItems = (ids, visited) => {
++      let result = [];
++      for (let id of asArray(ids)) {
++        let item = items.get(id);
++        if (!item || visited.has(id)) {
++          continue;
++        }
++        visited.add(id);
++        let data = item.data && typeof item.data === "object" ? item.data : {};
++        if (data.tab) {
++          let url = toBookmarkURL(data.tab.savedURL);
++          if (url) {
++            result.push({
++              url,
++              title: asString(item.title) || asString(data.tab.savedTitle),
++            });
++          }
++        } else if (data.list) {
++          let children = convertItems(item.childrenIds, visited);
++          if (children.length) {
++            result.push({
++              type: lazy.PlacesUtils.bookmarks.TYPE_FOLDER,
++              title: asString(item.title),
++              children,
++            });
++          }
++        } else {
++          // Split views and other groupings: keep their tabs, drop the grouping.
++          result.push(...convertItems(item.childrenIds, visited));
++        }
++      }
++      return result;
++    };
++
++    let isProfile = profile =>
++      (profile?.default
++        ? "Default"
++        : (profile?.custom?._0?.directoryBasename ?? "Default")) === profileId;
++
++    let result = [];
++    let topApps = asArray(container.topAppsContainerIDs);
++    for (let i = 0; i + 1 < topApps.length; i += 2) {
++      if (isProfile(topApps[i])) {
++        result.push(
++          ...convertItems(items.get(topApps[i + 1])?.childrenIds, new Set())
++        );
++      }
++    }
++
++    let spaceNumber = 0;
++    for (let space of spaces.values()) {
++      if (!isProfile(space.profile)) {
++        continue;
++      }
++      spaceNumber++;
++
++      let containerIDs = asArray(space.containerIDs);
++      let pinnedIndex = containerIDs.indexOf("pinned");
++      let pinnedRoot =
++        pinnedIndex === -1 ? null : items.get(containerIDs[pinnedIndex + 1]);
++      if (!pinnedRoot) {
++        continue;
++      }
++
++      let children = convertItems(pinnedRoot.childrenIds, new Set());
++      if (children.length) {
++        result.push({
++          type: lazy.PlacesUtils.bookmarks.TYPE_FOLDER,
++          title:
++            asString(space.title) ||
++            (await MigrationUtils.getLocalizedString(
++              "migration-imported-arc-untitled-space",
++              { number: spaceNumber }
++            )),
++          children,
++        });
++      }
++    }
++    return result;
++  },
++
++  /**
++   * Returns a bookmarks migration resource that imports a profile's Favorites
++   * and spaces from Arc's StorableSidebar.json onto the bookmarks toolbar.
++   *
++   * @param {string} sidebarPath
++   *   The path to StorableSidebar.json.
++   * @param {string} profileId
++   *   The Chromium profile directory name (e.g. "Default", "Profile 1").
++   * @returns {Promise<object|null>}
++   *   The resource, or null if the file is missing, unreadable or has nothing
++   *   to import for this profile.
++   */
++  async getSidebarResource(sidebarPath, profileId) {
++    let bookmarks;
++    try {
++      let sidebarJSON = await IOUtils.readJSON(sidebarPath);
++      bookmarks = await this.convertSidebar(sidebarJSON, profileId);
++    } catch (ex) {
++      if (!DOMException.isInstance(ex) || ex.name !== "NotFoundError") {
++        console.error("Could not read Arc spaces from", sidebarPath, ex);
++      }
++      return null;
++    }
++
++    if (!bookmarks.length) {
++      return null;
++    }
++
++    return {
++      type: MigrationUtils.resourceTypes.BOOKMARKS,
++
++      async migrate(aCallback) {
++        let success = false;
++        try {
++          await MigrationUtils.insertManyBookmarksWrapper(
++            bookmarks,
++            lazy.PlacesUtils.bookmarks.toolbarGuid,
++            { fixupOrSkipInvalidEntries: true }
++          );
++          success = true;
++        } catch (ex) {
++          console.error(ex);
++        }
++        aCallback(success);
++      },
++    };
++  },
++};
+diff --git a/browser/components/migration/ChromeMigrationUtils.sys.mjs b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+index 8e9e34c92c85d655216ccf8cb8dfdf9599329e69..b4f6d90514853e1de8d39fbccde5ffe757d597a4 100644
+--- a/browser/components/migration/ChromeMigrationUtils.sys.mjs
++++ b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+@@ -272,6 +272,19 @@ export var ChromeMigrationUtils = {
+ 
+     const SUB_DIRECTORIES = {
+       win: {
++        Arc: [
++          [
++            "LocalAppData",
++            "Packages",
++            // The package family name suffix is a hash of the publisher, so
++            // match on the package name instead of hardcoding it.
++            { prefix: "TheBrowserCompany.Arc_" },
++            "LocalCache",
++            "Local",
++            "Arc",
++            "User Data",
++          ],
++        ],
+         Brave: [
+           ["LocalAppData", "BraveSoftware", "Brave-Browser", "User Data"],
+         ],
+@@ -287,6 +300,7 @@ export var ChromeMigrationUtils = {
+         Vivaldi: [["LocalAppData", "Vivaldi", "User Data"]],
+       },
+       macosx: {
++        Arc: [["ULibDir", "Application Support", "Arc", "User Data"]],
+         Brave: [
+           ["ULibDir", "Application Support", "BraveSoftware", "Brave-Browser"],
+         ],
+@@ -346,8 +360,11 @@ export var ChromeMigrationUtils = {
+           targetPath = Services.dirsvc.get(rootDir, Ci.nsIFile).path;
+         }
+ 
+-        targetPath = PathUtils.join(targetPath, ...subfolders.slice(1));
+-        if (await IOUtils.exists(targetPath)) {
++        targetPath = await this._resolveSubfolders(
++          targetPath,
++          subfolders.slice(1)
++        );
++        if (targetPath) {
+           return targetPath;
+         }
+       } catch (ex) {
+@@ -358,6 +375,46 @@ export var ChromeMigrationUtils = {
+     return null;
+   },
+ 
++  /**
++   * Joins path components onto a base path and returns the result if it
++   * exists, or null otherwise.
++   *
++   * @param {string} basePath
++   * @param {Array<string|{prefix: string}>} components
++   *   Path components. A `{ prefix }` component matches any child directory
++   *   whose name starts with that prefix; each match is tried in turn.
++   * @returns {Promise<string|null>}
++   */
++  async _resolveSubfolders(basePath, components) {
++    let index = components.findIndex(c => typeof c !== "string");
++    if (index === -1) {
++      let path = PathUtils.join(basePath, ...components);
++      return (await IOUtils.exists(path)) ? path : null;
++    }
++
++    let parent = PathUtils.join(basePath, ...components.slice(0, index));
++    let { prefix } = components[index];
++    let children;
++    try {
++      children = await IOUtils.getChildren(parent);
++    } catch {
++      return null;
++    }
++    for (let child of children.sort()) {
++      if (!PathUtils.filename(child).startsWith(prefix)) {
++        continue;
++      }
++      let resolved = await this._resolveSubfolders(
++        child,
++        components.slice(index + 1)
++      );
++      if (resolved) {
++        return resolved;
++      }
++    }
++    return null;
++  },
++
+   /**
+    * Get the directory objects sorted by version number.
+    *
+diff --git a/browser/components/migration/ChromeProfileMigrator.sys.mjs b/browser/components/migration/ChromeProfileMigrator.sys.mjs
+index e88b69dc79989828d51f693923f1c044c889a5d3..9ef7a91712be47a333467b35bdb10afcb820f0c4 100644
+--- a/browser/components/migration/ChromeProfileMigrator.sys.mjs
++++ b/browser/components/migration/ChromeProfileMigrator.sys.mjs
+@@ -15,6 +15,8 @@ import { MigratorBase } from "moz-src:///browser/components/migration/MigratorBa
+ const lazy = {};
+ 
+ ChromeUtils.defineESModuleGetters(lazy, {
++  ArcMigrationUtils:
++    "moz-src:///browser/components/migration/ArcMigrationUtils.sys.mjs",
+   ChromeMigrationUtils:
+     "moz-src:///browser/components/migration/ChromeMigrationUtils.sys.mjs",
+   FormHistory: "resource://gre/modules/FormHistory.sys.mjs",
+@@ -152,14 +154,45 @@ export class ChromeProfileMigrator extends MigratorBase {
+         return false;
+       }
+ 
+-      let file = fp.file;
+-      if (file && file.path != originalDataPath) {
+-        this.#dataPathRemappings.set(originalDataPath, file.path);
++      let selectedDataPath =
++        fp.file && this._getDataPathFromPermissionFolder(fp.file.path);
++      if (selectedDataPath && selectedDataPath !== originalDataPath) {
++        this.#dataPathRemappings.set(originalDataPath, selectedDataPath);
+       }
+     }
+     return true;
+   }
+ 
++  /**
++   * Returns the folder that the user is asked to select in getPermissions.
++   * Override this if the browser keeps data outside of its user data path.
++   *
++   * @param {string} dataPath
++   *   The user data path containing Local State.
++   * @returns {string}
++   */
++  _getPermissionFolder(dataPath) {
++    return dataPath;
++  }
++
++  /**
++   * Returns the user data path containing Local State, given the folder the
++   * user selected in getPermissions. If this differs from the default user
++   * data path, the migrator reads from it instead. Override this whenever
++   * _getPermissionFolder is overridden, so that the selected folder leads back
++   * to the user data path. For example, if _getPermissionFolder returns the
++   * parent of the user data path, this should append the user data folder name
++   * to the selected folder.
++   *
++   * @param {string} folder
++   *   The folder selected by the user in getPermissions.
++   * @returns {string}
++   *   The user data path inside the selected folder.
++   */
++  _getDataPathFromPermissionFolder(folder) {
++    return folder;
++  }
++
+   async canGetPermissions() {
+     if (
+       !Services.prefs.getBoolPref(
+@@ -1296,3 +1329,55 @@ export class VivaldiProfileMigrator extends ChromeProfileMigrator {
+   _keychainServiceName = "Vivaldi Safe Storage";
+   _keychainAccountName = "Vivaldi";
+ }
++
++/**
++ * Arc migrator. Arc is Chromium-based, but it keeps spaces, pinned tabs and
++ * folders in its own StorableSidebar.json file next to the Chromium user data
++ * directory. Arc has no regular bookmarks, so Favorites are imported as
++ * bookmarks and spaces as bookmark folders, instead of reading the Chromium
++ * Bookmarks file.
++ */
++export class ArcProfileMigrator extends ChromeProfileMigrator {
++  static get key() {
++    return "arc";
++  }
++
++  static get displayNameL10nID() {
++    return "migration-wizard-migrator-display-name-arc";
++  }
++
++  static get brandImage() {
++    return "chrome://browser/content/migration/brands/arc.png";
++  }
++
++  _chromeUserDataPathSuffix = "Arc";
++  _keychainServiceName = "Arc Safe Storage";
++  _keychainAccountName = "Arc";
++
++  _getPermissionFolder(dataPath) {
++    return PathUtils.parent(dataPath);
++  }
++
++  _getDataPathFromPermissionFolder(folder) {
++    return PathUtils.join(folder, "User Data");
++  }
++
++  async getResources(aProfile) {
++    let resources = (await super.getResources(aProfile)).filter(
++      r => r.type !== MigrationUtils.resourceTypes.BOOKMARKS
++    );
++    let userDataPath = await this._getChromeUserDataPathIfExists();
++    if (!userDataPath || !aProfile || !(await this.hasPermissions())) {
++      return resources;
++    }
++
++    let sidebarResource = await lazy.ArcMigrationUtils.getSidebarResource(
++      PathUtils.join(PathUtils.parent(userDataPath), "StorableSidebar.json"),
++      aProfile.id
++    );
++    if (sidebarResource) {
++      resources.push(sidebarResource);
++    }
++    return resources;
++  }
++}
+diff --git a/browser/components/migration/MigrationUtils.sys.mjs b/browser/components/migration/MigrationUtils.sys.mjs
+index 1289865805d2d6cbb7813da5fabf000284d7ac4c..96293a109d35de3ef2a65002665fd4d9d1565ab9 100644
+--- a/browser/components/migration/MigrationUtils.sys.mjs
++++ b/browser/components/migration/MigrationUtils.sys.mjs
+@@ -72,6 +72,11 @@ const MIGRATOR_MODULES = Object.freeze({
+ 
+   // The following migrators are all variants of the ChromeProfileMigrator
+ 
++  ArcProfileMigrator: {
++    moduleURI:
++      "resource:///modules/zen/ZenProfileMigrators.sys.mjs",
++    platforms: ["macosx", "win"],
++  },
+   BraveProfileMigrator: {
+     moduleURI:
+       "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs",
+@@ -830,11 +835,14 @@ class MigrationUtils {
+     });
+   }
+ 
+-  insertManyBookmarksWrapper(bookmarks, parent) {
+-    let insertionPromise = lazy.PlacesUtils.bookmarks.insertTree({
+-      guid: parent,
+-      children: bookmarks,
+-    });
++  insertManyBookmarksWrapper(bookmarks, parent, options) {
++    let insertionPromise = lazy.PlacesUtils.bookmarks.insertTree(
++      {
++        guid: parent,
++        children: bookmarks,
++      },
++      options
++    );
+     return insertionPromise.then(
+       insertedItems => {
+         this._importQuantities.bookmarks += insertedItems.length;
+@@ -1197,6 +1205,7 @@ class MigrationUtils {
+     opera: 12,
+     "opera-gx": 14,
+     vivaldi: 13,
++    arc: 15,
+   });
+ 
+   getSourceIdForTelemetry(sourceName) {
+diff --git a/browser/components/migration/content/brands/arc.png b/browser/components/migration/content/brands/arc.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..bc31c09d0f98328bf681009362312150b3cc57d6
+GIT binary patch
+literal 10474
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/browser/components/migration/jar.mn b/browser/components/migration/jar.mn
+index bf1d7516edf24ac5354e65eec616aa70adc04053..553daeb0b4c066a8453864539817403f5bc177e9 100644
+--- a/browser/components/migration/jar.mn
++++ b/browser/components/migration/jar.mn
+@@ -16,6 +16,7 @@ browser.jar:
+    content/browser/migration/brands/canary.png                (content/brands/canary.png)
+    content/browser/migration/brands/edge.png                  (content/brands/edge.png)
+    content/browser/migration/brands/edgebeta.png              (content/brands/edgebeta.png)
++   content/browser/migration/brands/arc.png                   (content/brands/arc.png)
+ #endif
+ 
+    content/browser/migration/brands/brave.png                 (content/brands/brave.png)
+diff --git a/browser/components/migration/metrics.yaml b/browser/components/migration/metrics.yaml
+index 82675cbf4bdbe105b9ffe35f1c8444a57d6a9157..cfa76d4a4122a1be9e4a7f5eb470c67c2e54a65e 100644
+--- a/browser/components/migration/metrics.yaml
++++ b/browser/components/migration/metrics.yaml
+@@ -392,8 +392,8 @@ browser.migration:
+       This metric was generated to correspond to the Legacy Telemetry enumerated
+       histogram FX_MIGRATION_SOURCE_BROWSER.
+     range_min: 0
+-    range_max: 15
+-    bucket_count: 16
++    range_max: 16
++    bucket_count: 17
+     histogram_type: linear
+     bugs:
+       - https://bugzilla.mozilla.org/show_bug.cgi?id=731025
+diff --git a/browser/components/migration/moz.build b/browser/components/migration/moz.build
+index 37b89e1df6c93773dda170629b57b43daaf02c14..9da6c1a40c4cad3cc0df2aa7a02c93ddee697d92 100644
+--- a/browser/components/migration/moz.build
++++ b/browser/components/migration/moz.build
+@@ -21,6 +21,7 @@ XPIDL_SOURCES += [
+ XPIDL_MODULE = "migration"
+ 
+ MOZ_SRC_FILES += [
++    "ArcMigrationUtils.sys.mjs",
+     "ChromeMigrationUtils.sys.mjs",
+     "ChromeProfileMigrator.sys.mjs",
+     "FileMigrators.sys.mjs",
+diff --git a/browser/components/migration/tests/unit/test_Arc_spaces.js b/browser/components/migration/tests/unit/test_Arc_spaces.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..e09428e7526c62cc4b2618ea6450babe1ab007e9
+--- /dev/null
++++ b/browser/components/migration/tests/unit/test_Arc_spaces.js
+@@ -0,0 +1,468 @@
++"use strict";
++
++const { ArcMigrationUtils } = ChromeUtils.importESModule(
++  "moz-src:///browser/components/migration/ArcMigrationUtils.sys.mjs"
++);
++
++const { ArcProfileMigrator, ChromeProfileMigrator } =
++  ChromeUtils.importESModule(
++    "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs"
++  );
++
++const { ChromeMigrationUtils } = ChromeUtils.importESModule(
++  "moz-src:///browser/components/migration/ChromeMigrationUtils.sys.mjs"
++);
++
++const { MigratorBase } = ChromeUtils.importESModule(
++  "moz-src:///browser/components/migration/MigratorBase.sys.mjs"
++);
++
++const { sinon } = ChromeUtils.importESModule(
++  "resource://testing-common/Sinon.sys.mjs"
++);
++
++const { MockFilePicker } = ChromeUtils.importESModule(
++  "resource://testing-common/MockFilePicker.sys.mjs"
++);
++
++function pairs(objects) {
++  return objects.flatMap(o => [o.id, o]);
++}
++
++function tab(id, parentID, url, title, customTitle = null) {
++  return {
++    id,
++    parentID,
++    childrenIds: [],
++    title: customTitle,
++    data: { tab: { savedURL: url, savedTitle: title } },
++  };
++}
++
++function createSidebar() {
++  let items = [
++    { id: "work-pinned", childrenIds: ["w1", "folder", "split", "arc"] },
++    { id: "work-unpinned", childrenIds: ["w-today"] },
++    tab("w1", "work-pinned", "https://example.com/mail", "Mail"),
++    {
++      id: "folder",
++      parentID: "work-pinned",
++      childrenIds: ["f1", "missing"],
++      title: "Docs",
++      data: { list: {} },
++    },
++    tab("f1", "folder", "https://example.com/doc", "Doc", "My Doc"),
++    {
++      id: "split",
++      parentID: "work-pinned",
++      childrenIds: ["s1", "s2"],
++      data: { splitView: {} },
++    },
++    tab("s1", "split", "https://example.com/left", "Left"),
++    tab("s2", "split", "https://example.com/right", "Right"),
++    tab("arc", "work-pinned", "arc://settings", "Settings"),
++    tab("w-today", "work-unpinned", "https://example.com/today", "Today"),
++    { id: "personal-pinned", childrenIds: ["p1"] },
++    tab("p1", "personal-pinned", "https://example.org/", "Personal"),
++    { id: "empty-pinned", childrenIds: [] },
++    { id: "default-favorites", childrenIds: ["fav1", "fav2"] },
++    tab(
++      "fav1",
++      "default-favorites",
++      "https://example.com/calendar",
++      "Calendar"
++    ),
++    tab("fav2", "default-favorites", "arc://boosts", "Boosts"),
++    { id: "profile1-favorites", childrenIds: ["fav3"] },
++    tab("fav3", "profile1-favorites", "https://example.org/fav", "Fav"),
++  ];
++  let spaces = [
++    {
++      id: "work",
++      title: "Work",
++      profile: { default: true },
++      containerIDs: ["pinned", "work-pinned", "unpinned", "work-unpinned"],
++    },
++    {
++      id: "personal",
++      title: "",
++      profile: { custom: { _0: { directoryBasename: "Profile 1" } } },
++      containerIDs: ["pinned", "personal-pinned"],
++    },
++    {
++      id: "empty",
++      title: "Empty",
++      profile: { default: true },
++      containerIDs: ["pinned", "empty-pinned"],
++    },
++  ];
++  return {
++    sidebar: {
++      containers: [
++        { littleBrowser: { _0: "little-window" } },
++        {
++          spaces: pairs([
++            {
++              id: "little",
++              title: "Little",
++              profile: { default: true },
++              containerIDs: ["pinned", "little-pinned"],
++            },
++          ]),
++          items: pairs([
++            { id: "little-pinned", childrenIds: ["l1"] },
++            tab("l1", "little-pinned", "https://example.net/", "Little"),
++          ]),
++          topAppsContainerIDs: [],
++        },
++        { global: {} },
++        {
++          spaces: pairs(spaces),
++          items: pairs(items),
++          topAppsContainerIDs: [
++            { default: true },
++            "default-favorites",
++            { custom: { _0: { directoryBasename: "Profile 1" } } },
++            "profile1-favorites",
++          ],
++        },
++      ],
++    },
++  };
++}
++
++async function writeArcData(arcDir, sidebar = createSidebar()) {
++  let userDataDir = PathUtils.join(arcDir, "User Data");
++  await IOUtils.makeDirectory(PathUtils.join(userDataDir, "Default"), {
++    createAncestors: true,
++  });
++  await IOUtils.writeJSON(PathUtils.join(userDataDir, "Local State"), {
++    profile: { info_cache: { Default: { name: "Default" } } },
++  });
++  let sidebarPath = PathUtils.join(arcDir, "StorableSidebar.json");
++  if (typeof sidebar === "string") {
++    await IOUtils.writeUTF8(sidebarPath, sidebar);
++  } else {
++    await IOUtils.writeJSON(sidebarPath, sidebar);
++  }
++  return userDataDir;
++}
++
++add_task(async function test_convertSidebar() {
++  let sidebar = createSidebar();
++
++  Assert.deepEqual(
++    await ArcMigrationUtils.convertSidebar(sidebar, "Default"),
++    [
++      { url: "https://example.com/calendar", title: "Calendar" },
++      {
++        type: PlacesUtils.bookmarks.TYPE_FOLDER,
++        title: "Work",
++        children: [
++          { url: "https://example.com/mail", title: "Mail" },
++          {
++            type: PlacesUtils.bookmarks.TYPE_FOLDER,
++            title: "Docs",
++            children: [{ url: "https://example.com/doc", title: "My Doc" }],
++          },
++          { url: "https://example.com/left", title: "Left" },
++          { url: "https://example.com/right", title: "Right" },
++        ],
++      },
++    ],
++    "Default profile gets its Favorites and the Work space's pinned tabs, but nothing from Little Arc"
++  );
++
++  Assert.deepEqual(
++    await ArcMigrationUtils.convertSidebar(sidebar, "Profile 1"),
++    [
++      { url: "https://example.org/fav", title: "Fav" },
++      {
++        type: PlacesUtils.bookmarks.TYPE_FOLDER,
++        title: "Space 1",
++        children: [{ url: "https://example.org/", title: "Personal" }],
++      },
++    ],
++    "Favorites are per profile and untitled spaces are numbered per profile"
++  );
++
++  Assert.deepEqual(await ArcMigrationUtils.convertSidebar({}, "Default"), []);
++  Assert.deepEqual(
++    await ArcMigrationUtils.convertSidebar(sidebar, "Profile 2"),
++    []
++  );
++});
++
++add_task(async function test_convertSidebar_malformed() {
++  let malformed = [
++    null,
++    "sidebar",
++    { sidebar: { containers: {} } },
++    { sidebar: { containers: "containers" } },
++    { sidebar: { containers: [{ spaces: [], items: [5, "a", null] }] } },
++    { sidebar: { containers: ["global", { spaces: [], items: [] }] } },
++    { sidebar: { containers: [{ global: {} }] } },
++    { sidebar: { containers: [{ global: {} }, { spaces: {}, items: [] }] } },
++    {
++      sidebar: {
++        containers: [
++          { littleBrowser: {} },
++          { spaces: [], items: [] },
++          { global: {} },
++          "global",
++        ],
++      },
++    },
++  ];
++  for (let json of malformed) {
++    Assert.deepEqual(
++      await ArcMigrationUtils.convertSidebar(json, "Default"),
++      [],
++      `Nothing is converted from ${JSON.stringify(json)}`
++    );
++  }
++
++  let items = [
++    { id: "pinned", childrenIds: ["number", "bad", "nested", "ok"] },
++    {
++      id: "number",
++      title: 5,
++      data: { tab: { savedURL: 123, savedTitle: {} } },
++    },
++    tab("bad", "pinned", "https://exa mple.com/", "Bad"),
++    {
++      id: "nested",
++      childrenIds: { 0: "cycle" },
++      data: { list: {} },
++      title: "Nested",
++    },
++    { id: "ok", childrenIds: 5, data: "tab", title: ["Not a title"] },
++    {
++      id: "other-pinned",
++      childrenIds: ["ftp", "javascript", "empty-folder", "loop"],
++    },
++    tab("ftp", "other-pinned", " ftp://example.com/file ", null),
++    tab("javascript", "other-pinned", "javascript:alert(1)", "JS"),
++    {
++      id: "empty-folder",
++      childrenIds: ["data-url"],
++      data: { list: {} },
++      title: "Empty",
++    },
++    tab("data-url", "empty-folder", "data:text/html,hi", "Data"),
++    { id: "loop", childrenIds: ["loop-child"], data: { list: {} } },
++    { id: "loop-child", childrenIds: ["loop"], data: { list: {} } },
++  ];
++  let spaces = [
++    { id: "a", title: 7, profile: { default: true }, containerIDs: {} },
++    {
++      id: "b",
++      title: null,
++      profile: { default: true },
++      containerIDs: ["pinned", "pinned"],
++    },
++    {
++      id: "c",
++      profile: { default: true },
++      containerIDs: ["pinned", "other-pinned"],
++    },
++  ];
++  let sidebar = {
++    sidebar: {
++      containers: [
++        { global: {} },
++        {
++          spaces: pairs(spaces),
++          items: pairs(items),
++          topAppsContainerIDs: "favorites",
++        },
++      ],
++    },
++  };
++
++  Assert.deepEqual(
++    await ArcMigrationUtils.convertSidebar(sidebar, "Default"),
++    [
++      {
++        type: PlacesUtils.bookmarks.TYPE_FOLDER,
++        title: "Space 3",
++        children: [{ url: "ftp://example.com/file", title: "" }],
++      },
++    ],
++    "Malformed entries, invalid URLs and empty folders are skipped"
++  );
++});
++
++add_task(async function test_malformedSidebarFile() {
++  let arcDir = await IOUtils.createUniqueDirectory(
++    PathUtils.tempDir,
++    "test-arc-malformed"
++  );
++  registerCleanupFunction(() => IOUtils.remove(arcDir, { recursive: true }));
++
++  let sandbox = sinon.createSandbox();
++  registerCleanupFunction(() => sandbox.restore());
++
++  for (let sidebar of ["{not json", { sidebar: { containers: {} } }]) {
++    let userDataDir = await writeArcData(arcDir, sidebar);
++    sandbox.stub(ChromeMigrationUtils, "getDataPath").resolves(userDataDir);
++    sandbox
++      .stub(ChromeProfileMigrator.prototype, "getResources")
++      .resolves([{ type: MigrationUtils.resourceTypes.HISTORY }]);
++
++    let migrator = new ArcProfileMigrator();
++    Assert.ok(
++      await migrator.isSourceAvailable(),
++      "Arc history is still offered with a malformed sidebar file"
++    );
++    let resources = await migrator.getResources({ id: "Default" });
++    Assert.ok(
++      !resources.some(r => r.type === MigrationUtils.resourceTypes.BOOKMARKS),
++      "No bookmarks are offered from a malformed sidebar file"
++    );
++    sandbox.restore();
++  }
++});
++
++add_task(async function test_folderSelection() {
++  let arcDir = await IOUtils.createUniqueDirectory(
++    PathUtils.tempDir,
++    "test-arc-permissions"
++  );
++  registerCleanupFunction(() => IOUtils.remove(arcDir, { recursive: true }));
++  let userDataDir = await writeArcData(arcDir);
++
++  let sandbox = sinon.createSandbox();
++  registerCleanupFunction(() => sandbox.restore());
++  sandbox.stub(MigratorBase, "needsFolderSelectionToReadData").returns(true);
++  sandbox.stub(MigrationUtils, "canGetPermissionsOnPlatform").resolves(true);
++  sandbox.stub(ChromeMigrationUtils, "getDataPath").resolves(userDataDir);
++
++  MockFilePicker.init();
++  registerCleanupFunction(() => MockFilePicker.cleanup());
++
++  let migrator = new ArcProfileMigrator();
++  Assert.ok(
++    !(await migrator.hasPermissions()),
++    "No permissions before the folder is selected"
++  );
++
++  let displayDirectoryPath;
++  MockFilePicker.showCallback = () => {
++    displayDirectoryPath = MockFilePicker.displayDirectory?.path;
++    MockFilePicker.useDirectory([arcDir]);
++  };
++  MockFilePicker.returnValue = MockFilePicker.returnOK;
++  Assert.ok(await migrator.getPermissions(), "Got permissions");
++  Assert.equal(
++    PathUtils.normalize(displayDirectoryPath),
++    PathUtils.normalize(arcDir),
++    "The file picker opens in the Arc folder that contains the sidebar file"
++  );
++  Assert.equal(
++    PathUtils.normalize(await migrator._getChromeUserDataPathIfExists()),
++    PathUtils.normalize(userDataDir),
++    "Selecting the Arc folder maps back to its user data folder"
++  );
++
++  let resources = await migrator.getResources({ id: "Default" });
++  Assert.ok(
++    resources.some(r => r.type === MigrationUtils.resourceTypes.BOOKMARKS),
++    "Spaces are offered after the Arc folder was selected"
++  );
++
++  sandbox.restore();
++});
++
++add_task(function test_telemetrySourceId() {
++  Assert.equal(MigrationUtils.getSourceIdForTelemetry("arc"), 15);
++});
++
++add_task(async function test_migrateSpaces() {
++  let rootDir = do_get_tempdir();
++  let arcDir;
++  if (AppConstants.platform === "macosx") {
++    registerFakePath("ULibDir", rootDir);
++    arcDir = PathUtils.join(rootDir.path, "Application Support", "Arc");
++  } else {
++    registerFakePath("LocalAppData", rootDir);
++    arcDir = PathUtils.join(
++      rootDir.path,
++      "Packages",
++      "TheBrowserCompany.Arc_somepublisherhash",
++      "LocalCache",
++      "Local",
++      "Arc"
++    );
++  }
++  let userDataDir = await writeArcData(arcDir);
++  await IOUtils.writeJSON(PathUtils.join(userDataDir, "Default", "Bookmarks"), {
++    roots: {
++      bookmark_bar: {
++        children: [
++          { type: "url", url: "https://example.net/bar", name: "Bar" },
++        ],
++      },
++      other: {
++        children: [
++          { type: "url", url: "https://example.net/other", name: "Other" },
++        ],
++      },
++    },
++  });
++
++  if (AppConstants.platform === "win") {
++    // Decoys: a sibling package and a matching package without Arc data,
++    // which sorts before the real one.
++    for (let name of ["Other.App_abc", "TheBrowserCompany.Arc_aaaa"]) {
++      await IOUtils.makeDirectory(
++        PathUtils.join(rootDir.path, "Packages", name)
++      );
++    }
++  }
++  Assert.equal(
++    await ChromeMigrationUtils.getDataPath("Arc"),
++    userDataDir,
++    "Arc user data directory is found"
++  );
++
++  let migrator = await MigrationUtils.getMigrator("arc");
++  Assert.ok(migrator.enabled, "Arc migrator is enabled in the wizard");
++  Assert.ok(await migrator.isSourceAvailable(), "Arc source is available");
++
++  let profiles = await migrator.getSourceProfiles();
++  Assert.deepEqual(profiles, [{ id: "Default", name: "Default" }]);
++
++  await promiseMigration(
++    migrator,
++    MigrationUtils.resourceTypes.BOOKMARKS,
++    profiles[0]
++  );
++
++  let tree = await PlacesUtils.promiseBookmarksTree(
++    PlacesUtils.bookmarks.toolbarGuid
++  );
++  Assert.ok(
++    tree.children.some(c => c.uri === "https://example.com/calendar"),
++    "Favorites were imported as toolbar bookmarks"
++  );
++  let work = tree.children.find(c => c.title === "Work");
++  Assert.ok(work, "Work space was imported as a toolbar folder");
++  Assert.deepEqual(
++    work.children.map(c => c.title),
++    ["Mail", "Docs", "Left", "Right"]
++  );
++  Assert.equal(work.children[1].children[0].uri, "https://example.com/doc");
++  Assert.ok(
++    !tree.children.some(c => c.uri === "https://example.net/bar"),
++    "The Chromium Bookmarks file is not imported"
++  );
++
++  let unfiled = await PlacesUtils.promiseBookmarksTree(
++    PlacesUtils.bookmarks.unfiledGuid
++  );
++  Assert.ok(
++    !unfiled.children?.some(c => c.uri === "https://example.net/other"),
++    "The Chromium Bookmarks file is not imported"
++  );
++});
+diff --git a/browser/components/migration/tests/unit/xpcshell.toml b/browser/components/migration/tests/unit/xpcshell.toml
+index 75b6dd8f1bf8fe1bc2bad6f21299b8ecab009a99..ee40b908f2c7778640472505614d83e16b44894b 100644
+--- a/browser/components/migration/tests/unit/xpcshell.toml
++++ b/browser/components/migration/tests/unit/xpcshell.toml
+@@ -24,6 +24,12 @@ run-if = [
+   "os == 'win'",
+ ]
+ 
++["test_Arc_spaces.js"]
++run-if = [
++  "os == 'mac'",
++  "os == 'win'",
++]
++
+ ["test_BookmarksFileMigrator.js"]
+ 
+ ["test_ChromeMigrationUtils.js"]
+diff --git a/browser/locales/en-US/browser/migrationWizard.ftl b/browser/locales/en-US/browser/migrationWizard.ftl
+index d27c77501a658c75a177150e7a2df4ceda4387ae..5139958846f224b0c981733682111b3e936f1258 100644
+--- a/browser/locales/en-US/browser/migrationWizard.ftl
++++ b/browser/locales/en-US/browser/migrationWizard.ftl
+@@ -26,6 +26,7 @@ migration-wizard-selection-option-with-profile = { $sourceBrowser } — { $profi
+ # name string should have a key with "migration-wizard-migrator-display-name-"
+ # as a prefix followed by the unique identification key for the migrator.
+ 
++migration-wizard-migrator-display-name-arc = Arc
+ migration-wizard-migrator-display-name-brave = Brave
+ migration-wizard-migrator-display-name-canary = Chrome Canary
+ migration-wizard-migrator-display-name-chrome = Chrome
+@@ -52,6 +53,14 @@ migration-source-name-chrome = Google Chrome
+ migration-imported-safari-reading-list = Reading List (From Safari)
+ migration-imported-edge-reading-list = Reading List (From Edge)
+ 
++# Name of the bookmark folder created when importing a space from the Arc
++# browser that the user did not give a name. Spaces are Arc's way of grouping
++# tabs, similar to tab groups.
++#
++# Variables:
++#  $number (Number): the position of the space among the imported profile's spaces, starting at 1.
++migration-imported-arc-untitled-space = Space { $number }
++
+ ## These strings are shown if the selected browser data directory is unreadable.
+ ## In practice, this tends to only occur on Linux when Firefox
+ ## is installed as a Snap.
+diff --git a/toolkit/components/telemetry/Histograms.json b/toolkit/components/telemetry/Histograms.json
+index bfb182d59e5c1cab220b81a45a4d5da7e972f608..874361bbf23bfcb07b412bd92bf83c0489511902 100644
+--- a/toolkit/components/telemetry/Histograms.json
++++ b/toolkit/components/telemetry/Histograms.json
+@@ -947,7 +947,7 @@
+     "alert_emails": ["gijs@mozilla.com", "mak@mozilla.com"],
+     "expires_in_version": "never",
+     "kind": "enumerated",
+-    "n_values": 15,
++    "n_values": 16,
+     "releaseChannelCollection": "opt-out",
+     "description": "The browser that data is pulled from. The values correspond to the internal browser ID (see MigrationUtils.sys.mjs)"
+   },

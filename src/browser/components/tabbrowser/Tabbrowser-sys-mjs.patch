@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/Tabbrowser.sys.mjs b/browser/components/tabbrowser/Tabbrowser.sys.mjs
-index 430e1137a15f0aa8c5f39fd76127f825b2751c69..625fed8b6a6544c75c83e1cf855179bf56e5f089 100644
+index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0a9269b24 100644
 --- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
 +++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
 @@ -535,6 +535,7 @@ export class Tabbrowser {
@@ -21,15 +21,15 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..625fed8b6a6544c75c83e1cf855179bf
 +  get zenTabProgressListener() { return TabProgressListener; }
 +
 +  zenGetTabProgressFilter(tab) {
-+    return this.#tabFilters.get(tab);
++    return Tabbrowser.#tabFilters.get(tab);
 +  }
 +
 +  zenGetTabProgressListener(tab) {
-+    return this.#tabListeners.get(tab);
++    return Tabbrowser.#tabListeners.get(tab);
 +  }
 +
 +  zenSetTabProgressListener(tab, listener) {
-+    this.#tabListeners.set(tab, listener);
++    Tabbrowser.#tabListeners.set(tab, listener);
 +  }
 +
 +  get TabStateFlusher() {

@@ -122,8 +122,12 @@
   border-radius: 0 !important;
 }
 
-#urlbar:not([breakout-extend]) .urlbar-input {
-  color: color-mix(in srgb, var(--input-color, FieldText) 70%, transparent);
+#urlbar:not([breakout-extend]) {
+  --toolbar-field-text-color: var(--toolbar-color);
+
+  .urlbar-input {
+    color: var(--toolbar-field-text-color);
+  }
 }
 
 #urlbar .urlbar-input-box {

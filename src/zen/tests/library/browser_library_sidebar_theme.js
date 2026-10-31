@@ -88,18 +88,29 @@ add_task(async function test_space_preview_uses_sidebar_background() {
   const sidebar = document.getElementById("zen-toolbar-background");
   ok(preview, "The space preview uses the shared background component");
 
-  for (const [scheme, acrylic] of [
-    [1, true],
-    [1, false],
-    [0, true],
-    [0, false],
+  const coloredTheme = structuredClone(workspace.theme);
+  // Default themes follow the window; explicit workspace themes can override it.
+  for (const [scheme, acrylic, color] of [
+    [1, true, null],
+    [1, false, null],
+    [0, true, null],
+    [0, false, null],
+    [1, true, [30, 30, 30]],
+    [0, true, [235, 235, 235]],
+    [1, true, [158, 219, 204]],
+    [0, true, [158, 219, 204]],
   ]) {
     await SpecialPowers.pushPrefEnv({
       set: [
         ["zen.theme.acrylic-sidebar", acrylic],
         ["zen.view.window.scheme", scheme],
+        ["zen.theme.gradient-legacy-version", 1],
       ],
     });
+    workspace.theme = structuredClone(coloredTheme);
+    workspace.theme.gradientColors = color
+      ? [{ ...workspace.theme.gradientColors[0], c: color }]
+      : [];
     gZenThemePicker.onWorkspaceChange(workspace);
     await section.updateComplete;
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -125,9 +136,51 @@ add_task(async function test_space_preview_uses_sidebar_background() {
         acrylic ? "blur(42px)" : "none",
         "Acrylic preserves blur without changing brightness or saturation"
       );
+      const { isDarkMode } = gZenThemePicker.getGradientForWorkspace(workspace);
+      const rgb = isDarkMode ? "19, 19, 19" : "233, 233, 233";
+      for (const element of [preview, sidebar]) {
+        is(
+          getComputedStyle(element).backgroundColor,
+          acrylic ? `rgba(${rgb}, 0.8)` : `rgb(${rgb})`,
+          "The base surface follows the effective workspace scheme and only acrylic is translucent"
+        );
+      }
     }
     await SpecialPowers.popPrefEnv();
   }
+
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.theme.acrylic-sidebar", true]],
+  });
+  for (const reducedTransparency of [false, true]) {
+    await SpecialPowers.pushPrefEnv({
+      set: [["ui.prefersReducedTransparency", reducedTransparency ? 1 : 0]],
+    });
+    for (const unsupported of [false, true]) {
+      if (unsupported) {
+        document.documentElement.setAttribute("zen-no-acrylic", "true");
+      } else {
+        document.documentElement.removeAttribute("zen-no-acrylic");
+      }
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      for (const element of [preview, sidebar]) {
+        is(
+          getComputedStyle(element).backdropFilter,
+          reducedTransparency || unsupported ? "none" : "blur(42px)",
+          "Reduced transparency and unsupported compositors disable acrylic"
+        );
+        ok(
+          getComputedStyle(element).backgroundColor.startsWith(
+            reducedTransparency || unsupported ? "rgb(" : "rgba("
+          ),
+          "Acrylic fallbacks retain an opaque base surface"
+        );
+      }
+    }
+    await SpecialPowers.popPrefEnv();
+  }
+  document.documentElement.removeAttribute("zen-no-acrylic");
+  await SpecialPowers.popPrefEnv();
 
   Library.toggle();
   await TestUtils.waitForCondition(() => !Library.isLibrarySlightlyOpen);

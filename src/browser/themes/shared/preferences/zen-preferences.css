@@ -6,6 +6,10 @@
 
 @namespace html "http://www.w3.org/1999/xhtml";
 
+:root {
+  --zen-squircle-value: 1;
+}
+
 .pane-container {
   margin: auto;
 }

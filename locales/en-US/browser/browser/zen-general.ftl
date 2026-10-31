@@ -38,7 +38,6 @@ tab-context-zen-edit-icon =
     .label = Change Icon…
 
 zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
 
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
@@ -69,6 +68,7 @@ zen-tabs-renamed = Tab has been successfully renamed!
 zen-background-tab-opened-toast = New background tab opened!
 zen-workspace-renamed-toast = Workspace has been successfully renamed!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 
 zen-toggle-compact-mode-button =
     .label = Compact Mode
@@ -105,7 +105,6 @@ zen-site-data-setting-allow = Allowed
 zen-site-data-setting-block = Blocked
 zen-site-data-protections-enabled = Enabled
 zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension =
     .label = Extension
 zen-site-data-security-info-secure =
@@ -123,6 +122,8 @@ zen-site-data-site-settings =
 
 zen-site-data-header-share =
     .tooltiptext = Share This Page
+zen-site-data-header-boost =
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode =
     .tooltiptext = Enter Reader Mode
 zen-site-data-header-screenshot =

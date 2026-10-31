@@ -19,6 +19,10 @@ zen-panel-ui-live-folder-create =
 zen-panel-ui-new-empty-split =
     .label = New Split
 
+zen-workspaces-panel-context-archive =
+    .label = Archive Space
+    .accesskey = A
+
 zen-workspaces-panel-context-delete =
     .label = Delete Space
     .accesskey = D

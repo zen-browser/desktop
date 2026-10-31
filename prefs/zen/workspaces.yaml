@@ -42,6 +42,11 @@
 - name: zen.workspaces.separate-essentials
   value: true
 
+# What happens to the normal tabs of a space when it's archived. Pinned tabs
+# and essentials are always kept. Either "keep" (unload them) or "close".
+- name: zen.workspaces.archive.normal-tabs
+  value: keep
+
 - name: zen.workspaces.dnd-switch-padding
   value: 20
 

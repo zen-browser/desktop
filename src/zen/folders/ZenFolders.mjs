@@ -136,7 +136,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         .getElementById("context_zenChangeFolderSpace")
         .querySelector("menupopup");
       changeFolderSpace.innerHTML = "";
-      for (const workspace of [...gZenWorkspaces.getWorkspaces()].reverse()) {
+      for (const workspace of gZenWorkspaces.getVisibleWorkspaces().reverse()) {
         const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
         item.addEventListener("command", event => {
           if (!this.#lastFolderContextMenu) {

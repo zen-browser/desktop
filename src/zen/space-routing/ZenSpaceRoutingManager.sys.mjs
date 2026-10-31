@@ -110,8 +110,7 @@ class nsZenSpaceRoutingManager {
       case "most-recent-space":
         break;
       default: {
-        const targetWorkspace =
-          win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+        const targetWorkspace = this.#routeTarget(win, targetRoute);
 
         if (targetWorkspace) {
           userContextId = targetWorkspace.containerTabId;
@@ -149,6 +148,9 @@ class nsZenSpaceRoutingManager {
         win.gZenWorkspaces
           .getWorkspaces(true)
           .find(space => space.uuid === targetRoute);
+      if (win.gZenWorkspaces.isWorkspaceArchived(workspace)) {
+        return null;
+      }
       return workspace?.containerTabId ?? null;
     } catch (err) {
       console.error("[ZenSpaceRouting]: Error routing the startup URI:", err);
@@ -278,9 +280,24 @@ class nsZenSpaceRoutingManager {
     }
 
     // Only redirect when the destination space actually exists.
-    return win.gZenWorkspaces.getWorkspaceFromId(targetRoute)
-      ? targetRoute
-      : null;
+    return this.#routeTarget(win, targetRoute) ? targetRoute : null;
+  }
+
+  /**
+   * The space a route points at, or null when it is gone or archived. Links
+   * to an archived space open as if no route matched.
+   *
+   * @param {Window} win - The window the link opens in
+   * @param {string} targetRoute - The route's destination
+   * @returns {object|null} The destination space
+   * @private
+   */
+  #routeTarget(win, targetRoute) {
+    const workspace = win?.gZenWorkspaces?.getWorkspaceFromId?.(targetRoute);
+    if (!workspace || win.gZenWorkspaces.isWorkspaceArchived(workspace)) {
+      return null;
+    }
+    return workspace;
   }
 
   /**
@@ -413,7 +430,7 @@ class nsZenSpaceRoutingManager {
 
         default: {
           const workspaces = win?.gZenWorkspaces;
-          const targetWorkspace = workspaces?.getWorkspaceFromId?.(targetRoute);
+          const targetWorkspace = this.#routeTarget(win, targetRoute);
 
           if (targetWorkspace) {
             workspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);

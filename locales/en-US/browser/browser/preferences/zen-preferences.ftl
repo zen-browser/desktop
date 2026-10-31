@@ -173,6 +173,11 @@ zen-themes-auto-update =
 
 zen-settings-workspaces-force-container-tabs-to-workspace =
     .label = Switch to workspace where container is set as default when opening container tabs
+zen-settings-workspaces-archive-normal-tabs-label = When archiving a space, its unpinned tabs are
+zen-settings-workspaces-archive-normal-tabs-keep =
+    .label = Kept and unloaded
+zen-settings-workspaces-archive-normal-tabs-close =
+    .label = Closed
 
 zen-theme-marketplace-link = Visit Store
 

@@ -379,6 +379,10 @@
 }
 
 /* mark: workspace element */
+zen-workspace[archived] {
+  display: none !important;
+}
+
 zen-workspace {
   --toolbar-color: var(--toolbox-textcolor) !important;
 

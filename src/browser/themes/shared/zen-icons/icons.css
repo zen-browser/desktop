@@ -24,7 +24,8 @@
   fill: currentColor;
 }
 
-#back-button {
+#back-button,
+#zen-workspace-archived-undo-button {
   list-style-image: url("back.svg") !important;
 }
 

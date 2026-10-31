@@ -130,6 +130,7 @@ library-space-routing-remove-button =
 library-space-routing-external-links = Default route for external links
 library-space-routing-empty = Routes send links to the space you keep them in. Add one for a site you always open in the same place.
 library-space-routing-no-results = No routes found
+library-space-routing-target-archived = Archived, links open in the current space
 
 library-downloads-empty = No downloads found
 library-downloads-clear-all =
@@ -183,6 +184,11 @@ library-spaces-icon-button =
     .title = Change icon
 library-spaces-name-button =
     .title = Rename space
+library-spaces-archived-title = Archived
+library-spaces-archived-restore-button =
+    .tooltiptext = Restore space
+library-spaces-archived-delete-button =
+    .tooltiptext = Delete space
 
 library-boosts-search-placeholder =
     .placeholder = Search Boosts…

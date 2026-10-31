@@ -263,44 +263,6 @@ class ZenMigrationUtilsClass {
   }
 
   /**
-   * Finds the "User Data" directory of a packaged (MSIX) Chromium browser on
-   * Windows. Packaged apps keep their data under
-   * %LOCALAPPDATA%\Packages\<family name>\LocalCache\Local, and the family
-   * name ends in a publisher hash that can differ between installs, so every
-   * package folder with the given name prefix is tried.
-   *
-   * @param {string} packagesDir The Packages directory to search.
-   * @param {string} packageName The package name, e.g. "TheBrowserCompany.Arc".
-   * @param {string} dirName The browser's data directory name, e.g. "Arc".
-   * @returns {Promise<string|null>} The first existing "User Data" directory.
-   */
-  async findPackagedUserDataPath(packagesDir, packageName, dirName) {
-    let children;
-    try {
-      children = await IOUtils.getChildren(packagesDir);
-    } catch (e) {
-      return null;
-    }
-    const prefix = `${packageName}_`;
-    for (const child of children.sort()) {
-      if (!PathUtils.filename(child).startsWith(prefix)) {
-        continue;
-      }
-      const path = PathUtils.join(
-        child,
-        "LocalCache",
-        "Local",
-        dirName,
-        "User Data"
-      );
-      if (await IOUtils.exists(path)) {
-        return path;
-      }
-    }
-    return null;
-  }
-
-  /**
    * Converts Arc's StorableSidebar.json into an import plan. `containers` is
    * a key/value list: the `global` entry is the main sidebar, and each
    * `littleBrowser` entry is the sidebar of a Little Arc window, which only

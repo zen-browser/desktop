@@ -58,5 +58,14 @@
     "type": "phabricator",
     "id": "D323514",
     "name": "Fix HEVC video stutters and dropped frames"
+  },
+  {
+    "type": "phabricator",
+    "id": "D337289",
+    "name": "Arc browser migrator",
+    "replaces": {
+      // IMPORTANT: Remember to change the module URI to point to Zen's profile migrator instead of the default Chrome one.
+      "ArcProfileMigrator: {\n+    moduleURI:\n+      \"moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs\"": "ArcProfileMigrator: {\n+    moduleURI:\n+      \"resource:///modules/zen/ZenProfileMigrators.sys.mjs\""
+    }
   }
 ]

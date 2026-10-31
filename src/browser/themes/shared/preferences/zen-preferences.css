@@ -431,3 +431,71 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
     display: none !important;
   }
 }
+
+.zen-intelligence-minutes-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block: 6px;
+}
+
+.zen-intelligence-config-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block: 6px;
+}
+
+#zenTabIntelligenceNotifyMinutes {
+  width: 5em;
+  padding: 4px 6px;
+  border-radius: var(--border-radius-small, 4px);
+  text-align: center;
+}
+
+.zen-intelligence-account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 8px;
+}
+
+.zen-intelligence-connected-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.zen-intelligence-badge-dot {
+  color: #34c759;
+  font-size: 14px;
+}
+
+.zen-intelligence-user-email {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.zen-intelligence-advanced-details {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: var(--border-radius-small, 4px);
+  background: var(--in-content-box-background, light-dark(#f2f2f7, #2c2c2e));
+}
+
+.zen-intelligence-advanced-summary {
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.8;
+  user-select: none;
+}
+
+#zenTabIntelligenceOptions[disabled="true"],
+.zen-settings-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: grayscale(0.5);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+

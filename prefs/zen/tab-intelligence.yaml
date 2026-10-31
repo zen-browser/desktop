@@ -1,0 +1,33 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.tab-intelligence.enabled
+  value: true
+
+- name: zen.tab-intelligence.service.gmail
+  value: true
+
+- name: zen.tab-intelligence.service.google-calendar
+  value: true
+
+- name: zen.tab-intelligence.service.whatsapp
+  value: true
+
+- name: zen.tab-intelligence.service.outlook
+  value: true
+
+- name: zen.tab-intelligence.notify-minutes-before
+  value: 5
+
+- name: zen.tab-intelligence.google.oauth.client-id
+  value: ""
+
+- name: zen.tab-intelligence.google.oauth.client-secret
+  value: ""
+
+- name: zen.tab-intelligence.outlook.oauth.client-id
+  value: ""
+
+- name: zen.tab-intelligence.outlook.oauth.client-secret
+  value: ""

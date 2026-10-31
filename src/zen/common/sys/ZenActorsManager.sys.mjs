@@ -74,6 +74,21 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.view.drag-window-from-content",
   },
+  ZenTabIntelligence: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenTabIntelligenceParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenTabIntelligenceChild.sys.mjs",
+      events: {
+        DOMContentLoaded: { capture: true },
+        pageshow: { capture: true },
+      },
+    },
+    matches: ["https://web.whatsapp.com/*"],
+    messageManagerGroups: ["browsers"],
+    safeForUntrustedWebProcess: true,
+  },
 };
 
 if (!Services.appinfo.inSafeMode) {

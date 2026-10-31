@@ -20,6 +20,7 @@ export class nsZenSiteDataPanel {
   #iconMap = {
     install: "extension",
     "site-protection": "shield",
+    "tab-intelligence": "tab-intelligence",
   };
 
   constructor(window) {
@@ -599,6 +600,33 @@ export class nsZenSiteDataPanel {
       });
     }
 
+    // Add Tab Intelligence site toggle if current URL matches a supported service
+    const currentUrl = gBrowser.currentURI?.spec || "";
+    let intelligenceService = null;
+    if (currentUrl.startsWith("https://mail.google.com/")) {
+      intelligenceService = "gmail";
+    } else if (currentUrl.startsWith("https://calendar.google.com/")) {
+      intelligenceService = "google-calendar";
+    } else if (currentUrl.startsWith("https://web.whatsapp.com/")) {
+      intelligenceService = "whatsapp";
+    }
+
+    if (intelligenceService) {
+      const isEnabled =
+        Services.prefs.getBoolPref("zen.tab-intelligence.enabled", true) &&
+        Services.prefs.getBoolPref(
+          "zen.tab-intelligence.service." + intelligenceService,
+          true
+        );
+
+      permissions.push({
+        id: "tab-intelligence",
+        serviceName: intelligenceService,
+        state: isEnabled ? SitePermissions.ALLOW : SitePermissions.BLOCK,
+        scope: SitePermissions.SCOPE_PERSISTENT,
+      });
+    }
+
     for (let permission of permissions) {
       let [id] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
 
@@ -791,7 +819,13 @@ export class nsZenSiteDataPanel {
         return;
     }
 
-    if (permission.id === "site-protection") {
+    if (permission.id === "tab-intelligence") {
+      const prefKey = "zen.tab-intelligence.service." + permission.serviceName;
+      Services.prefs.setBoolPref(prefKey, newState === SitePermissions.ALLOW);
+      if (this.window.gZenTabIntelligenceUI && gBrowser.selectedTab) {
+        this.window.gZenTabIntelligenceUI.evaluateTab(gBrowser.selectedTab);
+      }
+    } else if (permission.id === "site-protection") {
       const { gProtectionsHandler } = this.window;
       if (newState === SitePermissions.BLOCK) {
         gProtectionsHandler.disableForCurrentPage();

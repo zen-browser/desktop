@@ -1,0 +1,14 @@
+diff --git a/media/ffvpx/ffvpxcommon.mozbuild b/media/ffvpx/ffvpxcommon.mozbuild
+index 86f34d96d5..6d9c5f0b14 100644
+--- a/media/ffvpx/ffvpxcommon.mozbuild
++++ b/media/ffvpx/ffvpxcommon.mozbuild
+@@ -22,6 +22,9 @@ LOCAL_INCLUDES += ['/media/ffvpx']
+ 
+ USE_LIBS += [ 'gkcodecs' ]
+ 
++if CONFIG['OS_ARCH'] == 'Darwin':
++    LDFLAGS += ['-Wl,-rpath,@loader_path']
++
+ # We allow warnings for third-party code that can be updated from upstream.
+ AllowCompilerWarnings()
+ 

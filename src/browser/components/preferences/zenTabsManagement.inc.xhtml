@@ -77,6 +77,161 @@
       </hbox>
 </groupbox>
 
+<hbox id="zenTabIntelligenceCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-tab-intelligence-title"/>
+</hbox>
+
+<groupbox id="zenTabIntelligenceGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-tab-intelligence-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-description" />
+
+      <checkbox id="zenTabIntelligenceEnabled"
+                data-l10n-id="zen-tab-intelligence-enabled"
+                preference="zen.tab-intelligence.enabled"/>
+
+      <vbox id="zenTabIntelligenceOptions" class="indent">
+            <checkbox id="zenTabIntelligenceServiceGmail"
+                      data-l10n-id="zen-tab-intelligence-service-gmail"
+                      preference="zen.tab-intelligence.service.gmail"/>
+            <checkbox id="zenTabIntelligenceServiceGoogleCalendar"
+                      data-l10n-id="zen-tab-intelligence-service-google-calendar"
+                      preference="zen.tab-intelligence.service.google-calendar"/>
+            <checkbox id="zenTabIntelligenceServiceWhatsApp"
+                      data-l10n-id="zen-tab-intelligence-service-whatsapp"
+                      preference="zen.tab-intelligence.service.whatsapp"/>
+            <checkbox id="zenTabIntelligenceServiceOutlook"
+                      data-l10n-id="zen-tab-intelligence-service-outlook"
+                      preference="zen.tab-intelligence.service.outlook"/>
+
+            <!-- Global Calendar Settings -->
+            <vbox id="zenTabIntelligenceCalendarSettings" class="indent">
+                  <label><html:h3 data-l10n-id="zen-tab-intelligence-calendar-settings-header"/></label>
+                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-calendar-settings-desc"/>
+
+                  <hbox align="center" class="zen-intelligence-minutes-row">
+                        <label id="zenTabIntelligenceNotifyMinutesBefore"
+                               data-l10n-id="zen-tab-intelligence-notify-minutes-before"/>
+                        <html:input id="zenTabIntelligenceNotifyMinutes"
+                                    type="number"
+                                    min="1"
+                                    max="120"
+                                    value="5"
+                                    class="input-inline"
+                                    preference="zen.tab-intelligence.notify-minutes-before"/>
+                        <label id="zenTabIntelligenceNotifyMinutesAfter"
+                               data-l10n-id="zen-tab-intelligence-notify-minutes-after"/>
+                  </hbox>
+            </vbox>
+
+            <vbox id="zenTabIntelligenceGoogleSettings" class="indent">
+                  <label><html:h3 data-l10n-id="zen-tab-intelligence-google-account-header"/></label>
+                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-google-account-desc"/>
+
+                  <!-- Disconnected state -->
+                  <hbox id="zenTabIntelligenceStatusDisconnectedRow" align="center" class="zen-intelligence-account-row">
+                        <description data-l10n-id="zen-tab-intelligence-google-status-disconnected" style="flex: 1;"/>
+                        <html:button id="zenTabIntelligenceGoogleConnectBtn"
+                                     type="button"
+                                     class="primary-button"
+                                     data-l10n-id="zen-tab-intelligence-google-connect-button"/>
+                  </hbox>
+
+                  <!-- Connected state -->
+                  <hbox id="zenTabIntelligenceStatusConnectedRow" align="center" class="zen-intelligence-account-row" hidden="true">
+                        <html:div class="zen-intelligence-connected-badge">
+                              <html:span class="zen-intelligence-badge-dot">●</html:span>
+                              <html:span id="zenTabIntelligenceGoogleUserDesc" class="zen-intelligence-user-email"/>
+                        </html:div>
+                        <html:button id="zenTabIntelligenceGoogleDisconnectBtn"
+                                     type="button"
+                                     class="subtle-button"
+                                     data-l10n-id="zen-tab-intelligence-google-disconnect-button"/>
+                  </hbox>
+
+                  <html:details class="zen-intelligence-advanced-details">
+                        <html:summary data-l10n-id="zen-tab-intelligence-google-advanced-auth" class="zen-intelligence-advanced-summary"/>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceGoogleClientIdLabel"
+                                     data-l10n-id="zen-tab-intelligence-google-client-id-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceGoogleClientId"
+                                          type="text"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Par défaut (laisser vide)"
+                                          preference="zen.tab-intelligence.google.oauth.client-id"/>
+                        </hbox>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceGoogleClientSecretLabel"
+                                     data-l10n-id="zen-tab-intelligence-google-client-secret-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceGoogleClientSecret"
+                                          type="password"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Optionnel"
+                                          preference="zen.tab-intelligence.google.oauth.client-secret"/>
+                        </hbox>
+                  </html:details>
+            </vbox>
+
+            <vbox id="zenTabIntelligenceOutlookSettings" class="indent">
+                  <label><html:h3 data-l10n-id="zen-tab-intelligence-outlook-account-header"/></label>
+                  <description class="description-deemphasized" data-l10n-id="zen-tab-intelligence-outlook-account-desc"/>
+
+                  <!-- Disconnected state -->
+                  <hbox id="zenTabIntelligenceOutlookStatusDisconnectedRow" align="center" class="zen-intelligence-account-row">
+                        <description data-l10n-id="zen-tab-intelligence-outlook-status-disconnected" style="flex: 1;"/>
+                        <html:button id="zenTabIntelligenceOutlookConnectBtn"
+                                     type="button"
+                                     class="primary-button"
+                                     data-l10n-id="zen-tab-intelligence-outlook-connect-button"/>
+                  </hbox>
+
+                  <!-- Connected state -->
+                  <hbox id="zenTabIntelligenceOutlookStatusConnectedRow" align="center" class="zen-intelligence-account-row" hidden="true">
+                        <html:div class="zen-intelligence-connected-badge">
+                              <html:span class="zen-intelligence-badge-dot">●</html:span>
+                              <html:span id="zenTabIntelligenceOutlookUserDesc" class="zen-intelligence-user-email"/>
+                        </html:div>
+                        <html:button id="zenTabIntelligenceOutlookDisconnectBtn"
+                                     type="button"
+                                     class="subtle-button"
+                                     data-l10n-id="zen-tab-intelligence-outlook-disconnect-button"/>
+                  </hbox>
+
+                  <html:details class="zen-intelligence-advanced-details">
+                        <html:summary data-l10n-id="zen-tab-intelligence-outlook-advanced-auth" class="zen-intelligence-advanced-summary"/>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceOutlookClientIdLabel"
+                                     data-l10n-id="zen-tab-intelligence-outlook-client-id-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceOutlookClientId"
+                                          type="text"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Par défaut (laisser vide)"
+                                          preference="zen.tab-intelligence.outlook.oauth.client-id"/>
+                        </hbox>
+                        <hbox align="center" class="zen-intelligence-config-row">
+                              <label id="zenTabIntelligenceOutlookClientSecretLabel"
+                                     data-l10n-id="zen-tab-intelligence-outlook-client-secret-label"
+                                     style="min-width: 140px;"/>
+                              <html:input id="zenTabIntelligenceOutlookClientSecret"
+                                          type="password"
+                                          class="input-inline"
+                                          style="flex: 1;"
+                                          placeholder="Optionnel"
+                                          preference="zen.tab-intelligence.outlook.oauth.client-secret"/>
+                        </hbox>
+                  </html:details>
+            </vbox>
+      </vbox>
+</groupbox>
+
 </html:template>
 
 

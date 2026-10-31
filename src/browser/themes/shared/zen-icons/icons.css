@@ -717,6 +717,9 @@
 .zen-permission-cookie-icon {
   list-style-image: url("cookies-fill.svg");
 }
+.zen-permission-tab-intelligence-icon {
+  list-style-image: url("chrome://browser/skin/window.svg");
+}
 
 /* tab sound icons */
 .tab-icon-overlay[soundplaying] {

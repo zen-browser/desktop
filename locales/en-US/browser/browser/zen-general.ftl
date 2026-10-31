@@ -105,6 +105,7 @@ zen-site-data-setting-allow = Allowed
 zen-site-data-setting-block = Blocked
 zen-site-data-protections-enabled = Enabled
 zen-site-data-protections-disabled = Disabled
+zen-site-data-setting-tab-intelligence = Tab Intelligence
 zen-site-data-security-info-extension =
     .label = Extension
 zen-site-data-security-info-secure =

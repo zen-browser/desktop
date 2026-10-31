@@ -1425,3 +1425,47 @@ zen-library {
   pointer-events: none;
   background: var(--zen-primary-color);
 }
+
+/* Tab Intelligence: Unread indicator badge for essential tabs */
+.tabbrowser-tab[zen-essential][zen-has-unread="true"] .tab-icon-stack {
+  position: relative !important;
+  overflow: visible !important;
+
+  &::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: -3.5px !important;
+    inset-inline-end: -3.5px !important;
+    width: 6.5px !important;
+    height: 6.5px !important;
+    border-radius: 50% !important;
+    background-color: var(--zen-colors-badge-red, #ff3b30) !important;
+    border: 1.5px solid var(--tab-background-color, var(--zen-surface, #ffffff)) !important;
+    z-index: 99 !important;
+    pointer-events: none !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+  }
+}
+
+/* Tab Intelligence: Unread indicator badge for pinned tabs */
+.tabbrowser-tab[pinned]:not([zen-essential])[zen-has-unread="true"] .tab-icon-stack {
+  position: relative !important;
+  overflow: visible !important;
+
+  &::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: -4px !important;
+    inset-inline-end: 1.5px !important;
+    width: 6.5px !important;
+    height: 6.5px !important;
+    border-radius: 50% !important;
+    background-color: var(--zen-colors-badge-red, #ff3b30) !important;
+    border: 1.5px solid var(--tab-background-color, var(--zen-surface, #ffffff)) !important;
+    z-index: 99 !important;
+    pointer-events: none !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+  }
+}

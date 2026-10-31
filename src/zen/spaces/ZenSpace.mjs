@@ -69,6 +69,15 @@ export class nsZenWorkspace extends MozXULElement {
           <label class="zen-current-workspace-indicator-name" />
           <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions" />
         </vbox>
+        <vbox class="zen-workspace-tabs-section zen-imminent-meeting-banner" hidden="true">
+          <hbox class="zen-imminent-meeting-content" align="center">
+            <vbox flex="1" class="zen-imminent-meeting-info">
+              <label class="zen-imminent-meeting-header" />
+              <label class="zen-imminent-meeting-subtitle" crop="end" />
+            </vbox>
+            <toolbarbutton class="zen-imminent-meeting-join-button toolbarbutton-1" data-l10n-id="zen-tab-intelligence-join-meeting" label="Join" />
+          </hbox>
+        </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
           <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section" hide-separator="true">
             <html:div class="zen-tab-group-start space-fake-collapsible-start" style="order: -9999;" />

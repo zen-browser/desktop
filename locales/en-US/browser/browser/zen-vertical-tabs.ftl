@@ -60,3 +60,11 @@ zen-tab-sublabel =
         [zen-default-pinned-cmd] Separate from pinned tab
         *[other] { $tabSubtitle }
     }
+
+zen-tab-intelligence-imminent-meeting =
+    .value = Imminent Meeting
+zen-tab-intelligence-join-meeting =
+    .label = Join
+    .tooltiptext = Join meeting
+zen-tab-intelligence-unread-messages = Unread messages
+zen-tab-intelligence-upcoming-events = Upcoming events

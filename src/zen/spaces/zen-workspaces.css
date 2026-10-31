@@ -532,3 +532,107 @@ zen-workspace {
     transform: rotate(0deg);
   }
 }
+
+/* Tab Intelligence: Imminent Meeting Banner */
+.zen-imminent-meeting-banner {
+  display: flex;
+  margin: 4px var(--zen-toolbox-padding, 8px);
+  padding: 6px 8px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+
+  &[hidden="true"] {
+    display: none !important;
+  }
+
+  .zen-imminent-meeting-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .zen-imminent-meeting-icon {
+    display: none;
+  }
+
+  .zen-imminent-meeting-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+    gap: 2px;
+  }
+
+  .zen-imminent-meeting-header,
+  .zen-imminent-meeting-badge {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .zen-imminent-meeting-subtitle,
+  .zen-imminent-meeting-title {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: inherit;
+    opacity: 0.72;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .zen-imminent-meeting-join-button {
+    appearance: none;
+    border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.2));
+    background: light-dark(#ffffff, #000000);
+    color: light-dark(#000000, #ffffff) !important;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+:root[dark] .zen-imminent-meeting-join-button,
+:root[zen-theme-dark="true"] .zen-imminent-meeting-join-button {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+:root:not([dark]):not([zen-theme-dark="true"]) .zen-imminent-meeting-join-button {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+:root:not([zen-sidebar-expanded="true"]) .zen-imminent-meeting-banner {
+  padding: 4px 2px;
+  margin: 4px auto;
+  justify-content: center;
+
+  .zen-imminent-meeting-info {
+    display: none;
+  }
+
+  .zen-imminent-meeting-join-button {
+    padding: 4px 6px;
+  }
+}

@@ -53,6 +53,9 @@ zen-bookmark-edit-panel-workspace-selector =
     .value = Spaces
     .accesskey = S
 
+zen-bookmark-edit-panel-workspace-expander =
+    .tooltiptext = Show all spaces
+
 zen-panel-ui-gradient-generator-algo-complementary =
     .label = Complementary
 zen-panel-ui-gradient-generator-algo-splitComplementary =

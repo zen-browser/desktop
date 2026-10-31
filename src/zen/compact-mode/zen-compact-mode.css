@@ -63,3 +63,32 @@
 %include toolbar.inc.css
   }
 }
+
+/* In DOM fullscreen (e.g. videos) the sidebar behaves like in compact mode, even if compact
+ * mode is disabled: hidden, and sliding in when hovering the screen edge.
+ * Set by ZenCompactMode.mjs, see zen.view.compact.show-sidebar-in-fullscreen */
+:root[inDOMFullscreen='true'][zen-fullscreen-sidebar='true']:not([customizing]) {
+
+%include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css
+
+  & #urlbar {
+    visibility: visible;
+  }
+
+%include sidebar.inc.css
+
+  /* The fullscreen content must not be shrunk by the compact mode margins. Same selector
+   * as in sidebar.inc.css so this one wins */
+  &:not([zen-compact-animating]) #zen-tabbox-wrapper {
+    margin: 0 !important;
+  }
+
+  /* Overrides Firefox's fullscreen-and-pointerlock.css, which collapses the toolbox */
+  #navigator-toolbox {
+    visibility: visible;
+  }
+
+  #navigator-toolbox:not([animate='true']) {
+    z-index: 2147483647;
+  }
+}

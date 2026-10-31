@@ -34,6 +34,24 @@ window.gZenVerticalTabsManager = {
     window.addEventListener("ZenCompactMode:LayoutUpdate", () =>
       this._updateEvent()
     );
+    // The fullscreen sidebar uses the compact mode layout, even if compact mode is disabled
+    for (const eventName of [
+      "MozDOMFullscreen:Entered",
+      "MozDOMFullscreen:Exited",
+    ]) {
+      window.addEventListener(eventName, event => {
+        const wasInDOMFullscreen = this._inDOMFullscreen;
+        this._inDOMFullscreen =
+          event.type === "MozDOMFullscreen:Entered" &&
+          this._showSidebarInFullscreen;
+        if (
+          wasInDOMFullscreen !== this._inDOMFullscreen &&
+          !gZenCompactModeManager.preference
+        ) {
+          this._updateEvent();
+        }
+      });
+    }
     this.initRightSideOrderContextMenu();
     this.initSetProfileContextMenu();
 
@@ -408,7 +426,8 @@ window.gZenVerticalTabsManager = {
 
       const topButtons = document.getElementById("zen-sidebar-top-buttons");
       const isCompactMode =
-        gZenCompactModeManager.preference && !forCustomizableMode;
+        (gZenCompactModeManager.preference || this._inDOMFullscreen) &&
+        !forCustomizableMode;
       const isVerticalTabs = this._prefsVerticalTabs || forCustomizableMode;
       const isSidebarExpanded = this._prefsSidebarExpanded || !isVerticalTabs;
       const isRightSide = this._prefsRightSide && isVerticalTabs;
@@ -750,6 +769,13 @@ window.gZenVerticalTabsManager = {
     }
   },
 };
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenVerticalTabsManager,
+  "_showSidebarInFullscreen",
+  "zen.view.compact.show-sidebar-in-fullscreen",
+  false
+);
 
 XPCOMUtils.defineLazyPreferenceGetter(
   gZenVerticalTabsManager,

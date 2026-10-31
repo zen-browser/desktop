@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Cluaisín scoilte
-            [1] Amharc scoilte a chur leis...
+            [-1] Scoilt Amach Cluaisín
+            [1] Cuir Radharc Scoilte Leis...
            *[other] Ceangail le { $tabCount } Cluaisíní
         }
     .accesskey = S
 zen-split-link = 
-    .label = Scoilt nasc chuig cluaisín nua
+    .label = Scoilt Nasc chuig Cluaisín Nua
     .accesskey = S
 zen-split-view-modifier-header = Radharc Scoilte
 zen-split-view-modifier-activate-reallocation = 

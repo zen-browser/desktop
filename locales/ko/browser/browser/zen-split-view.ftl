@@ -6,7 +6,7 @@ tab-zen-split-tabs =
     .label =
         { $tabCount ->
             [-1] 탭 나누기
-            [1] 나눠진 탭 추가...
+            [1] 새 나눠진 탭
            *[other] { $tabCount }개 탭 합치기
         }
     .accesskey = S

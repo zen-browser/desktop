@@ -7,7 +7,7 @@ tab-zen-split-tabs =
         { $tabCount ->
             [-1] Dela upp flik
             [1] Lägg till delad vy...
-           *[other] Gå med i { $tabCount } flikar
+           *[other] Lägg till i { $tabCount } flikar
         }
     .accesskey = S
 zen-split-link = 

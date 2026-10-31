@@ -11,7 +11,7 @@ tab-zen-split-tabs =
         }
     .accesskey = S
 zen-split-link = 
-    .label = Link splitsen naar nieuw tabblad
+    .label = Koppeling openen in gesplitste weergave
     .accesskey = S
 zen-split-view-modifier-header = Gesplitste weergave
 zen-split-view-modifier-activate-reallocation = 

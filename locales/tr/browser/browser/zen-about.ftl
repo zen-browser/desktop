@@ -5,58 +5,58 @@
 # The engine this build is based on, not meant to be translated.
 -zen-engine-name = Firefox
 zen-about-dialog-title = 
-    .title = About { -brand-full-name }
+    .title = { -brand-full-name } Hakkında
 zen-about-app-name = { -brand-full-name }
 # Variables:
 #   $version (String): Zen version, e.g. 1.24b
 #   $arch (String): CPU architecture, e.g. 64-bit or aarch64
-zen-about-version = Version { $version } ({ $arch })
+zen-about-version = Sürüm { $version } ({ $arch })
 # Variables:
 #   $version (String): Zen version, e.g. 1.25t
 #   $isodate (String): build date in ISO format, e.g. 2026-10-29
 #   $arch (String): CPU architecture, e.g. 64-bit or aarch64
-zen-about-version-twilight = Version { $version } ({ $isodate }) ({ $arch })
+zen-about-version-twilight = Sürüm { $version } ({ $isodate }) ({ $arch })
 zen-about-version-button = 
-    .title = Copy build information
-zen-about-copied = Copied
+    .title = Yapı bilgilerini kopyala
+zen-about-copied = Kopyalandı
 # Variables:
 #   $firefoxVersion (String): engine version this build is based on, e.g. 159.0
-zen-about-firefox-version = Based on { -zen-engine-name } { $firefoxVersion }
+zen-about-firefox-version = { -zen-engine-name } { $firefoxVersion } tabanlı
 
 ## Update status
 
-zen-about-update-check = Check for updates
-zen-about-update-check-again = Check again
-zen-about-update-try-again = Try again
-zen-about-update-checking = Checking for updates…
-zen-about-update-up-to-date = { -brand-short-name } is up to date
+zen-about-update-check = Güncellemeleri kontrol et
+zen-about-update-check-again = Tekrar kontrol et
+zen-about-update-try-again = Tekrar dene
+zen-about-update-checking = Güncellemeler kontrol ediliyor…
+zen-about-update-up-to-date = { -brand-short-name } güncel
 # Variables:
 #   $version (String): the version that can be downloaded, e.g. 1.25b
-zen-about-update-available = { -brand-short-name } { $version } is available
-zen-about-update-download = Download and install
+zen-about-update-available = { -brand-short-name } { $version } mevcut
+zen-about-update-download = İndir ve yükle
 # Variables:
 #   $transfer (String): download progress, e.g. 12.3 of 90.1 MB
-zen-about-update-downloading = Downloading update — { $transfer }
-zen-about-update-applying = Applying update…
-zen-about-update-ready = The update is ready to install
-zen-about-update-restart = Restart to update
-zen-about-update-restarting = Restarting…
-zen-about-update-download-failed = The update could not be downloaded
-zen-about-update-checking-failed = Could not check for updates
-zen-about-update-internal-error = Updates are unavailable because of an internal error
-zen-about-update-download-manually = Download manually
-zen-about-update-manual = A new version is available on the download page
-zen-about-update-policy-disabled = Updates are disabled by your organization
-zen-about-update-other-instance = { -brand-short-name } is being updated by another instance
-zen-about-update-unsupported = This system can no longer receive updates
-zen-about-update-learn-more = Learn more
+zen-about-update-downloading = Güncelleme indiriliyor — { $transfer }
+zen-about-update-applying = Güncelleme uygulanıyor…
+zen-about-update-ready = Güncelleme yüklenmeye hazır
+zen-about-update-restart = Güncellemek için yeniden başlat
+zen-about-update-restarting = Yeniden başlatılıyor…
+zen-about-update-download-failed = Güncelleme indirilemedi
+zen-about-update-checking-failed = Güncellemeler kontrol edilemedi
+zen-about-update-internal-error = İç hata nedeniyle güncellemeler kullanılamıyor
+zen-about-update-download-manually = El ile indir
+zen-about-update-manual = İndirme sayfasında yeni bir sürüm mevcut
+zen-about-update-policy-disabled = Güncellemeler kuruluşunuz tarafından devre dışı bırakıldı
+zen-about-update-other-instance = { -brand-short-name } başka bir örnek tarafından güncelleniyor
+zen-about-update-unsupported = Bu sistem artık güncelleme alamıyor
+zen-about-update-learn-more = Daha fazla bilgi alın
 
 ## Links
 
-zen-about-release-notes = What’s new
-zen-about-donate = Donate
-zen-about-report-issue = Report an issue
-zen-about-community = { -brand-short-name } is free and open source, built on { -zen-engine-name } by a <a data-l10n-name="github-link">community of contributors</a>.
-zen-about-license = License
-zen-about-rights = Your rights
-zen-about-privacy = Privacy
+zen-about-release-notes = Yenilikler
+zen-about-donate = Bağış yap
+zen-about-report-issue = Sorun bildir
+zen-about-community = { -brand-short-name }, <a data-l10n-name="github-link">katkıda bulunan topluluk</a> tarafından { -zen-engine-name } üzerinde oluşturulmuş, ücretsiz ve açık kaynaklı bir yazılımdır.
+zen-about-license = Lisans
+zen-about-rights = Haklarınız
+zen-about-privacy = Gizlilik

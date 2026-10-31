@@ -1798,6 +1798,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
 
     this.#prepareTabForFullOpen();
+    // Expanding from a pinned parent can leave the (unpinned) tab in the
+    // pinned section DOM. Later Ctrl+T inserts stack there (gh-15937).
+    this.#ensureExpandedTabInNormalSection();
 
     gZenVerticalTabsManager.animateItemOpen(this.#currentTab);
 
@@ -1851,6 +1854,32 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       .classList.remove("zen-glance-background");
     this.#currentParentTab._visuallySelected = false;
     gBrowser.TabStateFlusher.flush(this.#currentTab.linkedBrowser);
+  }
+
+  /**
+   * If an expanded glance tab is still under the pinned section, move it into
+   * the normal tabs strip.
+   */
+  #ensureExpandedTabInNormalSection() {
+    const tab = this.#currentTab;
+    if (
+      !tab ||
+      tab.pinned ||
+      !tab.closest(".zen-workspace-pinned-tabs-section")
+    ) {
+      return;
+    }
+    const strip = gZenWorkspaces.activeWorkspaceStrip;
+    if (!strip) {
+      return;
+    }
+    const empty = gZenWorkspaces._emptyTab;
+    if (empty?.parentElement === strip) {
+      empty.after(tab);
+    } else {
+      strip.insertBefore(tab, strip.lastChild);
+    }
+    gBrowser.tabContainer?._invalidateCachedTabs();
   }
 
   /**

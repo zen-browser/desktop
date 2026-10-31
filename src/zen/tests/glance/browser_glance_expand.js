@@ -75,11 +75,70 @@ add_task(async function test_Glance_Basic_Open() {
       gBrowser.visibleTabs.find(tab => !tab.pinned),
       "The glance tab should be the first normal tab (Ignoring empty tabs)"
     );
+    ok(
+      glanceTab.closest(".zen-workspace-normal-tabs-section"),
+      "Expanded glance from a pinned parent should land in the normal section"
+    );
     BrowserTestUtils.removeTab(glanceTab);
   }, false);
 
   for (const tab of tabsToRemove) {
     await BrowserTestUtils.removeTab(tab);
+  }
+});
+
+// Regression test for gh-15937: expanding a glance from a pinned tab must
+// place it in the normal section, and a following new tab must not stack in
+// the saved/pinned area.
+add_task(async function test_Glance_Expand_From_Pinned_Then_New_Tab() {
+  const tabsToRemove = [];
+  await BrowserTestUtils.openNewForegroundTab(
+    window.gBrowser,
+    "https://example.com/",
+    true
+  );
+  gBrowser.pinTab(gBrowser.selectedTab);
+  tabsToRemove.push(gBrowser.selectedTab);
+
+  gBrowser.selectedTab = gBrowser.tabs.find(tab => tab.pinned);
+
+  await openGlanceOnTab(async glanceTab => {
+    await gZenGlanceManager.fullyOpenGlance();
+    ok(!glanceTab.pinned, "Expanded glance tab should not be pinned");
+    ok(
+      !glanceTab.closest(".zen-workspace-pinned-tabs-section"),
+      "Expanded glance tab should not remain in the pinned section DOM"
+    );
+    ok(
+      glanceTab.closest(".zen-workspace-normal-tabs-section"),
+      "Expanded glance tab should be in the normal tabs section"
+    );
+
+    gBrowser.selectedTab = tabsToRemove[0];
+    const newTab = await BrowserTestUtils.openNewForegroundTab(
+      window.gBrowser,
+      "https://example.com/new",
+      true
+    );
+    tabsToRemove.push(newTab);
+
+    ok(!newTab.pinned, "New tab opened from a pinned tab should not be pinned");
+    ok(
+      !newTab.closest(".zen-workspace-pinned-tabs-section"),
+      "New tab should not appear in the pinned/saved tabs section"
+    );
+    ok(
+      newTab.closest(".zen-workspace-normal-tabs-section"),
+      "New tab should be in the normal tabs section"
+    );
+
+    BrowserTestUtils.removeTab(glanceTab);
+  }, false);
+
+  for (const tab of tabsToRemove) {
+    if (!tab.closing) {
+      await BrowserTestUtils.removeTab(tab);
+    }
   }
 });
 

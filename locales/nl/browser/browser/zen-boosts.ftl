@@ -54,7 +54,7 @@ zen-boost-receive-made-for = Made for
 zen-boost-receive-by = by
 zen-boost-receive-info = 
     .tooltiptext = About this Boost
-zen-boost-receive-info-text = Boost creator names are not verified. Boosts can change how a page looks using CSS and visual filters. They can't run code or send your data anywhere. This Boost will only run on { $domain }.
+zen-boost-receive-info-text = Auteurs van Boosts zijn ongeverifieerd. Boosts kunnen het uiterlijk van een pagina veranderen door middel van CSS en visuele filters. Ze kunnen geen code uitvoeren en je data niet versturen. Deze Boost werkt alleen op {$domain}.
 zen-boost-receive-title = Add this Boost to Zen?
 # The span carries the Library icon in front of the word.
 zen-boost-receive-description = Try it on! You can always switch back from the <span data-l10n-name="library">Library</span>.

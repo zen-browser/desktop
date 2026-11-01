@@ -317,6 +317,11 @@ body,
     :root[zen-right-side="true"] & {
       order: 1;
     }
+    /* Keep the expanded right sidebar's controls at the outside edge when
+     * compact mode moves them into the navigation toolbar. */
+    :root[zen-right-side="true"][zen-sidebar-expanded="true"]:not([zen-single-toolbar="true"]) & {
+      order: 3;
+    }
   }
 }
 

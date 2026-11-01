@@ -1063,6 +1063,15 @@ zen-library {
     height: 100%;
     align-items: center;
 
+    /* Keep the compact-mode toggle at the outer edge when it moves between
+     * the right sidebar and the navigation toolbar. */
+    :root[zen-right-side="true"][zen-sidebar-expanded="true"]:not(
+        [zen-single-toolbar="true"]
+      )
+      & {
+      justify-content: flex-end;
+    }
+
     #nav-bar & {
       padding-inline-end: var(--toolbarbutton-padding-outer);
     }

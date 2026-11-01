@@ -419,3 +419,47 @@ menuseparator {
 .tab-preview-thumbnail-container > canvas {
   border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
 }
+
+/* ==========================================================================
+   Modern Zen Chrome Tooltips
+   ========================================================================== */
+
+tooltip:not(#remoteBrowserTooltip):not([contenttooltip]):not([page="true"]) {
+  appearance: none !important;
+  -moz-default-appearance: none !important;
+  -moz-window-shadow: none !important;
+  border-radius: 16px !important;
+  border-top-left-radius: 4px !important;
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
+  padding: 5px 9px 6px 9px !important;
+  font-weight: 600 !important;
+  font-size: smaller !important;
+  background: color-mix(in srgb, var(--zen-primary-color, transparent), light-dark(white 85%, black 80%)) !important;
+  color: light-dark(#1c1c1f, #f3f3f3) !important;
+  box-shadow: none !important;
+}
+
+#tabbrowser-tab-tooltip .places-tooltip-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+#tabbrowser-tab-tooltip .places-tooltip-uri {
+  font-size: smaller;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+#back-button-tooltip-description,
+#forward-button-tooltip-description {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+#back-button-tooltip > .tooltip-label:last-child,
+#forward-button-tooltip > .tooltip-label:last-child {
+  font-size: smaller;
+  font-weight: 400;
+  opacity: 0.7;
+}
+

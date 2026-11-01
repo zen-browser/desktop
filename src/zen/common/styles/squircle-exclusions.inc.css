@@ -32,6 +32,7 @@
 .reusable-relay-masks > button,
 .radio-check,
 #zen-loading-progress-bar,
-#statuspanel-label {
+#statuspanel-label,
+tooltip {
   corner-shape: round;
 }

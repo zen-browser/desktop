@@ -13,7 +13,7 @@ const lazy = XPCOMUtils.declareLazy({
   },
 });
 
-const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
+const BOOST_SHEET_TYPE = Ci.nsIStyleSheetService.USER_SHEET;
 
 export class nsZenBoostStyles {
   #stylesCache = new Map();
@@ -44,7 +44,7 @@ export class nsZenBoostStyles {
   invalidateStyleForDomain(domain) {
     if (this.#stylesCache.has(domain)) {
       const { uri } = this.#stylesCache.get(domain);
-      lazy.styleSheetService.unregisterSheet(uri, AGENT_SHEET);
+      lazy.styleSheetService.unregisterSheet(uri, BOOST_SHEET_TYPE);
       this.#stylesCache.delete(domain);
     }
   }

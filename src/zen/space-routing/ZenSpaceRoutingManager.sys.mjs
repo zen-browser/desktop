@@ -543,21 +543,14 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
-   * Opens the Space Routing editor in a new popup window.
+   * Shows the routes, which live in the library.
    *
-   * @param {Window} parentWindow - The parent browser window
-   * @returns {Window|null} The instanced editor window
+   * @param {Window} parentWindow - The window to show them in
    */
-  async openSpaceRoutingDialog(parentWindow) {
-    await parentWindow.gDialogBox.open(
-      "chrome://browser/content/zen-components/windows/zen-space-routing.xhtml",
-      {
-        features: "resizable=no",
-        sizeTo: "available",
-        allowDuplicateDialogs: false,
-        parentWindow,
-      }
-    );
+  openSpaceRoutingSettings(parentWindow) {
+    // The library is a custom element of the window it belongs to, which is
+    // the only place a shared module can reach it from.
+    parentWindow.customElements.get("zen-library")?.toggle("space-routing");
   }
 
   /**
@@ -676,7 +669,8 @@ class nsZenSpaceRoutingManager {
 
     newRoute.reference = routeReference;
     this.updateRoute(newRoute);
-    this.openSpaceRoutingDialog(parentWindow);
+    this.saveRoutes();
+    this.openSpaceRoutingSettings(parentWindow);
   }
 
   /**

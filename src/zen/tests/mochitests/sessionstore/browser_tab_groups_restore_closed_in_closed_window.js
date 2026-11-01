@@ -65,7 +65,9 @@ add_task(async function test_restoreClosedTabGroupFromClosedWindow() {
 
   await TabStateFlusher.flushWindow(win);
 
-  const closedTabGroups = SessionStore.getClosedTabGroups(win);
+  const closedTabGroups = SessionStore.getClosedTabGroups({
+    sourceWindow: win,
+  });
   Assert.equal(closedTabGroups.length, 1, "there should be a closed tab group");
   Assert.equal(
     closedTabGroups[0].id,

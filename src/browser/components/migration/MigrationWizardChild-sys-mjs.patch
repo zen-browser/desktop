@@ -1,0 +1,55 @@
+diff --git a/browser/components/migration/MigrationWizardChild.sys.mjs b/browser/components/migration/MigrationWizardChild.sys.mjs
+index 5b817c59eb8857184d7835676f9651972a0d8657..88a52542684d1073729c6836b2c56110564bce5a 100644
+--- a/browser/components/migration/MigrationWizardChild.sys.mjs
++++ b/browser/components/migration/MigrationWizardChild.sys.mjs
+@@ -59,7 +59,8 @@ export class MigrationWizardChild extends JSWindowActorChild {
+   async #populateMigrators(
+     allowOnlyFileMigrators,
+     migratorKey,
+-    fileImportErrorMessage
++    fileImportErrorMessage,
++    profileId
+   ) {
+     let migrators = await this.sendQuery("GetAvailableMigrators");
+     let hasBrowserMigrators = migrators.some(migrator => {
+@@ -80,6 +81,7 @@ export class MigrationWizardChild extends JSWindowActorChild {
+         page: MigrationWizardConstants.PAGES.SELECTION,
+         showImportAll: lazy.SHOW_IMPORT_ALL_PREF,
+         migratorKey,
++        profileId,
+         fileImportErrorMessage,
+       });
+     }
+@@ -99,7 +101,11 @@ export class MigrationWizardChild extends JSWindowActorChild {
+     switch (event.type) {
+       case "MigrationWizard:RequestState": {
+         this.#sendTelemetryEvent("opened");
+-        await this.#requestState(event.detail?.allowOnlyFileMigrators);
++        await this.#requestState(
++          event.detail?.allowOnlyFileMigrators,
++          event.detail?.migratorKey,
++          event.detail?.profileId
++        );
+         break;
+       }
+ 
+@@ -195,12 +201,17 @@ export class MigrationWizardChild extends JSWindowActorChild {
+     }
+   }
+ 
+-  async #requestState(allowOnlyFileMigrators) {
++  async #requestState(allowOnlyFileMigrators, migratorKey, profileId) {
+     this.setComponentState({
+       page: MigrationWizardConstants.PAGES.LOADING,
+     });
+ 
+-    await this.#populateMigrators(allowOnlyFileMigrators);
++    await this.#populateMigrators(
++      allowOnlyFileMigrators,
++      migratorKey,
++      undefined,
++      profileId
++    );
+ 
+     this.#wizardEl.dispatchEvent(
+       new this.contentWindow.CustomEvent("MigrationWizard:Ready", {

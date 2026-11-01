@@ -1,26 +1,26 @@
 diff --git a/layout/generic/nsTextPaintStyle.cpp b/layout/generic/nsTextPaintStyle.cpp
-index 9dba72de611cd84ed07805f5ce40f882071240f0..782dea67f6d975ba5b7daa1e2e2ed862f7941952 100644
+index 4d6730747617d5591370e27a71ff969118c97137..e3dadadf928132f2050f693d6a7605729f26257f 100644
 --- a/layout/generic/nsTextPaintStyle.cpp
 +++ b/layout/generic/nsTextPaintStyle.cpp
-@@ -240,7 +240,7 @@ bool nsTextPaintStyle::GetTargetTextColor(nscolor* aForeColor) {
-       (mTargetTextPseudoStyle->HasAuthorSpecifiedTextColor() ||
-        mTargetTextPseudoStyle->HasAuthorSpecifiedBorderOrBackground())) {
+@@ -239,7 +239,7 @@ bool nsTextPaintStyle::GetTargetTextColor(nscolor* aForeColor) {
+       (mTargetTextPseudoStyle->HasAuthorOrUserSpecifiedTextColor() ||
+        mTargetTextPseudoStyle->HasAuthorOrUserSpecifiedBorderOrBackground())) {
      *aForeColor = mTargetTextPseudoStyle->GetVisitedDependentColor(
 -        &nsStyleText::mWebkitTextFillColor);
 +        &nsStyleText::mWebkitTextFillColor, mFrame);
-     return mTargetTextPseudoStyle->HasAuthorSpecifiedTextColor();
+     return mTargetTextPseudoStyle->HasAuthorOrUserSpecifiedTextColor();
    }
    *aForeColor = LookAndFeel::Color(
-@@ -257,7 +257,7 @@ bool nsTextPaintStyle::GetTargetTextBackgroundColor(nscolor* aBackColor) {
-       (mTargetTextPseudoStyle->HasAuthorSpecifiedTextColor() ||
-        mTargetTextPseudoStyle->HasAuthorSpecifiedBorderOrBackground())) {
+@@ -256,7 +256,7 @@ bool nsTextPaintStyle::GetTargetTextBackgroundColor(nscolor* aBackColor) {
+       (mTargetTextPseudoStyle->HasAuthorOrUserSpecifiedTextColor() ||
+        mTargetTextPseudoStyle->HasAuthorOrUserSpecifiedBorderOrBackground())) {
      *aBackColor = mTargetTextPseudoStyle->GetVisitedDependentColor(
 -        &nsStyleBackground::mBackgroundColor);
 +        &nsStyleBackground::mBackgroundColor, mFrame);
      return NS_GET_A(*aBackColor) != 0;
    }
    *aBackColor = LookAndFeel::Color(
-@@ -295,7 +295,8 @@ bool nsTextPaintStyle::GetCustomHighlightTextColor(nsAtom* aHighlightName,
+@@ -294,7 +294,8 @@ bool nsTextPaintStyle::GetCustomHighlightTextColor(nsAtom* aHighlightName,
      return false;
    }
  
@@ -28,9 +28,9 @@ index 9dba72de611cd84ed07805f5ce40f882071240f0..782dea67f6d975ba5b7daa1e2e2ed862
 +  *aForeColor =
 +      highlightStyle->GetVisitedDependentColor(&nsStyleText::mColor, mFrame);
  
-   return highlightStyle->HasAuthorSpecifiedTextColor();
+   return highlightStyle->HasAuthorOrUserSpecifiedTextColor();
  }
-@@ -317,7 +318,7 @@ bool nsTextPaintStyle::GetCustomHighlightBackgroundColor(nsAtom* aHighlightName,
+@@ -316,7 +317,7 @@ bool nsTextPaintStyle::GetCustomHighlightBackgroundColor(nsAtom* aHighlightName,
    }
  
    *aBackColor = highlightStyle->GetVisitedDependentColor(
@@ -40,8 +40,8 @@ index 9dba72de611cd84ed07805f5ce40f882071240f0..782dea67f6d975ba5b7daa1e2e2ed862
  }
  
 @@ -463,9 +464,9 @@ bool nsTextPaintStyle::InitSelectionColorsAndShadow() {
-     if (mSelectionPseudoStyle->HasAuthorSpecifiedTextColor() ||
-         mSelectionPseudoStyle->HasAuthorSpecifiedBorderOrBackground()) {
+     if (mSelectionPseudoStyle->HasAuthorOrUserSpecifiedTextColor() ||
+         mSelectionPseudoStyle->HasAuthorOrUserSpecifiedBorderOrBackground()) {
        mSelectionBGColor = mSelectionPseudoStyle->GetVisitedDependentColor(
 -          &nsStyleBackground::mBackgroundColor);
 -      mSelectionTextColor =

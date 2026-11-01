@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
         content/browser/zen-styles/zen-boosts.css                               (../../zen/boosts/zen-boosts.css)
+        content/browser/zen-styles/zen-boosts-share.css                         (../../zen/boosts/zen-boosts-share.css)
         content/browser/zen-styles/content/zen-zap.css                          (../../zen/boosts/zen-zap.css)
         content/browser/zen-styles/zen-zap-bar.css                              (../../zen/boosts/zen-zap-bar.css)
         content/browser/zen-components/ZenZapBar.mjs                            (../../zen/boosts/ZenZapBar.mjs)
@@ -12,6 +13,11 @@
         # Windows
 *       content/browser/zen-components/windows/zen-boost-editor.xhtml           (../../zen/boosts/zen-boost-editor.inc.xhtml)
         content/browser/zen-components/windows/zen-boost-editor.js              (../../zen/boosts/zen-boost-editor.js)
+*       content/browser/zen-components/windows/zen-boost-share.xhtml            (../../zen/boosts/zen-boost-share.inc.xhtml)
+        content/browser/zen-components/windows/zen-boost-share.js               (../../zen/boosts/zen-boost-share.js)
+*       content/browser/zen-components/windows/zen-boost-receive.xhtml          (../../zen/boosts/zen-boost-receive.inc.xhtml)
+        content/browser/zen-components/windows/zen-boost-receive.js             (../../zen/boosts/zen-boost-receive.js)
 
         # Images
         content/browser/zen-images/boost-indicator.svg                          (../../zen/images/boost-indicator.svg)
+        content/browser/zen-images/boost-share-heart.png                        (../../zen/images/boost-share-heart.png)

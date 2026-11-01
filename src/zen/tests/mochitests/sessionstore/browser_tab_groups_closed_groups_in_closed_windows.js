@@ -29,7 +29,7 @@ add_task(async function test_closedTabGroupsInClosedWindows() {
   await TabStateFlusher.flushWindow(win);
 
   Assert.equal(
-    SessionStore.getClosedTabGroups(win).length,
+    SessionStore.getClosedTabGroups({ sourceWindow: win }).length,
     0,
     "should start with no closed tab groups"
   );

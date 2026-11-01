@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.mjs b/browser/components/tabbrowser/content/tabgroup.mjs
-index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b2680088854a71 100644
+index 98ebd520d6d3ee5e7519a3ad6ff46c1beaba185a..552ebbede385ff271daabe37b59140a2a8224467 100644
 --- a/browser/components/tabbrowser/content/tabgroup.mjs
 +++ b/browser/components/tabbrowser/content/tabgroup.mjs
-@@ -17,11 +17,11 @@ const { TabMetrics } = ChromeUtils.importESModule(
+@@ -20,11 +20,11 @@ const { TabMetrics } = ChromeUtils.importESModule(
  export class MozTabbrowserTabGroup extends MozXULElement {
    static markup = `
      <vbox class="tab-group-label-container" pack="center">
@@ -17,7 +17,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
      <vbox class="tab-group-overflow-count-container" pack="center">
        <label class="tab-group-overflow-count" role="button" />
      </vbox>
-@@ -93,21 +93,37 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -90,21 +90,37 @@ export class MozTabbrowserTabGroup extends MozXULElement {
    }
  
    connectedCallback() {
@@ -59,7 +59,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
  
      this._initialized = true;
      this.saveOnWindowClose = true;
-@@ -136,11 +152,14 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -133,11 +149,14 @@ export class MozTabbrowserTabGroup extends MozXULElement {
  
      this.#labelContainerElement.addEventListener("mouseover", this);
      this.#labelContainerElement.addEventListener("mouseout", this);
@@ -79,15 +79,15 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
  
      this.#updateLabelAriaAttributes();
  
-@@ -154,17 +173,21 @@ export class MozTabbrowserTabGroup extends MozXULElement {
-     let tabGroupCreateDetail = this.#wasCreatedByAdoption
-       ? { isAdoptingGroup: true }
-       : {};
+@@ -148,17 +167,21 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+       ".tab-group-overflow-count"
+     );
+ 
 +    if (!this.hasAttribute('drag-image')) {
      this.dispatchEvent(
        new CustomEvent("TabGroupCreate", {
          bubbles: true,
-         detail: tabGroupCreateDetail,
+         detail: { adopting: this.#wasCreatedByAdoption },
        })
      );
 +    }
@@ -101,7 +101,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
  
    resetDefaultGroupName = () => {
      this.#defaultGroupName = "";
-@@ -199,10 +222,18 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -193,13 +216,21 @@ export class MozTabbrowserTabGroup extends MozXULElement {
      if (!this.#tabChangeObserver) {
        this.#tabChangeObserver = new window.MutationObserver(mutations => {
          if (!this.tabs.length) {
@@ -109,7 +109,10 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
 +            return;
 +          }
            this.dispatchEvent(
-             new CustomEvent("TabGroupRemoved", { bubbles: true })
+             new CustomEvent("TabGroupRemoved", {
+               bubbles: true,
+               detail: { adopting: this.#removedByAdoption },
+             })
            );
 -          this.remove();
 +          gZenVerticalTabsManager.animateItemClose(this).then(() => {
@@ -121,7 +124,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
            Services.obs.notifyObservers(
              this,
              "browser-tabgroup-removed-from-dom"
-@@ -247,7 +278,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -244,7 +275,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
          }
        });
      }
@@ -133,7 +136,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
    }
  
    get color() {
-@@ -353,6 +387,9 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -350,6 +384,9 @@ export class MozTabbrowserTabGroup extends MozXULElement {
    }
  
    set collapsed(val) {
@@ -143,7 +146,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
      if (!!val == this.collapsed) {
        return;
      }
-@@ -373,6 +410,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -370,6 +407,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
      const eventName = val ? "TabGroupCollapse" : "TabGroupExpand";
      this.dispatchEvent(new CustomEvent(eventName, { bubbles: true }));
  
@@ -154,7 +157,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
      let pendingAnimationPromises = this.tabs.flatMap(tab =>
        tab
          .getAnimations()
-@@ -436,7 +477,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -433,7 +474,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
          tabGroupName,
        })
        .then(result => {
@@ -162,7 +165,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
        });
    }
  
-@@ -511,9 +551,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -508,9 +548,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
     *
     * @returns {false}
     */
@@ -172,7 +175,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
  
    /**
     * @returns {null}
-@@ -522,10 +559,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -519,10 +556,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
      return null;
    }
  
@@ -186,7 +189,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
      return null;
    }
  
-@@ -533,13 +570,61 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -530,13 +567,61 @@ export class MozTabbrowserTabGroup extends MozXULElement {
     * @returns {MozTabbrowserTab[]}
     */
    get tabs() {
@@ -253,7 +256,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
    }
  
    /**
-@@ -659,9 +744,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -667,9 +752,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
          });
        } else {
          if (tabOrSplitView.pinned) {
@@ -263,7 +266,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
          }
          let tabToMove =
            this.documentGlobal === tabOrSplitView.documentGlobal
-@@ -724,7 +806,7 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -732,7 +814,7 @@ export class MozTabbrowserTabGroup extends MozXULElement {
     */
    on_click(event) {
      let isToggleElement =
@@ -272,7 +275,7 @@ index 282fdbdf2ec30ac3ce7c508b8769e5c555f67ea7..9f708e9b02ebc07261d8029ca6b26800
        event.target === this.#overflowCountLabel;
      if (isToggleElement && event.button === 0) {
        event.preventDefault();
-@@ -803,4 +885,5 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+@@ -812,4 +894,5 @@ export class MozTabbrowserTabGroup extends MozXULElement {
    }
  }
  

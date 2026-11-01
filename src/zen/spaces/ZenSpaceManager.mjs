@@ -10,6 +10,8 @@ import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  ZenKeyboardShortcuts:
+    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
@@ -1709,9 +1711,18 @@ class nsZenWorkspaces {
   }
 
   #deleteAllUnpinnedTabsInWorkspace(tabs) {
+    if (
+      !gBrowser.warnAboutClosingTabs(
+        tabs.length,
+        window.Tabbrowser.closingTabsEnum.OTHER
+      )
+    ) {
+      return false;
+    }
     gBrowser.removeTabs(tabs, {
       closeWindowWithLastTab: false,
     });
+    return true;
   }
 
   #deleteWorkspaceOwnedTabs(workspaceID) {
@@ -3201,10 +3212,13 @@ class nsZenWorkspaces {
     if (!closableTabs.length) {
       return;
     }
-    this.#deleteAllUnpinnedTabsInWorkspace(closableTabs);
+    if (!this.#deleteAllUnpinnedTabsInWorkspace(closableTabs)) {
+      return;
+    }
 
     const restoreClosedTabsShortcut =
-      gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
+      lazy.ZenKeyboardShortcuts.getShortcutDisplayFromCommand(
+        window,
         "History:RestoreLastClosedTabOrWindowOrSession"
       );
 

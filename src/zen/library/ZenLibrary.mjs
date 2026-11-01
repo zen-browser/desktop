@@ -28,11 +28,14 @@ ChromeUtils.defineESModuleGetters(
       "moz-src:///zen/library/sections/ZenLibraryMediaSection.mjs",
     ZenLibrarySpacesSection:
       "moz-src:///zen/library/sections/ZenLibrarySpacesSection.mjs",
+    ZenLibrarySpaceRoutingSection:
+      "moz-src:///zen/library/sections/ZenLibrarySpaceRoutingSection.mjs",
   },
   { global: "current" }
 );
 
 const LAST_TAB_PREF = "zen.library.last-tab";
+const HIDDEN_TABS_PREF = "zen.library.hidden-tabs";
 const CLEANUP_DELAY_MS = 30000;
 const IDLE_CLEANUP_TIMEOUT_MS = 2000;
 
@@ -90,11 +93,15 @@ export class ZenLibrary extends MozLitElement {
 
   static properties = {
     _activeTab: { type: String },
+    customizing: { type: Boolean, state: true },
   };
 
   constructor() {
     super();
     this.zenLibrarySections = {
+      ...(!window.gZenWorkspaces.privateWindowOrDisabled
+        ? { "space-routing": lazy.ZenLibrarySpaceRoutingSection }
+        : {}),
       media: lazy.ZenLibraryMediaSection,
       downloads: lazy.ZenLibraryDownloadsSection,
       boosts: lazy.ZenLibraryBoostsSection,
@@ -105,9 +112,70 @@ export class ZenLibrary extends MozLitElement {
         : {}),
       history: lazy.ZenLibraryHistorySection,
     };
+    this.customizing = false;
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
     this.#mounted.add(this.activeTab);
+  }
+
+  #tabsObserver = {
+    observe: () => this.requestUpdate(),
+  };
+
+  /** @returns {Set<string>} The sections taken out of the rail */
+  get #hiddenTabs() {
+    return new Set(
+      Services.prefs
+        .getStringPref(HIDDEN_TABS_PREF, "")
+        .split(",")
+        .map(id => id.trim())
+        .filter(Boolean)
+    );
+  }
+
+  /** @returns {object[]} The sections the rail shows as it stands */
+  get #railSections() {
+    const hidden = this.#hiddenTabs;
+    return Object.values(this.zenLibrarySections).filter(
+      Section => this.customizing || !hidden.has(Section.id)
+    );
+  }
+
+  #toggleCustomizing() {
+    this.customizing = !this.customizing;
+    this.toggleAttribute("customizing", this.customizing);
+    if (this.#customizeButton) {
+      this.#customizeButton.toggleAttribute("checked", this.customizing);
+    }
+  }
+
+  /**
+   * Takes a section out of the rail, or puts it back.
+   *
+   * @param {string} id - The section a tab stands for
+   */
+  #toggleTabHidden(id) {
+    const hidden = this.#hiddenTabs;
+    if (hidden.has(id)) {
+      hidden.delete(id);
+    } else {
+      // The rail is of no use with nothing left in it.
+      const sections = Object.values(this.zenLibrarySections);
+      if (sections.length - hidden.size < 2) {
+        return;
+      }
+      hidden.add(id);
+    }
+    Services.prefs.setStringPref(HIDDEN_TABS_PREF, [...hidden].join(","));
+    if (hidden.has(this.activeTab)) {
+      const next = Object.values(this.zenLibrarySections).find(
+        Section => !hidden.has(Section.id)
+      );
+      if (next) {
+        this.activeTab = next.id;
+      }
+    }
+    this.requestUpdate();
   }
 
   static get isLibraryOpen() {
@@ -131,6 +199,12 @@ export class ZenLibrary extends MozLitElement {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("unload", this, { once: true });
+    Services.prefs.addObserver(HIDDEN_TABS_PREF, this.#tabsObserver);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    Services.prefs.removeObserver(HIDDEN_TABS_PREF, this.#tabsObserver);
   }
 
   set isHidden(value) {
@@ -495,6 +569,10 @@ export class ZenLibrary extends MozLitElement {
     } else if (target === 0) {
       lib.#isOpen = false;
       lib.#canSwipe = false;
+      // Choosing the rail's tabs is over with the library it was done in.
+      if (lib.customizing) {
+        lib.#toggleCustomizing();
+      }
       lib.#tellSection("onLibraryClosing");
     }
 
@@ -914,6 +992,12 @@ export class ZenLibrary extends MozLitElement {
     if (!this.hasAttribute("open") || e.key !== "Escape") {
       return;
     }
+    for (const section of this._content?.children ?? []) {
+      if (section.dataset?.section === this.activeTab && section.onEscape?.()) {
+        e.preventDefault();
+        return;
+      }
+    }
     const focused = document.activeElement;
     if (
       focused?.closest("zen-library") === this &&
@@ -945,6 +1029,12 @@ export class ZenLibrary extends MozLitElement {
         command: () => ZenLibrary.animateProgress(0),
       },
       {
+        image: "chrome://browser/skin/zen-icons/paintbrush-fill.svg",
+        l10nId: "library-footer-customize-button",
+        id: "zen-library-customize-button",
+        command: () => this.#toggleCustomizing(),
+      },
+      {
         image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
         l10nId: "library-footer-donate-button",
         command: () => {
@@ -954,15 +1044,21 @@ export class ZenLibrary extends MozLitElement {
       },
     ];
 
-    for (const { image, l10nId, command } of buttons) {
+    for (const { image, l10nId, id, command } of buttons) {
       const button = document.createXULElement("toolbarbutton");
       button.className = "toolbarbutton-1";
       button.setAttribute("image", image);
       button.setAttribute("data-l10n-id", l10nId);
+      if (id) {
+        button.id = id;
+        this.#customizeButton = button;
+      }
       button.addEventListener("command", command);
       footer.appendChild(button);
     }
   }
+
+  #customizeButton = null;
 
   updated(changedProperties) {
     super.updated?.(changedProperties);
@@ -1009,14 +1105,18 @@ export class ZenLibrary extends MozLitElement {
         <vbox id="zen-library-side">
           <vbox id="zen-library-header"></vbox>
           <vbox id="zen-library-sidebar-tabs">
-            ${Object.values(this.zenLibrarySections).map(
+            ${this.#railSections.map(
               Section => html`
                 <vbox
                   class="zen-library-tab"
                   ?active=${this.activeTab === Section.id}
+                  ?hidden-tab=${this.#hiddenTabs.has(Section.id)}
                   data-section=${Section.id}
                   @contextmenu=${event => this.#openTabMenu(event, Section)}
                   @click=${event => {
+                    if (this.customizing) {
+                      return;
+                    }
                     if (this.activeTab !== Section.id) {
                       this.activeTab = Section.id;
                       const previousTab =
@@ -1036,6 +1136,33 @@ export class ZenLibrary extends MozLitElement {
                   <label
                     data-l10n-id=${Section.tabLabel ?? Section.label}
                   ></label>
+                  ${
+                    this.customizing
+                      ? html`
+                          <button
+                            class="zen-library-tab-toggle no-squircles"
+                            data-l10n-id=${
+                              this.#hiddenTabs.has(Section.id)
+                                ? "library-tab-restore-button"
+                                : "library-tab-remove-button"
+                            }
+                            @click=${event => {
+                              event.stopPropagation();
+                              this.#toggleTabHidden(Section.id);
+                            }}
+                          >
+                            <img
+                              src=${
+                                this.#hiddenTabs.has(Section.id)
+                                  ? "chrome://browser/skin/zen-icons/plus.svg"
+                                  : "chrome://browser/skin/zen-icons/close.svg"
+                              }
+                              alt=""
+                            />
+                          </button>
+                        `
+                      : nothing
+                  }
                 </vbox>
               `
             )}

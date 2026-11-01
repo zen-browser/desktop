@@ -27,7 +27,7 @@ add_task(async function test_TODO() {
 
   EventUtils.synthesizeMouseAtCenter(
     window.document.getElementById("firefox-view-button"),
-    { type: "mousedown" },
+    {},
     window
   );
   Assert.ok(window.FirefoxViewHandler.tab.selected);

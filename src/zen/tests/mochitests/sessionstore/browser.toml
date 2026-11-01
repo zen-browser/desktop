@@ -67,20 +67,11 @@ run-if = [
 ]
 
 ["browser_async_remove_tab.js"]
-skip-if = [
-  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && opt", # Bug 1787024
-  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && asan", # Bug 1787024
-  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && asan", # Bug 1787024
-]
 
 ["browser_async_window_flushing.js"]
 https_first_disabled = true
 skip-if = [
   "os == 'mac' && os_version == '10.15' && arch == 'x86_64' && opt", # Bug 1775616
-  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && asan", # Bug 1775616
-  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && asan", # Bug 1775616
-  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && opt", # Bug 1775616
-  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && opt", # Bug 1775616
 ]
 
 ["browser_attributes.js"]
@@ -213,8 +204,6 @@ skip-if = [
   "os == 'mac' && os_version == '10.15' && arch == 'x86_64' && opt", # Bug 1638958
   "os == 'mac' && os_version == '14.70' && arch == 'x86_64' && opt && socketprocess_networking", # Bug 1868915
   "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Disabled due to bleedover with other tests when run in regular suites; passes in "failures" jobs
-  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && opt", # Bug 1775605
-  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && opt", # Bug 1775605
 ]
 
 ["browser_movePendingTabToNewWindow.js"]
@@ -314,9 +303,6 @@ disabled="Disabled by import_external_tests.py"
 
 ["browser_restored_window_features.js"]
 disabled="Disabled by import_external_tests.py"
-skip-if = [
-  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
-]
 
 ["browser_revive_crashed_bg_tabs.js"]
 https_first_disabled = true
@@ -355,14 +341,11 @@ skip-if = [
   "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && debug && socketprocess_networking", # Bug 1848488
   "os == 'win' && os_version == '11.26100' && arch == 'x86' && debug && verify-standalone",
   "os == 'win' && os_version == '11.26200' && arch == 'x86' && debug && verify-standalone",
-  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && debug", # Bug 1848488
-  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && debug", # Bug 1848488
 ]
 
 ["browser_sizemodeBeforeMinimized.js"]
 skip-if = [
   "os == 'linux' && os_version == '22.04' && arch == 'x86_64'", # Bug 2057856
-  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
 ]
 
 ["browser_speculative_connect.js"]
@@ -386,8 +369,6 @@ disabled="Disabled by import_external_tests.py"
 disabled="Disabled by import_external_tests.py"
 skip-if = [
   "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && debug && socketprocess_networking", # Bug 1934803
-  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && debug", # Bug 1934803
-  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && debug", # Bug 1934803
 ]
 
 ["browser_tab_groups_closed_groups_in_closed_windows.js"]
@@ -404,9 +385,6 @@ disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_restore_closed_many_tabs.js"]
 disabled="Disabled by import_external_tests.py"
-skip-if = [
-  "os == 'mac' && os_version == '15.30' && arch == 'aarch64' && opt", # Bug 1954300
-]
 
 ["browser_tab_groups_restore_multiple.js"]
 disabled="Disabled by import_external_tests.py"
@@ -434,19 +412,12 @@ disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_saved.js"]
 disabled="Disabled by import_external_tests.py"
-skip-if = [
-  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && opt", # Bug 1945957
-]
 
 ["browser_tab_groups_state.js"]
 disabled="Disabled by import_external_tests.py"
 
 ["browser_tab_groups_undo.js"]
 disabled="Disabled by import_external_tests.py"
-
-skip-if = [
-  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 2023967
-]
 
 ["browser_tab_label_during_restore.js"]
 disabled="Disabled by import_external_tests.py"
@@ -478,7 +449,6 @@ run-if = [
 ["browser_upgrade_backup.js"]
 skip-if = [
   "asan",
-  "tsan",
 ]
 
 ["browser_urlbarSearchMode.js"]

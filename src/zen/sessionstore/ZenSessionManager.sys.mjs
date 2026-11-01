@@ -911,16 +911,17 @@ export class nsZenSessionManager {
     }
     this.log("Restoring new window with Zen session data");
     void lazy.SessionStore.getCurrentState(true);
-    // We want to iterate all windows except from aWindow.__SSi (string).
+    // We want to iterate all windows except from aWindow's own ID (string).
     // SessionStoreInternal._windows is an object, with the ID as key and the
     // window data as value, so we need to filter out the values that have the
-    // same ID as aWindow.__SSi. but lets filter it into an array to make it easier to work with.
+    // same ID as aWindow's. but lets filter it into an array to make it easier to work with.
     let windows = [];
+    const currentWindowId = SessionStoreInternal.getWindowId(aWindow);
     for (const winKey of Object.keys(SessionStoreInternal._windows)) {
       const winData = SessionStoreInternal._windows[winKey];
       if (
         winData &&
-        winKey !== aWindow.__SSi &&
+        winKey !== currentWindowId &&
         !winData.isPrivate &&
         !winData.isPopup &&
         !winData.isTaskbarTab &&

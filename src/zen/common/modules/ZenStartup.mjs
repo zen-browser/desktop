@@ -43,7 +43,6 @@ class ZenStartup {
       return;
     }
     this.#hasInitializedLayout = true;
-    gZenKeyboardShortcutsManager.beforeInit();
     try {
       const kNavbarItems = ["nav-bar", "PersonalToolbar"];
       const kNewContainerId = "zen-appcontent-navbar-container";
@@ -63,6 +62,12 @@ class ZenStartup {
 
       // overlap and interaction issues with vertical tabs
       document.getElementById("browser").prepend(deckTemplate);
+
+      // global notifications (e.g. captive portal) live in this toolbar, keep it
+      // out of the sidebar so compact mode doesn't hide them along with it
+      document
+        .getElementById("browser")
+        .prepend(document.getElementById("notifications-toolbar"));
 
       gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
@@ -166,6 +171,7 @@ class ZenStartup {
 
   #checkForWelcomePage() {
     const kWelcomeScreenSeenPref = "zen.welcome-screen.seen";
+    const kWelcomeScreenAlwaysShowPref = "zen.welcome-screen.always-show";
     if (Services.env.get("MOZ_HEADLESS")) {
       Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
       return;
@@ -175,7 +181,10 @@ class ZenStartup {
     if (BrowserHandler.kiosk) {
       return;
     }
-    if (!Services.prefs.getBoolPref(kWelcomeScreenSeenPref, false)) {
+    if (
+      !Services.prefs.getBoolPref(kWelcomeScreenSeenPref, false) ||
+      Services.prefs.getBoolPref(kWelcomeScreenAlwaysShowPref, false)
+    ) {
       Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
       Services.prefs.setStringPref(
         "zen.updates.last-build-id",

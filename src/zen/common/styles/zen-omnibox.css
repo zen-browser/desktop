@@ -20,7 +20,7 @@
   --urlbarview-separator-color: light-dark(rgb(233, 233, 233), rgb(46 46 47));
   --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
-  --urlbarView-results-padding: 12px !important;
+  --urlbarview-results-padding: 12px !important;
   --urlbar-container-height: 48px !important;
   --urlbar-input-container-border: none;
 
@@ -122,8 +122,12 @@
   border-radius: 0 !important;
 }
 
-#urlbar:not([breakout-extend]) .urlbar-input {
-  color: color-mix(in srgb, var(--input-color, FieldText) 70%, transparent);
+#urlbar:not([breakout-extend]) {
+  --toolbar-field-text-color: var(--toolbar-color);
+
+  .urlbar-input {
+    color: var(--toolbar-field-text-color);
+  }
 }
 
 #urlbar .urlbar-input-box {
@@ -244,11 +248,6 @@
   margin-bottom: auto !important;
 }
 
-#tracking-protection-icon-container,
-#page-action-buttons {
-  order: 2 !important;
-}
-
 #urlbar[breakout-extend] {
   z-index: 2;
 
@@ -320,7 +319,7 @@
   }
 
   &:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) #identity-box {
-    order: 2;
+    order: 3;
   }
 
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
@@ -643,9 +642,9 @@
 }
 
 .urlbarView-row {
-  --urlbarView-row-padding-inline: 8px;
+  --urlbarview-row-padding-inline: 8px;
   --urlbarview-row-padding-block: 10px;
-  --urlbarView-row-gutter: 0px;
+  --urlbarview-row-gutter: 0px;
 
   border-block: 2px solid transparent;
   color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) !important;
@@ -692,7 +691,7 @@
   max-height: 244px;
   overflow-y: auto;
   scrollbar-width: none;
-  margin-block-end: calc(var(--urlbarView-results-padding) - 2px);
+  margin-block-end: calc(var(--urlbarview-results-padding) - 2px);
   padding-block-end: 0 !important;
 
   & .action-contextualidentity {
@@ -706,7 +705,7 @@
   }
 
   #urlbar-results {
-    margin-block: calc(var(--urlbarView-results-padding) - 2px);
+    margin-block: calc(var(--urlbarview-results-padding) - 2px);
   }
 
   #identity-box {

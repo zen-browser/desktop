@@ -84,16 +84,14 @@ add_task(async function () {
             r =>
               !(
                 // We expect all changes to be within the tab strip.
-                (
-                  r.y1 >= tabStripRect.top &&
-                  r.y2 <= tabStripRect.bottom &&
-                  r.x1 >= tabStripRect.left &&
-                  r.x2 <= tabStripRect.right &&
-                  // The tab selection changes between 2 adjacent tabs, so we expect
-                  // both to change color at once: this should be a single rect of the
-                  // width of 2 tabs.
-                  inRange(r.w, minTabWidth, maxTabWidth * 2)
-                )
+                r.y1 >= tabStripRect.top &&
+                r.y2 <= tabStripRect.bottom &&
+                r.x1 >= tabStripRect.left &&
+                r.x2 <= tabStripRect.right &&
+                // The tab selection changes between 2 adjacent tabs, so we expect
+                // both to change color at once: this should be a single rect of the
+                // width of 2 tabs.
+                inRange(r.w, minTabWidth, maxTabWidth * 2)
               )
           ),
         exceptions: [

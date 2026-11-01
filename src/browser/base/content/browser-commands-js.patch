@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index 757c5b16612c96f327798f9e47c83144668074f0..1a10a321ee05f2ec84f33f087d8c0e43035fc18b 100644
+index 757c5b16612c96f327798f9e47c83144668074f0..1b843dc5aeb942e4d108110b18e67fdd2cec6f0d 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
 @@ -13,6 +13,10 @@ var BrowserCommands = {
@@ -13,7 +13,15 @@ index 757c5b16612c96f327798f9e47c83144668074f0..1a10a321ee05f2ec84f33f087d8c0e43
        try {
          gBrowser.goBack();
        } catch (ex) {}
-@@ -252,6 +256,10 @@ var BrowserCommands = {
+@@ -232,6 +236,7 @@ var BrowserCommands = {
+       event?.button == 1 &&
+       Services.prefs.getBoolPref("middlemouse.paste") &&
+       gMiddleClickNewTabUsesPasteboard;
++    searchClipboard ||= gZenUIManager.newTabButtonWantsClipboard(event);
+ 
+     let relatedToCurrent = false;
+     let where = "tab";
+@@ -252,6 +257,10 @@ var BrowserCommands = {
        }
      }
  
@@ -24,7 +32,7 @@ index 757c5b16612c96f327798f9e47c83144668074f0..1a10a321ee05f2ec84f33f087d8c0e43
      // A notification intended to be useful for modular peformance tracking
      // starting as close as is reasonably possible to the time when the user
      // expressed the intent to open a new tab.  Since there are a lot of
-@@ -374,6 +382,14 @@ var BrowserCommands = {
+@@ -374,6 +383,14 @@ var BrowserCommands = {
        return;
      }
  

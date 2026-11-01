@@ -1,37 +1,26 @@
 diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/components/sessionstore/SessionWriter.sys.mjs
 --- a/browser/components/sessionstore/SessionWriter.sys.mjs
 +++ b/browser/components/sessionstore/SessionWriter.sys.mjs
-@@ -80,10 +80,14 @@
-       return await SessionWriterInternal.wipe();
-     } finally {
-       unlock();
-     }
-   },
-+
-+  get _jsonLengthHint() {
-+    return SessionWriterInternal._lastJsonLength;
-+  },
- };
+@@ -82,10 +82,18 @@ export const SessionWriter = new (class {
  
- const SessionWriterInternal = {
-   // Path to the files used by the SessionWriter
-   Paths: null,
-@@ -104,10 +108,14 @@
-   /**
-    * Number of old upgrade backups that are being kept
-    */
-   maxUpgradeBackups: null,
+   #maxSerializeForward = null;
+ 
+   #upgradeBackupNeeded = false;
  
 +  // Estimated JSON string length from the previous write, used to pre-size
 +  // the serialization buffer and avoid incremental reallocations.
-+  _lastJsonLength: 0,
++  #lastJsonLength = 0;
++
++  get _jsonLengthHint() {
++    return this.#lastJsonLength;
++  }
 +
    /**
     * Initialize (or reinitialize) the writer.
     *
     * @param {string} origin Which of sessionstore.js or its backups
     *   was used. One of the `STATE_*` constants defined above.
-@@ -201,48 +209,60 @@
+@@ -190,48 +198,68 @@ export const SessionWriter = new (class {
          }
        }
  
@@ -40,7 +29,7 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
 +      // Add 5% headroom to the hint so small growth between saves doesn't
 +      // cause reallocs. The compressed-size-based estimate already has
 +      // sufficient margin from the 4x multiplier.
-+      let jsonLengthHint = Math.ceil(this._lastJsonLength * 1.05);
++      let jsonLengthHint = Math.ceil(this.#lastJsonLength * 1.05);
 +
 +      let uncompressedBytes;
  
@@ -50,58 +39,73 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
          // originally present and valid, it has been moved to
          // $Paths.cleanBackup a long time ago. We can therefore write
          // with the guarantees that we erase no important data.
--        await IOUtils.writeJSON(this.Paths.clean, state, {
-+        uncompressedBytes = await IOUtils.writeJSON(this.Paths.clean, state, {
-           tmpPath: this.Paths.clean + ".tmp",
+-        await IOUtils.writeJSON(this.#paths.clean, state, {
++        uncompressedBytes = await IOUtils.writeJSON(this.#paths.clean, state, {
+           tmpPath: this.#paths.clean + ".tmp",
            compress: true,
 +          lengthHint: jsonLengthHint,
          });
-         fileStat = await IOUtils.stat(this.Paths.clean);
-       } else if (this.state == STATE_RECOVERY) {
+         fileStat = await IOUtils.stat(this.#paths.clean);
+       } else if (this.#state == STATE_RECOVERY) {
          // At this stage, either $Paths.recovery was written >= 15
          // seconds ago during this session or we have just started
          // from $Paths.recovery left from the previous session. Either
          // way, $Paths.recovery is good. We can move $Path.backup to
          // $Path.recoveryBackup without erasing a good file with a bad
          // file.
--        await IOUtils.writeJSON(this.Paths.recovery, state, {
-+        uncompressedBytes = await IOUtils.writeJSON(this.Paths.recovery, state, {
-           tmpPath: this.Paths.recovery + ".tmp",
-           backupFile: this.Paths.recoveryBackup,
-           compress: true,
-+          lengthHint: jsonLengthHint,
-         });
-         fileStat = await IOUtils.stat(this.Paths.recovery);
+-        await IOUtils.writeJSON(this.#paths.recovery, state, {
+-          tmpPath: this.#paths.recovery + ".tmp",
+-          backupFile: this.#paths.recoveryBackup,
+-          compress: true,
+-        });
++        uncompressedBytes = await IOUtils.writeJSON(
++          this.#paths.recovery,
++          state,
++          {
++            tmpPath: this.#paths.recovery + ".tmp",
++            backupFile: this.#paths.recoveryBackup,
++            compress: true,
++            lengthHint: jsonLengthHint,
++          }
++        );
+         fileStat = await IOUtils.stat(this.#paths.recovery);
        } else {
          // In other cases, either $Path.recovery is not necessary, or
          // it doesn't exist or it has been corrupted. Regardless,
          // don't backup $Path.recovery.
--        await IOUtils.writeJSON(this.Paths.recovery, state, {
-+        uncompressedBytes = await IOUtils.writeJSON(this.Paths.recovery, state, {
-           tmpPath: this.Paths.recovery + ".tmp",
-           compress: true,
-+          lengthHint: jsonLengthHint,
-         });
-         fileStat = await IOUtils.stat(this.Paths.recovery);
+-        await IOUtils.writeJSON(this.#paths.recovery, state, {
+-          tmpPath: this.#paths.recovery + ".tmp",
+-          compress: true,
+-        });
++        uncompressedBytes = await IOUtils.writeJSON(
++          this.#paths.recovery,
++          state,
++          {
++            tmpPath: this.#paths.recovery + ".tmp",
++            compress: true,
++            lengthHint: jsonLengthHint,
++          }
++        );
+         fileStat = await IOUtils.stat(this.#paths.recovery);
        }
  
        telemetry.writeFileMs = Date.now() - startWriteMs;
        telemetry.fileSizeBytes = fileStat.size;
 +      // Use the actual pre-compression size from this write as the hint
 +      // for the next write's buffer allocation.
-+      this._lastJsonLength = uncompressedBytes.jsonLength;
++      this.#lastJsonLength = uncompressedBytes.jsonLength;
        lazy.sessionStoreLogger.debug(
          `SessionWriter.write wrote ${telemetry.fileSizeBytes} bytes in ${telemetry.writeFileMs}ms`
        );
      } catch (ex) {
        // Don't throw immediately
-@@ -375,10 +395,11 @@
+@@ -373,10 +401,11 @@ export const SessionWriter = new (class {
      } catch (ex) {
        exn = exn || ex;
      }
  
-     this.state = STATE_EMPTY;
-+    this._lastJsonLength = 0;
+     this.#state = STATE_EMPTY;
++    this.#lastJsonLength = 0;
      if (exn) {
        throw exn;
      }

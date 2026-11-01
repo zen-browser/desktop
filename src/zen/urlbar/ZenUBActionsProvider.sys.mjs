@@ -33,6 +33,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
+  ZenKeyboardShortcuts:
+    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -385,7 +387,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
             : queryContext.searchString,
         icon: action.icon,
         shortcutContent:
-          ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
+          lazy.ZenKeyboardShortcuts.getShortcutDisplayFromCommand(
+            ownerGlobal,
             action.command
           ),
         keywords: action.label.split(" "),

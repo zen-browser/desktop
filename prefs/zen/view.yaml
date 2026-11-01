@@ -37,6 +37,9 @@
 - name: zen.view.show-newtab-button-top
   value: true
 
+- name: zen.view.show-scroll-to-selected-tab
+  value: true
+
 - name: zen.view.window.scheme
   value: 2
 

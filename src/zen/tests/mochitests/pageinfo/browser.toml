@@ -13,9 +13,6 @@ skip-if = [
 ]
 
 ["browser_pageinfo_images.js"]
-skip-if = [
-  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
-]
 support-files = [
   "all_images.html",
   "../../../../browser/base/content/test/browser-general/moz.png",
@@ -32,7 +29,6 @@ support-files = [
 ]
 skip-if = [
   "asan",
-  "tsan",
   "verify", # bug 1997129
 ]
 

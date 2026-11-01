@@ -24,6 +24,17 @@ const SPACE_DOC = {
         icon: "chrome://browser/skin/zen-icons/selectable/star.svg",
         items: [
           { type: "tab", url: "https://example.com/sub", label: "Sub tab" },
+          {
+            type: "folder",
+            name: "Papers",
+            items: [
+              {
+                type: "tab",
+                url: "https://example.com/paper",
+                label: "Paper",
+              },
+            ],
+          },
         ],
       },
       {
@@ -153,6 +164,19 @@ add_task(async function test_import_space() {
 
   const folder = element.querySelector("zen-folder");
   Assert.ok(folder.collapsed, "imported folders start collapsed");
+  const subfolder = folder.querySelector("zen-folder");
+  Assert.equal(subfolder?.label, "Papers", "nested folders import");
+  Assert.ok(subfolder.collapsed, "nested folders start collapsed too");
+  Assert.ok(folder.collapsed, "adding a subfolder does not expand the parent");
+  Assert.deepEqual(
+    folder.allItemsRecursive
+      .filter(
+        item => gBrowser.isTab(item) && !item.hasAttribute("zen-empty-tab")
+      )
+      .map(tab => tab.label),
+    ["Sub tab", "Paper"],
+    "lazy folder tabs keep their shared labels"
+  );
   Assert.equal(
     folder.iconURL,
     "chrome://browser/skin/zen-icons/selectable/star.svg",

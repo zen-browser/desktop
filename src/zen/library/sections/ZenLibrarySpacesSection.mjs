@@ -10,6 +10,13 @@ import {
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 import { ZenLibraryDragAndDrop } from "moz-src:///zen/library/ZenLibraryDragAndDrop.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  isLibraryCopy: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  LIBRARY_COPY_ATTRIBUTE: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+});
+
 const GRADIENT_TOPIC = "zen-space-gradient-update";
 const SIZING_FALLBACK_MS = 600;
 const PLUS_BUTTON_WIDTH_PX = 50;
@@ -36,6 +43,20 @@ const STRIP_EVENTS = [
   "TabGroupMoved",
 ];
 const SHOWN_ATTRIBUTES = ["label", "image", "pending", "muted", "soundplaying"];
+
+/**
+ * @param {EventTarget} target - A tab, folder or group an event happened to
+ * @returns {string|null} The space it belongs to, or null when it does not
+ *   say, in which case every card is the safe answer
+ */
+function spaceOf(target) {
+  // Reads the element in hand first for the same reason isLibraryCopy does.
+  return (
+    target?.getAttribute?.("zen-workspace-id") ??
+    target?.closest?.("[zen-workspace-id]")?.getAttribute("zen-workspace-id") ??
+    null
+  );
+}
 
 const CONTAINED_EVENTS = [
   "TabGrouped",
@@ -71,7 +92,10 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #observer = { observe: () => this.requestUpdate() };
   #onDataChanged = () => this.requestUpdate();
   #onStripEvent = event => {
-    if (this.contains(event.target)) {
+    // A copy fires the same events as the real thing while it is being
+    // built, and a copy that has just been thrown away fires them from
+    // outside this element, where `contains` no longer answers for it.
+    if (this.contains(event.target) || lazy.isLibraryCopy(event.target)) {
       return;
     }
     if (
@@ -80,11 +104,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     ) {
       return;
     }
-    this.#scheduleStripsRefresh(
-      event.type === "TabAttrModified"
-        ? event.target.getAttribute("zen-workspace-id")
-        : null
-    );
+    this.#scheduleStripsRefresh(spaceOf(event.target));
   };
   #refreshTimer = null;
   /** @type {Set<string>|null} The spaces to rebuild, or null for every card */
@@ -92,6 +112,8 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #resizeObserver = new ResizeObserver(() => this.#updateLibraryWidth());
   /** @type {IntersectionObserver?} Fills a card once it is in view */
   #cardObserver = null;
+  /** @type {Set<Element>} The cards close enough to be worth building */
+  #cardsInView = new Set();
   #onScroll = event => {
     if (event.target.classList.contains("zen-library-space-body")) {
       this.#updateScrollBorders(event.target);
@@ -141,6 +163,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     super.connectedCallback();
     window.addEventListener("ZenWorkspaceDataChanged", this.#onDataChanged);
     window.addEventListener("ZenWorkspacesUIUpdate", this.#onDataChanged);
+    window.addEventListener("ZenCompactMode:Toggled", this.#onDataChanged);
     Services.obs.addObserver(this.#observer, GRADIENT_TOPIC);
     this.#resizeObserver.observe(this);
     window.addEventListener("dragend", this.#onDragEnd);
@@ -157,6 +180,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     super.disconnectedCallback();
     window.removeEventListener("ZenWorkspaceDataChanged", this.#onDataChanged);
     window.removeEventListener("ZenWorkspacesUIUpdate", this.#onDataChanged);
+    window.removeEventListener("ZenCompactMode:Toggled", this.#onDataChanged);
     Services.obs.removeObserver(this.#observer, GRADIENT_TOPIC);
     this.#resizeObserver.disconnect();
     window.removeEventListener("dragend", this.#onDragEnd);
@@ -201,6 +225,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
 
   onLibraryClosing() {
     this.#cardObserver?.disconnect();
+    this.#cardsInView.clear();
     for (const card of this.#cards) {
       card.querySelector(".zen-library-space-tabs").replaceChildren();
     }
@@ -237,9 +262,15 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     }
     this.#cardObserver ??= new IntersectionObserver(
       entries => {
-        const coming = entries
-          .filter(entry => entry.isIntersecting)
-          .map(entry => entry.target);
+        const coming = [];
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            this.#cardsInView.add(entry.target);
+            coming.push(entry.target);
+          } else {
+            this.#cardsInView.delete(entry.target);
+          }
+        }
         if (coming.length) {
           this.#fillStrips(false, null, coming);
         }
@@ -395,6 +426,10 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       if (rebuild && !strip.childElementCount) {
         continue;
       }
+      if (rebuild && !this.#cardsInView.has(card)) {
+        strip.replaceChildren();
+        continue;
+      }
       const before = rebuild ? this.#rowPositions(strip) : null;
       const space = gZenWorkspaces.workspaceElement(card.dataset.uuid);
       if (!space) {
@@ -494,6 +529,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
    * @param {Element} copy - The copied element, before it is connected
    */
   #renameIds(copy) {
+    copy.setAttribute(lazy.LIBRARY_COPY_ATTRIBUTE, "true");
     for (const element of [copy, ...copy.querySelectorAll("[id]")]) {
       if (element.id) {
         element.id = `${element.id}-copy`;
@@ -745,14 +781,24 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   // Theme
 
   #themeStyles(workspace) {
-    const { gradient, isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
-      gZenThemePicker.getGradientForWorkspace(workspace);
+    const {
+      gradient,
+      toolbarGradient,
+      grain,
+      isDarkMode,
+      isExplicitMode,
+      toolbarColor,
+      primaryColor,
+    } = gZenThemePicker.getGradientForWorkspace(workspace);
     let colorScheme = "";
     if (isExplicitMode) {
       colorScheme = isDarkMode ? "dark" : "light";
     }
     return {
-      "--zen-library-space-gradient": gradient,
+      "--zen-main-browser-background": gradient,
+      "--zen-main-browser-background-toolbar": toolbarGradient,
+      "--zen-background-opacity": 1,
+      "--zen-grainy-background-opacity": grain,
       "--zen-primary-color": primaryColor,
       "--toolbox-textcolor": `rgba(${toolbarColor.join(",")})`,
       colorScheme,
@@ -975,6 +1021,12 @@ export class ZenLibrarySpacesSection extends MozLitElement {
         style=${styleMap(this.#themeStyles(workspace))}
         ?active=${workspace.uuid === gZenWorkspaces.activeWorkspace}
       >
+        <div
+          class="zen-library-space-background zen-browser-generic-background ${gZenCompactModeManager.preference ? "zen-toolbar-background" : ""}"
+          zen-show-grainy-background=${workspace.theme?.texture > 0 ? "true" : "false"}
+        >
+          <div class="zen-browser-grain"></div>
+        </div>
         <div class="zen-library-space-header zen-squircle-before">
           ${this.#renderIcon(workspace)} ${this.#renderName(workspace)}
           <toolbarbutton

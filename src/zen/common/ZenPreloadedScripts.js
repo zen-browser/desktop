@@ -19,7 +19,6 @@
     "chrome://browser/content/ZenUIManager.mjs",
     "resource:///modules/zen/ZenVerticalTabsManager.mjs",
     "chrome://browser/content/zen-components/ZenMods.mjs",
-    "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
     "chrome://browser/content/zen-components/ZenSessionStore.mjs",
     "chrome://browser/content/zen-components/ZenGlanceManager.mjs",
     "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",

@@ -118,7 +118,9 @@ add_task(
 
     await TabStateFlusher.flushWindow(win);
 
-    const closedTabGroups = SessionStore.getClosedTabGroups(win);
+    const closedTabGroups = SessionStore.getClosedTabGroups({
+      sourceWindow: win,
+    });
     Assert.equal(
       closedTabGroups.length,
       1,

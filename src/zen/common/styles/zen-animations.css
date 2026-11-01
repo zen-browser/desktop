@@ -113,6 +113,30 @@
   }
 }
 
+@keyframes zen-dialog-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes zen-dialog-fade-out-shifted {
+  from {
+    opacity: 1;
+    transform: translateY(-10%);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(calc(-10% - 10px));
+  }
+}
+
 @keyframes zen-text-gradient {
   0% {
     background-position: 0% 50%;

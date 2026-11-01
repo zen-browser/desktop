@@ -1,0 +1,12 @@
+diff --git a/browser/components/migration/ChromeMigrationUtils.sys.mjs b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+index 8e9e34c92c85d655216ccf8cb8dfdf9599329e69..eaefa59aa43f9b31a616fc3a5997bc56ab8bf3f6 100644
+--- a/browser/components/migration/ChromeMigrationUtils.sys.mjs
++++ b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+@@ -302,6 +302,7 @@ export var ChromeMigrationUtils = {
+         ],
+         Opera: [["ULibDir", "Application Support", "com.operasoftware.Opera"]],
+         Vivaldi: [["ULibDir", "Application Support", "Vivaldi"]],
++        Dia: [["ULibDir", "Application Support", "Dia", "User Data"]],
+       },
+       linux: {
+         Brave: [["Home", ".config", "BraveSoftware", "Brave-Browser"]],

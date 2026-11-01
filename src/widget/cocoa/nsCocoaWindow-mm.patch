@@ -1,17 +1,20 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df134a59781 100644
+index cd1cbea4e..478bcb670 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -87,6 +87,8 @@
+@@ -90,9 +90,11 @@
  #include "mozilla/StaticPrefs_mozilla.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
 +#include "mozilla/StaticPrefs_zen.h"
-+#include "mozilla/nsZenDragAndDrop.h"
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
-@@ -1333,6 +1335,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
++#include "mozilla/nsZenDragAndDrop.h"
+ #include "mozilla/widget/Screen.h"
+ 
+ #ifdef ACCESSIBILITY
+@@ -1420,6 +1422,115 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
  }
  @end
  
@@ -83,6 +86,11 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
 +void nsCocoaWindow::SetWindowClass(const nsAString& aXulWinType,
 +                                   const nsAString& aXulWinClass,
 +                                   const nsAString& aXulWinName) {
++  if (mWindow && aXulWinType.EqualsLiteral("Zen:BoostEditor")) {
++    [mWindow setZenNeverMain:YES];
++    mWindow.styleMask |= NSWindowStyleMaskNonactivatingPanel;
++    return;
++  }
 +  if (mWindowType != WindowType::TopLevel || mIsBrowserWindow ||
 +      !aXulWinType.EqualsLiteral("navigator:browser")) {
 +    return;
@@ -122,7 +130,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -3908,7 +4014,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+@@ -3990,7 +4101,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -133,7 +141,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
  }
  
  // NSDraggingDestination
-@@ -3924,6 +4032,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+@@ -4006,6 +4119,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -143,7 +151,7 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -4978,6 +5089,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -5060,6 +5176,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
@@ -154,3 +162,32 @@ index fe4c27544a29b8bbf0b99331c9e1bce3038b8e81..84bd5953c6fc71bcd39ec8922ac84df1
    RemoveAllChildren();
    if (mWindow && mWindowMadeHere) {
      CancelAllTransitions();
+@@ -5752,7 +5872,9 @@ static void SyncPopoverBounds(NSPopover* aPopover,
+     } else {
+       NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+       EnsureFrameIsOnScreen();
+-      if (mWindowType == WindowType::TopLevel &&
++      if ((mWindowType == WindowType::TopLevel ||
++           (mWindowType == WindowType::Dialog &&
++            mAnimationType == nsIWidget::eDocumentWindowAnimation)) &&
+           [mWindow respondsToSelector:@selector(setAnimationBehavior:)]) {
+         NSWindowAnimationBehavior behavior;
+         if (mIsAnimationSuppressed) {
+@@ -8316,6 +8438,17 @@ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
+   return [super _validateStyleMask:(aStyleMask & ~keep)] | keep;
+ }
+ 
++- (void)setZenNeverMain:(BOOL)aValue {
++  mZenNeverMain = aValue;
++}
++
++- (BOOL)canBecomeMainWindow {
++  if (mZenNeverMain) {
++    return NO;
++  }
++  return [super canBecomeMainWindow];
++}
++
+ // The frame of a window is implemented using undocumented NSView subclasses.
+ // We offset the window buttons by overriding the method _closeButtonOrigin on
+ // these frame view classes. The class which is

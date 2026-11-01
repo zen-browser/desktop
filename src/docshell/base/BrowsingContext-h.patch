@@ -1,18 +1,19 @@
 diff --git a/docshell/base/BrowsingContext.h b/docshell/base/BrowsingContext.h
-index 6f7f58bba3be6f08b3b27e81f30864c61d683351..2516126365ee9e1c07e245a873efe5f48767aff7 100644
+index 5ad1e3b3d3e3abb0026439b4b21c457d5960ddf9..61b8dc2ebbc4589521fc5c8adbdbcd5a0d1a53d3 100644
 --- a/docshell/base/BrowsingContext.h
 +++ b/docshell/base/BrowsingContext.h
-@@ -265,6 +265,9 @@ struct EmbedderColorSchemes {
-   FIELD(HistoryEntryCount, uint32_t)                                          \
-   FIELD(HasRestoreData, bool)                                                 \
-   FIELD(SessionStoreEpoch, uint32_t)                                          \
-+  FIELD(ZenBoostsData, nscolor)                                               \
-+  FIELD(ZenBoostsComplementaryRotation, float)                                \
-+  FIELD(IsZenBoostsInverted, bool)                                            \
-   /* Whether we can execute scripts in this BrowsingContext. Has no effect    \
-    * unless scripts are also allowed in the parent WindowContext. */          \
-   FIELD(AllowJavascript, bool)                                                \
-@@ -671,6 +674,11 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+@@ -313,6 +313,10 @@ struct EmbedderColorSchemes {
+         {.mTopOnly = true, .mCanSet = CanSet::Unrestricted})                   \
+   FIELD(SessionStoreEpoch, uint32_t,                                           \
+         {.mTopOnly = true, .mCanSet = CanSet::ParentOnly})                     \
++  FIELD(ZenBoostsData, nscolor, {.mCanSet = CanSet::Unrestricted})             \
++  FIELD(ZenBoostsComplementaryRotation, float,                                 \
++        {.mCanSet = CanSet::Unrestricted})                                     \
++  FIELD(IsZenBoostsInverted, bool, {.mCanSet = CanSet::Unrestricted})          \
+   /* Whether we can execute scripts in this BrowsingContext. Has no effect     \
+    * unless scripts are also allowed in the parent WindowContext. */           \
+   FIELD(AllowJavascript, bool,                                                 \
+@@ -733,6 +737,11 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
  
    bool FullscreenAllowed() const;
  
@@ -24,23 +25,13 @@ index 6f7f58bba3be6f08b3b27e81f30864c61d683351..2516126365ee9e1c07e245a873efe5f4
    float FullZoom() const { return GetFullZoom(); }
    float TextZoom() const { return GetTextZoom(); }
  
-@@ -1290,6 +1298,19 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
-   }
+@@ -1360,6 +1369,9 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+   void DidSet(FieldIndex<I>, T&& aOldValue) {}
  
    void DidSet(FieldIndex<IDX_SessionStoreEpoch>, uint32_t aOldValue);
 +  void DidSet(FieldIndex<IDX_ZenBoostsData>, nscolor aOldValue);
 +  void DidSet(FieldIndex<IDX_ZenBoostsComplementaryRotation>, float aOldValue);
 +  void DidSet(FieldIndex<IDX_IsZenBoostsInverted>, bool aOldValue);
-+  bool CanSet(FieldIndex<IDX_ZenBoostsData>, const nscolor&, ContentParent*) {
-+    return true;
-+  }
-+  bool CanSet(FieldIndex<IDX_ZenBoostsComplementaryRotation>, const float&,
-+              ContentParent*) {
-+    return true;
-+  }
-+  bool CanSet(FieldIndex<IDX_IsZenBoostsInverted>, const bool&, ContentParent*) {
-+    return true;
-+  }
  
    // Ensure that opener is in the same BrowsingContextGroup.
    bool CanSet(FieldIndex<IDX_OpenerId>, const uint64_t& aValue,

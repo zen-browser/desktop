@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<?csp default-src chrome: resource:; object-src 'none'; ?>
+
+<window xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="zen-about-dialog"
+        windowtype="Browser:About"
+#ifndef XP_MACOSX
+        data-l10n-id="zen-about-dialog-title"
+#endif
+        role="dialog"
+        aria-describedby="zen-about-version-text zen-about-firefox-version zen-about-update-text">
+#ifdef XP_MACOSX
+#include ../../browser/base/content/macWindow.inc.xhtml
+#else
+  <script src="chrome://browser/content/utilityOverlay.js"/>
+#endif
+
+  <linkset>
+    <html:link rel="stylesheet" href="chrome://global/skin/global.css"/>
+    <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-about.css"/>
+
+    <html:link rel="localization" href="branding/brand.ftl"/>
+    <html:link rel="localization" href="browser/zen-about.ftl"/>
+  </linkset>
+
+  <html:main id="zen-about-content">
+    <html:img id="zen-about-logo" src="chrome://branding/content/about-logo.svg" alt="" draggable="false"/>
+    <html:h1 id="zen-about-name" data-l10n-id="zen-about-app-name"/>
+    <html:p id="zen-about-version" class="zen-about-muted" role="button" tabindex="0" data-l10n-id="zen-about-version-button">
+      <html:span id="zen-about-version-text"/>
+      <html:span id="zen-about-copied" data-l10n-id="zen-about-copied" hidden="hidden"/>
+    </html:p>
+    <html:p id="zen-about-firefox-version" class="zen-about-muted"/>
+
+    <html:section id="zen-about-update" data-state="never-checked" aria-live="polite">
+      <html:div id="zen-about-update-status">
+        <html:img id="zen-about-update-icon" alt=""/>
+        <html:p id="zen-about-update-text"/>
+      </html:div>
+      <html:progress id="zen-about-update-progress" max="100" hidden="hidden"/>
+      <html:button id="zen-about-update-button" hidden="hidden"/>
+    </html:section>
+
+    <html:footer id="zen-about-footer">
+      <html:p id="zen-about-community" class="zen-about-muted" data-l10n-id="zen-about-community">
+        <html:a data-l10n-name="github-link" href="https://github.com/zen-browser/desktop"/>
+      </html:p>
+      <html:div id="zen-about-link-group">
+        <html:nav id="zen-about-links" class="zen-about-muted">
+          <html:a id="zen-about-release-notes" href="" data-l10n-id="zen-about-release-notes"/>
+          <html:a id="zen-about-donate" href="https://www.zen-browser.app/donate" data-l10n-id="zen-about-donate"/>
+          <html:a id="zen-about-issues" href="https://github.com/zen-browser/desktop/issues" data-l10n-id="zen-about-report-issue"/>
+        </html:nav>
+        <html:nav id="zen-about-legal" class="zen-about-muted">
+          <html:a href="about:license" data-l10n-id="zen-about-license"/>
+          <html:a href="about:rights" data-l10n-id="zen-about-rights"/>
+          <html:a href="https://www.zen-browser.app/privacy-policy/" data-l10n-id="zen-about-privacy"/>
+        </html:nav>
+      </html:div>
+    </html:footer>
+  </html:main>
+
+  <keyset>
+    <key id="zen-about-escape-key" keycode="VK_ESCAPE"/>
+  </keyset>
+
+  <script src="chrome://browser/content/zen-components/windows/zen-about.js"/>
+</window>

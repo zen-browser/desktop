@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/design-system/dist/tokens-shared.css b/toolkit/themes/shared/design-system/dist/tokens-shared.css
-index 5564b097da8f2837d4623cd48928640741f0f600..894eef3d2f43db1889438f365f89255fe7b0857d 100644
+index 512b3a36efedb2b8d161d0020023856d42cb1758..a68c8949451667fb0ad6c18b62cc7d3128bf229d 100644
 --- a/toolkit/themes/shared/design-system/dist/tokens-shared.css
 +++ b/toolkit/themes/shared/design-system/dist/tokens-shared.css
 @@ -7,6 +7,8 @@
@@ -11,7 +11,7 @@ index 5564b097da8f2837d4623cd48928640741f0f600..894eef3d2f43db1889438f365f89255f
  :root,
  :host(.anonymous-content-host) {
    @layer tokens-foundation {
-@@ -28,10 +30,10 @@
+@@ -27,10 +29,10 @@
      --border-color-selected: var(--color-accent-primary);
      --border-color-transparent: transparent;
      --border-radius-circle: 9999px;
@@ -26,14 +26,14 @@ index 5564b097da8f2837d4623cd48928640741f0f600..894eef3d2f43db1889438f365f89255f
      --border-width: 1px;
  
      /** box-shadow **/
-@@ -439,8 +441,8 @@
-     --panel-background-color-dimmed-further: var(--background-color-dimmed-further);
+@@ -433,8 +435,8 @@
+     --panel-background-color: light-dark(var(--color-white), rgb(66, 65, 77));
      --panel-border-color: light-dark(rgb(240, 240, 244), rgb(82, 82, 94));
      --panel-border-radius: var(--border-radius-medium);
 -    --panel-box-shadow: 0 0 var(--panel-box-shadow-margin) hsla(0, 0%, 0%, 0.2);
 -    --panel-box-shadow-margin: 4px;
 +    --panel-box-shadow: var(--zen-big-shadow);
 +    --panel-box-shadow-margin: 8px;
+     --panel-footer-background-color: light-dark(color-mix(in srgb, currentColor 12%, transparent), color-mix(in srgb, currentColor 17%, transparent));
+     --panel-footer-text-color: inherit;
      --panel-menuitem-border-radius: var(--border-radius-small);
-     /* Block margin must be 0 so that there's always an item highlighted and no dead space when moving the pointer across items. */
-     --panel-menuitem-margin: 0 var(--panel-menuitem-margin-inline);

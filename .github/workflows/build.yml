@@ -304,9 +304,11 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' }}
         env:
           INPUTS_HASH: ${{ hashFiles('src/zen/common/sys/ZenPGOTraining.sys.mjs', 'src/build/pgo/profileserver-py.patch', 'src/testing/profiles/profileserver/user-js.patch') }}
+          UPDATE_BRANCH: ${{ inputs.update_branch }}
         run: |
-          ff=$(node -p "require('./surfer.json').version.version")
+          ff=$(node -p "const v = require('./surfer.json').version; (process.env.UPDATE_BRANCH !== 'release' && v.candidate && v.candidate !== v.version) ? v.candidate : v.version")
           echo "prefix=pgo-profdata-v2-ff${ff}-${INPUTS_HASH:0:12}" >> "$GITHUB_OUTPUT"
+          echo "Firefox for the profile key: $ff (branch $UPDATE_BRANCH)"
 
       - name: Look up the macOS x86_64 profile
         id: mac-x86
@@ -387,7 +389,7 @@ jobs:
   windows-step-1:
     name: Windows build step 1 (PGO build)
     uses: ./.github/workflows/windows-release-build.yml
-    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && needs.pgo-cache.outputs.windows-cs-hit != 'true' }}
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && (inputs.update_branch == 'twilight' || needs.pgo-cache.outputs.windows-cs-hit != 'true') }}
     needs: [build-data, buildid, pgo-cache]
     permissions:
       contents: write
@@ -403,7 +405,7 @@ jobs:
   windows-step-2:
     name: Windows build step 2 (Generate profile data)
     uses: ./.github/workflows/windows-profile-build.yml
-    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && needs.pgo-cache.outputs.windows-cs-hit != 'true' }}
+    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && (inputs.update_branch == 'twilight' || needs.pgo-cache.outputs.windows-cs-hit != 'true') }}
     permissions:
       contents: write
     secrets: inherit
@@ -417,7 +419,7 @@ jobs:
   windows-step-cs-1:
     name: Windows build step 3a (CS-instrumented build)
     uses: ./.github/workflows/windows-release-build.yml
-    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
+    if: ${{ !inputs.disable-pgo && inputs.update_branch != 'twilight' && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
     permissions:
       contents: write
     secrets: inherit
@@ -436,7 +438,7 @@ jobs:
   windows-step-cs-2:
     name: Windows build step 3b (Generate CS profile data)
     uses: ./.github/workflows/windows-profile-build.yml
-    if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
+    if: ${{ !inputs.disable-pgo && inputs.update_branch != 'twilight' && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
     permissions:
       contents: write
     secrets: inherit
@@ -461,13 +463,13 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
-      cs-pgo: ${{ inputs.disable-pgo && '' || 'use' }}
+      cs-pgo: ${{ (!inputs.disable-pgo && inputs.update_branch != 'twilight') && 'use' || '' }}
       disable-pgo: ${{ inputs.disable-pgo }}
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
-      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-windows-cs', needs.pgo-cache.outputs.prefix) || '' }}
-      pgo-cache-hit: ${{ needs.pgo-cache.outputs.windows-cs-hit == 'true' }}
+      pgo-cache-key-prefix: ${{ needs.pgo-cache.outputs.prefix && format('{0}-{1}', needs.pgo-cache.outputs.prefix, inputs.update_branch == 'twilight' && 'windows' || 'windows-cs') || '' }}
+      pgo-cache-hit: ${{ (inputs.update_branch == 'twilight' && needs.pgo-cache.outputs.windows-hit == 'true') || (inputs.update_branch != 'twilight' && needs.pgo-cache.outputs.windows-cs-hit == 'true') }}
 
   linux:
     name: Linux build
@@ -538,6 +540,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
+    if: ${{ !failure() && !cancelled() }}
     needs: [build-data, mac-step-3]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -629,6 +632,7 @@ jobs:
   release:
     permissions: write-all
     name: Release
+    if: ${{ !failure() && !cancelled() }}
     needs:
       [
         build-data,

@@ -371,7 +371,6 @@ export class SelectorComponent {
    */
   #hideSelectorComponent() {
     this.selectorComponent.style.visibility = "hidden";
-    this.selectorComponent.setAttribute("is-appearing", "false");
   }
 
   /**
@@ -397,8 +396,6 @@ export class SelectorComponent {
     const windowWidth = this.window.innerWidth;
     const windowHeight = this.window.innerHeight;
     const windowPadding = 10;
-
-    this.selectorComponent.setAttribute("is-appearing", "false");
 
     // The component follows the selected element vertically and is centered
     // on the screen horizontally. Both are clamped so it never leaves the
@@ -432,10 +429,6 @@ export class SelectorComponent {
     let originY = this.clamp(targetBottomY - top, 0, zapComponentHeight);
 
     this.selectorComponent.style.transformOrigin = `${originX}px ${originY}px`;
-
-    this.window.requestAnimationFrame(() => {
-      this.selectorComponent.setAttribute("is-appearing", "true");
-    });
   }
 
   /**

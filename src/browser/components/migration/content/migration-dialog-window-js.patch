@@ -1,0 +1,16 @@
+diff --git a/browser/components/migration/content/migration-dialog-window.js b/browser/components/migration/content/migration-dialog-window.js
+index b16a348a35a976f0a3b5d40b47c5bf60ff00bc3a..5af9370d9783c10d9614bbb0ca4b849fa1c84fe9 100644
+--- a/browser/components/migration/content/migration-dialog-window.js
++++ b/browser/components/migration/content/migration-dialog-window.js
+@@ -64,7 +64,10 @@ const MigrationDialog = {
+           args.options.profileId
+         );
+       } else {
+-        this._wiz.requestState();
++        this._wiz.requestState({
++          migratorKey: args.options?.migratorKey,
++          profileId: args.options?.profileId,
++        });
+       }
+     });
+   },

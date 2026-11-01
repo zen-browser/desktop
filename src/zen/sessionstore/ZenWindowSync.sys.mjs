@@ -10,6 +10,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  isLibraryCopy: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   TabStateFlusher:
     "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs",
   // eslint-disable-next-line mozilla/valid-lazy
@@ -19,6 +20,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   RunState: "moz-src:///browser/components/sessionstore/RunState.sys.mjs",
+  SessionStore:
+    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -146,7 +149,7 @@ class nsZenWindowSync {
     *[Symbol.iterator]() {
       for (let window of lazy.BrowserWindowTracker.orderedWindows) {
         if (
-          window.__SSi &&
+          lazy.SessionStore.getWindowId(window) &&
           !window.closed &&
           !window.gZenWorkspaces?.privateWindowOrDisabled
         ) {
@@ -383,9 +386,10 @@ class nsZenWindowSync {
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
     // The library builds copies of tabs and folders that fire these same
-    // events while being built. Their ids are suffixed with "-copy" (see
-    // ZenLibrarySpacesSection#renameIds), so never sync anything from one.
-    if (aEvent.target?.id?.endsWith("-copy")) {
+    // events while being built, and this listens in the capture phase, ahead
+    // of anything the library could do to hold them back. Nothing a copy
+    // says is worth syncing.
+    if (lazy.isLibraryCopy(aEvent.target)) {
       return;
     }
     if (
@@ -708,12 +712,16 @@ class nsZenWindowSync {
       }
       const relativeTab = this.getItemFromWindow(aWindow, originalSibling.id);
       if (relativeTab) {
-        gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(
-          relativeTab,
-          aTargetItem,
-          [aTargetItem],
-          false
-        );
+        try {
+          gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(
+            relativeTab,
+            aTargetItem,
+            [aTargetItem],
+            false
+          );
+        } catch (e) {
+          console.error("ZenWindowSync: failed to animate a synced move", e);
+        }
         relativeTab.after(aTargetItem);
       }
     });
@@ -804,13 +812,17 @@ class nsZenWindowSync {
    * @param {boolean} onClose - Indicates if the swap is done during a tab close operation.
    */
   #withRestoreTabProgressListener(aTab, callback, onClose = false) {
-    const otherTabBrowser = aTab.documentGlobal.gBrowser;
+    const otherTabBrowser = aTab.documentGlobal?.gBrowser;
     const otherBrowser = aTab.linkedBrowser;
 
     // We aren't closing the other tab so, we also need to swap its tablisteners.
-    let filter = otherTabBrowser.zenGetTabProgressFilter(aTab);
-    let tabListener = otherTabBrowser.zenGetTabProgressListener(aTab);
+    // All best effort: a window partway through closing stops answering for
+    // its own tabbrowser, and the swap matters more than the listeners do.
+    let filter;
+    let tabListener;
     try {
+      filter = otherTabBrowser.zenGetTabProgressFilter(aTab);
+      tabListener = otherTabBrowser.zenGetTabProgressListener(aTab);
       otherBrowser.webProgress.removeProgressListener(filter);
       filter.removeProgressListener(tabListener);
     } catch {
@@ -917,14 +929,13 @@ class nsZenWindowSync {
           );
         }
 
-        // Swap permanent keys
+        // Swap permanent keys. A tab reads its own back off the browser, so
+        // the browsers are the only place one lives.
         if (!onClose) {
           const ourPermanentKey = aOurTab.linkedBrowser.permanentKey;
-          const otherPermanentKey = aOtherTab.linkedBrowser.permanentKey;
-          aOurTab.linkedBrowser.permanentKey = otherPermanentKey;
+          aOurTab.linkedBrowser.permanentKey =
+            aOtherTab.linkedBrowser.permanentKey;
           aOtherTab.linkedBrowser.permanentKey = ourPermanentKey;
-          aOurTab.permanentKey = otherPermanentKey;
-          aOtherTab.permanentKey = ourPermanentKey;
         }
 
         // Since we are moving progress listeners around, there's a chance that we

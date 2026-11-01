@@ -3,23 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Roghanna Fillteáin Bheo
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = An tarraingt dheireanach: { $time }
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Athnuaigh
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Cruthaithe agam
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Sannta dom
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Mo Iarratais ar Athbhreithniú
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Cuir Iarratais Tarraingthe Dréachta san Áireamh
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = Fotha RSS
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Eatramh Aisghabhála
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
@@ -33,7 +33,7 @@ zen-live-folder-fetch-interval-hours =
            *[other] { $hours } hours
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Raon Ama
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
@@ -41,7 +41,7 @@ zen-live-folder-time-range-hours =
            *[other] Last { $hours } hours
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = Gach tráth
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
@@ -49,32 +49,32 @@ zen-live-folder-time-range-days =
            *[other] Last { $days } days
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Teorainn Míreanna
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = URL an fhotha
+zen-live-folder-rss-prompt-feed-url = Cuir isteach URL an fhotha, le do thoil
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } mír
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Theip ar an nuashonrú
+    .tooltiptext = Theip ar an nuashonrú. Bain triail as arís.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Gan síniú isteach i GitHub
+    .tooltiptext = Logáil isteach arís ar GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = Níl scagaire socraithe
+    .tooltiptext = Níl aon scagaire socraithe; ní fgheofar aon rud.
+zen-live-folder-rss-invalid-url-title = Theip ar chruthú an Fhillteáin Bheo
+zen-live-folder-rss-invalid-url-description = Tá URL an fhotha neamhbhailí. Seiceáil an seoladh agus bain triail as arís
 zen-live-folder-github-option-repo-filter = 
-    .label = Repositories
+    .label = Stórtha
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull Requests
+    .label = Iarratais Tarraingthe
 zen-live-folder-github-issues = 
-    .label = Issues
+    .label = Ceisteanna
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+    .label = Gintear an liosta seo bunaithe ar na hiarratais tharraingthe atá gníomhach agat faoi láthair.
+zen-live-folders-promotion-title = Fillteán beo cruthaithe!
+zen-live-folders-promotion-description = Beidh an t-ábhar is déanaí ó do chuid fothaí RSS nó ó iarratais tarraingthe GitHub le feiceáil anseo go huathoibríoch.

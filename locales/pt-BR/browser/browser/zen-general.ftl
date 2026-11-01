@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Perfil atual
+zen-panel-ui-current-profile-text = perfil atual
 unified-extensions-description = As extensões são usadas para trazer mais recursos adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =

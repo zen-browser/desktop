@@ -3,78 +3,78 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Live map opties
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Laatst opgehaald: { $time }
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Verversen
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Door mij aangemaakt
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Aan mij toegewezen
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Mijn reviewverzoeken
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Inclusief concept pull requests
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = RSS-feed
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Ophaalinterval
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 minuut
+           *[other] { $mins } minuten
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 uur
+           *[other] { $hours } uur
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Periode
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] Afgelopen uur
+           *[other] Afgelopen { $hours } uur
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = Alles
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] Afgelopen dag
+           *[other] Afgelopen { $days } dagen
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Itemlimiet
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = URL van feed
+zen-live-folder-rss-prompt-feed-url = Voer de URL van de feed in.
 zen-live-folder-rss-option-item-limit-num = 
     .label = { $limit } items
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Bijwerken mislukt
+    .tooltiptext = Bijwerken mislukt. Probeer het opnieuw.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Niet ingelogd bij GitHub
+    .tooltiptext = Log opnieuw in bij GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = Geen filter ingesteld
+    .tooltiptext = Er is geen filter ingesteld, er zal niets worden opgehaald.
+zen-live-folder-rss-invalid-url-title = Aanmaken van de live map is mislukt
+zen-live-folder-rss-invalid-url-description = De feed URL is ongeldig. Controleer het adres en probeer het opnieuw
 zen-live-folder-github-option-repo-filter = 
     .label = Repositories
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull Requests
+    .label = Pull requests
 zen-live-folder-github-issues = 
     .label = Issues
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+    .label = Deze lijst wordt gegenereerd op basis van je actieve pull requests.
+zen-live-folders-promotion-title = Live map aangemaakt!
+zen-live-folders-promotion-description = Hier wordt automatisch de laatste content van je RSS-feeds of GitHub pull requests weergegeven.

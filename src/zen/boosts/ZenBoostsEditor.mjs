@@ -261,12 +261,14 @@ export class nsZenBoostEditor {
       mode: Editor.modes.css,
       lineNumbers: true,
       theme: "mozilla",
-      readOnly: false,
+      readOnly: true,
       gutters: ["CodeMirror-linenumbers"],
     });
 
     await editor.appendTo(container);
+    await editor.setText(this.currentBoostData.customCSS || "");
     editor.refresh();
+    editor.setOption("readOnly", false);
     editor.on("change", this.onCodeEditorChange.bind(this));
 
     this.editorWindow._editor = editor;
@@ -1710,6 +1712,22 @@ ${cssSelector} {
   }
 
   updateAllVisuals() {
+    const defaults = gZenBoostsManager.getEmptyBoostEntry().boostData;
+    for (const [key, value] of Object.entries(defaults)) {
+      this.currentBoostData[key] ??= value;
+    }
+    for (const key of ["dotPos", "secondaryDotPos"]) {
+      this.currentBoostData[key] = {
+        ...defaults[key],
+        ...this.currentBoostData[key],
+      };
+    }
+
+    const css = this.currentBoostData.customCSS || "";
+    if (this.editorWindow._editor.getText() !== css) {
+      this.editorWindow._editor.setText(css);
+    }
+
     this.doc.getElementById("zen-boost-name-text").textContent =
       this.currentBoostData.boostName;
     const dot = this.doc.querySelector("#zen-boost-color-picker-dot-primary");
@@ -1749,8 +1767,6 @@ ${cssSelector} {
 
     dotSec.style.left = `${xPosSec}px`;
     dotSec.style.top = `${yPosSec}px`;
-
-    this.editorWindow._editor.setText(this.currentBoostData.customCSS || "");
 
     this.updateFontButtonVisuals();
     this.updateCaseButtonVisuals();

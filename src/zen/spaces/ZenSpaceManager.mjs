@@ -1376,7 +1376,9 @@ class nsZenWorkspaces {
     // Call parent node as on windows, the text can be double clicked
     let target;
     try {
-      target = event.explicitOriginalTarget?.closest("toolbarbutton");
+      target = (
+        event.target.anchorNode || event.explicitOriginalTarget
+      )?.closest("toolbarbutton");
     } catch (e) {
       console.error("Error getting explicitOriginalTarget in context menu:", e);
     }

@@ -26,7 +26,6 @@ zen-about-firefox-version = Bunaithe ar { -zen-engine-name } { $firefoxVersion }
 ## Update status
 
 zen-about-update-check = Seiceáil le haghaidh nuashonruithe
-zen-about-update-check-again = Seiceáil arís
 zen-about-update-try-again = Déan iarracht arís
 zen-about-update-checking = Ag seiceáil le haghaidh nuashonruithe…
 zen-about-update-up-to-date = Tá { -brand-short-name } cothrom le dáta

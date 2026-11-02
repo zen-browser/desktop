@@ -261,12 +261,14 @@ menuseparator {
 }
 
 .workspace-trigger {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  min-height: var(--input-min-height);
+  padding: var(--space-small);
   text-align: left;
-  padding: var(--zen-space-8) var(--zen-space-12);
   border: 1px solid var(--input-border-color);
-  border-radius: var(--zen-border-radius-4);
-  background-color: var(--zen-colors-tertiary);
+  border-radius: var(--border-radius-medium);
+  background-color: var(--input-background-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -277,12 +279,11 @@ menuseparator {
   width: 100%;
   max-height: var(--zen-bookmark-workspace-list-max-height);
   overflow-y: auto;
-  margin-top: var(--zen-space-4);
-  border: 1px solid var(--zen-colors-border);
-  border-radius: var(--zen-border-radius-4);
-  background-color: var(--zen-colors-tertiary);
-  box-shadow: var(--zen-box-shadow-hairline);
-  padding: var(--zen-space-4) 0;
+  margin-top: 0;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--border-radius-medium);
+  background-color: var(--background-color-box);
+  padding: 4px 0;
 }
 
 #editBMPanel_workspaceList li {

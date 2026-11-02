@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index 58d33bd452aca230a7a6e232f4df4bbe7e34b6af..ff97b799fa6e940fb0937df6c5cd841ad03a40fb 100644
+index 58d33bd452aca230a7a6e232f4df4bbe7e34b6af..a4f23c891e1240fb0937df6c5cd841ad03a40fb1 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
 @@ -279,6 +279,10 @@
@@ -30,14 +30,17 @@ index 58d33bd452aca230a7a6e232f4df4bbe7e34b6af..ff97b799fa6e940fb0937df6c5cd841a
  #include ../../components/customizableui/content/panelUI.inc.xhtml
  #include ../../components/controlcenter/content/identityPanel.inc.xhtml
  #include ../../components/controlcenter/content/permissionPanel.inc.xhtml
-@@ -890,7 +897,10 @@
+@@ -890,7 +897,13 @@
  #include ../../components/translations/content/fullPageTranslationsPanel.inc.xhtml
  #include ../../components/tabbrowser/content/browser-allTabsMenu.inc.xhtml
  
 -  <tooltip id="dynamic-shortcut-tooltip"/>
 +  <tooltip id="dynamic-shortcut-tooltip">
++    <hbox class="zen-tooltip-main-row" align="center">
++      <description class="tooltip-label zen-tooltip-title"/>
++      <description class="tooltip-label zen-tooltip-shortcut" hidden="true"/>
++    </hbox>
 +    <description class="tooltip-label zen-tooltip-description" hidden="true"/>
-+    <description class="tooltip-label zen-tooltip-shortcut" hidden="true"/>
 +  </tooltip>
  
    <menupopup id="SyncedTabsSidebarContext">

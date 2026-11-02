@@ -28,38 +28,49 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
      return this.cache.get(nodeId);
    },
  
++  shortcutCache: new Map(),
++
 +  ensureTooltipElements(aTooltip) {
-+    let titleEl = aTooltip.firstElementChild;
-+    if (titleEl) {
-+      titleEl.classList.add("zen-tooltip-title");
-+      titleEl.removeAttribute("value");
++    let mainRow = aTooltip.querySelector(".zen-tooltip-main-row");
++    let titleEl = aTooltip.querySelector(".zen-tooltip-title");
++    let shortcutEl = aTooltip.querySelector(".zen-tooltip-shortcut");
++    let descEl = aTooltip.querySelector(".zen-tooltip-description");
++
++    if (!mainRow) {
++      let legacyTitle = aTooltip.firstElementChild;
++      mainRow = document.createXULElement("hbox");
++      mainRow.className = "zen-tooltip-main-row";
++      mainRow.setAttribute("align", "center");
++      if (legacyTitle && !legacyTitle.classList.contains("zen-tooltip-description")) {
++        titleEl = legacyTitle;
++        titleEl.classList.add("zen-tooltip-title");
++      } else {
++        titleEl = document.createXULElement("description");
++        titleEl.className = "tooltip-label zen-tooltip-title";
++      }
++      mainRow.appendChild(titleEl);
++      if (!shortcutEl) {
++        shortcutEl = document.createXULElement("description");
++        shortcutEl.className = "tooltip-label zen-tooltip-shortcut";
++        shortcutEl.setAttribute("hidden", "true");
++      }
++      mainRow.appendChild(shortcutEl);
++      aTooltip.prepend(mainRow);
 +    }
 +
-+    let descEl = aTooltip.querySelector(".zen-tooltip-description");
 +    if (!descEl) {
-+      descEl = document.createXULElement
-+        ? document.createXULElement("description")
-+        : document.createElement("description");
++      descEl = document.createXULElement("description");
 +      descEl.className = "tooltip-label zen-tooltip-description";
 +      descEl.setAttribute("hidden", "true");
 +      aTooltip.appendChild(descEl);
 +    }
-+    descEl.removeAttribute("value");
 +
-+    let shortcutEl = aTooltip.querySelector(".zen-tooltip-shortcut");
-+    if (!shortcutEl) {
-+      shortcutEl = document.createXULElement
-+        ? document.createXULElement("description")
-+        : document.createElement("description");
-+      shortcutEl.className = "tooltip-label zen-tooltip-shortcut";
-+      shortcutEl.setAttribute("hidden", "true");
-+      aTooltip.appendChild(shortcutEl);
-+    }
-+    shortcutEl.removeAttribute("value");
++    titleEl?.removeAttribute("value");
++    shortcutEl?.removeAttribute("value");
++    descEl?.removeAttribute("value");
 +
-+    // Remove any duplicate title container or orphaned child
 +    for (let child of Array.from(aTooltip.children)) {
-+      if (child !== titleEl && child !== descEl && child !== shortcutEl) {
++      if (child !== mainRow && child !== descEl) {
 +        child.remove();
 +      }
 +    }
@@ -74,7 +85,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +    for (let el of elements) {
 +      if (el.id && el.id in this.nodeToTooltipMap) {
 +        let t = this.getText(el.id);
-+        if (t && t.trim() !== "") {
++        if (t?.trim()) {
 +          return t.trim();
 +        }
 +      }
@@ -83,40 +94,38 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +    // 2. Check tooltiptext or title attribute
 +    for (let el of elements) {
 +      let raw = el.getAttribute("tooltiptext") || el.getAttribute("title");
-+      if (raw && raw.trim() !== "") {
++      if (raw?.trim()) {
 +        return raw.trim();
 +      }
 +    }
 +
-+    // 3. Check Fluent (data-l10n-id)
++    // 3. Check direct aria-label or label before sync l10n fallback
 +    for (let el of elements) {
-+      let l10nId = el.getAttribute("data-l10n-id");
-+      if (l10nId && window.document?.l10n) {
-+        try {
-+          if (typeof document.l10n.formatMessagesSync === "function") {
-+            let [msg] = document.l10n.formatMessagesSync([{ id: l10nId }]);
-+            if (msg) {
-+              let tAttr = msg.attributes?.find(
-+                a =>
-+                  a.name === "tooltiptext" ||
-+                  a.name === "label" ||
-+                  a.name === "aria-label"
-+              );
-+              let val = tAttr?.value || msg.value;
-+              if (val && typeof val === "string" && val.trim() !== "") {
-+                return val.trim();
-+              }
-+            }
-+          }
-+        } catch (e) {}
++      let lbl = el.getAttribute("aria-label") || el.getAttribute("label");
++      if (lbl?.trim()) {
++        return lbl.trim();
 +      }
 +    }
 +
-+    // 4. Check direct label or aria-label
++    // 4. Fallback to Fluent (data-l10n-id)
 +    for (let el of elements) {
-+      let lbl = el.getAttribute("label") || el.getAttribute("aria-label");
-+      if (lbl && lbl.trim() !== "") {
-+        return lbl.trim();
++      let l10nId = el.getAttribute("data-l10n-id");
++      if (l10nId && window.document?.l10n?.formatMessagesSync) {
++        try {
++          let [msg] = document.l10n.formatMessagesSync([{ id: l10nId }]);
++          if (msg) {
++            let tAttr = msg.attributes?.find(
++              a =>
++                a.name === "tooltiptext" ||
++                a.name === "label" ||
++                a.name === "aria-label"
++            );
++            let val = tAttr?.value || msg.value;
++            if (typeof val === "string" && val.trim()) {
++              return val.trim();
++            }
++          }
++        } catch (e) {}
 +      }
 +    }
 +
@@ -126,43 +135,41 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +  findShortcutForTrigger(trigger, effectiveTrigger) {
 +    let elements = [trigger, effectiveTrigger].filter(Boolean);
 +    for (let el of [trigger, effectiveTrigger]) {
-+      if (el) {
-+        let parent = el.closest("[command], [key], [id]");
-+        if (parent && !elements.includes(parent)) {
-+          elements.push(parent);
-+        }
++      let parent = el?.closest("[command], [key], [id]");
++      if (parent && !elements.includes(parent)) {
++        elements.push(parent);
 +      }
 +    }
 +
 +    for (let el of elements) {
++      let cacheKey = el.id || el.getAttribute("command") || el.getAttribute("key");
++      if (cacheKey && this.shortcutCache.has(cacheKey)) {
++        let cached = this.shortcutCache.get(cacheKey);
++        if (cached) {
++          return cached;
++        }
++        continue;
++      }
++
++      let keyEl = null;
++
 +      // 1. Check if ID is in nodeToShortcutMap
 +      if (el.id && this.nodeToShortcutMap[el.id]) {
-+        let keyEl = document.getElementById(this.nodeToShortcutMap[el.id]);
-+        if (keyEl) {
-+          let s = ShortcutUtils.prettifyShortcut(keyEl);
-+          if (s) {
-+            return s;
-+          }
-+        }
++        keyEl = document.getElementById(this.nodeToShortcutMap[el.id]);
 +      }
 +
 +      // 2. Check command attribute
 +      let cmdId = el.getAttribute("command");
-+      if (cmdId) {
-+        let keyEl = document.querySelector(`keyset key[command="${cmdId}"]`);
++      if (!keyEl && cmdId) {
++        keyEl = document.querySelector(`keyset key[command="${cmdId}"]`);
 +        if (!keyEl && !cmdId.endsWith("NoEvent")) {
-+          keyEl = document.querySelector(
-+            `keyset key[command="${cmdId}NoEvent"]`
-+          );
++          keyEl = document.querySelector(`keyset key[command="${cmdId}NoEvent"]`);
 +        }
 +        if (!keyEl && cmdId.endsWith("NoEvent")) {
-+          keyEl = document.querySelector(
-+            `keyset key[command="${cmdId.replace(/NoEvent$/, "")}"]`
-+          );
++          keyEl = document.querySelector(`keyset key[command="${cmdId.replace(/NoEvent$/, "")}"]`);
 +        }
 +        if (!keyEl) {
-+          let cmd = document.getElementById(cmdId);
-+          let keyId = cmd?.getAttribute("key");
++          let keyId = document.getElementById(cmdId)?.getAttribute("key");
 +          if (keyId) {
 +            keyEl = document.getElementById(keyId);
 +          }
@@ -177,24 +184,26 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +            document.getElementById(`key_${baseName}`) ||
 +            document.getElementById(`key_${baseName.toLowerCase()}`);
 +        }
-+        if (keyEl) {
-+          let s = ShortcutUtils.prettifyShortcut(keyEl);
-+          if (s) {
-+            return s;
-+          }
-+        }
 +      }
 +
 +      // 3. Check key attribute directly on the element
-+      let keyId = el.getAttribute("key");
-+      if (keyId) {
-+        let keyEl = document.getElementById(keyId);
-+        if (keyEl) {
-+          let s = ShortcutUtils.prettifyShortcut(keyEl);
-+          if (s) {
-+            return s;
-+          }
++      if (!keyEl) {
++        let keyId = el.getAttribute("key");
++        if (keyId) {
++          keyEl = document.getElementById(keyId);
 +        }
++      }
++
++      if (keyEl) {
++        let pretty = ShortcutUtils.prettifyShortcut(keyEl) || null;
++        if (cacheKey) {
++          this.shortcutCache.set(cacheKey, pretty);
++        }
++        if (pretty) {
++          return pretty;
++        }
++      } else if (cacheKey) {
++        this.shortcutCache.set(cacheKey, null);
 +      }
 +    }
 +
@@ -203,7 +212,6 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +
 +  getTriggerDescription(trigger, effectiveTrigger, titleText) {
 +    let elements = [effectiveTrigger, trigger].filter(Boolean);
-+
 +    let desc = null;
 +
 +    // 1. Check explicit tooltipdescription or data-tooltip-desc
@@ -211,7 +219,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +      let d =
 +        el.getAttribute("tooltipdescription") ||
 +        el.getAttribute("data-tooltip-desc");
-+      if (d && d.trim() !== "") {
++      if (d?.trim()) {
 +        desc = d.trim();
 +        break;
 +      }
@@ -221,30 +229,18 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +    if (!desc) {
 +      for (let el of elements) {
 +        let l10nId = el.getAttribute("data-l10n-id");
-+        if (l10nId && window.document?.l10n) {
++        if (l10nId && window.document?.l10n?.formatMessagesSync) {
 +          try {
-+            let l10nArgs = null;
 +            let rawArgs = el.getAttribute("data-l10n-args");
-+            if (rawArgs) {
-+              try {
-+                l10nArgs = JSON.parse(rawArgs);
-+              } catch (e) {}
-+            }
-+            if (typeof document.l10n.formatMessagesSync === "function") {
-+              let [msg] = document.l10n.formatMessagesSync([
-+                { id: l10nId, args: l10nArgs },
-+              ]);
-+              if (msg?.attributes) {
-+                let descAttr = msg.attributes.find(
-+                  a =>
-+                    a.name === "description" ||
-+                    a.name === "tooltipdescription"
-+                );
-+                if (descAttr?.value && descAttr.value.trim() !== "") {
-+                  desc = descAttr.value.trim();
-+                  break;
-+                }
-+              }
++            let l10nArgs = rawArgs ? JSON.parse(rawArgs) : null;
++            let [msg] = document.l10n.formatMessagesSync([{ id: l10nId, args: l10nArgs }]);
++            let descAttr = msg?.attributes?.find(
++              a =>
++                a.name === "description" || a.name === "tooltipdescription"
++            );
++            if (descAttr?.value?.trim()) {
++              desc = descAttr.value.trim();
++              break;
 +            }
 +          } catch (e) {}
 +        }
@@ -254,10 +250,8 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +    // Avoid duplication if description matches title
 +    if (desc && titleText) {
 +      let cleanTitle = titleText.replace(/\s*\([^)]*\)$/, "").trim().toLowerCase();
-+      if (
-+        desc.trim().toLowerCase() === titleText.trim().toLowerCase() ||
-+        desc.trim().toLowerCase() === cleanTitle
-+      ) {
++      let cleanDesc = desc.trim().toLowerCase();
++      if (cleanDesc === titleText.trim().toLowerCase() || cleanDesc === cleanTitle) {
 +        return null;
 +      }
 +    }
@@ -279,10 +273,10 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +      !trigger.hasAttribute("title") &&
 +      !trigger.hasAttribute("tooltipdescription") &&
 +      !trigger.hasAttribute("data-tooltip-desc") &&
-+      !trigger.id
++      !(trigger.id && trigger.id in this.nodeToTooltipMap)
 +    ) {
 +      let parentWithTooltip = trigger.closest(
-+        "[tooltiptext], [title], [tooltipdescription], [data-tooltip-desc], [data-l10n-id], [id], [command], [label], [aria-label]"
++        "[tooltiptext], [title], [tooltipdescription], [data-tooltip-desc], [data-l10n-id], [command], [key], toolbarbutton, tab"
 +      );
 +      if (parentWithTooltip) {
 +        effectiveTrigger = parentWithTooltip;
@@ -297,10 +291,10 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +      aTooltip.getAttribute("label") ||
 +      "";
 +
-+    // 2. Resolve shortcut if available
++    // 2. Resolve shortcut if available (strip from title if already embedded)
 +    let prettyShortcut = this.findShortcutForTrigger(trigger, effectiveTrigger);
-+    if (prettyShortcut && titleText && !titleText.includes(prettyShortcut)) {
-+      titleText = `${titleText} (${prettyShortcut})`;
++    if (prettyShortcut && titleText.endsWith(`(${prettyShortcut})`)) {
++      titleText = titleText.slice(0, -`(${prettyShortcut})`.length).trim();
 +    }
 +
 +    // 3. Resolve secondary description
@@ -310,7 +304,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +      titleText
 +    );
 +
-+    // Safety: hide popup if neither title nor description could be resolved
++    // Hide popup if neither title nor description could be resolved
 +    if (!titleText && !descText) {
 +      try {
 +        aTooltip.hidePopup();
@@ -318,58 +312,47 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +      return;
 +    }
 +
-+    // Apply title
 +    if (titleEl) {
 +      titleEl.textContent = titleText;
-+      titleEl.removeAttribute("value");
-+      if (titleText) {
-+        titleEl.removeAttribute("hidden");
-+      } else {
-+        titleEl.setAttribute("hidden", "true");
-+      }
++      titleEl.toggleAttribute("hidden", !titleText);
 +    }
 +
-+    // Apply description
-+    if (descEl) {
-+      descEl.removeAttribute("value");
-+      if (descText) {
-+        descEl.textContent = descText;
-+        descEl.removeAttribute("hidden");
-+      } else {
-+        descEl.textContent = "";
-+        descEl.setAttribute("hidden", "true");
-+      }
-+    }
-+
-+    // Keep shortcut container hidden for now (appended to title in Phase 2)
 +    if (shortcutEl) {
-+      shortcutEl.textContent = "";
-+      shortcutEl.removeAttribute("value");
-+      shortcutEl.setAttribute("hidden", "true");
++      shortcutEl.textContent = prettyShortcut || "";
++      shortcutEl.toggleAttribute("hidden", !prettyShortcut);
 +    }
 +
-+    // Sync with tooltip label attribute for Gecko consistency
++    if (descEl) {
++      descEl.textContent = descText || "";
++      descEl.toggleAttribute("hidden", !descText);
++    }
++
++    // Sync with tooltip label attribute for Gecko accessibility
 +    if (titleText) {
 +      aTooltip.setAttribute("label", titleText);
 +    } else {
 +      aTooltip.removeAttribute("label");
 +    }
 +
-+    this.updateTheme(aTooltip);
++    this.updateTheme(aTooltip, trigger, effectiveTrigger);
 +  },
 +
-+  updateTheme(aTooltip) {
++  updateTheme(aTooltip, aTrigger = null, aEffectiveTrigger = null) {
 +    if (!aTooltip) {
 +      return;
 +    }
 +
-+    let trigger = aTooltip.triggerNode;
-+    let effectiveTrigger = trigger;
-+    if (trigger && !trigger.hasAttribute("tooltiptext") && !trigger.hasAttribute("title") && !trigger.id) {
-+      let parentWithTooltip = trigger.closest("[tooltiptext], [title], [id]");
-+      if (parentWithTooltip) {
-+        effectiveTrigger = parentWithTooltip;
-+      }
++    let trigger = aTrigger || aTooltip.triggerNode;
++    let effectiveTrigger = aEffectiveTrigger || trigger;
++    if (
++      !aEffectiveTrigger &&
++      trigger &&
++      !trigger.hasAttribute("tooltiptext") &&
++      !trigger.hasAttribute("title") &&
++      !trigger.id
++    ) {
++      effectiveTrigger =
++        trigger.closest("[tooltiptext], [title], [id], toolbarbutton, tab") || trigger;
 +    }
 +
 +    try {
@@ -377,11 +360,12 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +      let isDark = null;
 +      let primaryColor = null;
 +
-+      // 1. Resolve workspace context from trigger (if hovering a workspace icon or workspace tab)
++      // 1. Resolve workspace context from trigger or active workspace
 +      let ws = null;
-+      let wsId = trigger?.getAttribute("zen-workspace-id") ||
-+                 effectiveTrigger?.getAttribute("zen-workspace-id") ||
-+                 trigger?.closest("[zen-workspace-id]")?.getAttribute("zen-workspace-id");
++      let wsId =
++        trigger?.getAttribute("zen-workspace-id") ||
++        effectiveTrigger?.getAttribute("zen-workspace-id") ||
++        trigger?.closest("[zen-workspace-id]")?.getAttribute("zen-workspace-id");
 +      if (wsId && window.gZenWorkspaces) {
 +        ws = window.gZenWorkspaces.getWorkspaceFromId?.(wsId);
 +      }
@@ -389,17 +373,21 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +        ws = window.gZenWorkspaces.getActiveWorkspace?.();
 +      }
 +
-+      // 2. Get workspace theme data (colors and mode)
++      // 2. Get workspace theme data
 +      let wsThemeData = null;
 +      if (ws && window.gZenThemePicker) {
-+        wsThemeData = window.gZenThemePicker.getGradientForWorkspace?.(ws, { getGradient: false }) ||
-+                      window.gZenThemePicker.getWorkspaceTheme?.(ws);
++        wsThemeData =
++          window.gZenThemePicker.getGradientForWorkspace?.(ws, {
++            getGradient: false,
++          }) || window.gZenThemePicker.getWorkspaceTheme?.(ws);
 +      }
 +
 +      // 3. Resolve primary color
 +      if (trigger) {
-+        let explicitColor = trigger.closest("[zen-should-be-dark-mode]")?.style?.getPropertyValue("--zen-primary-color");
-+        if (explicitColor && explicitColor.trim() !== "") {
++        let explicitColor = trigger
++          .closest("[zen-should-be-dark-mode], [zen-workspace-id]")
++          ?.style?.getPropertyValue("--zen-primary-color");
++        if (explicitColor?.trim()) {
 +          primaryColor = explicitColor.trim();
 +        }
 +      }
@@ -407,22 +395,28 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +        primaryColor = wsThemeData.primaryColor;
 +      }
 +      if (!primaryColor) {
-+        let computed = effectiveTrigger ? window.getComputedStyle(effectiveTrigger) : null;
++        let computed = effectiveTrigger
++          ? window.getComputedStyle(effectiveTrigger)
++          : null;
 +        let c = computed?.getPropertyValue("--zen-primary-color");
-+        if (c && c.trim() !== "") {
++        if (c?.trim()) {
 +          primaryColor = c.trim();
 +        } else {
-+          primaryColor = window.getComputedStyle(document.documentElement).getPropertyValue("--zen-primary-color")?.trim();
++          primaryColor = window
++            .getComputedStyle(document.documentElement)
++            .getPropertyValue("--zen-primary-color")
++            ?.trim();
 +        }
 +      }
 +
-+      // 4. Resolve dark vs light mode:
++      // 4. Resolve dark vs light mode
 +      if (schemePref === 0) {
 +        isDark = true;
 +      } else if (schemePref === 1) {
 +        isDark = false;
 +      } else {
-+        // Auto (schemePref === 2):
++        // Auto mode (schemePref === 2):
++        // Check if trigger is inside an element with an explicit mode override
 +        let darkElem = trigger?.closest?.("[zen-should-be-dark-mode]");
 +        if (darkElem && darkElem !== document.documentElement) {
 +          let val = darkElem.getAttribute("zen-should-be-dark-mode");
@@ -432,27 +426,33 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +            isDark = false;
 +          }
 +        }
-+        if (isDark === null && wsThemeData && typeof wsThemeData.isDarkMode === "boolean") {
-+          isDark = wsThemeData.isDarkMode;
++        // Check if workspace explicitly forces dark or light mode
++        if (isDark === null && typeof ws?.theme?.darkMode === "boolean") {
++          isDark = ws.theme.darkMode;
 +        }
++        // Fallback to native scheme resolved by C++ LookAndFeel on the tooltip or ZenThemePicker
 +        if (isDark === null) {
-+          isDark = window.matchMedia("(-moz-system-dark-theme)").matches ||
-+                   window.matchMedia("(prefers-color-scheme: dark)").matches;
++          let nativeScheme = aTooltip.getAttribute("scheme");
++          if (nativeScheme === "dark" || nativeScheme === "light") {
++            isDark = nativeScheme === "dark";
++          } else if (window.gZenThemePicker) {
++            isDark = window.gZenThemePicker.isDarkMode;
++          } else {
++            isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
++          }
 +        }
 +      }
 +
-+      // Apply theme to tooltip
-+      if (primaryColor && primaryColor.trim() !== "") {
++      if (primaryColor?.trim()) {
 +        aTooltip.style.setProperty("--zen-primary-color", primaryColor.trim());
 +      } else {
 +        aTooltip.style.removeProperty("--zen-primary-color");
 +      }
 +
-+      aTooltip.setAttribute("scheme", isDark ? "dark" : "light");
-+      aTooltip.style.colorScheme = isDark ? "dark" : "light";
-+    } catch (e) {
-+      // Ignore
-+    }
++      let schemeStr = isDark ? "dark" : "light";
++      aTooltip.setAttribute("scheme", schemeStr);
++      aTooltip.style.colorScheme = schemeStr;
++    } catch (e) {}
    },
  
    cache: new Map(),

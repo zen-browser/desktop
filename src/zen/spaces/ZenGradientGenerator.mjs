@@ -161,9 +161,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", darkModeChange);
-    window
-      .matchMedia("(-moz-system-dark-theme)")
-      .addEventListener("change", darkModeChange);
 
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
@@ -199,7 +196,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       default:
     }
     return (
-      window.matchMedia("(-moz-system-dark-theme)").matches ||
+      Services.prefs.getIntPref("ui.systemUsesDarkTheme", -1) === 1 ||
       window.matchMedia("(prefers-color-scheme: dark)").matches
     );
   }

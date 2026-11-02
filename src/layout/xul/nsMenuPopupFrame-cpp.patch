@@ -1,5 +1,5 @@
 diff --git a/layout/xul/nsMenuPopupFrame.cpp b/layout/xul/nsMenuPopupFrame.cpp
-index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad67d70494 100644
+index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad67d70494 100644
 --- a/layout/xul/nsMenuPopupFrame.cpp
 +++ b/layout/xul/nsMenuPopupFrame.cpp
 @@ -382,7 +382,12 @@ void nsMenuPopupFrame::PropagateStyleToWidget(WidgetStyleFlags aFlags) const {
@@ -16,7 +16,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
    }
    if (aFlags.contains(WidgetStyle::InputRegion)) {
      widget->SetInputRegion(ComputeInputRegion(*Style(), *PresContext()));
-@@ -402,6 +407,126 @@ void nsMenuPopupFrame::PropagateStyleToWidget(WidgetStyleFlags aFlags) const {
+@@ -402,6 +407,127 @@ void nsMenuPopupFrame::PropagateStyleToWidget(WidgetStyleFlags aFlags) const {
    }
  }
  
@@ -31,8 +31,9 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
 +    }
 +
 +    RefPtr<nsAtom> zenDarkAtom = NS_Atomize("zen-should-be-dark-mode");
++    Element* rootElem = mTriggerContent->OwnerDoc()->GetRootElement();
 +    nsIContent* content = mTriggerContent;
-+    while (content) {
++    while (content && content != rootElem) {
 +      if (content->IsElement()) {
 +        nsAutoString darkMode;
 +        if (content->AsElement()->GetAttr(kNameSpaceID_None, zenDarkAtom, darkMode)) {
@@ -49,9 +50,9 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
 +
 +    int32_t systemDark = 0;
 +    if (NS_SUCCEEDED(LookAndFeel::GetInt(LookAndFeel::IntID::SystemUsesDarkTheme,
-+                                         &systemDark)) &&
-+        systemDark) {
-+      return LookAndFeel::ColorScheme::Dark;
++                                         &systemDark))) {
++      return systemDark ? LookAndFeel::ColorScheme::Dark
++                        : LookAndFeel::ColorScheme::Light;
 +    }
 +
 +    if (nsIFrame* triggerFrame = mTriggerContent->GetPrimaryFrame()) {
@@ -62,7 +63,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
 +}
 +
 +void nsMenuPopupFrame::UpdateColorSchemeForTooltip() {
-+  // Si c'est une tooltip Chrome (hors contenu web)
++  // Only apply custom tooltip color scheme to Chrome UI tooltips
 +  if (IsTooltip() && mTriggerContent &&
 +      !mTriggerContent->OwnerDoc()->IsContentDocument()) {
 +    LookAndFeel::ColorScheme triggerScheme = ResolveColorSchemeForTrigger();
@@ -70,7 +71,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
 +      widget->SetColorScheme(Some(triggerScheme));
 +    }
 +
-+    // Positionner l'attribut pour le CSS
++    // Sync scheme attribute for CSS styling
 +    if (Element* popupElem = GetContent()->AsElement()) {
 +      popupElem->SetAttr(kNameSpaceID_None, nsGkAtoms::scheme,
 +                         triggerScheme == LookAndFeel::ColorScheme::Dark
@@ -143,7 +144,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
  bool nsMenuPopupFrame::IsMouseTransparent() const {
    return ::IsMouseTransparent(*Style());
  }
-@@ -845,6 +970,7 @@ void nsMenuPopupFrame::InitializePopup(nsIContent* aAnchorContent,
+@@ -845,6 +971,7 @@ void nsMenuPopupFrame::InitializePopup(nsIContent* aAnchorContent,
      mExtraMargin = {};
    }
    mTriggerContent = aTriggerContent;
@@ -151,7 +152,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
    mIsNativeMenu = aIsNativeMenu == IsNativeMenu::Yes;
    mIsTopLevelContextMenu = false;
    mVFlip = false;
-@@ -980,6 +1106,7 @@ void nsMenuPopupFrame::InitializePopupAtScreen(
+@@ -980,6 +1107,7 @@ void nsMenuPopupFrame::InitializePopupAtScreen(
    mPopupState = ePopupShowing;
    mAnchorContent = nullptr;
    mTriggerContent = aTriggerContent;
@@ -159,7 +160,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
    mScreenRect =
        nsRect(CSSPixel::ToAppUnits(CSSIntPoint(aXPos, aYPos)), nsSize());
    mExtraMargin = {};
-@@ -1070,6 +1197,13 @@ void nsMenuPopupFrame::ClearTriggerContentIncludingDocument() {
+@@ -1070,6 +1198,13 @@ void nsMenuPopupFrame::ClearTriggerContentIncludingDocument() {
        }
      }
    }
@@ -173,7 +174,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
    mTriggerContent = nullptr;
  }
  
-@@ -1740,6 +1874,25 @@ auto nsMenuPopupFrame::GetRects(const nsSize& aPrefSize) const -> Rects {
+@@ -1740,6 +1875,25 @@ auto nsMenuPopupFrame::GetRects(const nsSize& aPrefSize) const -> Rects {
              endAligned, &result.mVFlip);
        }
  
@@ -199,7 +200,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..da7d4098669184900e2234555ade48ad
  #ifdef DEBUG
        NS_ASSERTION(constraintRect->Contains(result.mUsedRect),
                     "Popup is offscreen");
-@@ -1782,6 +1935,11 @@ void nsMenuPopupFrame::SetPopupPosition(bool aIsMove) {
+@@ -1782,6 +1936,11 @@ void nsMenuPopupFrame::SetPopupPosition(bool aIsMove) {
  void nsMenuPopupFrame::PerformMove(const Rects& aRects) {
    auto* ps = PresShell();
  

@@ -126,15 +126,18 @@ class nsZenWorkspaceIcons extends MozXULElement {
       const themeData = window.gZenThemePicker?.getGradientForWorkspace
         ? window.gZenThemePicker.getGradientForWorkspace(workspace, { getGradient: false })
         : window.gZenThemePicker?.getWorkspaceTheme?.(workspace);
-      if (themeData) {
-        button.setAttribute("zen-should-be-dark-mode", themeData.isDarkMode ? "true" : "false");
-        if (themeData.primaryColor) {
-          button.style.setProperty("--zen-primary-color", themeData.primaryColor);
-        }
+      if (typeof workspace.theme?.darkMode === "boolean") {
+        button.setAttribute(
+          "zen-should-be-dark-mode",
+          workspace.theme.darkMode ? "true" : "false"
+        );
+      } else {
+        button.removeAttribute("zen-should-be-dark-mode");
       }
-    } catch (e) {
-      // Ignore
-    }
+      if (themeData?.primaryColor) {
+        button.style.setProperty("--zen-primary-color", themeData.primaryColor);
+      }
+    } catch (e) {}
 
     const isSvgIcon = !!workspace.icon?.endsWith(".svg");
     const hasIcon = gZenWorkspaces.workspaceHasIcon(workspace);

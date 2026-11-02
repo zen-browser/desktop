@@ -322,7 +322,6 @@
   &,
   & panel,
   & menupopup,
-  & tooltip,
   & .zen-browser-generic-background,
   & #urlbar[breakout-extend],
   & #tabbrowser-tabpanels browser[type='content'],
@@ -348,13 +347,11 @@
     }
   }
 
-  &[zen-should-be-dark-mode='true'] #browser,
-  &[zen-should-be-dark-mode='true'] tooltip {
+  &[zen-should-be-dark-mode='true'] #browser {
 %include schemes/dark.inc.css
   }
 
-  &[zen-should-be-dark-mode='false'] #browser,
-  &[zen-should-be-dark-mode='false'] tooltip {
+  &[zen-should-be-dark-mode='false'] #browser {
 %include schemes/light.inc.css
   }
 }

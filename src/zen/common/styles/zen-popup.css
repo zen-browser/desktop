@@ -424,7 +424,7 @@ menuseparator {
    Modern Zen Chrome Tooltips
    ========================================================================== */
 
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]) {
+tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"]) {
   appearance: none !important;
   -moz-default-appearance: none !important;
   -moz-window-shadow: none !important;
@@ -436,118 +436,51 @@ tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not(
   line-height: 1.3 !important;
   box-shadow: none !important;
 
+  &[scheme="dark"] {
+    color-scheme: dark !important;
+  }
+
+  &[scheme="light"] {
+    color-scheme: light !important;
+  }
+
   border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
   background-color: color-mix(
     in srgb,
-    var(--zen-primary-color, transparent) 15%,
-    light-dark(#ffffff, #1c1c1f) 85%
+    var(--zen-primary-color, transparent) light-dark(12%, 18%),
+    light-dark(#ffffff, #1c1c1f)
   ) !important;
   color: light-dark(#1c1c1f, #f3f3f3) !important;
-}
 
-/* Anchor corner closest to trigger (defaults to top-left if unspecified) */
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"])[corner="top-left"],
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([corner]) {
-  border-top-left-radius: 4px !important;
-}
+  /* Anchor corner closest to trigger (defaults to top-left if unspecified) */
+  &[corner="top-left"],
+  &:not([corner]) {
+    border-top-left-radius: 4px !important;
+  }
 
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"])[corner="top-right"] {
-  border-top-right-radius: 4px !important;
-}
+  &[corner="top-right"] {
+    border-top-right-radius: 4px !important;
+  }
 
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"])[corner="bottom-left"] {
-  border-bottom-left-radius: 4px !important;
-}
+  &[corner="bottom-left"] {
+    border-bottom-left-radius: 4px !important;
+  }
 
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"])[corner="bottom-right"] {
-  border-bottom-right-radius: 4px !important;
-}
+  &[corner="bottom-right"] {
+    border-bottom-right-radius: 4px !important;
+  }
 
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]) label,
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]) description,
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]) .tooltip-label {
-  color: inherit !important;
-}
-
-/* Dark mode based on window or workspace theme */
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"])[scheme="dark"],
-#main-window[zen-should-be-dark-mode="true"] tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="light"]),
-#main-window[style*="--toolbar-color-scheme: dark"] tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="light"]) {
-  color-scheme: dark !important;
-  background-color: color-mix(
-    in srgb,
-    var(--zen-primary-color, transparent) 18%,
-    #1c1c1f 82%
-  ) !important;
-  color: #f3f3f3 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-}
-
-@media -moz-pref("zen.view.window.scheme", 0) {
-  tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="light"]) {
-    color-scheme: dark !important;
-    background-color: color-mix(
-      in srgb,
-      var(--zen-primary-color, transparent) 18%,
-      #1c1c1f 82%
-    ) !important;
-    color: #f3f3f3 !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+  & label,
+  & description,
+  & .tooltip-label {
+    color: inherit !important;
+    margin: 0 !important;
   }
 }
 
-/* Light mode based on window or workspace theme */
-tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"])[scheme="light"],
-#main-window[zen-should-be-dark-mode="false"] tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="dark"]),
-#main-window[style*="--toolbar-color-scheme: light"] tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="dark"]) {
-  color-scheme: light !important;
-  background-color: color-mix(
-    in srgb,
-    var(--zen-primary-color, transparent) 12%,
-    #ffffff 88%
-  ) !important;
-  color: #1c1c1f !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
-}
-
-@media -moz-pref("zen.view.window.scheme", 1) {
-  tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="dark"]) {
-    color-scheme: light !important;
-    background-color: color-mix(
-      in srgb,
-      var(--zen-primary-color, transparent) 12%,
-      #ffffff 88%
-    ) !important;
-    color: #1c1c1f !important;
-    border-color: rgba(0, 0, 0, 0.15) !important;
-  }
-}
-
-/* System dark theme fallback if not explicitly specified */
-@media (-moz-system-dark-theme) {
-  tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="light"]) {
-    color-scheme: dark !important;
-    background-color: color-mix(
-      in srgb,
-      var(--zen-primary-color, transparent) 18%,
-      #1c1c1f 82%
-    ) !important;
-    color: #f3f3f3 !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not([page="true"]):not([scheme="light"]) {
-    color-scheme: dark !important;
-    background-color: color-mix(
-      in srgb,
-      var(--zen-primary-color, transparent) 18%,
-      #1c1c1f 82%
-    ) !important;
-    color: #f3f3f3 !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
-  }
+.zen-tooltip-main-row {
+  gap: 6px;
+  align-items: center;
 }
 
 /* Main title in modern tooltip */
@@ -559,8 +492,17 @@ tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not(
   color: inherit !important;
 }
 
+/* Keyboard shortcut badge */
+.zen-tooltip-shortcut {
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  opacity: 0.65 !important;
+  color: inherit !important;
+}
+
 /* Suppress ::before pseudo-element from Gecko [value] (xul.css) */
-#dynamic-shortcut-tooltip > .tooltip-label::before,
+#dynamic-shortcut-tooltip .tooltip-label::before,
 #dynamic-shortcut-tooltip .zen-tooltip-title::before,
 #dynamic-shortcut-tooltip .zen-tooltip-description::before,
 #dynamic-shortcut-tooltip .zen-tooltip-shortcut::before {
@@ -578,7 +520,7 @@ tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not(
   color: inherit !important;
 }
 
-/* Strict fallback: collapse empty or hidden secondary description and shortcut */
+/* Collapse empty or hidden secondary description and shortcut */
 .zen-tooltip-description[hidden],
 .zen-tooltip-description:empty,
 .zen-tooltip-shortcut[hidden],
@@ -586,31 +528,3 @@ tooltip:not(#remoteBrowserTooltip):not(#aHTMLTooltip):not([contenttooltip]):not(
 .places-tooltip-description[hidden],
 .places-tooltip-description:empty {
   display: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-#tabbrowser-tab-tooltip .places-tooltip-title {
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-#tabbrowser-tab-tooltip .places-tooltip-uri {
-  font-size: smaller;
-  font-weight: 400;
-  opacity: 0.7;
-}
-
-#back-button-tooltip-description,
-#forward-button-tooltip-description {
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-#back-button-tooltip > .tooltip-label:last-child,
-#forward-button-tooltip > .tooltip-label:last-child {
-  font-size: smaller;
-  font-weight: 400;
-  opacity: 0.7;
-}
-

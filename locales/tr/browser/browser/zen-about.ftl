@@ -26,7 +26,6 @@ zen-about-firefox-version = { -zen-engine-name } { $firefoxVersion } tabanlı
 ## Update status
 
 zen-about-update-check = Güncellemeleri kontrol et
-zen-about-update-check-again = Tekrar kontrol et
 zen-about-update-try-again = Tekrar dene
 zen-about-update-checking = Güncellemeler kontrol ediliyor…
 zen-about-update-up-to-date = { -brand-short-name } güncel

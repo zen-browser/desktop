@@ -5,7 +5,7 @@
 zen-live-folder-options = 
     .label = Opciones de carpeta activa
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Última sincronización: { $time }
 zen-live-folder-refresh = 
     .label = Recargar
 zen-live-folder-github-option-author-self = 
@@ -13,13 +13,13 @@ zen-live-folder-github-option-author-self =
 zen-live-folder-github-option-assigned-self = 
     .label = Asignado a mí
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Mis solicitudes de revisión
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Incluir borrador de pull requests
 zen-live-folder-type-rss = 
     .label = Feed RSS
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Intervalo de sincronización
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->

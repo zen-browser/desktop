@@ -85,6 +85,7 @@ zen-settings-window-tabs-warn-on-quit =
     }
 zen-settings-window-ctrl-tab-header = Ctrl+Tab
 zen-settings-window-tabs-ctrl-tab-recent = Cycle through tabs in recently used order
+zen-settings-window-tabs-ctrl-tab-cross-space = Cycle through tabs in all spaces
 zen-settings-window-tabs-ctrl-tab-ignore-pending = Skip tabs that aren’t loaded
 zen-settings-window-tabs-ctrl-tab-ignore-essentials = Skip Essentials
 zen-settings-window-pinned-header = Pinned Tabs

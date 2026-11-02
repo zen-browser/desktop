@@ -82,6 +82,10 @@
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-ctrl-tab-recent"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="browser.ctrlTab.sortByRecentlyUsed"/>
               </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row zen-settings-sub-row" data-depends-on="browser.ctrlTab.sortByRecentlyUsed">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-ctrl-tab-cross-space"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.ctrl-tab.cross-space"/>
+              </html:div>
               <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-ctrl-tab-ignore-pending"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.ctrl-tab.ignore-pending-tabs"/>

@@ -28,6 +28,18 @@
   <key id="zen-workspace-create" command="cmd_zenOpenWorkspaceCreation"/>
   <key id="zen-close-all-unpinned-tabs" key="K" modifiers="accel,shift" command="cmd_zenCloseUnpinnedTabs"/>
 
+  <!-- Firefox handles tab switching itself, these keys never fire. They hold
+       the bindings so they can be changed in about:keyboard, see
+       ZenKeyboardShortcuts.getSystemActionForEvent. -->
+#ifdef XP_MACOSX
+#define ZEN_TAB_SWITCHER_MODIFIER control
+#else
+#define ZEN_TAB_SWITCHER_MODIFIER accel
+#endif
+#expand  <key id="zen-tab-switcher-cycle" keycode="VK_TAB" modifiers="__ZEN_TAB_SWITCHER_MODIFIER__" disabled="true"/>
+#expand  <key id="zen-tab-switcher-next" keycode="VK_PAGE_DOWN" modifiers="__ZEN_TAB_SWITCHER_MODIFIER__" disabled="true"/>
+#expand  <key id="zen-tab-switcher-previous" keycode="VK_PAGE_UP" modifiers="__ZEN_TAB_SWITCHER_MODIFIER__" disabled="true"/>
+
   <key id="zen-split-view-grid" key="G" modifiers="accel,alt" command="cmd_zenSplitViewGrid"/>
   <key id="zen-split-view-vertical" key="V" modifiers="accel,alt" command="cmd_zenSplitViewVertical"/>
   <key id="zen-split-view-horizontal" key="H" modifiers="accel,alt" command="cmd_zenSplitViewHorizontal"/>

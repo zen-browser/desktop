@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/browser-ctrlTab.js b/browser/components/tabbrowser/content/browser-ctrlTab.js
-index 727e21f1754b0842080d8f3e29060baad445df66..ee9df3a311fc72954e064a2cbc56b716d116314a 100644
+index 3878a29a91aef0911f0260082847ed416ddf16d4..db888dbb583caf932371b0e928b1b448ec474c39 100644
 --- a/browser/components/tabbrowser/content/browser-ctrlTab.js
 +++ b/browser/components/tabbrowser/content/browser-ctrlTab.js
-@@ -252,7 +252,8 @@ var ctrlTab = {
+@@ -264,7 +264,8 @@ var ctrlTab = {
    },
  
    get tabList() {
@@ -12,7 +12,7 @@ index 727e21f1754b0842080d8f3e29060baad445df66..ee9df3a311fc72954e064a2cbc56b716
    },
  
    init: function ctrlTab_init() {
-@@ -457,7 +458,7 @@ var ctrlTab = {
+@@ -485,7 +486,7 @@ var ctrlTab = {
      // If the tab is hidden, don't add it to the list unless it's selected
      // (Normally hidden tabs would be unhidden when selected, but that doesn't
      // happen for Firefox View).
@@ -21,7 +21,7 @@ index 727e21f1754b0842080d8f3e29060baad445df66..ee9df3a311fc72954e064a2cbc56b716
        return;
      }
  
-@@ -481,7 +482,7 @@ var ctrlTab = {
+@@ -509,7 +510,7 @@ var ctrlTab = {
    },
  
    open: function ctrlTab_open() {
@@ -30,12 +30,86 @@ index 727e21f1754b0842080d8f3e29060baad445df66..ee9df3a311fc72954e064a2cbc56b716
        return;
      }
  
-@@ -759,7 +760,7 @@ var ctrlTab = {
+@@ -585,7 +586,10 @@ var ctrlTab = {
+   },
+ 
+   onKeyDown(event) {
+-    let action = ShortcutUtils.getSystemActionForEvent(event);
++    let action = this.ZenKeyboardShortcuts.getSystemActionForEvent(
++      event,
++      document
++    );
+     if (action != ShortcutUtils.CYCLE_TABS) {
+       return;
+     }
+@@ -601,19 +605,26 @@ var ctrlTab = {
+     event.preventDefault();
+     event.stopPropagation();
+ 
++    let reverse = this.ZenKeyboardShortcuts.isTabSwitcherReverseEvent(
++      event,
++      document
++    );
+     if (this.isOpen) {
+-      this.advanceFocus(!event.shiftKey);
++      this.advanceFocus(!reverse);
+       return;
+     }
+ 
+-    if (event.shiftKey) {
++    if (reverse) {
+       this.showAllTabs("shift-tab");
+       return;
+     }
+ 
+     document.addEventListener("keyup", this, { mozSystemGroup: true });
+ 
+-    let tabs = gBrowser.visibleTabs;
++    // With cross-space switching, the other tabs may all be in other spaces.
++    let tabs = gZenWorkspaces.crossSpaceCtrlTab
++      ? this.tabList
++      : gBrowser.visibleTabs;
+     if (tabs.length > 2) {
+       this.open();
+     } else if (tabs.length == 2) {
+@@ -741,7 +752,9 @@ var ctrlTab = {
+         event.preventDefault();
+         event.stopPropagation();
+ 
+-        if (event.keyCode === event.DOM_VK_CONTROL) {
++        if (
++          this.ZenKeyboardShortcuts.isTabSwitcherReleaseEvent(event, document)
++        ) {
+           document.removeEventListener("keyup", this, { mozSystemGroup: true });
+ 
+           if (this.isOpen) {
+@@ -794,14 +807,17 @@ var ctrlTab = {
+     aCallback(urls);
+   },
+   _sortRecentlyUsedTabs() {
++    // Right after switching spaces, the previous and the newly selected tab
++    // can share a lastAccessed time. The selected tab always comes first.
+     this._recentlyUsedTabs.sort(
+-      (tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed
++      (tab1, tab2) =>
++        tab2.selected - tab1.selected || tab2.lastAccessed - tab1.lastAccessed
+     );
+   },
    _initRecentlyUsedTabs() {
      this._recentlyUsedTabs = Array.prototype.filter.call(
-       gBrowser.tabs,
+-      gBrowser.tabs,
 -      tab => !tab.closing && !tab.hidden
++      gZenWorkspaces.ctrlTabCandidates,
 +      tab => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
      );
      this._sortRecentlyUsedTabs();
    },
+@@ -846,6 +862,8 @@ var ctrlTab = {
+ 
+ ChromeUtils.defineESModuleGetters(ctrlTab, {
+   KeyboardLockUtils: "resource://gre/modules/KeyboardLockUtils.sys.mjs",
++  ZenKeyboardShortcuts:
++    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
+ });
+ 
+ XPCOMUtils.defineLazyPreferenceGetter(

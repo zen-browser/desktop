@@ -28,6 +28,9 @@
 - name: services.sync.prefs.sync.zen.tabs.ctrl-tab.ignore-pending-tabs
   value: true
 
+- name: services.sync.prefs.sync.zen.tabs.ctrl-tab.cross-space
+  value: true
+
 - name: services.sync.prefs.sync.zen.ctrlTab.show-pending-tabs
   value: true
 

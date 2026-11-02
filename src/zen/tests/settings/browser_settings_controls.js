@@ -101,6 +101,28 @@ add_task(async function test_dependent_rows() {
   await SpecialPowers.popPrefEnv();
 });
 
+add_task(async function test_ctrl_tab_cross_space() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["browser.ctrlTab.sortByRecentlyUsed", true],
+      ["zen.tabs.ctrl-tab.cross-space", false],
+    ],
+  });
+  const win = await openSettingsWindow();
+  const toggle = toggleFor(win, "zen.tabs.ctrl-tab.cross-space");
+  const row = toggle.closest(".zen-settings-row");
+  ok(!row.inert, "Cycling through all spaces can be turned on");
+  await clickToggle(toggle);
+  ok(
+    Services.prefs.getBoolPref("zen.tabs.ctrl-tab.cross-space"),
+    "Clicking the toggle turns it on"
+  );
+  Services.prefs.setBoolPref("browser.ctrlTab.sortByRecentlyUsed", false);
+  ok(row.inert, "It only applies while cycling in recently used order");
+  await BrowserTestUtils.closeWindow(win);
+  await SpecialPowers.popPrefEnv();
+});
+
 add_task(async function test_menulists() {
   await SpecialPowers.pushPrefEnv({
     set: [

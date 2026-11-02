@@ -52,3 +52,6 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+- name: zen.tabs.ctrl-tab.cross-space
+  value: false

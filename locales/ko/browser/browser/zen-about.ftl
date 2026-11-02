@@ -26,7 +26,6 @@ zen-about-firefox-version = { -zen-engine-name }{ $firefoxVersion } 기반
 ## Update status
 
 zen-about-update-check = 업데이트 확인
-zen-about-update-check-again = 다시 확인
 zen-about-update-try-again = 다시 시도
 zen-about-update-checking = 업데이트 확인하는 중…
 zen-about-update-up-to-date = { -brand-short-name }은 최신 버전입니다

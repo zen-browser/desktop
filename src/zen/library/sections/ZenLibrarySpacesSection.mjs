@@ -816,7 +816,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #openActions(event) {
     document
       .getElementById("zenWorkspaceMoreActions")
-      .openPopup(event.currentTarget, "after_end", 0, 0, false, false, event);
+      .openPopup(event.currentTarget, "after_end", 0, 0, true, false, event);
   }
 
   // Icon and name

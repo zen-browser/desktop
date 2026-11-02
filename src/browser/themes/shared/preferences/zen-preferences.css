@@ -39,25 +39,37 @@ html|dialog {
   background: var(--zen-colors-tertiary);
 }
 
-groupbox button {
+groupbox button,
+moz-box-button,
+moz-box-link {
   border-radius: calc(5px * var(--zen-squircle-value)) !important;
   overflow: hidden;
+  --box-border-radius: calc(5px * var(--zen-squircle-value)) !important;
+  --box-border-radius-inner: calc(5px * var(--zen-squircle-value)) !important;
 }
 
 groupbox button,
-groupbox menulist {
+groupbox menulist,
+moz-box-button,
+moz-box-link {
   background-color: light-dark(#f1f1f1, #363636);
   color: light-dark(black, white);
 }
 
 groupbox button:hover,
-groupbox menulist:hover {
+groupbox menulist:hover,
+moz-box-button:hover,
+moz-box-link:hover {
   background-color: light-dark(#e5e5e5, #444444) !important;
+  --box-button-background-color-hover: light-dark(#e5e5e5, #444444) !important;
 }
 
 groupbox button:hover:active,
-groupbox menulist:hover:active {
+groupbox menulist:hover:active,
+moz-box-button:hover:active,
+moz-box-link:hover:active {
   background-color: light-dark(#d5d5d5, #505050) !important;
+  --box-button-background-color-active: light-dark(#d5d5d5, #505050) !important;
 }
 
 groupbox h2 {

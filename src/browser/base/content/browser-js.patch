@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4c1ec9b76 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..7d99c8e32efc67415523f0b6b5f199c21a2ffa05 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,11 +24,12 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,509 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,628 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
 +  shortcutCache: new Map(),
++  _keysetObserver: null,
 +
 +  clearCache() {
 +    this.cache.clear();
@@ -40,9 +41,33 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
 +      return;
 +    }
 +    this._initialized = true;
++
++    // Invalidate caches when shortcuts change or when customization/focus shifts
 +    window.addEventListener("customizationchange", () => this.clearCache());
++    window.addEventListener("focus", () => this.clearCache());
++    window.addEventListener("CustomKeysUpdate", () => this.clearCache());
++
 +    try {
 +      Services.obs.addObserver(() => this.clearCache(), "zen:keyboard-shortcuts-changed");
++    } catch (e) {}
++
++    // Observe changes to keysets and keys (e.g. when CustomKeys modifies shortcuts)
++    try {
++      this._keysetObserver = new MutationObserver(() => this.clearCache());
++      const keysets = document.querySelectorAll("keyset");
++      const observedParents = new Set();
++      for (const keyset of keysets) {
++        this._keysetObserver.observe(keyset, {
++          childList: true,
++          subtree: true,
++          attributes: true,
++          attributeFilter: ["key", "keycode", "modifiers", "disabled", "data-l10n-id"],
++        });
++        if (keyset.parentElement && !observedParents.has(keyset.parentElement)) {
++          observedParents.add(keyset.parentElement);
++          this._keysetObserver.observe(keyset.parentElement, { childList: true });
++        }
++      }
 +    } catch (e) {}
 +  },
 +
@@ -112,32 +137,36 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
 +      return [];
 +    }
 +
-+    // 1. If separated by '+' (Windows / Linux style: "Ctrl+Shift+T")
++    // 1. If it contains macOS modifier symbols, treat as concatenated macOS style
++    if (/[⌘⌥⇧⌃^]/.test(trimmed)) {
++      const modifiers = ["⌘", "⌥", "⇧", "⌃", "^"];
++      let keys = [];
++      let remaining = trimmed;
++
++      while (remaining.length > 0) {
++        let foundMod = modifiers.find(m => remaining.startsWith(m));
++        if (foundMod) {
++          keys.push(foundMod);
++          remaining = remaining.slice(foundMod.length);
++        } else {
++          keys.push(remaining);
++          break;
++        }
++      }
++      return keys;
++    }
++
++    // 2. Windows / Linux style separated by '+' (e.g. "Ctrl+Shift+T", "Ctrl++")
 +    if (trimmed.includes("+")) {
 +      if (trimmed.endsWith("++")) {
 +        let prefix = trimmed.slice(0, -2);
-+        return [...prefix.split("+").filter(Boolean), "+"];
++        return [...prefix.split("+").map(s => s.trim()).filter(Boolean), "+"];
 +      }
-+      return trimmed.split("+").filter(Boolean);
++      return trimmed.split("+").map(s => s.trim()).filter(Boolean);
 +    }
 +
-+    // 2. If concatenated (macOS style: "⌘S", "⌃1", "^1", "⌥⌘B", "⇧⌘T")
-+    const modifiers = ["⌘", "⌥", "⇧", "⌃", "^"];
-+    let keys = [];
-+    let remaining = trimmed;
-+
-+    while (remaining.length > 0) {
-+      let foundMod = modifiers.find(m => remaining.startsWith(m));
-+      if (foundMod) {
-+        keys.push(foundMod);
-+        remaining = remaining.slice(foundMod.length);
-+      } else {
-+        keys.push(remaining);
-+        break;
-+      }
-+    }
-+
-+    return keys;
++    // 3. Single key (e.g. "F5", "Esc", "Del")
++    return [trimmed];
 +  },
 +
 +  getTriggerTitle(trigger, effectiveTrigger) {
@@ -194,6 +223,124 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
 +    return null;
 +  },
 +
++  _resolveCommandTarget(cmdId) {
++    if (!cmdId) {
++      return null;
++    }
++    let cmdEl = document.getElementById(cmdId);
++    if (cmdEl) {
++      let observesTarget = cmdEl.querySelector("observes[element]")?.getAttribute("element");
++      if (observesTarget) {
++        return observesTarget;
++      }
++    }
++    return cmdId
++      .replace(/Or(Back|Forward)?Duplicate$/, "")
++      .replace(/NoEvent$/, "");
++  },
++
++  _resolveKeyElement(el) {
++    // 1. Direct key attribute on element: key="keyId"
++    let directKeyId = el.getAttribute("key");
++    if (directKeyId) {
++      let k = document.getElementById(directKeyId);
++      if (k && k.tagName === "key") {
++        return k;
++      }
++    }
++
++    // 2. Resolve via command attribute
++    let cmdId = el.getAttribute("command");
++    if (cmdId) {
++      let commandsToTry = new Set();
++      commandsToTry.add(cmdId);
++
++      let primaryCmd = this._resolveCommandTarget(cmdId);
++      if (primaryCmd) {
++        commandsToTry.add(primaryCmd);
++        if (!primaryCmd.endsWith("NoEvent")) {
++          commandsToTry.add(`${primaryCmd}NoEvent`);
++        }
++      }
++      if (!cmdId.endsWith("NoEvent")) {
++        commandsToTry.add(`${cmdId}NoEvent`);
++      }
++
++      for (let cmd of commandsToTry) {
++        // Direct query for key element bound to this command
++        try {
++          let k = document.querySelector(`key[command="${CSS.escape(cmd)}"]:not([disabled="true"])`);
++          if (k && (k.hasAttribute("key") || k.hasAttribute("keycode"))) {
++            return k;
++          }
++        } catch (e) {}
++
++        // Check if command element itself specifies a key attribute
++        let cmdEl = document.getElementById(cmd);
++        let cmdKeyId = cmdEl?.getAttribute("key");
++        if (cmdKeyId) {
++          let k = document.getElementById(cmdKeyId);
++          if (k && k.tagName === "key") {
++            return k;
++          }
++        }
++
++        // Check naming patterns derived from command ID
++        let baseName = cmd
++          .replace(/^cmd_/, "")
++          .replace(/^Browser:/, "")
++          .replace(/^zen[-_]/, "");
++        let candidates = [
++          `key_${baseName}`,
++          `key_${baseName.toLowerCase()}`,
++          `go${baseName}Kb`,
++          `go${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Kb`,
++          `${baseName}Kb`,
++          `${baseName.toLowerCase()}Kb`,
++          `zen-${baseName.toLowerCase()}`,
++        ];
++        for (let cand of candidates) {
++          let k = document.getElementById(cand);
++          if (k && k.tagName === "key") {
++            return k;
++          }
++        }
++      }
++    }
++
++    // 3. Fallback to predefined map for standard UI elements
++    if (el.id && this.nodeToShortcutMap[el.id]) {
++      let k = document.getElementById(this.nodeToShortcutMap[el.id]);
++      if (k && k.tagName === "key") {
++        return k;
++      }
++    }
++
++    // 4. Check naming conventions derived from element ID
++    if (el.id) {
++      let cleanId = el.id
++        .replace(/-button$/, "")
++        .replace(/^appMenu-/, "")
++        .replace(/2$/, "");
++      let idCandidates = [
++        `key_${cleanId}`,
++        `key_${cleanId.toLowerCase()}`,
++        `go${cleanId.charAt(0).toUpperCase() + cleanId.slice(1)}Kb`,
++        `${cleanId}Kb`,
++        `${cleanId.toLowerCase()}Kb`,
++        `zen-${cleanId}`,
++      ];
++      for (let cand of idCandidates) {
++        let k = document.getElementById(cand);
++        if (k && k.tagName === "key") {
++          return k;
++        }
++      }
++    }
++
++    return null;
++  },
++
 +  findShortcutForTrigger(trigger, effectiveTrigger) {
 +    let elements = [trigger, effectiveTrigger].filter(Boolean);
 +    for (let el of [trigger, effectiveTrigger]) {
@@ -213,59 +360,31 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
 +        continue;
 +      }
 +
-+      let keyEl = null;
-+
-+      // 1. Check if ID is in nodeToShortcutMap
-+      if (el.id && this.nodeToShortcutMap[el.id]) {
-+        keyEl = document.getElementById(this.nodeToShortcutMap[el.id]);
++      let keyEl = this._resolveKeyElement(el);
++      let pretty = null;
++      if (keyEl) {
++        pretty = ShortcutUtils.prettifyShortcut(keyEl) || null;
 +      }
 +
-+      // 2. Check command attribute
-+      let cmdId = el.getAttribute("command");
-+      if (!keyEl && cmdId) {
-+        keyEl = document.querySelector(`keyset key[command="${cmdId}"]`);
-+        if (!keyEl && !cmdId.endsWith("NoEvent")) {
-+          keyEl = document.querySelector(`keyset key[command="${cmdId}NoEvent"]`);
-+        }
-+        if (!keyEl && cmdId.endsWith("NoEvent")) {
-+          keyEl = document.querySelector(`keyset key[command="${cmdId.replace(/NoEvent$/, "")}"]`);
-+        }
-+        if (!keyEl) {
-+          let keyId = document.getElementById(cmdId)?.getAttribute("key");
-+          if (keyId) {
-+            keyEl = document.getElementById(keyId);
++      // If key element wasn't directly found, try ZenKeyboardShortcuts helper
++      if (!pretty) {
++        let cmd = el.getAttribute("command");
++        if (cmd && window.ZenKeyboardShortcuts?.getShortcutDisplayFromCommand) {
++          pretty = window.ZenKeyboardShortcuts.getShortcutDisplayFromCommand(window, cmd);
++          if (!pretty) {
++            let primaryCmd = this._resolveCommandTarget(cmd);
++            if (primaryCmd && primaryCmd !== cmd) {
++              pretty = window.ZenKeyboardShortcuts.getShortcutDisplayFromCommand(window, primaryCmd);
++            }
 +          }
 +        }
-+        if (!keyEl) {
-+          let baseName = cmdId
-+            .replace(/^cmd_/, "")
-+            .replace(/^Browser:/, "")
-+            .replace(/OrDuplicate$/, "")
-+            .replace(/OrBackDuplicate$/, "");
-+          keyEl =
-+            document.getElementById(`key_${baseName}`) ||
-+            document.getElementById(`key_${baseName.toLowerCase()}`);
-+        }
 +      }
 +
-+      // 3. Check key attribute directly on the element
-+      if (!keyEl) {
-+        let keyId = el.getAttribute("key");
-+        if (keyId) {
-+          keyEl = document.getElementById(keyId);
-+        }
++      if (cacheKey) {
++        this.shortcutCache.set(cacheKey, pretty || null);
 +      }
-+
-+      if (keyEl) {
-+        let pretty = ShortcutUtils.prettifyShortcut(keyEl) || null;
-+        if (cacheKey) {
-+          this.shortcutCache.set(cacheKey, pretty);
-+        }
-+        if (pretty) {
-+          return pretty;
-+        }
-+      } else if (cacheKey) {
-+        this.shortcutCache.set(cacheKey, null);
++      if (pretty) {
++        return pretty;
 +      }
 +    }
 +
@@ -536,7 +655,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
    },
  
    cache: new Map(),
-@@ -4030,7 +4536,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4655,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -545,7 +664,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4576,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4695,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -554,7 +673,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4601,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4720,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -563,7 +682,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5314,13 @@ var gDialogBox = {
+@@ -4808,9 +5433,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -580,7 +699,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
      }
  
      try {
-@@ -4836,6 +5346,10 @@ var gDialogBox = {
+@@ -4836,6 +5465,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -591,7 +710,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5535,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5654,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

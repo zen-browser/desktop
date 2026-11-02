@@ -54,6 +54,17 @@ groupbox h2 {
   font-size: 15px;
 }
 
+#zenTabSwitcherDescription html|kbd {
+  font: inherit;
+  font-size: 0.9em;
+  padding: 1px 6px;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background-color: light-dark(#f1f1f1, #363636);
+  white-space: nowrap;
+}
+
 #categories > .category {
   margin-left: 0 !important;
   min-height: 40px !important;
@@ -408,6 +419,7 @@ groupbox h2 {
 #helpButton,
 #support-firefox,
 #tabGroupSuggestions,
+#ctrlTabRecentlyUsedOrder,
 #setting-control-sidebarChatbotFieldset,
 #setting-control-supportFirefox,
 .mission-message,

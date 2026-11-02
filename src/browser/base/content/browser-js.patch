@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6591302f7 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df7626916d95add 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,7 +24,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,674 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,661 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
@@ -373,19 +373,6 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
 +
 +    return null;
 +  },
-+        `${cleanId.toLowerCase()}Kb`,
-+        `zen-${cleanId}`,
-+      ];
-+      for (let cand of idCandidates) {
-+        let k = document.getElementById(cand);
-+        if (k && k.tagName === "key") {
-+          return k;
-+        }
-+      }
-+    }
-+
-+    return null;
-+  },
 +
 +  findShortcutForTrigger(trigger, effectiveTrigger) {
 +    let elements = [trigger, effectiveTrigger].filter(Boolean);
@@ -701,7 +688,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
    },
  
    cache: new Map(),
-@@ -4030,7 +4701,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4688,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -710,7 +697,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4741,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4728,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -719,7 +706,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4766,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4753,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -728,7 +715,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5479,13 @@ var gDialogBox = {
+@@ -4808,9 +5466,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -745,7 +732,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
      }
  
      try {
-@@ -4836,6 +5511,10 @@ var gDialogBox = {
+@@ -4836,6 +5498,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -756,7 +743,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..a065bf92c639a1138c2659bc8e3ccfd6
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5700,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5687,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

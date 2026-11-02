@@ -23,30 +23,30 @@ zen-live-folder-option-fetch-interval =
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 nóiméad
+           *[other] { $mins } nóiméad
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 uair
+           *[other] { $hours } uair an chloig
         }
 zen-live-folder-rss-option-time-range = 
     .label = Raon Ama
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] An uair dheireanach
+           *[other] Na { $hours } uair an chloig dheireanacha
         }
 zen-live-folder-time-range-all-time = 
     .label = Gach tráth
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] An lá deireanach
+           *[other] Na { $days } lá deireanacha
         }
 zen-live-folder-rss-option-item-limit = 
     .label = Teorainn Míreanna

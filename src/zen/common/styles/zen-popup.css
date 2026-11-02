@@ -498,7 +498,7 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 2px !important;
   margin-inline-start: 6px !important;
 }
 
@@ -558,13 +558,16 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   display: none !important;
 }
 
-/* Secondary description */
+/* Secondary description with subtle divider separator line */
 .zen-tooltip-description {
+  display: block !important;
   font-weight: 400 !important;
-  font-size: 11px !important;
-  line-height: 1.25 !important;
-  opacity: 0.75 !important;
-  margin-top: 2px !important;
+  font-size: 11.5px !important;
+  line-height: 1.35 !important;
+  opacity: 0.85 !important;
+  margin-top: 6px !important;
+  padding-top: 5px !important;
+  border-top: 1px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.12)) !important;
   color: inherit !important;
 }
 

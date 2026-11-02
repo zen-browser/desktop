@@ -470,8 +470,8 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   }
 
   & label,
-  & description,
-  & .tooltip-label {
+  & description:not(.zen-tooltip-key),
+  & .tooltip-label:not(.zen-tooltip-key) {
     color: inherit !important;
     margin: 0 !important;
   }
@@ -493,7 +493,7 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   color: inherit !important;
 }
 
-/* Keyboard shortcut container ("cases séparées par touche") */
+/* Keyboard shortcut container (separate boxes per key) */
 .zen-tooltip-shortcut {
   display: flex !important;
   flex-direction: row !important;
@@ -502,8 +502,9 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   margin-inline-start: 6px !important;
 }
 
-/* Individual keyboard keycap ("case par touche") */
-.zen-tooltip-key {
+/* Individual keyboard keycap */
+.zen-tooltip-key,
+#dynamic-shortcut-tooltip .zen-tooltip-key {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -519,28 +520,27 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   text-align: center !important;
   letter-spacing: -0.01em !important;
 
-  /* Pastel keycap background tinted by workspace accent color */
+  /* Keycap background using light accent color in both light and dark mode */
   background-color: color-mix(
     in srgb,
     var(--zen-primary-color, #888888) 36%,
     #ffffff
   ) !important;
 
-  /* Text color matching the space accent */
-  color: color-mix(
-    in srgb,
-    var(--zen-primary-color, #111111) 75%,
-    #000000
+  /* Symbol using dark accent color in both light and dark mode */
+  color: light-dark(
+    color-mix(in srgb, var(--zen-primary-color, #111111) 60%, #1c1c1f),
+    color-mix(in srgb, var(--zen-primary-color, #1c1c1f) 30%, #101518)
   ) !important;
 
-  /* 3D keycap bottom bevel */
+  /* 3D keycap bottom bevel unchanged */
   box-shadow: 0 1.5px 0 color-mix(
     in srgb,
     var(--zen-primary-color, #222222) 55%,
     #000000 45%
   ) !important;
 
-  /* Subtle border around the keycap */
+  /* Subtle border outline */
   border: 0.5px solid color-mix(
     in srgb,
     var(--zen-primary-color, #000000) 25%,

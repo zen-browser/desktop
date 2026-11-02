@@ -152,7 +152,12 @@ class nsZenAboutDialog {
 
   #initLinks() {
     const releaseNotes = document.getElementById("zen-about-release-notes");
-    releaseNotes.href = this.releaseNotesURL;
+    const releaseNotesURL = this.releaseNotesURL;
+    if (releaseNotesURL) {
+      releaseNotes.href = releaseNotesURL;
+    } else {
+      releaseNotes.remove();
+    }
     document
       .getElementById("zen-about-content")
       .addEventListener("click", event => {
@@ -282,8 +287,6 @@ class nsZenAboutDialog {
           }
           this.#show("up-to-date", {
             textId: "zen-about-update-up-to-date",
-            buttonId: "zen-about-update-check-again",
-            action: () => this.checkForUpdates(),
           });
         });
         break;

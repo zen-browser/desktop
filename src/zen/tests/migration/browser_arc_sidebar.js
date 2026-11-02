@@ -44,6 +44,7 @@ add_task(async function test_parse_arc_sidebar() {
   );
   Assert.equal(first.theme.intensity, 0.8, "Arc's intensity is read");
   Assert.equal(first.theme.noise, 0.5, "Arc's noise is read");
+  Assert.equal(first.theme.overlay, "grain", "Arc's grain style is read");
   Assert.deepEqual(
     first.items,
     [
@@ -155,7 +156,7 @@ add_task(async function test_parse_arc_single_color_theme() {
   const [first] = ZenMigrationUtils.parseArcSidebar(sidebar).spaces;
   Assert.deepEqual(
     first.theme,
-    { colors: [[51, 102, 153]], intensity: 0.3, noise: 0 },
+    { colors: [[51, 102, 153]], intensity: 0.3, noise: 0, overlay: null },
     "A single color theme gives one color"
   );
 });
@@ -196,8 +197,14 @@ add_task(async function test_apply_arc_sidebar() {
       !first.theme.gradientColors[1].isPrimary,
     "The first base color is the primary one"
   );
-  Assert.equal(first.theme.opacity, 0.8, "Arc's intensity sets the opacity");
+  const minOpacity = AppConstants.platform === "macosx" ? 0.3 : 0.25;
+  Assert.equal(
+    first.theme.opacity,
+    minOpacity + 0.8 * (0.8 - minOpacity),
+    "Arc's intensity is mapped onto the slider range"
+  );
   Assert.equal(first.theme.texture, 0.5, "Arc's noise sets the texture");
+  Assert.equal(first.theme.textureType, "grain", "Arc's grain style is kept");
   const second = workspaces.find(w => w.uuid !== original.uuid);
   Assert.equal(second.name, "Space 2", "The second space was created");
 

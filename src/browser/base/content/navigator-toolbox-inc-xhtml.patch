@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 12c237929070194908b4c90481a42752d7099b7b..74fae7ab4155ee69463fea4af9b9562163d0621b 100644
+index d8aeb318a225ac9a2528d274ec1dcb32fac3fd8e..7bbafcd0a497fea109748ee56f61d0f36b3cedf5 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -58,3 +58,20 @@ index 12c237929070194908b4c90481a42752d7099b7b..74fae7ab4155ee69463fea4af9b95621
  
    <toolbar id="nav-bar"
             class="browser-toolbar"
+@@ -130,14 +139,14 @@
+                      removable="false" overflows="false"
+                      keepbroadcastattributeswhencustomizing="true"
+                      command="Browser:BackOrBackDuplicate"
+-                     tooltip="back-button-tooltip"
++                     tooltip="dynamic-shortcut-tooltip"
+                      context="backForwardMenu"/>
+       <toolbarbutton id="forward-button" class="toolbarbutton-1 chromeclass-toolbar-additional"
+                      data-l10n-id="toolbar-button-forward-2"
+                      removable="false" overflows="false"
+                      keepbroadcastattributeswhencustomizing="true"
+                      command="Browser:ForwardOrForwardDuplicate"
+-                     tooltip="forward-button-tooltip"
++                     tooltip="dynamic-shortcut-tooltip"
+                      context="backForwardMenu"/>
+       <toolbaritem id="stop-reload-button" class="chromeclass-toolbar-additional"
+                    data-l10n-id="toolbar-button-stop-reload"

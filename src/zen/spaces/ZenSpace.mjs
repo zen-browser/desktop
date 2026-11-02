@@ -679,6 +679,7 @@ export class nsZenWorkspace extends MozXULElement {
     } else {
       this.style.colorScheme = "";
     }
+    this.setAttribute("zen-should-be-dark-mode", isDarkMode ? "true" : "false");
     this.style.setProperty(
       "--toolbox-textcolor",
       `rgb(${toolbarColor.join(",")})`

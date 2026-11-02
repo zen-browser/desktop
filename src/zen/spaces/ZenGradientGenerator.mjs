@@ -161,6 +161,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", darkModeChange);
+    window
+      .matchMedia("(-moz-system-dark-theme)")
+      .addEventListener("change", darkModeChange);
 
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
@@ -195,7 +198,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return false;
       default:
     }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return (
+      window.matchMedia("(-moz-system-dark-theme)").matches ||
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
   }
 
   get colorHarmonies() {
@@ -2086,6 +2092,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   invalidateGradientCache(uuid) {
     delete this.#gradientsCache[uuid];
     gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
+  }
+
+  getWorkspaceTheme(workspace) {
+    return this.getGradientForWorkspace(workspace, { getGradient: false });
   }
 
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {

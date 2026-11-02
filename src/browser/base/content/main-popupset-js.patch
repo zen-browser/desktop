@@ -1,0 +1,31 @@
+diff --git a/browser/base/content/main-popupset.js b/browser/base/content/main-popupset.js
+index d2390681bd8cff28a0d9116655c3e591e71c2c73..e26fa6400310e0a4c4e3dab00b1e9681a87544a0 100644
+--- a/browser/base/content/main-popupset.js
++++ b/browser/base/content/main-popupset.js
+@@ -628,6 +628,26 @@ document.addEventListener(
+         webrtcUI.updateWarningLabel(event.currentTarget);
+       });
+ 
++    document.addEventListener("popupshowing", event => {
++      if (
++        event.target.localName === "tooltip" &&
++        event.target.id !== "remoteBrowserTooltip" &&
++        event.target.id !== "aHTMLTooltip" &&
++        !event.target.hasAttribute("contenttooltip") &&
++        !event.target.hasAttribute("page")
++      ) {
++        DynamicShortcutTooltip.updateTheme(event.target);
++      }
++    });
++
++    document.addEventListener("popuphidden", event => {
++      if (event.target.localName === "tooltip") {
++        event.target.style.removeProperty("--zen-primary-color");
++        event.target.removeAttribute("corner");
++        event.target.removeAttribute("scheme");
++      }
++    });
++
+     mainPopupSet.addEventListener("popupshowing", event => {
+       switch (event.target.id) {
+         case "context_sendTabToDevicePopupMenu":

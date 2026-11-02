@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 7ce8e235dd4dafde6ed1bfa8c81c4dc1409141f1..b2423a1d07c9dd4348fa16ef291ecc5a0aa389af 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2f7623a60 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,7 +10,7 @@ index 7ce8e235dd4dafde6ed1bfa8c81c4dc1409141f1..b2423a1d07c9dd4348fa16ef291ecc5a
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -883,7 +884,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
+@@ -881,7 +882,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
    var backDisabled = backCommand.hasAttribute("disabled");
    var forwardDisabled = forwardCommand.hasAttribute("disabled");
@@ -24,34 +24,196 @@ index 7ce8e235dd4dafde6ed1bfa8c81c4dc1409141f1..b2423a1d07c9dd4348fa16ef291ecc5a
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -4035,7 +4041,7 @@ function warnAboutClosingWindow() {
+@@ -3578,9 +3584,159 @@ const DynamicShortcutTooltip = {
+     return this.cache.get(nodeId);
+   },
+ 
++  findShortcutForTrigger(trigger) {
++    if (!trigger) {
++      return null;
++    }
++    let keyId = trigger.getAttribute("key");
++    let keyEl = keyId ? document.getElementById(keyId) : null;
++    if (!keyEl && trigger.getAttribute("command")) {
++      let cmdId = trigger.getAttribute("command");
++      let cmd = document.getElementById(cmdId);
++      if (cmd) {
++        keyId = cmd.getAttribute("key");
++        if (keyId) {
++          keyEl = document.getElementById(keyId);
++        }
++      }
++      if (!keyEl) {
++        keyEl = document.querySelector(`keyset key[command="${cmdId}"]`);
++      }
++    }
++    if (keyEl) {
++      return ShortcutUtils.prettifyShortcut(keyEl);
++    }
++    return null;
++  },
++
+   updateText(aTooltip) {
+-    let nodeId = aTooltip.triggerNode.id;
+-    aTooltip.setAttribute("label", this.getText(nodeId));
++    let trigger = aTooltip.triggerNode;
++    if (!trigger) {
++      return;
++    }
++
++    let effectiveTrigger = trigger;
++    if (!trigger.hasAttribute("tooltiptext") && !trigger.hasAttribute("title") && !trigger.id) {
++      let parentWithTooltip = trigger.closest("[tooltiptext], [title], [id]");
++      if (parentWithTooltip) {
++        effectiveTrigger = parentWithTooltip;
++      }
++    }
++
++    let nodeId = effectiveTrigger.id;
++    let text = nodeId ? this.getText(nodeId) : null;
++    if (text) {
++      aTooltip.setAttribute("label", text);
++    } else {
++      let rawText = effectiveTrigger.getAttribute("tooltiptext") || effectiveTrigger.getAttribute("title");
++      if (rawText) {
++        let prettyShortcut = this.findShortcutForTrigger(effectiveTrigger);
++        if (prettyShortcut && !rawText.includes(prettyShortcut)) {
++          aTooltip.setAttribute("label", `${rawText} (${prettyShortcut})`);
++        } else {
++          aTooltip.setAttribute("label", rawText);
++        }
++      }
++    }
++
++    this.updateTheme(aTooltip);
++  },
++
++  updateTheme(aTooltip) {
++    if (!aTooltip) {
++      return;
++    }
++
++    let trigger = aTooltip.triggerNode;
++    let effectiveTrigger = trigger;
++    if (trigger && !trigger.hasAttribute("tooltiptext") && !trigger.hasAttribute("title") && !trigger.id) {
++      let parentWithTooltip = trigger.closest("[tooltiptext], [title], [id]");
++      if (parentWithTooltip) {
++        effectiveTrigger = parentWithTooltip;
++      }
++    }
++
++    try {
++      let schemePref = Services.prefs.getIntPref("zen.view.window.scheme", 2);
++      let isDark = null;
++      let primaryColor = null;
++
++      // 1. Resolve workspace context from trigger (if hovering a workspace icon or workspace tab)
++      let ws = null;
++      let wsId = trigger?.getAttribute("zen-workspace-id") ||
++                 effectiveTrigger?.getAttribute("zen-workspace-id") ||
++                 trigger?.closest("[zen-workspace-id]")?.getAttribute("zen-workspace-id");
++      if (wsId && window.gZenWorkspaces) {
++        ws = window.gZenWorkspaces.getWorkspaceFromId?.(wsId);
++      }
++      if (!ws && window.gZenWorkspaces) {
++        ws = window.gZenWorkspaces.getActiveWorkspace?.();
++      }
++
++      // 2. Get workspace theme data (colors and mode)
++      let wsThemeData = null;
++      if (ws && window.gZenThemePicker) {
++        wsThemeData = window.gZenThemePicker.getGradientForWorkspace?.(ws, { getGradient: false }) ||
++                      window.gZenThemePicker.getWorkspaceTheme?.(ws);
++      }
++
++      // 3. Resolve primary color
++      if (trigger) {
++        let explicitColor = trigger.closest("[zen-should-be-dark-mode]")?.style?.getPropertyValue("--zen-primary-color");
++        if (explicitColor && explicitColor.trim() !== "") {
++          primaryColor = explicitColor.trim();
++        }
++      }
++      if (!primaryColor && wsThemeData?.primaryColor) {
++        primaryColor = wsThemeData.primaryColor;
++      }
++      if (!primaryColor) {
++        let computed = effectiveTrigger ? window.getComputedStyle(effectiveTrigger) : null;
++        let c = computed?.getPropertyValue("--zen-primary-color");
++        if (c && c.trim() !== "") {
++          primaryColor = c.trim();
++        } else {
++          primaryColor = window.getComputedStyle(document.documentElement).getPropertyValue("--zen-primary-color")?.trim();
++        }
++      }
++
++      // 4. Resolve dark vs light mode:
++      if (schemePref === 0) {
++        isDark = true;
++      } else if (schemePref === 1) {
++        isDark = false;
++      } else {
++        // Auto (schemePref === 2):
++        let darkElem = trigger?.closest?.("[zen-should-be-dark-mode]");
++        if (darkElem && darkElem !== document.documentElement) {
++          let val = darkElem.getAttribute("zen-should-be-dark-mode");
++          if (val === "true") {
++            isDark = true;
++          } else if (val === "false") {
++            isDark = false;
++          }
++        }
++        if (isDark === null && wsThemeData && typeof wsThemeData.isDarkMode === "boolean") {
++          isDark = wsThemeData.isDarkMode;
++        }
++        if (isDark === null) {
++          isDark = window.matchMedia("(-moz-system-dark-theme)").matches ||
++                   window.matchMedia("(prefers-color-scheme: dark)").matches;
++        }
++      }
++
++      // Apply theme to tooltip
++      if (primaryColor && primaryColor.trim() !== "") {
++        aTooltip.style.setProperty("--zen-primary-color", primaryColor.trim());
++      } else {
++        aTooltip.style.removeProperty("--zen-primary-color");
++      }
++
++      aTooltip.setAttribute("scheme", isDark ? "dark" : "light");
++      aTooltip.style.colorScheme = isDark ? "dark" : "light";
++    } catch (e) {
++      // Ignore
++    }
+   },
+ 
+   cache: new Map(),
+@@ -4030,7 +4186,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
 -      gBrowser.openTabs.length,
 +      gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
-       Tabbrowser.closingTabsEnum.ALL
+       gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4075,7 +4081,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4226,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
 -        gBrowser.openTabs.length,
 +        gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
-         Tabbrowser.closingTabsEnum.ALL
+         gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4100,7 +4106,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4251,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
 -      gBrowser.openTabs.length,
 +      gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
-       Tabbrowser.closingTabsEnum.ALL
+       gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4813,9 +4819,13 @@ var gDialogBox = {
+@@ -4808,9 +4964,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -68,7 +230,7 @@ index 7ce8e235dd4dafde6ed1bfa8c81c4dc1409141f1..b2423a1d07c9dd4348fa16ef291ecc5a
      }
  
      try {
-@@ -4841,6 +4851,10 @@ var gDialogBox = {
+@@ -4836,6 +4996,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -79,7 +241,7 @@ index 7ce8e235dd4dafde6ed1bfa8c81c4dc1409141f1..b2423a1d07c9dd4348fa16ef291ecc5a
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5026,6 +5040,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5185,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

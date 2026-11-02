@@ -122,6 +122,19 @@ class nsZenWorkspaceIcons extends MozXULElement {
    */
   #updateWorkspaceIcon(button, workspace) {
     button.setAttribute("tooltiptext", workspace.name);
+    try {
+      const themeData = window.gZenThemePicker?.getGradientForWorkspace
+        ? window.gZenThemePicker.getGradientForWorkspace(workspace, { getGradient: false })
+        : window.gZenThemePicker?.getWorkspaceTheme?.(workspace);
+      if (themeData) {
+        button.setAttribute("zen-should-be-dark-mode", themeData.isDarkMode ? "true" : "false");
+        if (themeData.primaryColor) {
+          button.style.setProperty("--zen-primary-color", themeData.primaryColor);
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
 
     const isSvgIcon = !!workspace.icon?.endsWith(".svg");
     const hasIcon = gZenWorkspaces.workspaceHasIcon(workspace);

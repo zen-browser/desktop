@@ -56,12 +56,9 @@ add_task(async function test_Reapply_Max_Size_Split_View() {
   }, "grid", 4);
 });
 
-add_task(async function test_Reject_Split_Exceeding_Max_Size() {
+add_task(async function test_Reject_Tab_Added_To_Max_Size_Split_View() {
   await basicSplitNTabs(async tabs => {
-    const extraTabs = await Promise.all([
-      addTabTo(gBrowser, getUrlForNthTab(4)),
-      addTabTo(gBrowser, getUrlForNthTab(5)),
-    ]);
+    const extraTab = await addTabTo(gBrowser, getUrlForNthTab(5));
     const showToast = sinon.stub(gZenUIManager, "showToast");
 
     try {
@@ -69,17 +66,17 @@ add_task(async function test_Reject_Split_Exceeding_Max_Size() {
         split.tabs.includes(tabs[0])
       );
       const result = gZenViewSplitter.splitTabs(
-        [tabs[0], ...extraTabs],
+        [tabs[0], extraTab],
         undefined,
         -1,
         { activate: false }
       );
 
-      Assert.equal(result, undefined, "A five-tab split should be rejected");
+      Assert.equal(result, undefined, "A fifth tab should be rejected");
       Assert.equal(
         group.tabs.length,
-        3,
-        "Rejected tabs should not be added to the existing split"
+        gZenViewSplitter.MAX_TABS,
+        "The split should remain at the maximum number of tabs"
       );
       sinon.assert.calledOnceWithExactly(
         showToast,
@@ -87,10 +84,8 @@ add_task(async function test_Reject_Split_Exceeding_Max_Size() {
       );
     } finally {
       showToast.restore();
-      for (const tab of extraTabs) {
-        await BrowserTestUtils.removeTab(tab);
-      }
+      await BrowserTestUtils.removeTab(extraTab);
     }
-  }, "grid", 3);
+  }, "grid", 4);
 });
 

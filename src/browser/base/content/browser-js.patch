@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa968511481b94 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd831733c1 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,12 +24,13 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,680 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,707 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
 +  shortcutCache: new Map(),
 +  _keysetObserver: null,
++  _obsCallback: null,
 +
 +  clearCache() {
 +    this.cache.clear();
@@ -42,19 +43,20 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
 +    }
 +    this._initialized = true;
 +
-+    // Invalidate caches when shortcuts change or when customization/focus shifts
-+    window.addEventListener("customizationchange", () => this.clearCache());
-+    window.addEventListener("focus", () => this.clearCache());
-+    window.addEventListener("CustomKeysUpdate", () => this.clearCache());
-+    window.addEventListener("ZenWorkspacesUIUpdate", () => this.clearCache());
++    this._onClearCache = () => this.clearCache();
++    window.addEventListener("customizationchange", this._onClearCache);
++    window.addEventListener("focus", this._onClearCache);
++    window.addEventListener("CustomKeysUpdate", this._onClearCache);
++    window.addEventListener("ZenWorkspacesUIUpdate", this._onClearCache);
 +
 +    try {
-+      Services.obs.addObserver(() => this.clearCache(), "zen:keyboard-shortcuts-changed");
++      this._obsCallback = () => this.clearCache();
++      Services.obs.addObserver(this._obsCallback, "zen:keyboard-shortcuts-changed");
 +    } catch (e) {}
 +
 +    // Observe changes to keysets and keys (e.g. when CustomKeys modifies shortcuts)
 +    try {
-+      this._keysetObserver = new MutationObserver(() => this.clearCache());
++      this._keysetObserver = new MutationObserver(this._onClearCache);
 +      const keysets = document.querySelectorAll("keyset");
 +      const observedParents = new Set();
 +      for (const keyset of keysets) {
@@ -70,6 +72,24 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
 +        }
 +      }
 +    } catch (e) {}
++
++    window.addEventListener(
++      "unload",
++      () => {
++        this._keysetObserver?.disconnect();
++        this._keysetObserver = null;
++        if (this._obsCallback) {
++          try {
++            Services.obs.removeObserver(
++              this._obsCallback,
++              "zen:keyboard-shortcuts-changed"
++            );
++          } catch (e) {}
++          this._obsCallback = null;
++        }
++      },
++      { once: true }
++    );
 +  },
 +
 +  ensureTooltipElements(aTooltip) {
@@ -77,6 +97,13 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
 +    let titleEl = aTooltip.querySelector(".zen-tooltip-title");
 +    let shortcutEl = aTooltip.querySelector(".zen-tooltip-shortcut");
 +    let descEl = aTooltip.querySelector(".zen-tooltip-description");
++
++    if (mainRow && titleEl && shortcutEl && descEl) {
++      titleEl.removeAttribute("value");
++      shortcutEl.removeAttribute("value");
++      descEl.removeAttribute("value");
++      return { titleEl, descEl, shortcutEl };
++    }
 +
 +    if (!mainRow) {
 +      let legacyTitle = aTooltip.firstElementChild;
@@ -707,7 +734,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
    },
  
    cache: new Map(),
-@@ -4030,7 +4707,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4734,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -716,7 +743,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4747,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4774,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -725,7 +752,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4772,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4799,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -734,7 +761,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5485,13 @@ var gDialogBox = {
+@@ -4808,9 +5512,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -751,7 +778,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
      }
  
      try {
-@@ -4836,6 +5517,10 @@ var gDialogBox = {
+@@ -4836,6 +5544,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -762,7 +789,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa9685
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5706,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5733,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

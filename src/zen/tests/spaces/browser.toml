@@ -45,4 +45,6 @@ support-files = [
 
 ["browser_workspace_bookmarks.js"]
 
+["browser_bookmark_edit_workspace_selector.js"]
+
 ["browser_zen_workspace_cmdline.js"]

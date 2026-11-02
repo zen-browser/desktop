@@ -1458,7 +1458,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           group.tabs.includes(existingSplitTab)
         );
         const group = this._data[groupIndex];
-        if (group.tabs.length >= this.MAX_TABS) {
+        if (new Set(group.tabs.concat(tabs)).size > this.MAX_TABS) {
           gZenUIManager.showToast("zen-split-view-limit-toast");
           return;
         }

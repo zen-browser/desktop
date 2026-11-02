@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6be174a1a 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..f6999acd221730066e5980286c6cfbb4c1ec9b76 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,7 +24,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,452 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,509 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
@@ -66,12 +66,21 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
 +      }
 +      mainRow.appendChild(titleEl);
 +      if (!shortcutEl) {
-+        shortcutEl = document.createXULElement("description");
-+        shortcutEl.className = "tooltip-label zen-tooltip-shortcut";
++        shortcutEl = document.createXULElement("hbox");
++        shortcutEl.className = "zen-tooltip-shortcut";
++        shortcutEl.setAttribute("align", "center");
 +        shortcutEl.setAttribute("hidden", "true");
 +      }
 +      mainRow.appendChild(shortcutEl);
 +      aTooltip.prepend(mainRow);
++    }
++
++    if (!shortcutEl) {
++      shortcutEl = document.createXULElement("hbox");
++      shortcutEl.className = "zen-tooltip-shortcut";
++      shortcutEl.setAttribute("align", "center");
++      shortcutEl.setAttribute("hidden", "true");
++      mainRow.appendChild(shortcutEl);
 +    }
 +
 +    if (!descEl) {
@@ -92,6 +101,43 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
 +    }
 +
 +    return { titleEl, descEl, shortcutEl };
++  },
++
++  parseShortcutKeys(str) {
++    if (!str || typeof str !== "string") {
++      return [];
++    }
++    let trimmed = str.trim();
++    if (!trimmed) {
++      return [];
++    }
++
++    // 1. If separated by '+' (Windows / Linux style: "Ctrl+Shift+T")
++    if (trimmed.includes("+")) {
++      if (trimmed.endsWith("++")) {
++        let prefix = trimmed.slice(0, -2);
++        return [...prefix.split("+").filter(Boolean), "+"];
++      }
++      return trimmed.split("+").filter(Boolean);
++    }
++
++    // 2. If concatenated (macOS style: "⌘S", "⌃1", "^1", "⌥⌘B", "⇧⌘T")
++    const modifiers = ["⌘", "⌥", "⇧", "⌃", "^"];
++    let keys = [];
++    let remaining = trimmed;
++
++    while (remaining.length > 0) {
++      let foundMod = modifiers.find(m => remaining.startsWith(m));
++      if (foundMod) {
++        keys.push(foundMod);
++        remaining = remaining.slice(foundMod.length);
++      } else {
++        keys.push(remaining);
++        break;
++      }
++    }
++
++    return keys;
 +  },
 +
 +  getTriggerTitle(trigger, effectiveTrigger) {
@@ -341,8 +387,19 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
 +    }
 +
 +    if (shortcutEl) {
-+      shortcutEl.textContent = prettyShortcut || "";
-+      shortcutEl.toggleAttribute("hidden", !prettyShortcut);
++      shortcutEl.replaceChildren();
++      let keys = this.parseShortcutKeys(prettyShortcut);
++      if (keys.length > 0) {
++        for (let key of keys) {
++          let keyEl = document.createXULElement("description");
++          keyEl.className = "zen-tooltip-key";
++          keyEl.textContent = key;
++          shortcutEl.appendChild(keyEl);
++        }
++        shortcutEl.removeAttribute("hidden");
++      } else {
++        shortcutEl.setAttribute("hidden", "true");
++      }
 +    }
 +
 +    if (descEl) {
@@ -479,7 +536,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
    },
  
    cache: new Map(),
-@@ -4030,7 +4479,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4536,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -488,7 +545,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4519,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4576,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -497,7 +554,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4544,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4601,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -506,7 +563,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5257,13 @@ var gDialogBox = {
+@@ -4808,9 +5314,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -523,7 +580,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
      }
  
      try {
-@@ -4836,6 +5289,10 @@ var gDialogBox = {
+@@ -4836,6 +5346,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -534,7 +591,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5478,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5535,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

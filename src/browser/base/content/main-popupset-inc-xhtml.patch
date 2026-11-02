@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index 58d33bd452aca230a7a6e232f4df4bbe7e34b6af..a4f23c891e1240fb0937df6c5cd841ad03a40fb1 100644
+index 58d33bd452aca230a7a6e232f4df4bbe7e34b6af..95c79f58a347d78439ce76be68869cecc5485397 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
 @@ -279,6 +279,10 @@
@@ -38,7 +38,7 @@ index 58d33bd452aca230a7a6e232f4df4bbe7e34b6af..a4f23c891e1240fb0937df6c5cd841ad
 +  <tooltip id="dynamic-shortcut-tooltip">
 +    <hbox class="zen-tooltip-main-row" align="center">
 +      <description class="tooltip-label zen-tooltip-title"/>
-+      <description class="tooltip-label zen-tooltip-shortcut" hidden="true"/>
++      <hbox class="zen-tooltip-shortcut" align="center" hidden="true"/>
 +    </hbox>
 +    <description class="tooltip-label zen-tooltip-description" hidden="true"/>
 +  </tooltip>

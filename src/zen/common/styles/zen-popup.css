@@ -493,28 +493,67 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   color: inherit !important;
 }
 
-/* Keyboard shortcut badge */
+/* Keyboard shortcut container ("cases séparées par touche") */
 .zen-tooltip-shortcut {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 3px !important;
+  margin-inline-start: 6px !important;
+}
+
+/* Individual keyboard keycap ("case par touche") */
+.zen-tooltip-key {
   display: inline-flex !important;
   align-items: center !important;
-  font-family: inherit !important;
-  font-weight: 600 !important;
-  font-size: 10px !important;
-  line-height: 1 !important;
-  padding: 1px 5px !important;
+  justify-content: center !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  box-sizing: border-box !important;
+  padding: 0 4px !important;
   border-radius: 4px !important;
-  background-color: light-dark(rgba(0, 0, 0, 0.07), rgba(255, 255, 255, 0.12)) !important;
-  border: 1px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16)) !important;
-  color: inherit !important;
-  opacity: 0.85 !important;
-  letter-spacing: 0.02em !important;
+  font-family: inherit !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  letter-spacing: -0.01em !important;
+
+  /* Pastel keycap background tinted by workspace accent color */
+  background-color: color-mix(
+    in srgb,
+    var(--zen-primary-color, #888888) 36%,
+    #ffffff
+  ) !important;
+
+  /* Text color matching the space accent */
+  color: color-mix(
+    in srgb,
+    var(--zen-primary-color, #111111) 75%,
+    #000000
+  ) !important;
+
+  /* 3D keycap bottom bevel */
+  box-shadow: 0 1.5px 0 color-mix(
+    in srgb,
+    var(--zen-primary-color, #222222) 55%,
+    #000000 45%
+  ) !important;
+
+  /* Subtle border around the keycap */
+  border: 0.5px solid color-mix(
+    in srgb,
+    var(--zen-primary-color, #000000) 25%,
+    transparent
+  ) !important;
 }
 
 /* Suppress ::before pseudo-element from Gecko [value] (xul.css) */
 #dynamic-shortcut-tooltip .tooltip-label::before,
 #dynamic-shortcut-tooltip .zen-tooltip-title::before,
 #dynamic-shortcut-tooltip .zen-tooltip-description::before,
-#dynamic-shortcut-tooltip .zen-tooltip-shortcut::before {
+#dynamic-shortcut-tooltip .zen-tooltip-shortcut::before,
+#dynamic-shortcut-tooltip .zen-tooltip-key::before {
   content: none !important;
   display: none !important;
 }
@@ -534,10 +573,12 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
 .zen-tooltip-description:empty,
 .zen-tooltip-shortcut[hidden],
 .zen-tooltip-shortcut:empty,
+.zen-tooltip-key:empty,
 .places-tooltip-description[hidden],
 .places-tooltip-description:empty {
   display: none !important;
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
+  box-shadow: none !important;
 }

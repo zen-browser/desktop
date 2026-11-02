@@ -3,53 +3,65 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-#zenEditBookmarkPanelFaviconContainer {
-  border: 1px solid var(--input-border-color);
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 16px;
-  background: light-dark(#fff, rgba(255, 255, 255, 0.1));
-}
-
-#editBookmarkPanel::part(content) {
-  display: flex;
-  flex-direction: row;
-}
-
 #zenEditBookmarkPanelFavicon {
   width: var(--icon-size-medium);
   height: var(--icon-size-medium);
 }
 
+/* Put favicon within the panel header, at its end */
 #editBookmarkPanel .panel-header {
+  align-items: center;
+  gap: 10px;
   min-height: 0;
-  padding-bottom: 0;
-  padding-top: 16px;
+  padding: 16px var(--panel-padding, 16px) 0;
 }
 
-#editBMPanel_namePicker {
-  width: -moz-available;
-}
-
-label.editBMPanel_folderRow,
-label.editBMPanel_nameRow {
-  min-width: 60px;
+#editBookmarkPanel .panel-header > h1 {
+  flex: 1;
+  min-width: 0;
+  margin-inline-start: 0 !important;
 }
 
 hbox.editBMPanel_folderRow {
   width: -moz-available;
 }
 
-.zenEditBMPanel_fieldContainer:not(:first-child) {
-  margin-top: 10px;
+/* Apply two-column row system in both popover panel & dialog */
+#editBookmarkPanelContent#editBookmarkPanelContent {
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
 }
 
-.zenEditBMPanel_fieldContainer {
-  align-items: center;
+#editBookmarkPanelContent#editBookmarkPanelContent label[control] {
+  margin: 0;
+}
+
+#editBookmarkPanelContent > label[control] {
+  grid-column: 1;
+  padding-top: 0;
+  text-align: end;
+}
+
+#editBookmarkPanelContent > input,
+#editBookmarkPanelContent > hbox > input {
+  margin: 0;
+}
+
+#editBookmarkPanelContent > input {
+  width: -moz-available;
+}
+
+#editBookmarkPanelContent > .caption-label {
+  grid-column: 2;
+  margin-top: -6px;
+}
+
+#editBMPanel_itemsCountText,
+#editBMPanel_folderTreeRow,
+#editBMPanel_workspaceList,
+#editBMPanel_tagsSelectorRow {
+  grid-column: 1 / -1;
 }
 
 #editBookmarkPanelBottomContent {
@@ -64,8 +76,34 @@ hbox.editBMPanel_folderRow {
   margin-right: 10px;
 }
 
-#editBMPanel_workspaceSummary .workspace-trigger {
-  margin-inline-end: 16px;
+/* Match panel inputs instead of Firefox's ThreeDShadow/small-radius box */
+#editBMPanel_folderTree,
+#editBMPanel_tagsSelector {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-medium);
+}
+
+#editBookmarkPanel .expander-up,
+#editBookmarkPanel .expander-down,
+#bookmarkpropertiesdialog .expander-up,
+#bookmarkpropertiesdialog .expander-down {
+  margin-inline-start: 10px;
+}
+
+#editBookmarkPanelContent #editBMPanel_folderTreeRow #editBMPanel_newFolderBox {
+  padding-top: 10px;
+  justify-content: flex-end;
+}
+
+/* Specific colors for bookmark popover panel */
+#editBookmarkPanel #editBMPanel_folderTree,
+#editBookmarkPanel #editBMPanel_workspaceList {
+  background-color: var(--input-background-color);
+}
+
+#editBookmarkPanel #editBMPanel_folderTree,
+#editBookmarkPanel #editBMPanel_tagsSelector {
+  border-color: var(--input-border-color);
 }
 
 /* Bookmarks in toolbar */

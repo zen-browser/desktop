@@ -27,7 +27,9 @@ add_task(async function test_Private_Mode() {
     "Containers/profiles should not be shown in private windows"
   );
 
-  const popup = privateWindow.document.getElementById("zenWorkspaceMoreActions");
+  const popup = privateWindow.document.getElementById(
+    "zenWorkspaceMoreActions"
+  );
   privateWindow.gZenWorkspaces.updateWorkspaceActionsMenu({
     target: popup,
   });

@@ -6,6 +6,7 @@
 prefs = ["zen.workspaces.separate-essentials=false"]
 support-files = [
   "head.js",
+  "bookmark_edit_helpers.js",
 ]
 
 ["browser_basic_workspaces.js"]

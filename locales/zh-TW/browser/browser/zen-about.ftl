@@ -26,10 +26,9 @@ zen-about-firefox-version = 基於 { -zen-engine-name } { $firefoxVersion }
 ## Update status
 
 zen-about-update-check = 檢查更新
-zen-about-update-check-again = 再次檢查
 zen-about-update-try-again = 再試一次
 zen-about-update-checking = 正在檢查更新…
-zen-about-update-up-to-date = { -brand-short-name } 已經是最新版本
+zen-about-update-up-to-date = { -brand-short-name } 已是最新版本
 # Variables:
 #   $version (String): the version that can be downloaded, e.g. 1.25b
 zen-about-update-available = { -brand-short-name } { $version } 可供更新
@@ -48,7 +47,7 @@ zen-about-update-download-manually = 手動下載
 zen-about-update-manual = 下載頁面中已有新版本
 zen-about-update-policy-disabled = 更新已由您的機構停用
 zen-about-update-other-instance = { -brand-short-name } 正由另一程序更新中
-zen-about-update-unsupported = 此作業系統已無法再接受更新
+zen-about-update-unsupported = 此作業系統已無法再接收更新
 zen-about-update-learn-more = 了解更多
 
 ## Links

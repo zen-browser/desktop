@@ -498,7 +498,7 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 2px !important;
+  gap: 1.5px !important;
   margin-inline-start: 6px !important;
 }
 

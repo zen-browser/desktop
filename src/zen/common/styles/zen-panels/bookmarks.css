@@ -106,6 +106,35 @@ hbox.editBMPanel_folderRow {
   border-color: var(--input-border-color);
 }
 
+#bookmarkpropertiesdialog #editBookmarkPanelContent #editBMPanel_tagsField,
+#bookmarkpropertiesdialog #editBookmarkPanelContent #editBMPanel_folderMenuList {
+  margin-inline-end: 0;
+}
+
+#bookmarkpropertiesdialog #editBookmarkPanelContent {
+  padding-inline: 10px;
+  margin-inline: 0;
+}
+
+#bookmarkpropertiesdialog #editBookmarkPanelContent > label:not(.editBMPanel_nameRow),
+#bookmarkpropertiesdialog #editBookmarkPanelContent > #editBMPanel_folderTreeRow,
+#bookmarkpropertiesdialog #editBookmarkPanelContent > #editBMPanel_tagsSelectorRow {
+  padding-block: 0;
+}
+
+/* Specific colors for add/edit bookmark dialog */
+#bookmarkpropertiesdialog .workspace-trigger,
+#bookmarkpropertiesdialog #editBMPanel_workspaceList {
+  background-color: var(--background-color-box);
+  border-color: var(--border-color);
+}
+
+/* SubDialog caps the frame; `contain` stops the content re-expanding it */
+#bookmarkpropertiesdialog.doScroll::part(content-box) {
+  overflow-y: auto;
+  contain: size;
+}
+
 /* Bookmarks in toolbar */
 #PersonalToolbar {
   background: transparent;

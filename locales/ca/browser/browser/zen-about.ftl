@@ -26,7 +26,6 @@ zen-about-firefox-version = Basat en { -zen-engine-name } { $firefoxVersion }
 ## Update status
 
 zen-about-update-check = Cerca actualitzacions
-zen-about-update-check-again = Torna-ho a provar
 zen-about-update-try-again = Torna-ho a provar
 zen-about-update-checking = S'està comprovant si hi ha actualitzacions…
 zen-about-update-up-to-date = El { -brand-short-name } està actualitzat

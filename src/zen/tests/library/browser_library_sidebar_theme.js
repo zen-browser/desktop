@@ -126,8 +126,10 @@ add_task(async function test_space_preview_uses_sidebar_background() {
       }
     }
     is(
-      getComputedStyle(preview.querySelector(".zen-browser-grain")).opacity,
-      getComputedStyle(sidebar.querySelector(".zen-browser-grain")).opacity,
+      getComputedStyle(preview.querySelector(".zen-browser-grain"), "::after")
+        .opacity,
+      getComputedStyle(sidebar.querySelector(".zen-browser-grain"), "::after")
+        .opacity,
       "The preview uses the sidebar's grain opacity"
     );
     if (!matchMedia("(prefers-reduced-transparency: reduce)").matches) {

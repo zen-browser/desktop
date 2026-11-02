@@ -1525,6 +1525,7 @@ class nsZenWorkspaces {
 
   get shouldShowContainers() {
     return (
+      !this.isPrivateWindow &&
       Services.prefs.getBoolPref("privacy.userContext.ui.enabled") &&
       !!ContextualIdentityService.getPublicIdentities().length
     );
@@ -2199,10 +2200,9 @@ class nsZenWorkspaces {
         const {
           gradient: nextGradient,
           grain: nextGrain,
+          grainTexture: nextGrainTexture,
           toolbarGradient: nextToolbarGradient,
         } = gZenThemePicker.getGradientForWorkspace(nextWorkspace);
-        const existingGrain =
-          gZenThemePicker.getGradientForWorkspace(workspace).grain;
         const percentage = Math.abs(offsetPixels) / 200;
         [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
           element => {
@@ -2222,20 +2222,22 @@ class nsZenWorkspaces {
             "--zen-main-browser-background-toolbar-old",
             nextToolbarGradient
           );
+          // The next space's grain rides along in the old slot, like its
+          // gradient does.
+          [
+            lazy.browserBackgroundElement,
+            lazy.toolbarBackgroundElement,
+          ].forEach(element =>
+            gZenThemePicker.setGrainLayer(
+              element,
+              nextGrain,
+              nextGrainTexture,
+              {
+                old: true,
+              }
+            )
+          );
           this.#setAnimatingBackground(true);
-        }
-        // Fit the offsetPixels into the grain limits. Both ends may be nextGrain and existingGrain,
-        // so we need to use the min and max of both. For example, existing may be 0.2 and next may be 0.5,
-        // meaning we should convert the offset to a percentage between 0.2 and 0.5. BUT if existingGrain
-        // is 0.5 and nextGrain is 0.2, we should still convert the offset to a percentage between 0.2 and 0.5.
-        const minGrain = Math.min(existingGrain, nextGrain);
-        const maxGrain = Math.max(existingGrain, nextGrain);
-        const grainValue =
-          minGrain +
-          (maxGrain - minGrain) *
-            (existingGrain > nextGrain ? 1 - percentage : percentage);
-        if (!this.#inChangingWorkspace) {
-          gZenThemePicker.updateNoise(grainValue);
         }
       }
     } else {

@@ -3,6 +3,10 @@
 
 "use strict";
 
+ChromeUtils.defineESModuleGetters(this, {
+  sinon: "resource://testing-common/Sinon.sys.mjs",
+});
+
 add_task(async function test_Basic_Split_View() {
   await basicSplitNTabs(() => {
     ok(
@@ -33,16 +37,22 @@ add_task(async function test_Browser_Elements_Attributes() {
 
 add_task(async function test_Reapply_Max_Size_Split_View() {
   await basicSplitNTabs(tabs => {
-    const group = gZenViewSplitter.splitTabs(tabs, undefined, -1, {
-      activate: false,
-    });
+    const showToast = sinon.stub(gZenUIManager, "showToast");
+    try {
+      const group = gZenViewSplitter.splitTabs(tabs, undefined, -1, {
+        activate: false,
+      });
 
-    Assert.ok(group, "Reapplying an existing four-tab split should succeed");
-    Assert.equal(
-      group.tabs.length,
-      gZenViewSplitter.MAX_TABS,
-      "Reapplying the split should keep the same number of tabs"
-    );
+      Assert.ok(group, "Reapplying an existing four-tab split should succeed");
+      Assert.equal(
+        group.tabs.length,
+        gZenViewSplitter.MAX_TABS,
+        "Reapplying the split should keep the same number of tabs"
+      );
+      sinon.assert.notCalled(showToast);
+    } finally {
+      showToast.restore();
+    }
   }, "grid", 4);
 });
 
@@ -52,6 +62,7 @@ add_task(async function test_Reject_Split_Exceeding_Max_Size() {
       addTabTo(gBrowser, getUrlForNthTab(4)),
       addTabTo(gBrowser, getUrlForNthTab(5)),
     ]);
+    const showToast = sinon.stub(gZenUIManager, "showToast");
 
     try {
       const group = gZenViewSplitter._data.find(split =>
@@ -70,7 +81,12 @@ add_task(async function test_Reject_Split_Exceeding_Max_Size() {
         3,
         "Rejected tabs should not be added to the existing split"
       );
+      sinon.assert.calledOnceWithExactly(
+        showToast,
+        "zen-split-view-limit-toast"
+      );
     } finally {
+      showToast.restore();
       for (const tab of extraTabs) {
         await BrowserTestUtils.removeTab(tab);
       }

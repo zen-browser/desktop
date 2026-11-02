@@ -261,12 +261,14 @@ menuseparator {
 }
 
 .workspace-trigger {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  min-height: var(--input-min-height);
+  padding: var(--space-small);
   text-align: left;
-  padding: 8px 12px;
   border: 1px solid var(--input-border-color);
-  border-radius: 4px;
-  background-color: var(--zen-colors-tertiary);
+  border-radius: var(--border-radius-medium);
+  background-color: var(--input-background-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -277,11 +279,10 @@ menuseparator {
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
-  margin-top: 4px;
-  border: 1px solid var(--zen-colors-border);
-  border-radius: 4px;
-  background-color: var(--zen-colors-tertiary);
-  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+  margin-top: 0;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--border-radius-medium);
+  background-color: var(--background-color-box);
   padding: 4px 0;
 }
 

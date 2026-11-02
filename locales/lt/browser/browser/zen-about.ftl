@@ -26,7 +26,6 @@ zen-about-firefox-version = Remiantis „{ -zen-engine-name }“ { $firefoxVersi
 ## Update status
 
 zen-about-update-check = Tikrinti dėl atnaujinimų
-zen-about-update-check-again = Tikrinti dar kartą
 zen-about-update-try-again = Bandyti dar kartą
 zen-about-update-checking = Tikrinama dėl atnaujinimų…
 zen-about-update-up-to-date = „{ -brand-short-name }“ yra atnaujinta.

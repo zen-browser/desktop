@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe60909721 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..340cea363c375d1f3a09037d2259f2fb4f051f5b 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,7 +24,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,667 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,660 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
@@ -98,13 +98,6 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
 +    let shortcutEl = aTooltip.querySelector(".zen-tooltip-shortcut");
 +    let descEl = aTooltip.querySelector(".zen-tooltip-description");
 +
-+    if (mainRow && titleEl && shortcutEl && descEl) {
-+      titleEl.removeAttribute("value");
-+      shortcutEl.removeAttribute("value");
-+      descEl.removeAttribute("value");
-+      return { titleEl, descEl, shortcutEl };
-+    }
-+
 +    if (!mainRow) {
 +      let legacyTitle = aTooltip.firstElementChild;
 +      mainRow = document.createXULElement("hbox");
@@ -147,6 +140,8 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
 +    shortcutEl?.removeAttribute("value");
 +    descEl?.removeAttribute("value");
 +
++    // Remove any stray description or child outside mainRow and descEl
++    // (e.g. default child created by Gecko XULTooltipElement::Init)
 +    for (let child of Array.from(aTooltip.children)) {
 +      if (child !== mainRow && child !== descEl) {
 +        child.remove();
@@ -605,12 +600,10 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
 +      descEl.toggleAttribute("hidden", !descText);
 +    }
 +
-+    // Sync with tooltip label attribute for Gecko accessibility
-+    if (titleText) {
-+      aTooltip.setAttribute("label", titleText);
-+    } else {
-+      aTooltip.removeAttribute("label");
-+    }
++    // Do not set "label" attribute on aTooltip: Gecko's XULTooltipElement::AfterSetAttr
++    // watches changes to the "label" attribute and synchronizes it into GetFirstChild(),
++    // which would duplicate the title if any description element is present.
++    aTooltip.removeAttribute("label");
 +
 +    this.updateTheme(aTooltip, trigger, effectiveTrigger);
 +  },
@@ -694,7 +687,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
    },
  
    cache: new Map(),
-@@ -4030,7 +4694,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4687,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -703,7 +696,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4734,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4727,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -712,7 +705,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4759,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4752,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -721,7 +714,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5472,13 @@ var gDialogBox = {
+@@ -4808,9 +5465,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -738,7 +731,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
      }
  
      try {
-@@ -4836,6 +5504,10 @@ var gDialogBox = {
+@@ -4836,6 +5497,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -749,7 +742,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5693,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5686,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

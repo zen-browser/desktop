@@ -467,12 +467,16 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
 }
 
 /* Main title in modern tooltip */
-.zen-tooltip-title,
-#dynamic-shortcut-tooltip > .tooltip-label:first-child {
+.zen-tooltip-title {
   font-weight: 600 !important;
   font-size: 12px !important;
   line-height: 1.3 !important;
   color: inherit !important;
+}
+
+/* Hide any stray top-level description under dynamic-shortcut-tooltip */
+#dynamic-shortcut-tooltip > description:not(.zen-tooltip-description) {
+  display: none !important;
 }
 
 /* Keyboard shortcut container (separate boxes per key) */

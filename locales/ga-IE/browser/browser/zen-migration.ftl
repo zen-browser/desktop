@@ -9,6 +9,6 @@ migration-zen-all-profiles-label = Gach próifíl
 migration-list-zen-spaces-label = spásanna agus cluaisíní pionnaithe
 migration-wizard-progress-success-zen-spaces =
     { $quantity ->
-        [one] { $quantity } space
-       *[other] { $quantity } spaces
+        [one] { $quantity } spás
+       *[other] { $quantity } spásanna
     }

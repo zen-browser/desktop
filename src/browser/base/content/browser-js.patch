@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99f225bb2c 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..893ceb6a32cd9bc71093a1985960d1c6be174a1a 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,11 +24,27 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,429 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,452 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
 +  shortcutCache: new Map(),
++
++  clearCache() {
++    this.cache.clear();
++    this.shortcutCache.clear();
++  },
++
++  init() {
++    if (this._initialized) {
++      return;
++    }
++    this._initialized = true;
++    window.addEventListener("customizationchange", () => this.clearCache());
++    try {
++      Services.obs.addObserver(() => this.clearCache(), "zen:keyboard-shortcuts-changed");
++    } catch (e) {}
++  },
 +
 +  ensureTooltipElements(aTooltip) {
 +    let mainRow = aTooltip.querySelector(".zen-tooltip-main-row");
@@ -262,6 +278,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
    updateText(aTooltip) {
 -    let nodeId = aTooltip.triggerNode.id;
 -    aTooltip.setAttribute("label", this.getText(nodeId));
++    this.init();
 +    let trigger = aTooltip.triggerNode;
 +    if (!trigger) {
 +      return;
@@ -293,8 +310,14 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
 +
 +    // 2. Resolve shortcut if available (strip from title if already embedded)
 +    let prettyShortcut = this.findShortcutForTrigger(trigger, effectiveTrigger);
-+    if (prettyShortcut && titleText.endsWith(`(${prettyShortcut})`)) {
-+      titleText = titleText.slice(0, -`(${prettyShortcut})`.length).trim();
++    if (prettyShortcut) {
++      titleText = titleText.replace(/\s*\([^)]*\)$/, "").trim();
++    } else {
++      let match = titleText.match(/\s*\(([^)]+)\)$/);
++      if (match && (match[1].includes("⌘") || match[1].includes("Ctrl") || match[1].includes("Alt") || match[1].includes("⇧") || match[1].includes("Shift") || match[1].length <= 3)) {
++        prettyShortcut = match[1];
++        titleText = titleText.slice(0, match.index).trim();
++      }
 +    }
 +
 +    // 3. Resolve secondary description
@@ -456,7 +479,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
    },
  
    cache: new Map(),
-@@ -4030,7 +4456,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4479,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -465,7 +488,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4496,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4519,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -474,7 +497,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4521,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4544,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -483,7 +506,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5234,13 @@ var gDialogBox = {
+@@ -4808,9 +5257,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -500,7 +523,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
      }
  
      try {
-@@ -4836,6 +5266,10 @@ var gDialogBox = {
+@@ -4836,6 +5289,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -511,7 +534,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5455,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5478,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

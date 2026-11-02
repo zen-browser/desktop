@@ -445,10 +445,9 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   }
 
   border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
-  background-color: color-mix(
-    in srgb,
-    var(--zen-primary-color, transparent) light-dark(12%, 18%),
-    light-dark(#ffffff, #1c1c1f)
+  background-color: light-dark(
+    color-mix(in srgb, var(--zen-primary-color, #ffffff) 12%, #ffffff),
+    color-mix(in srgb, var(--zen-primary-color, #1c1c1f) 18%, #1c1c1f)
   ) !important;
   color: light-dark(#1c1c1f, #f3f3f3) !important;
 
@@ -479,8 +478,10 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
 }
 
 .zen-tooltip-main-row {
-  gap: 6px;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 
 /* Main title in modern tooltip */
@@ -494,11 +495,19 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
 
 /* Keyboard shortcut badge */
 .zen-tooltip-shortcut {
-  font-weight: 500 !important;
-  font-size: 11px !important;
-  line-height: 1.2 !important;
-  opacity: 0.65 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  padding: 1px 5px !important;
+  border-radius: 4px !important;
+  background-color: light-dark(rgba(0, 0, 0, 0.07), rgba(255, 255, 255, 0.12)) !important;
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16)) !important;
   color: inherit !important;
+  opacity: 0.85 !important;
+  letter-spacing: 0.02em !important;
 }
 
 /* Suppress ::before pseudo-element from Gecko [value] (xul.css) */
@@ -528,3 +537,7 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
 .places-tooltip-description[hidden],
 .places-tooltip-description:empty {
   display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}

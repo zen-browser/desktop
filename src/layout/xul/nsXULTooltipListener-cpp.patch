@@ -1,8 +1,8 @@
 diff --git a/layout/xul/nsXULTooltipListener.cpp b/layout/xul/nsXULTooltipListener.cpp
-index ff76bf415223f202985f8f3a4be4d672cee43595..c19473fe4c3be14264345df0463bc5500a5bc012 100644
+index ff76bf415223f202985f8f3a4be4d672cee43595..73b0c971edc50d6a5226d40bb9ff242070a43b69 100644
 --- a/layout/xul/nsXULTooltipListener.cpp
 +++ b/layout/xul/nsXULTooltipListener.cpp
-@@ -542,6 +542,35 @@ nsresult nsXULTooltipListener::FindTooltip(nsIContent* aTarget,
+@@ -542,6 +542,37 @@ nsresult nsXULTooltipListener::FindTooltip(nsIContent* aTarget,
  
    // non-XUL elements should just use the default tooltip
    if (!aTarget->IsXULElement()) {
@@ -15,7 +15,8 @@ index ff76bf415223f202985f8f3a4be4d672cee43595..c19473fe4c3be14264345df0463bc550
 +        }
 +      }
 +      nsIContent* parent = aTarget->GetParent();
-+      while (parent && text.IsEmpty()) {
++      uint32_t depth = 0;
++      while (parent && text.IsEmpty() && depth++ < 15) {
 +        if (parent->IsElement()) {
 +          if (parent->AsElement()->HasAttr(nsGkAtoms::tooltip)) {
 +            break;
@@ -39,7 +40,7 @@ index ff76bf415223f202985f8f3a4be4d672cee43595..c19473fe4c3be14264345df0463bc550
      nsIPopupContainer* popupContainer =
          nsIPopupContainer::GetPopupContainer(document->GetPresShell());
      NS_ENSURE_STATE(popupContainer);
-@@ -563,8 +592,35 @@ nsresult nsXULTooltipListener::FindTooltip(nsIContent* aTarget,
+@@ -563,8 +594,35 @@ nsresult nsXULTooltipListener::FindTooltip(nsIContent* aTarget,
  
    nsAutoString tooltipText;
    aTarget->AsElement()->GetAttr(nsGkAtoms::tooltiptext, tooltipText);
@@ -74,3 +75,4 @@ index ff76bf415223f202985f8f3a4be4d672cee43595..c19473fe4c3be14264345df0463bc550
 +    }
      // specifying tooltiptext means we will always use the default tooltip
      nsIPopupContainer* popupContainer =
+         nsIPopupContainer::GetPopupContainer(document->GetPresShell());

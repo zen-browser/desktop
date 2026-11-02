@@ -1,5 +1,5 @@
 diff --git a/layout/xul/nsMenuPopupFrame.cpp b/layout/xul/nsMenuPopupFrame.cpp
-index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad67d70494 100644
+index 338110ca939da8dd7801c5c817680857b4cdc3f3..e4957aac6592438737af4b6e9f23619a79919b31 100644
 --- a/layout/xul/nsMenuPopupFrame.cpp
 +++ b/layout/xul/nsMenuPopupFrame.cpp
 @@ -382,7 +382,12 @@ void nsMenuPopupFrame::PropagateStyleToWidget(WidgetStyleFlags aFlags) const {
@@ -16,7 +16,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
    }
    if (aFlags.contains(WidgetStyle::InputRegion)) {
      widget->SetInputRegion(ComputeInputRegion(*Style(), *PresContext()));
-@@ -402,6 +407,127 @@ void nsMenuPopupFrame::PropagateStyleToWidget(WidgetStyleFlags aFlags) const {
+@@ -402,6 +407,128 @@ void nsMenuPopupFrame::PropagateStyleToWidget(WidgetStyleFlags aFlags) const {
    }
  }
  
@@ -33,16 +33,17 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
 +    RefPtr<nsAtom> zenDarkAtom = NS_Atomize("zen-should-be-dark-mode");
 +    Element* rootElem = mTriggerContent->OwnerDoc()->GetRootElement();
 +    nsIContent* content = mTriggerContent;
-+    while (content && content != rootElem) {
++    uint32_t depth = 0;
++    while (content && content != rootElem && depth++ < 20) {
 +      if (content->IsElement()) {
-+        nsAutoString darkMode;
-+        if (content->AsElement()->GetAttr(kNameSpaceID_None, zenDarkAtom, darkMode)) {
-+          if (darkMode.EqualsLiteral("true")) {
-+            return LookAndFeel::ColorScheme::Dark;
-+          }
-+          if (darkMode.EqualsLiteral("false")) {
-+            return LookAndFeel::ColorScheme::Light;
-+          }
++        Element* elem = content->AsElement();
++        if (elem->AttrValueIs(kNameSpaceID_None, zenDarkAtom, nsGkAtoms::_true,
++                              eCaseMatters)) {
++          return LookAndFeel::ColorScheme::Dark;
++        }
++        if (elem->AttrValueIs(kNameSpaceID_None, zenDarkAtom, nsGkAtoms::_false,
++                              eCaseMatters)) {
++          return LookAndFeel::ColorScheme::Light;
 +        }
 +      }
 +      content = content->GetParent();
@@ -77,7 +78,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
 +                         triggerScheme == LookAndFeel::ColorScheme::Dark
 +                             ? u"dark"_ns
 +                             : u"light"_ns,
-+                         true);
++                         /* aNotify = */ true);
 +    }
 +  }
 +}
@@ -144,7 +145,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
  bool nsMenuPopupFrame::IsMouseTransparent() const {
    return ::IsMouseTransparent(*Style());
  }
-@@ -845,6 +971,7 @@ void nsMenuPopupFrame::InitializePopup(nsIContent* aAnchorContent,
+@@ -845,6 +972,7 @@ void nsMenuPopupFrame::InitializePopup(nsIContent* aAnchorContent,
      mExtraMargin = {};
    }
    mTriggerContent = aTriggerContent;
@@ -152,7 +153,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
    mIsNativeMenu = aIsNativeMenu == IsNativeMenu::Yes;
    mIsTopLevelContextMenu = false;
    mVFlip = false;
-@@ -980,6 +1107,7 @@ void nsMenuPopupFrame::InitializePopupAtScreen(
+@@ -980,6 +1108,7 @@ void nsMenuPopupFrame::InitializePopupAtScreen(
    mPopupState = ePopupShowing;
    mAnchorContent = nullptr;
    mTriggerContent = aTriggerContent;
@@ -160,7 +161,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
    mScreenRect =
        nsRect(CSSPixel::ToAppUnits(CSSIntPoint(aXPos, aYPos)), nsSize());
    mExtraMargin = {};
-@@ -1070,6 +1198,13 @@ void nsMenuPopupFrame::ClearTriggerContentIncludingDocument() {
+@@ -1070,6 +1199,13 @@ void nsMenuPopupFrame::ClearTriggerContentIncludingDocument() {
        }
      }
    }
@@ -174,7 +175,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
    mTriggerContent = nullptr;
  }
  
-@@ -1740,6 +1875,25 @@ auto nsMenuPopupFrame::GetRects(const nsSize& aPrefSize) const -> Rects {
+@@ -1740,6 +1876,25 @@ auto nsMenuPopupFrame::GetRects(const nsSize& aPrefSize) const -> Rects {
              endAligned, &result.mVFlip);
        }
  
@@ -200,7 +201,7 @@ index 338110ca939da8dd7801c5c817680857b4cdc3f3..72b14098669184900e2234555ade48ad
  #ifdef DEBUG
        NS_ASSERTION(constraintRect->Contains(result.mUsedRect),
                     "Popup is offscreen");
-@@ -1782,6 +1936,11 @@ void nsMenuPopupFrame::SetPopupPosition(bool aIsMove) {
+@@ -1782,6 +1937,11 @@ void nsMenuPopupFrame::SetPopupPosition(bool aIsMove) {
  void nsMenuPopupFrame::PerformMove(const Rects& aRects) {
    auto* ps = PresShell();
  

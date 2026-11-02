@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df7626916d95add 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..3ea326f45b62e38c9443497d23aa968511481b94 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,7 +24,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,661 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,680 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
@@ -46,6 +46,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
 +    window.addEventListener("customizationchange", () => this.clearCache());
 +    window.addEventListener("focus", () => this.clearCache());
 +    window.addEventListener("CustomKeysUpdate", () => this.clearCache());
++    window.addEventListener("ZenWorkspacesUIUpdate", () => this.clearCache());
 +
 +    try {
 +      Services.obs.addObserver(() => this.clearCache(), "zen:keyboard-shortcuts-changed");
@@ -371,20 +372,38 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
 +      }
 +    }
 +
++    // 5. Check if element is a workspace button (e.g. inside zen-workspace-icons)
++    let wsButton = el.hasAttribute?.("zen-workspace-id")
++      ? el
++      : el.closest?.("[zen-workspace-id]");
++    if (wsButton && wsButton.parentElement?.localName === "zen-workspace-icons") {
++      let idx = Array.from(wsButton.parentElement.children).indexOf(wsButton) + 1;
++      if (idx >= 1 && idx <= 10) {
++        let k = document.getElementById(`zen-workspace-switch-${idx}`);
++        if (k && k.tagName === "key") {
++          return k;
++        }
++      }
++    }
++
 +    return null;
 +  },
 +
 +  findShortcutForTrigger(trigger, effectiveTrigger) {
 +    let elements = [trigger, effectiveTrigger].filter(Boolean);
 +    for (let el of [trigger, effectiveTrigger]) {
-+      let parent = el?.closest("[command], [key], [id]");
++      let parent = el?.closest("[command], [key], [id], [zen-workspace-id]");
 +      if (parent && !elements.includes(parent)) {
 +        elements.push(parent);
 +      }
 +    }
 +
 +    for (let el of elements) {
-+      let cacheKey = el.id || el.getAttribute("command") || el.getAttribute("key");
++      let cacheKey =
++        el.id ||
++        el.getAttribute("command") ||
++        el.getAttribute("key") ||
++        el.getAttribute("zen-workspace-id");
 +      if (cacheKey && this.shortcutCache.has(cacheKey)) {
 +        let cached = this.shortcutCache.get(cacheKey);
 +        if (cached) {
@@ -688,7 +707,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
    },
  
    cache: new Map(),
-@@ -4030,7 +4688,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4707,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -697,7 +716,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4728,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4747,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -706,7 +725,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4753,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4772,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -715,7 +734,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5466,13 @@ var gDialogBox = {
+@@ -4808,9 +5485,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -732,7 +751,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
      }
  
      try {
-@@ -4836,6 +5498,10 @@ var gDialogBox = {
+@@ -4836,6 +5517,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -743,7 +762,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..0351f52cf6994c40c73f41012df76269
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5687,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5706,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

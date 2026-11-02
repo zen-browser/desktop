@@ -103,13 +103,14 @@ class nsZenWorkspaceIcons extends MozXULElement {
     });
   }
 
-  #createWorkspaceIcon(workspace) {
+  #createWorkspaceIcon(workspace, index) {
     const button = document.createXULElement("toolbarbutton");
     button.setAttribute("class", "subviewbutton toolbarbutton-1");
     button.setAttribute("zen-workspace-id", workspace.uuid);
     button.setAttribute("context", "zenWorkspaceMoreActions");
+    button.setAttribute("tooltip", "dynamic-shortcut-tooltip");
     button.addEventListener("command", this);
-    this.#updateWorkspaceIcon(button, workspace);
+    this.#updateWorkspaceIcon(button, workspace, index);
     return button;
   }
 
@@ -119,9 +120,16 @@ class nsZenWorkspaceIcons extends MozXULElement {
    *
    * @param {Element} button - The button standing in for the workspace
    * @param {object} workspace - The workspace it represents
+   * @param {number} [index] - 1-based index of the workspace
    */
-  #updateWorkspaceIcon(button, workspace) {
+  #updateWorkspaceIcon(button, workspace, index) {
     button.setAttribute("tooltiptext", workspace.name);
+    button.setAttribute("tooltip", "dynamic-shortcut-tooltip");
+    if (typeof index === "number" && index >= 1 && index <= 10) {
+      button.setAttribute("key", `zen-workspace-switch-${index}`);
+    } else {
+      button.removeAttribute("key");
+    }
     try {
       const themeData = window.gZenThemePicker?.getGradientForWorkspace
         ? window.gZenThemePicker.getGradientForWorkspace(workspace, { getGradient: false })
@@ -186,13 +194,14 @@ class nsZenWorkspaceIcons extends MozXULElement {
     }
 
     let slot = this.firstElementChild;
+    let index = 1;
     for (const workspace of workspaces) {
       const existing = reusable.get(workspace.uuid);
       if (existing) {
         reusable.delete(workspace.uuid);
-        this.#updateWorkspaceIcon(existing, workspace);
+        this.#updateWorkspaceIcon(existing, workspace, index);
       }
-      const button = existing ?? this.#createWorkspaceIcon(workspace);
+      const button = existing ?? this.#createWorkspaceIcon(workspace, index);
       if (button === slot) {
         slot = slot.nextElementSibling;
       } else if (existing) {
@@ -200,6 +209,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
       } else {
         this.insertBefore(button, slot);
       }
+      index++;
     }
     for (const button of reusable.values()) {
       button.remove();

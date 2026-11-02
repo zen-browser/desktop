@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index ded45fd53f0fd7f0a48283d61cffdda20f79137e..7fc34d89146b723cb01a1432bc1d1fe97e5d2eba 100644
+index 58d33bd452aca230a7a6e232f4df4bbe7e34b6af..ff97b799fa6e940fb0937df6c5cd841ad03a40fb 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
-@@ -234,6 +234,10 @@
+@@ -279,6 +279,10 @@
             hidden="true"
             tabspecific="true"
             aria-labelledby="editBookmarkPanelTitle">
@@ -13,7 +13,7 @@ index ded45fd53f0fd7f0a48283d61cffdda20f79137e..7fc34d89146b723cb01a1432bc1d1fe9
        <box class="panel-header">
          <html:h1>
            <html:span id="editBookmarkPanelTitle"/>
-@@ -259,6 +263,7 @@
+@@ -304,6 +308,7 @@
                    class="footer-button"/>
          </html:moz-button-group>
        </vbox>
@@ -21,7 +21,7 @@ index ded45fd53f0fd7f0a48283d61cffdda20f79137e..7fc34d89146b723cb01a1432bc1d1fe9
      </panel>
    </html:template>
  
-@@ -765,6 +770,8 @@
+@@ -879,6 +884,8 @@
  
  #include popup-notifications.inc.xhtml
  
@@ -30,3 +30,15 @@ index ded45fd53f0fd7f0a48283d61cffdda20f79137e..7fc34d89146b723cb01a1432bc1d1fe9
  #include ../../components/customizableui/content/panelUI.inc.xhtml
  #include ../../components/controlcenter/content/identityPanel.inc.xhtml
  #include ../../components/controlcenter/content/permissionPanel.inc.xhtml
+@@ -890,7 +897,10 @@
+ #include ../../components/translations/content/fullPageTranslationsPanel.inc.xhtml
+ #include ../../components/tabbrowser/content/browser-allTabsMenu.inc.xhtml
+ 
+-  <tooltip id="dynamic-shortcut-tooltip"/>
++  <tooltip id="dynamic-shortcut-tooltip">
++    <description class="tooltip-label zen-tooltip-description" hidden="true"/>
++    <description class="tooltip-label zen-tooltip-shortcut" hidden="true"/>
++  </tooltip>
+ 
+   <menupopup id="SyncedTabsSidebarContext">
+     <menuitem data-lazy-l10n-id="synced-tabs-context-open"

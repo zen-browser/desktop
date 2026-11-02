@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2f7623a60 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..f63f0a45f857bb8faebd55ee3e85cd99f225bb2c 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,33 +24,245 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,159 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,429 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
-+  findShortcutForTrigger(trigger) {
-+    if (!trigger) {
-+      return null;
++  ensureTooltipElements(aTooltip) {
++    let titleEl = aTooltip.firstElementChild;
++    if (titleEl) {
++      titleEl.classList.add("zen-tooltip-title");
++      titleEl.removeAttribute("value");
 +    }
-+    let keyId = trigger.getAttribute("key");
-+    let keyEl = keyId ? document.getElementById(keyId) : null;
-+    if (!keyEl && trigger.getAttribute("command")) {
-+      let cmdId = trigger.getAttribute("command");
-+      let cmd = document.getElementById(cmdId);
-+      if (cmd) {
-+        keyId = cmd.getAttribute("key");
-+        if (keyId) {
-+          keyEl = document.getElementById(keyId);
++
++    let descEl = aTooltip.querySelector(".zen-tooltip-description");
++    if (!descEl) {
++      descEl = document.createXULElement
++        ? document.createXULElement("description")
++        : document.createElement("description");
++      descEl.className = "tooltip-label zen-tooltip-description";
++      descEl.setAttribute("hidden", "true");
++      aTooltip.appendChild(descEl);
++    }
++    descEl.removeAttribute("value");
++
++    let shortcutEl = aTooltip.querySelector(".zen-tooltip-shortcut");
++    if (!shortcutEl) {
++      shortcutEl = document.createXULElement
++        ? document.createXULElement("description")
++        : document.createElement("description");
++      shortcutEl.className = "tooltip-label zen-tooltip-shortcut";
++      shortcutEl.setAttribute("hidden", "true");
++      aTooltip.appendChild(shortcutEl);
++    }
++    shortcutEl.removeAttribute("value");
++
++    // Remove any duplicate title container or orphaned child
++    for (let child of Array.from(aTooltip.children)) {
++      if (child !== titleEl && child !== descEl && child !== shortcutEl) {
++        child.remove();
++      }
++    }
++
++    return { titleEl, descEl, shortcutEl };
++  },
++
++  getTriggerTitle(trigger, effectiveTrigger) {
++    let elements = [effectiveTrigger, trigger].filter(Boolean);
++
++    // 1. Check if ID is in nodeToTooltipMap (e.g. tabs-newtab-button)
++    for (let el of elements) {
++      if (el.id && el.id in this.nodeToTooltipMap) {
++        let t = this.getText(el.id);
++        if (t && t.trim() !== "") {
++          return t.trim();
 +        }
 +      }
-+      if (!keyEl) {
-+        keyEl = document.querySelector(`keyset key[command="${cmdId}"]`);
++    }
++
++    // 2. Check tooltiptext or title attribute
++    for (let el of elements) {
++      let raw = el.getAttribute("tooltiptext") || el.getAttribute("title");
++      if (raw && raw.trim() !== "") {
++        return raw.trim();
 +      }
 +    }
-+    if (keyEl) {
-+      return ShortcutUtils.prettifyShortcut(keyEl);
++
++    // 3. Check Fluent (data-l10n-id)
++    for (let el of elements) {
++      let l10nId = el.getAttribute("data-l10n-id");
++      if (l10nId && window.document?.l10n) {
++        try {
++          if (typeof document.l10n.formatMessagesSync === "function") {
++            let [msg] = document.l10n.formatMessagesSync([{ id: l10nId }]);
++            if (msg) {
++              let tAttr = msg.attributes?.find(
++                a =>
++                  a.name === "tooltiptext" ||
++                  a.name === "label" ||
++                  a.name === "aria-label"
++              );
++              let val = tAttr?.value || msg.value;
++              if (val && typeof val === "string" && val.trim() !== "") {
++                return val.trim();
++              }
++            }
++          }
++        } catch (e) {}
++      }
 +    }
++
++    // 4. Check direct label or aria-label
++    for (let el of elements) {
++      let lbl = el.getAttribute("label") || el.getAttribute("aria-label");
++      if (lbl && lbl.trim() !== "") {
++        return lbl.trim();
++      }
++    }
++
 +    return null;
++  },
++
++  findShortcutForTrigger(trigger, effectiveTrigger) {
++    let elements = [trigger, effectiveTrigger].filter(Boolean);
++    for (let el of [trigger, effectiveTrigger]) {
++      if (el) {
++        let parent = el.closest("[command], [key], [id]");
++        if (parent && !elements.includes(parent)) {
++          elements.push(parent);
++        }
++      }
++    }
++
++    for (let el of elements) {
++      // 1. Check if ID is in nodeToShortcutMap
++      if (el.id && this.nodeToShortcutMap[el.id]) {
++        let keyEl = document.getElementById(this.nodeToShortcutMap[el.id]);
++        if (keyEl) {
++          let s = ShortcutUtils.prettifyShortcut(keyEl);
++          if (s) {
++            return s;
++          }
++        }
++      }
++
++      // 2. Check command attribute
++      let cmdId = el.getAttribute("command");
++      if (cmdId) {
++        let keyEl = document.querySelector(`keyset key[command="${cmdId}"]`);
++        if (!keyEl && !cmdId.endsWith("NoEvent")) {
++          keyEl = document.querySelector(
++            `keyset key[command="${cmdId}NoEvent"]`
++          );
++        }
++        if (!keyEl && cmdId.endsWith("NoEvent")) {
++          keyEl = document.querySelector(
++            `keyset key[command="${cmdId.replace(/NoEvent$/, "")}"]`
++          );
++        }
++        if (!keyEl) {
++          let cmd = document.getElementById(cmdId);
++          let keyId = cmd?.getAttribute("key");
++          if (keyId) {
++            keyEl = document.getElementById(keyId);
++          }
++        }
++        if (!keyEl) {
++          let baseName = cmdId
++            .replace(/^cmd_/, "")
++            .replace(/^Browser:/, "")
++            .replace(/OrDuplicate$/, "")
++            .replace(/OrBackDuplicate$/, "");
++          keyEl =
++            document.getElementById(`key_${baseName}`) ||
++            document.getElementById(`key_${baseName.toLowerCase()}`);
++        }
++        if (keyEl) {
++          let s = ShortcutUtils.prettifyShortcut(keyEl);
++          if (s) {
++            return s;
++          }
++        }
++      }
++
++      // 3. Check key attribute directly on the element
++      let keyId = el.getAttribute("key");
++      if (keyId) {
++        let keyEl = document.getElementById(keyId);
++        if (keyEl) {
++          let s = ShortcutUtils.prettifyShortcut(keyEl);
++          if (s) {
++            return s;
++          }
++        }
++      }
++    }
++
++    return null;
++  },
++
++  getTriggerDescription(trigger, effectiveTrigger, titleText) {
++    let elements = [effectiveTrigger, trigger].filter(Boolean);
++
++    let desc = null;
++
++    // 1. Check explicit tooltipdescription or data-tooltip-desc
++    for (let el of elements) {
++      let d =
++        el.getAttribute("tooltipdescription") ||
++        el.getAttribute("data-tooltip-desc");
++      if (d && d.trim() !== "") {
++        desc = d.trim();
++        break;
++      }
++    }
++
++    // 2. Check Fluent (.description or .tooltipdescription attribute)
++    if (!desc) {
++      for (let el of elements) {
++        let l10nId = el.getAttribute("data-l10n-id");
++        if (l10nId && window.document?.l10n) {
++          try {
++            let l10nArgs = null;
++            let rawArgs = el.getAttribute("data-l10n-args");
++            if (rawArgs) {
++              try {
++                l10nArgs = JSON.parse(rawArgs);
++              } catch (e) {}
++            }
++            if (typeof document.l10n.formatMessagesSync === "function") {
++              let [msg] = document.l10n.formatMessagesSync([
++                { id: l10nId, args: l10nArgs },
++              ]);
++              if (msg?.attributes) {
++                let descAttr = msg.attributes.find(
++                  a =>
++                    a.name === "description" ||
++                    a.name === "tooltipdescription"
++                );
++                if (descAttr?.value && descAttr.value.trim() !== "") {
++                  desc = descAttr.value.trim();
++                  break;
++                }
++              }
++            }
++          } catch (e) {}
++        }
++      }
++    }
++
++    // Avoid duplication if description matches title
++    if (desc && titleText) {
++      let cleanTitle = titleText.replace(/\s*\([^)]*\)$/, "").trim().toLowerCase();
++      if (
++        desc.trim().toLowerCase() === titleText.trim().toLowerCase() ||
++        desc.trim().toLowerCase() === cleanTitle
++      ) {
++        return null;
++      }
++    }
++
++    return desc;
 +  },
 +
    updateText(aTooltip) {
@@ -62,27 +274,85 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
 +    }
 +
 +    let effectiveTrigger = trigger;
-+    if (!trigger.hasAttribute("tooltiptext") && !trigger.hasAttribute("title") && !trigger.id) {
-+      let parentWithTooltip = trigger.closest("[tooltiptext], [title], [id]");
++    if (
++      !trigger.hasAttribute("tooltiptext") &&
++      !trigger.hasAttribute("title") &&
++      !trigger.hasAttribute("tooltipdescription") &&
++      !trigger.hasAttribute("data-tooltip-desc") &&
++      !trigger.id
++    ) {
++      let parentWithTooltip = trigger.closest(
++        "[tooltiptext], [title], [tooltipdescription], [data-tooltip-desc], [data-l10n-id], [id], [command], [label], [aria-label]"
++      );
 +      if (parentWithTooltip) {
 +        effectiveTrigger = parentWithTooltip;
 +      }
 +    }
 +
-+    let nodeId = effectiveTrigger.id;
-+    let text = nodeId ? this.getText(nodeId) : null;
-+    if (text) {
-+      aTooltip.setAttribute("label", text);
-+    } else {
-+      let rawText = effectiveTrigger.getAttribute("tooltiptext") || effectiveTrigger.getAttribute("title");
-+      if (rawText) {
-+        let prettyShortcut = this.findShortcutForTrigger(effectiveTrigger);
-+        if (prettyShortcut && !rawText.includes(prettyShortcut)) {
-+          aTooltip.setAttribute("label", `${rawText} (${prettyShortcut})`);
-+        } else {
-+          aTooltip.setAttribute("label", rawText);
-+        }
++    let { titleEl, descEl, shortcutEl } = this.ensureTooltipElements(aTooltip);
++
++    // 1. Resolve main title
++    let titleText =
++      this.getTriggerTitle(trigger, effectiveTrigger) ||
++      aTooltip.getAttribute("label") ||
++      "";
++
++    // 2. Resolve shortcut if available
++    let prettyShortcut = this.findShortcutForTrigger(trigger, effectiveTrigger);
++    if (prettyShortcut && titleText && !titleText.includes(prettyShortcut)) {
++      titleText = `${titleText} (${prettyShortcut})`;
++    }
++
++    // 3. Resolve secondary description
++    let descText = this.getTriggerDescription(
++      trigger,
++      effectiveTrigger,
++      titleText
++    );
++
++    // Safety: hide popup if neither title nor description could be resolved
++    if (!titleText && !descText) {
++      try {
++        aTooltip.hidePopup();
++      } catch (e) {}
++      return;
++    }
++
++    // Apply title
++    if (titleEl) {
++      titleEl.textContent = titleText;
++      titleEl.removeAttribute("value");
++      if (titleText) {
++        titleEl.removeAttribute("hidden");
++      } else {
++        titleEl.setAttribute("hidden", "true");
 +      }
++    }
++
++    // Apply description
++    if (descEl) {
++      descEl.removeAttribute("value");
++      if (descText) {
++        descEl.textContent = descText;
++        descEl.removeAttribute("hidden");
++      } else {
++        descEl.textContent = "";
++        descEl.setAttribute("hidden", "true");
++      }
++    }
++
++    // Keep shortcut container hidden for now (appended to title in Phase 2)
++    if (shortcutEl) {
++      shortcutEl.textContent = "";
++      shortcutEl.removeAttribute("value");
++      shortcutEl.setAttribute("hidden", "true");
++    }
++
++    // Sync with tooltip label attribute for Gecko consistency
++    if (titleText) {
++      aTooltip.setAttribute("label", titleText);
++    } else {
++      aTooltip.removeAttribute("label");
 +    }
 +
 +    this.updateTheme(aTooltip);
@@ -186,7 +456,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
    },
  
    cache: new Map(),
-@@ -4030,7 +4186,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4456,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -195,7 +465,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4226,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4496,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -204,7 +474,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4251,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4521,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -213,7 +483,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +4964,13 @@ var gDialogBox = {
+@@ -4808,9 +5234,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -230,7 +500,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
      }
  
      try {
-@@ -4836,6 +4996,10 @@ var gDialogBox = {
+@@ -4836,6 +5266,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -241,7 +511,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..be05f49b76ad02678f639685fca384b2
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5185,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5455,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

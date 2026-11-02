@@ -97,9 +97,9 @@ library-history-menu-forget =
 -library-cancel-download = Cealaigh an íoslódáil
 -library-show-in-folder =
     { PLATFORM() ->
-        [macos] Show in Finder
-        [windows] Show in File Explorer
-       *[other] Show in folder
+        [macos] Taispeáin i  Finder
+        [windows] Taispeáin i  File Explorer
+       *[other] Taispeáin i folder
     }
 library-space-routing-section-title = Ródú
 library-space-routing-search-placeholder = 

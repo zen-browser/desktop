@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/main-popupset.js b/browser/base/content/main-popupset.js
-index d2390681bd8cff28a0d9116655c3e591e71c2c73..42d7701963be65c3f2979e845485f9ed9d7f723e 100644
+index d2390681bd8cff28a0d9116655c3e591e71c2c73..a171b3cbff02953db30f2462f19a9d27bd0f70f1 100644
 --- a/browser/base/content/main-popupset.js
 +++ b/browser/base/content/main-popupset.js
-@@ -628,6 +628,31 @@ document.addEventListener(
+@@ -628,6 +628,28 @@ document.addEventListener(
          webrtcUI.updateWarningLabel(event.currentTarget);
        });
  
@@ -22,9 +22,6 @@ index d2390681bd8cff28a0d9116655c3e591e71c2c73..42d7701963be65c3f2979e845485f9ed
 +    document.addEventListener("popuphidden", event => {
 +      if (event.target.localName === "tooltip") {
 +        event.target.style.removeProperty("--zen-primary-color");
-+        event.target.style.colorScheme = "";
-+        event.target.removeAttribute("corner");
-+        event.target.removeAttribute("scheme");
 +        if (event.target.id === "dynamic-shortcut-tooltip") {
 +          event.target.removeAttribute("label");
 +        }

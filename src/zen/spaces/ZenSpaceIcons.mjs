@@ -133,15 +133,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
     try {
       const themeData = window.gZenThemePicker?.getGradientForWorkspace
         ? window.gZenThemePicker.getGradientForWorkspace(workspace, { getGradient: false })
-        : window.gZenThemePicker?.getWorkspaceTheme?.(workspace);
-      if (typeof workspace.theme?.darkMode === "boolean") {
-        button.setAttribute(
-          "zen-should-be-dark-mode",
-          workspace.theme.darkMode ? "true" : "false"
-        );
-      } else {
-        button.removeAttribute("zen-should-be-dark-mode");
-      }
+        : null;
       if (themeData?.primaryColor) {
         button.style.setProperty("--zen-primary-color", themeData.primaryColor);
       }

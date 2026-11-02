@@ -451,24 +451,6 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   ) !important;
   color: light-dark(#1c1c1f, #f3f3f3) !important;
 
-  /* Anchor corner closest to trigger (defaults to top-left if unspecified) */
-  &[corner="top-left"],
-  &:not([corner]) {
-    border-top-left-radius: 4px !important;
-  }
-
-  &[corner="top-right"] {
-    border-top-right-radius: 4px !important;
-  }
-
-  &[corner="bottom-left"] {
-    border-bottom-left-radius: 4px !important;
-  }
-
-  &[corner="bottom-right"] {
-    border-bottom-right-radius: 4px !important;
-  }
-
   & label,
   & description:not(.zen-tooltip-key),
   & .tooltip-label:not(.zen-tooltip-key) {

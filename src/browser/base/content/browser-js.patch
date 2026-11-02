@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd831733c1 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..c760a0833dea50f64e13169b47b35bfe60909721 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,7 +24,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3578,9 +3584,707 @@ const DynamicShortcutTooltip = {
+@@ -3578,9 +3584,667 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
@@ -634,8 +634,6 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
 +    }
 +
 +    try {
-+      let schemePref = Services.prefs.getIntPref("zen.view.window.scheme", 2);
-+      let isDark = null;
 +      let primaryColor = null;
 +
 +      // 1. Resolve workspace context from trigger or active workspace
@@ -663,7 +661,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
 +      // 3. Resolve primary color
 +      if (trigger) {
 +        let explicitColor = trigger
-+          .closest("[zen-should-be-dark-mode], [zen-workspace-id]")
++          .closest("[zen-workspace-id]")
 +          ?.style?.getPropertyValue("--zen-primary-color");
 +        if (explicitColor?.trim()) {
 +          primaryColor = explicitColor.trim();
@@ -687,54 +685,16 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
 +        }
 +      }
 +
-+      // 4. Resolve dark vs light mode
-+      if (schemePref === 0) {
-+        isDark = true;
-+      } else if (schemePref === 1) {
-+        isDark = false;
-+      } else {
-+        // Auto mode (schemePref === 2):
-+        // Check if trigger is inside an element with an explicit mode override
-+        let darkElem = trigger?.closest?.("[zen-should-be-dark-mode]");
-+        if (darkElem && darkElem !== document.documentElement) {
-+          let val = darkElem.getAttribute("zen-should-be-dark-mode");
-+          if (val === "true") {
-+            isDark = true;
-+          } else if (val === "false") {
-+            isDark = false;
-+          }
-+        }
-+        // Check if workspace explicitly forces dark or light mode
-+        if (isDark === null && typeof ws?.theme?.darkMode === "boolean") {
-+          isDark = ws.theme.darkMode;
-+        }
-+        // Fallback to native scheme resolved by C++ LookAndFeel on the tooltip or ZenThemePicker
-+        if (isDark === null) {
-+          let nativeScheme = aTooltip.getAttribute("scheme");
-+          if (nativeScheme === "dark" || nativeScheme === "light") {
-+            isDark = nativeScheme === "dark";
-+          } else if (window.gZenThemePicker) {
-+            isDark = window.gZenThemePicker.isDarkMode;
-+          } else {
-+            isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-+          }
-+        }
-+      }
-+
 +      if (primaryColor?.trim()) {
 +        aTooltip.style.setProperty("--zen-primary-color", primaryColor.trim());
 +      } else {
 +        aTooltip.style.removeProperty("--zen-primary-color");
 +      }
-+
-+      let schemeStr = isDark ? "dark" : "light";
-+      aTooltip.setAttribute("scheme", schemeStr);
-+      aTooltip.style.colorScheme = schemeStr;
 +    } catch (e) {}
    },
  
    cache: new Map(),
-@@ -4030,7 +4734,7 @@ function warnAboutClosingWindow() {
+@@ -4030,7 +4694,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -743,7 +703,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -4070,7 +4774,7 @@ function warnAboutClosingWindow() {
+@@ -4070,7 +4734,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -752,7 +712,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -4095,7 +4799,7 @@ function warnAboutClosingWindow() {
+@@ -4095,7 +4759,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -761,7 +721,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4808,9 +5512,13 @@ var gDialogBox = {
+@@ -4808,9 +5472,13 @@ var gDialogBox = {
      // Bring the window to the front in case we're minimized or occluded:
      window.focus();
  
@@ -778,7 +738,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
      }
  
      try {
-@@ -4836,6 +5544,10 @@ var gDialogBox = {
+@@ -4836,6 +5504,10 @@ var gDialogBox = {
        this._updateMenuAndCommandState(true /* to enable */);
        this._dialog = null;
        UpdatePopupNotificationsVisibility();
@@ -789,7 +749,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..98aec431ffd930dfb2359421eeea5dcd
      }
      if (this._queued.length) {
        setTimeout(() => this._openNextDialog(), 0);
-@@ -5021,6 +5733,16 @@ var ConfirmationHint = {
+@@ -5021,6 +5693,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

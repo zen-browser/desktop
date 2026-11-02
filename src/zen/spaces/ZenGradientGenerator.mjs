@@ -195,10 +195,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return false;
       default:
     }
-    return (
-      Services.prefs.getIntPref("ui.systemUsesDarkTheme", -1) === 1 ||
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    );
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   }
 
   get colorHarmonies() {
@@ -2089,10 +2086,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   invalidateGradientCache(uuid) {
     delete this.#gradientsCache[uuid];
     gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
-  }
-
-  getWorkspaceTheme(workspace) {
-    return this.getGradientForWorkspace(workspace, { getGradient: false });
   }
 
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {

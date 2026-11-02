@@ -35,5 +35,4 @@
 #statuspanel-label,
 tooltip {
   corner-shape: round;
-  --zen-squircle: none !important;
 }

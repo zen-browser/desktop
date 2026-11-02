@@ -124,20 +124,11 @@ class nsZenWorkspaceIcons extends MozXULElement {
    */
   #updateWorkspaceIcon(button, workspace, index) {
     button.setAttribute("tooltiptext", workspace.name);
-    button.setAttribute("tooltip", "dynamic-shortcut-tooltip");
     if (typeof index === "number" && index >= 1 && index <= 10) {
       button.setAttribute("key", `zen-workspace-switch-${index}`);
     } else {
       button.removeAttribute("key");
     }
-    try {
-      const themeData = window.gZenThemePicker?.getGradientForWorkspace
-        ? window.gZenThemePicker.getGradientForWorkspace(workspace, { getGradient: false })
-        : null;
-      if (themeData?.primaryColor) {
-        button.style.setProperty("--zen-primary-color", themeData.primaryColor);
-      }
-    } catch (e) {}
 
     const isSvgIcon = !!workspace.icon?.endsWith(".svg");
     const hasIcon = gZenWorkspaces.workspaceHasIcon(workspace);

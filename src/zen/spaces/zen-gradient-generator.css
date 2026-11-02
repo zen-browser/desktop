@@ -394,10 +394,10 @@
     pointer-events: none;
   }
 
-  &::before {
-    background-image: url(chrome://browser/content/zen-images/grain-bg.png);
-    opacity: var(--zen-grainy-background-opacity, 0);
-    mix-blend-mode: hard-light;
+  & .zen-theme-picker-texture-face {
+    background-image: var(--zen-grain-texture);
+    background-size: var(--zen-grain-tile) var(--zen-grain-tile);
+    opacity: calc(var(--zen-grain-alpha) * max(0.5, var(--zen-grainy-background-opacity, 0)));
     width: 60%;
     height: 60%;
     pointer-events: none;
@@ -406,8 +406,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1;
-    content: "";
     position: absolute;
+  }
+
+  &[zen-grain-texture="none"] .zen-theme-picker-texture-face {
+    display: none;
   }
 
   & .zen-theme-picker-texture-dot {

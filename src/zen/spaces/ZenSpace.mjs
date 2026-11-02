@@ -672,7 +672,7 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   onGradientCacheChanged() {
-    const { isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
+    const { isDarkMode, isExplicitMode, paletteStyles } =
       gZenThemePicker.getGradientForWorkspace(
         gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid),
         { getGradient: false }
@@ -682,11 +682,9 @@ export class nsZenWorkspace extends MozXULElement {
     } else {
       this.style.colorScheme = "";
     }
-    this.style.setProperty(
-      "--toolbox-textcolor",
-      `rgb(${toolbarColor.join(",")})`
-    );
-    this.style.setProperty("--zen-primary-color", primaryColor);
+    for (const [property, value] of Object.entries(paletteStyles)) {
+      this.style.setProperty(property, value);
+    }
   }
 
   checkPinsExistence() {

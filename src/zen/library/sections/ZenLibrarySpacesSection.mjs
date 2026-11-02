@@ -787,8 +787,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       grain,
       isDarkMode,
       isExplicitMode,
-      toolbarColor,
-      primaryColor,
+      paletteStyles,
     } = gZenThemePicker.getGradientForWorkspace(workspace);
     let colorScheme = "";
     if (isExplicitMode) {
@@ -799,8 +798,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
       "--zen-main-browser-background-toolbar": toolbarGradient,
       "--zen-background-opacity": 1,
       "--zen-grainy-background-opacity": grain,
-      "--zen-primary-color": primaryColor,
-      "--toolbox-textcolor": `rgba(${toolbarColor.join(",")})`,
+      ...paletteStyles,
       colorScheme,
     };
   }
@@ -1024,6 +1022,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
         <div
           class="zen-library-space-background zen-browser-generic-background ${gZenCompactModeManager.preference ? "zen-toolbar-background" : ""}"
           zen-show-grainy-background=${workspace.theme?.texture > 0 ? "true" : "false"}
+          zen-grain-texture=${workspace.theme?.textureType ?? "grain"}
         >
           <div class="zen-browser-grain"></div>
         </div>

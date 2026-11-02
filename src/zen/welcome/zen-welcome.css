@@ -217,8 +217,8 @@
       inset: 0;
       z-index: 0;
       background-image: url(chrome://browser/content/zen-images/grain-bg.png);
+      background-size: 155px 155px;
       opacity: 0.3;
-      mix-blend-mode: overlay;
       pointer-events: none;
     }
   }

@@ -43,6 +43,24 @@ on:
         type: boolean
         default: false
 
+    secrets:
+      # What this workflow reads when called.
+      DEPLOY_KEY:
+        required: false
+      SURFER_CERT_PATCH_ISSUER:
+        required: false
+      SURFER_CERT_PATCH_NAME:
+        required: false
+      SURFER_CERT_PATCH_NAME_PREV:
+        required: false
+      SURFER_CERT_PATCH_ISSUER_PREV:
+        required: false
+      ZEN_SAFEBROWSING_API_KEY:
+        required: false
+      ZEN_MOZILLA_API_KEY:
+        required: false
+      ZEN_GOOGLE_LOCATION_SERVICE_API_KEY:
+        required: false
 jobs:
   mac-build:
     name: Build macOS - ${{ matrix.arch }}

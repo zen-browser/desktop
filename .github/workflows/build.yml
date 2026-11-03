@@ -393,7 +393,14 @@ jobs:
     needs: [build-data, buildid, pgo-cache]
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+      SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+      SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+      SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
+      ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+      ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
     with:
       use-sccache: ${{ inputs.use-sccache }}
       build-version: ${{ needs.build-data.outputs.version }}
@@ -408,7 +415,6 @@ jobs:
     if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && (inputs.update_branch == 'twilight' || needs.pgo-cache.outputs.windows-cs-hit != 'true') }}
     permissions:
       contents: write
-    secrets: inherit
     needs: [windows-step-1, build-data, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -422,7 +428,14 @@ jobs:
     if: ${{ !inputs.disable-pgo && inputs.update_branch != 'twilight' && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+      SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+      SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+      SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
+      ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+      ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
     needs: [build-data, windows-step-2, buildid, pgo-cache]
     with:
       use-sccache: ${{ inputs.use-sccache }}
@@ -441,7 +454,6 @@ jobs:
     if: ${{ !inputs.disable-pgo && inputs.update_branch != 'twilight' && needs.pgo-cache.outputs.windows-cs-hit != 'true' && !failure() && !cancelled() }}
     permissions:
       contents: write
-    secrets: inherit
     needs: [windows-step-cs-1, build-data, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -456,7 +468,14 @@ jobs:
     uses: ./.github/workflows/windows-release-build.yml
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+      SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+      SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+      SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
+      ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+      ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
     # windows-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
     needs: [build-data, windows-step-2, windows-step-cs-2, buildid, pgo-cache]
@@ -476,7 +495,15 @@ jobs:
     uses: ./.github/workflows/linux-release-build.yml
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+      SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+      SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+      SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
+      ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+      ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+      ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
     needs: [build-data, buildid, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -494,7 +521,15 @@ jobs:
     needs: [build-data, buildid, pgo-cache]
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+      SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+      SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+      SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
+      ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+      ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+      ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
     with:
       use-sccache: ${{ inputs.use-sccache }}
       build-version: ${{ needs.build-data.outputs.version }}
@@ -508,7 +543,6 @@ jobs:
     if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.mac-hit != 'true' }}
     permissions:
       contents: write
-    secrets: inherit
     needs: [mac-step-1, build-data, pgo-cache]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -520,7 +554,15 @@ jobs:
     uses: ./.github/workflows/macos-release-build.yml
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+      SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+      SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+      SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
+      ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+      ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+      ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
     # mac-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
     needs: [build-data, mac-step-2, buildid, pgo-cache]
@@ -539,7 +581,15 @@ jobs:
     uses: ./.github/workflows/macos-universal-release-build.yml
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      macOS_CERTIFICATES_P12_For_App_BASE64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
+      macOS_CERTIFICATES_P12_PASSWORD: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
+      macOS_PROVISIONING_PROFILE: ${{ secrets.macOS_PROVISIONING_PROFILE }}
+      macOS_AppleDeveloperId: ${{ secrets.macOS_AppleDeveloperId }}
+      macOS_AppleAccountId: ${{ secrets.macOS_AppleAccountId }}
+      macOS_AppleDeveloperIdTeamId: ${{ secrets.macOS_AppleDeveloperIdTeamId }}
+      macOS_AppleDeveloperIdPassword: ${{ secrets.macOS_AppleDeveloperIdPassword }}
     if: ${{ !failure() && !cancelled() }}
     needs: [build-data, mac-step-3]
     with:

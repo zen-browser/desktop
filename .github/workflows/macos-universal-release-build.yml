@@ -12,6 +12,24 @@ on:
         required: true
         type: string
 
+    secrets:
+      # What this workflow reads when called.
+      DEPLOY_KEY:
+        required: false
+      macOS_CERTIFICATES_P12_For_App_BASE64:
+        required: false
+      macOS_CERTIFICATES_P12_PASSWORD:
+        required: false
+      macOS_PROVISIONING_PROFILE:
+        required: false
+      macOS_AppleDeveloperId:
+        required: false
+      macOS_AppleAccountId:
+        required: false
+      macOS_AppleDeveloperIdTeamId:
+        required: false
+      macOS_AppleDeveloperIdPassword:
+        required: false
 jobs:
   mac-build:
     name: Unify macOS (Universal)

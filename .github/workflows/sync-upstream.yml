@@ -16,6 +16,10 @@ on:
         type: boolean
         default: false
 
+    secrets:
+      # What this workflow reads when called.
+      DEPLOY_KEY:
+        required: false
 permissions:
   contents: write
 

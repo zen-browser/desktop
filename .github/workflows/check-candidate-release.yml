@@ -28,7 +28,8 @@ jobs:
     uses: ./.github/workflows/sync-upstream.yml
     permissions:
       contents: write
-    secrets: inherit
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
     needs: [check_candidates]
     with:
       release_candidate: true

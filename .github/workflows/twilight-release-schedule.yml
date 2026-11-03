@@ -15,6 +15,9 @@ jobs:
   twilight-release-schedule:
     name: Twilight Release Schedule
     permissions: write-all
+    # Kept: the release job of build.yml reads its signing secrets from the
+    # Deploy-Release and Deploy-Twilight environments, and environment secrets
+    # only reach a called workflow through inherit.
     secrets: inherit
     uses: ./.github/workflows/build.yml
     with:

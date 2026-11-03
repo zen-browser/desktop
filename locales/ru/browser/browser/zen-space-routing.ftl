@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Настройки маршрутизации
-zen-space-routing-tab-routed-toast = Новая вкладка открыта в { $targetWorkspace}
+zen-space-routing-tab-routed-toast = Новая вкладка открыта в { $targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->

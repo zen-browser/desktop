@@ -1,0 +1,35 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# How many minutes before a meeting the join button shows up.
+- name: zen.integrations.meeting-notice-minutes
+  value: 5
+
+# Enable mock test mode for previewing emails and events without accounts.
+- name: zen.integrations.mock-enabled
+  value: false
+
+# Enable unread badges for WhatsApp tabs.
+- name: zen.integrations.whatsapp-unread-badge
+  value: true
+
+# OAuth applications registered for Zen. The connect buttons stay disabled
+# while the client id is empty.
+- name: zen.integrations.google.client-id
+  value: ""
+
+- name: zen.integrations.google.client-secret
+  value: ""
+
+- name: zen.integrations.google.connected
+  value: false
+
+- name: zen.integrations.microsoft.client-id
+  value: ""
+
+- name: zen.integrations.microsoft.client-secret
+  value: ""
+
+- name: zen.integrations.microsoft.connected
+  value: false

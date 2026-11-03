@@ -1,0 +1,676 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ==========================================================================
+   Hover Preview Popup
+   ========================================================================== */
+
+#zen-integrations-popup {
+  --panel-padding: 8px 10px;
+  width: 275px;
+  transition-property: -moz-window-transform, -moz-window-opacity, transform, opacity;
+  transition-duration: 0.18s;
+  transition-timing-function: var(--animation-easing-function, ease-out);
+
+  &[animating-out] {
+    opacity: 0;
+    -moz-window-opacity: 0;
+    transform: translateY(-8px);
+    -moz-window-transform: translateY(-8px);
+    transition-duration: 0.11s;
+    transition-timing-function: ease-in;
+
+    &:where([side="top"]) {
+      transform: translateY(-8px);
+      -moz-window-transform: translateY(-8px);
+    }
+
+    &:where([side="bottom"]) {
+      transform: translateY(8px);
+      -moz-window-transform: translateY(8px);
+    }
+
+    &:where([side="left"]) {
+      transform: translateX(-8px);
+      -moz-window-transform: translateX(-8px);
+    }
+
+    &:where([side="right"]) {
+      transform: translateX(8px);
+      -moz-window-transform: translateX(8px);
+    }
+  }
+
+  & * {
+    max-width: -moz-available;
+  }
+
+  & .zen-integrations-empty {
+    padding: 2em 1em;
+    text-align: center;
+    font-weight: 500;
+    opacity: 0.75;
+  }
+}
+
+#zen-integrations-content-wrapper {
+  position: relative;
+  min-height: 140px;
+}
+
+/* Header bar with title and action buttons on the same line */
+#zen-integrations-header-bar {
+  display: flex;
+  align-items: center;
+  padding: 4px 4px 6px 4px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor, transparent 90%);
+  gap: 2px;
+}
+
+.zen-integrations-header {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.zen-integrations-header-btn {
+  -moz-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--zen-border-radius, 6px);
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.12s ease, background-color 0.12s ease;
+
+  & image,
+  & .toolbarbutton-icon {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    padding: 0;
+  }
+
+  & .toolbarbutton-text {
+    display: none !important;
+  }
+
+  &:hover {
+    background-color: var(--zen-toolbar-element-bg-hover, rgba(128, 128, 128, 0.15));
+    opacity: 1;
+  }
+
+  &:active {
+    background-color: var(--zen-toolbar-element-bg-active, rgba(128, 128, 128, 0.25));
+  }
+}
+
+.zen-integrations-settings-action {
+  list-style-image: url("chrome://browser/skin/zen-icons/settings.svg");
+  -moz-context-properties: fill;
+  fill: currentColor;
+}
+
+.zen-integrations-compose-action {
+  list-style-image: url("chrome://browser/skin/zen-icons/plus.svg");
+  -moz-context-properties: fill;
+  fill: currentColor;
+}
+
+#zen-integrations-list {
+  padding: 4px 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   Meeting Join Button at Top of Calendar Preview (Reference: Pill button)
+   ========================================================================== */
+
+#zen-integrations-meeting-card {
+  margin: 2px 2px 8px 2px;
+}
+
+.zen-integrations-top-join {
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16));
+  border-radius: 8px;
+  background: light-dark(#ffffff, #2a2a2a);
+  color: light-dark(#111827, #f3f4f6);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+  & .toolbarbutton-text {
+    font-family: inherit !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    color: light-dark(#111827, #f3f4f6) !important;
+    text-align: start !important;
+    display: block !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  & image,
+  & .toolbarbutton-icon {
+    display: none !important;
+  }
+
+  &:hover {
+    background-color: light-dark(#f8fafc, #363636);
+    border-color: light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.26));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-0.5px);
+  }
+
+  &:active {
+    background-color: light-dark(#f1f5f9, #242424);
+    transform: translateY(0);
+  }
+}
+
+.zen-integrations-top-select {
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  min-height: 38px;
+  padding: 6px 30px 6px 14px;
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16));
+  border-radius: 8px;
+  background-color: light-dark(#ffffff, #2a2a2a);
+  color: light-dark(#111827, #f3f4f6);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  background-image: url("chrome://browser/skin/zen-icons/arrow-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 11px;
+  -moz-context-properties: fill;
+  fill: currentColor;
+  text-overflow: ellipsis;
+  outline: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:dir(rtl) {
+    background-position: left 12px center;
+    padding: 6px 14px 6px 30px;
+  }
+
+  &:hover {
+    background-color: light-dark(#f8fafc, #363636);
+    border-color: light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.26));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-0.5px);
+  }
+
+  &:active {
+    background-color: light-dark(#f1f5f9, #242424);
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    border-color: var(--zen-primary-color, #2563eb);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--zen-primary-color, #2563eb), transparent 70%);
+  }
+
+  & option {
+    background-color: light-dark(#ffffff, #2a2a2a);
+    color: light-dark(#111827, #f3f4f6);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+}
+
+/* ==========================================================================
+   Mail List Styles (Iconless, compact & clean)
+   ========================================================================== */
+
+.zen-integrations-mail-item {
+  cursor: pointer;
+  border-radius: 6px;
+  margin: 3px 0;
+
+  &:hover {
+    background-color: color-mix(in srgb, currentColor, transparent 92%);
+  }
+
+  & .zen-integrations-mail-content {
+    height: auto;
+    min-height: 44px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  & .zen-integrations-mail-labels {
+    width: 100%;
+    gap: 2px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  & .zen-integrations-mail-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+  }
+
+  & .zen-integrations-mail-sender {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  & .zen-integrations-mail-date {
+    font-size: 10.5px;
+    font-weight: 500;
+    opacity: 0.6;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  & .zen-integrations-mail-subject {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .zen-integrations-mail-snippet {
+    font-size: 10.5px;
+    opacity: 0.65;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ==========================================================================
+   Calendar Timeline Styles
+   ========================================================================== */
+
+.zen-integrations-timeline-container {
+  position: relative;
+  padding: 4px 0;
+}
+
+.zen-integrations-hour-row {
+  display: flex;
+  align-items: center;
+  height: 38px;
+}
+
+.zen-integrations-hour-label {
+  width: 44px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.65;
+}
+
+.zen-integrations-hour-divider {
+  flex: 1;
+  height: 1px;
+  background-color: color-mix(in srgb, currentColor, transparent 90%);
+}
+
+.zen-integrations-current-time-marker {
+  position: absolute;
+  left: 44px;
+  right: 0;
+  height: 2px;
+  background-color: var(--zen-primary-color, #2563eb);
+  z-index: 2;
+  pointer-events: none;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--zen-primary-color, #2563eb);
+  }
+}
+
+.zen-integrations-events-layer {
+  position: relative;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zen-integrations-event-card {
+  position: relative;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #1e1b4b;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, filter 0.1s ease;
+
+  &:hover {
+    filter: brightness(0.96);
+    transform: translateY(-1px);
+  }
+
+  & .zen-integrations-event-title {
+    font-size: 12px;
+    font-weight: 600;
+    padding-inline-end: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .zen-integrations-event-time {
+    font-size: 10.5px;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  & .zen-integrations-event-cam-icon {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    background-color: currentColor;
+    mask-image: url("chrome://browser/skin/zen-icons/video-fill.svg");
+    -webkit-mask-image: url("chrome://browser/skin/zen-icons/video-fill.svg");
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+    opacity: 0.85;
+  }
+}
+
+.zen-integrations-events-overlap-row {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  width: 100%;
+
+  & .zen-integrations-event-card {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 6px 8px;
+  }
+
+  & .zen-integrations-event-title {
+    font-size: 11.5px;
+    padding-inline-end: 14px;
+  }
+
+  & .zen-integrations-event-time {
+    font-size: 10px;
+  }
+
+  & .zen-integrations-event-cam-icon {
+    top: 5px;
+    right: 6px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* ==========================================================================
+   Unread Badge (WhatsApp, Gmail, Outlook)
+   ========================================================================== */
+
+.tabbrowser-tab[zen-has-unread="true"] .tab-icon-stack {
+  position: relative;
+  overflow: visible;
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -2px;
+    inset-inline-end: -2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--zen-colors-badge-red, #ff3b30);
+    border: 1.5px solid var(--tab-background-color, var(--zen-surface, #ffffff));
+    z-index: 99;
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.tabbrowser-tab[pinned]:not([zen-essential])[zen-has-unread="true"] .tab-icon-stack::after {
+  bottom: -1px;
+  inset-inline-end: 1px;
+}
+
+.tabbrowser-tab[zen-essential][zen-has-unread="true"] .tab-icon-stack::after {
+  bottom: -4.5px;
+  inset-inline-end: -4.5px;
+}
+
+/* ==========================================================================
+   Essential Tab Meeting Notice
+   ========================================================================== */
+
+.tabbrowser-tab[zen-essential][zen-meeting-notice] {
+  position: relative;
+
+  &::after {
+    content: attr(zen-meeting-notice);
+    display: block;
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 1.5px 3.5px;
+    border-radius: 4px;
+    background-color: var(--zen-primary-color, #2563eb);
+    color: #ffffff;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* ==========================================================================
+   Sidebar Imminent Meeting Banner
+   ========================================================================== */
+
+.zen-integrations-banner {
+  align-items: center;
+  gap: 10px;
+  margin: 4px var(--zen-toolbox-padding);
+  padding: 6px 10px;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, currentColor, transparent 94%);
+  border: 1px solid color-mix(in srgb, currentColor, transparent 90%);
+
+  :root:not([zen-sidebar-expanded="true"]) & {
+    justify-content: center;
+    margin-inline: auto;
+    padding: 4px 2px;
+  }
+}
+
+.zen-integrations-banner-info {
+  min-width: 0;
+  gap: 2px;
+
+  :root:not([zen-sidebar-expanded="true"]) & {
+    display: none;
+  }
+}
+
+.zen-integrations-banner-header {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.zen-integrations-banner-title {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.zen-integrations-join-button {
+  -moz-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--zen-primary-color, #0a84ff);
+  color: #ffffff !important;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.12s ease;
+
+  & .toolbarbutton-text {
+    display: block !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  & image,
+  & .toolbarbutton-icon {
+    display: none !important;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+    transform: translateY(-0.5px);
+  }
+
+  &:active {
+    filter: brightness(0.95);
+    transform: translateY(0);
+  }
+
+  :root:not([zen-sidebar-expanded="true"]) & {
+    padding-inline: 6px;
+  }
+}
+
+.zen-integrations-sidebar-select {
+  -moz-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
+  width: 68px;
+  min-width: 68px;
+  max-width: 68px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 4px 18px 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--zen-primary-color, #0a84ff);
+  color: #ffffff !important;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  background-image: url("chrome://browser/skin/zen-icons/arrow-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 8px;
+  -moz-context-properties: fill;
+  fill: #ffffff;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: filter 0.12s ease, transform 0.12s ease;
+
+  &:dir(rtl) {
+    background-position: left 6px center;
+    padding: 4px 8px 4px 18px;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+    transform: translateY(-0.5px);
+  }
+
+  &:active {
+    filter: brightness(0.95);
+    transform: translateY(0);
+  }
+
+  & option {
+    background-color: light-dark(#ffffff, #2a2a2a);
+    color: light-dark(#111827, #f3f4f6);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  :root:not([zen-sidebar-expanded="true"]) & {
+    width: 38px;
+    min-width: 38px;
+    max-width: 38px;
+    padding-inline: 4px;
+    background-image: none;
+    text-align: center;
+  }
+}

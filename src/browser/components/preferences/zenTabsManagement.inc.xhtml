@@ -77,6 +77,48 @@
       </hbox>
 </groupbox>
 
+<hbox id="zenIntegrationsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement"
+      data-subcategory="integrations">
+      <html:h1 data-l10n-id="pane-zen-integrations-title"/>
+</hbox>
+
+<groupbox id="zenIntegrationsGroup" data-category="paneZenTabManagement" data-subcategory="integrations" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-integrations-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-integrations-description" />
+
+      <hbox align="center">
+            <label data-l10n-id="zen-integrations-google-label" flex="1"/>
+            <button id="zenIntegrationsGoogleButton" data-provider="google"/>
+      </hbox>
+      <hbox align="center">
+            <label data-l10n-id="zen-integrations-microsoft-label" flex="1"/>
+            <button id="zenIntegrationsMicrosoftButton" data-provider="microsoft"/>
+      </hbox>
+
+      <hbox align="center">
+            <label data-l10n-id="zen-integrations-meeting-notice-before"/>
+            <html:input id="zenIntegrationsNoticeMinutes"
+                        type="number"
+                        min="1"
+                        max="60"
+                        preference="zen.integrations.meeting-notice-minutes"/>
+            <label data-l10n-id="zen-integrations-meeting-notice-after"/>
+      </hbox>
+
+      <checkbox id="zenIntegrationsWhatsAppBadge"
+                data-l10n-id="zen-integrations-whatsapp-badge"
+                label="Show unread badge on WhatsApp tabs"
+                preference="zen.integrations.whatsapp-unread-badge" />
+
+      <checkbox id="zenIntegrationsMockEnabled"
+                data-l10n-id="zen-integrations-mock-enabled"
+                label="Enable mock test mode (for preview testing)"
+                preference="zen.integrations.mock-enabled" />
+</groupbox>
+
 </html:template>
 
 

@@ -108,6 +108,22 @@ zen-pinned-tab-manager-reset-close-shortcut-option =
 zen-pinned-tab-manager-close-close-shortcut-option =
     .label = Close tab
 
+pane-zen-integrations-title = Integrations
+zen-integrations-header = Mail and Calendar Integrations
+zen-integrations-description = Hover a pinned or essential Gmail, Google Calendar or Outlook tab to preview unread emails and upcoming events.
+zen-integrations-meeting-notice-before = Show the join button
+zen-integrations-meeting-notice-after = minutes before a meeting
+zen-integrations-whatsapp-badge =
+    .label = Show unread badge on WhatsApp tabs
+zen-integrations-mock-enabled =
+    .label = Enable mock test mode (for preview testing)
+zen-integrations-google-label = Google
+zen-integrations-microsoft-label = Microsoft
+zen-integrations-connect =
+    .label = Connect
+zen-integrations-disconnect =
+    .label = Disconnect
+
 pane-zen-workspaces-header = Workspaces
 zen-settings-workspaces-header = General settings for workspaces
 zen-settings-workspaces-description = With workspaces, you can have multiple browsing sessions at once!

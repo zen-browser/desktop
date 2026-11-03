@@ -12,6 +12,7 @@ DIRS += [
     "compact-mode",
     "drag-and-drop",
     "glance",
+    "integrations",
     "kbs",
     "library",
     "live-folders",

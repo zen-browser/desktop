@@ -760,6 +760,82 @@ var gZenWorkspacesSettings = {
         toggleZenCycleByAttrWarning
       );
     });
+
+    gZenIntegrationsSettings.init();
+  },
+
+  handleSubcategory(subcategory) {
+    if (subcategory === "integrations") {
+      const target =
+        document.getElementById("zenIntegrationsGroup") ||
+        document.getElementById("zenIntegrationsCategory");
+      if (target) {
+        requestAnimationFrame(() => {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+          target.classList.add("spotlight");
+        });
+        return true;
+      }
+    }
+    return false;
+  },
+};
+
+var gZenIntegrationsSettings = {
+  init() {
+    const whatsappBadgePref = "zen.integrations.whatsapp-unread-badge";
+    const checkbox = document.getElementById("zenIntegrationsWhatsAppBadge");
+    if (!Services.prefs.prefHasUserValue(whatsappBadgePref)) {
+      try {
+        Services.prefs.getBoolPref(whatsappBadgePref);
+      } catch {
+        Services.prefs.setBoolPref(whatsappBadgePref, true);
+      }
+    }
+    if (checkbox && !checkbox.checked && Services.prefs.getBoolPref(whatsappBadgePref, true)) {
+      checkbox.checked = true;
+    }
+
+    let ZenGoogleProvider, ZenMicrosoftProvider;
+    try {
+      ({ ZenGoogleProvider } = ChromeUtils.importESModule(
+        "resource:///modules/zen/integrations/ZenGoogleProvider.sys.mjs"
+      ));
+      ({ ZenMicrosoftProvider } = ChromeUtils.importESModule(
+        "resource:///modules/zen/integrations/ZenMicrosoftProvider.sys.mjs"
+      ));
+    } catch (e) {
+      console.warn("Could not load integrations providers in preferences", e);
+      return;
+    }
+
+    for (const provider of [ZenGoogleProvider, ZenMicrosoftProvider]) {
+      const button = document.querySelector(
+        `#zenIntegrationsGroup button[data-provider="${provider.id}"]`
+      );
+      if (!button) {
+        continue;
+      }
+      const { client } = provider;
+
+      const update = () => {
+        document.l10n.setAttributes(
+          button,
+          client.isConnected
+            ? "zen-integrations-disconnect"
+            : "zen-integrations-connect"
+        );
+        button.disabled = !client.isConnected && !client.isAvailable;
+      };
+      button.addEventListener("command", () =>
+        client.isConnected ? client.disconnect() : client.connect()
+      );
+      client.addEventListener("change", update);
+      window.addEventListener("unload", () =>
+        client.removeEventListener("change", update)
+      );
+      update();
+    }
   },
 };
 
@@ -866,6 +942,21 @@ Preferences.addAll([
   },
   {
     id: "zen.window-sync.sync-only-pinned-tabs",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.integrations.meeting-notice-minutes",
+    type: "int",
+    default: 5,
+  },
+  {
+    id: "zen.integrations.whatsapp-unread-badge",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.integrations.mock-enabled",
     type: "bool",
     default: false,
   },

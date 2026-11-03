@@ -13,16 +13,16 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.7.0
         with:
           persist-credentials: false
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         # note: This will use the version defined in '.python-version' by defaultç
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
@@ -63,7 +63,7 @@ jobs:
           npm run import
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         if: steps.git-check.outputs.files_changed == 'true'
         env:
           GIT_TRACE: 1

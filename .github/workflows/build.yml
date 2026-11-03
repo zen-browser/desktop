@@ -80,7 +80,7 @@ jobs:
       buildids: ${{ steps.get.outputs.bid }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           submodules: recursive
@@ -135,13 +135,13 @@ jobs:
       build_time: ${{ steps.data.outputs.buildtime }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
@@ -178,7 +178,7 @@ jobs:
           echo "buildtime=$(date +"%H:%M:%S")" >> $GITHUB_OUTPUT
 
       - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v5.2.0
         if: ${{ inputs.update_version }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
@@ -190,14 +190,14 @@ jobs:
     needs: [build-data]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
@@ -233,14 +233,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
@@ -274,7 +274,7 @@ jobs:
             -C engine .
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: zen.source.tar.zst
@@ -291,7 +291,7 @@ jobs:
       windows-cs-hit: ${{ steps.probe.outputs.windows-cs }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
 
@@ -321,7 +321,7 @@ jobs:
       - name: Look up the macOS x86_64 profile
         id: mac-x86
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.1.0
         with:
           key: ${{ steps.key.outputs.prefix }}-macos-x86_64
           path: ~/artifact
@@ -330,7 +330,7 @@ jobs:
       - name: Look up the macOS aarch64 profile
         id: mac-arm
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.1.0
         with:
           key: ${{ steps.key.outputs.prefix }}-macos-aarch64
           path: ~/artifact
@@ -339,7 +339,7 @@ jobs:
       - name: Look up the Windows x86_64 profile
         id: win-x86
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.1.0
         with:
           key: ${{ steps.key.outputs.prefix }}-windows-x86_64
           path: ~/artifact
@@ -348,7 +348,7 @@ jobs:
       - name: Look up the Linux x86_64 profile
         id: linux-x86
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.1.0
         with:
           key: ${{ steps.key.outputs.prefix }}-linux-x86_64
           path: ~/artifact
@@ -357,7 +357,7 @@ jobs:
       - name: Look up the Windows x86_64 context-sensitive profile
         id: win-cs
         if: ${{ steps.gate.outputs.enabled == 'true' && !inputs.regenerate-pgo }}
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.1.0
         with:
           key: ${{ steps.key.outputs.prefix }}-windows-cs-x86_64
           path: ~/artifact
@@ -615,14 +615,14 @@ jobs:
     needs: [linux, build-data]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
@@ -633,7 +633,7 @@ jobs:
           sudo apt-get -y install libfuse2 desktop-file-utils appstream
 
       - name: Download Linux build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: zen.linux-${{ matrix.arch }}.tar.xz
 
@@ -675,14 +675,14 @@ jobs:
           unset ARCH
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: zen-${{ matrix.arch }}.AppImage
           path: ./dist/zen-${{ matrix.arch }}.AppImage
 
       - name: Upload artifact (ZSync)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: zen-${{ matrix.arch }}.AppImage.zsync
@@ -711,17 +711,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
 
       - name: Checkout updates repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           repository: zen-browser/updates-server
           path: updates-server
@@ -785,7 +785,7 @@ jobs:
           cp -a ../macos_update_manifest/.  updates/
 
       - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v5.2.0
         if: ${{ inputs.create_release || inputs.update_branch == 'twilight' }}
         with:
           commit_message: 🚀 Update update manifests
@@ -832,7 +832,7 @@ jobs:
 
       - name: Upload signed MAR files to workflow artifacts
         if: ${{ inputs.update_branch == 'release' && !inputs.create_release }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: signed-mar-files
@@ -894,7 +894,7 @@ jobs:
 
     steps:
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           repository: zen-browser/release-utils
           token: ${{ secrets.DEPLOY_KEY }}
@@ -911,14 +911,14 @@ jobs:
             --version ${{ needs.build-data.outputs.version }}
 
       - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v5.2.0
         with:
           commit_message: 🚀 Update releases for Flatpak
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com
 
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           repository: zen-browser/flatpak
           token: ${{ secrets.DEPLOY_KEY }}
@@ -934,7 +934,7 @@ jobs:
           echo -n ${{ needs.build-data.outputs.version }} > ./flatpak/version
 
       - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v5.2.0
         with:
           commit_message: "[release]: Update Flatpak manifest"
           commit_user_name: Zen Browser Robot
@@ -955,24 +955,24 @@ jobs:
 
     steps:
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           repository: flathub/app.zen_browser.zen
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Download Linux x86_64 build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: zen.linux-x86_64.tar.xz
 
       - name: Download Linux aarch64 build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: zen.linux-aarch64.tar.xz
 
       - name: Update repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           path: zen-browser
@@ -1010,14 +1010,14 @@ jobs:
           rm -rf zen.linux-aarch64.tar.xz
 
       - name: Upload Flatpak manifest
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: app.zen_browser.zen.yml
           path: ./app.zen_browser.zen.yml
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         env:
           GIT_TRACE: 1
           GIT_CURL_VERBOSE: 1

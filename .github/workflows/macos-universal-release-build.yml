@@ -43,19 +43,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         # note: This will use the version defined in '.python-version' by default
 
       - name: Setup Git
@@ -132,12 +132,12 @@ jobs:
           rm -rf obj-mar-tools mar-mozconfig
 
       - name: Download x86_64 DMG from artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: zen-x86_64-apple-darwin-dist.dmg
 
       - name: Download aarch64 DMG from artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: zen-aarch64-apple-darwin-dist.dmg
 
@@ -201,7 +201,7 @@ jobs:
           echo "Merged aaarch64 into x86_64!"
 
       - name: Import APPLE DEVELOPER ID CERTIFICATE for .app
-        uses: Apple-Actions/import-codesign-certs@v3
+        uses: Apple-Actions/import-codesign-certs@v3.0.0
         with:
           p12-file-base64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
           p12-password: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
@@ -246,14 +246,14 @@ jobs:
           xcrun stapler staple "zen.macos-universal.dmg"
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: zen.macos-universal.dmg
           path: ./zen.macos-universal.dmg
 
       - name: Download platform.ini
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: platform.ini
 
@@ -277,14 +277,14 @@ jobs:
           mv ./dist/output.mar ./macos.mar
 
       - name: Upload build artifact (.mar)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: macos.mar
           path: ./macos.mar
 
       - name: Upload build artifact (update manifests)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: macos_update_manifest

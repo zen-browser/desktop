@@ -46,12 +46,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
@@ -68,14 +68,14 @@ jobs:
 
       - name: Download artifact
         if: ${{ matrix.arch == 'x86_64' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           path: C:\artifact
           name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-${{ inputs.instrumented-artifact }}
 
       - name: Download the base profile data
         if: ${{ matrix.arch == 'x86_64' && inputs.cs-pgo }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           path: C:\base
           name: windows-base-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
@@ -148,14 +148,14 @@ jobs:
 
       - name: Cache profile data
         if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v5.1.0
         with:
           key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Upload artifacts
         if: ${{ matrix.arch == 'x86_64' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 1
           path: |

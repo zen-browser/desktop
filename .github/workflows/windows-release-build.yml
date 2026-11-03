@@ -83,31 +83,31 @@ jobs:
 
     steps:
       - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
+        uses: jlumbroso/free-disk-space@v2.0.0
         if: ${{ !((inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'aarch64') }}
         with:
           tool-cache: false
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@main
+        uses: mozilla-actions/sccache-action@v0.0.11
         if: ${{ inputs.use-sccache }}
         with:
           disable_annotations: true
 
       - name: Expose actions cache variables
-        uses: actions/github-script@v6
+        uses: actions/github-script@v6.4.1
         with:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
@@ -135,7 +135,7 @@ jobs:
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
         id: cache-win-cross
-        uses: actions/cache@v5
+        uses: actions/cache@v5.1.0
         with:
           path: ${HOME}/win-cross
           key: win-cross
@@ -255,14 +255,14 @@ jobs:
         run: sh scripts/download-language-packs.sh
 
       - name: Download artifact (if use profdata)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && matrix.arch == 'x86_64' && !inputs.pgo-cache-hit }}
         with:
           path: ~/artifact
           name: ${{ inputs.cs-pgo == 'use' && 'windows-cs-profdata-' || 'windows-profdata-' }}${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
 
       - name: Restore cached profile data
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.1.0
         if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && matrix.arch == 'x86_64' && inputs.pgo-cache-hit }}
         with:
           key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
@@ -337,7 +337,7 @@ jobs:
           mv ./dist/zen.installer.exe ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
 
       - name: Upload artifact (PGO)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         if: ${{ (inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'x86_64' }}
         with:
           retention-days: 2
@@ -345,7 +345,7 @@ jobs:
           path: ./zen.win64-pgo-stage-1.zip
 
       - name: Upload the base profile data for the CS profile run
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         if: ${{ inputs.cs-pgo == 'generate' && matrix.arch == 'x86_64' }}
         with:
           retention-days: 2
@@ -369,7 +369,7 @@ jobs:
 
       - name: Upload dist object
         if: ${{ !inputs.generate-pgo && inputs.cs-pgo != 'generate' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 2
           name: windows-x64-obj-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
@@ -377,7 +377,7 @@ jobs:
 
       - name: Upload artifact (if Twilight branch, installer)
         if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-pgo && inputs.cs-pgo != 'generate' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: zen.installer${{ matrix.arch == 'aarch64' && '-arm64' ||  '' }}.exe
@@ -385,7 +385,7 @@ jobs:
 
       - name: Upload artifact (if Twilight branch, .mar)
         if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-pgo && inputs.cs-pgo != 'generate' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
@@ -393,7 +393,7 @@ jobs:
 
       - name: Upload artifact (if Twilight branch, update manifests)
         if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-pgo && inputs.cs-pgo != 'generate' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 5
           name: windows_update_manifest_${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}

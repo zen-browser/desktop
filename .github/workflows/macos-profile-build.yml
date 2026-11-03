@@ -32,17 +32,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
 
       - name: Setup Git
         run: |
@@ -65,7 +65,7 @@ jobs:
         run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download instrumented app
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           path: ~/instrumented
           name: macos-pgo-stage1-${{ matrix.arch }}
@@ -121,13 +121,13 @@ jobs:
 
       - name: Cache profile data
         if: ${{ inputs.pgo-cache-key-prefix != '' }}
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v5.1.0
         with:
           key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 1
           path: |

@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Inställningar för ruttning av utrymme
-zen-space-routing-tab-routed-toast = Ny flik öppnad i { $targetWorkspace}
+zen-space-routing-tab-routed-toast = Ny flik öppnad i { $targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->

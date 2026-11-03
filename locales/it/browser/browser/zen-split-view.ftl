@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split Out Tab
-            [1] Add Split View...
-           *[other] Join { $tabCount } Tabs
+            [-1] Dividi scheda
+            [1] Aggiungi vista divisa...
+           *[other] Combina { $tabCount } Schede
         }
     .accesskey = S
 zen-split-link = 
-    .label = Split Link to New Tab
+    .label = Dividi il collegamento in una nuova scheda
     .accesskey = S
 zen-split-view-modifier-header = Dividi Vista
 zen-split-view-modifier-activate-reallocation = 

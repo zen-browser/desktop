@@ -83,6 +83,12 @@ index f5df770e7c03446c2d23664b9100e12149ea7a59..398ae5b75a27aec60341f3058310013d
 +    var expander = this._element("workspacesSelectorExpander");
 +    expander.classList.toggle("expander-up", !dropdown.hidden);
 +    expander.classList.toggle("expander-down", dropdown.hidden);
++    document.l10n.setAttributes(
++      expander,
++      dropdown.hidden
++        ? "zen-bookmark-edit-panel-workspace-expander"
++        : "zen-bookmark-edit-panel-workspace-expander-hide"
++    );
 +
 +    // Only update summary text when closing the dropdown
 +    if (dropdown.hidden) {

@@ -218,8 +218,8 @@ function arcSpaceTheme(space) {
   return result;
 }
 
-function colorLightness([r, g, b]) {
-  return Math.round(((Math.max(r, g, b) + Math.min(r, g, b)) / 2 / 255) * 100);
+function colorBrightness([r, g, b]) {
+  return Math.round((Math.max(r, g, b) / 255) * 100);
 }
 
 /**
@@ -229,7 +229,7 @@ function colorLightness([r, g, b]) {
  */
 function spaceThemeFromArc({ colors, intensity, noise, overlay }) {
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-  const lightness = colorLightness(colors[0]);
+  const lightness = colorBrightness(colors[0]);
   return {
     type: "gradient",
     gradientColors: colors.map((c, index) => ({

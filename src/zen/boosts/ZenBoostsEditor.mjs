@@ -404,6 +404,23 @@ export class nsZenBoostEditor {
     ];
   }
 
+  /**
+   * The font a grid slot renders in on this machine: its first installed
+   * candidate, or the slot's generic family.
+   *
+   * @param {string[]} slot - One entry of commonFonts
+   * @param {string[]} installed - The installed font names
+   * @returns {string}
+   */
+  resolveFontSlot(slot, installed) {
+    const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
+    return (
+      slot.find(
+        candidate => candidate in genericLabels || installed.includes(candidate)
+      ) ?? slot.at(-1)
+    );
+  }
+
   static GENERIC_FONT_LABELS = {
     "system-ui": "System",
     "sans-serif": "Sans Serif",
@@ -427,11 +444,7 @@ export class nsZenBoostEditor {
     const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
 
     for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
-      // The first candidate that is installed, or the slot's generic family.
-      const font =
-        commonFonts[i].find(
-          candidate => candidate in genericLabels || fonts.includes(candidate)
-        ) ?? commonFonts[i].at(-1);
+      const font = this.resolveFontSlot(commonFonts[i], fonts);
 
       const fontButton = this.doc.createElement("button");
       fontButton.setAttribute("font-data", `${font}`);
@@ -1630,12 +1643,13 @@ ${cssSelector} {
    * Shuffles the boost data and updates the presentation
    */
   shuffleBoost() {
-    const availFonts = this.fetchFontList();
+    // A random slot of the font grid, as it renders on this machine.
     const commonFonts = this.commonFonts;
-    let font = commonFonts[Math.floor(Math.random() * commonFonts.length)];
-    if (availFonts.includes(font)) {
-      this.currentBoostData.fontFamily = font;
-    }
+    const slot = commonFonts[Math.floor(Math.random() * commonFonts.length)];
+    this.currentBoostData.fontFamily = this.resolveFontSlot(
+      slot,
+      this.fetchFontList()
+    );
 
     this.currentBoostData.smartInvert = Math.random() > 0.5;
     this.currentBoostData.autoTheme = false;

@@ -310,7 +310,6 @@ class nsZenAboutDialog {
           textArgs: {
             transfer: lazy.DownloadUtils.getTransferTotal(progress, max),
           },
-          progress: max > 0 ? (progress / max) * 100 : null,
         });
         break;
       }
@@ -384,19 +383,8 @@ class nsZenAboutDialog {
    * @param {string} [options.buttonId] Fluent id for the action button.
    * @param {Function} [options.action] Runs when the button is clicked.
    * @param {boolean} [options.primary] Styles the button as the main action.
-   * @param {number} [options.progress] Percentage, null for indeterminate.
    */
-  #show(
-    state,
-    {
-      textId,
-      textArgs = {},
-      buttonId,
-      action,
-      primary = false,
-      progress = null,
-    }
-  ) {
+  #show(state, { textId, textArgs = {}, buttonId, action, primary = false }) {
     const section = document.getElementById("zen-about-update");
     section.hidden = false;
     section.dataset.state = state;
@@ -417,14 +405,6 @@ class nsZenAboutDialog {
       document.l10n.setAttributes(button, buttonId);
     }
     button.classList.toggle("primary", primary);
-
-    const bar = document.getElementById("zen-about-update-progress");
-    bar.hidden = state != "downloading";
-    if (progress === null) {
-      bar.removeAttribute("value");
-    } else {
-      bar.value = progress;
-    }
   }
 }
 

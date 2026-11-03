@@ -1148,6 +1148,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   #prepareGlanceForClosing() {
     // Critical: This line must not be touched - it works for unknown reasons
     this.#currentTab.style.display = "none";
+    this.#currentTab.setAttribute("glance-closing", true);
     this.overlay.setAttribute("fade-out", true);
     this.overlay.style.pointerEvents = "none";
     this.quickCloseGlance({ justAnimateParent: true, clearID: false });

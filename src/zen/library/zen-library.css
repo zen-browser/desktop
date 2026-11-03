@@ -1263,18 +1263,13 @@ zen-library-history-section {
     opacity 0.2s ease,
     scale 0.2s ease,
     z-index 0.2s step-end;
-  background: var(--zen-branding-bg);
   border-radius: 14px;
   --toolbar-color: var(--toolbox-textcolor);
 
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
+  & > .zen-library-space-background {
+    display: block;
     z-index: -1;
     border-radius: 14px;
-    background: var(--zen-library-space-gradient);
-    background-blend-mode: screen;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s ease;
   }
@@ -1284,7 +1279,7 @@ zen-library-history-section {
     scale: 1.03;
     transition: scale 0.2s ease;
 
-    &::before {
+    & > .zen-library-space-background {
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
   }

@@ -117,7 +117,6 @@ export class nsZenBoostEditor {
       .addEventListener("click", this.onCodeButtonPressed.bind(this));
     const shareButton = this.doc.getElementById("zen-boost-share");
     shareButton.addEventListener("click", this.onShareBoostPressed.bind(this));
-    shareButton.hidden = !gZenBoostsManager.canShareFrom(this.openerWindow);
     this.doc
       .getElementById("zen-boost-back")
       .addEventListener("click", this.onCodeBackButtonPressed.bind(this));
@@ -519,9 +518,6 @@ export class nsZenBoostEditor {
   }
 
   onShareBoostPressed() {
-    if (!gZenBoostsManager.canShareFrom(this.openerWindow)) {
-      return;
-    }
     if (!this.currentBoostData?.changeWasMade) {
       this.openerWindow.gZenUIManager.showToast(
         "zen-boost-share-nothing-toast"

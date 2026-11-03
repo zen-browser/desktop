@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Tab wedi'i Hollti
-            [1] Ychwanegu Golwg Hollt...
+            [-1] Rhannu tab
+            [1] Ychwanegu golwg hollt...
            *[other] Uno { $tabCount } Tab
         }
     .accesskey = H
 zen-split-link = 
-    .label = Rhannu Dolen i Dab Newydd
+    .label = Rhannu dolen i dab newydd
     .accesskey = D
 zen-split-view-modifier-header = Golwg Hollt
 zen-split-view-modifier-activate-reallocation = 

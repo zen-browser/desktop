@@ -5,7 +5,7 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Del fane
+            [-1] Fordelt fane
             [1] Legg til delt visning
            *[other] Spleis { $tabCount } faner
         }

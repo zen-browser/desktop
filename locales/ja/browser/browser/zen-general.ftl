@@ -140,4 +140,4 @@ zen-window-sync-migration-dialog-message = Zenは同一デバイス内のウィ�
 zen-window-sync-migration-dialog-learn-more = もっと詳しく
 zen-window-sync-migration-dialog-accept = わかりました
 zen-appmenu-new-blank-window = 
-    .label = 新しい非同期ウィンドウ
+    .label = 新しい空のウィンドウ

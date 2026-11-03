@@ -496,6 +496,7 @@ export class nsZenWorkspace extends MozXULElement {
     if (
       !entry ||
       entry.isIntersecting ||
+      entry.target.hasAttribute("glance-closing") ||
       !this.overflows ||
       !this.#canOfferScrollToTab(this.#watchedTab)
     ) {

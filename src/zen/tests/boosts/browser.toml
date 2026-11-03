@@ -21,6 +21,8 @@ support-files = [
 
 ["browser_boosts_border.js"]
 
+["browser_boosts_code_editor.js"]
+
 ["browser_boosts_gradient.js"]
 
 ["browser_boosts_inline_svg.js"]

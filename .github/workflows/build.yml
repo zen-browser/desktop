@@ -82,6 +82,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
@@ -191,6 +192,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
@@ -233,6 +235,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
@@ -289,6 +292,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Decide whether a cached profile may be reused
         id: gate
@@ -612,6 +617,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
@@ -707,6 +713,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
@@ -950,6 +957,7 @@ jobs:
       - name: Checkout Flatpak repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           repository: flathub/app.zen_browser.zen
           token: ${{ secrets.DEPLOY_KEY }}
 
@@ -966,6 +974,7 @@ jobs:
       - name: Update repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           path: zen-browser
           token: ${{ secrets.DEPLOY_KEY }}
 

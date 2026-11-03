@@ -140,4 +140,4 @@ zen-window-sync-migration-dialog-message = Zen synchronise désormais les fenêt
 zen-window-sync-migration-dialog-learn-more = En savoir plus
 zen-window-sync-migration-dialog-accept = J'ai compris
 zen-appmenu-new-blank-window = 
-    .label = Nouvelle fenêtre vierge
+    .label = Nouvelle fenêtre vide

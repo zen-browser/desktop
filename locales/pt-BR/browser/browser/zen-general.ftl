@@ -138,4 +138,4 @@ zen-window-sync-migration-dialog-message = Zen agora sincroniza as janelas no me
 zen-window-sync-migration-dialog-learn-more = Saiba Mais
 zen-window-sync-migration-dialog-accept = Entendi
 zen-appmenu-new-blank-window = 
-    .label = Nova Janela em Branco
+    .label = Nova janela em branco

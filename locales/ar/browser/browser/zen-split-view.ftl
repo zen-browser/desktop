@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split Out Tab
-            [1] Add Split View...
+            [-1] Split out tab
+            [1] Add split view...
            *[other] Join { $tabCount } Tabs
         }
     .accesskey = س
 zen-split-link = 
-    .label = Split Link to New Tab
+    .label = تقسيم الرابط إلى علامة تبويب جديدة
     .accesskey = س
 zen-split-view-modifier-header = تقسيم العرض
 zen-split-view-modifier-activate-reallocation = 

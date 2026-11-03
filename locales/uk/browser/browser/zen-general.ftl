@@ -140,4 +140,4 @@ zen-window-sync-migration-dialog-message = Zen тепер синхронізує
 zen-window-sync-migration-dialog-learn-more = Дізнатися більше
 zen-window-sync-migration-dialog-accept = Зрозуміло
 zen-appmenu-new-blank-window = 
-    .label = Нове порожнє вікно
+    .label = Нове несинхронізоване вікно

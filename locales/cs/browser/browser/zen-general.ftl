@@ -140,4 +140,4 @@ zen-window-sync-migration-dialog-message = Zen nyní synchronizuje okna na stejn
 zen-window-sync-migration-dialog-learn-more = Zjistit více
 zen-window-sync-migration-dialog-accept = Rozumím
 zen-appmenu-new-blank-window = 
-    .label = New Blank Window
+    .label = Nové prázdné okno

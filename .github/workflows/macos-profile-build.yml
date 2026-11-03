@@ -48,8 +48,13 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Setup Rust
+        env:
+          # rustup-init 1.29.2 for the runner's architecture and the checksum
+          # rustup publishes for it, checked before it runs.
+          RUSTUP_TARGET: ${{ matrix.arch == 'aarch64' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}
+          RUSTUP_SHA256: ${{ matrix.arch == 'aarch64' && 'f7c7e11eb2e07f006e532a8aaac77b32f4527d305ac386c0c633ca6133d35ca9' || 'b9610730ddeef52765723847866fd1e3540b2bf7d5ab0c324aa143a5edf25ba0' }}
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
+          curl --proto '=https' --tlsv1.2 -sSf -o rustup-init "https://static.rust-lang.org/rustup/archive/1.29.2/${RUSTUP_TARGET}/rustup-init" && echo "${RUSTUP_SHA256}  rustup-init" | shasum -a 256 -c - && chmod +x rustup-init && ./rustup-init -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml) && rm rustup-init
 
       - name: Install dependencies
         run: npm ci

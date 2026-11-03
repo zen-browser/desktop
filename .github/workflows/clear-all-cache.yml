@@ -5,7 +5,9 @@ on:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      # gh cache list and gh cache delete use the job token.
+      actions: write
     steps:
       - name: Cleanup
         run: |

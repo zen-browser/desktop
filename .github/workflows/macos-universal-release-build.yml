@@ -30,6 +30,9 @@ on:
         required: false
       macOS_AppleDeveloperIdPassword:
         required: false
+permissions:
+  contents: read
+
 jobs:
   mac-build:
     name: Unify macOS (Universal)

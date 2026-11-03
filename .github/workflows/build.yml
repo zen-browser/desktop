@@ -69,6 +69,9 @@ on:
         type: "boolean"
         default: false
 
+permissions:
+  contents: read
+
 jobs:
   buildid:
     name: Generate build ID
@@ -680,7 +683,10 @@ jobs:
           path: ./dist/zen-${{ matrix.arch }}.AppImage.zsync
 
   release:
-    permissions: write-all
+    permissions:
+      # Every write of this job goes through DEPLOY_KEY: the release, the
+      # updates repository commit and the staging cleanup.
+      contents: read
     name: Release
     if: ${{ !failure() && !cancelled() }}
     needs:
@@ -871,7 +877,10 @@ jobs:
 
   prepare-flatpak:
     if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
-    permissions: write-all
+    permissions:
+      # The release-utils and flatpak repositories are checked out and
+      # pushed with DEPLOY_KEY.
+      contents: read
     name: Prepare Flatpak
     needs: [release, linux, build-data]
     runs-on: ubuntu-latest
@@ -930,7 +939,9 @@ jobs:
 
   release-flatpak:
     if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
-    permissions: write-all
+    permissions:
+      # The Flathub checkout and the pull request use DEPLOY_KEY.
+      contents: read
     name: Release Flatpak
     needs: [prepare-flatpak, build-data]
     runs-on: ubuntu-latest

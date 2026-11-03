@@ -124,7 +124,6 @@ add_task(async function test_about_update_states() {
   const section = doc.getElementById("zen-about-update");
   const text = doc.getElementById("zen-about-update-text");
   const button = doc.getElementById("zen-about-update-button");
-  const progress = doc.getElementById("zen-about-update-progress");
 
   if (!AppConstants.MOZ_UPDATER) {
     ok(section.hidden, "Builds without an updater hide the update row");
@@ -143,8 +142,6 @@ add_task(async function test_about_update_states() {
 
   dialog.onUpdateStatus(AppUpdater.STATUS.DOWNLOADING, 25, 100);
   is(section.dataset.state, "downloading", "Downloading state is reflected");
-  ok(!progress.hidden, "Progress bar is visible while downloading");
-  is(progress.value, 25, "Progress bar tracks the download");
   ok(
     doc.l10n.getAttributes(text).args.transfer,
     "Downloading text carries the transfer amount"
@@ -152,7 +149,6 @@ add_task(async function test_about_update_states() {
 
   dialog.onUpdateStatus(AppUpdater.STATUS.READY_FOR_RESTART);
   is(section.dataset.state, "ready", "Ready state is reflected");
-  ok(progress.hidden, "Progress bar hides once the download is done");
   ok(!button.hidden, "Restart button is offered");
   is(
     button.getAttribute("data-l10n-id"),

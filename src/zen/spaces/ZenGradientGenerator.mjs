@@ -7,6 +7,7 @@ import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components
 const kMinLayerAlpha = 0.2;
 const kMaxLayerAlpha = 0.75;
 const kMinWindowAlpha = 0.35;
+const kMinTextMix = 0.4;
 const kGradientStops = 12;
 const kBaseGradientReach = 2 / 3;
 const kTextures = ["none", "grain", "sand", "denim", "tweed"];
@@ -771,16 +772,33 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       saturation = 0;
       lightness = Math.round((1 - normalizedDistance) * 100);
     }
-    const [r, g, b] = this.hslToRgb(
-      hue / 360,
-      saturation / 100,
-      lightness / 100
-    );
+    let r, g, b;
+    if (type === EXPLICIT_LIGHTNESS_TYPE) {
+      [r, g, b] = this.hsbToRgb(hue, normalizedDistance, lightness / 100);
+    } else {
+      [r, g, b] = this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
+    }
     return [
       Math.min(255, Math.max(0, r)),
       Math.min(255, Math.max(0, g)),
       Math.min(255, Math.max(0, b)),
     ];
+  }
+
+  hsbToRgb(hue, saturation, brightness) {
+    const c = brightness * saturation;
+    const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+    const m = brightness - c;
+    const sector = Math.floor((((hue % 360) + 360) % 360) / 60) % 6;
+    const [r, g, b] = [
+      [c, x, 0],
+      [x, c, 0],
+      [0, c, x],
+      [0, x, c],
+      [x, 0, c],
+      [c, 0, x],
+    ][sector];
+    return [r + m, g + m, b + m].map(v => Math.round(v * 255));
   }
 
   getJSONPos(x, y) {
@@ -1738,11 +1756,20 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     };
   }
 
+  // How much of the accent the toolbar text carries.
+  get textAccentMix() {
+    return kMinTextMix + (1 - kMinTextMix) * this.layerIntensity;
+  }
+
   // The toolbar text colour as a style map, for the window, space elements
   // and library previews alike.
   toolbarTextStyles(accentColor, isDarkMode) {
     const titles = this.titleColors(accentColor);
-    const [r, g, b] = isDarkMode ? titles.dark : titles.light;
+    const [r, g, b] = this.blendColors(
+      isDarkMode ? titles.dark : titles.light,
+      isDarkMode ? [255, 255, 255] : [0, 0, 0],
+      this.textAccentMix * 100
+    );
     return { "--toolbox-textcolor": `rgb(${r}, ${g}, ${b})` };
   }
 
@@ -2040,7 +2067,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             this.getAccentColorForUI(dominantColor, isDarkMode)
           );
           for (const [property, value] of Object.entries(
-            this.toolbarTextStyles(dominantColor, isDarkMode)
+            browser.gZenThemePicker.toolbarTextStyles(dominantColor, isDarkMode)
           )) {
             docElement.style.setProperty(property, value);
           }

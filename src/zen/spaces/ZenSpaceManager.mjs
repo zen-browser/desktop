@@ -3249,7 +3249,7 @@ class nsZenWorkspaces {
         args: { name: this.getWorkspaceFromId(workspaceId).name },
       },
     ]);
-    if (Services.prompt.confirm(null, title, body)) {
+    if (Services.prompt.confirm(window, title, body)) {
       this.removeWorkspace(workspaceId);
     }
   }

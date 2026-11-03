@@ -578,38 +578,8 @@ const globalActionsTemplate = [
   },
 ];
 
-const FALLBACK_LABELS = {
-  "zen-action-share-tab": "Share Tab",
-  "zen-action-page-qr-code": "Generate Page QR Code",
-  "zen-action-toggle-reader-mode": "Toggle Reader Mode",
-  "zen-action-copy-current-url-markdown": "Copy Current URL as Markdown",
-  "zen-action-close-unpinned-tabs": "Close Unpinned Tabs",
-  "zen-action-unload-workspace": "Unload Workspace",
-  "zen-action-toggle-split-view-direction": "Toggle Split View Direction",
-  "zen-action-manage-spaces": "Manage Spaces",
-  "zen-action-replace-pinned-url-with-current":
-    "Replace Pinned Tab URL with Current",
-  "zen-action-mute-tab": "Mute Tab",
-  "zen-action-unmute-tab": "Unmute Tab",
-  "zen-action-open-downloads": "Open Downloads",
-  "zen-action-open-history": "Open History",
-  "zen-action-clear-history": "Clear Recent History",
-  "zen-action-clear-browsing-data": "Clear Cookies and Site Data",
-  "zen-action-clear-current-site-data": "Clear Data for This Site",
-  "zen-action-zoom-in": "Zoom In",
-  "zen-action-zoom-out": "Zoom Out",
-  "zen-action-zoom-reset": "Reset Zoom",
-  "zen-action-open-inspector": "Toggle Developer Tools / Inspector",
-  "zen-action-open-web-console": "Open Web Console",
-  "zen-action-quit-application": "Quit Browser",
-};
-
 export function formatValueSync(l10nId) {
-  try {
-    return lazy.l10n.formatValueSync(l10nId) || FALLBACK_LABELS[l10nId] || l10nId;
-  } catch {
-    return FALLBACK_LABELS[l10nId] || l10nId;
-  }
+  return lazy.l10n.formatValueSync(l10nId);
 }
 
 const labels = new Map();

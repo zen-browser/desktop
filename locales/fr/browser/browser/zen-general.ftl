@@ -5,17 +5,36 @@
 zen-panel-ui-current-profile-text = profil actuel
 unified-extensions-description = Les extensions sont utilisées pour ajouter plus de fonctionnalités à { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Réinitialiser l’onglet épinglé
+    .label =
+        { $isEssential ->
+            [true] Réinitialiser l'onglet Essential
+           *[false] Réinitialiser l'onglet épinglé
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Ajouter aux Essentials ({ $num } / { $max } emplacements occupés)
+    .label = Ajouter aux Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Retirer des Essentials
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Modifier l'URL de l'Essential
+           *[false] Modifier de l'URL de l'onglet épinglé
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Remplacer l’URL épinglée par l’actuelle
+    .label = Remplacer par l'URL actuelle
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Modifier…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Changer le libellé...
+tab-context-zen-edit-icon = 
+    .label = Changer l'icône...
 zen-themes-corrupted = Votre fichier de thèmes { -brand-short-name } est corrompu. Il a été réinitialisé au thème par défaut.
 zen-shortcuts-corrupted = Votre fichier de raccourcis { -brand-short-name } est corrompu. Ils ont été réinitialisés aux raccourcis par défaut.
 # note: Do not translate the "<br/>" tags in the following string
@@ -27,20 +46,21 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimiser
     .tooltip = Minimiser
 zen-panel-ui-gradient-generator-custom-color = Couleur personnalisée
-zen-panel-ui-gradient-generator-saved-message = Le dégradé a été enregistré avec succès !
 zen-copy-current-url-confirmation = URL actuelle copiée !
+zen-copy-current-url-as-markdown-confirmation = URL actuelle copiée en tant que Markdown !
 zen-general-cancel-label = 
     .label = Annuler
 zen-general-confirm = 
     .label = Confirmer
 zen-pinned-tab-replaced = L’adresse de l'onglet épinglé a été remplacée par l’adresse actuelle.
+zen-pinned-tab-url-edited = L'URL de l'onglet épinglé a été mise à jour !
+zen-pinned-tab-url-invalid = Cela ne ressemble pas à une URL valide.
+zen-pinned-tab-edit-url-title = Modifier l'URL épinglée
+zen-pinned-tab-edit-url-label = Entrer l'URL à laquelle cet onglet épinglé devrait pointer :
 zen-tabs-renamed = L’onglet a été renommé avec succès !
 zen-background-tab-opened-toast = Nouvel onglet ouvert en arrière-plan !
 zen-workspace-renamed-toast = L'espace de travail a été renommé avec succès !
-zen-library-sidebar-workspaces = 
-    .label = Espaces
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-split-view-limit-toast = Impossible d'ajouter d'autres panneaux à la vue fractionnée !
 zen-toggle-compact-mode-button = 
     .label = Mode compact
     .tooltiptext = Activer/Désactiver le mode compact
@@ -55,11 +75,15 @@ zen-icons-picker-emoji =
     .label = Émojis
 zen-icons-picker-svg = 
     .label = Icônes
+zen-emojis-picker-search = 
+    .placeholder = Rechercher des émojis
 urlbar-search-mode-zen_actions = Actions
 zen-site-data-settings = Paramètres
 zen-generic-manage = Gérer
 zen-generic-more = Plus
 zen-generic-next = Suivant
+zen-essentials-promo-label = Ajouter aux Essentials
+zen-essentials-promo-sublabel = Accédez à vos onglets favoris en un clic
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Autorisé
 zen-site-data-setting-block = Bloqué
@@ -94,3 +118,25 @@ zen-site-data-setting-site-protection = Protection contre le pistage
 
 zen-site-data-panel-feature-callout-title = Un nouvel endroit pour vos extensions, permissions et plus encore
 zen-site-data-panel-feature-callout-subtitle = Cliquez sur l'icône pour gérer les paramètres du site, afficher les infos de sécurité, accéder aux extensions et effectuer d'autres actions.
+zen-open-link-in-glance = 
+    .label = Ouvrir le lien dans Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Mise à jour terminée !
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Quoi de neuf dans { -brand-short-name } ?
+zen-sidebar-notification-updated-tooltip = 
+    .title = Voir les notes de version
+zen-sidebar-notification-donate-label = Soutenir { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Faire un don au projet
+zen-sidebar-notification-restart-safe-mode-label = Un problème est survenu ?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Redémarrer en mode de dépannage
+zen-window-sync-migration-dialog-title = Gardez vos fenêtres synchronisées
+zen-window-sync-migration-dialog-message = Zen synchronise désormais les fenêtres sur le même appareil, de sorte que les modifications apportées à une fenêtre sont instantanément répercutées sur les autres.
+zen-window-sync-migration-dialog-learn-more = En savoir plus
+zen-window-sync-migration-dialog-accept = J'ai compris
+zen-appmenu-new-blank-window = 
+    .label = Nouvelle fenêtre vide

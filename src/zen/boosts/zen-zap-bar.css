@@ -1,0 +1,94 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+:host {
+  grid-area: findbar;
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 0;
+  padding: 10px;
+
+  color: #d6d6d6;
+  background-color: #1d1b1b;
+  border-top: 1px solid #2f2b2b;
+}
+
+button {
+  appearance: none;
+  flex: 0 0 auto;
+
+  height: 30px;
+  min-width: 30px;
+  margin: 0;
+  padding: 0 10px;
+
+  border: none;
+  border-radius: 8px;
+
+  /* stylelint-disable-next-line property-no-unknown */
+  corner-shape: superellipse(var(--zen-squircle-value));
+
+  background: linear-gradient(0deg, #afafaf 0%, #e5e5e5 100%);
+  color: #1d1b1b;
+  font: inherit;
+  font-weight: bold;
+
+  transition:
+    0.1s filter ease-in-out,
+    scale 0.35s cubic-bezier(0.11, 1.6, 0.63, 1);
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &:active {
+    filter: brightness(0.8);
+    scale: 0.95;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #e5e5e5;
+    outline-offset: 1px;
+  }
+}
+
+.zen-zap-bar-list {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 6px;
+
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.zen-zap-bar-unzap {
+  width: 30px;
+  padding: 0;
+}
+
+.zen-zap-bar-helper {
+  padding-inline-start: 6px;
+  opacity: 0.8;
+  user-select: none;
+}
+
+:host([empty]) .zen-zap-bar-helper {
+  flex: 1 1 auto;
+  padding: 0;
+  text-align: center;
+}
+
+.zen-zap-bar-done {
+  padding: 0 12px;
+}

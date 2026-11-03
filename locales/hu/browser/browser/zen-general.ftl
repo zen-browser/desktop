@@ -5,17 +5,36 @@
 zen-panel-ui-current-profile-text = jelenlegi profil
 unified-extensions-description = A bővítmények a { -brand-short-name }-t új funkciókkal látják el.
 tab-context-zen-reset-pinned-tab = 
-    .label = Kitűzött lap visszaállítása
+    .label =
+        { $isEssential ->
+            [true] Alapvető lap visszaállítása
+           *[false] Rögzített lap visszaállítása
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Felvétel az alapvetőkbe ({ $num } / { $max } hely foglalt)
+    .label = Felvétel az alapvetőkbe
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } hely foglalt
 tab-context-zen-remove-essential = 
     .label = Eltávolítás az alapvetőkből
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Kitűzött lap cseréje a jelenlegi URL-el
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Címke módosítása...
+tab-context-zen-edit-icon = 
+    .label = Ikon módosítása...
 zen-themes-corrupted = A te { -brand-short-name } mod fájljaid károsodtak. Vissza lettek állítva az eredeti témára.
 zen-shortcuts-corrupted = A te { -brand-short-name } parancsikonok fájlod károsodott. Vissza lettek állítva az eredeti parancsikonokra.
 # note: Do not translate the "<br/>" tags in the following string
@@ -27,20 +46,21 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimalizálás
     .tooltip = Minimalizálás
 zen-panel-ui-gradient-generator-custom-color = Egyedi szín
-zen-panel-ui-gradient-generator-saved-message = Színátmenet sikeresen mentve!
 zen-copy-current-url-confirmation = Jelenlegi URL másolva!
+zen-copy-current-url-as-markdown-confirmation = Jelenlegi URL másolva Markdownként!
 zen-general-cancel-label = 
     .label = Mégsem
 zen-general-confirm = 
     .label = Megerősítés
 zen-pinned-tab-replaced = A rögzített lap URL címe helyébe az aktuális URL cím lépett!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = A lap sikeresen át lett nevezve!
 zen-background-tab-opened-toast = Új lap megnyitva!
 zen-workspace-renamed-toast = A munkakörnyezet sikeresen át lett nevezve!
-zen-library-sidebar-workspaces = 
-    .label = Környezetek
-zen-library-sidebar-mods = 
-    .label = Modok
+zen-split-view-limit-toast = Nem lehet további paneleket hozzáadni az osztott nézethez!
 zen-toggle-compact-mode-button = 
     .label = Kompakt mód
     .tooltiptext = Kompakt mód ki-/bekapcsolása
@@ -55,11 +75,15 @@ zen-icons-picker-emoji =
     .label = Emojik
 zen-icons-picker-svg = 
     .label = Ikonok
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Műveletek
 zen-site-data-settings = Beállítások
 zen-generic-manage = Kezelés
 zen-generic-more = Több
 zen-generic-next = Következő
+zen-essentials-promo-label = Felvétel az alapvetőkbe
+zen-essentials-promo-sublabel = Tartsd kedvenc lapjaid egy kattintásnyira
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Engedélyezve
 zen-site-data-setting-block = Blokkolva
@@ -94,3 +118,25 @@ zen-site-data-setting-site-protection = Nyomkövetés védelem
 
 zen-site-data-panel-feature-callout-title = Új hely az add-onok, engedélyek és egyéb elemek számára
 zen-site-data-panel-feature-callout-subtitle = Kattints az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.
+zen-open-link-in-glance = 
+    .label = Link megnyitása a bepillantóban
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Frissítés befejezve!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = { -brand-short-name } újdonságai
+zen-sidebar-notification-updated-tooltip = 
+    .title = Változások listájának megtekintése
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
+zen-sidebar-notification-restart-safe-mode-label = Valami elromlott?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Újraindítás biztonságos módban
+zen-window-sync-migration-dialog-title = Tartsad szinkronban az ablakaid
+zen-window-sync-migration-dialog-message = A Zen mostantól szinkronizálja az ugyanazon eszközön található ablakokat, így az egyik ablakban végzett módosítások azonnal megjelennek a többiben is.
+zen-window-sync-migration-dialog-learn-more = Tudj meg többet
+zen-window-sync-migration-dialog-accept = Értettem
+zen-appmenu-new-blank-window = 
+    .label = Új üres ablak

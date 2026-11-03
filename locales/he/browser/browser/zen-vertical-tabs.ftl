@@ -3,37 +3,45 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = כרטיסיות בצד ימין
+    .label = לשוניות בצד שמאל
     .accesskey = ר
 zen-toolbar-context-compact-mode = 
-    .label = מצב מכווץ
+    .label = מצב חסכוני
 zen-toolbar-context-compact-mode-enable = 
-    .label = הפעל מצב מכווץ
+    .label = הפעלת מצב חסכוני
     .accesskey = ג
 zen-toolbar-context-compact-mode-just-tabs = 
     .label = הסתרת סרגל צידי
 zen-toolbar-context-compact-mode-just-toolbar = 
     .label = הסתרת סרגל
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = הסתרת שניהם
+    .label = הסתרת שני הסרגלים
     .accesskey = י
+zen-toolbar-context-move-to-folder = 
+    .label = העברה לתיקייה...
+    .accesskey = צ
 zen-toolbar-context-new-folder = 
     .label = תיקייה חדשה
     .accesskey = מ
 sidebar-zen-expand = 
-    .label = הרחבת סרגל צדדי
+    .label = הרחבת סרגל הצד
 sidebar-zen-create-new = 
-    .label = הוספה...
+    .label = יצירת חדש...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] פנה ועבור ללשונית
-           *[other] פנה { $tabCount } לשוניות ועבור לראשונה
+            [one] כיבוי לשונית ומעבר ללשונית
+           *[other] כיבוי { $tabCount } לשוניות ומעבר ללשונית הראשונה
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] אפס והצמד לשונית
-           *[other] אפס והצמד { $tabCount } לשוניות
+            [one] איפוס והצמדת לשונית
+           *[other] איפוס והצמדת { $tabCount } לשוניות
         }
-tab-reset-pin-label = חזור לקישור המוצמד
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

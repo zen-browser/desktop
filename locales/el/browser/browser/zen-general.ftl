@@ -5,17 +5,36 @@
 zen-panel-ui-current-profile-text = τρέχον προφίλ
 unified-extensions-description = Οι επεκτάσεις χρησιμοποιούνται για να φέρουν περισσότερη επιπλέον λειτουργικότητα στο { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Επαναφορά Καρφιτσωμένης Καρτέλας
+    .label =
+        { $isEssential ->
+            [true] Επαναφορά Απαραίτητης Καρτέλας
+           *[false] Επαναφορά Καρφιτσωμένης Καρτέλας
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Προσθήκη στα Απαραίτητα ({ $num } / { $max } θέσεις γεμάτες)
+    .label = Προσθήκη στα Απαραίτητα
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } γεμισμένες θέσεις
 tab-context-zen-remove-essential = 
     .label = Αφαίρεση από Απαραίτητα
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Αντικατάσταση καρφιτσωμένου URL με το τρέχον
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Αλλαγή Ετικέτας...
+tab-context-zen-edit-icon = 
+    .label = Αλλαγή Εικονιδίου...
 zen-themes-corrupted = Το αρχείο { -brand-short-name } mods είναι κατεστραμμένο. Έχει γίνει επαναφορά στο προεπιλεγμένο θέμα.
 zen-shortcuts-corrupted = Το αρχείο συντομεύσεων σας { -brand-short-name } είναι κατεστραμμένο. Έχει γίνει επαναφορά στις προεπιλεγμένες συντομεύσεις.
 # note: Do not translate the "<br/>" tags in the following string
@@ -27,23 +46,24 @@ pictureinpicture-minimize-btn =
     .aria-label = Ελαχιστοποίηση
     .tooltip = Ελαχιστοποίηση
 zen-panel-ui-gradient-generator-custom-color = Προσαρμοσμένο Χρώμα
-zen-panel-ui-gradient-generator-saved-message = Επιτυχής αποθήκευση της διαβάθμισης!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Αντιγράφηκε το τρέχον URL!
+zen-copy-current-url-as-markdown-confirmation = Η τωρινή διεύθυνσή αντιγράφηκε ως Markdown!
 zen-general-cancel-label = 
     .label = Ακύρωση
 zen-general-confirm = 
     .label = Επιβεβαίωση
 zen-pinned-tab-replaced = Το URL της καρφιτσωμένης καρτέλας έχει αντικατασταθεί από το τρέχον URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Η καρτέλα μετονομάστηκε επιτυχώς!
 zen-background-tab-opened-toast = Άνοιξε νέα καρτέλα στο παρασκήνιο!
 zen-workspace-renamed-toast = Ο χώρος εργασίας μετονομάστηκε επιτυχώς!
-zen-library-sidebar-workspaces = 
-    .label = Χώροι
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Συμπαγής Λειτουργία
+    .tooltiptext = Εναλλαγή Συμπαγούς Λειτουργίας
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -52,45 +72,71 @@ zen-close-label = Κλείσιμο
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Αναζήτηση...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Εμότζι
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
+    .label = Εικονίδια
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
+urlbar-search-mode-zen_actions = Ενέργειες
+zen-site-data-settings = Ρυθμίσεις
+zen-generic-manage = Διαχείριση
+zen-generic-more = Περισσότερα
+zen-generic-next = Επόμενο
+zen-essentials-promo-label = Προσθήκη στα Απαραίτητα
+zen-essentials-promo-sublabel = Κρατήστε τις αγαπημένες σας καρτέλες ένα κλικ μακριά
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Επιτρέπεται
+zen-site-data-setting-block = Αποκλείστηκε
+zen-site-data-protections-enabled = Ενεργό
+zen-site-data-protections-disabled = Ανενεργό
+zen-site-data-setting-cross-site = Cookies Mεταξύ Iστότοπων
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Επέκταση
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Ασφαλές
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Μη Ασφαλές
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Διαχείριση Επεκτάσεων
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Προσθήκη Επεκτάσεων
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Όλες Οι Ρυθμίσεις Ιστοσελίδας
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Κοινοποίηση Αυτή Της Σελίδας
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Είσοδος Σε Λειτουργία Ανάγνωσης
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Λήψη στιγμιότυπου οθόνης
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Σελιδοδείκτης στη Σελίδα
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Αντιγραφή URL
+zen-site-data-setting-site-protection = Προστασία Ανίχνευσης
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Ένα νέο σπίτι για επεκτάσεις, άδειες, και άλλα
+zen-site-data-panel-feature-callout-subtitle = Κανε κλικ στο εικονίδιο για διαχείριση ρυθμίσεων ιστότοπων, εμφάνιση πληροφοριών ασφαλείας, πρόσβαση σε επεκτάσεις, και εκτέλεση συχνών ενεργειών.
+zen-open-link-in-glance = 
+    .label = Άνοιγμα συνδέσμου με ματιά
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Η Ενημέρωση Ολοκληρώθηκε!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Τι νέο υπάρχει στο { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Προβολή Σημειώσεων Έκδοσης
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
+zen-sidebar-notification-restart-safe-mode-label = Χάλασε κάτι;
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Επανεκκίνηση σε Ασφαλή Λειτουργία
+zen-window-sync-migration-dialog-title = Κρατήστε τα παράθυρα σας συγχρονισμένα
+zen-window-sync-migration-dialog-message = Το Zen άρα στην ίδια συσκευή, άρα αλλαγές σε ένα παράθυρο τώρα αντικατροπτίζονται στα άλλα άμεσα.
+zen-window-sync-migration-dialog-learn-more = Περισσότερα
+zen-window-sync-migration-dialog-accept = Κατάλαβα
+zen-appmenu-new-blank-window = 
+    .label = Νέο κενό παράθυρο

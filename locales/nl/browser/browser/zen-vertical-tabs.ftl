@@ -17,8 +17,11 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Beide verbergen
     .accesskey = U
+zen-toolbar-context-move-to-folder = 
+    .label = Verplaats naar map...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Nieuwe map
     .accesskey = N
 sidebar-zen-expand = 
     .label = Zijbalk uitklappen
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Tabblad resetten en vastmaken
            *[other] { $tabCount } tabbladen resetten en vastmaken
         }
-tab-reset-pin-label = Terug naar vastgemaakte URL
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Terug naar vastgezette URL
+        [zen-default-pinned-cmd] Afsplitsen van vastgezette tabblad
+       *[other] { $tabSubtitle }
+    }

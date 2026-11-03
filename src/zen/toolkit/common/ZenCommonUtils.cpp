@@ -25,10 +25,10 @@ using WindowGlobalChild = mozilla::dom::WindowGlobalChild;
 
 namespace {
 /**
-  * @brief Helper function to fetch the most recent window proxy.
-  * @param aWindow The window to query.
-  * @returns The most recent window.
-  */
+ * @brief Helper function to fetch the most recent window proxy.
+ * @param aWindow The window to query.
+ * @returns The most recent window.
+ */
 static nsresult GetMostRecentWindowProxy(mozIDOMWindowProxy** aWindow) {
   nsresult rv;
   nsCOMPtr<nsIWindowMediator> med(
@@ -40,9 +40,9 @@ static nsresult GetMostRecentWindowProxy(mozIDOMWindowProxy** aWindow) {
   return NS_ERROR_FAILURE;
 }
 /**
-  * @brief Helper function to query and get a reference to the window.
-  * @param aWindow The window to query.
-  */
+ * @brief Helper function to query and get a reference to the window.
+ * @param aWindow The window to query.
+ */
 static nsCOMPtr<mozIDOMWindowProxy> GetMostRecentWindow() {
   nsCOMPtr<mozIDOMWindowProxy> aWindow;
   nsresult rv = GetMostRecentWindowProxy(getter_AddRefs(aWindow));
@@ -51,12 +51,12 @@ static nsCOMPtr<mozIDOMWindowProxy> GetMostRecentWindow() {
   }
   return aWindow;
 }
-}
+}  // namespace
 
 using mozilla::dom::WindowGlobalChild;
 
 #define NS_ZEN_CAN_SHARE_FAILURE() \
-  *canShare = false; \
+  *canShare = false;               \
   return NS_OK;
 
 NS_IMETHODIMP
@@ -80,28 +80,29 @@ ZenCommonUtils::CanShare(bool* canShare) {
 }
 
 NS_IMETHODIMP
-ZenCommonUtils::Share(nsIURI* url, const nsACString& title, const nsACString& text, 
-    uint32_t aX, uint32_t aY, uint32_t aWidth, uint32_t aHeight) {
+ZenCommonUtils::Share(nsIURI* url, const nsACString& title,
+                      const nsACString& text, uint32_t aX, uint32_t aY,
+                      uint32_t aWidth, uint32_t aHeight) {
   auto aWindow = GetMostRecentWindow();
   if (!aWindow) {
     return NS_ERROR_NOT_AVAILABLE;
   }
   if (!IsSharingSupported()) {
-    return NS_OK; // We don't want to throw an error here
+    return NS_OK;  // We don't want to throw an error here
   }
   return ShareInternal(aWindow, url, title, text, aX, aY, aWidth, aHeight);
 }
 
-nsresult ZenCommonUtils::ShareInternal(nsCOMPtr<mozIDOMWindowProxy>& aWindow, nsIURI* url,
-    const nsACString& title, const nsACString& text, uint32_t aX, uint32_t aY,
-    uint32_t aWidth, uint32_t aHeight) {
+nsresult ZenCommonUtils::ShareInternal(nsCOMPtr<mozIDOMWindowProxy>& aWindow,
+                                       nsIURI* url, const nsACString& title,
+                                       const nsACString& text, uint32_t aX,
+                                       uint32_t aY, uint32_t aWidth,
+                                       uint32_t aHeight) {
   // We shoud've had done pointer checks before, so we can assume
   // aWindow is valid.
 #ifdef NS_ZEN_CAN_SHARE_NATIVE
-  return ::nsZenNativeShareInternal::ShowNativeDialog(
-    aWindow, url, title, text, 
-    aX, aY, aWidth, aHeight
-  );
+  return ::nsZenNativeShareInternal::ShowNativeDialog(aWindow, url, title, text,
+                                                      aX, aY, aWidth, aHeight);
 #else
   return NS_ERROR_NOT_IMPLEMENTED;
 #endif
@@ -118,4 +119,4 @@ auto ZenCommonUtils::IsSharingSupported() -> bool {
 #endif
 }
 
-} // namespace: zen
+}  // namespace zen

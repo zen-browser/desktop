@@ -7,17 +7,32 @@ on:
   workflow_call:
     inputs:
       build-version:
-        description: 'The version to build'
+        description: "The version to build"
         required: true
         type: string
       profile-data-path-archive:
-        description: 'The path to the zip archive containing the profile data'
+        description: "The path to the zip archive containing the profile data"
         required: false
         type: string
       release-branch:
-        description: 'The branch to build'
+        description: "The branch to build"
         required: true
         type: string
+      pgo-cache-key-prefix:
+        description: "Cache key prefix for the generated profile data"
+        required: false
+        type: string
+        default: ""
+      cs-pgo:
+        description: "Collect a context-sensitive profile and merge it with the base one"
+        required: false
+        type: boolean
+        default: false
+      instrumented-artifact:
+        description: "Artifact holding the instrumented build to profile"
+        required: false
+        type: string
+        default: "zen-windows-profile-data-and-jarlog.zip"
 
 jobs:
   windows-profile-build:
@@ -27,7 +42,6 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-
     runs-on: ${{ inputs.release-branch == 'release' && 'windows-latest' || 'windows-latest' }}
 
     steps:
@@ -37,12 +51,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Setup Git
         run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install Surfer
         run: npm i -g @zen-browser/surfer
@@ -55,13 +69,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: C:\artifact
-          name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-zen-windows-profile-data-and-jarlog.zip
+          name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-${{ inputs.instrumented-artifact }}
+
+      - name: Download the base profile data
+        if: ${{ matrix.arch == 'x86_64' && inputs.cs-pgo }}
+        uses: actions/download-artifact@v4
+        with:
+          path: C:\base
+          name: windows-base-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
 
       - name: Unpack artifact
         if: ${{ matrix.arch == 'x86_64' }}
         run: |
           cd C:\artifact
-          ls
           Expand-Archive -Path .\${{ inputs.profile-data-path-archive }} -DestinationPath C:\artifact
           ls
 
@@ -93,7 +113,8 @@ jobs:
           echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
-          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
+          echo './mach python ../scripts/download_pgo_extended_corpus.py' '' >> mozilla-build-run.sh
+          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe --extended-corpus ./pgo-extended-corpus --' '' >> mozilla-build-run.sh
           C:\mozilla-build\start-shell.bat $workspace_dir_current\mozilla-build-run.sh
 
       - name: Move profile data
@@ -104,6 +125,32 @@ jobs:
           mv engine/merged.profdata merged.profdata
           mv engine/en-US.log en-US.log
 
+      - name: Merge the context-sensitive profile into the base profile
+        if: ${{ matrix.arch == 'x86_64' && inputs.cs-pgo }}
+        shell: bash
+        env:
+          LLVM_PROFDATA: /c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe
+        run: |
+          set -euo pipefail
+          mv merged.profdata cs.profdata
+          "$LLVM_PROFDATA" show --showcs cs.profdata > cs-profile-summary.txt
+          grep -Eq "Total functions: [1-9][0-9]*" cs-profile-summary.txt
+          "$LLVM_PROFDATA" merge /c/base/merged.profdata cs.profdata -o merged.profdata
+
+      - name: Stage profile data where a build expects it
+        if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
+        shell: bash
+        run: |
+          mkdir -p ~/artifact
+          cp merged.profdata en-US.log ~/artifact/
+
+      - name: Cache profile data
+        if: ${{ matrix.arch == 'x86_64' && inputs.pgo-cache-key-prefix != '' }}
+        uses: actions/cache/save@v5
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
+          path: ~/artifact
+
       - name: Upload artifacts
         if: ${{ matrix.arch == 'x86_64' }}
         uses: actions/upload-artifact@v4
@@ -112,4 +159,4 @@ jobs:
           path: |
             merged.profdata
             en-US.log
-          name: windows-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
+          name: ${{ inputs.cs-pgo && 'windows-cs-profdata-' || 'windows-profdata-' }}${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}

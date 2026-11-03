@@ -4,18 +4,18 @@ on:
   workflow_call:
     inputs:
       build-version:
-        description: 'The version to build'
+        description: "The version to build"
         required: true
         type: string
       release-branch:
-        description: 'The branch to build'
+        description: "The branch to build"
         required: true
         type: string
 
 jobs:
   mac-build:
     name: Unify macOS (Universal)
-    runs-on: 'macos-26'
+    runs-on: "macos-26"
 
     strategy:
       fail-fast: false
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -38,8 +38,8 @@ jobs:
 
       - name: Setup Git
         run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install system dependencies
         run: |
@@ -60,7 +60,7 @@ jobs:
 
           brew install watchman
 
-          cargo install apple-codesign
+          cargo install apple-codesign --locked --force
 
       - name: Force usage of gnu-tar
         run: |
@@ -92,10 +92,22 @@ jobs:
       - name: Populate mozconfig
         env:
           SURFER_MOZCONFIG_ONLY: true
+          ZEN_RELEASE: 1
+          ZEN_GA_DISABLE_PGO: true
         run: |
           npm run build
           cd engine
           ./mach configure
+
+      - name: Build host mar tool
+        run: |
+          set -ex
+          cd engine
+          echo "ac_add_options --enable-project=tools/update-packaging" > mar-mozconfig
+          echo "mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-mar-tools" >> mar-mozconfig
+          MOZCONFIG=$PWD/mar-mozconfig ./mach build -v
+          cp obj-mar-tools/dist/host/bin/mar ../zen-macos-host-mar
+          rm -rf obj-mar-tools mar-mozconfig
 
       - name: Download x86_64 DMG from artifacts
         uses: actions/download-artifact@v4
@@ -211,11 +223,6 @@ jobs:
             --wait
           xcrun stapler staple "zen.macos-universal.dmg"
 
-      - name: Download host mar
-        uses: actions/download-artifact@v4
-        with:
-          name: zen-macos-host-mar
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -231,6 +238,7 @@ jobs:
       - name: Package for mar
         env:
           JUST_MAR: true
+          ZEN_GA_DISABLE_PGO: true
         run: |
           # we don't need it anymore
           set -ex

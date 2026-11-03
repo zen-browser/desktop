@@ -1,0 +1,14 @@
+diff --git a/image/AutoRestoreSVGState.h b/image/AutoRestoreSVGState.h
+index b3b63acd813d310c1ce63c761f361d07782b149f..4ec4b74fff0fde2af793cc821353783c180a7f6f 100644
+--- a/image/AutoRestoreSVGState.h
++++ b/image/AutoRestoreSVGState.h
+@@ -52,6 +52,9 @@ class MOZ_STACK_CLASS AutoRestoreSVGState final {
+         }
+         return dom::PrefersColorSchemeOverride::None;
+       }());
++      pc->SetZenBoostsOverride(aSVGContext.GetZenBoostsAccent(),
++                               aSVGContext.GetZenBoostsComplementaryRotation(),
++                               aSVGContext.GetZenBoostsInverted());
+     }
+ 
+     // Set context paint (if specified) on the document:

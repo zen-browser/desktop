@@ -1,0 +1,18 @@
+diff --git a/devtools/client/locales/en-US/toolbox.properties b/devtools/client/locales/en-US/toolbox.properties
+index d4f986b024d3505b8c151f8e0166a20ff1862c5d..b2fb69e8897abdacb090d5a6faca203656e7cd44 100644
+--- a/devtools/client/locales/en-US/toolbox.properties
++++ b/devtools/client/locales/en-US/toolbox.properties
+@@ -66,11 +66,11 @@ toolbox.androidElementPicker.mac.tooltip=Pick an element from the Android phone
+ 
+ # LOCALIZATION NOTE (toolbox.elementPicker.key)
+ # Key shortcut used to toggle the element picker.
+-toolbox.elementPicker.key=CmdOrCtrl+Shift+C
++toolbox.elementPicker.key=CmdOrCtrl+Shift+L
+ 
+ # LOCALIZATION NOTE (toolbox.elementPicker.mac.key)
+ # Key shortcut used to toggle the element picker for macOS.
+-toolbox.elementPicker.mac.key=Cmd+Opt+C
++toolbox.elementPicker.mac.key=Cmd+Opt+L
+ 
+ # LOCALIZATION NOTE (toolbox.viewCssSourceInStyleEditor.label)
+ # Used as a message in either tooltips or contextual menu items to open the

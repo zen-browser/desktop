@@ -1,0 +1,21 @@
+diff --git a/browser/themes/shared/places/organizer-shared.css b/browser/themes/shared/places/organizer-shared.css
+index fe6b79cfc2453927c324a044bd62040f866def95..a93813c76ba3633c365a739289b39187c0d1e881 100644
+--- a/browser/themes/shared/places/organizer-shared.css
++++ b/browser/themes/shared/places/organizer-shared.css
+@@ -52,6 +52,16 @@
+   }
+ }
+ 
++#places .zenEditBMPanel_fieldContainer {
++  display: contents;
++}
++
++#places label[control="editBMPanel_workspacesSelectorExpander"],
++#places #editBMPanel_workspaceDropdown,
++#places #editBMPanel_workspaceList {
++  display: none;
++}
++
+ #editBMPanel_itemsCountText {
+   grid-column: auto / span 2;
+   justify-self: center;

@@ -5,4 +5,6 @@
 *.patch linguist-language=C++
 *.d.ts linguist-language=TypeScript
 
-src/zen/tests/*.js linguist-language=Test
+src/zen/tests/** linguist-language=C++
+
+*.patch text eol=lf

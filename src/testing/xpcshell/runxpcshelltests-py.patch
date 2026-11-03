@@ -1,0 +1,14 @@
+diff --git a/testing/xpcshell/runxpcshelltests.py b/testing/xpcshell/runxpcshelltests.py
+index 403401613189ffb758037850dc6bbb1d55f194ab..cad28e245155eb54775e551885532026e56c5fa9 100755
+--- a/testing/xpcshell/runxpcshelltests.py
++++ b/testing/xpcshell/runxpcshelltests.py
+@@ -2275,6 +2275,9 @@ class XPCShellTests:
+         appDirKey = None
+         if "appname" in self.mozInfo:
+             appDirKey = self.mozInfo["appname"] + "-appdir"
++            if appDirKey == "zen-appdir":
++                # Inherited manifests use firefox-appdir.
++                appDirKey = "firefox-appdir"
+ 
+         # We have to do this before we run tests that depend on having the node
+         # http/2 server.

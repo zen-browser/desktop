@@ -1,0 +1,13 @@
+diff --git a/layout/svg/FilterInstance.cpp b/layout/svg/FilterInstance.cpp
+index 499f824aaeed6ac014974ff11848cf40ac0bba09..bec724baf0ae97cd9dea59a1609d8ea9baaad715 100644
+--- a/layout/svg/FilterInstance.cpp
++++ b/layout/svg/FilterInstance.cpp
+@@ -1681,7 +1681,7 @@ nsresult FilterInstance::BuildPrimitivesForFilter(
+   // If we don't have a frame, use opaque black for shadows with unspecified
+   // shadow colors.
+   nscolor shadowFallbackColor =
+-      mTargetFrame ? mTargetFrame->StyleText()->mColor.ToColor()
++      mTargetFrame ? mTargetFrame->StyleText()->mColor.ToColor(mTargetFrame)
+                    : NS_RGB(0, 0, 0);
+ 
+   CSSFilterInstance cssFilterInstance(aFilter, shadowFallbackColor,

@@ -1,0 +1,12 @@
+[DEFAULT]
+support-files = [
+  "dummy_page.html",
+  "scroll-to-text-fragment-from-browser-chrome-target.html",
+]
+prefs = ["dom.text_fragments.enabled=true"]
+
+["browser_scroll-to-text-fragment-from-browser-chrome.js"]
+
+["browser_scroll-to-text-fragment-from-context-menu.js"]
+
+["browser_scroll-to-text-fragment-from-window-open.js"]

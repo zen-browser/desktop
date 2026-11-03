@@ -1,0 +1,22 @@
+diff --git a/.stylelintrc.js b/.stylelintrc.js
+index 19c7310d7471d55c52dca24ca8095f798fb44d60..d76a027778ddd799fe3898730f48d9eebf452f65 100644
+--- a/.stylelintrc.js
++++ b/.stylelintrc.js
+@@ -67,7 +67,7 @@ module.exports = {
+     ],
+ 
+     "max-nesting-depth": [
+-      3,
++      6,
+       {
+         ignore: ["blockless-at-rules"],
+       },
+@@ -281,7 +281,7 @@ module.exports = {
+     "stylelint-plugin-mozilla/media-query-no-invalid": true,
+     "stylelint-plugin-mozilla/no-base-design-tokens": true,
+     "stylelint-plugin-mozilla/no-has-selector": true,
+-    "stylelint-plugin-mozilla/use-design-tokens": true,
++    "stylelint-plugin-mozilla/use-design-tokens": null,
+     "stylelint-plugin-mozilla/use-paired-color-tokens": true,
+   },
+ 

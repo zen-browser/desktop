@@ -5,92 +5,138 @@
 zen-panel-ui-current-profile-text = nykyinen profiili
 unified-extensions-description = Laajennuksia käytetään tuomaan enemmän ylimääräisiä toimintoja { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Nollaa Kiinnitetty Välilehti
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials ({ $num } / { $max } slots filled)
+    .label = Lisää olennaisiin
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } täytetty paikka
 tab-context-zen-remove-essential = 
     .label = Poista olennaisista
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Korvaa kiinnitetty URL-osoite nykyisellä
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = { -brand-short-name } modejasi tiedosto on vioittunut. Ne on palautettu oletusteemaan.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
+zen-shortcuts-corrupted = { -brand-short-name } Oikotietä sisältävä tiedosto on korruptoitunut. Ne on palautettu oletus oikoteihin.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
-    Try opening a new tab to see the new URL bar in action!
-zen-disable = Disable
+    Uusi URL-palkki on otettu käyttöön, uusia välilehtisivuja ei enää tarvita.<br/><br/>
+    Kokeile avata uusi välilehti nähdäksesi uuden URL-palkin toiminnassa!
+zen-disable = Poista käytöstä
 pictureinpicture-minimize-btn = 
-    .aria-label = Minimize
-    .tooltip = Minimize
+    .aria-label = Minimoi
+    .tooltip = Minimoi
 zen-panel-ui-gradient-generator-custom-color = Muokattu Väri
-zen-panel-ui-gradient-generator-saved-message = Kaltevuus tallennettu onnistuneesti!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Nykyinen URL-osoite kopioitu!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = Peruuta
 zen-general-confirm = 
-    .label = Confirm
+    .label = Vahvista
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
-zen-tabs-renamed = Tab has been successfully renamed!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
-zen-library-sidebar-workspaces = 
-    .label = Spaces
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-tabs-renamed = Välilehti on nimetty uudelleen!
+zen-background-tab-opened-toast = Uusi taustavälilehti avattu!
+zen-workspace-renamed-toast = Työtila on nimetty uudelleen!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Kompakti Tila
+    .tooltiptext = Ota käyttöön Kompakti tila
 
 # note: Do not translate the "<br/>" tags in the following string
 
-zen-learn-more-text = Learn More
-zen-close-label = Close
+zen-learn-more-text = Lue Lisää
+zen-close-label = Sulje
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = Hae...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Emojit
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
+    .label = Kuvakkeet
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
+urlbar-search-mode-zen_actions = Toiminnot
+zen-site-data-settings = Asetukset
+zen-generic-manage = Hallitse
+zen-generic-more = Lisää
+zen-generic-next = Seuraava
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Sallittu
+zen-site-data-setting-block = Estetty
+zen-site-data-protections-enabled = Käytössä
+zen-site-data-protections-disabled = Pois käytöstä
+zen-site-data-setting-cross-site = Sivuston välinen eväste
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Laajennus
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Turvallinen
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Ei turvallinen
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Hallita Laajennuksia
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Lisää Laajennuksia
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Kaikki Sivuston Asetukset
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Jaa Tämä Sivu
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Siirry lukutilaan
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Ota kuvakaappaus
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Lisää Tämä Sivu Kirjanmerkkeihin
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Kopioi URL
+zen-site-data-setting-site-protection = Seuranta Suojaus
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Uusi koti lisäosille, käyttöoikeuksille ja paljon muuta
+zen-site-data-panel-feature-callout-subtitle = Klikkaa kuvaketta hallitaksesi sivuston asetuksia, tarkastella tietoturvatietoja, käyttää laajennuksia ja suorittaa yhteisiä toimintoja.
+zen-open-link-in-glance = 
+    .label = Avaa linkki vilkaisussa
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Päivitys valmis!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Mitä uutta { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Katso Julkaisutiedot
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
+zen-sidebar-notification-restart-safe-mode-label = Jotain rikki?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Käynnistä uudelleen vianmääritystilassa
+zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-accept = Got It
+zen-appmenu-new-blank-window = 
+    .label = New blank window

@@ -2,48 +2,68 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Aktuelles Profil
-unified-extensions-description = Erweiterungen werden verwendet, um { -brand-short-name } zusätzliche Funktionen hinzuzufügen.
+zen-panel-ui-current-profile-text = Dein aktuelles Profil
+unified-extensions-description = Mit Erweiterungen kannst du { -brand-short-name } um zusätzliche Funktionen erweitern.
 tab-context-zen-reset-pinned-tab = 
-    .label = Angepinnten Tab zurücksetzen
+    .label =
+        { $isEssential ->
+            [true] Essential-Tab zurücksetzen
+           *[false] Angehefteten Tab zurücksetzen
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Zu Essentials hinzufügen ({ $num } / { $max } Plätze belegt)
+    .label = Zu Essentials hinzufügen
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } Plätzen belegt
 tab-context-zen-remove-essential = 
     .label = Aus Essentials entfernen
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Essentials URL bearbeiten
+           *[false] Angeheftete URL bearbeiten
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Angepinnte URL durch aktuelle ersetzen
+    .label = Mit aktueller URL ersetzen
     .accesskey = C
-zen-themes-corrupted = Ihre { -brand-short-name } Mods-Datei ist beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
-zen-shortcuts-corrupted = Ihre { -brand-short-name } Tastenkürzel-Datei ist beschädigt. Sie wurde auf die Standard-Tastenkürzel zurückgesetzt.
+tab-context-zen-edit-pinned-url = 
+    .label = Bearbeiten...
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Titel ändern...
+tab-context-zen-edit-icon = 
+    .label = Symbol ändern...
+zen-themes-corrupted = Deine { -brand-short-name }-Mods-Datei ist beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
+zen-shortcuts-corrupted = Deine { -brand-short-name }-Tastenkombinationsdatei ist beschädigt. Sie wurde auf die Standard-Tastenkombinationen zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Die neue Adressleiste wurde aktiviert und macht neue Tab-Seiten überflüssig.<br/><br/>
-    Öffnen Sie einen neuen Tab, um die neue Adressleiste in Aktion zu sehen!
+    Öffne einfach einen neuen Tab, um die neue Adressleiste auszuprobieren!
 zen-disable = Deaktivieren
 pictureinpicture-minimize-btn = 
     .aria-label = Minimieren
     .tooltip = Minimieren
-zen-panel-ui-gradient-generator-custom-color = Benutzerdefinierte Farbe
-zen-panel-ui-gradient-generator-saved-message = Farbverlauf erfolgreich gespeichert!
-zen-copy-current-url-confirmation = Aktuelle URL kopiert!
+zen-panel-ui-gradient-generator-custom-color = Eigene Farbe
+zen-copy-current-url-confirmation = URL kopiert!
+zen-copy-current-url-as-markdown-confirmation = URL als Markdown kopiert!
 zen-general-cancel-label = 
     .label = Abbrechen
 zen-general-confirm = 
     .label = Bestätigen
-zen-pinned-tab-replaced = Die URL des angepinnten Tabs wurde durch die aktuelle URL ersetzt!
-zen-tabs-renamed = Tab wurde erfolgreich umbenannt!
-zen-background-tab-opened-toast = Neuer Hintergrund-Tab geöffnet!
-zen-workspace-renamed-toast = Arbeitsbereich wurde erfolgreich umbenannt!
-zen-library-sidebar-workspaces = 
-    .label = Arbeitsbereiche
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-pinned-tab-replaced = Die URL des angehefteten Tabs wurde aktualisiert!
+zen-pinned-tab-url-edited = Angeheftete URL wurde aktualisiert!
+zen-pinned-tab-url-invalid = Das sieht nicht nach einer gültigen URL aus.
+zen-pinned-tab-edit-url-title = Angeheftete URL bearbeiten
+zen-pinned-tab-edit-url-label = Gib die URL an, auf die der angeheftete Tab verweisen soll:
+zen-tabs-renamed = Tab umbenannt!
+zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
+zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
+zen-split-view-limit-toast = Diese Split View kann keine weiteren Panels aufnehmen!
 zen-toggle-compact-mode-button = 
     .label = Kompakter Modus
-    .tooltiptext = Compact Mode umschalten
+    .tooltiptext = Kompakten Modus umschalten
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -55,17 +75,21 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Symbole
+zen-emojis-picker-search = 
+    .placeholder = Emojis durchsuchen
 urlbar-search-mode-zen_actions = Aktionen
 zen-site-data-settings = Einstellungen
 zen-generic-manage = Verwalten
 zen-generic-more = Mehr
 zen-generic-next = Weiter
+zen-essentials-promo-label = Zu Essentials hinzufügen
+zen-essentials-promo-sublabel = Deine Lieblings-Tabs, immer nur einen Klick entfernt
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Erlaubt
 zen-site-data-setting-block = Blockiert
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site-Cookie
+zen-site-data-protections-enabled = Aktiviert
+zen-site-data-protections-disabled = Deaktiviert
+zen-site-data-setting-cross-site = Seitenübergreifendes Cookie
 zen-site-data-security-info-extension = 
     .label = Erweiterung
 zen-site-data-security-info-secure = 
@@ -79,18 +103,40 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Alle Website-Einstellungen
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Diese Seite teilen
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Lesemodus aktivieren
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Bildschirmfoto erstellen
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Diese Seite als Lesezeichen speichern
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL kopieren
 zen-site-data-setting-site-protection = Tracking-Schutz
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = Eine neue Heimat für Add-ons, Berechtigungen und mehr
-zen-site-data-panel-feature-callout-subtitle = Klicken Sie auf das Symbol, um Website-Einstellungen zu verwalten, Sicherheitsinformationen anzuzeigen, auf Erweiterungen zuzugreifen und häufige Aktionen auszuführen.
+zen-site-data-panel-feature-callout-title = Hier findest du Add-ons, Berechtigungen und mehr
+zen-site-data-panel-feature-callout-subtitle = Klicke auf das Symbol, um Website-Einstellungen anzupassen, Sicherheitsinfos anzuzeigen, auf Erweiterungen zuzugreifen und häufige Aktionen auszuführen.
+zen-open-link-in-glance = 
+    .label = Link in Schnellansicht öffnen
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Update abgeschlossen!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Was in { -brand-short-name } neu ist
+zen-sidebar-notification-updated-tooltip = 
+    .title = Versionshinweise anzeigen
+zen-sidebar-notification-donate-label = Unterstütze { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Spende für das Projekt
+zen-sidebar-notification-restart-safe-mode-label = Funktioniert etwas nicht?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Im abgesicherten Modus neu starten
+zen-window-sync-migration-dialog-title = Halte deine Fenster synchron
+zen-window-sync-migration-dialog-message = Zen synchronisiert jetzt Fenster auf demselben Gerät, sodass Änderungen in einem Fenster sofort in den anderen übernommen werden.
+zen-window-sync-migration-dialog-learn-more = Mehr erfahren
+zen-window-sync-migration-dialog-accept = Verstanden
+zen-appmenu-new-blank-window = 
+    .label = Neues leeres Fenster

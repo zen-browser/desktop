@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const { openGlanceOnTab: internalGlanceHandle } = ChromeUtils.importESModule(
-  'resource://testing-common/GlanceTestUtils.sys.mjs'
+  "resource://testing-common/GlanceTestUtils.sys.mjs"
 );
 
 function openGlanceOnTab(callback, close = true) {

@@ -1,0 +1,12 @@
+diff --git a/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs b/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
+index e0b78c29ad081e6eb541eb2aeae4cb6d5cbb9b9b..ae56a624523bee66bc1d1343b455fc7cb65ebef1 100644
+--- a/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
++++ b/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
+@@ -321,6 +321,7 @@ export const AIWindow = {
+    * @param {boolean} [options.isToggling]
+    */
+   _updateHamburgerMenuPosition(win, { isToggling = false } = {}) {
++    return;
+     const hamburgerMenu = win.document.getElementById("PanelUI-button");
+     const targetToolbar = win.document.getElementById(
+       this.verticalTabsEnabled ? "nav-bar" : "TabsToolbar"

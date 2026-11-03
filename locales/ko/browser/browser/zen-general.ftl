@@ -5,17 +5,36 @@
 zen-panel-ui-current-profile-text = 현재 프로필
 unified-extensions-description = 확장 프로그램은 { -brand-short-name }에 더 많은 추가 기능을 제공하는 데 사용됩니다.
 tab-context-zen-reset-pinned-tab = 
-    .label = 고정된 탭 초기화
+    .label =
+        { $isEssential ->
+            [true] 에센셜 탭 초기화
+           *[false] 고정된 탭 초기화
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = 에센셜에 추가 ({ $num } / { $max } 개 추가됨)
+    .label = 에센셜에 추가
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max }개 추가됨
 tab-context-zen-remove-essential = 
     .label = 에센셜에서 제거하기
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] 에센셜 URL 편집
+           *[false] 고정된 탭 URL 편집
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 고정된 URL을 현재 URL로 변경
+    .label = 현재 URL로 변경
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = 편집…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = 라벨 편집...
+tab-context-zen-edit-icon = 
+    .label = 아이콘 편집...
 zen-themes-corrupted = { -brand-short-name } 모드 파일이 손상되었습니다. 기본 테마로 재설정되었습니다.
 zen-shortcuts-corrupted = { -brand-short-name } 단축키 파일이 손상되었습니다. 기본 단축키 설정으로 재설정 되었습니다.
 # note: Do not translate the "<br/>" tags in the following string
@@ -27,20 +46,21 @@ pictureinpicture-minimize-btn =
     .aria-label = 최소화
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
-zen-panel-ui-gradient-generator-saved-message = 성공적으로 그라데이션을 저장했습니다!
 zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
+zen-copy-current-url-as-markdown-confirmation = 현재 URL을 마크다운으로 복사했습니다!
 zen-general-cancel-label = 
     .label = 취소
 zen-general-confirm = 
     .label = 확인
 zen-pinned-tab-replaced = 고정 URL이 현재 URL로 변경되었습니다!
+zen-pinned-tab-url-edited = 고정된 탭 URL이 변경되었습니다!
+zen-pinned-tab-url-invalid = 올바른 URL 형식이 아닙니다.
+zen-pinned-tab-edit-url-title = 고정된 탭 URL 편집
+zen-pinned-tab-edit-url-label = 이 고정된 탭이 고정할 URL을 입력하세요:
 zen-tabs-renamed = 탭의 이름이 성공적으로 변경되었습니다!
 zen-background-tab-opened-toast = 새 백그라운드 탭이 열렸습니다!
 zen-workspace-renamed-toast = 워크스페이스 이름이 변경되었습니다!
-zen-library-sidebar-workspaces = 
-    .label = 스페이스
-zen-library-sidebar-mods = 
-    .label = 모드
+zen-split-view-limit-toast = 패널을 더 추가할 수 없습니다!
 zen-toggle-compact-mode-button = 
     .label = 사이드바 축소 모드
     .tooltiptext = 사이드바 축소 토글
@@ -55,11 +75,15 @@ zen-icons-picker-emoji =
     .label = 이모티콘
 zen-icons-picker-svg = 
     .label = 아이콘
+zen-emojis-picker-search = 
+    .placeholder = 이모지 검색
 urlbar-search-mode-zen_actions = 액션
 zen-site-data-settings = 설정
 zen-generic-manage = 관리
 zen-generic-more = 더 보기
 zen-generic-next = 다음
+zen-essentials-promo-label = 에센셜에 추가
+zen-essentials-promo-sublabel = 가장 좋아하는 탭을 바로 열 수 있게
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 허용됨
 zen-site-data-setting-block = 금지됨
@@ -94,3 +118,25 @@ zen-site-data-setting-site-protection = 추적 보호
 
 zen-site-data-panel-feature-callout-title = 애드온, 권한, 그리고 더 많은 것을 위한 새로운 곳
 zen-site-data-panel-feature-callout-subtitle = 아이콘을 클릭해 사이트 설정, 보안 정보 조회, 확장 프로그램 접근, 기타 행동을 수행할 수 있습니다.
+zen-open-link-in-glance = 
+    .label = 글랜스로 링크 열기
+    .accesskey = G
+zen-sidebar-notification-updated-heading = 업데이트 완료!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = { -brand-short-name }의 새로운 기능
+zen-sidebar-notification-updated-tooltip = 
+    .title = 업데이트 기록 보기
+zen-sidebar-notification-donate-label = { -brand-short-name } 후원
+zen-sidebar-notification-donate-tooltip = 
+    .title = 프로젝트에 후원하기
+zen-sidebar-notification-restart-safe-mode-label = 무언가 고장났나요?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = 안전 모드로 다시 시작
+zen-window-sync-migration-dialog-title = 창을 동기화 상태로 유지
+zen-window-sync-migration-dialog-message = Zen이 이제 같은 기기에서 창을 동기화합니다. 한 창에서의 변경이 다른 창에서도 즉시 적용됩니다.
+zen-window-sync-migration-dialog-learn-more = 더 알아보기
+zen-window-sync-migration-dialog-accept = 알겠습니다
+zen-appmenu-new-blank-window = 
+    .label = 새 빈 창

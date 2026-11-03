@@ -1,0 +1,15 @@
+diff --git a/browser/components/urlbar/content/UrlbarResult.mjs b/browser/components/urlbar/content/UrlbarResult.mjs
+index febdaae5818d21b142ba1d5968875133b6f3adb9..3a69e4d62e453c25b9e8f6d057e5f90d1740ab5b 100644
+--- a/browser/components/urlbar/content/UrlbarResult.mjs
++++ b/browser/components/urlbar/content/UrlbarResult.mjs
+@@ -253,6 +253,10 @@ export class UrlbarResult {
+     return this.#heuristic;
+   }
+ 
++  set heuristic(value) {
++    this.#heuristic = value;
++  }
++
+   /**
+    * Whether the view hides the group label above the result's row.
+    *

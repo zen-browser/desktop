@@ -3,19 +3,38 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-current-profile-text = profil saat ini
-unified-extensions-description = Ekstensi digunakan untuk menambahkan lebih banyak fungsi ekstra ke { -brand-short-name }.
+unified-extensions-description = Ekstensi digunakan untuk menambahkan fungsi ekstra ke { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Kembalikan ke URL Awal
+    .label =
+        { $isEssential ->
+            [true] Reset Tab Esensial ke URL awal
+           *[false] Reset Tab Sematan ke URL awal
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Tambahkan ke Essentials ({ $num } / { $max } slot terisi)
+    .label = Tambahkan ke Esensial
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slot terisi
 tab-context-zen-remove-essential = 
-    .label = Hapus dari Essentials
+    .label = Hapus dari Esensial
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Ganti URL Sematan ke URL saat ini
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Ubah Label...
+tab-context-zen-edit-icon = 
+    .label = Ubah Ikon...
 zen-themes-corrupted = Tidak dapat memuat file tema { -brand-short-name } Anda karena rusak. File tersebut telah diatur ulang ke tema default.
 zen-shortcuts-corrupted = File pintasan { -brand-short-name } Anda rusak. Mereka telah diatur ulang ke pintasan default.
 # note: Do not translate the "<br/>" tags in the following string
@@ -27,20 +46,21 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimalkan
     .tooltip = Minimalkan
 zen-panel-ui-gradient-generator-custom-color = Warna Kustom
-zen-panel-ui-gradient-generator-saved-message = Berhasil menyimpan gradien!
 zen-copy-current-url-confirmation = URL Disalin!
+zen-copy-current-url-as-markdown-confirmation = URL disalin sebagai Markdown!
 zen-general-cancel-label = 
     .label = Batalkan
 zen-general-confirm = 
     .label = Konfirmasi
 zen-pinned-tab-replaced = URL awal dari tab yang disematkan telah diganti dengan URL saat ini.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tab telah berhasil diubah namanya!
 zen-background-tab-opened-toast = Tab baru telah terbuka di latar belakang!
 zen-workspace-renamed-toast = Ruang Kerja telah berhasil diubah namanya!
-zen-library-sidebar-workspaces = 
-    .label = Ruang
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Mode Ringkas
     .tooltiptext = Aktifkan/Sembunyikan Mode Ringkas
@@ -55,11 +75,15 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Ikon
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Aksi
 zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
 zen-generic-more = Selengkapnya
 zen-generic-next = Lanjut
+zen-essentials-promo-label = Tambahkan ke Esensial
+zen-essentials-promo-sublabel = Akses tab favorit Anda hanya dengan sekali klik
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Diizinkan
 zen-site-data-setting-block = Diblokir
@@ -94,3 +118,25 @@ zen-site-data-setting-site-protection = Perlindungan Pelacakan
 
 zen-site-data-panel-feature-callout-title = Rumah baru untuk add-on, izin, dan lainnya
 zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengaturan situs, melihat info keamanan, mengakses ekstensi, dan melakukan tindakan umum.
+zen-open-link-in-glance = 
+    .label = Buka Tautan di Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Pembaruan Selesai!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Apa yang baru di { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Lihat Catatan Rilis
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
+zen-sidebar-notification-restart-safe-mode-label = Ada yang rusak?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Mulai Ulang dalam Mode Aman
+zen-window-sync-migration-dialog-title = Jaga Jendela Anda Tetap Sinkron
+zen-window-sync-migration-dialog-message = Zen kini menyinkronkan jendela pada perangkat yang sama, sehingga perubahan di satu jendela akan langsung terlihat di jendela lainnya.
+zen-window-sync-migration-dialog-learn-more = Pelajari Lebih Lanjut
+zen-window-sync-migration-dialog-accept = Oke!
+zen-appmenu-new-blank-window = 
+    .label = Jendela Kosong Baru

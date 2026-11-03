@@ -1,0 +1,178 @@
+diff --git a/build/moz.configure/lto-pgo.configure b/build/moz.configure/lto-pgo.configure
+index 1488ac89ec452dedd5f863c1fc906a46fa7739d3..77f9e286a2ca36b90805ddaa60f5a347c6aa4e6f 100644
+--- a/build/moz.configure/lto-pgo.configure
++++ b/build/moz.configure/lto-pgo.configure
+@@ -21,8 +21,6 @@ imply_option("MOZ_PGO", enable_profile_generate)
+ 
+ set_config("MOZ_PROFILE_GENERATE", enable_profile_generate)
+ 
+-set_define("MOZ_PROFILE_GENERATE", enable_profile_generate)
+-
+ option(
+     "--enable-profile-use",
+     env="MOZ_PROFILE_USE",
+@@ -35,6 +33,49 @@ enable_profile_use = depends_if("--enable-profile-use")(lambda _: True)
+ imply_option("MOZ_PGO", enable_profile_use)
+ set_config("MOZ_PROFILE_USE", enable_profile_use)
+ 
++option(
++    "--enable-cs-profile-generate",
++    help="Build a context-sensitive PGO instrumented binary",
++)
++
++option(
++    "--enable-cs-profile-use",
++    help="Use context-sensitive profile data during LTO",
++)
++
++
++@depends(
++    "--enable-cs-profile-generate",
++    "--enable-cs-profile-use",
++    "--enable-profile-use",
++    c_compiler,
++    target,
++    link,
++)
++@imports("os")
++def cs_profile_mode(generate, use, profile_use, compiler, target, linker_path):
++    generate = bool(generate)
++    use = bool(use)
++    if not generate and not use:
++        return namespace(generate=False, use=False)
++    if generate and use:
++        die("Cannot generate and use context-sensitive profiles in one build.")
++    if not profile_use or profile_use[0] != "cross":
++        die("Context-sensitive PGO requires --enable-profile-use=cross.")
++    if compiler.type != "clang-cl" or target.os != "WINNT" or target.cpu != "x86_64":
++        die("Context-sensitive PGO is only enabled for Windows x64.")
++    if not linker_path or not os.path.basename(linker_path).startswith("lld-link"):
++        die("Context-sensitive PGO requires lld-link.")
++    return namespace(generate=generate, use=use)
++
++
++@depends(enable_profile_generate, cs_profile_mode)
++def profile_generate_define(profile_generate, cs_profile):
++    return True if profile_generate or cs_profile.generate else None
++
++
++set_define("MOZ_PROFILE_GENERATE", profile_generate_define)
++
+ llvm_profdata = check_prog(
+     "LLVM_PROFDATA", ["llvm-profdata"], allow_missing=True, paths=clang_search_path
+ )
+@@ -129,6 +170,21 @@ pgo_temporal = c_compiler.try_compile(
+ )
+ 
+ 
++@depends(c_compiler, cs_profile_mode)
++@imports("os")
++def cs_profile_runtime(compiler, cs_profile):
++    if not cs_profile.generate:
++        return None
++
++    resource_dir = check_cmd_output(compiler.compiler, "--print-resource-dir").strip()
++    runtime = os.path.join(
++        resource_dir, "lib", "windows", "clang_rt.profile-x86_64.lib"
++    )
++    if not os.path.isfile(runtime):
++        die("Unable to find the context-sensitive profile runtime at %s" % runtime)
++    return runtime
++
++
+ @depends(
+     c_compiler,
+     select_linker,
+@@ -137,6 +193,8 @@ pgo_temporal = c_compiler.try_compile(
+     target_is_windows,
+     pgo_temporal,
+     orderfile_path,
++    cs_profile_mode,
++    cs_profile_runtime,
+ )
+ @imports("multiprocessing")
+ def pgo_flags(
+@@ -147,6 +205,8 @@ def pgo_flags(
+     target_is_windows,
+     pgo_temporal,
+     orderfile,
++    cs_profile,
++    cs_runtime,
+ ):
+     if compiler.type == "gcc":
+         return namespace(
+@@ -194,15 +254,36 @@ def pgo_flags(
+             # by default)
+             gen_cflags += ["-mllvm", "-enable-name-compression=false"]
+ 
++        use_cflags = [
++            prefix + "-fprofile-use=%s" % profdata,
++            # Some error messages about mismatched profile data
++            # come in via -Wbackend-plugin, so disable those too.
++            "-Wno-error=backend-plugin",
++        ]
++
++        if compiler.type == "clang-cl" and target.os == "WINNT" and target.cpu == "x86_64":
++            use_ldflags += ["-mllvm:-enable-ext-tsp-block-placement=1"]
++
++        if cs_profile.generate:
++            use_cflags += [
++                prefix + "-fcs-profile-generate",
++                "-mllvm",
++                "-enable-name-compression=false",
++            ]
++            use_ldflags += [
++                "/lto-cs-profile-generate",
++                "/lto-cs-profile-file:default_%m.profraw",
++                "-mllvm:-enable-name-compression=false",
++                "/include:__llvm_profile_runtime",
++                cs_runtime,
++            ]
++        elif cs_profile.use:
++            use_ldflags += ["/lto-cs-profile-file:" + profdata]
++
+         return namespace(
+             gen_cflags=gen_cflags,
+             gen_ldflags=gen_ldflags,
+-            use_cflags=[
+-                prefix + "-fprofile-use=%s" % profdata,
+-                # Some error messages about mismatched profile data
+-                # come in via -Wbackend-plugin, so disable those too.
+-                "-Wno-error=backend-plugin",
+-            ],
++            use_cflags=use_cflags,
+             use_ldflags=use_ldflags,
+         )
+ 
+@@ -243,6 +324,7 @@ def moz_pgo_rust(pgo, profile_use, profile_generate, c_compiler):
+     if c_compiler.type == "gcc":
+         die("Cannot use cross-language PGO with GCC.")
+ 
++    log.info("Enabling cross-language PGO for Rust")
+     return True
+ 
+ 
+@@ -265,7 +347,6 @@ option(
+     help="Indicate that ld64 is free of symbol aliasing bugs",
+ )
+ 
+-imply_option("MOZ_LD64_KNOWN_GOOD", True, when=moz_automation)
+ 
+ use_fat_lto = cxx_compiler.try_link(
+     ldflags=depends(stlport_libs)(
+@@ -483,3 +564,15 @@ set_config("MOZ_LTO_CFLAGS", lto.cflags)
+ set_config("MOZ_LTO_LDFLAGS", lto.ldflags)
+ set_config("MOZ_LTO_RUST_CROSS", lto.rust_lto)
+ set_config("MOZ_LTO_FAT", lto.fat)
++
++
++@depends(cs_profile_mode, lto)
++def validated_cs_profile_mode(cs_profile, lto):
++    if cs_profile.generate or cs_profile.use:
++        if not lto or lto.rust_lto != "full":
++            die("Context-sensitive PGO requires full cross-language LTO.")
++    return cs_profile
++
++
++set_config("MOZ_CS_PROFILE_GENERATE", validated_cs_profile_mode.generate)
++set_config("MOZ_CS_PROFILE_USE", validated_cs_profile_mode.use)

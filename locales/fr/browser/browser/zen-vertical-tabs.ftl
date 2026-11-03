@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Masquer les deux
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Déplacer vers le dossier...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nouveau dossier
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Rétablir et épingler l'onglet
            *[other] Rétablir et épingler { $tabCount } onglets
         }
-tab-reset-pin-label = Retour à l’URL épinglée
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Retour à l'URL épinglée
+        [zen-default-pinned-cmd] Séparer de l'onglet épinglé
+       *[other] { $tabSubtitle }
+    }

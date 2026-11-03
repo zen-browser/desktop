@@ -1,0 +1,11 @@
+<!-- Testcase originally by <moz_bug_r_a4@yahoo.com> -->
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test for bug 463206</title>
+
+<iframe src="data:text/html;charset=utf-8,<iframe></iframe><iframe%20src='data:text/html;charset=utf-8,<input%2520id=%2522in1%2522>'></iframe>"></iframe>
+<iframe src="data:text/html;charset=utf-8,<input%20id='out1'><input%20id='out2'><iframe%20src='data:text/html;charset=utf-8,<input%2520id=%2522in1%2522>'>"></iframe>
+
+<input id="out1">
+<input name="1|#out2">

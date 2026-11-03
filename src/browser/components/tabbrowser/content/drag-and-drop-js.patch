@@ -1,0 +1,322 @@
+diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
+index f9623f82499e516050d523068e70ebaa4fe9a66a..95bcc078a86b4ec4b35f5916b7e4a5e305afba9e 100644
+--- a/browser/components/tabbrowser/content/drag-and-drop.js
++++ b/browser/components/tabbrowser/content/drag-and-drop.js
+@@ -42,6 +42,9 @@
+    * @returns {MozTabbrowserTab|vbox}
+    */
+   const elementToMove = element => {
++    if (element.group?.hasAttribute("split-view-group")) {
++      return element.group;
++    }
+     if (isTab(element) || isSplitViewWrapper(element)) {
+       return element;
+     }
+@@ -140,6 +143,9 @@
+       }
+ 
+       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
++      if (draggedTab && dropEffect === "move") {
++        gZenViewSplitter.onBrowserDragEndToSplit(event);
++      }
+       if (
+         (dropEffect == "move" || dropEffect == "copy") &&
+         document == draggedTab.ownerDocument &&
+@@ -161,6 +167,7 @@
+         ) {
+           draggedTab.group.collapsedByDrag = true;
+           draggedTab.group.collapsed = true;
++          gZenFolders.animateGroupMove(draggedTab.group);
+         }
+ 
+         if (dropEffect == "move") {
+@@ -168,10 +175,6 @@
+ 
+           // Pinned tabs in expanded vertical mode are on a grid format and require
+           // different logic to drag and drop.
+-          if (this._tabbrowserTabs.isContainerVerticalPinnedGrid(draggedTab)) {
+-            this._animateExpandedPinnedTabMove(event);
+-            return;
+-          }
+           this._animateTabMove(event);
+           return;
+         }
+@@ -310,6 +313,10 @@
+ 
+       this._tabDropIndicator.hidden = true;
+       event.stopPropagation();
++      if (draggedTab && dropEffect == "move") {
++        this.handle_drop_transition?.(draggedTab._dragData.dropElement, draggedTab, movingTabs, draggedTab._dragData.dropBefore);
++        [draggedTab, movingTabs] = gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
++      }
+       if (draggedTab && dropEffect == "copy") {
+         let duplicatedDraggedTab;
+         let duplicatedTabs = [];
+@@ -337,12 +344,16 @@
+         let translateOffsetY = oldTranslateY % tabHeight;
+         let newTranslateX = oldTranslateX - translateOffsetX;
+         let newTranslateY = oldTranslateY - translateOffsetY;
+-        let isPinned = draggedTab.pinned;
+-        let numPinned = gBrowser.pinnedTabCount;
++        let isPinned = draggedTab?.group ? draggedTab.group.pinned : draggedTab.pinned;
++        let numPinned = gBrowser._numVisiblePinTabsWithoutCollapsed;
++        let essential = draggedTab.hasAttribute("zen-essential");
+         let tabs = this._tabbrowserTabs.dragAndDropElements.slice(
+-          isPinned ? 0 : numPinned,
+-          isPinned ? numPinned : undefined
++          isPinned ? (essential ? 0 : gBrowser._numZenEssentials) : numPinned,
++          isPinned ? (essential ? gBrowser._numZenEssentials : numPinned) : undefined
+         );
++        if (tabs.length == 0) {
++          tabs = [...movingTabs];
++        }
+ 
+         if (this._tabbrowserTabs.isContainerVerticalPinnedGrid(draggedTab)) {
+           // Update both translate axis for pinned vertical expanded tabs
+@@ -417,11 +428,13 @@
+           this._dragToPinPromoCard,
+         ];
+         let shouldPin =
++          false &&  
+           movingTabs.some(t => isTab(t)) &&
+           !draggedTab.pinned &&
+           (overPinnedDropIndicator ||
+             dragToPinTargets.some(el => el.contains(event.target)));
+         let shouldUnpin =
++          false &&
+           isTab(draggedTab) &&
+           draggedTab.pinned &&
+           this._tabbrowserTabs.arrowScrollbox.contains(event.target);
+@@ -492,6 +505,7 @@
+           }
+         }
+ 
++        shouldTranslate = false;
+         if (shouldTranslate) {
+           this.#dropAnimationEndTime = Date.now() + DROP_ANIMATION_GRACE_MS;
+           let translationPromises = [];
+@@ -504,7 +518,7 @@
+                 item.removeAttribute("tabdrop-samewindow");
+                 resolve();
+               };
+-              if (gReduceMotion) {
++              if (true || gReduceMotion) {
+                 postTransitionCleanup();
+               } else {
+                 let onTransitionEnd = transitionendEvent => {
+@@ -595,7 +609,7 @@
+           if (tab.selected) {
+             selectedTab = tab;
+             indexForSelectedTab = newIndex;
+-          } else if (isSplitViewWrapper(tab)) {
++          } else if (false) {
+             const droppedIntoPinnedArea = dropIndex < gBrowser.pinnedTabCount;
+             const newSplitView = gBrowser.adoptSplitView(tab, {
+               elementIndex: droppedIntoPinnedArea
+@@ -620,7 +634,7 @@
+             }
+           }
+         }
+-        if (selectedTab) {
++        if (false) {
+           const newTab = gBrowser.adoptTab(selectedTab, {
+             elementIndex: indexForSelectedTab,
+             selectTab: selectedTab == draggedTab,
+@@ -654,10 +668,6 @@
+               this._tabbrowserTabs.dragAndDropElements[
+                 gBrowser.pinnedTabCount + unpinnedSplitViews.length - 1
+               ];
+-            gBrowser.addRangeToMultiSelectedTabs(
+-              firstUnpinnedSplitView.tabs.at(0),
+-              lastUnpinnedSplitView.tabs.at(-1)
+-            );
+           }
+         }
+       } else {
+@@ -717,6 +727,7 @@
+ 
+           let nextItem = this._tabbrowserTabs.dragAndDropElements[newIndex];
+           let tabGroup = isTab(nextItem) && nextItem.group;
++          if (gZenViewSplitter.handleTabDrop(event, urls, replace, inBackground)) return;
+           gBrowser.loadTabs(urls, {
+             inBackground,
+             replace,
+@@ -758,6 +769,22 @@
+         this._expandGroupOnDrop(draggedTab);
+       }
+       this._resetTabsAfterDrop(draggedTab);
++      if (
++        !dt.mozUserCancelled &&
++        dt.dropEffect == "none" &&
++        !this._tabbrowserTabs._isCustomizing
++      ) {
++        const moved = gZenViewSplitter.moveTabToSplitView(event, draggedTab);
++        if (moved) {
++          delete draggedTab._dragData;
++          return;
++        }
++      } else if (dt.mozUserCancelled) {
++        gZenViewSplitter.onBrowserDragEndToSplit(event, true);
++        if (gZenViewSplitter._lastOpenedTab) {
++          gZenViewSplitter._lastOpenedTab._visuallySelected = false;
++        }
++      }
+ 
+       if (
+         dt.mozUserCancelled ||
+@@ -1088,11 +1115,10 @@
+         return this.#getHorizontalScrollboxDragTarget(event, ignoreSides);
+       }
+       while (target) {
+-        if (
+-          isTab(target) ||
+-          isTabGroupLabel(target) ||
+-          isSplitViewWrapper(target)
+-        ) {
++        if (isTab(target) || isTabGroupLabel(target) || target?.classList?.contains("tab-group-label-container")) {
++          if (target.classList?.contains("tab-group-label-container")) {
++            target = target.querySelector(".tab-group-label");
++          }
+           break;
+         }
+         target = target.parentNode;
+@@ -1122,6 +1148,9 @@
+           return null;
+         }
+       }
++      if (target?.group?.hasAttribute("split-view-group")) {
++        target = target.group.labelElement;
++      }
+       return target;
+     }
+ 
+@@ -1188,17 +1217,24 @@
+       let periphery = draggedTab.ownerDocument.getElementById(
+         "tabbrowser-arrowscrollbox-periphery"
+       );
+-      // The group's tabs animate back to their full size, so hold on to the
+-      // space reserved for them until they get there.
+-      group.addEventListener(
+-        "TabGroupAnimationComplete",
+-        () => {
+-          group.collapsedByDrag = false;
+-          this.#releaseSpaceInScrolledContent(periphery);
+-        },
+-        { once: true }
+-      );
+-      group.collapsed = false;
++      const expand = !group.hasAttribute("has-active");
++      if (expand) {
++        // The group's tabs animate back to their full size, so hold on to the
++        // space reserved for them until they get there.
++        group.addEventListener(
++          "TabGroupAnimationComplete",
++          () => {
++            group.collapsedByDrag = false;
++            this.#releaseSpaceInScrolledContent(periphery);
++          },
++          { once: true }
++        );
++      } else {
++        group.collapsedByDrag = false;
++        this.#releaseSpaceInScrolledContent(periphery);
++      }
++      group.collapsed = !expand;
++      gZenFolders.animateGroupMove(group, true);
+     }
+ 
+     /**
+@@ -1380,7 +1416,6 @@
+         // using updateDragImage. On Linux, we can use a panel.
+         if (platform == "win" || platform == "macosx") {
+           captureListener = function () {
+-            dt.updateDragImage(canvas, dragImageOffset, dragImageOffset);
+           };
+         } else {
+           // Create a panel to use it in setDragImage
+@@ -1418,7 +1453,6 @@
+         );
+         dragImageOffset = dragImageOffset * scale;
+       }
+-      dt.setDragImage(toDrag, dragImageOffset, dragImageOffset);
+ 
+       // _dragData.offsetX/Y give the coordinates that the mouse should be
+       // positioned relative to the corner of the new window created upon
+@@ -1437,7 +1471,7 @@
+       let dropEffect = this.getDropEffectForTabDrag(event);
+       let isMovingInTabStrip = !fromTabList && dropEffect == "move";
+       let collapseTabGroupDuringDrag =
+-        isMovingInTabStrip && isTabGroupLabel(tab) && !tab.group.collapsed;
++        isMovingInTabStrip && isTabGroupLabel(tab) && (!tab.group.collapsed || tab.group.hasAttribute("has-active"));
+ 
+       tab._dragData = {
+         offsetX: this._tabbrowserTabs.verticalMode
+@@ -1447,7 +1481,7 @@
+           ? event.screenY - window.screenY - tabOffset
+           : event.screenY - window.screenY,
+         scrollPos:
+-          this._tabbrowserTabs.verticalMode && tab.pinned
++          this._tabbrowserTabs.verticalMode && tab.pinned && false
+             ? this._tabbrowserTabs.pinnedTabsContainer.scrollPosition
+             : this._tabbrowserTabs.arrowScrollbox.scrollPosition,
+         screenX: event.screenX,
+@@ -1540,6 +1574,7 @@
+       if (tabStripItemElement.hasAttribute("dragtarget")) {
+         return;
+       }
++      return;
+       let isPinned = tab.pinned;
+       let dragAndDropElements = this._tabbrowserTabs.dragAndDropElements;
+       let isGrid = this._tabbrowserTabs.isContainerVerticalPinnedGrid(tab);
+@@ -1913,23 +1948,6 @@
+ 
+       // Slide the relevant tabs to their new position.
+       // non-moving tabs adjust for RTL
+-      for (let item of this._tabbrowserTabs.dragAndDropElements) {
+-        if (
+-          !tab._dragData.movingTabsSet.has(item) &&
+-          (item._moveTogetherSelectedTabsData?.translateX ||
+-            item._moveTogetherSelectedTabsData?.translateY) &&
+-          ((item.pinned && tab.pinned) || (!item.pinned && !tab.pinned))
+-        ) {
+-          let element = elementToMove(item);
+-          if (isGrid) {
+-            element.style.transform = `translate(${(this._rtlMode ? -1 : 1) * item._moveTogetherSelectedTabsData.translateX}px, ${item._moveTogetherSelectedTabsData.translateY}px)`;
+-          } else if (this._tabbrowserTabs.verticalMode) {
+-            element.style.transform = `translateY(${item._moveTogetherSelectedTabsData.translateY}px)`;
+-          } else {
+-            element.style.transform = `translateX(${(this._rtlMode ? -1 : 1) * item._moveTogetherSelectedTabsData.translateX}px)`;
+-          }
+-        }
+-      }
+       // moving tabs don't adjust for RTL
+       for (let item of selectedElements) {
+         if (
+@@ -1978,7 +1996,6 @@
+       for (let item of this._tabbrowserTabs.dragAndDropElements) {
+         delete item._moveTogetherSelectedTabsData;
+         item = elementToMove(item);
+-        item.style.transform = "";
+         item.removeAttribute("multiselected-move-together");
+       }
+     }
+@@ -2830,7 +2847,6 @@
+         tab.style.top = "";
+         tab.style.maxWidth = "";
+         tab.style.pointerEvents = "";
+-        tab.removeAttribute("dragtarget");
+         tab.removeAttribute("small-stack");
+         tab.removeAttribute("big-stack");
+       }
+@@ -2839,11 +2855,9 @@
+       )) {
+         label.style.width = "";
+         label.style.maxWidth = "";
+-        label.style.height = "";
+         label.style.left = "";
+         label.style.top = "";
+         label.style.pointerEvents = "";
+-        label.removeAttribute("dragtarget");
+       }
+       for (let label of draggedTabContainer.getElementsByClassName(
+         "tab-group-label"

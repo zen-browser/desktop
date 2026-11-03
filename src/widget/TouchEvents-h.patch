@@ -1,0 +1,36 @@
+diff --git a/widget/TouchEvents.h b/widget/TouchEvents.h
+index b54503605b1e0ca9ff5d7bd835821ab6c6c92426..4361a397eea4f06f1651d2db6cce7c8ca830a712 100644
+--- a/widget/TouchEvents.h
++++ b/widget/TouchEvents.h
+@@ -94,7 +94,9 @@ class WidgetSimpleGestureEvent final : public WidgetMouseEventBase {
+         mAllowedDirections(0),
+         mDirection(0),
+         mClickCount(0),
+-        mDelta(0.0) {}
++        mDelta(0.0),
++        mSwipeSuccessThreshold(0.0),
++        mSwipeSuccessVelocityContribution(-1.0) {}
+ 
+   WidgetSimpleGestureEvent(const WidgetSimpleGestureEvent& aOther)
+       : WidgetMouseEventBase(aOther.IsTrusted(), aOther.mMessage,
+@@ -102,7 +104,10 @@ class WidgetSimpleGestureEvent final : public WidgetMouseEventBase {
+         mAllowedDirections(aOther.mAllowedDirections),
+         mDirection(aOther.mDirection),
+         mClickCount(0),
+-        mDelta(aOther.mDelta) {}
++        mDelta(aOther.mDelta),
++        mSwipeSuccessThreshold(aOther.mSwipeSuccessThreshold),
++        mSwipeSuccessVelocityContribution(
++            aOther.mSwipeSuccessVelocityContribution) {}
+ 
+   NS_DEFINE_VIRTUAL_DESTRUCTOR_CHECKING_CLASS_VALUE(WidgetSimpleGestureEvent,
+                                                     eSimpleGestureEventClass,
+@@ -127,6 +132,8 @@ class WidgetSimpleGestureEvent final : public WidgetMouseEventBase {
+   uint32_t mClickCount;
+   // Delta for magnify and rotate events
+   double mDelta;
++  double mSwipeSuccessThreshold;
++  double mSwipeSuccessVelocityContribution;
+ 
+   // XXX Not tested by test_assign_event_data.html
+   void AssignSimpleGestureEventData(const WidgetSimpleGestureEvent& aEvent,

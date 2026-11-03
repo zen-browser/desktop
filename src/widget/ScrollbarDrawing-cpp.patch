@@ -1,0 +1,23 @@
+diff --git a/widget/ScrollbarDrawing.cpp b/widget/ScrollbarDrawing.cpp
+index fec73f8a8cbfbf952f1d14f1a4eb2b20f9b5aad4..375ef5654cf61e4dea102588679d2ac2060d299a 100644
+--- a/widget/ScrollbarDrawing.cpp
++++ b/widget/ScrollbarDrawing.cpp
+@@ -121,7 +121,7 @@ sRGBColor ScrollbarDrawing::ComputeScrollbarTrackColor(
+   const nsStyleUI* ui = aStyle.StyleUI();
+   if (ui->mScrollbarColor.IsColors()) {
+     return sRGBColor::FromABGR(
+-        ui->mScrollbarColor.AsColors().track.CalcColor(aStyle));
++        ui->mScrollbarColor.AsColors().track.CalcColor(aStyle, aFrame));
+   }
+   static constexpr sRGBColor sDefaultDarkTrackColor =
+       sRGBColor::FromU8(20, 20, 25, 77);
+@@ -143,7 +143,8 @@ sRGBColor ScrollbarDrawing::ComputeScrollbarThumbColor(
+   const nsStyleUI* ui = aStyle.StyleUI();
+   if (ui->mScrollbarColor.IsColors()) {
+     return sRGBColor::FromABGR(ThemeColors::AdjustUnthemedScrollbarThumbColor(
+-        ui->mScrollbarColor.AsColors().thumb.CalcColor(aStyle), aElementState));
++        ui->mScrollbarColor.AsColors().thumb.CalcColor(aStyle, aFrame),
++        aElementState));
+   }
+ 
+   auto systemColor = [&] {

@@ -1,0 +1,13 @@
+diff --git a/accessible/windows/ia2/ia2AccessibleComponent.cpp b/accessible/windows/ia2/ia2AccessibleComponent.cpp
+index 7837fdee3db339543f8b3d95dcb23ebe99aed8dc..207adf3ded9848b84ec89e94f80e8e02f161923c 100644
+--- a/accessible/windows/ia2/ia2AccessibleComponent.cpp
++++ b/accessible/windows/ia2/ia2AccessibleComponent.cpp
+@@ -81,7 +81,7 @@ ia2AccessibleComponent::get_foreground(IA2Color* aForeground) {
+   if (!acc) return CO_E_OBJNOTCONNECTED;
+ 
+   nsIFrame* frame = acc->GetFrame();
+-  if (frame) *aForeground = frame->StyleText()->mColor.ToColor();
++  if (frame) *aForeground = frame->StyleText()->mColor.ToColor(frame);
+ 
+   return S_OK;
+ }

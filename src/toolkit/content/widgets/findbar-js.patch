@@ -1,8 +1,8 @@
 diff --git a/toolkit/content/widgets/findbar.js b/toolkit/content/widgets/findbar.js
-index 8ca512e0b212bb6e25ed37e7edb4f8e2587d5bb0..5abfff92b3a8df5d138082af96419668a2c8a9bb 100644
+index ff9bb99e4ca481feb97d060e34eae37846ba55cf..6517111456d85d975d5857a044c642bdc1294be4 100644
 --- a/toolkit/content/widgets/findbar.js
 +++ b/toolkit/content/widgets/findbar.js
-@@ -1188,6 +1188,7 @@
+@@ -1189,6 +1189,7 @@
       *   e.g. <command name="cmd_find" oncommand="gFindBar.onFindCommand();"/>
       */
      onFindCommand() {

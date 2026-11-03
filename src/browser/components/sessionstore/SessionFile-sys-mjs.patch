@@ -1,0 +1,20 @@
+diff --git a/browser/components/sessionstore/SessionFile.sys.mjs b/browser/components/sessionstore/SessionFile.sys.mjs
+index 5ed858536ad1a9e5803d46ad600adbbc7f9ac826..1816ae266214f8269d715f989797ee8262785c6e 100644
+--- a/browser/components/sessionstore/SessionFile.sys.mjs
++++ b/browser/components/sessionstore/SessionFile.sys.mjs
+@@ -25,6 +25,7 @@ const lazy = XPCOMUtils.declareLazy({
+     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
+   SessionWriter:
+     "moz-src:///browser/components/sessionstore/SessionWriter.sys.mjs",
++  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+ });
+ 
+ const PREF_UPGRADE_BACKUP = "browser.sessionstore.upgradeBackup.latestBuildID";
+@@ -433,6 +434,7 @@ var SessionFileInternal = {
+     }
+     this._readOrigin = result.origin;
+ 
++    await lazy.ZenSessionStore.readFile();
+     return { ...result, noFilesFound, fileStates };
+   },
+ 

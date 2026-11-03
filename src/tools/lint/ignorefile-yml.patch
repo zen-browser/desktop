@@ -1,0 +1,12 @@
+diff --git a/tools/lint/ignorefile.yml b/tools/lint/ignorefile.yml
+index 5ae3b282a54c129bb16bca461470154e4a882618..f46c6256037cbef1392f8d070726d45dadac1289 100644
+--- a/tools/lint/ignorefile.yml
++++ b/tools/lint/ignorefile.yml
+@@ -3,7 +3,6 @@ ignorefile:
+     description: Linter for .gitignore and .hgignore files
+     include:
+         - '.gitignore'
+-        - '.hgignore'
+     support-files:
+         - 'tools/lint/ignorefile**'
+     type: external

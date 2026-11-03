@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Folaigh an dá cheann
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Bog go Fillteán...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Fillteán Nua
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Athshocraigh agus priontáil an cluaisín
            *[other] Athshocraigh agus priontáil an cluaisín { $tabCount }
         }
-tab-reset-pin-label = Ar ais chuig an url bioráilte
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Ar ais go dtí an url bioráilte
+        [zen-default-pinned-cmd] Ar leithligh ón gcluaisín bioráilte
+       *[other] { $tabSubtitle }
+    }

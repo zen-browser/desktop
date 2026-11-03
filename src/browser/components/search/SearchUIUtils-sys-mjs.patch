@@ -1,13 +1,12 @@
 diff --git a/browser/components/search/SearchUIUtils.sys.mjs b/browser/components/search/SearchUIUtils.sys.mjs
-index 55f90f4e802480728bbd5ef962b507183e017997..2a83f861fe6edee2b127c8d7946abcdcdbf677f5 100644
+index cc84dd2417809ca7f8403c07a52601d37f79354b..3d54118375691af3a5cd8f2191be930b00161a52 100644
 --- a/browser/components/search/SearchUIUtils.sys.mjs
 +++ b/browser/components/search/SearchUIUtils.sys.mjs
-@@ -430,7 +430,7 @@ export var SearchUIUtils = {
-         triggeringSearchEngine: engine.name,
+@@ -456,6 +456,7 @@ export var SearchUIUtils = {
        },
      });
--
-+    window.gZenGlanceManager?.onSearchSelectCommand(where);
-     return { engine, url: submission.uri };
-   },
  
++    window.gZenGlanceManager?.onSearchSelectCommand(where);
+     lazy.BrowserSearchTelemetry.recordSearch(
+       window.gBrowser.selectedBrowser,
+       engine,

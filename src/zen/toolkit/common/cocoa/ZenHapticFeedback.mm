@@ -21,15 +21,13 @@ namespace zen {
 nsresult ZenCommonUtils::PlayHapticFeedbackInternal() {
   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
   if (@available(macOS 10.14, *)) {
-    id<NSHapticFeedbackPerformer> performer = [NSHapticFeedbackManager defaultPerformer];
+    id<NSHapticFeedbackPerformer> performer =
+        [NSHapticFeedbackManager defaultPerformer];
     [performer performFeedbackPattern:NSHapticFeedbackPatternAlignment
                       performanceTime:NSHapticFeedbackPerformanceTimeDefault];
-  } else {
-    // Fallback on earlier versions
-    // Note: This is a no-op on older versions of iOS/macOS
   }
   return NS_OK;
   NS_OBJC_END_TRY_BLOCK_RETURN(NS_OK);
 }
 
-}
+}  // namespace zen

@@ -1,0 +1,20 @@
+[DEFAULT]
+head = "head_helpers.js ../../../../services/common/tests/unit/head_helpers.js"
+firefox-appdir = "browser"
+support-files = ["!/services/common/tests/unit/head_helpers.js"]
+
+["test_crypto_crypt.js"]
+
+["test_crypto_random.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_jwcrypto.js"]
+run-if = [
+  "appname != 'thunderbird'",
+]
+
+["test_utils_hawk.js"]
+
+["test_utils_httpmac.js"]

@@ -35,7 +35,7 @@ fi
     if echo "$LATEST_RELEASE" | jq -e '.security != null and .security != ""' > /dev/null; then
       echo
       echo "## Security"
-      echo "[Various security fixes]($(echo "$LATEST_RELEASE" | jq -r '.security'))"
+      echo "$LATEST_RELEASE" | jq -r 'if (.security | type) == "string" then "- " + .security else .security[] | "- " + . end'
     fi
 
     if echo "$LATEST_RELEASE" | jq -e '(.features // []) | length > 0' > /dev/null; then

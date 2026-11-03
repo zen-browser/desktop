@@ -1,0 +1,22 @@
+diff --git a/layout/style/ComputedStyle.h b/layout/style/ComputedStyle.h
+index 661ec439dea1bc59dbc4507c9788df8821ea9086..7aa21f5388d6e3b5f1a85e38acdd646254ca8b01 100644
+--- a/layout/style/ComputedStyle.h
++++ b/layout/style/ComputedStyle.h
+@@ -18,6 +18,7 @@
+ 
+ enum nsChangeHint : uint32_t;
+ class nsWindowSizes;
++class nsIFrame;
+ 
+ #define FORWARD_STRUCT(name_) struct nsStyle##name_;
+ FOR_EACH_STYLE_STRUCT(FORWARD_STRUCT, FORWARD_STRUCT)
+@@ -338,7 +339,8 @@ class ComputedStyle {
+    *               been listed in nsCSSVisitedDependentPropList.h.
+    */
+   template <typename T, typename S>
+-  nscolor GetVisitedDependentColor(T S::* aField) const;
++  nscolor GetVisitedDependentColor(T S::* aField,
++                                   const nsIFrame* aFrame) const;
+ 
+   /**
+    * aColors should be a two element array of nscolor in which the first

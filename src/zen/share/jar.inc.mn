@@ -1,0 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+*       content/browser/zen-styles/zen-share.css                                (../../zen/share/zen-share.css)
+*       content/browser/zen-components/windows/zen-share-confirm.xhtml          (../../zen/share/zen-share-confirm.inc.xhtml)
+        content/browser/zen-components/windows/zen-share-confirm.js             (../../zen/share/zen-share-confirm.js)

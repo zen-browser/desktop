@@ -8,31 +8,33 @@
         noautofocus="true">
   <panelmultiview mainViewId="unified-extensions-view">
 # We'll keep the view with this name/id in order to prevent
-# any sort of future issues we may have if firefox decides
+# any sort of future issues we may have if firefox decides
 # to change the functionality of this view
     <panelview id="unified-extensions-view"
                 class="cui-widget-panelview"
                 mainview-with-header="true">
       <hbox id="zen-site-data-header">
         <toolbarbutton id="zen-site-data-header-share"
+                        class="zen-squircle-before"
                         data-l10n-id="zen-site-data-header-share"
                         flex="1"
                         closemenu="none" />
-        <toolbarbutton id="zen-site-data-header-reader-mode"
-                        data-l10n-id="zen-site-data-header-reader-mode"
-                        command="View:ReaderView"
-                        tooltip="dynamic-shortcut-tooltip"
-                        flex="1" />
         <toolbarbutton id="zen-site-data-header-screenshot"
+                        class="zen-squircle-before"
                         data-l10n-id="zen-site-data-header-screenshot"
                         command="Browser:Screenshot"
                         flex="1" />
+        <toolbarbutton id="zen-site-data-header-boost"
+                        class="zen-squircle-before"
+                        data-l10n-id="zen-site-data-header-boost"
+                        flex="1" />
         <toolbarbutton id="zen-site-data-header-bookmark"
+                        class="zen-squircle-before"
                         data-l10n-id="zen-site-data-header-bookmark"
                         command="Browser:AddBookmarkAs"
                         flex="1" />
       </hbox>
-      <vbox class="zen-site-data-section">
+      <vbox id="zen-site-data-section-addons" class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
           <label data-l10n-id="unified-extensions-header-title" flex="1" />
           <label data-l10n-id="zen-generic-manage" id="zen-site-data-manage-addons" />
@@ -54,6 +56,17 @@
             <toolbarbutton id="zen-site-data-new-addon-button"
                   class="subviewbutton toolbarbutton-1" />
           </vbox>
+
+# We don't really use this, but again, to keep firefox happy
+# in case they decide to change something for this specific
+# empty state, we keep it on the DOM
+# https://searchfox.org/firefox-main/rev/e613f4df351a21871cfeadf7d5b4043ffad157b1/browser/components/customizableui/content/panelUI.inc.xhtml#101-106
+          <vbox id="unified-extensions-empty-state" context="">
+            <!-- Shown when no extensions are listed. -->
+            <html:img src="chrome://browser/skin/addons/extensions-panel-empty-illustration.svg" loading="lazy" />
+            <html:h2 class="subview-subheader" />
+            <description />
+          </vbox>
         </hbox>
 
 # Keep this button on the DOM even though we hide it for ever,
@@ -61,8 +74,16 @@
 # for this specific button / id
         <toolbarbutton id="unified-extensions-manage-extensions"
                         class="subviewbutton panel-subview-footer-button unified-extensions-manage-extensions"
-                        data-l10n-id="unified-extensions-manage-extensions" 
+                        data-l10n-id="unified-extensions-manage-extensions"
                         hidden="true" />
+      </vbox>
+      <vbox class="zen-site-data-section">
+        <hbox class="zen-site-data-section-header">
+          <label data-l10n-id="zen-site-data-boosts" flex="1" />
+        </hbox>
+        <vbox id="zen-site-data-boost-list">
+          <!-- settings will be inserted here -->
+        </vbox>
       </vbox>
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
@@ -74,8 +95,13 @@
         </vbox>
       </vbox>
       <hbox id="zen-site-data-footer">
-        <toolbarbutton id="zen-site-data-security-info" 
+        <toolbarbutton id="zen-site-data-security-info"
                        class="subviewbutton zen-interactive-button" />
+        <toolbarbutton id="zen-site-data-reader-mode"
+                       class="subviewbutton zen-interactive-button"
+                       data-l10n-id="zen-site-data-header-reader-mode"
+                       command="View:ReaderView"
+                       tooltip="dynamic-shortcut-tooltip" />
         <toolbarbutton id="zen-site-data-actions"
                        class="subviewbutton zen-interactive-button"
                        closemenu="none"

@@ -1,18 +1,8 @@
 diff --git a/browser/components/customizableui/content/panelUI.js b/browser/components/customizableui/content/panelUI.js
-index 7156397d597579f745ea20ae2b9327433a31c8ec..23c15c60acd77150ea89bd6f2fa1685a0cfc37fd 100644
+index 140ea6eddd0d0c6817bbaabf2dc00083eaa11b13..0fe33867cf64d02b2b6e6db8b6844a4ea044ad33 100644
 --- a/browser/components/customizableui/content/panelUI.js
 +++ b/browser/components/customizableui/content/panelUI.js
-@@ -518,8 +518,7 @@ const PanelUI = {
-         tempPanel.setAttribute("animate", "false");
-       }
-       tempPanel.setAttribute("context", "");
--      document
--        .getElementById(CustomizableUI.AREA_NAVBAR)
-+      aAnchor.closest("toolbar")
-         .appendChild(tempPanel);
- 
-       let multiView = document.createXULElement("panelmultiview");
-@@ -610,10 +609,12 @@ const PanelUI = {
+@@ -666,10 +666,12 @@ const PanelUI = {
      if (hasKids && !this.navbar.hasAttribute("nonemptyoverflow")) {
        this.navbar.setAttribute("nonemptyoverflow", "true");
        this.overflowPanel.setAttribute("hasfixeditems", "true");
@@ -25,7 +15,7 @@ index 7156397d597579f745ea20ae2b9327433a31c8ec..23c15c60acd77150ea89bd6f2fa1685a
      }
    },
  
-@@ -961,7 +962,7 @@ const PanelUI = {
+@@ -1017,7 +1019,7 @@ const PanelUI = {
          el.removeAttribute("data-lazy-l10n-id");
        });
  

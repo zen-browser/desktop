@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Mindkettő elrejtése
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Áthelyezés mappába...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Új mappa
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Lap visszaállítása és rögzítése
            *[other] { $tabCount } lap visszaállítása és rögzítése
         }
-tab-reset-pin-label = Vissza a rögzített url címre
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Vissza a rögzített URL-hez
+        [zen-default-pinned-cmd] Leválás a rögzített lapról
+       *[other] { $tabSubtitle }
+    }

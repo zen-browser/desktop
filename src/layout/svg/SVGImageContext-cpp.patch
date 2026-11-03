@@ -1,0 +1,55 @@
+diff --git a/layout/svg/SVGImageContext.cpp b/layout/svg/SVGImageContext.cpp
+index 4d43db157aa9447105eeb5459cad74de6cef01d6..327d8e4f7e21783824616800fa821218c8c848e8 100644
+--- a/layout/svg/SVGImageContext.cpp
++++ b/layout/svg/SVGImageContext.cpp
+@@ -10,6 +10,7 @@
+ #include "mozilla/LookAndFeel.h"
+ #include "mozilla/ServoCSSParser.h"
+ #include "mozilla/StaticPrefs_svg.h"
++#include "mozilla/dom/BrowsingContext.h"
+ #include "mozilla/dom/Document.h"
+ #include "nsIFrame.h"
+ #include "nsISVGPaintContext.h"
+@@ -18,6 +19,19 @@
+ 
+ namespace mozilla {
+ 
++/* static */
++void SVGImageContext::MaybeStoreZenBoosts(SVGImageContext& aContext,
++                                          const nsPresContext& aPresContext) {
++  if (dom::Document* doc = aPresContext.Document()) {
++    if (dom::BrowsingContext* bc = doc->GetBrowsingContext()) {
++      bc = bc->Top();
++      aContext.SetZenBoosts(bc->ZenBoostsData(),
++                            bc->ZenBoostsComplementaryRotation(),
++                            bc->IsZenBoostsInverted());
++    }
++  }
++}
++
+ /* static */
+ void SVGImageContext::MaybeStoreContextPaint(SVGImageContext& aContext,
+                                              nsIFrame* aFromFrame,
+@@ -50,6 +64,8 @@ void SVGImageContext::MaybeStoreContextPaint(SVGImageContext& aContext,
+     }
+   }
+ 
++  MaybeStoreZenBoosts(aContext, aPresContext);
++
+   const nsStyleSVG* style = aStyle.StyleSVG();
+   if (!style->ExposesContextProperties()) {
+     // Content must have '-moz-context-properties' set to the names of the
+@@ -62,11 +78,11 @@ void SVGImageContext::MaybeStoreContextPaint(SVGImageContext& aContext,
+ 
+   if ((style->mMozContextProperties.bits & StyleContextPropertyBits::FILL) &&
+       style->mFill.kind.IsColor()) {
+-    fill = Some(style->mFill.kind.AsColor().CalcColor(aStyle));
++    fill = Some(style->mFill.kind.AsColor().CalcColor(aStyle, nullptr));
+   }
+   if ((style->mMozContextProperties.bits & StyleContextPropertyBits::STROKE) &&
+       style->mStroke.kind.IsColor()) {
+-    stroke = Some(style->mStroke.kind.AsColor().CalcColor(aStyle));
++    stroke = Some(style->mStroke.kind.AsColor().CalcColor(aStyle, nullptr));
+   }
+   if ((style->mMozContextProperties.bits &
+        StyleContextPropertyBits::FILL_OPACITY) &&

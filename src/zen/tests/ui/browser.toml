@@ -1,0 +1,22 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+prefs = [
+  "ui.popup.disable_autohide=false",
+  "zen.tabs.rename-tabs=true",
+  "zen.view.sidebar-expanded=true",
+  "browser.tabs.closeTabByDblclick=false",
+]
+support-files = [
+  "slow_load.sjs",
+]
+
+["browser_tab_loading_indicator.js"]
+
+["browser_tab_renamer.js"]
+
+["browser_toasts.js"]
+
+["browser_zen_commands.js"]

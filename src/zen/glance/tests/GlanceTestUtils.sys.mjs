@@ -3,16 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export function openGlanceOnTab(window, callback, close = true) {
-  return new Promise(async (resolve) => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async resolve => {
     window.gZenGlanceManager
       .openGlance({
-        url: 'https://example.com',
+        url: "https://example.com",
         clientX: 0,
         clientY: 0,
         width: 0,
         height: 0,
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
       })
-      .then(async (glanceTab) => {
+      .then(async glanceTab => {
         await callback(glanceTab);
         if (close) {
           window.gZenGlanceManager

@@ -19,15 +19,26 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Hide both
     .accesskey = H
 
+zen-toolbar-context-move-to-folder =
+    .label = Move to Folder
+    .accesskey = M
+
 zen-toolbar-context-new-folder =
     .label = New Folder
     .accesskey = N
+
+zen-tabs-newtab-paste-and-search =
+    .label = Paste & Search
+
+zen-scroll-to-selected-tab =
+    .tooltiptext = Scroll to the selected tab
+    .aria-label = Scroll to the selected tab
 
 sidebar-zen-expand =
   .label = Expand Sidebar
 
 sidebar-zen-create-new =
-  .label = Create New...
+  .label = Create New
 
 tabbrowser-unload-tab-button =
 .tooltiptext =
@@ -42,4 +53,10 @@ tabbrowser-reset-pin-button =
         [one] Reset and pin tab
         *[other] Reset and pin { $tabCount } tabs
     }
-tab-reset-pin-label = Back to pinned url
+
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+        *[other] { $tabSubtitle }
+    }

@@ -1,58 +1,98 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64225e42b0 100644
+index 7ce8e235dd4dafde6ed1bfa8c81c4dc1409141f1..b2423a1d07c9dd4348fa16ef291ecc5a0aa389af 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
-     "resource://gre/modules/ContextualIdentityService.sys.mjs",
+@@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
+     "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
    CustomizableUI:
      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
 +  ZenCustomizableUI: "resource:///modules/ZenCustomizableUI.sys.mjs",
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -2293,6 +2294,8 @@ var XULBrowserWindow = {
-     AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
-     TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
+@@ -883,7 +884,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
-+    gZenPinnedTabManager.onLocationChange(gBrowser.selectedBrowser);
-+
-     PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
- 
-     if (!gMultiProcessBrowser) {
-@@ -3795,7 +3798,7 @@ function warnAboutClosingWindow() {
+   var backDisabled = backCommand.hasAttribute("disabled");
+   var forwardDisabled = forwardCommand.hasAttribute("disabled");
+-  if (backDisabled == aWebNavigation.canGoBack) {
++  var canGoBack = aWebNavigation.canGoBack;
++  if (!canGoBack) {
++    canGoBack = gZenCommonActions.shouldCloseTabOnBack();
++  }
++  
++  if (backDisabled == canGoBack) {
+     if (backDisabled) {
+       backCommand.removeAttribute("disabled");
+     } else {
+@@ -4035,7 +4041,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
 -      gBrowser.openTabs.length,
 +      gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
-       gBrowser.closingTabsEnum.ALL
+       Tabbrowser.closingTabsEnum.ALL
      );
    }
-@@ -3835,7 +3838,7 @@ function warnAboutClosingWindow() {
+@@ -4075,7 +4081,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
 -        gBrowser.openTabs.length,
 +        gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
-         gBrowser.closingTabsEnum.ALL
+         Tabbrowser.closingTabsEnum.ALL
        )
      );
-@@ -3860,7 +3863,7 @@ function warnAboutClosingWindow() {
+@@ -4100,7 +4106,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
 -      gBrowser.openTabs.length,
 +      gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
-       gBrowser.closingTabsEnum.ALL
+       Tabbrowser.closingTabsEnum.ALL
      )
    );
-@@ -4782,6 +4785,9 @@ var ConfirmationHint = {
-     MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
-     MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
-     document.l10n.setAttributes(this._message, messageId, options.l10nArgs);
+@@ -4813,9 +4819,13 @@ var gDialogBox = {
+     // Bring the window to the front in case we're minimized or occluded:
+     window.focus();
+ 
+-    // Prevent urlbar views from showing on top of the modal.
+-    for (let urlbar of document.querySelectorAll(".urlbar")) {
+-      urlbar.view?.close();
++    try {
++      // Prevent urlbars from showing on top of modal
++      for (let urlbar of document.querySelectorAll(".urlbar")) {
++        urlbar.incrementPopoverBlockerCount();
++      }
++    } catch (ex) {
++      console.error(ex);
+     }
+ 
+     try {
+@@ -4841,6 +4851,10 @@ var gDialogBox = {
+       this._updateMenuAndCommandState(true /* to enable */);
+       this._dialog = null;
+       UpdatePopupNotificationsVisibility();
++      // Restore the urlbar popovers if needed
++      for (let urlbar of document.querySelectorAll(".urlbar")) {
++        urlbar.decrementPopoverBlockerCount();
++      }
+     }
+     if (this._queued.length) {
+       setTimeout(() => this._openNextDialog(), 0);
+@@ -5026,6 +5040,16 @@ var ConfirmationHint = {
+     }
+ 
+     document.l10n.setAttributes(this._message, messageId, l10nArgs);
 +    if (window.gZenUIManager?.showToast) {
-+      return window.gZenUIManager.showToast(messageId, options);
++      return window.gZenUIManager.showToast(messageId, {
++        hideCheckmark,
++        descriptionId,
++        l10nArgs,
++        showDescription,
++        position,
++        event,
++      });
 +    }
-     if (options.descriptionId) {
-       document.l10n.setAttributes(this._description, options.descriptionId);
+     if (descriptionId) {
+       document.l10n.setAttributes(this._description, descriptionId);
        this._description.hidden = false;

@@ -1,13 +1,10 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * Gecko generic/specialized adjustments for xpcom and webidl types.
  */
 
 // More specific types for parent process browsing contexts.
 interface CanonicalBrowsingContext extends LoadContextMixin {
-  embedderElement: XULBrowserElement;
+  embedderElement: MozBrowser;
   currentWindowContext: WindowGlobalParent;
   parent: CanonicalBrowsingContext;
   parentWindowContext: WindowGlobalParent;
@@ -16,7 +13,7 @@ interface CanonicalBrowsingContext extends LoadContextMixin {
 }
 
 declare namespace ChromeUtils {
-  type Modules = import('./generated/lib.gecko.modules').Modules;
+  type Modules = import("./generated/lib.gecko.modules").Modules;
 
   function importESModule<T extends keyof Modules>(
     aResourceURI: T,
@@ -28,16 +25,36 @@ interface ChromeWindow extends Window {
   isChromeWindow: true;
 }
 
+interface XULElementTagNameMap {
+  browser: MozBrowser;
+  iframe: XULFrameElement;
+  label: XULTextElement;
+  menu: XULMenuElement;
+  menupopup: XULPopupElement;
+  tree: XULTreeElement;
+}
+
 interface Document {
-  createXULElement(name: 'browser'): XULBrowserElement;
+  createXULElement<K extends keyof XULElementTagNameMap>(
+    localName: K,
+    options?: string | ElementCreationOptions
+  ): XULElementTagNameMap[K];
+  createXULElement(
+    localName: string,
+    options?: string | ElementCreationOptions
+  ): XULElement;
 }
 
 type nsIGleanPingNoReason = {
-  [K in keyof nsIGleanPing]: K extends 'submit' ? (_?: never) => void : nsIGleanPing[K];
+  [K in keyof nsIGleanPing]: K extends "submit"
+    ? (_?: never) => void
+    : nsIGleanPing[K];
 };
 
 type nsIGleanPingWithReason<T> = {
-  [K in keyof nsIGleanPing]: K extends 'submit' ? (reason: T) => void : nsIGleanPing[K];
+  [K in keyof nsIGleanPing]: K extends "submit"
+    ? (reason: T) => void
+    : nsIGleanPing[K];
 };
 
 interface MessageListenerManagerMixin {
@@ -125,15 +142,6 @@ type Sandbox = typeof globalThis & nsISupports;
 
 interface WindowGlobalParent extends WindowContext {
   readonly browsingContext: CanonicalBrowsingContext;
-}
-
-// Hand-crafted artisanal types.
-interface XULBrowserElement extends XULFrameElement, FrameLoader {
-  currentURI: nsIURI;
-  documentURI: nsIURI | null;
-  docShellIsActive: boolean;
-  isRemoteBrowser: boolean;
-  remoteType: string;
 }
 
 // https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1736

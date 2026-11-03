@@ -1,0 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.window-sync.enabled
+  value: true
+
+- name: zen.window-sync.log
+  value: false
+
+- name: zen.window-sync.prefer-unsynced-windows
+  value: false
+
+- name: zen.window-sync.open-link-in-new-unsynced-window
+  value: true
+
+- name: zen.window-sync.sync-only-pinned-tabs
+  value: false

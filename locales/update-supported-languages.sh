@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 LANGS_FILE="./supported-languages"
 
 # Clean up the file

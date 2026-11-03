@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = 两者都隐藏
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = 移动到文件夹…
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = 新建文件夹
     .accesskey = N
@@ -33,7 +36,12 @@ tabbrowser-unload-tab-button =
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] 重置并置顶标签页
-           *[other] 重置并置顶 { $tabCount } 个标签页
+            [one] 重置并固定标签页
+           *[other] 重置并固定 { $tabCount } 个标签页
         }
-tab-reset-pin-label = 返回置顶网址
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] 返回标签页
+        [zen-default-pinned-cmd] 从标签页分离
+       *[other] { $tabSubtitle }
+    }

@@ -5,17 +5,36 @@
 zen-panel-ui-current-profile-text = perfil actual
 unified-extensions-description = Las extensiones se utilizan para agregar más funcionalidades a { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Restablecer pestaña fijada
+    .label =
+        { $isEssential ->
+            [true] Restablecer pestaña esencial
+           *[false] Restablecer pestaña fijada
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Añadir a esenciales ({ $num } / { $max } huecos llenos)
+    .label = Añadir a esenciales
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } huecos llenos
 tab-context-zen-remove-essential = 
     .label = Quitar de esenciales
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Editar URL esencial
+           *[false] Editar URL fijada
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Reemplazar la URL fijada con la actual
+    .label = Reemplazar con la URL actual
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Editar…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Cambiar etiqueta...
+tab-context-zen-edit-icon = 
+    .label = Cambiar icono...
 zen-themes-corrupted = Su archivo de mods de { -brand-short-name } está dañado. Se ha restablecido el tema por defecto.
 zen-shortcuts-corrupted = Su archivo de atajos de { -brand-short-name } está dañado. Se han restablecido los atajos por defecto.
 # note: Do not translate the "<br/>" tags in the following string
@@ -27,20 +46,21 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimizar
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Color personalizado
-zen-panel-ui-gradient-generator-saved-message = ¡Gradiente guardado con éxito!
 zen-copy-current-url-confirmation = ¡URL actual copiada!
+zen-copy-current-url-as-markdown-confirmation = ¡La URL actual se copió como Markdown!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
     .label = Confirmar
 zen-pinned-tab-replaced = La URL de la pestaña fijada se ha reemplazado por la URL actual.
+zen-pinned-tab-url-edited = ¡La URL de la pestaña fijada ha sido actualizada!
+zen-pinned-tab-url-invalid = Eso no parece una URL válida.
+zen-pinned-tab-edit-url-title = Editar URL fijada
+zen-pinned-tab-edit-url-label = Introduzca la URL a la que debe apuntar esta pestaña fijada:
 zen-tabs-renamed = ¡La pestaña se ha renombrado con éxito!
 zen-background-tab-opened-toast = ¡Nueva pestaña abierta en segundo plano!
 zen-workspace-renamed-toast = ¡El espacio de trabajo ha sido renombrado con éxito!
-zen-library-sidebar-workspaces = 
-    .label = Espacios
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-split-view-limit-toast = ¡No se pueden añadir más paneles a la vista dividida!
 zen-toggle-compact-mode-button = 
     .label = Modo compacto
     .tooltiptext = Alternar modo compacto
@@ -55,11 +75,15 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Iconos
+zen-emojis-picker-search = 
+    .placeholder = Buscar emojis
 urlbar-search-mode-zen_actions = Acciones
 zen-site-data-settings = Ajustes
 zen-generic-manage = Administrar
 zen-generic-more = Más
 zen-generic-next = Siguiente
+zen-essentials-promo-label = Añadir a esenciales
+zen-essentials-promo-sublabel = Mantenga sus pestañas favoritas a solo un clic de distancia
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
@@ -94,3 +118,25 @@ zen-site-data-setting-site-protection = Protección contra el rastreo
 
 zen-site-data-panel-feature-callout-title = Un nuevo hogar para complementos, permisos y más
 zen-site-data-panel-feature-callout-subtitle = Haga clic en el icono para administrar la configuración del sitio, ver información de seguridad, acceder a extensiones, y realizar acciones comunes.
+zen-open-link-in-glance = 
+    .label = Abrir enlace en Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = ¡Actualización completada!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Novedades en { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Ver notas de la versión
+zen-sidebar-notification-donate-label = Soporte { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donar al proyecto
+zen-sidebar-notification-restart-safe-mode-label = ¿Algo dejó de funcionar?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Reiniciar en modo seguro
+zen-window-sync-migration-dialog-title = Mantenga sus ventanas sincronizadas
+zen-window-sync-migration-dialog-message = Ahora Zen sincroniza las ventanas en el mismo dispositivo, por lo que los cambios en una ventana se reflejan en las demás instantáneamente.
+zen-window-sync-migration-dialog-learn-more = Más información
+zen-window-sync-migration-dialog-accept = Entendido
+zen-appmenu-new-blank-window = 
+    .label = Nueva ventana en blanco

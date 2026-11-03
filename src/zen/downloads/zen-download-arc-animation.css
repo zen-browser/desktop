@@ -41,6 +41,6 @@
   width: 100%;
   height: 100%;
   background-color: var(--zen-primary-color);
-  mask: url('chrome://browser/content/zen-images/downloads/download.svg') no-repeat center;
+  mask: url("chrome://browser/content/zen-images/downloads/download.svg") no-repeat center;
   mask-size: 70%;
 }

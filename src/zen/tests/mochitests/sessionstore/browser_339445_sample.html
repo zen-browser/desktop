@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<meta charset="utf-8">
+<title>Test for bug 339445</title>
+
+storageTestItem = <span id="storageTestItem">FAIL</span>
+
+<!--
+  storageTestItem's textContent will be one of the following:
+  * FAIL    : sessionStorage wasn't available
+  * PENDING : the test value has been initialized on first load
+  * SUCCESS : the test value was correctly retrieved
+-->
+
+<script type="application/javascript">
+  document.getElementById("storageTestItem").textContent =
+    sessionStorage.storageTestItem || "PENDING";
+  sessionStorage.storageTestItem = "SUCCESS";
+</script>

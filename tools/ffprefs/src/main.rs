@@ -326,7 +326,7 @@ fn is_twilight_build() -> bool {
     if let Ok(content) = fs::read_to_string(&dynamic_config_path) {
         return !content.contains("\"release\"");
     }
-    false
+    true
 }
 
 fn get_env_values() -> HashMap<String, bool> {
@@ -345,6 +345,17 @@ fn expand_pref_values(prefs: &mut [Preference]) {
                 new_value = new_value.replace(&placeholder, if *value { "true" } else { "false" });
             }
             pref.value = new_value.clone();
+        }
+        // Also change the condition if it contains placeholders
+        if let Some(condition) = &pref.condition {
+            let mut new_condition = condition.clone();
+            for (key, value) in &env_values {
+                let placeholder = format!("@{}@", key);
+                if new_condition.contains(&placeholder) {
+                    new_condition = new_condition.replace(&placeholder, if *value { "1" } else { "0" });
+                }
+                pref.condition = Some(new_condition.clone());
+            }
         }
     }
 }

@@ -1,0 +1,39 @@
+diff --git a/layout/base/nsPresContext.h b/layout/base/nsPresContext.h
+index dd13711ab28e0f43f2a0e4f5e9a9794c3eb4e206..e404bd2f10e7e92bf193b5f692e673bad1b464d5 100644
+--- a/layout/base/nsPresContext.h
++++ b/layout/base/nsPresContext.h
+@@ -594,6 +594,22 @@ class nsPresContext : public nsISupports,
+    */
+   void SetColorSchemeOverride(mozilla::dom::PrefersColorSchemeOverride);
+ 
++  // Zen boosts override. SVG images render in their own document, which has no
++  // BrowsingContext to carry the page's boost, so the host propagates it here.
++  void SetZenBoostsOverride(nscolor aAccent, float aComplementaryRotation,
++                            bool aInverted) {
++    mZenBoostsOverrideAccent = aAccent;
++    mZenBoostsOverrideComplementaryRotation = aComplementaryRotation;
++    mZenBoostsOverrideInverted = aInverted;
++    mHasZenBoostsOverride = true;
++  }
++  bool HasZenBoostsOverride() const { return mHasZenBoostsOverride; }
++  nscolor ZenBoostsOverrideAccent() const { return mZenBoostsOverrideAccent; }
++  float ZenBoostsOverrideComplementaryRotation() const {
++    return mZenBoostsOverrideComplementaryRotation;
++  }
++  bool ZenBoostsOverrideInverted() const { return mZenBoostsOverrideInverted; }
++
+   /**
+    * Sets the effective link parameters overrides, and invalidate stuff as
+    * needed.
+@@ -1444,6 +1460,11 @@ class nsPresContext : public nsISupports,
+   mozilla::StyleLinkParameters mLinkParameters;
+   nsMargin mEmbedderScrollbarInset;
+ 
++  nscolor mZenBoostsOverrideAccent = 0;
++  float mZenBoostsOverrideComplementaryRotation = 0.0f;
++  bool mZenBoostsOverrideInverted = false;
++  bool mHasZenBoostsOverride = false;
++
+  protected:
+   virtual ~nsPresContext();
+ 

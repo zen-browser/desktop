@@ -1,13 +1,13 @@
 diff --git a/browser/base/content/browser-sets.js b/browser/base/content/browser-sets.js
-index 9cff49a7b86f7697f70c4ef61d3c3561f058dc45..15ac9a8a79e8642b3add2f6df63ed32eb0c8bcb9 100644
+index b6345b7c99a55d81f5c09dfea4f1aff2a3cfa775..a486701f4843f0bd484d463947881229666da892 100644
 --- a/browser/base/content/browser-sets.js
 +++ b/browser/base/content/browser-sets.js
-@@ -253,7 +253,7 @@ document.addEventListener(
-         }
-       });
- 
--    document.getElementById("mainKeyset").addEventListener("command", event => {
-+    document.getElementById("zenKeyset").addEventListener("command", event => {
-       const SIDEBAR_REVAMP_PREF = "sidebar.revamp";
-       const SIDEBAR_REVAMP_ENABLED = Services.prefs.getBoolPref(
-         SIDEBAR_REVAMP_PREF,
+@@ -379,6 +379,8 @@ document.addEventListener(
+               panel: SidebarController.currentID,
+               opened: SidebarController._state.launcherExpanded,
+             });
++          } else {
++            SidebarController.toggle();
+           }
+           break;
+         case "key_gotoHistory":

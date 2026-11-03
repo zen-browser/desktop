@@ -1,0 +1,10 @@
+{
+  "id": "filename-of-dump.txt",
+  "attachment": {
+    "filename": "filename-of-dump.txt",
+    "hash": "4c46ef7e4f1951d210fe54c21e07c09bab265fd122580083ed1d6121547a8c6b",
+    "size": 25
+  },
+  "last_modified": 1234567,
+  "some_key": "some metadata"
+}

@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Skjul begge
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Move to Folder...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Ny mappe
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Nulstil og fastgør fane
            *[other] Nulstil og fastgør { $tabCount } faner
         }
-tab-reset-pin-label = Tilbage til fastgjort URL
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Tilbage til fastgjort url
+        [zen-default-pinned-cmd] Adskil fra fastgjort fane
+       *[other] { $tabSubtitle }
+    }

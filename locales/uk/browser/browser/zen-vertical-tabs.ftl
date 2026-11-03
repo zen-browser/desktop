@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Приховувати обидві
     .accesskey = Н
+zen-toolbar-context-move-to-folder = 
+    .label = Перемістити до теки...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Нова тека
     .accesskey = N
@@ -38,4 +41,9 @@ tabbrowser-reset-pin-button =
             [few] Скинути та закріпити { $tabCount } вкладки
            *[other] Скинути та закріпити { $tabCount } вкладок
         }
-tab-reset-pin-label = Повернутися до закріпленої адреси
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Назад до закріпленої URL-адреси
+        [zen-default-pinned-cmd] Відокремити від закріпленої вкладки
+       *[other] { $tabSubtitle }
+    }

@@ -3,7 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [DEFAULT]
-prefs = ["zen.welcome-screen.seen=false"]
+prefs = [
+  "zen.welcome-screen.seen=false",
+  "browser.migrate.internal-testing.enabled=true",
+]
 support-files = [
   "head.js",
 ]

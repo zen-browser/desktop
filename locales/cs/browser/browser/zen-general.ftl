@@ -5,44 +5,64 @@
 zen-panel-ui-current-profile-text = aktuální profil
 unified-extensions-description = Rozšíření slouží k přidání dalších funkcí do prohlížeče { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Resetovat připnuté karty
+    .label =
+        { $isEssential ->
+            [true] Resetovat Essential panel
+           *[false] Resetovat připnutý panel
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Přidat do Essentials ({ $num } / { $max } zaplněných slotů)
+    .label = Přidat do Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } zaplněných slotů
 tab-context-zen-remove-essential = 
     .label = Odstranit z Essentials
     .accesskey = R
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Nahradit připnutou URL adresu aktuální adresou
+    .label = Nahradit současnou URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Upravit…
+    .accesskey = E
+tab-context-zen-edit-title = 
+    .label = Změnit název...
+tab-context-zen-edit-icon = 
+    .label = Změnit ikonu...
 zen-themes-corrupted = Váš { -brand-short-name } mods soubor je poškozen. Byl obnoven na výchozí motiv.
 zen-shortcuts-corrupted = Soubor se zkratky prohlížeče { -brand-short-name } je poškozen. Zkratky byly resetovány na výchozí nastavení.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Nový adresní řádek je nyní zapnutý, takže už není potřeba otevírat nové karty.<br/><br/>
-    Zkuste otevřít novou kartu a podívejte se, jak funguje!
+    Zkuste otevřít nový panel a podívejte se, jak funguje!
 zen-disable = Zavřít
 pictureinpicture-minimize-btn = 
     .aria-label = Minimalizovat
     .tooltip = Minimalizovat
 zen-panel-ui-gradient-generator-custom-color = Vlastní barva
-zen-panel-ui-gradient-generator-saved-message = Gradient byl úspěšně uložen!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = URL adresa byla zkopírována!
+zen-copy-current-url-as-markdown-confirmation = Kopírovat aktuální URL jako Markdown!
 zen-general-cancel-label = 
     .label = Zrušit
 zen-general-confirm = 
     .label = Potvrdit
 zen-pinned-tab-replaced = Připnutá URL adresa panelu byla nahrazena aktuální URL adresou.
+zen-pinned-tab-url-edited = URL připnuté karty byla aktualizována!
+zen-pinned-tab-url-invalid = To nevypadá jako platná URL adresa.
+zen-pinned-tab-edit-url-title = Upravit připnutou adresu URL
+zen-pinned-tab-edit-url-label = Zadejte URL, na kterou by měl tento připnutý panel odkazovat:
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
-zen-background-tab-opened-toast = Nová karta na pozadí byla otevřena!
+zen-background-tab-opened-toast = Nový panel na pozadí byl otevřen!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
-zen-library-sidebar-workspaces = 
-    .label = Prostory
-zen-library-sidebar-mods = 
-    .label = Módy
+zen-split-view-limit-toast = Do rozděleného zobrazení nelze přidat více panelů!
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
+    .label = Kompaktní režim
     .tooltiptext = Přepnout kompaktní režim
 
 # note: Do not translate the "<br/>" tags in the following string
@@ -55,17 +75,21 @@ zen-icons-picker-emoji =
     .label = Emodži
 zen-icons-picker-svg = 
     .label = Ikony
+zen-emojis-picker-search = 
+    .placeholder = Vyhledat emoji
 urlbar-search-mode-zen_actions = Akce
 zen-site-data-settings = Nastavení
 zen-generic-manage = Spravovat
 zen-generic-more = Více
-zen-generic-next = Next
+zen-generic-next = Další
+zen-essentials-promo-label = Přídat do Essentials
+zen-essentials-promo-sublabel = Mějte oblíbené panely na dosah jedním kliknutím
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Povoleno
 zen-site-data-setting-block = Blokováno
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-protections-enabled = Zapnuto
+zen-site-data-protections-disabled = Vypnuto
+zen-site-data-setting-cross-site = Mezi stránkové cookies
 zen-site-data-security-info-extension = 
     .label = Rozšíření
 zen-site-data-security-info-secure = 
@@ -79,18 +103,40 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Nastavení všech stránek
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Sdílet tuto stránku
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Zapnout čtecí režim
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Pořídit snímek obrazovky
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Přidat tuto stránku do záložek
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Kopírovat URL
+zen-site-data-setting-site-protection = Ochrana proti sledování
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Nový domov pro doplňky, oprávnění a další
+zen-site-data-panel-feature-callout-subtitle = Klikněte na ikonu pro správu nastavení webu, zobrazení bezpečnostních informací, přístup k rozšíření a provádění běžných akcí.
+zen-open-link-in-glance = 
+    .label = Otevřít odkaz v Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Aktualizace byla dokončena!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Co je nového v prohlížeči { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Zobrazit změny
+zen-sidebar-notification-donate-label = Podpořte { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Přispět na projekt
+zen-sidebar-notification-restart-safe-mode-label = Něco se rozbilo?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Restartovat v Nouzovém Režimu
+zen-window-sync-migration-dialog-title = Mějte svá okna synchronizovaná
+zen-window-sync-migration-dialog-message = Zen nyní synchronizuje okna na stejném zařízení. Změny provedené v jednom okně se okamžitě projeví v ostatních.
+zen-window-sync-migration-dialog-learn-more = Zjistit více
+zen-window-sync-migration-dialog-accept = Rozumím
+zen-appmenu-new-blank-window = 
+    .label = Nové prázdné okno

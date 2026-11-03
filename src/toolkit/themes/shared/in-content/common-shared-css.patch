@@ -1,40 +1,22 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 96129498de63153704711bf7a21fb10922e80917..83f7b5ee2f15197dc42ec02ec1a73cc2bfc19a4d 100644
+index 087d356b80886b22692f948a97f229ccf75737fd..9c2d370e94d1f901ded4a7a786a475fdf867de07 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
-@@ -4,7 +4,7 @@
- 
- @import url("chrome://global/skin/design-system/tokens-brand.css");
- @import url("chrome://global/skin/design-system/text-and-typography.css");
--
-+@import url("chrome://browser/content/zen-styles/zen-theme.css");
- @namespace html "http://www.w3.org/1999/xhtml";
- @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
- 
-@@ -68,7 +68,7 @@
+@@ -40,7 +40,7 @@
     * this in forced colors mode, as we should be using system colours then.
     */
    :root[dialogroot] {
--    --background-color-canvas: #42414d;
+-    --background-color-canvas: var(--color-gray-80);
 +    --background-color-canvas: var(--zen-dialog-background);
    }
  }
  
-@@ -706,7 +706,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
-   fill-opacity: 1;
- }
- 
--@media (max-width: 830px) {
-+@media (max-width: 130px) {
-   :root {
-     --in-content-sidebar-width: 118px;
-   }
-@@ -1096,7 +1096,7 @@ xul|*.sidebar-footer-link {
-   user-select: none;
- }
- 
--@media (max-width: 830px) {
-+@media (max-width: 130px) {
-   .sidebar-footer-list {
-     margin-inline-start: 40px;
-     align-items: flex-start;
+@@ -141,7 +141,7 @@ xul|menulist {
+   border-radius: var(--button-border-radius);
+   background-color: var(--button-background-color);
+   font-weight: normal;
+-  padding: var(--button-padding);
++  padding: 0.7em 1em;
+   text-decoration: none;
+   margin: var(--space-xsmall) var(--space-small);
+   /* Ensure font-size isn't overridden by widget styling (e.g. in forms.css) */

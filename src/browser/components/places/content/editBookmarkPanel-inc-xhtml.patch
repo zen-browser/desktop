@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/content/editBookmarkPanel.inc.xhtml b/browser/components/places/content/editBookmarkPanel.inc.xhtml
-index 40366677b60123c66bf0739d1b2374b423d3061c..a2774e99726407d95011126ea2a272f08eaf0961 100644
+index eb23018327ff6eef7c28683d695bcf610fcc87d2..6627c4b5594d440527208236f784365b06a79411 100644
 --- a/browser/components/places/content/editBookmarkPanel.inc.xhtml
 +++ b/browser/components/places/content/editBookmarkPanel.inc.xhtml
 @@ -12,14 +12,15 @@
@@ -20,7 +20,7 @@ index 40366677b60123c66bf0739d1b2374b423d3061c..a2774e99726407d95011126ea2a272f0
    <label data-l10n-id="bookmark-overlay-location-2"
           class="editBMPanel_folderRow hideable"
           control="editBMPanel_folderMenuList"/>
-@@ -47,7 +48,25 @@
+@@ -49,7 +50,25 @@
              class="expander-down panel-button"
              data-l10n-id="bookmark-overlay-folders-expander2"/>
    </hbox>

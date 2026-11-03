@@ -1,8 +1,8 @@
 diff --git a/browser/components/places/PlacesUIUtils.sys.mjs b/browser/components/places/PlacesUIUtils.sys.mjs
-index 86cc499f9b959ef87ab57fc4195e0c65f25e8c7c..a928ea83b9f4d0133238e744d2fb91318d36d4de 100644
+index 7c11a2004c87aa6f0c61cf05ca522c7471c7be71..0f92f9925221cadbd258402f1b6a86a71fdb42e9 100644
 --- a/browser/components/places/PlacesUIUtils.sys.mjs
 +++ b/browser/components/places/PlacesUIUtils.sys.mjs
-@@ -60,6 +60,7 @@ class BookmarkState {
+@@ -61,6 +61,7 @@ class BookmarkState {
      info,
      tags = "",
      keyword = "",
@@ -10,7 +10,7 @@ index 86cc499f9b959ef87ab57fc4195e0c65f25e8c7c..a928ea83b9f4d0133238e744d2fb9131
      isFolder = false,
      children = [],
      autosave = false,
-@@ -84,12 +85,18 @@ class BookmarkState {
+@@ -85,12 +86,18 @@ class BookmarkState {
        keyword,
        parentGuid: info.parentGuid,
        index,
@@ -29,7 +29,7 @@ index 86cc499f9b959ef87ab57fc4195e0c65f25e8c7c..a928ea83b9f4d0133238e744d2fb9131
    /**
     * Save edited title for the bookmark
     *
-@@ -183,6 +190,14 @@ class BookmarkState {
+@@ -184,6 +191,14 @@ class BookmarkState {
        "BookmarkState::createBookmark"
      );
      this._guid = results?.[0];
@@ -44,7 +44,7 @@ index 86cc499f9b959ef87ab57fc4195e0c65f25e8c7c..a928ea83b9f4d0133238e744d2fb9131
      return this._guid;
    }
  
-@@ -216,6 +231,14 @@ class BookmarkState {
+@@ -217,6 +232,14 @@ class BookmarkState {
        "BookmarkState::save::createFolder"
      );
      this._guid = results[0];
@@ -59,7 +59,7 @@ index 86cc499f9b959ef87ab57fc4195e0c65f25e8c7c..a928ea83b9f4d0133238e744d2fb9131
      return this._guid;
    }
  
-@@ -302,11 +325,97 @@ class BookmarkState {
+@@ -303,11 +326,97 @@ class BookmarkState {
        await lazy.PlacesTransactions.batch(transactions, "BookmarkState::save");
      }
  
@@ -157,12 +157,3 @@ index 86cc499f9b959ef87ab57fc4195e0c65f25e8c7c..a928ea83b9f4d0133238e744d2fb9131
    /**
     * Append transactions to update tags by given information.
     *
-@@ -904,7 +1013,7 @@ export var PlacesUIUtils = {
-     aNode,
-     aWhere,
-     aWindow,
--    { aPrivate = false, userContextId = 0 } = {}
-+    { aPrivate = false, userContextId = undefined } = {}
-   ) {
-     if (
-       aNode &&

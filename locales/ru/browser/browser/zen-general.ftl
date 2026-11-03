@@ -5,19 +5,38 @@
 zen-panel-ui-current-profile-text = текущий профиль
 unified-extensions-description = Расширения дополняют функционал { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Сбросить закреплённую вкладку
+    .label =
+        { $isEssential ->
+            [true] Сбросить важную вкладку
+           *[false] Сбросить закрепленную вкладку
+        }
     .accesskey = К
 tab-context-zen-add-essential = 
-    .label = Добавить в важное ({ $num } из { $max } слотов занято)
+    .label = Добавить в важное
     .accesskey = У
+tab-context-zen-add-essential-badge = { $num }/{ $max } мест занято
 tab-context-zen-remove-essential = 
     .label = Удалить из важного
     .accesskey = К
+tab-context-zen-edit-pinned-page = 
+    .label =
+        { $isEssential ->
+            [true] Изменить URL-адрес из важного
+           *[false] Изменить закрепленный URL-адрес
+        }
+    .accesskey = З
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Заменить закреплённый адрес на текущий
+    .label = Заменить текущим URL-адресом
     .accesskey = С
-zen-themes-corrupted = Файл дополнения { -brand-short-name } повреждён. Возвращена тема по умолчанию.
-zen-shortcuts-corrupted = Файл комбинаций клавиш { -brand-short-name } повреждён. Возвращены комбинации клавиш по умолчанию.
+tab-context-zen-edit-pinned-url = 
+    .label = Редактировать…
+    .accesskey = У
+tab-context-zen-edit-title = 
+    .label = Переименовать...
+tab-context-zen-edit-icon = 
+    .label = Изменить значок...
+zen-themes-corrupted = Файл модов { -brand-short-name } повреждён. Тема сброшена к стандартной.
+zen-shortcuts-corrupted = Файл сочетаний клавиш { -brand-short-name } повреждён. Возвращены сочетания клавиш по умолчанию.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Новая адресная строка активирована, теперь нет необходимости использовать отдельные страницы для новых вкладок.<br/><br/>
@@ -26,21 +45,22 @@ zen-disable = Выключить
 pictureinpicture-minimize-btn = 
     .aria-label = Свернуть
     .tooltip = Свернуть
-zen-panel-ui-gradient-generator-custom-color = Пользовательский цвет
-zen-panel-ui-gradient-generator-saved-message = Градиент успешно сохранён!
+zen-panel-ui-gradient-generator-custom-color = Свой цвет
 zen-copy-current-url-confirmation = Адрес скопирован!
+zen-copy-current-url-as-markdown-confirmation = Текущий адрес скопирован как Markdown!
 zen-general-cancel-label = 
     .label = Отменить
 zen-general-confirm = 
     .label = Подтвердить
 zen-pinned-tab-replaced = Адрес закреплённой вкладки заменён на текущий адрес!
+zen-pinned-tab-url-edited = Ссылка на закрепленную вкладку обновлена!
+zen-pinned-tab-url-invalid = Это не похоже на допустимый URL.
+zen-pinned-tab-edit-url-title = Редактировать прикрепленный URL
+zen-pinned-tab-edit-url-label = Введите URL на который должна вести эта вкладка:
 zen-tabs-renamed = Вкладка успешно переименована!
 zen-background-tab-opened-toast = Открыта новая фоновая вкладка!
 zen-workspace-renamed-toast = Пространство успешно переименовано!
-zen-library-sidebar-workspaces = 
-    .label = Пространства
-zen-library-sidebar-mods = 
-    .label = Моды
+zen-split-view-limit-toast = Невозможно добавить больше панелей в раздельный вид!
 zen-toggle-compact-mode-button = 
     .label = Компактный режим
     .tooltiptext = Переключить компактный режим
@@ -55,11 +75,15 @@ zen-icons-picker-emoji =
     .label = Эмодзи
 zen-icons-picker-svg = 
     .label = Иконки
+zen-emojis-picker-search = 
+    .placeholder = Поиск эмодзи
 urlbar-search-mode-zen_actions = Действия
 zen-site-data-settings = Настройки
 zen-generic-manage = Изменить
 zen-generic-more = Ещё
 zen-generic-next = Далее
+zen-essentials-promo-label = Добавить в важное
+zen-essentials-promo-sublabel = Доступ к любимым вкладкам в один клик
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Разрешено
 zen-site-data-setting-block = Запрещено
@@ -94,3 +118,25 @@ zen-site-data-setting-site-protection = Защита от отслеживани
 
 zen-site-data-panel-feature-callout-title = Новый дом для расширений, разрешений и всего остального
 zen-site-data-panel-feature-callout-subtitle = Нажмите на значок для доступа к настройкам сайта, параметрам безопасности, расширениям и прочим действиям.
+zen-open-link-in-glance = 
+    .label = Открыть ссылку в предпросмотре
+    .accesskey = П
+zen-sidebar-notification-updated-heading = Обновление завершено!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Что нового в { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Примечания к выпуску
+zen-sidebar-notification-donate-label = Поддержать { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Поддержать проект
+zen-sidebar-notification-restart-safe-mode-label = Что-то пошло не так?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Перезапустить в безопасном режиме
+zen-window-sync-migration-dialog-title = Синхронизируйте окна
+zen-window-sync-migration-dialog-message = Теперь Zen синхронизирует окна на одном устройстве, поэтому изменения в одном окне будут мгновенно отображаться в других.
+zen-window-sync-migration-dialog-learn-more = Узнать больше
+zen-window-sync-migration-dialog-accept = Понятно
+zen-appmenu-new-blank-window = 
+    .label = Новое пустое окно

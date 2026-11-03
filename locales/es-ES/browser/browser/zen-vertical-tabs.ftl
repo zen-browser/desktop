@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Ocultar ambas
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Mover a la carpeta...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nueva carpeta
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Restablecer y fijar pestaña
            *[other] Restablecer y fijar { $tabCount } pestañas
         }
-tab-reset-pin-label = Volver a la URL fijada
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Volver a la URL fijada
+        [zen-default-pinned-cmd] Separar de la pestaña fijada
+       *[other] { $tabSubtitle }
+    }

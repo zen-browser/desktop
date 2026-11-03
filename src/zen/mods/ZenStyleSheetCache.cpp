@@ -11,14 +11,17 @@
 
 #include "nsStyleSheetService.h"
 
-#include "mozilla/css/SheetParsingMode.h"
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/GlobalStyleSheetCache.h"
+#include "mozilla/RefPtr.h"
+#include "mozilla/ServoStyleConsts.h"
+#include "mozilla/StyleSheet.h"
 
-#define GET_MODS_FILE(chromeFile, err) \
+#define GET_MODS_FILE(chromeFile, err)                                        \
   NS_GetSpecialDirectory(NS_APP_USER_CHROME_DIR, getter_AddRefs(chromeFile)); \
-  if (!chromeFile) { \
-    return err; \
-  } \
+  if (!chromeFile) {                                                          \
+    return err;                                                               \
+  }                                                                           \
   chromeFile->Append(ZEN_MODS_FILENAME);
 
 namespace zen {
@@ -44,12 +47,11 @@ auto ZenStyleSheetCache::GetModsSheet() -> StyleSheet* {
     }
   }
 
-  LoadSheetFile(chromeFile, css::eUserSheetFeatures);
+  LoadSheetFile(chromeFile, StyleOrigin::User);
   return mModsSheet;
 }
 
-auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
-                                        css::SheetParsingMode aParsingMode)
+auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile, StyleOrigin aOrigin)
     -> void {
   nsCOMPtr<nsIURI> uri;
   NS_NewFileURI(getter_AddRefs(uri), aFile);
@@ -57,26 +59,28 @@ auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
     return;
   }
 
-  auto loader = new mozilla::css::Loader;
-  auto result = loader->LoadSheetSync(uri, aParsingMode,
-                                      css::Loader::UseSystemPrincipal::Yes);
+  RefPtr<mozilla::css::Loader> loader = new mozilla::css::Loader;
+  auto result =
+      loader->LoadSheetSync(uri, aOrigin, css::Loader::UseSystemPrincipal::Yes);
   if (MOZ_UNLIKELY(result.isErr())) {
     return;
   }
   mModsSheet = result.unwrapOr(nullptr);
 }
-  
+
 /* static */
 auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   MOZ_ASSERT(NS_IsMainThread());
   if (!gZenModsCache) {
     gZenModsCache = new ZenStyleSheetCache;
+    ClearOnShutdown(&gZenModsCache);
   }
   return gZenModsCache;
 }
 
-nsresult ZenStyleSheetCache::RebuildModsStylesheets(const nsACString& aContents) {
-  // Re-parse the mods stylesheet. By doing so, we read 
+nsresult ZenStyleSheetCache::RebuildModsStylesheets(
+    const nsACString& aContents) {
+  // Re-parse the mods stylesheet. By doing so, we read
   // Once we have the data as a nsACString, we call ReparseSheet from the
   // StyleSheet class to re-parse the stylesheet.
   auto sheet = GetModsSheet();
@@ -91,7 +95,6 @@ nsresult ZenStyleSheetCache::RebuildModsStylesheets(const nsACString& aContents)
   return aRv.StealNSResult();
 }
 
+mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache;
 
-mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache; 
-
-} // namespace: zen
+}  // namespace zen

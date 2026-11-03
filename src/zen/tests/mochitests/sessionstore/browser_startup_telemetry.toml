@@ -1,0 +1,9 @@
+# The tests in this manifest read Glean metrics that SessionStore records once,
+# while the browser starts, and that cannot be recorded again. They need a
+# browser no other test has run in: browser-chrome gives one browser to a whole
+# manifest, and Services.fog.testResetFOG(), which several tests legitimately
+# call, clears those metrics for every test that follows it.
+
+[DEFAULT]
+
+["browser_startup_timeline_telemetry.js"]

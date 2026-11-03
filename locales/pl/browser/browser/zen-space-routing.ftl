@@ -8,6 +8,6 @@ zen-space-routing-tab-routed-toast = Nowa karta otwarta w { $targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Dodaj regułę dla domeny
-           *[other] Dodaj regułę dla domen
+            [one] Dodaj regułę przekierowania dla domeny
+           *[other] Dodaj regułę przekierowania dla domen
         }

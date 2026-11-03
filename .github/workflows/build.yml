@@ -137,7 +137,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: useblacksmith/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
@@ -192,7 +192,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: useblacksmith/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
@@ -234,7 +234,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: useblacksmith/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
@@ -613,7 +613,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: useblacksmith/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 

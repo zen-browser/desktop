@@ -87,7 +87,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: useblacksmith/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
@@ -125,7 +125,7 @@ jobs:
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
         id: cache-mac-cross
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@v5
         with:
           path: ${HOME}/mac-cross
           key: mac-cross

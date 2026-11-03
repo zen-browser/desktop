@@ -56,6 +56,9 @@ zen-bookmark-edit-panel-workspace-selector =
 zen-bookmark-edit-panel-workspace-expander =
     .tooltiptext = Show all spaces
 
+zen-bookmark-edit-panel-workspace-expander-hide =
+    .tooltiptext = Hide
+
 zen-panel-ui-gradient-generator-algo-complementary =
     .label = Complementary
 zen-panel-ui-gradient-generator-algo-splitComplementary =

@@ -83,7 +83,7 @@ zen-generic-manage = Kezelés
 zen-generic-more = Több
 zen-generic-next = Következő
 zen-essentials-promo-label = Felvétel az alapvetőkbe
-zen-essentials-promo-sublabel = Tartsa kedvenc lapjait egy kattintásra
+zen-essentials-promo-sublabel = Tartsd kedvenc lapjaid egy kattintásnyira
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Engedélyezve
 zen-site-data-setting-block = Blokkolva
@@ -118,7 +118,7 @@ zen-site-data-setting-site-protection = Nyomkövetés védelem
 # Section: Feature callouts
 
 zen-site-data-panel-feature-callout-title = Új hely az add-onok, engedélyek és egyéb elemek számára
-zen-site-data-panel-feature-callout-subtitle = Kattintson az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.
+zen-site-data-panel-feature-callout-subtitle = Kattints az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.
 zen-open-link-in-glance = 
     .label = Link megnyitása a bepillantóban
     .accesskey = G
@@ -135,9 +135,9 @@ zen-sidebar-notification-donate-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Valami elromlott?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Újraindítás biztonságos módban
-zen-window-sync-migration-dialog-title = Tartsa szinkronban az ablakait
+zen-window-sync-migration-dialog-title = Tartsad szinkronban az ablakaid
 zen-window-sync-migration-dialog-message = A Zen mostantól szinkronizálja az ugyanazon eszközön található ablakokat, így az egyik ablakban végzett módosítások azonnal megjelennek a többiben is.
 zen-window-sync-migration-dialog-learn-more = Tudj meg többet
 zen-window-sync-migration-dialog-accept = Értettem
 zen-appmenu-new-blank-window = 
-    .label = New Blank Window
+    .label = Új üres ablak

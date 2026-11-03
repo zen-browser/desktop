@@ -566,12 +566,6 @@
             // Single profile browsers report no profile list.
             profiles = [null];
           }
-          if (key === "arc") {
-            profiles = [
-              profiles.find(profile => profile?.id === "Default") ??
-                profiles[0],
-            ];
-          }
           const nameId = migrator.constructor.displayNameL10nID;
           let displayName = nameId;
           try {

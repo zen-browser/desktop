@@ -20,4 +20,5 @@
 #include ../../../zen/boosts/jar.inc.mn
 #include ../../../zen/share/jar.inc.mn
 #include ../../../zen/library/jar.inc.mn
+#include ../../../zen/about/jar.inc.mn
 #include ../../../zen/migration/jar.inc.mn

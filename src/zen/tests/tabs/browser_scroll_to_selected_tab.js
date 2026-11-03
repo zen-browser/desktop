@@ -3,6 +3,10 @@
 
 "use strict";
 
+const { openGlanceOnTab } = ChromeUtils.importESModule(
+  "resource://testing-common/GlanceTestUtils.sys.mjs"
+);
+
 const ICON_URL = "chrome://branding/content/icon32.png";
 
 let space;
@@ -138,6 +142,34 @@ add_task(async function test_never_offered_for_an_essential() {
     () => pill.hidden,
     "Selecting an essential takes the pill away"
   );
+
+  gZenPinnedTabManager.removeEssentials(essential);
+  BrowserTestUtils.removeTab(essential);
+  gBrowser.selectedTab = gBrowser.visibleTabs.at(-1);
+  await TestUtils.waitForCondition(
+    () => selectedIsVisible(),
+    "Back on a tab in the strip"
+  );
+});
+
+add_task(async function test_never_offered_for_a_glance_from_an_essential() {
+  // The glance tab is drawn inside the essential, so it is never in the strip.
+  const essential = openedTabs.pop();
+  gZenPinnedTabManager.addToEssentials(essential);
+  await TestUtils.waitForCondition(
+    () => essential.hasAttribute("zen-essential"),
+    "The tab is set aside as an essential"
+  );
+  gBrowser.selectedTab = essential;
+  await openGlanceOnTab(window, async () => {
+    scrollbox.scrollbox.scrollTop = scrollbox.scrollbox.scrollTopMax;
+    /* eslint-disable-next-line mozilla/no-arbitrary-setTimeout */
+    await new Promise(resolve => setTimeout(resolve, 400));
+    Assert.ok(
+      pill.hidden,
+      "Nothing is offered for a glance opened from an essential"
+    );
+  });
 
   gZenPinnedTabManager.removeEssentials(essential);
   BrowserTestUtils.removeTab(essential);

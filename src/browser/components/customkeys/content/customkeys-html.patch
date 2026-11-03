@@ -1,0 +1,15 @@
+diff --git a/browser/components/customkeys/content/customkeys.html b/browser/components/customkeys/content/customkeys.html
+index 309101962aae7a5fed6d0686bee512d72bfacf1e..bef4e92e45f409c6f4d37e9a7173bf0484a83eca 100644
+--- a/browser/components/customkeys/content/customkeys.html
++++ b/browser/components/customkeys/content/customkeys.html
+@@ -21,6 +21,10 @@
+       href="chrome://browser/content/customkeys/customkeys-sidebar.css"
+     />
+     <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
++    <link
++      rel="stylesheet"
++      href="chrome://browser/skin/preferences/zen-preferences.css"
++    />
+     <link
+       rel="icon"
+       type="image/svg+xml"

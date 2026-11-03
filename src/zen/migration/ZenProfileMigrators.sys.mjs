@@ -2,9 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 import { MigrationUtils } from "moz-src:///browser/components/migration/MigrationUtils.sys.mjs";
-import { ChromeProfileMigrator } from "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs";
+import {
+  ArcProfileMigrator as FirefoxArcProfileMigrator,
+  ChromeProfileMigrator,
+} from "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs";
 
 const lazy = {};
 
@@ -12,69 +14,95 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenMigrationUtils: "resource:///modules/zen/ZenMigrationUtils.sys.mjs",
 });
 
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "l10n",
+  () => new Localization(["browser/zen-migration.ftl"])
+);
+
+const kAllProfilesId = "zen-all-profiles";
+
 /**
- * Arc keeps its web data in a regular Chromium "User Data" directory, so the
- * Chrome migrator handles bookmarks, history, passwords and form data. Its
- * sidebar (spaces, pinned tabs, folders and favorites) lives next to it in
- * StorableSidebar.json, which this migrator turns into Zen spaces.
+ * Adds an "All profiles" entry to a Chromium migrator's profile list.
+ *
+ * @param {typeof ChromeProfileMigrator} Base
  */
-export class ArcProfileMigrator extends ChromeProfileMigrator {
-  static get key() {
-    return "arc";
-  }
-
-  static get displayNameL10nID() {
-    return "migration-wizard-migrator-display-name-arc";
-  }
-
-  static get brandImage() {
-    return "chrome://browser/content/zen-images/migration/arc.png";
-  }
-
-  _chromeUserDataPathSuffix = "Arc";
-  _keychainServiceName = "Arc Safe Storage";
-  _keychainAccountName = "Arc";
-
-  #packagedDataPath = null;
-
-  /**
-   * On Windows Arc is an MSIX package, so when none of the fixed locations
-   * exist its data is looked for under whichever package folder it got.
-   *
-   * @param {boolean} [noRemapping=false]
-   * @returns {Promise<string|null>}
-   */
-  async _getChromeUserDataPathIfExists(noRemapping = false) {
-    const path = await super._getChromeUserDataPathIfExists(noRemapping);
-    if (path || AppConstants.platform != "win") {
-      return path;
-    }
-    this.#packagedDataPath ??= lazy.ZenMigrationUtils.findPackagedUserDataPath(
-      PathUtils.join(
-        Services.dirsvc.get("LocalAppData", Ci.nsIFile).path,
-        "Packages"
-      ),
-      "TheBrowserCompany.Arc",
-      this._chromeUserDataPathSuffix
-    );
-    this._chromeUserDataPath = await this.#packagedDataPath;
-    return this._chromeUserDataPath;
-  }
-
-  /**
-   * The sidebar is shared by every Arc profile, so it is offered once, with
-   * the default profile.
-   *
-   * @param {object} aProfile
-   * @returns {Promise<object[]>}
-   */
-  async getResources(aProfile) {
-    const resources = await super.getResources(aProfile);
-    if (!aProfile || aProfile.id == "Default") {
-      const sidebar = await this._getSidebarResource();
-      if (sidebar) {
-        resources.push(sidebar);
+function withAllProfiles(Base) {
+  return class extends Base {
+    async getSourceProfiles() {
+      const profiles = await super.getSourceProfiles();
+      if (!Array.isArray(profiles) || profiles.length < 2) {
+        return profiles;
       }
+      const name = await lazy.l10n
+        .formatValue("migration-zen-all-profiles-label")
+        .catch(() => null);
+      return [
+        { id: kAllProfilesId, name: name || "All profiles" },
+        ...profiles,
+      ];
+    }
+
+    async getResources(aProfile) {
+      if (aProfile?.id !== kAllProfilesId) {
+        return super.getResources(aProfile);
+      }
+      const byType = new Map();
+      for (const profile of await super.getSourceProfiles()) {
+        for (const resource of await this.getResources(profile)) {
+          if (!byType.has(resource.type)) {
+            byType.set(resource.type, []);
+          }
+          byType.get(resource.type).push(resource);
+        }
+      }
+      return [...byType].map(([type, resources]) => ({
+        type,
+        migrate(aCallback) {
+          (async () => {
+            let success = true;
+            let spaces = 0;
+            for (const resource of resources) {
+              const ok = await new Promise(resolve =>
+                resource.migrate(resolve)
+              );
+              success &&= !!ok;
+              if (type === MigrationUtils.resourceTypes.ZEN_SPACES) {
+                spaces += lazy.ZenMigrationUtils.lastImportedSpaceCount;
+              }
+            }
+            if (type === MigrationUtils.resourceTypes.ZEN_SPACES) {
+              lazy.ZenMigrationUtils.lastImportedSpaceCount = spaces;
+            }
+            return success;
+          })().then(aCallback, ex => {
+            console.error(ex);
+            aCallback(false);
+          });
+        },
+      }));
+    }
+  };
+}
+
+/**
+ * Firefox's Arc migrator finds Arc's data, asks for access to the folder
+ * holding it and imports the Chromium data. It turns the sidebar
+ * (StorableSidebar.json, shared by every Arc profile) into bookmark folders;
+ * Zen replaces that resource with one that turns the chosen profile's spaces,
+ * pinned tabs, folders and favorites into Zen spaces and essentials. Profiles
+ * other than the main one get a container of their own.
+ */
+export class ArcProfileMigrator extends withAllProfiles(
+  FirefoxArcProfileMigrator
+) {
+  async getResources(aProfile) {
+    const resources = (await super.getResources(aProfile)).filter(
+      resource => resource.type !== MigrationUtils.resourceTypes.BOOKMARKS
+    );
+    const sidebar = await this._getSidebarResource(aProfile);
+    if (sidebar) {
+      resources.push(sidebar);
     }
     return resources;
   }
@@ -99,13 +127,16 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
     return PathUtils.join(PathUtils.parent(dataPath), "StorableSidebar.json");
   }
 
-  async _readSidebarPlan() {
+  async _readSidebarPlan(aProfile) {
     const sidebarPath = await this._getSidebarPath();
     if (!sidebarPath || !(await IOUtils.exists(sidebarPath))) {
       return null;
     }
-    const plan = lazy.ZenMigrationUtils.parseArcSidebar(
-      await IOUtils.readJSON(sidebarPath)
+    const plan = lazy.ZenMigrationUtils.filterArcPlan(
+      lazy.ZenMigrationUtils.parseArcSidebar(
+        await IOUtils.readJSON(sidebarPath)
+      ),
+      aProfile?.id
     );
     if (!plan.spaces.length && !plan.favorites.length) {
       return null;
@@ -113,10 +144,10 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
     return plan;
   }
 
-  async _getSidebarResource() {
+  async _getSidebarResource(aProfile) {
     let plan;
     try {
-      plan = await this._readSidebarPlan();
+      plan = await this._readSidebarPlan(aProfile);
     } catch (ex) {
       console.error("Could not read the Arc sidebar", ex);
       return null;
@@ -132,8 +163,17 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
         (async () => {
           // Re-read so that changes made in Arc since the wizard listed its
           // data are picked up too.
-          const latest = await migrator._readSidebarPlan().catch(() => null);
-          await lazy.ZenMigrationUtils.applyArcSidebar(latest ?? plan);
+          const latest = await migrator
+            ._readSidebarPlan(aProfile)
+            .catch(() => null);
+          await lazy.ZenMigrationUtils.applyArcSidebar(
+            latest ?? plan,
+            undefined,
+            {
+              containerTabId:
+                lazy.ZenMigrationUtils.containerIdForArcProfile(aProfile),
+            }
+          );
         })().then(
           () => aCallback(true),
           ex => {
@@ -151,7 +191,7 @@ export class ArcProfileMigrator extends ChromeProfileMigrator {
  * through the Chrome migrator. Its pinned tabs are kept in an encrypted
  * database and cannot be imported.
  */
-export class DiaProfileMigrator extends ChromeProfileMigrator {
+export class DiaProfileMigrator extends withAllProfiles(ChromeProfileMigrator) {
   static get key() {
     return "dia";
   }

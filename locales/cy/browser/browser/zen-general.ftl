@@ -140,4 +140,4 @@ zen-window-sync-migration-dialog-message = Mae Zen bellach yn cydweddu ffenestri
 zen-window-sync-migration-dialog-learn-more = Dysgu Rhagor
 zen-window-sync-migration-dialog-accept = Iawn
 zen-appmenu-new-blank-window = 
-    .label = Ffenest Newydd Gwag
+    .label = Ffenestr wag newydd

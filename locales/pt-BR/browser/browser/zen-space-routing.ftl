@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Opções de Roteamento de Espaço
-zen-space-routing-tab-routed-toast = Nova aba aberta em { $targetWorkspace}
+zen-space-routing-tab-routed-toast = Nova aba aberta em { $targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->

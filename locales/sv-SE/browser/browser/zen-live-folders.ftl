@@ -3,78 +3,78 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Alternativ för livemapp
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Senast hämtad: { $time}
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Uppdatera
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Skapad av mig
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Tilldelad till mig
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Mina granskningsförfrågningar
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Inkludera utkast till sammanslagningsbegäran
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = RSS flöde
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Hämta intervall
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 minut
+           *[other] { $mins } minuter
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 timme
+           *[other] { $hours } timmar
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Tidsintervall
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] Senaste timmen
+           *[other] Senaste { $hours } timmarna
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = Hela tiden
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] Sista dagen
+           *[other] Sista { $days } dagarna
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Objektsgräns
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = Flödes URL
+zen-live-folder-rss-prompt-feed-url = Ange flödets URL
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } objekt
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Misslyckades att uppdatera
+    .tooltiptext = Misslyckades att uppdatera. Försök igen.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Inte inloggad på GitHub
+    .tooltiptext = Logga in igen på GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = Filter är inte inställt
+    .tooltiptext = Inget filter inställt, kommer ingenting att hämtas.
+zen-live-folder-rss-invalid-url-title = Misslyckades med att skapa livemapp
+zen-live-folder-rss-invalid-url-description = URL för flöde är ogiltig. Kontrollera adressen och försök igen
 zen-live-folder-github-option-repo-filter = 
-    .label = Repositories
+    .label = Kodförråd
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull Requests
+    .label = Förfrågningar om sammanslagning
 zen-live-folder-github-issues = 
-    .label = Issues
+    .label = Problem
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+    .label = Denna lista genereras baserat på dina för närvarande aktiva förfrågningar om sammanslagning.
+zen-live-folders-promotion-title = Live mapp skapad!
+zen-live-folders-promotion-description = Det senaste innehållet från dina RSS-flöden eller GitHub förfrågningar om sammanslagning visas här automatiskt.

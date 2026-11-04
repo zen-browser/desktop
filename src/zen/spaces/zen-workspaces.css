@@ -339,6 +339,33 @@
   background: light-dark(color-mix(in srgb, var(--zen-accent-button-background) 10%, white), color-mix(in srgb, var(--zen-accent-button-background) 50%, black));
   box-shadow: var(--tab-box-shadow-selected), 0 0px 10px rgba(0, 0, 0, 0.1);
 
+  /* `light-dark()` below only resolves to dark when a scheme is declared, which
+   * the root misses when `zen.view.window.scheme` is unset, so mirror it here. */
+  color-scheme: light dark;
+
+  @media -moz-pref('zen.view.window.scheme', 0) {
+    color-scheme: dark;
+  }
+
+  @media -moz-pref('zen.view.window.scheme', 1) {
+    color-scheme: light;
+  }
+
+  @media -moz-pref('zen.view.window.scheme', 2) {
+    @media (-moz-system-dark-theme) {
+      color-scheme: dark;
+    }
+  }
+
+  /* Custom space themes can push the window into dark mode on their own. */
+  :root[zen-should-be-dark-mode='true'] & {
+    color-scheme: dark;
+  }
+
+  :root[zen-should-be-dark-mode='false'] & {
+    color-scheme: light;
+  }
+
   transition: scale 0.15s ease-in-out;
 
   :root:not([zen-sidebar-expanded="true"]) & {

@@ -273,3 +273,23 @@ add_task(async function test_hidden_when_the_strip_does_not_overflow() {
     "A strip that fits never offers the pill"
   );
 });
+
+add_task(async function test_follows_the_window_scheme() {
+  // Make sure the pill's scheme mirrors the window scheme selection, so its
+  // `light-dark()` colors actually go dark when the window does.
+  for (const [scheme, expected] of [
+    [0, "dark"],
+    [1, "light"],
+  ]) {
+    await SpecialPowers.pushPrefEnv({
+      set: [["zen.view.window.scheme", scheme]],
+    });
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    Assert.equal(
+      getComputedStyle(pill).colorScheme,
+      expected,
+      `The pill follows the window scheme when it is ${scheme}`
+    );
+    await SpecialPowers.popPrefEnv();
+  }
+});

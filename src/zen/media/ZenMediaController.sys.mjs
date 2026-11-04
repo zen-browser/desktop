@@ -14,8 +14,56 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+function updateDockingInAllWindows() {
+  for (const win of Services.wm.getEnumerator("navigator:browser")) {
+    win.gZenMediaController?.updateDocking();
+  }
+}
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "VIDEO_ENABLED",
+  "zen.mediacontrols.video.enabled",
+  true,
+  updateDockingInAllWindows
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "PIP_ENABLED",
+  "media.videocontrols.picture-in-picture.enabled",
+  false,
+  updateDockingInAllWindows
+);
+// When Firefox opens a Picture-in-Picture window on tab switch, that window
+// takes over from the sidebar video.
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "PIP_WHEN_SWITCHING_TABS",
+  "media.videocontrols.picture-in-picture.enable-when-switching-tabs.enabled",
+  false,
+  updateDockingInAllWindows
+);
+
 const MAX_STACKED_CARDS = 3;
 const MAX_PEEK_LEVELS = 2;
+
+// Keeps very wide or very tall videos from producing an unusable card.
+const MIN_VIDEO_ASPECT = 1;
+const MAX_VIDEO_ASPECT = 21 / 9;
+
+// How long to wait for the media controller to report a Picture-in-Picture
+// mode change caused by docking or undocking a video.
+const PIP_MODE_TIMEOUT_MS = 1000;
+// How long a Picture-in-Picture window may take to open before the card
+// assumes the request was declined (e.g. a paused or muted video) and docks
+// the video again. Opening a window and loading its player can take well over
+// PIP_MODE_TIMEOUT_MS, and docking while it opens would fight over the clone.
+const PIP_WINDOW_TIMEOUT_MS = 5000;
+// A docked video keeps its media controller in Picture-in-Picture mode, which
+// exempts it from the controller's stop-control timer and keeps it as the
+// main controller for media keys. So a paused video is only kept docked for
+// short pauses, well below the stop-control timer.
+const PAUSED_UNDOCK_DELAY_MS = 5000;
 
 /**
  * A single card in the sidebar media stack.
@@ -24,6 +72,22 @@ class ZenMediaCard {
   #updateInterval = null;
   #tabTimeout = null;
   #controllerListeners = null;
+
+  // The docked video player: { browser, wgp, cloning }. The browser is a
+  // Picture-in-Picture player embedded in the card instead of in a window.
+  #dock = null;
+  #docking = false;
+  #dockGeneration = 0;
+  // Counts hand-offs to a Picture-in-Picture window still in progress.
+  #suppressDock = 0;
+  #pausedTimeout = null;
+  // Set once the media has been paused for PAUSED_UNDOCK_DELAY_MS.
+  pausedTooLong = false;
+  // Set after undocking until the media controller stops reporting the
+  // Picture-in-Picture mode the docked player caused.
+  #releasingPip = false;
+  #releaseTimeout = null;
+  #pipModeWaiters = new Set();
 
   static supportedKeys = ["playpause", "previoustrack", "nexttrack"];
 
@@ -40,6 +104,8 @@ class ZenMediaCard {
     this.currentTimeEl = element.querySelector(".zen-media-current-time");
     this.durationEl = element.querySelector(".zen-media-duration");
     this.focusButton = element.querySelector(".zen-media-focus-button");
+    this.videoContainer = element.querySelector(".zen-media-video-container");
+    this.controlsBox = element.querySelector(".zen-media-controls-hbox");
 
     this.#initListeners();
 
@@ -61,6 +127,7 @@ class ZenMediaCard {
       }
 
       this.element.classList.toggle("playing", controller.isPlaying);
+      this.#updatePausedState();
       this.updateMetadata();
       this.updatePositionState(positionState);
       this.updateSupportedKeys();
@@ -85,11 +152,43 @@ class ZenMediaCard {
     if (this.isSharing) {
       return true;
     }
-    if (this.controller.isBeingUsedInPIPModeOrFullscreen) {
+    if (
+      this.controller.isBeingUsedInPIPModeOrFullscreen &&
+      !this.#ownsPipMode
+    ) {
       return false;
     }
     return (
       this.window.gBrowser.selectedBrowser.browserId !== this.browser.browserId
+    );
+  }
+
+  get isVideoDocked() {
+    return !!this.#dock;
+  }
+
+  /**
+   * The docked player clones the video, which the media controller reports
+   * as Picture-in-Picture mode. That mode must not hide the card.
+   */
+  get #ownsPipMode() {
+    return !!this.#dock || this.#releasingPip;
+  }
+
+  /**
+   * The height the card takes in the sidebar's layout. A docked video
+   * overlaps the tabs above it, so only the controls are reserved, as for a
+   * card without video.
+   */
+  get reservedHeight() {
+    const height = this.element.getBoundingClientRect().height;
+    if (!this.element.hasAttribute("zen-video")) {
+      return height;
+    }
+    return (
+      height -
+      this.videoContainer.getBoundingClientRect().height +
+      this.controlsBox.getBoundingClientRect().height
     );
   }
 
@@ -138,6 +237,25 @@ class ZenMediaCard {
   #onPlaybackstateChange() {
     this.element.classList.toggle("playing", this.controller.isPlaying);
     this.updatePosition();
+    this.#updatePausedState();
+    // A page may only create its <video> once playback starts.
+    this.manager.updateDocking();
+  }
+
+  #updatePausedState() {
+    if (this.controller.isPlaying) {
+      if (this.#pausedTimeout) {
+        this.window.clearTimeout(this.#pausedTimeout);
+        this.#pausedTimeout = null;
+      }
+      this.pausedTooLong = false;
+    } else if (!this.#pausedTimeout && !this.pausedTooLong) {
+      this.#pausedTimeout = this.window.setTimeout(() => {
+        this.#pausedTimeout = null;
+        this.pausedTooLong = true;
+        this.manager.updateDocking();
+      }, PAUSED_UNDOCK_DELAY_MS);
+    }
   }
 
   #onSupportedKeysChange() {
@@ -147,6 +265,7 @@ class ZenMediaCard {
   #onMetadataChange() {
     this.updateMetadata();
     this.updatePipButton();
+    this.manager.updateDocking();
   }
 
   #onDeactivated() {
@@ -154,11 +273,29 @@ class ZenMediaCard {
   }
 
   #onPipModeChange() {
-    this.element.toggleAttribute(
-      "pip",
-      this.controller.isBeingUsedInPIPModeOrFullscreen
-    );
+    const inPipMode = this.controller.isBeingUsedInPIPModeOrFullscreen;
+    if (!inPipMode) {
+      this.#endPipRelease();
+    }
+    let lostClone = false;
+    if (this.#dock) {
+      if (inPipMode) {
+        this.#dock.cloning = true;
+      } else if (this.#dock.cloning) {
+        // The page stopped the clone, e.g. by removing the <video>.
+        lostClone = true;
+        this.#undock();
+      }
+    }
+    this.element.toggleAttribute("pip", inPipMode && !this.#ownsPipMode);
     this.refreshVisibility();
+    for (const check of Array.from(this.#pipModeWaiters)) {
+      check();
+    }
+    if (lostClone) {
+      // Dock again if the page has another video to show.
+      this.manager.updateDocking();
+    }
   }
 
   refreshVisibility() {
@@ -172,6 +309,8 @@ class ZenMediaCard {
       if (this.element.hidden) {
         this.element.hidden = false;
         this.manager.onCardVisibilityChanged();
+      } else {
+        this.manager.updateDocking();
       }
       return;
     }
@@ -180,6 +319,9 @@ class ZenMediaCard {
       return;
     }
     this.element.setAttribute("zen-hiding", "true");
+    // The tab itself is being shown (or the media went elsewhere), so stop
+    // cloning right away instead of after the hide animation.
+    this.setVideoDocked(false);
     Promise.allSettled(
       this.element.getAnimations().map(animation => animation.finished)
     ).then(() => {
@@ -188,6 +330,8 @@ class ZenMediaCard {
       }
       this.element.removeAttribute("zen-hiding");
       if (this.shouldBeVisible) {
+        // Shown again while hiding (e.g. a quick switch back and forth).
+        this.manager.updateDocking();
         return;
       }
       this.element.hidden = true;
@@ -377,9 +521,215 @@ class ZenMediaCard {
   }
 
   onPip() {
-    this.browser.browsingContext.currentWindowGlobal
-      .getActor("PictureInPictureLauncher")
-      .sendAsyncMessage("PictureInPicture:KeyToggle");
+    this.handOffToPipWindow(() =>
+      this.browser.browsingContext.currentWindowGlobal
+        .getActor("PictureInPictureLauncher")
+        .sendAsyncMessage("PictureInPicture:KeyToggle")
+    );
+  }
+
+  /**
+   * Requests a Picture-in-Picture window for this card's media. A video can
+   * only be cloned to one player at a time, and a toggle request for a video
+   * that is already being cloned closes the player instead of opening one,
+   * so the docked player has to be gone first.
+   *
+   * @param {Function} requestPip - Sends the Picture-in-Picture request. It
+   *   receives the window global of the docked video's frame, or null.
+   */
+  async handOffToPipWindow(requestPip) {
+    const wgp = this.#dock?.wgp ?? null;
+    const wasDocked = !!this.#dock;
+    this.#suppressDock++;
+    try {
+      // Also cancels a dock still being set up.
+      this.#undock();
+      if (wasDocked) {
+        await this.#waitForPipMode(false);
+      }
+      requestPip(wgp);
+      await this.#waitForPipMode(true, PIP_WINDOW_TIMEOUT_MS);
+    } catch (e) {
+      console.error("Failed to open Picture-in-Picture for media card", e);
+    } finally {
+      this.#suppressDock--;
+      // Docks again if no window opened (e.g. the page declined).
+      this.manager.updateDocking();
+    }
+  }
+
+  /**
+   * @param {boolean} docked - Whether the card should show its video.
+   */
+  setVideoDocked(docked) {
+    if (
+      docked &&
+      !this.#suppressDock &&
+      this.controller &&
+      !this.pausedTooLong
+    ) {
+      this.#tryDock();
+    } else {
+      this.#undock();
+    }
+  }
+
+  async #tryDock() {
+    if (this.#dock || this.#docking) {
+      return;
+    }
+    this.#docking = true;
+    const generation = ++this.#dockGeneration;
+    try {
+      const found = await this.manager.findDockableVideo(this.browser);
+      if (found && generation === this.#dockGeneration) {
+        await this.#attachPlayer(found);
+      }
+    } catch (e) {
+      console.error("Failed to show video in media card", e);
+    } finally {
+      if (generation === this.#dockGeneration) {
+        this.#docking = false;
+      }
+    }
+  }
+
+  /**
+   * Embeds a Picture-in-Picture player browser in the card. Like the player
+   * window (see toolkit's pictureinpicture/content/player.js), it loads in
+   * the same content process as the video, which the clone requires.
+   *
+   * @param {object} found - Result of findDockableVideo().
+   */
+  async #attachPlayer({ wgp, videoRef, videoWidth, videoHeight }) {
+    const aspect = Math.min(
+      Math.max(videoWidth / videoHeight, MIN_VIDEO_ASPECT),
+      MAX_VIDEO_ASPECT
+    );
+    // Throws if the frame went away since the video was found.
+    const { remoteType } = wgp.domProcess;
+    const groupId = wgp.browsingContext.group.id;
+
+    const browser = this.window.document.createXULElement("browser");
+    for (const [name, value] of Object.entries({
+      type: "content",
+      remote: "true",
+      remoteType,
+      initialBrowsingContextGroupId: groupId,
+      // Gives it the Picture-in-Picture actors but none of the tab ones.
+      messagemanagergroup: "pip-player",
+      nodefaultsrc: "true",
+      tabindex: "-1",
+    })) {
+      browser.setAttribute(name, value);
+    }
+    browser.classList.add("zen-media-video-browser");
+    this.element.style.setProperty("--zen-media-video-aspect", aspect);
+    // Shown before the browser is inserted so it gets laid out.
+    this.element.setAttribute("zen-video", "true");
+    this.videoContainer.appendChild(browser);
+    this.#dock = { browser, wgp, cloning: false };
+    this.manager.onCardLayoutChanged();
+
+    try {
+      const actor =
+        browser.browsingContext.currentWindowGlobal.getActor(
+          "PictureInPicture"
+        );
+      await actor.sendQuery("PictureInPicture:SetupPlayer", {
+        videoRef,
+        isPipApiRequest: false,
+        // Zen patch: docking is automatic, not a user gesture on the page.
+        zenSkipActivation: true,
+        initDimension: {
+          width: this.videoContainer.clientWidth,
+          height: this.videoContainer.clientHeight,
+        },
+      });
+      if (this.#dock?.browser !== browser) {
+        return;
+      }
+      // Setup resolves without cloning when the video went away meanwhile.
+      if (!(await this.#waitForPipMode(true))) {
+        if (this.#dock?.browser === browser) {
+          this.#undock();
+        }
+      }
+    } catch (e) {
+      if (this.#dock?.browser === browser) {
+        this.#undock();
+      }
+      throw e;
+    }
+  }
+
+  #undock() {
+    this.#dockGeneration++;
+    this.#docking = false;
+    if (!this.#dock) {
+      return;
+    }
+    const { browser } = this.#dock;
+    this.#dock = null;
+    if (this.controller?.isBeingUsedInPIPModeOrFullscreen) {
+      this.#beginPipRelease();
+    }
+    // Unloading the player stops the clone (PictureInPictureChild).
+    browser.remove();
+    this.element.removeAttribute("zen-video");
+    this.manager.onCardLayoutChanged();
+  }
+
+  #beginPipRelease() {
+    this.#endPipRelease();
+    this.#releasingPip = true;
+    this.#releaseTimeout = this.window.setTimeout(() => {
+      this.#releaseTimeout = null;
+      this.#releasingPip = false;
+      this.refreshVisibility();
+    }, PIP_MODE_TIMEOUT_MS);
+  }
+
+  #endPipRelease() {
+    if (this.#releaseTimeout) {
+      this.window.clearTimeout(this.#releaseTimeout);
+      this.#releaseTimeout = null;
+    }
+    this.#releasingPip = false;
+  }
+
+  /**
+   * @param {boolean} inPipMode - The Picture-in-Picture mode to wait for.
+   * @param {number} timeoutMs - How long to wait.
+   * @returns {Promise<boolean>} Whether the controller reached that mode
+   *   before the timeout.
+   */
+  #waitForPipMode(inPipMode, timeoutMs = PIP_MODE_TIMEOUT_MS) {
+    return new Promise(resolve => {
+      const reached = () => {
+        try {
+          return this.controller.isBeingUsedInPIPModeOrFullscreen === inPipMode;
+        } catch {
+          return false;
+        }
+      };
+      if (!this.controller || reached()) {
+        resolve(!!this.controller);
+        return;
+      }
+      const finish = result => {
+        this.window.clearTimeout(timer);
+        this.#pipModeWaiters.delete(check);
+        resolve(result);
+      };
+      const check = () => {
+        if (reached()) {
+          finish(true);
+        }
+      };
+      const timer = this.window.setTimeout(() => finish(false), timeoutMs);
+      this.#pipModeWaiters.add(check);
+    });
   }
 
   onMicrophoneMuteToggle() {
@@ -421,6 +771,13 @@ class ZenMediaCard {
    * Drops what the card holds outside its own element.
    */
   teardown() {
+    this.#undock();
+    this.#endPipRelease();
+    if (this.#pausedTimeout) {
+      this.window.clearTimeout(this.#pausedTimeout);
+      this.#pausedTimeout = null;
+    }
+
     if (this.controller && this.#controllerListeners) {
       for (const [event, listener] of Object.entries(
         this.#controllerListeners
@@ -476,6 +833,7 @@ class ZenMediaCard {
 export class ZenMediaController extends ZenUIComponent {
   #cards = new Map();
   #cardTemplate = null;
+  #uninitialized = false;
 
   mediaControlBar = null;
 
@@ -644,11 +1002,90 @@ export class ZenMediaController extends ZenUIComponent {
   }
 
   uninit() {
+    this.#uninitialized = true;
     for (const card of this.#cards.values()) {
       card.teardown();
       card.element.remove();
     }
     this.#cards.clear();
+  }
+
+  /**
+   * Shows the video of the front card when video is enabled, and drops the
+   * docked players of every other card.
+   */
+  updateDocking() {
+    if (!this.mediaControlBar || this.#uninitialized) {
+      return;
+    }
+    const front = this.frontCard;
+    const canDock =
+      lazy.VIDEO_ENABLED &&
+      // The card uses the Picture-in-Picture player, so it follows the same
+      // switch (which policies can turn off).
+      lazy.PIP_ENABLED &&
+      // Firefox's own tab-switch Picture-in-Picture window takes over.
+      !lazy.PIP_WHEN_SWITCHING_TABS;
+    for (const card of this.#cards.values()) {
+      card.setVideoDocked(
+        canDock &&
+          card === front &&
+          !card.isSharing &&
+          !card.pausedTooLong &&
+          !card.element.hasAttribute("zen-hiding")
+      );
+    }
+  }
+
+  /**
+   * Finds the video to show for a browser, preferring a playing one, in the
+   * top frame first and then in subframes.
+   *
+   * @param {Browser} browser - The media tab's browser.
+   * @returns {Promise<object|null>} The video found by ZenMediaDockChild,
+   *   with the window global of its frame as `wgp`.
+   */
+  async findDockableVideo(browser) {
+    const contexts =
+      browser.browsingContext?.getAllBrowsingContextsInSubtree() ?? [];
+    const results = await Promise.all(
+      contexts.map(async context => {
+        const wgp = context.currentWindowGlobal;
+        if (!wgp) {
+          return null;
+        }
+        try {
+          const result = await wgp
+            .getActor("ZenMediaDock")
+            .sendQuery("ZenMediaDock:FindVideo");
+          return result ? { ...result, wgp } : null;
+        } catch {
+          // No actor for this frame (e.g. a privileged page), or it went away.
+          return null;
+        }
+      })
+    );
+    const found = results.filter(Boolean);
+    return found.find(result => result.playing) ?? found[0] ?? null;
+  }
+
+  onCardLayoutChanged() {
+    if (this.#uninitialized || this.mediaControlBar.hasAttribute("hidden")) {
+      return;
+    }
+    this.#updateCollapsedHeight();
+    this.window.gZenUIManager.updateTabsToolbar();
+  }
+
+  #updateCollapsedHeight() {
+    const front = this.frontCard;
+    if (!front) {
+      return;
+    }
+    this.mediaControlBar.style.setProperty(
+      "--zen-media-collapsed-height",
+      front.reservedHeight + "px"
+    );
   }
 
   closeAllCards() {
@@ -660,6 +1097,7 @@ export class ZenMediaController extends ZenUIComponent {
   onCardVisibilityChanged() {
     this.#updateStack();
     this.#refreshToolbarVisibility();
+    this.updateDocking();
   }
 
   onCardDestroyed(card) {
@@ -795,10 +1233,7 @@ export class ZenMediaController extends ZenUIComponent {
         return;
       }
 
-      this.mediaControlBar.style.setProperty(
-        "--zen-media-collapsed-height",
-        front.element.getBoundingClientRect().height + "px"
-      );
+      this.#updateCollapsedHeight();
       this.mediaControlBar.style.opacity = 0;
       this.window.gZenUIManager.updateTabsToolbar();
       this.#revealBar(0, 10);

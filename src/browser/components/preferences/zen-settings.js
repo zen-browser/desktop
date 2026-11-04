@@ -810,6 +810,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.mediacontrols.video.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
     id: "zen.view.drag-window-from-content",
     type: "bool",
     default: true,

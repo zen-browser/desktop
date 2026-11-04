@@ -74,6 +74,17 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.view.drag-window-from-content",
   },
+  ZenMediaDock: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenMediaDockParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenMediaDockChild.sys.mjs",
+    },
+    messageManagerGroups: ["browsers"],
+    allFrames: true,
+    safeForUntrustedWebProcess: true,
+  },
 };
 
 if (!Services.appinfo.inSafeMode) {

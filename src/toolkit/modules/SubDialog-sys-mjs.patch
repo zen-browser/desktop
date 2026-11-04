@@ -60,16 +60,17 @@ index b3ce915..bbbdb5a 100644
      this._overlay.style.opacity = ""; // XXX: focus hack continued from _onContentLoaded
  
      if (this._box.getAttribute("resizable") == "true") {
-@@ -512,6 +556,17 @@ SubDialog.prototype = {
+@@ -512,6 +556,18 @@ SubDialog.prototype = {
        this._resizeObserver.observe(this._box, { attributes: true });
      }
  
 +    // Re-measure when a section expands; runs before paint, so the clamp is painted
-+    if (this._frame.contentDocument.querySelector("[zen-max-window-ratio]")) {
++    let zenRoot = this._frame.contentDocument.querySelector("[zen-max-window-ratio]");
++    if (zenRoot && !this._zenAutosize) {
 +      this._zenAutosize = new this._frame.contentWindow.MutationObserver(() =>
 +        this.resizeVertically()
 +      );
-+      this._zenAutosize.observe(this._frame.contentDocument.documentElement, {
++      this._zenAutosize.observe(zenRoot, {
 +        childList: true, subtree: true,
 +        attributes: true, attributeFilter: ["hidden"],
 +      });
@@ -78,7 +79,7 @@ index b3ce915..bbbdb5a 100644
      this._trapFocus();
  
      this._resizeCallback?.({
-@@ -615,6 +670,11 @@ SubDialog.prototype = {
+@@ -615,6 +671,11 @@ SubDialog.prototype = {
      // Now do the same but for the height. We need to do this afterwards because otherwise
      // XUL assumes we'll optimize for height and gives us "wrong" values which then are no
      // longer correct after we set the width:
@@ -90,7 +91,7 @@ index b3ce915..bbbdb5a 100644
      let frameMinHeight = getDocHeight();
      let frameHeight = docEl.getAttribute("height")
        ? docEl.getAttribute("height") + "px"
-@@ -624,6 +684,14 @@ SubDialog.prototype = {
+@@ -624,6 +685,14 @@ SubDialog.prototype = {
      // accounting for titlebar, padding/border and some spacing.
      let frameOverhead = frameSizeDifference + titleBarHeight;
      let maxHeight = this._window.innerHeight - frameOverhead;

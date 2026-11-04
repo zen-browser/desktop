@@ -815,6 +815,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "media.videocontrols.picture-in-picture.enable-when-occluded.enabled",
+    type: "bool",
+    default: false,
+  },
+  {
     id: "zen.view.drag-window-from-content",
     type: "bool",
     default: true,

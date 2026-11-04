@@ -43,6 +43,14 @@ XPCOMUtils.defineLazyPreferenceGetter(
   false,
   updateDockingInAllWindows
 );
+// When the window is minimized or covered, the sidebar video moves to a
+// Picture-in-Picture window, and back once the window is visible again.
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "PIP_WHEN_OCCLUDED",
+  "media.videocontrols.picture-in-picture.enable-when-occluded.enabled",
+  false
+);
 
 const MAX_STACKED_CARDS = 3;
 const MAX_PEEK_LEVELS = 2;
@@ -834,6 +842,12 @@ export class ZenMediaController extends ZenUIComponent {
   #cards = new Map();
   #cardTemplate = null;
   #uninitialized = false;
+  #windowOutOfSight = false;
+  // Browsers whose docked video was handed to a Picture-in-Picture window
+  // because this window went out of sight, until that window is closed.
+  #poppedOutBrowsers = new Set();
+  // Browsers whose hand-off is still waiting for the player to open.
+  #pendingPopOuts = new Set();
 
   mediaControlBar = null;
 
@@ -856,6 +870,10 @@ export class ZenMediaController extends ZenUIComponent {
         card.onTabSelect();
       }
     });
+
+    this.#windowOutOfSight = this.#isWindowOutOfSight;
+    this.addEventListener("sizemodechange");
+    this.addEventListener("occlusionstatechange");
 
     const onTabDiscardedOrClosed = this.onTabDiscardedOrClosed.bind(this);
 
@@ -1067,6 +1085,136 @@ export class ZenMediaController extends ZenUIComponent {
     );
     const found = results.filter(Boolean);
     return found.find(result => result.playing) ?? found[0] ?? null;
+  }
+
+  on_sizemodechange() {
+    this.#onWindowVisibilityChange();
+  }
+
+  on_occlusionstatechange() {
+    this.#onWindowVisibilityChange();
+  }
+
+  get #isWindowOutOfSight() {
+    return (
+      this.window.windowState === this.window.STATE_MINIMIZED ||
+      this.window.isFullyOccluded
+    );
+  }
+
+  /**
+   * Firefox's enable-when-occluded only covers a video in the selected tab.
+   * This covers the docked one, which always belongs to a background tab.
+   */
+  async #onWindowVisibilityChange() {
+    const outOfSight = this.#isWindowOutOfSight;
+    if (outOfSight === this.#windowOutOfSight) {
+      return;
+    }
+    this.#windowOutOfSight = outOfSight;
+
+    if (!outOfSight) {
+      for (const browser of Array.from(this.#poppedOutBrowsers)) {
+        this.#closePoppedOutPlayer(browser);
+        if (!this.#pendingPopOuts.has(browser)) {
+          // Closed by the user meanwhile; a player they open later is theirs.
+          this.#poppedOutBrowsers.delete(browser);
+        }
+      }
+      return;
+    }
+
+    const card = this.frontCard;
+    if (!card?.isVideoDocked || !lazy.PIP_ENABLED || !lazy.PIP_WHEN_OCCLUDED) {
+      return;
+    }
+    const { browser } = card;
+    this.#poppedOutBrowsers.add(browser);
+    this.#pendingPopOuts.add(browser);
+    // Like Firefox's tab-switch auto-open, this skips paused or muted video.
+    await card.handOffToPipWindow(wgp => {
+      if (this.#windowOutOfSight) {
+        wgp
+          .getActor("PictureInPictureLauncher")
+          .sendAsyncMessage("PictureInPicture:AutoToggle");
+      }
+    });
+    this.#pendingPopOuts.delete(browser);
+    if (!PictureInPicture.weakAutoPipBrowserToParent.has(browser)) {
+      // No player opened.
+      this.#poppedOutBrowsers.delete(browser);
+    } else if (!this.#windowOutOfSight) {
+      // The window came back while the player was opening.
+      this.#closePoppedOutPlayer(browser);
+    } else {
+      this.#keepPlayerOnScreen(browser);
+    }
+  }
+
+  /**
+   * Firefox positions a new player from the window that requested it
+   * (PictureInPicture.fitToScreen). This window is minimized by now, and its
+   * CSS-to-desktop scale and position no longer describe a real screen, so
+   * the player can land off-screen. Re-fit it from the player's own window.
+   *
+   * @param {Browser} browser - The browser whose player to check.
+   */
+  #keepPlayerOnScreen(browser) {
+    const actorRef = PictureInPicture.weakAutoPipBrowserToParent.get(browser);
+    const player = actorRef && PictureInPicture.getWeakPipPlayer(actorRef);
+    if (!player) {
+      return;
+    }
+    const scale = player.devicePixelRatio / player.desktopToDeviceScale;
+    const left = player.screenX * scale;
+    const top = player.screenY * scale;
+    const width = player.outerWidth * scale;
+    const height = player.outerHeight * scale;
+    const [screenLeft, screenTop, screenWidth, screenHeight] =
+      PictureInPicture.getAvailScreenSize(
+        PictureInPicture.getWorkingScreen(left, top, width, height)
+      );
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    if (
+      centerX >= screenLeft &&
+      centerX <= screenLeft + screenWidth &&
+      centerY >= screenTop &&
+      centerY <= screenTop + screenHeight
+    ) {
+      return;
+    }
+    // With the player as the requesting window, an off-screen player gets
+    // the default size and corner of the nearest screen.
+    player.resizeToVideo(
+      PictureInPicture.fitToScreen(player, {
+        videoWidth: player.innerWidth,
+        videoHeight: player.innerHeight,
+      })
+    );
+  }
+
+  /**
+   * Closing the player stops its clone, which shows the card again, and the
+   * card then docks the video again.
+   *
+   * @param {Browser|null} browser - The browser whose player to close.
+   */
+  #closePoppedOutPlayer(browser) {
+    if (!browser) {
+      return;
+    }
+    // Firefox records the player here (handlePictureInPictureRequest) once
+    // it starts opening. Until then, keep the browser so the player is
+    // closed when the hand-off finishes.
+    const actorRef = PictureInPicture.weakAutoPipBrowserToParent.get(browser);
+    if (actorRef) {
+      this.#poppedOutBrowsers.delete(browser);
+      PictureInPicture.closeSinglePipWindow({
+        reason: "Foregrounded",
+        actorRef,
+      });
+    }
   }
 
   onCardLayoutChanged() {

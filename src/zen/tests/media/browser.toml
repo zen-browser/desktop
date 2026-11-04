@@ -20,3 +20,5 @@ support-files = [
 ["browser_media_stack.js"]
 
 ["browser_media_video_docking.js"]
+
+["browser_media_video_popout.js"]

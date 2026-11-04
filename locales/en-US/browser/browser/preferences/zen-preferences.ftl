@@ -42,6 +42,10 @@ zen-media-controls-header = Sidebar media player
 zen-media-controls-description = Control media playing in other tabs from the bottom of the sidebar
 zen-media-controls-video-enabled =
     .label = Show the video, not just the controls
+zen-media-controls-pip-when-switching-tabs =
+    .label = Open Picture-in-Picture instead when switching tabs
+zen-media-controls-pip-when-occluded =
+    .label = Open Picture-in-Picture when the window is minimized or covered
 
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!

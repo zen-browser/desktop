@@ -156,40 +156,6 @@
   }
 }
 
-#zen-about-update-progress {
-  appearance: none;
-  width: 180px;
-  height: 4px;
-  border: none;
-  border-radius: 2px;
-  background: var(--zen-about-button-background);
-  overflow: hidden;
-
-  &[hidden] {
-    display: none;
-  }
-
-  &::-moz-progress-bar {
-    background: AccentColor;
-    border-radius: 2px;
-  }
-
-  &:indeterminate::-moz-progress-bar {
-    width: 30%;
-    animation: zen-about-progress-slide 1.2s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes zen-about-progress-slide {
-  from {
-    margin-inline-start: 0;
-  }
-
-  to {
-    margin-inline-start: 70%;
-  }
-}
-
 #zen-about-update-button {
   appearance: none;
   margin: 0;
@@ -288,9 +254,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #zen-about-update-button,
-  #zen-about-update-progress::-moz-progress-bar {
+  #zen-about-update-button {
     transition: none;
-    animation: none;
   }
 }

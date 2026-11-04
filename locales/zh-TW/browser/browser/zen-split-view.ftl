@@ -11,7 +11,7 @@ tab-zen-split-tabs =
         }
     .accesskey = S
 zen-split-link = 
-    .label = 將連結加到分割畫面
+    .label = 將連結加至分割畫面
     .accesskey = S
 zen-split-view-modifier-header = 分割畫面
 zen-split-view-modifier-activate-reallocation = 

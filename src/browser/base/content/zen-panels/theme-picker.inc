@@ -29,60 +29,97 @@
         <toolbarbutton id="PanelUI-zen-gradient-generator-color-page-left" class="toolbarbutton-1" disabled="true" />
         <hbox id="PanelUI-zen-gradient-generator-color-pages">
           <hbox>
-            <box class="no-squircles" data-lightness="90" data-algo="float" data-num-dots="1" data-position="240,240" style="background: #f4efdf;"></box>
-            <box class="no-squircles" data-lightness="80" data-algo="float" data-num-dots="1" data-position="233,157" style="background: #f0b8cd;"></box>
-            <box class="no-squircles" data-lightness="80" data-algo="float" data-num-dots="1" data-position="236,111" style="background: #e9c3e3;"></box>
-            <box class="no-squircles" data-lightness="70" data-algo="float" data-num-dots="1" data-position="234,173" style="background: #da7682;"></box>
-            <box class="no-squircles" data-lightness="70" data-algo="float" data-num-dots="1" data-position="220,187" style="background: #eb8570;"></box>
-            <box class="no-squircles" data-lightness="60" data-algo="float" data-num-dots="1" data-position="225,237" style="background: #dcce7f;"></box>
-            <box class="no-squircles" data-lightness="60" data-algo="float" data-num-dots="1" data-position="147,195" style="background: #5becad;"></box>
-            <box class="no-squircles" data-lightness="50" data-algo="float" data-num-dots="1" data-position="81,84" style="background: #919bb5;"></box>
+            <box class="no-squircles" data-lightness="95" data-algo="float" data-num-dots="1" data-position="365,275" data-color="242, 234, 228" style="background: rgb(242, 234, 228);"></box>
+            <box class="no-squircles" data-lightness="95" data-algo="float" data-num-dots="1" data-position="313,142" data-color="242, 155, 187" style="background: rgb(242, 155, 187);"></box>
+            <box class="no-squircles" data-lightness="65" data-algo="float" data-num-dots="1" data-position="282,84" data-color="166, 114, 157" style="background: rgb(166, 114, 157);"></box>
+            <box class="no-squircles" data-lightness="95" data-algo="float" data-num-dots="1" data-position="270,184" data-color="242, 94, 107" style="background: rgb(242, 94, 107);"></box>
+            <box class="no-squircles" data-lightness="100" data-algo="float" data-num-dots="1" data-position="259,211" data-color="255, 133, 88" style="background: rgb(255, 133, 88);"></box>
+            <box class="no-squircles" data-lightness="97" data-algo="float" data-num-dots="1" data-position="241,244" data-color="248, 213, 88" style="background: rgb(248, 213, 88);"></box>
+            <box class="no-squircles" data-lightness="91" data-algo="float" data-num-dots="1" data-position="150,212" data-color="52, 232, 149" style="background: rgb(52, 232, 149);"></box>
+            <box class="no-squircles" data-lightness="85" data-algo="float" data-num-dots="1" data-position="93,161" data-color="108, 186, 217" style="background: rgb(108, 186, 217);"></box>
+            <box class="no-squircles" data-lightness="54" data-algo="float" data-num-dots="1" data-position="111,61" data-color="102, 103, 137" style="background: rgb(102, 103, 137);"></box>
           </hbox>
           <hbox>
-            <box class="no-squircles" data-lightness="90" data-algo="analogous" data-num-dots="3" data-position="240,240"
-                style="--c1: rgb(245, 237, 214); --c2: rgb(221, 243, 216); --c3: rgb(243, 216, 225);" />
-            <box class="no-squircles" data-lightness="85" data-algo="analogous" data-num-dots="3" data-position="233,157"
-                style="--c1: rgb(243, 190, 222); --c2: rgb(247, 222, 186); --c3: rgb(223, 195, 238);" />
-            <box class="no-squircles" data-lightness="80" data-algo="analogous" data-num-dots="3" data-position="236,111"
-                style="--c1: rgb(229, 179, 228); --c2: rgb(236, 172, 178); --c3: rgb(197, 185, 223);" />
-            <box class="no-squircles" data-lightness="70" data-algo="analogous" data-num-dots="3" data-position="234,173"
-                style="--c1: rgb(235, 122, 159); --c2: rgb(239, 239, 118); --c3: rgb(210, 133, 224);" />
-            <box class="no-squircles" data-lightness="70" data-algo="analogous" data-num-dots="3" data-position="220,187"
-                style="--c1: rgb(242, 115, 123); --c2: rgb(175, 242, 115); --c3: rgb(230, 125, 232);" />
-            <box class="no-squircles" data-lightness="60" data-algo="analogous" data-num-dots="3" data-position="225,237"
-                style="--c1: rgb(221, 205, 85); --c2: rgb(97, 212, 94); --c3: rgb(215, 91, 124);" />
-            <box class="no-squircles" data-lightness="60" data-algo="analogous" data-num-dots="3" data-position="147,195"
-                style="--c1: rgb(75, 231, 210); --c2: rgb(84, 175, 222); --c3: rgb(62, 244, 112);" />
-            <box class="no-squircles" data-lightness="55" data-algo="analogous" data-num-dots="3" data-position="81,84"
-                style="--c1: rgb(122, 132, 158); --c2: rgb(137, 117, 164); --c3: rgb(116, 162, 164);" />
+            <box class="no-squircles" data-lightness="95" data-algo="analogous" data-num-dots="3" data-position="365,275" data-color="242, 234, 228"
+                style="--c1: rgb(242, 234, 228); --c2: rgb(238, 242, 228); --c3: rgb(242, 228, 234);" />
+            <box class="no-squircles" data-lightness="95" data-algo="analogous" data-num-dots="3" data-position="313,142" data-color="242, 155, 187"
+                style="--c1: rgb(242, 155, 187); --c2: rgb(242, 196, 155); --c3: rgb(224, 155, 242);" />
+            <box class="no-squircles" data-lightness="65" data-algo="analogous" data-num-dots="3" data-position="282,84" data-color="166, 114, 157"
+                style="--c1: rgb(166, 114, 157); --c2: rgb(166, 114, 114); --c3: rgb(132, 114, 166);" />
+            <box class="no-squircles" data-lightness="95" data-algo="analogous" data-num-dots="3" data-position="270,184" data-color="242, 94, 107"
+                style="--c1: rgb(242, 94, 107); --c2: rgb(242, 204, 94); --c3: rgb(242, 94, 230);" />
+            <box class="no-squircles" data-lightness="100" data-algo="analogous" data-num-dots="3" data-position="259,211" data-color="255, 133, 88"
+                style="--c1: rgb(255, 133, 88); --c2: rgb(238, 255, 88); --c3: rgb(255, 88, 182);" />
+            <box class="no-squircles" data-lightness="97" data-algo="analogous" data-num-dots="3" data-position="241,244" data-color="248, 213, 88"
+                style="--c1: rgb(248, 213, 88); --c2: rgb(150, 248, 88); --c3: rgb(248, 88, 96);" />
+            <box class="no-squircles" data-lightness="91" data-algo="analogous" data-num-dots="3" data-position="150,212" data-color="52, 232, 149"
+                style="--c1: rgb(52, 232, 149); --c2: rgb(52, 165, 232); --c3: rgb(105, 232, 52);" />
+            <box class="no-squircles" data-lightness="85" data-algo="analogous" data-num-dots="3" data-position="93,161" data-color="108, 186, 217"
+                style="--c1: rgb(108, 186, 217); --c2: rgb(121, 108, 217); --c3: rgb(108, 217, 157);" />
+            <box class="no-squircles" data-lightness="54" data-algo="analogous" data-num-dots="3" data-position="111,61" data-color="102, 103, 137"
+                style="--c1: rgb(102, 103, 137); --c2: rgb(130, 102, 137); --c3: rgb(102, 132, 137);" />
           </hbox>
           <hbox>
-            <box class="no-squircles" data-lightness="10" data-algo="float" data-num-dots="1" data-position="171,72" style="background:rgb(93, 86, 106);"></box>
-            <box class="no-squircles" data-lightness="40" data-algo="float" data-num-dots="1" data-position="265,79" style="background: #997096;"></box>
-            <box class="no-squircles" data-lightness="35" data-algo="float" data-num-dots="1" data-position="301,176" style="background: #956066;"></box>
-            <box class="no-squircles" data-lightness="30" data-algo="float" data-num-dots="1" data-position="237,210" style="background: #9c6645;"></box>
-            <box class="no-squircles" data-lightness="30" data-algo="float" data-num-dots="1" data-position="91,228" style="background: #517b6c;"></box>
-            <box class="no-squircles" data-lightness="25" data-algo="float" data-num-dots="1" data-position="67,159" style="background: #576e75;"></box>
-            <box class="no-squircles" data-lightness="20" data-algo="float" data-num-dots="1" data-position="314,235" style="background:rgb(131, 109, 95);"></box>
-            <box class="no-squircles" data-lightness="20" data-algo="float" data-num-dots="1" data-position="118,215" style="background: #447464;"></box>
+            <box class="no-squircles" data-lightness="100" data-algo="float" data-num-dots="1" data-position="386,243" data-color="254, 251, 250" style="background: rgb(254, 251, 250);"></box>
+            <box class="no-squircles" data-lightness="100" data-algo="float" data-num-dots="1" data-position="357,105" data-color="255, 233, 243" style="background: rgb(255, 233, 243);"></box>
+            <box class="no-squircles" data-lightness="95" data-algo="float" data-num-dots="1" data-position="304,54" data-color="241, 209, 236" style="background: rgb(241, 209, 236);"></box>
+            <box class="no-squircles" data-lightness="100" data-algo="float" data-num-dots="1" data-position="353,171" data-color="255, 203, 209" style="background: rgb(255, 203, 209);"></box>
+            <box class="no-squircles" data-lightness="100" data-algo="float" data-num-dots="1" data-position="353,243" data-color="255, 224, 211" style="background: rgb(255, 224, 211);"></box>
+            <box class="no-squircles" data-lightness="100" data-algo="float" data-num-dots="1" data-position="319,324" data-color="255, 249, 229" style="background: rgb(255, 249, 229);"></box>
+            <box class="no-squircles" data-lightness="99" data-algo="float" data-num-dots="1" data-position="43,294" data-color="222, 253, 235" style="background: rgb(222, 253, 235);"></box>
+            <box class="no-squircles" data-lightness="99" data-algo="float" data-num-dots="1" data-position="20,139" data-color="220, 243, 252" style="background: rgb(220, 243, 252);"></box>
+            <box class="no-squircles" data-lightness="90" data-algo="float" data-num-dots="1" data-position="98,41" data-color="197, 198, 229" style="background: rgb(197, 198, 229);"></box>
           </hbox>
           <hbox>
-            <box class="no-squircles" data-lightness="10" data-algo="analogous" data-num-dots="3" data-position="171,72"
-                style="--c1: rgb(23, 17, 34); --c2: rgb(37, 14, 35); --c3: rgb(18, 22, 33);" />
-            <box class="no-squircles" data-lightness="40" data-algo="analogous" data-num-dots="3" data-position="265,79"
-                style="--c1: rgb(128, 76, 124); --c2: rgb(141, 63, 66); --c3: rgb(97, 88, 116);" />
-            <box class="no-squircles" data-lightness="35" data-algo="analogous" data-num-dots="3" data-position="301,176"
-                style="--c1: rgb(122, 56, 64); --c2: rgb(126, 121, 52); --c3: rgb(111, 68, 110);" />
-            <box class="no-squircles" data-lightness="30" data-algo="analogous" data-num-dots="3" data-position="237,210"
-                style="--c1: rgb(131, 65, 22); --c2: rgb(64, 128, 25); --c3: rgb(122, 31, 91);" />
-            <box class="no-squircles" data-lightness="30" data-algo="analogous" data-num-dots="3" data-position="91,228"
-                style="--c1: rgb(45, 108, 85); --c2: rgb(52, 85, 101); --c3: rgb(52, 118, 35);" />
-            <box class="no-squircles" data-lightness="25" data-algo="analogous" data-num-dots="3" data-position="67,159"
-                style="--c1: rgb(45, 74, 83); --c2: rgb(46, 50, 81); --c3: rgb(38, 90, 65);" />
-            <box class="no-squircles" data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="314,235"
-                style="--c1: rgb(64, 47, 38); --c2: rgb(55, 64, 38); --c3: rgb(59, 43, 52);" />
-            <box class="no-squircles" data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="118,215"
-                style="--c1: rgb(22, 80, 61); --c2: rgb(26, 60, 76); --c3: rgb(27, 87, 15);" />
+            <box class="no-squircles" data-lightness="100" data-algo="analogous" data-num-dots="3" data-position="386,243" data-color="254, 251, 250"
+                style="--c1: rgb(254, 251, 250); --c2: rgb(254, 254, 250); --c3: rgb(254, 250, 252);" />
+            <box class="no-squircles" data-lightness="100" data-algo="analogous" data-num-dots="3" data-position="357,105" data-color="255, 233, 243"
+                style="--c1: rgb(255, 233, 243); --c2: rgb(255, 241, 233); --c3: rgb(249, 233, 255);" />
+            <box class="no-squircles" data-lightness="95" data-algo="analogous" data-num-dots="3" data-position="304,54" data-color="241, 209, 236"
+                style="--c1: rgb(241, 209, 236); --c2: rgb(241, 209, 209); --c3: rgb(219, 209, 241);" />
+            <box class="no-squircles" data-lightness="100" data-algo="analogous" data-num-dots="3" data-position="353,171" data-color="255, 203, 209"
+                style="--c1: rgb(255, 203, 209); --c2: rgb(255, 240, 203); --c3: rgb(255, 203, 252);" />
+            <box class="no-squircles" data-lightness="100" data-algo="analogous" data-num-dots="3" data-position="353,243" data-color="255, 224, 211"
+                style="--c1: rgb(255, 224, 211); --c2: rgb(249, 255, 211); --c3: rgb(255, 211, 235);" />
+            <box class="no-squircles" data-lightness="100" data-algo="analogous" data-num-dots="3" data-position="319,324" data-color="255, 249, 229"
+                style="--c1: rgb(255, 249, 229); --c2: rgb(239, 255, 229); --c3: rgb(255, 229, 231);" />
+            <box class="no-squircles" data-lightness="99" data-algo="analogous" data-num-dots="3" data-position="43,294" data-color="222, 253, 235"
+                style="--c1: rgb(222, 253, 235); --c2: rgb(222, 245, 253); --c3: rgb(235, 253, 222);" />
+            <box class="no-squircles" data-lightness="99" data-algo="analogous" data-num-dots="3" data-position="20,139" data-color="220, 243, 252"
+                style="--c1: rgb(220, 243, 252); --c2: rgb(224, 220, 252); --c3: rgb(220, 252, 234);" />
+            <box class="no-squircles" data-lightness="90" data-algo="analogous" data-num-dots="3" data-position="98,41" data-color="197, 198, 229"
+                style="--c1: rgb(197, 198, 229); --c2: rgb(223, 197, 229); --c3: rgb(197, 225, 229);" />
+          </hbox>
+          <hbox>
+            <box class="no-squircles" data-lightness="35" data-algo="float" data-num-dots="1" data-position="208,60" data-color="78, 58, 90" style="background: rgb(78, 58, 90);"></box>
+            <box class="no-squircles" data-lightness="41" data-algo="float" data-num-dots="1" data-position="270,124" data-color="105, 53, 88" style="background: rgb(105, 53, 88);"></box>
+            <box class="no-squircles" data-lightness="56" data-algo="float" data-num-dots="1" data-position="283,189" data-color="143, 64, 66" style="background: rgb(143, 64, 66);"></box>
+            <box class="no-squircles" data-lightness="69" data-algo="float" data-num-dots="1" data-position="259,221" data-color="177, 109, 64" style="background: rgb(177, 109, 64);"></box>
+            <box class="no-squircles" data-lightness="84" data-algo="float" data-num-dots="1" data-position="257,251" data-color="215, 179, 93" style="background: rgb(215, 179, 93);"></box>
+            <box class="no-squircles" data-lightness="80" data-algo="float" data-num-dots="1" data-position="277,331" data-color="205, 204, 164" style="background: rgb(205, 204, 164);"></box>
+            <box class="no-squircles" data-lightness="66" data-algo="float" data-num-dots="1" data-position="95,304" data-color="122, 169, 130" style="background: rgb(122, 169, 130);"></box>
+            <box class="no-squircles" data-lightness="38" data-algo="float" data-num-dots="1" data-position="125,219" data-color="34, 97, 73" style="background: rgb(34, 97, 73);"></box>
+            <box class="no-squircles" data-lightness="42" data-algo="float" data-num-dots="1" data-position="130,151" data-color="38, 69, 107" style="background: rgb(38, 69, 107);"></box>
+          </hbox>
+          <hbox>
+            <box class="no-squircles" data-lightness="35" data-algo="analogous" data-num-dots="3" data-position="208,60" data-color="78, 58, 90"
+                style="--c1: rgb(78, 58, 90); --c2: rgb(90, 58, 75); --c3: rgb(58, 65, 90);" />
+            <box class="no-squircles" data-lightness="41" data-algo="analogous" data-num-dots="3" data-position="270,124" data-color="105, 53, 88"
+                style="--c1: rgb(105, 53, 88); --c2: rgb(105, 61, 53); --c3: rgb(79, 53, 105);" />
+            <box class="no-squircles" data-lightness="56" data-algo="analogous" data-num-dots="3" data-position="283,189" data-color="143, 64, 66"
+                style="--c1: rgb(143, 64, 66); --c2: rgb(143, 128, 64); --c3: rgb(143, 64, 132);" />
+            <box class="no-squircles" data-lightness="69" data-algo="analogous" data-num-dots="3" data-position="259,221" data-color="177, 109, 64"
+                style="--c1: rgb(177, 109, 64); --c2: rgb(151, 177, 64); --c3: rgb(177, 64, 113);" />
+            <box class="no-squircles" data-lightness="84" data-algo="analogous" data-num-dots="3" data-position="257,251" data-color="215, 179, 93"
+                style="--c1: rgb(215, 179, 93); --c2: rgb(149, 215, 93); --c3: rgb(215, 93, 109);" />
+            <box class="no-squircles" data-lightness="80" data-algo="analogous" data-num-dots="3" data-position="277,331" data-color="205, 204, 164"
+                style="--c1: rgb(205, 204, 164); --c2: rgb(172, 205, 164); --c3: rgb(205, 170, 164);" />
+            <box class="no-squircles" data-lightness="66" data-algo="analogous" data-num-dots="3" data-position="95,304" data-color="122, 169, 130"
+                style="--c1: rgb(122, 169, 130); --c2: rgb(122, 169, 169); --c3: rgb(153, 169, 122);" />
+            <box class="no-squircles" data-lightness="38" data-algo="analogous" data-num-dots="3" data-position="125,219" data-color="34, 97, 73"
+                style="--c1: rgb(34, 97, 73); --c2: rgb(34, 68, 97); --c3: rgb(47, 97, 34);" />
+            <box class="no-squircles" data-lightness="42" data-algo="analogous" data-num-dots="3" data-position="130,151" data-color="38, 69, 107"
+                style="--c1: rgb(38, 69, 107); --c2: rgb(64, 38, 107); --c3: rgb(38, 107, 87);" />
           </hbox>
           <hbox>
 # Start from black to white in a span on 8 steps and.
@@ -139,7 +176,7 @@
 #endif
               />
           </vbox>
-          <vbox id="PanelUI-zen-gradient-generator-texture-wrapper">
+          <vbox id="PanelUI-zen-gradient-generator-texture-wrapper" data-l10n-id="zen-panel-ui-gradient-generator-texture">
           </vbox>
         </hbox>
       </hbox>

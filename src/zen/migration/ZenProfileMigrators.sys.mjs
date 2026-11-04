@@ -2,9 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 import { MigrationUtils } from "moz-src:///browser/components/migration/MigrationUtils.sys.mjs";
-import { ChromeProfileMigrator } from "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs";
+import {
+  ArcProfileMigrator as FirefoxArcProfileMigrator,
+  ChromeProfileMigrator,
+} from "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs";
 
 const lazy = {};
 
@@ -84,59 +86,20 @@ function withAllProfiles(Base) {
 }
 
 /**
- * Arc keeps its web data in a regular Chromium "User Data" directory, so the
- * Chrome migrator handles bookmarks, history, passwords and form data. Its
- * sidebar (spaces, pinned tabs, folders and favorites) lives next to it in
- * StorableSidebar.json, shared by every Arc profile, which this migrator
- * turns into Zen spaces. Each space is tagged with its Arc profile, so only
- * the chosen profile's spaces are imported, and profiles other than the main
- * one get a container of their own.
+ * Firefox's Arc migrator finds Arc's data, asks for access to the folder
+ * holding it and imports the Chromium data. It turns the sidebar
+ * (StorableSidebar.json, shared by every Arc profile) into bookmark folders;
+ * Zen replaces that resource with one that turns the chosen profile's spaces,
+ * pinned tabs, folders and favorites into Zen spaces and essentials. Profiles
+ * other than the main one get a container of their own.
  */
-export class ArcProfileMigrator extends withAllProfiles(ChromeProfileMigrator) {
-  static get key() {
-    return "arc";
-  }
-
-  static get displayNameL10nID() {
-    return "migration-wizard-migrator-display-name-arc";
-  }
-
-  static get brandImage() {
-    return "chrome://browser/content/zen-images/migration/arc.png";
-  }
-
-  _chromeUserDataPathSuffix = "Arc";
-  _keychainServiceName = "Arc Safe Storage";
-  _keychainAccountName = "Arc";
-
-  #packagedDataPath = null;
-
-  /**
-   * On Windows Arc is an MSIX package, so when none of the fixed locations
-   * exist its data is looked for under whichever package folder it got.
-   *
-   * @param {boolean} [noRemapping=false]
-   * @returns {Promise<string|null>}
-   */
-  async _getChromeUserDataPathIfExists(noRemapping = false) {
-    const path = await super._getChromeUserDataPathIfExists(noRemapping);
-    if (path || AppConstants.platform != "win") {
-      return path;
-    }
-    this.#packagedDataPath ??= lazy.ZenMigrationUtils.findPackagedUserDataPath(
-      PathUtils.join(
-        Services.dirsvc.get("LocalAppData", Ci.nsIFile).path,
-        "Packages"
-      ),
-      "TheBrowserCompany.Arc",
-      this._chromeUserDataPathSuffix
-    );
-    this._chromeUserDataPath = await this.#packagedDataPath;
-    return this._chromeUserDataPath;
-  }
-
+export class ArcProfileMigrator extends withAllProfiles(
+  FirefoxArcProfileMigrator
+) {
   async getResources(aProfile) {
-    const resources = await super.getResources(aProfile);
+    const resources = (await super.getResources(aProfile)).filter(
+      resource => resource.type !== MigrationUtils.resourceTypes.BOOKMARKS
+    );
     const sidebar = await this._getSidebarResource(aProfile);
     if (sidebar) {
       resources.push(sidebar);

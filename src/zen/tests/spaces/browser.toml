@@ -12,6 +12,8 @@ support-files = [
 
 ["browser_bookmark_workspace_storage.js"]
 
+["browser_close_all_unpinned_tabs_warning.js"]
+
 ["browser_default_containers.js"]
 
 ["browser_double_click_newtab.js"]

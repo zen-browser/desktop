@@ -117,7 +117,6 @@ export class nsZenBoostEditor {
       .addEventListener("click", this.onCodeButtonPressed.bind(this));
     const shareButton = this.doc.getElementById("zen-boost-share");
     shareButton.addEventListener("click", this.onShareBoostPressed.bind(this));
-    shareButton.hidden = !gZenBoostsManager.canShareFrom(this.openerWindow);
     this.doc
       .getElementById("zen-boost-back")
       .addEventListener("click", this.onCodeBackButtonPressed.bind(this));
@@ -262,12 +261,14 @@ export class nsZenBoostEditor {
       mode: Editor.modes.css,
       lineNumbers: true,
       theme: "mozilla",
-      readOnly: false,
+      readOnly: true,
       gutters: ["CodeMirror-linenumbers"],
     });
 
     await editor.appendTo(container);
+    await editor.setText(this.currentBoostData.customCSS || "");
     editor.refresh();
+    editor.setOption("readOnly", false);
     editor.on("change", this.onCodeEditorChange.bind(this));
 
     this.editorWindow._editor = editor;
@@ -405,6 +406,23 @@ export class nsZenBoostEditor {
     ];
   }
 
+  /**
+   * The font a grid slot renders in on this machine: its first installed
+   * candidate, or the slot's generic family.
+   *
+   * @param {string[]} slot - One entry of commonFonts
+   * @param {string[]} installed - The installed font names
+   * @returns {string}
+   */
+  resolveFontSlot(slot, installed) {
+    const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
+    return (
+      slot.find(
+        candidate => candidate in genericLabels || installed.includes(candidate)
+      ) ?? slot.at(-1)
+    );
+  }
+
   static GENERIC_FONT_LABELS = {
     "system-ui": "System",
     "sans-serif": "Sans Serif",
@@ -428,11 +446,7 @@ export class nsZenBoostEditor {
     const genericLabels = nsZenBoostEditor.GENERIC_FONT_LABELS;
 
     for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
-      // The first candidate that is installed, or the slot's generic family.
-      const font =
-        commonFonts[i].find(
-          candidate => candidate in genericLabels || fonts.includes(candidate)
-        ) ?? commonFonts[i].at(-1);
+      const font = this.resolveFontSlot(commonFonts[i], fonts);
 
       const fontButton = this.doc.createElement("button");
       fontButton.setAttribute("font-data", `${font}`);
@@ -519,9 +533,6 @@ export class nsZenBoostEditor {
   }
 
   onShareBoostPressed() {
-    if (!gZenBoostsManager.canShareFrom(this.openerWindow)) {
-      return;
-    }
     if (!this.currentBoostData?.changeWasMade) {
       this.openerWindow.gZenUIManager.showToast(
         "zen-boost-share-nothing-toast"
@@ -1634,12 +1645,13 @@ ${cssSelector} {
    * Shuffles the boost data and updates the presentation
    */
   shuffleBoost() {
-    const availFonts = this.fetchFontList();
+    // A random slot of the font grid, as it renders on this machine.
     const commonFonts = this.commonFonts;
-    let font = commonFonts[Math.floor(Math.random() * commonFonts.length)];
-    if (availFonts.includes(font)) {
-      this.currentBoostData.fontFamily = font;
-    }
+    const slot = commonFonts[Math.floor(Math.random() * commonFonts.length)];
+    this.currentBoostData.fontFamily = this.resolveFontSlot(
+      slot,
+      this.fetchFontList()
+    );
 
     this.currentBoostData.smartInvert = Math.random() > 0.5;
     this.currentBoostData.autoTheme = false;
@@ -1714,6 +1726,22 @@ ${cssSelector} {
   }
 
   updateAllVisuals() {
+    const defaults = gZenBoostsManager.getEmptyBoostEntry().boostData;
+    for (const [key, value] of Object.entries(defaults)) {
+      this.currentBoostData[key] ??= value;
+    }
+    for (const key of ["dotPos", "secondaryDotPos"]) {
+      this.currentBoostData[key] = {
+        ...defaults[key],
+        ...this.currentBoostData[key],
+      };
+    }
+
+    const css = this.currentBoostData.customCSS || "";
+    if (this.editorWindow._editor.getText() !== css) {
+      this.editorWindow._editor.setText(css);
+    }
+
     this.doc.getElementById("zen-boost-name-text").textContent =
       this.currentBoostData.boostName;
     const dot = this.doc.querySelector("#zen-boost-color-picker-dot-primary");
@@ -1753,8 +1781,6 @@ ${cssSelector} {
 
     dotSec.style.left = `${xPosSec}px`;
     dotSec.style.top = `${yPosSec}px`;
-
-    this.editorWindow._editor.setText(this.currentBoostData.customCSS || "");
 
     this.updateFontButtonVisuals();
     this.updateCaseButtonVisuals();

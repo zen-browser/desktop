@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
@@ -38,6 +39,16 @@ const kImportableSchemes = new Set(["http:", "https:", "file:", "ftp:"]);
 const kArcDefaultSpaceId = "thebrowser.company.defaultPersonalSpaceID";
 
 const kMaxTreeDepth = 32;
+// Range of the space intensity slider, keep in sync with theme-picker.inc.
+const kMinSpaceOpacity = AppConstants.platform === "macosx" ? 0.3 : 0.25;
+const kMaxSpaceOpacity = 0.8;
+// Arc grain styles mapped onto the theme picker's.
+const kArcTextures = {
+  grain: "grain",
+  sand: "sand",
+  denim: "denim",
+  tweed: "tweed",
+};
 const kMaxSpaceColors = 3;
 
 const kArcDefaultProfile = "Default";
@@ -150,12 +161,12 @@ function arcColor(color) {
  * Reads an Arc space's window theme
  *
  * @param {object} space
- * @returns {{colors: number[][], intensity: number|null, noise: number|null}}
- *   Up to kMaxSpaceColors `[r, g, b]` colors in 0-255 plus Arc's intensity
- *   and noise factors when present.
+ * @returns {{colors: number[][], intensity: number|null, noise: number|null, overlay: string|null}}
+ *   Up to kMaxSpaceColors `[r, g, b]` colors in 0-255 plus Arc's intensity,
+ *   noise factor and grain style when present.
  */
 function arcSpaceTheme(space) {
-  const result = { colors: [], intensity: null, noise: null };
+  const result = { colors: [], intensity: null, noise: null, overlay: null };
   const style =
     space.customInfo?.windowTheme?.background?.single?._0?.style?.color?._0;
   if (!style || typeof style !== "object") {
@@ -201,21 +212,24 @@ function arcSpaceTheme(space) {
   if (typeof modifiers?.noiseFactor === "number") {
     result.noise = modifiers.noiseFactor;
   }
+  if (modifiers?.overlay in kArcTextures) {
+    result.overlay = modifiers.overlay;
+  }
   return result;
 }
 
-function colorLightness([r, g, b]) {
-  return Math.round(((Math.max(r, g, b) + Math.min(r, g, b)) / 2 / 255) * 100);
+function colorBrightness([r, g, b]) {
+  return Math.round((Math.max(r, g, b) / 255) * 100);
 }
 
 /**
- * @param {{colors: number[][], intensity: number|null, noise: number|null}} arcTheme
+ * @param {{colors: number[][], intensity: number|null, noise: number|null, overlay: string|null}} arcTheme
  *   The colors (first one primary) and modifiers read from Arc.
  * @returns {object} A Zen space theme, as nsZenThemePicker.getTheme builds it
  */
-function spaceThemeFromArc({ colors, intensity, noise }) {
+function spaceThemeFromArc({ colors, intensity, noise, overlay }) {
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-  const lightness = colorLightness(colors[0]);
+  const lightness = colorBrightness(colors[0]);
   return {
     type: "gradient",
     gradientColors: colors.map((c, index) => ({
@@ -226,11 +240,17 @@ function spaceThemeFromArc({ colors, intensity, noise }) {
       lightness,
       type: "explicit-lightness",
     })),
-    opacity: intensity === null ? 0.5 : clamp(intensity, 0.3, 0.8),
+    // Arc's intensity spans Zen's whole slider, both start at a 20% tint.
+    opacity:
+      intensity === null
+        ? 0.5
+        : kMinSpaceOpacity +
+          clamp(intensity, 0, 1) * (kMaxSpaceOpacity - kMinSpaceOpacity),
     texture:
       noise === null
         ? 0
         : Math.min(15 / 16, Math.round(clamp(noise, 0, 1) * 16) / 16),
+    textureType: kArcTextures[overlay] ?? kArcTextures.grain,
   };
 }
 
@@ -260,44 +280,6 @@ class ZenMigrationUtilsClass {
           !win.gZenWorkspaces.privateWindowOrDisabled
       ) ?? null
     );
-  }
-
-  /**
-   * Finds the "User Data" directory of a packaged (MSIX) Chromium browser on
-   * Windows. Packaged apps keep their data under
-   * %LOCALAPPDATA%\Packages\<family name>\LocalCache\Local, and the family
-   * name ends in a publisher hash that can differ between installs, so every
-   * package folder with the given name prefix is tried.
-   *
-   * @param {string} packagesDir The Packages directory to search.
-   * @param {string} packageName The package name, e.g. "TheBrowserCompany.Arc".
-   * @param {string} dirName The browser's data directory name, e.g. "Arc".
-   * @returns {Promise<string|null>} The first existing "User Data" directory.
-   */
-  async findPackagedUserDataPath(packagesDir, packageName, dirName) {
-    let children;
-    try {
-      children = await IOUtils.getChildren(packagesDir);
-    } catch (e) {
-      return null;
-    }
-    const prefix = `${packageName}_`;
-    for (const child of children.sort()) {
-      if (!PathUtils.filename(child).startsWith(prefix)) {
-        continue;
-      }
-      const path = PathUtils.join(
-        child,
-        "LocalCache",
-        "Local",
-        dirName,
-        "User Data"
-      );
-      if (await IOUtils.exists(path)) {
-        return path;
-      }
-    }
-    return null;
   }
 
   /**

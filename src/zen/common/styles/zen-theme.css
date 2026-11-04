@@ -171,7 +171,7 @@
   ) !important;
   --zen-toolbar-button-size: 16px;
   @media (-moz-platform: macos) {
-    --zen-toolbar-button-size: 17px;
+    --zen-toolbar-button-size: 18px;
   }
 
   /* Using a semitransparent background preserves the tinting from the backdrop.
@@ -211,6 +211,8 @@
 
   --browser-area-z-index-toolbox: 2 !important;
   --attention-dot-color: transparent !important;
+
+  --toolbar-text-color: light-dark(rgba(0, 0, 0, .8), rgba(255, 255, 255, .8)) !important;
 
   --zen-appcontent-border: 1px solid var(--zen-colors-border);
 
@@ -291,8 +293,6 @@
   /** Other theme-related styles */
   @media (-moz-platform: macos) {
     font-family:
-      SF Pro,
-      ui-sans-serif,
       system-ui,
       sans-serif,
       Apple Color Emoji,
@@ -302,7 +302,7 @@
   }
 
   @media (-moz-platform: windows) {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI Variable', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 }
 

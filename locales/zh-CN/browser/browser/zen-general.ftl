@@ -36,7 +36,6 @@ tab-context-zen-edit-title =
 tab-context-zen-edit-icon = 
     .label = 更改图标…
 zen-themes-corrupted = 您的 { -brand-short-name } 模组文件已损坏。它们已重置为默认主题。
-zen-shortcuts-corrupted = 您的 { -brand-short-name } 快捷键文件已损坏。它们已重置为默认快捷键。
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = 新的地址栏已启用，不再需要新标签页。<br/><br/>打开一个新标签页来试试看新地址栏！
 zen-disable = 禁用
@@ -59,6 +58,7 @@ zen-tabs-renamed = 标签页重命名成功！
 zen-background-tab-opened-toast = 新的后台标签页已打开 ！
 zen-workspace-renamed-toast = 工作区重命名成功！
 zen-split-view-limit-toast = 无法在分屏视图中添加更多面板！
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = 简洁模式
     .tooltiptext = 切换简洁模式
@@ -87,7 +87,6 @@ zen-site-data-setting-allow = 允许
 zen-site-data-setting-block = 阻止
 zen-site-data-protections-enabled = 开启
 zen-site-data-protections-disabled = 关闭
-zen-site-data-setting-cross-site = 跨站 Cookie
 zen-site-data-security-info-extension = 
     .label = 扩展
 zen-site-data-security-info-secure = 
@@ -102,6 +101,8 @@ zen-site-data-site-settings =
     .label = 所有站点设置
 zen-site-data-header-share = 
     .tooltiptext = 分享此页面
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = 进入阅读模式
 zen-site-data-header-screenshot = 
@@ -123,7 +124,7 @@ zen-sidebar-notification-updated-heading = 更新完成！
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = 了解 { -brand-short-name } 的新版变化
+zen-sidebar-notification-updated-label = 了解 { -brand-short-name } 的新变化
 zen-sidebar-notification-updated-tooltip = 
     .title = 查看更新日志
 zen-sidebar-notification-donate-label = 支持 { -brand-short-name }

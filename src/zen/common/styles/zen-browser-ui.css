@@ -90,6 +90,24 @@ body,
   }
 }
 
+.zen-browser-generic-background,
+.zen-library-space {
+  --zen-gradient-width: 100vw;
+  --zen-gradient-height: 100vh;
+  --zen-gradient-phi: atan2(var(--zen-gradient-height), var(--zen-gradient-width));
+  --zen-gradient-tan: tan(var(--zen-gradient-phi));
+  --zen-gradient-slope: atan(var(--zen-gradient-tan) * var(--zen-gradient-tan));
+  --zen-gradient-base-angle: calc(90deg + var(--zen-gradient-slope));
+  --zen-gradient-sin: sin(var(--zen-gradient-slope));
+  --zen-gradient-cos: cos(var(--zen-gradient-slope));
+  --zen-gradient-dx: min(var(--zen-gradient-width), var(--zen-gradient-width) / var(--zen-gradient-tan));
+  --zen-gradient-dy: min(var(--zen-gradient-height), var(--zen-gradient-height) * var(--zen-gradient-tan));
+  --zen-gradient-x0: calc((var(--zen-gradient-width) - var(--zen-gradient-dx)) / 2);
+  --zen-gradient-y0: calc((var(--zen-gradient-height) - var(--zen-gradient-dy)) / 2);
+  --zen-gradient-base-start: calc(var(--zen-gradient-x0) * var(--zen-gradient-cos) + var(--zen-gradient-y0) * var(--zen-gradient-sin));
+  --zen-gradient-base-span: calc(var(--zen-gradient-dx) * var(--zen-gradient-cos) + var(--zen-gradient-dy) * var(--zen-gradient-sin));
+}
+
 .zen-browser-generic-background {
   position: absolute;
   inset: 0;
@@ -99,19 +117,6 @@ body,
 
   isolation: isolate;
   contain: size style;
-
-  --zen-gradient-phi: atan2(100vh, 100vw);
-  --zen-gradient-tan: tan(var(--zen-gradient-phi));
-  --zen-gradient-slope: atan(var(--zen-gradient-tan) * var(--zen-gradient-tan));
-  --zen-gradient-base-angle: calc(90deg + var(--zen-gradient-slope));
-  --zen-gradient-sin: sin(var(--zen-gradient-slope));
-  --zen-gradient-cos: cos(var(--zen-gradient-slope));
-  --zen-gradient-dx: min(100vw, 100vw / var(--zen-gradient-tan));
-  --zen-gradient-dy: min(100vh, 100vh * var(--zen-gradient-tan));
-  --zen-gradient-x0: calc((100vw - var(--zen-gradient-dx)) / 2);
-  --zen-gradient-y0: calc((100vh - var(--zen-gradient-dy)) / 2);
-  --zen-gradient-base-start: calc(var(--zen-gradient-x0) * var(--zen-gradient-cos) + var(--zen-gradient-y0) * var(--zen-gradient-sin));
-  --zen-gradient-base-span: calc(var(--zen-gradient-dx) * var(--zen-gradient-cos) + var(--zen-gradient-dy) * var(--zen-gradient-sin));
 
   &::after,
   &::before {

@@ -116,7 +116,7 @@ async function testWorkspaceSelectorInPanel(aDirection) {
   assertRowLayout(document, aDirection, "panel");
 
   let panel = document.getElementById("editBookmarkPanel");
-  let hidden = promisePopupHidden(panel);
+  let hidden = BrowserTestUtils.waitForPopupEvent(panel, "hidden");
   panel.hidePopup();
   await hidden;
 }

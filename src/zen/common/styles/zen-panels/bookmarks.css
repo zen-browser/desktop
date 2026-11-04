@@ -90,11 +90,6 @@ hbox.editBMPanel_folderRow {
   margin-inline-start: 10px;
 }
 
-#editBookmarkPanelContent #editBMPanel_folderTreeRow #editBMPanel_newFolderBox {
-  padding-top: 10px;
-  justify-content: flex-end;
-}
-
 /* Specific colors for bookmark popover panel */
 #editBookmarkPanel #editBMPanel_folderTree,
 #editBookmarkPanel #editBMPanel_workspaceList {

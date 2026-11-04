@@ -3,56 +3,101 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Boost hernoemen
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Willekeurige Vibe
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Reset alle wijzigingen
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-case = Case
+    .label = Boost verwijderen
+zen-boost-size = Grootte
+zen-boost-case = Hoofdletters
 zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+zen-boost-code = CSS
+zen-boost-share = Delen
+zen-boost-share-nothing-toast = Maak wijzigingen voordat je de Boost deelt
+zen-boost-share-dialog = 
+    .buttonlabelaccept = Boost delen
+    .buttonlabelcancel = Sluiten
+zen-boost-share-name-input = 
+    .placeholder = Mijn Boost
+zen-boost-share-shared-by = door
+zen-boost-share-author-input = 
+    .placeholder = Anoniem
+zen-boost-share-scribble-text = Geen meesterwerk is compleet zonder handtekening, dus krabbel je naam, schrijf een gedicht of teken iets
+zen-boost-share-hide-screenshot = 
+    .label = Verberg schermafbeelding
+zen-boost-share-info = 
+    .tooltiptext = Info over delen
+    .aria-label = Info over delen
+zen-boost-share-info-text = Controleer deze informatie zorgvuldig, want je kunt een gedeelde Boost niet aanpassen. Iedereen met de link kan deze toepassen, maar wijzigingen zijn alleen van invloed op je eigen versie.
+zen-boost-share-pane-sign = 
+    .tooltiptext = Voeg een handtekening toe
+    .aria-label = Voeg een handtekening toe
+zen-boost-share-pane-screenshot-menu = 
+    .tooltiptext = Schermafbeelding instellingen
+    .aria-label = Schermafbeelding instellingen
+zen-boost-share-pane-done = 
+    .tooltiptext = Klaar met ondertekenen
+    .aria-label = Klaar met ondertekenen
+zen-boost-share-pane-back = 
+    .tooltiptext = Terug naar de schermafbeelding
+    .aria-label = Terug naar de schermafbeelding
+zen-boost-share-pane-clear = 
+    .tooltiptext = De handtekening wissen
+    .aria-label = De handtekening wissen
+zen-boost-shared-animation-copied-link = Link gekopieerd
+zen-boost-receive-dialog = 
+    .buttonlabelaccept = Boost ontvangen
+    .buttonlabelcancel = Sluiten
+zen-boost-receive-made-for = Gemaakt voor
+zen-boost-receive-by = door
+zen-boost-receive-info = 
+    .tooltiptext = Over deze Boost
+zen-boost-receive-info-text = Auteurs van Boosts zijn ongeverifieerd. Boosts kunnen het uiterlijk van een pagina veranderen door middel van CSS en visuele filters. Ze kunnen geen code uitvoeren en je data niet versturen. Deze Boost werkt alleen op { $domain }.
+zen-boost-receive-title = Deze Boost aan Zen toevoegen?
+# The span carries the Library icon in front of the word.
+zen-boost-receive-description = Probeer het uit! Je kunt altijd terugschakelen naar hoe het was via de <span data-l10n-name="library">Bibliotheek</span>.
+zen-boost-received-toast = Boost toegevoegd!
+zen-boost-receive-error-toast = Kon de Boost niet laden
+zen-boost-back = Terug
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Willekeurige Vibe
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Slimme omkering van kleuren
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Geavanceerde kleurinstellingen
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Kleuraanpassingen uitschakelen
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Hoofdlettergebruik veranderen
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Vind CSS selector
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = Open inspector
 zen-boost-color-contrast = Contrast
-zen-boost-color-brightness = Brightness
-zen-boost-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-boost-color-brightness = Helderheid
+zen-boost-color-original-saturation = Oorspronkelijke verzadiging
+zen-add-zap-helper = Klik op elementen op de pagina om ze weg te <b>Zappen</b>
+zen-remove-zap-helper = ← Klik om Zap ongedaan te maken
+zen-select-this = Selecteer dit element
+zen-select-related = Selecteer aanverwante elementen
+zen-select-cancel = Annuleren
+zen-zap-this = Zap dit element
+zen-zap-related = Zap alle aanverwante elementen
+zen-zap-cancel = Annuleren
+zen-zap-done = Klaar
+zen-boost-focus = Focus
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Geen elementen gezapt
+        [1] { $elementCount } elementen gezapt
+       *[other] { $elementCount } elementen gezapt
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Boost exporteren
 zen-boost-load = 
-    .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
+    .label = Boost importeren
+zen-panel-ui-boosts-exported-message = Boost geëxporteerd!
 zen-site-data-boosts = Boosts
-zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+zen-boost-rename-boost-prompt = Boost hernoemen?

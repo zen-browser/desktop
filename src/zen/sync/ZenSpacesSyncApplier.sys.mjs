@@ -406,9 +406,8 @@ class nsZenSpacesSyncApplier {
       { id: "zen-workspaces-remote-delete-title" },
       { id: "zen-workspaces-remote-delete-body", args: { name } },
     ]);
-    const result = await Services.prompt.asyncConfirmEx(
-      win.browsingContext,
-      Services.prompt.MODAL_TYPE_WINDOW,
+    const result = Services.prompt.confirmEx(
+      win,
       title,
       body,
       Services.prompt.STD_YES_NO_BUTTONS,
@@ -416,9 +415,9 @@ class nsZenSpacesSyncApplier {
       null,
       null,
       null,
-      false
+      {}
     );
-    return result.get("buttonNumClicked") === 0;
+    return result === 0;
   }
 
   /* Mark: folders */

@@ -1083,6 +1083,7 @@ zen-library-history-section {
 
 .zen-library-row-actions {
   display: flex;
+  align-items: center;
   gap: 4px;
 
   /* Shown while the row is hovered; outranks the library's button rule. */

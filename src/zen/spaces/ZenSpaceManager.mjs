@@ -1376,7 +1376,9 @@ class nsZenWorkspaces {
     // Call parent node as on windows, the text can be double clicked
     let target;
     try {
-      target = event.explicitOriginalTarget?.closest("toolbarbutton");
+      target = (
+        event.target.anchorNode || event.explicitOriginalTarget
+      )?.closest("toolbarbutton");
     } catch (e) {
       console.error("Error getting explicitOriginalTarget in context menu:", e);
     }
@@ -3247,7 +3249,7 @@ class nsZenWorkspaces {
         args: { name: this.getWorkspaceFromId(workspaceId).name },
       },
     ]);
-    if (Services.prompt.confirm(null, title, body)) {
+    if (Services.prompt.confirm(window, title, body)) {
       this.removeWorkspace(workspaceId);
     }
   }

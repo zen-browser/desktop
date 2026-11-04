@@ -4,23 +4,25 @@
 
 zen-welcome-title-line1 = Välkommen till
 zen-welcome-title-line2 = ett lugnare internet
+zen-welcome-back = Tillbaka
+zen-welcome-skip = Hoppa över för nu
 zen-welcome-import-title = En fräsch start, Samma bokmärken
-zen-welcome-import-description-1 = Dina bokmärken, historik och lösenord är som ett spår av brödsmulor på nätet —lämna dem inte bakom dig!
-zen-welcome-import-description-2 = Ta dem enkelt över från en annan webbläsare och plocka upp precis där du slutade.
-zen-welcome-import-button = Importera nu
-zen-welcome-set-default-browser = Ställ in { -brand-short-name } som din standardwebbläsare
-zen-welcome-dont-set-default-browser = Ställ INTE in { -brand-short-name } som din standardwebbläsare
-zen-welcome-initial-essentials-title = Dina nyckelflikar, alltid inom räckhåll
-zen-welcome-initial-essentials-description-1 = Håll dina viktigaste flikar lättillgängliga och alltid till hands, oavsett hur många du öppnar.
-zen-welcome-initial-essentials-description-2 = Viktiga flikar är alltid synliga, oavsett vilken arbetsyta du befinner dig i.
-zen-welcome-workspace-colors-title = Dina arbetsytor, dina färger
-zen-welcome-workspace-colors-description = Anpassa din webbläsare genom att ge varje arbetsyta sin egen unika färgidentitet.
-zen-welcome-start-browsing-title =
-    Allt klart?<br/>
-    Låt oss komma igång!
-zen-welcome-start-browsing-description-1 = Du är klar och redo att börja. Klicka på knappen nedan för att börja surfa med { -brand-short-name }.
-zen-welcome-start-browsing = Dyk in!
+zen-welcome-import-description = Välj en webbläsare för att importera dina bokmärken, historik och lösenord från och plocka upp precis där du slutade.
+zen-welcome-import-no = <strong>NEJ</strong>, börja fräscht.
+zen-welcome-default-browser-title = Gör { -brand-short-name } till din standard?
+zen-welcome-default-browser-description = Länkar från andra program öppnas i { -brand-short-name }. Du kan alltid ändra detta senare.
+zen-welcome-set-default-browser = <strong>JA</strong>, gör { -brand-short-name } till standard.
+zen-welcome-dont-set-default-browser = <strong>NEJ</strong>, utforskar fortfarande mina alternativ.
 zen-welcome-default-search-title = Din standardsökmotor
 zen-welcome-default-search-description = Välj din standardsökmotor. Du kan alltid ändra det senare!
-zen-welcome-skip-button = Hoppa över
-zen-welcome-finished = Din Zen har konfigurerats korrekt!
+zen-welcome-essentials-title = Välj de program du använder mest.
+zen-welcome-essentials-description = Välj dina favoritappar för att hålla dem behändiga i sidofältet.
+zen-welcome-block-ads-title = Blockera annonser och spårare?
+zen-welcome-block-ads-description = { -brand-short-name } kan installera uBlock Origin åt dig, så sidor ladda renare och snabbare. Du kan ta bort det när som helst.
+zen-welcome-block-ads-yes = <strong>JA</strong>, blockera annonser för mig.
+zen-welcome-block-ads-no = <strong>NEJ</strong>, visa mig allting.
+zen-welcome-workspace-colors-title = Dina arbetsytor, dina färger
+zen-welcome-workspace-colors-description = Anpassa din webbläsare genom att ge varje arbetsyta sin egen unika färgidentitet.
+zen-welcome-start-browsing-title = Allt klart? Låt oss komma igång!
+zen-welcome-start-browsing-description-1 = Du är klar och redo att börja. Klicka på knappen nedan för att börja surfa med { -brand-short-name }.
+zen-welcome-start-browsing = Dyk in!

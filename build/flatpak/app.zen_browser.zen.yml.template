@@ -31,6 +31,7 @@ finish-args:
   - --talk-name=org.gtk.vfs.*
   - --own-name=org.mpris.MediaPlayer2.firefox.*
   - --own-name=org.mozilla.zen.*
+  - --talk-name=org.freedesktop.NativeMessagingProxy
 cleanup:
   - /include
   - /lib/pkgconfig
@@ -50,6 +51,7 @@ modules:
       - mv zen /app/
       - mkdir -p /app/etc/zen
 
+      - install -Dm0644 native-messaging.js ${FLATPAK_DEST}/zen/defaults/pref/native-messaging.js
       - install -Dm0755 metadata/launch-script.sh ${{FLATPAK_DEST}}/bin/launch-script.sh
       - install -Dm0644 metadata/policies.json ${{FLATPAK_DEST}}/bin/distribution/policies.json
       - install -Dm0644 metadata/icons/${{FLATPAK_ID}}.svg ${{FLATPAK_DEST}}/share/icons/hicolor/scalable/apps/${{FLATPAK_ID}}.svg
@@ -76,3 +78,9 @@ modules:
         sha256: {flatpak_sha256}
         strip-components: 0
         dest: metadata
+
+      - type: inline
+        dest-filename: native-messaging.js
+        contents: |
+                  pref("widget.use-xdg-desktop-portal.native-messaging", 2);
+                  pref("widget.use-xdg-desktop-portal.native-messaging-proxy", 2);

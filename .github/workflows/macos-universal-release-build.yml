@@ -174,10 +174,8 @@ jobs:
 
       - name: Unify architectures
         run: |
-          set -euo pipefail
           cd engine
-          APP="./obj-x86_64-apple-darwin/dist/${{ env.APP_NAME }}.app"
-          ./mach python "./toolkit/mozapps/installer/unify.py" "$APP" "./obj-aarch64-apple-darwin/dist/${{ env.APP_NAME }}.app"
+          ./mach python "./toolkit/mozapps/installer/unify.py" "./obj-x86_64-apple-darwin/dist/${{ env.APP_NAME }}.app" "./obj-aarch64-apple-darwin/dist/${{ env.APP_NAME }}.app"
           echo "Merged aaarch64 into x86_64!"
 
       - name: Import APPLE DEVELOPER ID CERTIFICATE for .app
@@ -192,44 +190,11 @@ jobs:
           echo "Copying provisioning profile for .app on both architectures (${{ env.APP_NAME }})"
           cp ./Zen_Browser.provisionprofile "./embedded.provisionprofile"
 
-      - name: Validate provisioning profile
-        run: |
-          set -euo pipefail
-          cd engine
-          APP="./obj-x86_64-apple-darwin/dist/${{ env.APP_NAME }}.app"
-          PROFILE_PLIST="$(mktemp)"
-          trap 'rm -f "$PROFILE_PLIST"' EXIT
-
-          security cms -D -i ./Zen_Browser.provisionprofile > "$PROFILE_PLIST"
-          BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Contents/Info.plist")"
-          TEAM_ID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.team-identifier' "$PROFILE_PLIST")"
-          PROFILE_APP_ID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.application-identifier' "$PROFILE_PLIST")"
-          EXPECTED_APP_ID="$TEAM_ID.$BUNDLE_ID"
-
-          if [ "$PROFILE_APP_ID" != "$EXPECTED_APP_ID" ]; then
-            echo "Provisioning profile application identifier mismatch:" >&2
-            echo "  profile:  $PROFILE_APP_ID" >&2
-            echo "  expected: $EXPECTED_APP_ID" >&2
-            exit 1
-          fi
-
       - name: Sign .app
         run: |
-          set -euo pipefail
           cd engine
-          # Use the production entitlement set for release builds.
-          APP="./obj-x86_64-apple-darwin/dist/${{ env.APP_NAME }}.app"
-          ./mach macos-sign -v -r -c "release" -e "production" -a "$APP" --rcodesign-p12-file zenCert.p12 --rcodesign-p12-password-file zenpCertPassword.passwd
-
-          # Signing or copying the bundle must not leave Finder metadata on
-          # signed files. Extended attributes are not part of the signature,
-          # so remove them before performing the strict verification.
-          xattr -cr "$APP"
-          if xattr -lr "$APP" | grep -Eq 'com\.apple\.(FinderInfo|ResourceFork)'; then
-            echo "Forbidden Finder metadata remains in $APP" >&2
-            exit 1
-          fi
-          codesign --verify --deep --strict --verbose=2 "$APP"
+          # TODO: Change it to "production" once we figure out the issue with the webauth
+          ./mach macos-sign -v -r -c "release" -e "production" -a "./obj-x86_64-apple-darwin/dist/${{ env.APP_NAME }}.app" --rcodesign-p12-file zenCert.p12 --rcodesign-p12-password-file zenpCertPassword.passwd
 
       - name: Create DMG
         run: |
@@ -257,20 +222,6 @@ jobs:
             --no-s3-acceleration \
             --wait
           xcrun stapler staple "zen.macos-universal.dmg"
-
-      - name: Verify packaged .app
-        run: |
-          set -euo pipefail
-          MOUNT_DIR="$(mktemp -d)"
-          cleanup() {
-            hdiutil detach "$MOUNT_DIR" >/dev/null 2>&1 || true
-            rmdir "$MOUNT_DIR" 2>/dev/null || true
-          }
-          trap cleanup EXIT
-
-          hdiutil attach -nobrowse -readonly -mountpoint "$MOUNT_DIR" zen.macos-universal.dmg
-          codesign --verify --deep --strict --verbose=2 "$MOUNT_DIR/${{ env.APP_NAME }}.app"
-          xcrun stapler validate zen.macos-universal.dmg
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

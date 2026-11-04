@@ -271,7 +271,7 @@
     --zen-urlbar-background-base: light-dark(rgb(255, 255, 255), rgb(24 24 24));
     /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce)) {
-      :root:not([zen-no-acrylic="true"]) &:not(:-moz-window-inactive) {
+      &:not(:-moz-window-inactive) {
         --zen-urlbar-background-transparent: light-dark(
           rgba(255, 255, 255, .93),
           rgba(20, 20, 20, .92)
@@ -286,9 +286,7 @@
 
     /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce))  {
-      :root:not([zen-no-acrylic="true"]) & {
-        backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
-      }
+      backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
     }
   }
 

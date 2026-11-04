@@ -72,7 +72,7 @@
     #dragImageEssential = false;
 
     #dragOverSplit = {};
-
+    #touchDrags = new Map();
     constructor(tabbrowserTabs) {
       super(tabbrowserTabs);
 
@@ -140,6 +140,118 @@
           capture: true,
         }
       );
+      // Native tab DnD is too sensitive to touchscreen movement: a small
+      // slide during a tap can detach the tab into a new window. Keep
+      // touch-originated drags out of the native drag pipeline without
+      // changing pointer events, mouse dragging, or external drops.
+      document.addEventListener(
+        "pointerdown",
+        event => this.#onTouchPointerDown(event),
+        true
+      );
+      for (const type of ["pointerup", "pointercancel"]) {
+        document.addEventListener(
+          type,
+          event => this.#onTouchPointerEnd(event),
+          true
+        );
+      }
+      document.addEventListener(
+        "dragstart",
+        event => this.#onTabDragStart(event),
+        true
+      );
+      this._tabbrowserTabs.addEventListener("TabClose", event => {
+        this.#clearTouchTab(event.target);
+      });
+      window.addEventListener("blur", () => this.#clearAllTouchDrags());
+    }
+
+    #restoreTouchTab(tab, state) {
+      if (state.restored) {
+        return;
+      }
+      state.restored = true;
+      tab.draggable = state.draggable;
+      if (state.attribute === null) {
+        tab.removeAttribute("draggable");
+      } else {
+        tab.setAttribute("draggable", state.attribute);
+      }
+    }
+
+    #clearTouchTab(tab) {
+      const state = this.#touchDrags.get(tab);
+      if (!state) {
+        return;
+      }
+      if (state.timer !== null) {
+        clearTimeout(state.timer);
+      }
+      this.#restoreTouchTab(tab, state);
+      this.#touchDrags.delete(tab);
+    }
+
+    #clearAllTouchDrags() {
+      for (const tab of this.#touchDrags.keys()) {
+        this.#clearTouchTab(tab);
+      }
+    }
+
+    #onTouchPointerDown(event) {
+      if (event.pointerType !== "touch") {
+        if (event.pointerType === "mouse" || event.pointerType === "pen") {
+          this.#clearAllTouchDrags();
+        }
+        return;
+      }
+      if (event.button !== 0) {
+        return;
+      }
+      const tab = event.target?.closest?.(".tabbrowser-tab");
+      if (!tab || !isTab(tab)) {
+        return;
+      }
+
+      let state = this.#touchDrags.get(tab);
+      if (!state) {
+        state = {
+          draggable: tab.draggable,
+          attribute: tab.getAttribute("draggable"),
+          pointers: new Set(),
+          timer: null,
+          restored: false,
+        };
+        this.#touchDrags.set(tab, state);
+      } else if (state.timer !== null) {
+        clearTimeout(state.timer);
+        state.timer = null;
+      }
+      state.restored = false;
+      state.pointers.add(event.pointerId);
+      tab.draggable = false;
+      tab.setAttribute("draggable", "false");
+    }
+
+    #onTouchPointerEnd(event) {
+      for (const [tab, state] of this.#touchDrags) {
+        if (!state.pointers.delete(event.pointerId)) {
+          continue;
+        }
+        if (state.pointers.size === 0) {
+          this.#restoreTouchTab(tab, state);
+          state.timer = setTimeout(() => this.#clearTouchTab(tab), 350);
+        }
+        break;
+      }
+    }
+
+    #onTabDragStart(event) {
+      const tab = event.target?.closest?.(".tabbrowser-tab");
+      if (tab && this.#touchDrags.has(tab)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
     }
 
     startTabDrag(event, tab, ...args) {

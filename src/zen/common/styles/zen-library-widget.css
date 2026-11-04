@@ -19,7 +19,7 @@
 #zen-library-button {
   position: relative;
 
-  --zen-library-sprite-size: 18px;
+  --zen-library-sprite-size: 22px;
 
   & .zen-library-sprite {
     position: absolute;

@@ -13,7 +13,7 @@
   align-items: center;
   gap: 10px;
   min-height: 0;
-  padding: 16px var(--panel-padding, 16px) 0;
+  padding: 16px var(--panel-padding, 16px) 12px;
 }
 
 #editBookmarkPanel .panel-header > h1 {
@@ -99,6 +99,7 @@ hbox.editBMPanel_folderRow {
 #editBookmarkPanel #editBMPanel_folderTree,
 #editBookmarkPanel #editBMPanel_workspaceList {
   background-color: var(--input-background-color);
+  padding: 4px 0;
 }
 
 #editBookmarkPanel #editBMPanel_folderTree,
@@ -122,17 +123,28 @@ hbox.editBMPanel_folderRow {
   padding-block: 0;
 }
 
-/* Specific colors for add/edit bookmark dialog */
+/* Dialog-specific theming; the list must not shrink into its own scroller. */
 #bookmarkpropertiesdialog .workspace-trigger,
 #bookmarkpropertiesdialog #editBMPanel_workspaceList {
   background-color: var(--background-color-box);
   border-color: var(--border-color);
+  max-height: none;
+  overflow-y: visible;
 }
 
 /* SubDialog caps the frame; `contain` stops the content re-expanding it */
 #bookmarkpropertiesdialog.doScroll::part(content-box) {
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   contain: size;
+}
+
+#bookmarkpropertiesdialog.doScroll #editBookmarkPanelContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-top: 8px;
 }
 
 /* Bookmarks in toolbar */

@@ -19,7 +19,11 @@
 #zen-library-button {
   position: relative;
 
-  --zen-library-sprite-size: 22px;
+  --zen-library-sprite-size: 20px;
+
+  @media (-moz-platform: macos) {
+    --zen-library-sprite-size: 22px;
+  }
 
   & .zen-library-sprite {
     position: absolute;

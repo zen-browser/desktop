@@ -1,0 +1,23 @@
+diff --git a/toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs b/toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs
+index 0c8379da8b1c7b3dd5cf946820fab8e69c70786d..15974c5d35a11a8ce4b49a008b4b2c18ebd4fe4c 100644
+--- a/toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs
++++ b/toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs
+@@ -323,8 +323,18 @@ _ContextualIdentityService.prototype = {
+       .sort((a, b) => a >= b)
+       .pop();
+ 
++    const createDefaults = Services.prefs.getBoolPref(
++      "zen.containers.create-default-identities",
++      true
++    );
+     // Clone the array
+     for (let identity of this._defaultIdentities) {
++      if (
++        !createDefaults &&
++        this._userIdentities.some(user => user.l10nId == identity.l10nId)
++      ) {
++        continue;
++      }
+       let stored = Object.assign({}, identity);
+       delete stored.l10nId;
+       this._identities.push(stored);

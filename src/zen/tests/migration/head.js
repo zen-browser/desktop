@@ -72,6 +72,7 @@ function buildArcSidebar() {
     {
       id: "s1",
       title: "Work Space",
+      profile: { default: {} },
       customInfo: {
         iconType: { emoji_v2: "\u{1F9EA}" },
         windowTheme: {
@@ -112,6 +113,7 @@ function buildArcSidebar() {
     "s2",
     {
       id: "s2",
+      profile: { custom: { _0: { directoryBasename: "Profile 1" } } },
       customInfo: {},
       containerIDs: ["pinned", "pinned-2", "unpinned", "unpinned-2"],
     },

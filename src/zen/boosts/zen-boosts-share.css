@@ -335,7 +335,6 @@
 
 .zbs-screenshot {
   background-color: var(--surface-background);
-  transform: translateZ(1px);
 
   & .zbs-screenshot-favicon {
     display: none;
@@ -420,7 +419,6 @@
   margin: -12px;
   perspective: 400px;
   transform-origin: top;
-  transform: translateZ(10px);
   filter: drop-shadow(0 0 4px var(--pane-shadow));
 }
 
@@ -461,10 +459,6 @@
     background: none;
     -moz-context-properties: fill, fill-opacity;
     fill: var(--ink);
-
-    & .button-box {
-      scale: 0.85;
-    }
 
     &:first-child {
       border-radius: 20px 6px 6px 20px;

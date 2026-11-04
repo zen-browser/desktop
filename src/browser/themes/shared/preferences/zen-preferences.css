@@ -6,8 +6,12 @@
 
 @namespace html "http://www.w3.org/1999/xhtml";
 
+:root {
+  --zen-squircle-value: 1;
+}
+
 .pane-container {
-  margin: auto;
+  margin: 0 auto;
 }
 
 description {
@@ -365,6 +369,7 @@ groupbox h2 {
 
 #zenLayoutList {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 10px;
 

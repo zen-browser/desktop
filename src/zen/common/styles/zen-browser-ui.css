@@ -34,6 +34,80 @@ body,
   width: 100%;
 }
 
+.zen-browser-generic-background,
+#PanelUI-zen-gradient-generator-texture-wrapper {
+  --zen-grain-texture: url(chrome://browser/content/zen-images/grain-bg.png);
+  --zen-grain-tile: 155px;
+  --zen-grain-alpha: 0.7;
+  --zen-grain-texture-old: url(chrome://browser/content/zen-images/grain-bg.png);
+  --zen-grain-tile-old: 155px;
+  --zen-grain-alpha-old: 0.7;
+
+  &[zen-grain-texture="none"] {
+    --zen-grain-texture: none;
+    --zen-grain-alpha: 0;
+  }
+
+  &[zen-grain-texture="sand"] {
+    --zen-grain-texture: url(chrome://browser/content/zen-images/sand-bg.png);
+    --zen-grain-tile: 100px;
+    --zen-grain-alpha: 0.3;
+  }
+
+  &[zen-grain-texture="denim"] {
+    --zen-grain-texture: url(chrome://browser/content/zen-images/denim-bg.png);
+    --zen-grain-tile: 100px;
+    --zen-grain-alpha: 0.85;
+  }
+
+  &[zen-grain-texture="tweed"] {
+    --zen-grain-texture: url(chrome://browser/content/zen-images/tweed-bg.png);
+    --zen-grain-tile: 100px;
+    --zen-grain-alpha: 1;
+  }
+
+  &[zen-grain-texture-old="none"] {
+    --zen-grain-texture-old: none;
+    --zen-grain-alpha-old: 0;
+  }
+
+  &[zen-grain-texture-old="sand"] {
+    --zen-grain-texture-old: url(chrome://browser/content/zen-images/sand-bg.png);
+    --zen-grain-tile-old: 100px;
+    --zen-grain-alpha-old: 0.3;
+  }
+
+  &[zen-grain-texture-old="denim"] {
+    --zen-grain-texture-old: url(chrome://browser/content/zen-images/denim-bg.png);
+    --zen-grain-tile-old: 100px;
+    --zen-grain-alpha-old: 0.85;
+  }
+
+  &[zen-grain-texture-old="tweed"] {
+    --zen-grain-texture-old: url(chrome://browser/content/zen-images/tweed-bg.png);
+    --zen-grain-tile-old: 100px;
+    --zen-grain-alpha-old: 1;
+  }
+}
+
+.zen-browser-generic-background,
+.zen-library-space {
+  --zen-gradient-width: 100vw;
+  --zen-gradient-height: 100vh;
+  --zen-gradient-phi: atan2(var(--zen-gradient-height), var(--zen-gradient-width));
+  --zen-gradient-tan: tan(var(--zen-gradient-phi));
+  --zen-gradient-slope: atan(var(--zen-gradient-tan) * var(--zen-gradient-tan));
+  --zen-gradient-base-angle: calc(90deg + var(--zen-gradient-slope));
+  --zen-gradient-sin: sin(var(--zen-gradient-slope));
+  --zen-gradient-cos: cos(var(--zen-gradient-slope));
+  --zen-gradient-dx: min(var(--zen-gradient-width), var(--zen-gradient-width) / var(--zen-gradient-tan));
+  --zen-gradient-dy: min(var(--zen-gradient-height), var(--zen-gradient-height) * var(--zen-gradient-tan));
+  --zen-gradient-x0: calc((var(--zen-gradient-width) - var(--zen-gradient-dx)) / 2);
+  --zen-gradient-y0: calc((var(--zen-gradient-height) - var(--zen-gradient-dy)) / 2);
+  --zen-gradient-base-start: calc(var(--zen-gradient-x0) * var(--zen-gradient-cos) + var(--zen-gradient-y0) * var(--zen-gradient-sin));
+  --zen-gradient-base-span: calc(var(--zen-gradient-dx) * var(--zen-gradient-cos) + var(--zen-gradient-dy) * var(--zen-gradient-sin));
+}
+
 .zen-browser-generic-background {
   position: absolute;
   inset: 0;
@@ -58,7 +132,6 @@ body,
     background: var(--zen-main-browser-background);
     opacity: var(--zen-background-opacity);
     transition: 0s;
-    background-blend-mode: lighten;
   }
 
   &:is(.zen-toolbar-background) {
@@ -71,7 +144,6 @@ body,
     background: var(--zen-main-browser-background-old);
     opacity: calc(1 - var(--zen-background-opacity));
     transition: 0s;
-    background-blend-mode: lighten;
   }
 
   &:is(.zen-toolbar-background) {
@@ -88,19 +160,41 @@ body,
     display: none;
     position: absolute;
     inset: 0;
-    background-image: url(chrome://browser/content/zen-images/grain-bg.png);
     pointer-events: none;
     z-index: 1;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    &::after {
+      background-image: var(--zen-grain-texture);
+      background-size: var(--zen-grain-tile) var(--zen-grain-tile);
+      opacity: calc(
+        var(--zen-grainy-background-opacity, 0) * var(--zen-grain-alpha) * var(--zen-background-opacity, 1)
+      );
+    }
+
+    &::before {
+      background-image: var(--zen-grain-texture-old);
+      background-size: var(--zen-grain-tile-old) var(--zen-grain-tile-old);
+      opacity: calc(
+        var(--zen-grainy-background-opacity-old, 0) * var(--zen-grain-alpha-old) *
+          (1 - var(--zen-background-opacity, 1))
+      );
+    }
   }
 
   &[zen-show-grainy-background="true"] .zen-browser-grain {
     display: flex;
-    opacity: var(--zen-grainy-background-opacity, 0);
+  }
 
-    &:not([swipe-gesture]) {
-      /* note: Keep in sync with kGlobalAnimationDuration */
-      transition: opacity 0.2s ease-in-out;
-    }
+  &:not([animating-background]) .zen-browser-grain:not([swipe-gesture])::after {
+    /* note: Keep in sync with kGlobalAnimationDuration */
+    transition: opacity 0.2s ease-in-out;
   }
 }
 

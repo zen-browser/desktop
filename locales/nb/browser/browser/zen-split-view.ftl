@@ -11,7 +11,7 @@ tab-zen-split-tabs =
         }
     .accesskey = S
 zen-split-link = 
-    .label = Del opp lenke til ny fane
+    .label = Del lenke til ny fane
     .accesskey = S
 zen-split-view-modifier-header = Splittet visning
 zen-split-view-modifier-activate-reallocation = 

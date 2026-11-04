@@ -29,52 +29,45 @@ index 7c11a2004c87aa6f0c61cf05ca522c7471c7be71..0f92f9925221cadbd258402f1b6a86a7
    /**
     * Save edited title for the bookmark
     *
-@@ -184,6 +191,14 @@ class BookmarkState {
+@@ -184,6 +191,8 @@ class BookmarkState {
        "BookmarkState::createBookmark"
      );
      this._guid = results?.[0];
 +
-+    if ('workspaces' in this._newState) {
-+      try {
-+        await this.updateBookmarkWorkspaces(this._guid, this._newState.workspaces);
-+      } catch (ex) {
-+        console.error("Failed to update workspace assignments:", ex);
-+      }
-+    }
++    await this._updateWorkspacesIfNeeded();
      return this._guid;
    }
  
-@@ -217,6 +232,14 @@ class BookmarkState {
+@@ -217,6 +226,8 @@ class BookmarkState {
        "BookmarkState::save::createFolder"
      );
      this._guid = results[0];
 +
-+    if ('workspaces' in this._newState) {
-+      try {
-+        await this.updateBookmarkWorkspaces(this._guid, this._newState.workspaces);
-+      } catch (ex) {
-+        console.error("Failed to update workspace assignments:", ex);
-+      }
-+    }
++    await this._updateWorkspacesIfNeeded();
      return this._guid;
    }
  
-@@ -303,11 +326,97 @@ class BookmarkState {
+@@ -303,11 +314,101 @@ class BookmarkState {
        await lazy.PlacesTransactions.batch(transactions, "BookmarkState::save");
      }
  
-+    if ('workspaces' in this._newState) {
-+      try {
-+        await this.updateBookmarkWorkspaces(this._guid, this._newState.workspaces);
-+      } catch (ex) {
-+        console.error("Failed to update workspace assignments:", ex);
-+      }
-+    }
++    await this._updateWorkspacesIfNeeded();
      this._originalState = { ...this._originalState, ...this._newState };
      this._newState = {};
      return this._guid;
    }
  
++  async _updateWorkspacesIfNeeded() {
++    if (!("workspaces" in this._newState)) {
++      return;
++    }
++    try {
++      await this.updateBookmarkWorkspaces(this._guid, this._newState.workspaces);
++    } catch (ex) {
++      console.error("Failed to update workspace assignments:", ex);
++    }
++  }
++
 +  async updateBookmarkWorkspaces(bookmarkGuid, workspaces) {
 +    await lazy.PlacesUtils.withConnectionWrapper('ZenWorkspaceBookmarksStorage.updateBookmarkWorkspaces', async (db) => {
 +      const now = Date.now();
@@ -122,10 +115,11 @@ index 7c11a2004c87aa6f0c61cf05ca522c7471c7be71..0f92f9925221cadbd258402f1b6a86a7
 +          await this._recordChange(db, bookmarkGuid, workspaceUuid, 'added');
 +        }
 +      });
++
++      await this._updateLastChangeTimestamp(db);
 +    });
 +
-+    const changes = { bookmarkGuid, workspaces };
-+    Services.obs.notifyObservers(null, "workspace-bookmarks-updated", JSON.stringify(changes));
++    Services.obs.notifyObservers(null, "workspace-bookmarks-updated");
 +  }
 +
 +  async _recordChange(db, bookmarkGuid, workspaceUuid, changeType) {
@@ -142,8 +136,6 @@ index 7c11a2004c87aa6f0c61cf05ca522c7471c7be71..0f92f9925221cadbd258402f1b6a86a7
 +      change_type: changeType,
 +      timestamp: Math.floor(now / 1000)
 +    });
-+
-+    await this._updateLastChangeTimestamp(db);
 +  }
 +
 +  async _updateLastChangeTimestamp(db) {

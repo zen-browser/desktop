@@ -21,30 +21,6 @@ function getToolbarNodeForItemGuid(aItemGuid, aWin = window) {
   return null;
 }
 
-function promisePopupShown(aPopup) {
-  return new Promise(resolve => {
-    if (aPopup.state == "open") {
-      resolve();
-    } else {
-      let onPopupShown = () => {
-        aPopup.removeEventListener("popupshown", onPopupShown);
-        resolve();
-      };
-      aPopup.addEventListener("popupshown", onPopupShown);
-    }
-  });
-}
-
-function promisePopupHidden(aPopup) {
-  return new Promise(resolve => {
-    let onPopupHidden = () => {
-      aPopup.removeEventListener("popuphidden", onPopupHidden);
-      resolve();
-    };
-    aPopup.addEventListener("popuphidden", onPopupHidden);
-  });
-}
-
 function isToolbarVisible(aToolbar) {
   let hidingAttribute =
     aToolbar.getAttribute("type") == "menubar" ? "autohide" : "collapsed";
@@ -172,7 +148,7 @@ function flushSpacesToSessionStore() {
 async function openStarPanel(aWin = window) {
   aWin.StarUI._createPanelIfNeeded();
   let panel = aWin.document.getElementById("editBookmarkPanel");
-  let shown = promisePopupShown(panel);
+  let shown = BrowserTestUtils.waitForPopupEvent(panel, "shown");
   aWin.BookmarkingUI.star.click();
   await shown;
   return panel;

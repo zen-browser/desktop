@@ -75,6 +75,9 @@ export class nsZenWorkspace extends MozXULElement {
             <label class="zen-integrations-banner-title" crop="end" />
           </vbox>
           <toolbarbutton class="zen-integrations-join-button" data-l10n-id="zen-integrations-join-button" label="Join" />
+          <toolbarbutton class="zen-integrations-camera-button toolbarbutton-1" data-l10n-id="zen-integrations-join-button">
+            <image class="zen-integrations-camera-icon" />
+          </toolbarbutton>
           <html:select class="zen-integrations-sidebar-select" hidden="true" />
         </hbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">

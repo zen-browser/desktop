@@ -74,6 +74,7 @@ export class ZenIntegrationsUI extends ZenUIComponent {
   #isSwiping = false;
   #wheelSwipeTimer = null;
   #swipeEndTimer = null;
+  #meetingsMenu = null;
 
   init() {
     this.#popup = this.document.getElementById("zen-integrations-popup");
@@ -161,6 +162,8 @@ export class ZenIntegrationsUI extends ZenUIComponent {
   }
 
   uninit() {
+    this.#meetingsMenu?.remove();
+    this.#meetingsMenu = null;
     this.window.clearInterval(this.#clockTimer);
     if (this.#animatingOutTimer) {
       this.window.clearTimeout(this.#animatingOutTimer);
@@ -338,6 +341,21 @@ export class ZenIntegrationsUI extends ZenUIComponent {
       if (meeting?.joinUrl) {
         this.window.openWebLinkIn(meeting.joinUrl, "tab");
         lazy.ZenIntegrationsManager.dismissMeeting(meeting.key);
+      }
+      return;
+    }
+
+    // Camera button in workspace sidebar banner (collapsed sidebar)
+    if (target.classList?.contains("zen-integrations-camera-button")) {
+      const { meetings } = lazy.ZenIntegrationsManager;
+      if (meetings.length > 1) {
+        this.#openMeetingsMenu(target);
+      } else {
+        const meeting = meetings[0] ?? null;
+        if (meeting?.joinUrl) {
+          this.window.openWebLinkIn(meeting.joinUrl, "tab");
+          lazy.ZenIntegrationsManager.dismissMeeting(meeting.key);
+        }
       }
       return;
     }
@@ -932,6 +950,51 @@ export class ZenIntegrationsUI extends ZenUIComponent {
     } else if (this.#popup.state === "closed") {
       this.#popup.openPopup(tab, { position, x, y });
     }
+  }
+
+  #ensureMeetingsMenu() {
+    if (!this.#meetingsMenu) {
+      this.#meetingsMenu = this.document.createXULElement("menupopup");
+      this.#meetingsMenu.id = "zen-integrations-meetings-menu";
+      this.#meetingsMenu.addEventListener("command", event => {
+        const item = event.target;
+        const joinUrl = item.dataset.joinUrl;
+        const meetingKey = item.dataset.meetingKey;
+        if (joinUrl) {
+          this.window.openWebLinkIn(joinUrl, "tab");
+          if (meetingKey) {
+            lazy.ZenIntegrationsManager.dismissMeeting(meetingKey);
+          }
+        }
+      });
+      const popupset = this.document.getElementById("mainPopupSet") || this.document.documentElement;
+      popupset.appendChild(this.#meetingsMenu);
+    }
+    return this.#meetingsMenu;
+  }
+
+  #openMeetingsMenu(anchor) {
+    const { meetings } = lazy.ZenIntegrationsManager;
+    const menu = this.#ensureMeetingsMenu();
+    menu.replaceChildren();
+
+    for (const m of meetings) {
+      const item = this.document.createXULElement("menuitem");
+      const timeStr = m.start
+        ? new Date(m.start).toLocaleTimeString(undefined, {
+            hour: "numeric",
+            minute: "2-digit",
+          })
+        : "";
+      item.setAttribute("label", timeStr ? `${m.title || "Meeting"} (${timeStr})` : (m.title || "Meeting"));
+      item.dataset.joinUrl = m.joinUrl || "";
+      item.dataset.meetingKey = m.key || "";
+      menu.appendChild(item);
+    }
+
+    const isRightSide = this.document.documentElement.getAttribute("zen-right-side") === "true";
+    const position = isRightSide ? "start_before" : "after_start";
+    menu.openPopup(anchor, position);
   }
 
   #updateBanners() {

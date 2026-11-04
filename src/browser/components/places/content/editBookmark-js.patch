@@ -31,15 +31,12 @@ index d3180c5..6b9369b 100644
          }
          break;
      }
-@@ -1281,6 +1289,108 @@ var gEditItemOverlay = {
+@@ -1281,6 +1289,96 @@ var gEditItemOverlay = {
    get bookmarkState() {
      return this._bookmarkState;
    },
 +
 +  async onWorkspaceSelectionChange(event) {
-+    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
-+      return;
-+    }
 +    event.stopPropagation();
 +
 +    // Add new workspaces uuids
@@ -56,16 +53,12 @@ index d3180c5..6b9369b 100644
 +  },
 +
 +  onWorkspaceDropdownToggle() {
-+    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
-+      return;
-+    }
-+
 +    // Toggle active class on the container
 +    const dropdown = this._workspaceList;
 +
 +    dropdown.hidden = !dropdown.hidden;
 +
-+    var expander = this._element("workspacesSelectorExpander");
++    let expander = this._element("workspacesSelectorExpander");
 +    expander.classList.toggle("expander-up", !dropdown.hidden);
 +    expander.classList.toggle("expander-down", dropdown.hidden);
 +    document.l10n.setAttributes(
@@ -91,7 +84,7 @@ index d3180c5..6b9369b 100644
 +  },
 +
 +  async _initWorkspaceDropdown(aInfo) {
-+    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
++    if (document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
 +      return;
 +    }
 +    const { ZenSessionStore } = ChromeUtils.importESModule(
@@ -113,7 +106,6 @@ index d3180c5..6b9369b 100644
 +      const input = document.createElementNS("http://www.w3.org/1999/xhtml", "input");
 +
 +      input.setAttribute("type", "checkbox");
-+      input.setAttribute("name", "workspace");
 +      input.setAttribute("value", workspace.uuid);
 +
 +      // Check if this workspace is selected
@@ -130,17 +122,13 @@ index d3180c5..6b9369b 100644
 +    this._zenSetWorkspaceSummary();
 +
 +    // Handle read-only state
-+    if (this.readOnly) {
-+      this._workspaceDropdown.setAttribute("disabled", "true");
-+    } else {
-+      this._workspaceDropdown.removeAttribute("disabled");
-+    }
++    this._workspaceDropdown.toggleAttribute("disabled", this.readOnly);
 +  },
 +  _selectedWorkspaces : [],
  };
  
  ChromeUtils.defineLazyGetter(gEditItemOverlay, "_folderTree", () => {
-@@ -1319,6 +1429,9 @@ for (let elt of [
+@@ -1319,6 +1417,9 @@ for (let elt of [
    "locationField",
    "keywordField",
    "tagsField",

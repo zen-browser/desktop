@@ -9,7 +9,8 @@ const kMaxLayerAlpha = 0.75;
 const kMinWindowAlpha = 0.35;
 const kMinTextMix = 0.4;
 const kGradientStops = 12;
-const kBaseGradientReach = 2 / 3;
+const kBaseGradientReach = 4 / 3;
+const kOverlayMaxAlpha = 0.9;
 const kTextures = ["none", "grain", "sand", "denim", "tweed"];
 const kDefaultTexture = "grain";
 const kGrainDefault = 10 / 16;
@@ -1534,7 +1535,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return rgba ? [rgba.r, rgba.g, rgba.b] : [0, 0, 0];
   }
 
-  #colorStop(rgb, forToolbar = false) {
+  #colorStop(rgb, forToolbar = false, alphaScale = 1) {
     // Where the window itself is translucent (vibrancy, Mica, acrylic) that
     // material is the underlay, so the layer keeps its alpha and the slider
     // still controls how much shows through. Elsewhere we composite over
@@ -1543,10 +1544,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       ? this.#allowTransparencyOnSidebar
       : this.canBeTransparent;
     if (translucent) {
-      return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${this.windowAlpha})`;
+      const alpha = this.windowAlpha * alphaScale;
+      return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
     }
     const [r, g, b] = this.compositeOverUnderlay(rgb);
-    return `rgb(${r}, ${g}, ${b})`;
+    return alphaScale === 1
+      ? `rgb(${r}, ${g}, ${b})`
+      : `rgba(${r}, ${g}, ${b}, ${alphaScale})`;
   }
 
   #getSingleRGBColor(color, forToolbar = false) {
@@ -1613,7 +1617,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     for (let i = 0; i < kGradientStops; i++) {
       const position = i / (kGradientStops - 1);
       const color = this.#colorStop(
-        this.mixInOklab(rgbs[0], rgbs[1], position * kBaseGradientReach),
+        this.mixInOklab(
+          rgbs[0],
+          rgbs[1],
+          Math.min(1, position * kBaseGradientReach)
+        ),
         forToolbar
       );
       baseStops.push(
@@ -1625,7 +1633,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     ];
     if (rgbs.length > 2) {
       layers.unshift(
-        `linear-gradient(to bottom, transparent, ${this.#colorStop(rgbs[2], forToolbar)})`
+        `linear-gradient(to bottom, transparent, ${this.#colorStop(rgbs[2], forToolbar, kOverlayMaxAlpha)})`
       );
     }
     return layers.join(", ");
@@ -1636,10 +1644,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       return this.isDarkMode;
     }
 
-    const bg = accentColor;
+    const bg = this.canBeTransparent
+      ? accentColor
+      : this.compositeOverUnderlay(accentColor);
     const titles = this.titleColors(accentColor);
     const darkText = titles.dark;
-    const bias = parseFloat(this.darkModeBias) || 0;
+    const bias = this.canBeTransparent ? parseFloat(this.darkModeBias) || 0 : 0;
     const lightText = this.blendColors(titles.light, bg, (1 - bias) * 100);
 
     const darkContrast = this.contrastRatio(bg, darkText);

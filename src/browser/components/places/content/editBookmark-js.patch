@@ -6,7 +6,7 @@ index d3180c5..6b9369b 100644
          this._keywordField.readOnly = this.readOnly;
        }
  
-+      if (showOrCollapse("workspaceRow", true, "workspace")) {
++      if (showOrCollapse("workspaceRow", isBookmark, "workspace")) {
 +        await this._initWorkspaceDropdown(aInfo);
 +      }
 +

@@ -1,20 +1,19 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ad138aa5ac49e1d8272e923773d94c05d42126b2..54e822f8f6d82236201edee599f940537d57df00 100644
+index ad138aa5ac49e1d8272e923773d94c05d42126b2..f8c601b4d70529961ba260d444c00acfc62b5572 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -3510,6 +3510,11 @@ XPCOMUtils.defineLazyPreferenceGetter(
-   false
+@@ -3511,6 +3511,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
  );
  
-+const TOOLTIP_SOURCE_SELECTOR =
-+  "[tooltiptext], [title], [tooltipdescription], [data-l10n-id], [command], [key], toolbarbutton, tab";
-+const SHORTCUT_MODIFIER = /[⌘⌥⇧⌃]|Ctrl|Alt|Shift/;
-+const TRAILING_PARENTHESIS = /\s*\(([^)]+)\)$/;
-+
  const DynamicShortcutTooltip = {
++  SOURCE_SELECTOR: "[tooltiptext], toolbarbutton, tab",
++  SHORTCUT_MODIFIER: /[⌘⌥⇧⌃]|Ctrl|Alt|Shift/,
++  TRAILING_PARENTHESIS: /\s*\(([^)]+)\)$/,
++
    nodeToTooltipMap: {
      "bookmarks-menu-button": "bookmarksMenuButton.tooltip",
-@@ -3578,11 +3583,192 @@ const DynamicShortcutTooltip = {
+     "context-reload": "reloadButton.tooltip",
+@@ -3578,9 +3582,208 @@ const DynamicShortcutTooltip = {
      return this.cache.get(nodeId);
    },
  
@@ -113,7 +112,7 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..54e822f8f6d82236201edee599f94053
 +      let command = el.getAttribute("command");
 +      shortcut ||=
 +        command &&
-+        window.ZenKeyboardShortcuts?.getShortcutDisplayFromCommand?.(
++        window.ZenKeyboardShortcuts?.getShortcutDisplayFromCommand(
 +          window,
 +          command
 +        );
@@ -145,6 +144,55 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..54e822f8f6d82236201edee599f94053
 +    }
 +  },
 +
++  // TODO: Temporary. Remove once the tooltip strings are restructured and no
++  // longer embed their shortcut in the title ("Reload (⌘R)").
++  _splitTitle(title, shortcut) {
++    let suffix = title.match(this.TRAILING_PARENTHESIS);
++    if (suffix && (shortcut || this.SHORTCUT_MODIFIER.test(suffix[1]))) {
++      return {
++        title: title.slice(0, suffix.index),
++        shortcut: shortcut || suffix[1],
++      };
++    }
++    return { title, shortcut };
++  },
++
++  _render(aTooltip, { title, shortcut, description }) {
++    // Gecko injects a default <description> child with the tooltiptext value.
++    // Remove it so it doesn't duplicate our own rendered title.
++    for (let child of [...aTooltip.childNodes]) {
++      if (
++        child.localName === "description" &&
++        !child.classList.contains("zen-tooltip-title") &&
++        !child.classList.contains("zen-tooltip-description") &&
++        !child.closest(".zen-tooltip-main-row")
++      ) {
++        child.remove();
++      }
++    }
++
++    let titleEl = aTooltip.querySelector(".zen-tooltip-title");
++    let shortcutEl = aTooltip.querySelector(".zen-tooltip-shortcut");
++    let descriptionEl = aTooltip.querySelector(".zen-tooltip-description");
++    let keys = this.parseShortcutKeys(shortcut);
++
++    titleEl.textContent = title;
++    titleEl.hidden = !title;
++
++    shortcutEl.replaceChildren(
++      ...keys.map(key => {
++        let keyEl = document.createXULElement("description");
++        keyEl.className = "zen-tooltip-key";
++        keyEl.textContent = key;
++        return keyEl;
++      })
++    );
++    shortcutEl.hidden = !keys.length;
++
++    descriptionEl.textContent = description ?? "";
++    descriptionEl.hidden = !description;
++  },
++
    updateText(aTooltip) {
 -    let nodeId = aTooltip.triggerNode.id;
 -    aTooltip.setAttribute("label", this.getText(nodeId));
@@ -152,18 +200,14 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..54e822f8f6d82236201edee599f94053
 +    if (!trigger) {
 +      return;
 +    }
-+    let source = trigger.closest(TOOLTIP_SOURCE_SELECTOR) ?? trigger;
-+    let sources = source === trigger ? [trigger] : [source, trigger];
++    let sources = [
++      ...new Set([trigger.closest(this.SOURCE_SELECTOR), trigger]),
++    ].filter(Boolean);
 +
-+    let title = this.getTriggerTitle(sources);
-+    let shortcut = this.findShortcut(sources);
-+
-+    // Some titles already embed the shortcut: "Reload (⌘R)".
-+    let suffix = title.match(TRAILING_PARENTHESIS);
-+    if (suffix && (shortcut || SHORTCUT_MODIFIER.test(suffix[1]))) {
-+      title = title.slice(0, suffix.index);
-+      shortcut ||= suffix[1];
-+    }
++    let { title, shortcut } = this._splitTitle(
++      this.getTriggerTitle(sources),
++      this.findShortcut(sources)
++    );
 +
 +    let description = this.getTriggerDescription(sources);
 +    if (description?.toLowerCase() === title.toLowerCase()) {
@@ -175,37 +219,8 @@ index ad138aa5ac49e1d8272e923773d94c05d42126b2..54e822f8f6d82236201edee599f94053
 +      return;
 +    }
 +
-+    let titleEl = aTooltip.querySelector(".zen-tooltip-title");
-+    let shortcutEl = aTooltip.querySelector(".zen-tooltip-shortcut");
-+    let descriptionEl = aTooltip.querySelector(".zen-tooltip-description");
-+
-+    if (titleEl) {
-+      titleEl.textContent = title;
-+      titleEl.hidden = !title;
-+    }
-+
-+    if (shortcutEl) {
-+      let keys = this.parseShortcutKeys(shortcut);
-+      shortcutEl.replaceChildren(
-+        ...keys.map(key => {
-+          let keyEl = document.createXULElement("description");
-+          keyEl.className = "zen-tooltip-key";
-+          keyEl.textContent = key;
-+          return keyEl;
-+        })
-+      );
-+      shortcutEl.hidden = !keys.length;
-+    }
-+
-+    if (descriptionEl) {
-+      descriptionEl.textContent = description ?? "";
-+      descriptionEl.hidden = !description;
-+    }
-+
++    this._render(aTooltip, { title, shortcut, description });
 +    this._applyAccent(aTooltip, trigger);
    },
  
-+
    cache: new Map(),
- };
- 

@@ -108,7 +108,6 @@ class nsZenWorkspaceIcons extends MozXULElement {
     button.setAttribute("class", "subviewbutton toolbarbutton-1");
     button.setAttribute("zen-workspace-id", workspace.uuid);
     button.setAttribute("context", "zenWorkspaceMoreActions");
-    button.setAttribute("tooltip", "dynamic-shortcut-tooltip");
     button.addEventListener("command", this);
     this.#updateWorkspaceIcon(button, workspace, index);
     return button;

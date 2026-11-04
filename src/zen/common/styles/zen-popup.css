@@ -422,11 +422,15 @@ menuseparator {
 
 /* Chrome tooltips */
 tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"]) {
+  --zen-tooltip-accent: var(--zen-primary-color, #888888);
+
   appearance: none;
   -moz-window-shadow: none;
   border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
   border-radius: 16px;
   padding: 4px 10px 5px;
+  max-width: 40em;
+  width: max-content;
   background-color: light-dark(
     color-mix(in srgb, var(--zen-primary-color, #ffffff) 12%, #ffffff),
     color-mix(in srgb, var(--zen-primary-color, #1c1c1f) 18%, #1c1c1f)
@@ -445,9 +449,7 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
     color-scheme: light;
   }
 
-  & description:not(.zen-tooltip-key),
-  & label:not(.zen-tooltip-key),
-  & .tooltip-label:not(.zen-tooltip-key) {
+  & :is(description, label, .tooltip-label):not(.zen-tooltip-key) {
     margin: 0;
     color: inherit;
   }
@@ -455,13 +457,11 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
 
 .zen-tooltip-main-row {
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .zen-tooltip-title {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: inherit;
+  min-width: 0;
 }
 
 .zen-tooltip-shortcut {
@@ -469,8 +469,7 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   margin-inline-start: 6px;
 }
 
-.zen-tooltip-key,
-#dynamic-shortcut-tooltip .zen-tooltip-key {
+.zen-tooltip-key {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -484,13 +483,13 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   line-height: 1;
   text-align: center;
   letter-spacing: -0.01em;
-  background-color: color-mix(in srgb, var(--zen-primary-color, #888888) 36%, #ffffff);
+  background-color: color-mix(in srgb, var(--zen-tooltip-accent) 36%, #ffffff);
   color: light-dark(
-    color-mix(in srgb, var(--zen-primary-color, #111111) 60%, #1c1c1f),
-    color-mix(in srgb, var(--zen-primary-color, #1c1c1f) 30%, #101518)
+    color-mix(in srgb, var(--zen-tooltip-accent) 60%, #1c1c1f),
+    color-mix(in srgb, var(--zen-tooltip-accent) 30%, #101518)
   );
-  border: 0.5px solid color-mix(in srgb, var(--zen-primary-color, #000000) 25%, transparent);
-  box-shadow: 0 1.5px 0 color-mix(in srgb, var(--zen-primary-color, #222222) 55%, #000000 45%);
+  border: 0.5px solid color-mix(in srgb, var(--zen-tooltip-accent) 25%, transparent);
+  box-shadow: 0 1.5px 0 color-mix(in srgb, var(--zen-tooltip-accent) 55%, #000000 45%);
 }
 
 .zen-tooltip-description {
@@ -501,9 +500,4 @@ tooltip:not(#remoteBrowserTooltip, #aHTMLTooltip, [contenttooltip], [page="true"
   font-weight: 400;
   line-height: 1.35;
   opacity: 0.85;
-}
-
-/* Hide any stray default child injected by Gecko */
-#dynamic-shortcut-tooltip > description:not(.zen-tooltip-description) {
-  display: none !important;
 }

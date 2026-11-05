@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   pr-test:
+    if: github.head_ref != 'l10n_dev'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

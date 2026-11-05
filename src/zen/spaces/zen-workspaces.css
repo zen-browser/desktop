@@ -333,10 +333,11 @@
   padding: 6px 8px;
   border-radius: 999px;
 
-  background: color-mix(in srgb, var(--zen-accent-button-background) 20%, light-dark(white, black));
-  box-shadow: var(--tab-box-shadow-selected), 0 0px 10px rgba(0, 0, 0, 0.05);
-  color: color-mix(in srgb, var(--zen-primary-color), light-dark(black, white 90%));
+  color: light-dark(rgba(0, 0, 0, .8), white);
   -moz-window-dragging: no-drag;
+
+  background: light-dark(color-mix(in srgb, var(--zen-accent-button-background) 10%, white), color-mix(in srgb, var(--zen-accent-button-background) 50%, black));
+  box-shadow: var(--tab-box-shadow-selected), 0 0px 10px rgba(0, 0, 0, 0.1);
 
   transition: scale 0.15s ease-in-out;
 

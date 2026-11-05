@@ -85,7 +85,7 @@ window.gZenVerticalTabsManager = {
             data-lazy-l10n-id="zen-workspaces-panel-context-default-profile">
         <menupopup />
       </menu>
-      <menuseparator/>
+      <menuseparator id="zen-toolbar-context-set-profile-separator"/>
     `);
     const menu = fragment.firstElementChild;
     const separator = menu.nextElementSibling;
@@ -101,7 +101,9 @@ window.gZenVerticalTabsManager = {
       if (event.target === contextMenu) {
         const hidden = !gZenWorkspaces.shouldShowContainers;
         menu.hidden = hidden;
-        separator.hidden = hidden;
+        if (!separator.hidden) {
+          separator.hidden = hidden;
+        }
       }
     });
     document
@@ -374,7 +376,7 @@ window.gZenVerticalTabsManager = {
 
   getSidebarMinWidth() {
     if (AppConstants.platform === "macosx") {
-      return 169;
+      return 171;
     }
 
     let useCaptionButtons = this._prefsUseSingleToolbar;

@@ -66,7 +66,6 @@ class nsZenUIManager {
     gZenVerticalTabsManager.init();
     this.#urlbar.init();
 
-    this.#markAcrylicSupport();
     this.#initCreateNewPopup();
     this.#debloatContextMenus();
     this.#addCompactModeButtonIfNeeded();
@@ -477,25 +476,6 @@ class nsZenUIManager {
   }
 
   // Section: startup DOM tweaks
-
-  /**
-   * Software WebRender can't filter the web content behind the chrome, so the acrylic
-   * elements have nothing to blur there and must stay opaque. Safe mode blocks
-   * hardware acceleration, so it ends up on the same path.
-   */
-  #markAcrylicSupport() {
-    let supported = !Services.appinfo.inSafeMode;
-
-    try {
-      supported &&= !window.windowUtils.layerManagerType.includes("Software");
-    } catch (e) {
-      // No widget associated with this window yet, assume hardware rendering.
-    }
-
-    if (!supported) {
-      document.documentElement.setAttribute("zen-no-acrylic", "true");
-    }
-  }
 
   #addCompactModeButtonIfNeeded() {
     const kPref = "zen.ui.migration.compact-mode-button-added";

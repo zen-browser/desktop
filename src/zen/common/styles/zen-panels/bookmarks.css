@@ -76,11 +76,32 @@ hbox.editBMPanel_folderRow {
   margin-right: 10px;
 }
 
-/* Match panel inputs instead of Firefox's ThreeDShadow/small-radius box */
+/* Make expanded Location tree match panel input styling, declare min-height */
 #editBMPanel_folderTree,
 #editBMPanel_tagsSelector {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-medium);
+  min-height: 12.5em;
+}
+
+/* Lay the row out as a grid box to preserve height within the scroll area */
+#editBMPanel_folderTreeRow:not([hidden]) {
+  display: grid;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--border-radius-medium);
+}
+
+#editBookmarkPanelContent > #editBMPanel_folderTreeRow > #editBMPanel_folderTree {
+  border: 0;
+  background-color: transparent;
+}
+
+#editBMPanel_folderTreeRow > #editBMPanel_newFolderBox {
+  padding: 6px 8px 8px;
+}
+
+#editBMPanel_newFolderButton {
+  flex: 1;
 }
 
 #editBookmarkPanel .expander-up,

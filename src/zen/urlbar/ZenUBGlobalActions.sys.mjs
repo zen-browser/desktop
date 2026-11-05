@@ -337,6 +337,56 @@ const globalActionsTemplate = [
       return isNotEmptyTab(window);
     },
   },
+  {
+    l10nId: "zen-action-new-figjam",
+    command: window =>
+      window.openTrustedLinkIn("https://www.figjam.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/selectable/shapes.svg",
+  },
+  {
+    l10nId: "zen-action-new-figma-design",
+    command: window => window.openTrustedLinkIn("https://www.figma.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/selectable/image.svg",
+  },
+  {
+    l10nId: "zen-action-new-word-doc",
+    command: window => window.openTrustedLinkIn("https://www.word.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/page-portrait.svg",
+  },
+  {
+    l10nId: "zen-action-new-google-docs",
+    command: window => window.openTrustedLinkIn("https://www.docs.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/page-portrait.svg",
+  },
+  {
+    l10nId: "zen-action-new-google-sheets",
+    command: window =>
+      window.openTrustedLinkIn("https://www.sheets.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/page-portrait.svg",
+  },
+  {
+    l10nId: "zen-action-new-google-slides",
+    command: window =>
+      window.openTrustedLinkIn("https://www.slides.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/page-portrait.svg",
+  },
+  {
+    l10nId: "zen-action-new-google-meet",
+    command: window => window.openTrustedLinkIn("https://www.meet.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/video-fill.svg",
+  },
+  {
+    l10nId: "zen-action-new-notion-page",
+    command: window =>
+      window.openTrustedLinkIn("https://www.notion.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/page-portrait.svg",
+  },
+  {
+    l10nId: "zen-action-new-linear-issue",
+    command: window =>
+      window.openTrustedLinkIn("https://www.linear.new", "tab"),
+    icon: "chrome://browser/skin/zen-icons/selectable/warning.svg",
+  },
 ];
 
 export function formatValueSync(l10nId) {

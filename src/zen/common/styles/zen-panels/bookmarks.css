@@ -139,6 +139,11 @@ hbox.editBMPanel_folderRow {
   padding-block: 0;
 }
 
+#bookmarkpropertiesdialog #editBMPanel_folderTreeRow {
+  background-color: var(--background-color-box);
+  border-color: var(--border-color);
+}
+
 /* Dialog-specific theming; the list must not shrink into its own scroller. */
 #bookmarkpropertiesdialog .workspace-trigger,
 #bookmarkpropertiesdialog #editBMPanel_workspaceList {

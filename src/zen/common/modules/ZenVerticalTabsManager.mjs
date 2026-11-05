@@ -376,7 +376,7 @@ window.gZenVerticalTabsManager = {
 
   getSidebarMinWidth() {
     if (AppConstants.platform === "macosx") {
-      return 171;
+      return 169;
     }
 
     let useCaptionButtons = this._prefsUseSingleToolbar;

@@ -26,8 +26,11 @@ export class nsZenLiveFolderProvider {
     throw new Error("Unimplemented");
   }
 
-  async refresh() {
+  async refresh(clearDismissed = false) {
     this.#task.disarm();
+    if (clearDismissed) {
+      this.manager.clearDismissedItems?.(this.id);
+    }
     const result = await this.#fetchLiveFolder();
     this.#task.arm();
     return result;
@@ -92,7 +95,7 @@ export class nsZenLiveFolderProvider {
 
     switch (key) {
       case "refresh": {
-        this.refresh();
+        this.refresh(true);
         break;
       }
       case "setInterval": {

@@ -710,15 +710,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const { lastSelectedWorkspaceTabs } = gZenWorkspaces;
 
-    // See gh-16390.
-    folder.setAttribute("zen-workspace-id", workspaceId);
-    for (const nested of folder.querySelectorAll("zen-folder")) {
-      nested.setAttribute("zen-workspace-id", workspaceId);
-    }
-
     for (const tab of folder.tabs) {
+      // This sets the ID for the current folder and any sub-folder
+      // we may encounter
       tab.setAttribute("zen-workspace-id", workspaceId);
-      // Split view groups are not folders and are not walked above.
       tab.group.setAttribute("zen-workspace-id", workspaceId);
       gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
 

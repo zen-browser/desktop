@@ -405,6 +405,9 @@ class nsZenAboutDialog {
       document.l10n.setAttributes(button, buttonId);
     }
     button.classList.toggle("primary", primary);
+    if (primary) {
+      button.focus();
+    }
   }
 }
 

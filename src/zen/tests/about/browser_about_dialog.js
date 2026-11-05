@@ -156,6 +156,7 @@ add_task(async function test_about_update_states() {
     "Restart button is labelled"
   );
   ok(button.classList.contains("primary"), "Restart is the primary action");
+  is(doc.activeElement, button, "Restart button takes focus so Enter works");
 
   dialog.onUpdateStatus(AppUpdater.STATUS.DOWNLOAD_FAILED);
   is(section.dataset.state, "failed", "Failed state is reflected");

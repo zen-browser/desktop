@@ -7,7 +7,8 @@ import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components
 const kMinLayerAlpha = 0.2;
 const kMaxLayerAlpha = 0.75;
 const kMinWindowAlpha = 0.35;
-const kMinTextMix = 0.4;
+const kTextOpacity = 0.8;
+const kTextTint = 0.1;
 const kGradientStops = 12;
 const kBaseGradientReach = 4 / 3;
 const kOverlayMaxAlpha = 0.9;
@@ -35,84 +36,6 @@ function srgbToLinear(channel) {
 
 function linearToSrgb(c) {
   return Math.min(255, Math.max(0, toGamma(c) * 255));
-}
-
-function multiplyMatrix(m, v) {
-  return m.map(row => row[0] * v[0] + row[1] * v[1] + row[2] * v[2]);
-}
-
-const kSrgbToXyz = [
-  [0.4123908, 0.35758434, 0.18048079],
-  [0.21263901, 0.71516868, 0.07219232],
-  [0.01933082, 0.11919478, 0.95053215],
-];
-const kXyzToP3 = [
-  [2.49349691, -0.93138362, -0.40271078],
-  [-0.82948897, 1.76266406, 0.02362469],
-  [0.03584583, -0.07617239, 0.95688452],
-];
-const kP3ToXyz = [
-  [0.48657095, 0.26566769, 0.19821729],
-  [0.22897456, 0.69173852, 0.07928691],
-  [0.0, 0.04511338, 1.04394437],
-];
-const kXyzToSrgb = [
-  [3.24096994, -1.53738318, -0.49861076],
-  [-0.96924364, 1.8759675, 0.04155506],
-  [0.05563008, -0.20397696, 1.05697151],
-];
-
-function srgbToP3(rgb) {
-  const xyz = multiplyMatrix(kSrgbToXyz, rgb.map(toLinear));
-  return multiplyMatrix(kXyzToP3, xyz).map(toGamma);
-}
-
-function p3ToSrgb(p3) {
-  const xyz = multiplyMatrix(kP3ToXyz, p3.map(toLinear));
-  return multiplyMatrix(kXyzToSrgb, xyz).map(toGamma);
-}
-
-function unitRgbToHsl([r, g, b]) {
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const d = max - min;
-  const l = (max + min) / 2;
-  let h = 0;
-  if (d !== 0) {
-    if (max === r) {
-      h = ((g - b) / d) % 6;
-    } else if (max === g) {
-      h = (b - r) / d + 2;
-    } else {
-      h = (r - g) / d + 4;
-    }
-  }
-  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
-  return [(((h * 60) % 360) + 360) % 360, s, l];
-}
-
-function hslToUnitRgb(h, s, l) {
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = l - c / 2;
-  const sector = Math.floor((((h % 360) + 360) % 360) / 60) % 6;
-  const [r, g, b] = [
-    [c, x, 0],
-    [x, c, 0],
-    [0, c, x],
-    [0, x, c],
-    [x, 0, c],
-    [c, 0, x],
-  ][sector];
-  return [r + m, g + m, b + m];
-}
-
-function mixUnit(a, b, t) {
-  return a.map((v, i) => v + (b[i] - v) * t);
-}
-
-function unitToRgb(unit) {
-  return unit.map(c => Math.round(Math.min(255, Math.max(0, c * 255))));
 }
 
 function rgbToOklab([r, g, b]) {
@@ -1648,9 +1571,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       ? accentColor
       : this.compositeOverUnderlay(accentColor);
     const titles = this.titleColors(accentColor);
-    const darkText = titles.dark;
     const bias = this.canBeTransparent ? parseFloat(this.darkModeBias) || 0 : 0;
-    const lightText = this.blendColors(titles.light, bg, (1 - bias) * 100);
+    const darkText = this.blendColors(titles.dark, bg, kTextOpacity * 100);
+    const lightText = this.blendColors(
+      titles.light,
+      bg,
+      (kTextOpacity - bias) * 100
+    );
 
     const darkContrast = this.contrastRatio(bg, darkText);
     const lightContrast = this.contrastRatio(bg, lightText);
@@ -1758,29 +1685,18 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   titleColors(accentColor) {
-    const [h, sat, l] = unitRgbToHsl(srgbToP3(accentColor.map(c => c / 255)));
-    const shadedDark = p3ToSrgb(hslToUnitRgb(h, sat, Math.max(l, 0.6) * 0.525));
     return {
-      light: unitToRgb(mixUnit(shadedDark, [0, 0, 0], 0.7)),
-      dark: unitToRgb(mixUnit(shadedDark, [1, 1, 1], 0.85)),
+      light: this.blendColors(accentColor, [0, 0, 0], kTextTint * 100),
+      dark: this.blendColors(accentColor, [255, 255, 255], kTextTint * 100),
     };
-  }
-
-  // How much of the accent the toolbar text carries.
-  get textAccentMix() {
-    return kMinTextMix + (1 - kMinTextMix) * this.layerIntensity;
   }
 
   // The toolbar text colour as a style map, for the window, space elements
   // and library previews alike.
   toolbarTextStyles(accentColor, isDarkMode) {
     const titles = this.titleColors(accentColor);
-    const [r, g, b] = this.blendColors(
-      isDarkMode ? titles.dark : titles.light,
-      isDarkMode ? [255, 255, 255] : [0, 0, 0],
-      this.textAccentMix * 100
-    );
-    return { "--toolbox-textcolor": `rgb(${r}, ${g}, ${b})` };
+    const [r, g, b] = isDarkMode ? titles.dark : titles.light;
+    return { "--toolbox-textcolor": `rgba(${r}, ${g}, ${b}, ${kTextOpacity})` };
   }
 
   getMostDominantColor(allColors) {

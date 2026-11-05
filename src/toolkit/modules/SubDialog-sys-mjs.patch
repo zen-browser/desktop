@@ -97,12 +97,32 @@ index b3ce915..bbbdb5a 100644
      let maxHeight = this._window.innerHeight - frameOverhead;
 +    // zen-max-window-ratio caps the frame as a share of the window
 +    let zenRatio = +contentPane?.getAttribute("zen-max-window-ratio") || 0;
-+    if (zenRatio > 0 && zenRatio < 1) {
++    // Keep the cap in vh so it tracks the window without a re-measure
++    let zenCap = zenRatio > 0 && zenRatio < 1 ? `${zenRatio * 100}vh` : null;
++    if (zenCap) {
 +      maxHeight = this._window.innerHeight * zenRatio;
-+      frameOverhead = this._window.innerHeight - maxHeight;
-+      // Hard ceiling: --subdialog-inner-height only refreshes when we measure
-+      this._frame.style.maxHeight = `${maxHeight}px`;
++      this._frame.style.maxHeight = zenCap;
 +    }
      // Do this with a frame height in pixels...
      if (!frameHeight.endsWith("px")) {
        console.error(
+@@ -656,10 +725,11 @@ SubDialog.prototype = {
+     this._overlay.style.setProperty("--subdialog-inner-height", frameHeight);
+-    this._frame.style.height = `min(
+-      calc(100vh - ${frameOverhead}px),
+-      var(--subdialog-inner-height, ${frameHeight})
+-    )`;
+-    this._box.style.minHeight = `calc(
+-      ${boxVerticalBorder + titleBarHeight + frameVerticalMargin}px +
+-      ${frameMinHeight}
+-    )`;
++    let frameHeightCss = zenCap
++      ? `min(${zenCap}, var(--subdialog-inner-height, ${frameHeight}))`
++      : `min(calc(100vh - ${frameOverhead}px),` +
++        `var(--subdialog-inner-height, ${frameHeight}))`;
++    let boxChrome = boxVerticalBorder + titleBarHeight + frameVerticalMargin;
++    this._frame.style.height = frameHeightCss;
++    this._box.style.minHeight = zenCap
++      ? `calc(${boxChrome}px + min(${frameHeight}, ${zenCap}))`
++      : `calc(${boxChrome}px + ${frameMinHeight})`;
+   },

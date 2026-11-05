@@ -20,7 +20,35 @@ index 25eb66b96a30c86e08376577f4636e159a02c76e..9b997ab559ddade67a7390539b3b4f92
      customizer.hidden = true;
      browser.hidden = false;
  
-@@ -1176,6 +1176,7 @@ export class CustomizeMode {
+@@ -963,15 +963,18 @@ export class CustomizeMode {
+     if (!this.#window.gReduceMotion) {
+       let overflowButton = this.$("nav-bar-overflow-button");
+       overflowButton.setAttribute("animate", "true");
+-      overflowButton.addEventListener(
+-        "animationend",
+-        function onAnimationEnd(event) {
+-          if (event.animationName.startsWith("overflow-animation")) {
+-            this.removeEventListener("animationend", onAnimationEnd);
+-            this.removeAttribute("animate");
+-          }
+-        }
+-      );
++      let cleanupTimeout;
++      let cleanup = event => {
++        if (!event || event.animationName.startsWith("overflow-animation")) {
++          overflowButton.removeEventListener("animationend", cleanup);
++          overflowButton.removeEventListener("animationcancel", cleanup);
++          this.#window.clearTimeout(cleanupTimeout);
++          overflowButton.removeAttribute("animate");
++        }
++      };
++      overflowButton.addEventListener("animationend", cleanup);
++      overflowButton.addEventListener("animationcancel", cleanup);
++      cleanupTimeout = this.#window.setTimeout(cleanup, 1000);
+     }
+   }
+ 
+@@ -1176,6 +1179,7 @@ export class CustomizeMode {
      return (
        aNode.localName == "toolbarbutton" ||
        aNode.localName == "toolbaritem" ||

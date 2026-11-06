@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e965500a25e70 100644
+index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..f3f4538754edbc67aeca51fddb190ca3da0473fb 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
 @@ -13,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -195,16 +195,15 @@ index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e9655
          this.#target == this.#toolbar
            ? toolbarChildrenWidth
 -          : sumChildrenInlineSize(this.#target);
-+          : sumChildrenInlineSize((win.gZenVerticalTabsManager._hasSetSingleToolbar && this.#target.id == 'nav-bar-customization-target') ? win.document.getElementById("zen-sidebar-top-buttons-customization-target") : this.#target, win.gZenVerticalTabsManager._topButtonsSeparatorElement);
++          : sumChildrenInlineSize(this.#isZenSingleToolbarNavBar() ? win.document.getElementById("zen-sidebar-top-buttons-customization-target") : this.#target, win.gZenVerticalTabsManager._topButtonsSeparatorElement);
      });
  
      lazy.log.debug(
-@@ -8191,7 +8193,43 @@ class OverflowableToolbar {
+@@ -8191,7 +8193,42 @@ class OverflowableToolbar {
        Math.max(targetWidth, targetChildrenWidth)
      );
      totalAvailWidth = Math.ceil(totalAvailWidth);
-+    if (this.#target.id == 'nav-bar-customization-target' && 
-+        win.gZenVerticalTabsManager._hasSetSingleToolbar &&
++    if (this.#isZenSingleToolbarNavBar() &&
 +        Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true) &&
 +       !win.document.documentElement.hasAttribute("zen-creating-workspace") &&
 +       !win.document.documentElement.hasAttribute("inDOMFullscreen") &&
@@ -232,7 +231,7 @@ index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e9655
 +        }
 +      }
 +    }
-+    if (win.gZenVerticalTabsManager._hasSetSingleToolbar && this.#toolbar.id == 'nav-bar') return { isOverflowing: false, targetContentWidth, totalAvailWidth };
++    if (this.#isZenSingleToolbarNavBar()) return { isOverflowing: false, targetContentWidth, totalAvailWidth };
      let isOverflowing = targetContentWidth > totalAvailWidth;
 +    if (win.gZenVerticalTabsManager._hasSetSingleToolbar &&
 +      this.#target.id == 'zen-sidebar-top-buttons-customization-target' &&
@@ -243,7 +242,7 @@ index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e9655
      return { isOverflowing, targetContentWidth, totalAvailWidth };
    }
  
-@@ -8252,7 +8290,11 @@ class OverflowableToolbar {
+@@ -8252,7 +8289,11 @@ class OverflowableToolbar {
              return;
            }
          }
@@ -256,7 +255,7 @@ index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e9655
            lazy.log.debug(
              `Need ${minSize} but width is ${totalAvailWidth} so bailing`
            );
-@@ -8285,7 +8327,7 @@ class OverflowableToolbar {
+@@ -8285,7 +8326,7 @@ class OverflowableToolbar {
          }
        }
        if (!inserted) {
@@ -265,7 +264,7 @@ index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e9655
        }
        child.removeAttribute("cui-anchorid");
        child.removeAttribute("overflowedItem");
-@@ -8411,6 +8453,9 @@ class OverflowableToolbar {
+@@ -8411,6 +8452,9 @@ class OverflowableToolbar {
     *   if no such list exists.
     */
    get #webExtList() {
@@ -275,7 +274,7 @@ index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e9655
      if (!this.#webExtListRef) {
        let targetID = this.#toolbar.getAttribute("addon-webext-overflowtarget");
        if (!targetID) {
-@@ -8422,6 +8467,9 @@ class OverflowableToolbar {
+@@ -8422,6 +8466,9 @@ class OverflowableToolbar {
        let win = this.#toolbar.documentGlobal;
        let { panel } = win.gUnifiedExtensions;
        this.#webExtListRef = panel.querySelector(`#${targetID}`);
@@ -285,7 +284,39 @@ index 76cab7f8e4630119c8f166f14bfc5a781f49f5fd..740663df4122bf8ad64c079b2e4e9655
      }
      return this.#webExtListRef;
    }
-@@ -8630,7 +8678,7 @@ class OverflowableToolbar {
+@@ -8437,6 +8484,13 @@ class OverflowableToolbar {
+     return aNode == this.#defaultList || aNode == this.#webExtList;
+   }
+ 
++  #isZenSingleToolbarNavBar() {
++    return (
++      this.#toolbar.id == "nav-bar" &&
++      this.#toolbar.documentGlobal.gZenVerticalTabsManager._hasSetSingleToolbar
++    );
++  }
++
+   /**
+    * Private event handlers start here.
+    */
+@@ -8507,7 +8561,7 @@ class OverflowableToolbar {
+     // moved or removed from an area via the CustomizableUI API while
+     // overflowed. It reorganizes the internal state of this OverflowableToolbar
+     // to handle that change.
+-    if (!this.#enabled || !this.#isOverflowList(aContainer)) {
++    if (!this.#enabled || !this.#isOverflowList(aContainer) || this.#isZenSingleToolbarNavBar()) {
+       return;
+     }
+     // When we (re)move an item, update all the items that come after it in the list
+@@ -8536,7 +8590,7 @@ class OverflowableToolbar {
+     // causes overflow or underflow of the toolbar.
+     if (
+       !this.#enabled ||
+-      (aContainer != this.#target && !this.#isOverflowList(aContainer))
++      (aContainer != this.#target && !this.#isOverflowList(aContainer)) || this.#isZenSingleToolbarNavBar()
+     ) {
+       return;
+     }
+@@ -8630,7 +8684,7 @@ class OverflowableToolbar {
          break;
        }
        case "mousedown": {

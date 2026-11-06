@@ -543,9 +543,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       if (tab.hasAttribute("zen-essential")) {
         continue;
       }
-      while (tab.group && !tab.group.hasAttribute("split-view-group")) {
-        gBrowser.ungroupTab(tab);
-      }
       tab.setAttribute("zen-essential", "true");
       if (tab.hasAttribute("zen-workspace-id")) {
         tab.removeAttribute("zen-workspace-id");

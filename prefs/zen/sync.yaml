@@ -9,6 +9,14 @@
 - name: zen.spaces-sync.debug
   value: false
 
+# Settings sync (keyboard shortcuts; mods/custom-css follow). Enabled here for
+# development — gate on "@IS_TWILIGHT@" like the spaces engine before shipping.
+- name: services.sync.engine.zensettings
+  value: true
+
+- name: zen.settings-sync.debug
+  value: false
+
 - name: zen.spaces-sync.normal-tabs
   value: false
 

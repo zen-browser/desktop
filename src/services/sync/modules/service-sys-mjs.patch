@@ -1,14 +1,18 @@
 diff --git a/services/sync/modules/service.sys.mjs b/services/sync/modules/service.sys.mjs
-index 4f4efe572909441abdd81909282936702c225621..2b47a2c9e97cf87641a0be9814f9a6be4d43f6ea 100644
+index 90a1d919f5c38236f1e522639f0ae377eb314044..294d28854e0c23e1e2e4d32ccb18865f7028beca 100644
 --- a/services/sync/modules/service.sys.mjs
 +++ b/services/sync/modules/service.sys.mjs
-@@ -99,6 +99,10 @@ function getEngineModules() {
+@@ -106,6 +106,14 @@ function getEngineModules() {
      whenTrue: "ExtensionStorageEngineKinto",
      whenFalse: "ExtensionStorageEngineBridge",
    };
 +  result.Spaces = {
 +    module: "resource:///modules/zen/ZenSpacesSync.sys.mjs",
 +    symbol: "ZenSpacesSyncEngine",
++  };
++  result.ZenSettings = {
++    module: "resource:///modules/zen/ZenSettingsSync.sys.mjs",
++    symbol: "ZenSettingsSyncEngine",
 +  };
    return result;
  }

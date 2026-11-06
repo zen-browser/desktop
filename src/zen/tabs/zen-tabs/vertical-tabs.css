@@ -978,10 +978,13 @@ zen-library {
     background: currentColor;
     translate: -50% -50%;
     rotate: var(--zen-tab-button-line-rotation);
-    transition:
-      rotate 0.12s ease,
-      width 0.12s ease;
     will-change: transform;
+
+    @media not (prefers-reduced-motion: reduce) {
+      transition:
+        rotate 0.12s ease,
+        width 0.12s ease;
+    }
   }
 
   &::after {

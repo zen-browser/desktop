@@ -134,12 +134,17 @@ tab-group[split-view-group] {
       display: none !important;
     }
 
+    :root[zen-sidebar-expanded='true'] & > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button {
+      display: block !important;
+      visibility: collapse !important;
+
+      /* This is from Firefox itself, but we need to always override it */
+      margin-inline-end: 0 !important;
+    }
+
     @container browser-tab (min-width: 70px) {
       :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button {
-        display: block !important;
-
-        /* This is from Firefox itself, but we need to always override it */
-        margin-inline-end: 0 !important;
+        visibility: visible !important;
       }
     }
 

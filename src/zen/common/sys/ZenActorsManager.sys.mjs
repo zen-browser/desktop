@@ -57,28 +57,6 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.glance.enabled",
   },
-  ZenGmailUnread: {
-    parent: {
-      esModuleURI: "resource:///actors/ZenGmailUnreadParent.sys.mjs",
-    },
-    child: {
-      esModuleURI: "resource:///actors/ZenGmailUnreadChild.sys.mjs",
-      events: {
-        DOMContentLoaded: {},
-        DOMTitleChanged: {},
-        pagehide: {},
-        pageshow: {},
-      },
-    },
-    matches: [
-      "https://mail.google.com/*",
-      ...(Cu.isInAutomation
-        ? ["https://example.com/browser/zen/tests/tabs/file_gmail_unread.html"]
-        : []),
-    ],
-    remoteTypes: ["web"],
-    safeForUntrustedWebProcess: true,
-  },
   ZenWindowDrag: {
     parent: {
       esModuleURI: "resource:///actors/ZenWindowDragParent.sys.mjs",

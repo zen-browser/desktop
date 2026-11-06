@@ -282,6 +282,13 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      if (!aLabel || (isURL && /^about:reader\?url=/.test(aLabel))) {
        return false;
      }
+@@ -2718,2 +2845,6 @@ export class Tabbrowser {
+     aTab.setAttribute("label", aLabel);
++    aTab.toggleAttribute(
++      "zen-title-unread",
++      /^\((?:\d+|\d{1,3}([.,])\d{3}(?:\1\d{3})*)\+?\)\s/.test(aLabel)
++    );
+     aTab.setAttribute("labeldirection", isRTL ? "rtl" : "ltr");
 @@ -2836,7 +2963,7 @@ export class Tabbrowser {
        newIndex = this.selectedTab.index + 1;
      }

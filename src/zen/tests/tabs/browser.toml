@@ -4,7 +4,6 @@
 
 [DEFAULT]
 support-files = [
-  "file_gmail_unread.html",
   "head.js",
 ]
 
@@ -14,7 +13,7 @@ tags = [
   "vertical-tabs"
 ]
 
-["browser_gmail_unread.js"]
+["browser_essential_unread_dot.js"]
 
 ["browser_issue_14534.js"]
 

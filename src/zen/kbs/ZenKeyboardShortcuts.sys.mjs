@@ -312,6 +312,16 @@ class nsZenKeyboardShortcuts {
       if (sameBinding(binding, await defaultBindingOf(keyEl))) {
         continue;
       }
+      // On non-macOS, full screen default is F11; do not import legacy Ctrl+F
+      // that conflicts with Find in page (key_find).
+      if (
+        AppConstants.platform != "macosx" &&
+        id == "key_enterFullScreen" &&
+        binding.key == "F" &&
+        binding.modifiers == "accel"
+      ) {
+        continue;
+      }
       lazy.CustomKeys.changeKey(id, binding);
     }
 
@@ -348,10 +358,18 @@ class nsZenKeyboardShortcuts {
         Promise.resolve().then(check);
       }
     });
-    observer.observe(window.document.body, { childList: true });
-    window.addEventListener("unload", () => observer.disconnect(), {
-      once: true,
-    });
+    const root = window.document.documentElement ?? window.document.body;
+    observer.observe(root, { childList: true, subtree: true });
+    window.addEventListener(
+      "unload",
+      () => {
+        observer.disconnect();
+        this.#finishLegacyMigration(path);
+      },
+      {
+        once: true,
+      }
+    );
   }
 
   async #finishLegacyMigration(path) {

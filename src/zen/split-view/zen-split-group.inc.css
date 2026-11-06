@@ -134,7 +134,8 @@ tab-group[split-view-group] {
       display: none !important;
     }
 
-    :root[zen-sidebar-expanded='true'] & > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button {
+    :root[zen-sidebar-expanded='true'] & > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button,
+    :root[zen-sidebar-expanded='true'] & > .tabbrowser-tab[pinned]:not([pending], [zen-essential]) .tab-reset-button {
       display: block !important;
       visibility: collapse !important;
 
@@ -143,7 +144,8 @@ tab-group[split-view-group] {
     }
 
     @container browser-tab (min-width: 70px) {
-      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button {
+      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button,
+      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab[pinned]:not([pending], [zen-essential]) .tab-reset-button {
         visibility: visible !important;
       }
     }

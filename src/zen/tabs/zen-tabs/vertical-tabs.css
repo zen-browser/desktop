@@ -1293,6 +1293,17 @@ zen-library {
     justify-content: center;
   }
 
+  &[zen-gmail-unread] > .tab-stack > .tab-content {
+    background-image: radial-gradient(
+      circle,
+      var(--tab-attention-dot-color) 0 2px,
+      transparent 2.5px
+    );
+    background-position: center bottom 5px;
+    background-repeat: no-repeat;
+    background-size: 5px 5px;
+  }
+
   & .tab-label-container,
   & .tab-close-button {
     display: none !important;

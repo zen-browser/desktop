@@ -32,15 +32,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
 
       - name: Setup Git
         run: |
@@ -48,8 +50,13 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Setup Rust
+        env:
+          # rustup-init 1.29.2 for the runner's architecture and the checksum
+          # rustup publishes for it, checked before it runs.
+          RUSTUP_TARGET: ${{ matrix.arch == 'aarch64' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}
+          RUSTUP_SHA256: ${{ matrix.arch == 'aarch64' && 'f7c7e11eb2e07f006e532a8aaac77b32f4527d305ac386c0c633ca6133d35ca9' || 'b9610730ddeef52765723847866fd1e3540b2bf7d5ab0c324aa143a5edf25ba0' }}
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
+          curl --proto '=https' --tlsv1.2 -sSf -o rustup-init "https://static.rust-lang.org/rustup/archive/1.29.2/${RUSTUP_TARGET}/rustup-init" && echo "${RUSTUP_SHA256}  rustup-init" | shasum -a 256 -c - && chmod +x rustup-init && ./rustup-init -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml) && rm rustup-init
 
       - name: Install dependencies
         run: npm ci
@@ -58,7 +65,7 @@ jobs:
         run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download instrumented app
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           path: ~/instrumented
           name: macos-pgo-stage1-${{ matrix.arch }}
@@ -114,13 +121,13 @@ jobs:
 
       - name: Cache profile data
         if: ${{ inputs.pgo-cache-key-prefix != '' }}
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v5.1.0
         with:
           key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           retention-days: 1
           path: |

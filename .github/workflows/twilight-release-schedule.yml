@@ -11,10 +11,18 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: read
+
 jobs:
   twilight-release-schedule:
     name: Twilight Release Schedule
-    permissions: write-all
+    permissions:
+      # The most any job of build.yml declares.
+      contents: write
+    # Kept: the release job of build.yml reads its signing secrets from the
+    # Deploy-Release and Deploy-Twilight environments, and environment secrets
+    # only reach a called workflow through inherit.
     secrets: inherit
     uses: ./.github/workflows/build.yml
     with:
@@ -29,9 +37,11 @@ jobs:
     needs: twilight-release-schedule
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"

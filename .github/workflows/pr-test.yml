@@ -17,12 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
+          persist-credentials: false
           submodules: recursive
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
 
@@ -31,7 +32,7 @@ jobs:
 
       - name: Restore Surfer engine cache
         id: surfer-engine-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.1.0
         with:
           path: .surfer/engine/
           key: surfer-engine-${{ hashFiles('surfer.json') }}

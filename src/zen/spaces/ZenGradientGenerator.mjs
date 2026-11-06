@@ -5,12 +5,23 @@
 import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 const kMinLayerAlpha = 0.2;
-const kMaxLayerAlpha = 0.75;
+const kMaxLayerAlpha = 0.88;
+const kMinTranslucentLayerAlpha = 0.85;
 const kMinWindowAlpha = 0.35;
-const kMinTextMix = 0.4;
+const kMaxWindowAlpha = 1;
+const kTextOpacity = 0.9;
+const kTextTint = 0.12;
 const kGradientStops = 12;
-const kBaseGradientReach = 4 / 3;
+const kGradientChroma = 0;
+const kGradientHueEase = 0;
+const kBaseGradientStart = 0;
+const kBaseGradientEnd = 0.75;
+const kOverlayStart = 0;
+const kOverlayEnd = 1;
 const kOverlayMaxAlpha = 0.9;
+const kOverlayStrips = 64;
+const kOverlayAngle = 180;
+const kOverlayReferenceAspect = 16 / 10;
 const kTextures = ["none", "grain", "sand", "denim", "tweed"];
 const kDefaultTexture = "grain";
 const kGrainDefault = 10 / 16;
@@ -35,84 +46,6 @@ function srgbToLinear(channel) {
 
 function linearToSrgb(c) {
   return Math.min(255, Math.max(0, toGamma(c) * 255));
-}
-
-function multiplyMatrix(m, v) {
-  return m.map(row => row[0] * v[0] + row[1] * v[1] + row[2] * v[2]);
-}
-
-const kSrgbToXyz = [
-  [0.4123908, 0.35758434, 0.18048079],
-  [0.21263901, 0.71516868, 0.07219232],
-  [0.01933082, 0.11919478, 0.95053215],
-];
-const kXyzToP3 = [
-  [2.49349691, -0.93138362, -0.40271078],
-  [-0.82948897, 1.76266406, 0.02362469],
-  [0.03584583, -0.07617239, 0.95688452],
-];
-const kP3ToXyz = [
-  [0.48657095, 0.26566769, 0.19821729],
-  [0.22897456, 0.69173852, 0.07928691],
-  [0.0, 0.04511338, 1.04394437],
-];
-const kXyzToSrgb = [
-  [3.24096994, -1.53738318, -0.49861076],
-  [-0.96924364, 1.8759675, 0.04155506],
-  [0.05563008, -0.20397696, 1.05697151],
-];
-
-function srgbToP3(rgb) {
-  const xyz = multiplyMatrix(kSrgbToXyz, rgb.map(toLinear));
-  return multiplyMatrix(kXyzToP3, xyz).map(toGamma);
-}
-
-function p3ToSrgb(p3) {
-  const xyz = multiplyMatrix(kP3ToXyz, p3.map(toLinear));
-  return multiplyMatrix(kXyzToSrgb, xyz).map(toGamma);
-}
-
-function unitRgbToHsl([r, g, b]) {
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const d = max - min;
-  const l = (max + min) / 2;
-  let h = 0;
-  if (d !== 0) {
-    if (max === r) {
-      h = ((g - b) / d) % 6;
-    } else if (max === g) {
-      h = (b - r) / d + 2;
-    } else {
-      h = (r - g) / d + 4;
-    }
-  }
-  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
-  return [(((h * 60) % 360) + 360) % 360, s, l];
-}
-
-function hslToUnitRgb(h, s, l) {
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = l - c / 2;
-  const sector = Math.floor((((h % 360) + 360) % 360) / 60) % 6;
-  const [r, g, b] = [
-    [c, x, 0],
-    [x, c, 0],
-    [0, c, x],
-    [0, x, c],
-    [x, 0, c],
-    [c, 0, x],
-  ][sector];
-  return [r + m, g + m, b + m];
-}
-
-function mixUnit(a, b, t) {
-  return a.map((v, i) => v + (b[i] - v) * t);
-}
-
-function unitToRgb(unit) {
-  return unit.map(c => Math.round(Math.min(255, Math.max(0, c * 255))));
 }
 
 function rgbToOklab([r, g, b]) {
@@ -723,8 +656,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     // important: If any sort of sizing is changed, make sure changes are reflected here
     const padding = 0;
     const rect = {
-      width: 380 + padding * 2,
-      height: 380 + padding * 2,
+      width: 364 + padding * 2,
+      height: 364 + padding * 2,
     };
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
@@ -1496,19 +1429,28 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   // Alpha of the colour layer over the underlay.
   get layerAlpha() {
     return (
-      kMinLayerAlpha + (kMaxLayerAlpha - kMinLayerAlpha) * this.layerIntensity
+      kMinLayerAlpha +
+      (kMaxLayerAlpha - kMinLayerAlpha) * this.layerIntensity ** 2
+    );
+  }
+
+  get translucentLayerAlpha() {
+    return (
+      kMinTranslucentLayerAlpha +
+      (kMaxLayerAlpha - kMinTranslucentLayerAlpha) * this.layerIntensity ** 2
     );
   }
 
   // Alpha used for the colour layer where the window itself shows through.
   get windowAlpha() {
     return (
-      kMinWindowAlpha + (kMaxLayerAlpha - kMinWindowAlpha) * this.layerIntensity
+      kMinWindowAlpha +
+      (kMaxWindowAlpha - kMinWindowAlpha) * this.layerIntensity ** 2
     );
   }
 
   get underlay() {
-    return this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
+    return [255, 255, 255];
   }
 
   // Composites an [r, g, b] colour over the underlay at the current layer
@@ -1520,7 +1462,63 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     );
   }
 
-  // Mixes two [r, g, b] colours in OKLab.
+  #compositeExact(rgb, alpha) {
+    const underlay = this.underlay;
+    return rgb.map((channel, i) => channel * alpha + underlay[i] * (1 - alpha));
+  }
+
+  mixInLinear(rgb1, rgb2, t) {
+    return rgb1.map((v, i) =>
+      linearToSrgb(
+        srgbToLinear(v) + (srgbToLinear(rgb2[i]) - srgbToLinear(v)) * t
+      )
+    );
+  }
+
+  mixBase(rgb1, rgb2, t, via = null) {
+    const lab1 = rgbToOklab(rgb1);
+    const lab2 = rgbToOklab(rgb2);
+    const plain = lab1.map((v, i) => v + (lab2[i] - v) * t);
+    const [c1, c2] = [
+      Math.hypot(lab1[1], lab1[2]),
+      Math.hypot(lab2[1], lab2[2]),
+    ];
+    const [h1, h2] = [
+      Math.atan2(lab1[2], lab1[1]),
+      Math.atan2(lab2[2], lab2[1]),
+    ];
+    const wrap = angle => {
+      while (angle > Math.PI) {
+        angle -= 2 * Math.PI;
+      }
+      while (angle < -Math.PI) {
+        angle += 2 * Math.PI;
+      }
+      return angle;
+    };
+    let dh = wrap(h2 - h1);
+    const labVia = via && rgbToOklab(via);
+    if (labVia && Math.hypot(labVia[1], labVia[2]) > 1e-4) {
+      const toVia = wrap(Math.atan2(labVia[2], labVia[1]) - h1);
+      const onShortArc =
+        dh >= 0 ? toVia >= 0 && toVia <= dh : toVia <= 0 && toVia >= dh;
+      if (!onShortArc) {
+        dh -= Math.sign(dh || 1) * 2 * Math.PI;
+      }
+    }
+    // Ease the hue so the gradient lingers near both end hues and crosses the
+    // ones in between more quickly, keeping them a tint rather than a band.
+    const smooth = t * t * (3 - 2 * t);
+    const eased = t + (smooth - t) * kGradientHueEase;
+    // A colour with no chroma has no hue of its own, so follow the other one.
+    const hue = c1 < 1e-4 ? h2 : c2 < 1e-4 ? h1 : h1 + dh * eased;
+    const chroma = c1 + (c2 - c1) * t;
+    const vivid = [plain[0], chroma * Math.cos(hue), chroma * Math.sin(hue)];
+    return oklabToRgb(
+      plain.map((v, i) => v + (vivid[i] - v) * kGradientChroma)
+    );
+  }
+
   mixInOklab(rgb1, rgb2, t) {
     const lab1 = rgbToOklab(rgb1);
     const lab2 = rgbToOklab(rgb2);
@@ -1535,22 +1533,116 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return rgba ? [rgba.r, rgba.g, rgba.b] : [0, 0, 0];
   }
 
-  #colorStop(rgb, forToolbar = false, alphaScale = 1) {
-    // Where the window itself is translucent (vibrancy, Mica, acrylic) that
-    // material is the underlay, so the layer keeps its alpha and the slider
-    // still controls how much shows through. Elsewhere we composite over
-    // white or black.
-    const translucent = forToolbar
+  #isTranslucent(forToolbar = false) {
+    return forToolbar
       ? this.#allowTransparencyOnSidebar
       : this.canBeTransparent;
-    if (translucent) {
+  }
+
+  #paint(rgb, forToolbar = false) {
+    return this.#compositeExact(rgb, this.#paintAlpha(forToolbar));
+  }
+
+  #paintAlpha(forToolbar = false) {
+    return this.#isTranslucent(forToolbar)
+      ? this.translucentLayerAlpha
+      : this.layerAlpha;
+  }
+
+  #colorStop(rgb, forToolbar = false, alphaScale = 1) {
+    const [r, g, b] = this.compositeOverUnderlay(
+      rgb,
+      this.#paintAlpha(forToolbar)
+    );
+    if (this.#isTranslucent(forToolbar)) {
       const alpha = this.windowAlpha * alphaScale;
-      return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
-    const [r, g, b] = this.compositeOverUnderlay(rgb);
     return alphaScale === 1
       ? `rgb(${r}, ${g}, ${b})`
       : `rgba(${r}, ${g}, ${b}, ${alphaScale})`;
+  }
+
+  #baseMixAt(u, v) {
+    const tan = 1 / kOverlayReferenceAspect;
+    const dx = Math.min(1, 1 / tan);
+    const dy = Math.min(1, tan);
+    const ax = 0.5 - dx / 2;
+    const ay = 0.5 - dy / 2;
+    const t = Math.min(
+      1,
+      Math.max(0, ((u - ax) * dx + (v - ay) * dy) / (dx * dx + dy * dy))
+    );
+    return Math.min(
+      1,
+      Math.max(
+        0,
+        (t - kBaseGradientStart) / (kBaseGradientEnd - kBaseGradientStart)
+      )
+    );
+  }
+
+  #overlayLayers(rgbs, forToolbar = false) {
+    const layers = [];
+    const width = `round(up, var(--zen-gradient-width) / ${kOverlayStrips}, 1px)`;
+    for (let i = 0; i < kOverlayStrips; i++) {
+      const u = (i + 0.5) / kOverlayStrips;
+      const stops = [`transparent ${kOverlayStart * 100}%`];
+      for (let j = 1; j < kGradientStops; j++) {
+        const t = j / (kGradientStops - 1);
+        const v = kOverlayStart + t * (kOverlayEnd - kOverlayStart);
+        const base = this.mixBase(
+          rgbs[0],
+          rgbs[1],
+          this.#baseMixAt(u, v),
+          rgbs[2]
+        );
+        const [color, alpha] = this.#solveOverlayStop(
+          base,
+          rgbs[2],
+          t,
+          forToolbar
+        );
+        stops.push(
+          `${this.#paintedStop(color, alpha, forToolbar)} ${(v * 100).toFixed(1)}%`
+        );
+      }
+      layers.push(
+        `linear-gradient(${kOverlayAngle}deg, ${stops.join(", ")}) calc(${i} * ${width}) 0 / ${width} 100% no-repeat`
+      );
+    }
+    return layers;
+  }
+
+  #solveOverlayStop(base, overlay, t, forToolbar = false) {
+    const under = this.#paint(base, forToolbar);
+    const target = this.#paint(
+      this.mixInLinear(base, overlay, t * kOverlayMaxAlpha),
+      forToolbar
+    );
+    let alpha = t * kOverlayMaxAlpha;
+    for (let channel = 0; channel < 3; channel++) {
+      const u = under[channel];
+      const v = target[channel];
+      if (v < u && u > 0) {
+        alpha = Math.max(alpha, (u - v) / u);
+      } else if (v > u && u < 255) {
+        alpha = Math.max(alpha, (v - u) / (255 - u));
+      }
+    }
+    alpha = Math.min(1, alpha);
+    const color = target.map((v, channel) =>
+      Math.min(255, Math.max(0, (v - under[channel] * (1 - alpha)) / alpha))
+    );
+    return [color, alpha];
+  }
+
+  #paintedStop(rgb, alpha, forToolbar) {
+    const [r, g, b] = rgb.map(v => v.toFixed(2));
+    const value = this.#isTranslucent(forToolbar)
+      ? this.windowAlpha * alpha
+      : alpha;
+    return `rgba(${r}, ${g}, ${b}, ${value.toFixed(4)})`;
   }
 
   #getSingleRGBColor(color, forToolbar = false) {
@@ -1617,10 +1709,18 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     for (let i = 0; i < kGradientStops; i++) {
       const position = i / (kGradientStops - 1);
       const color = this.#colorStop(
-        this.mixInOklab(
+        this.mixBase(
           rgbs[0],
           rgbs[1],
-          Math.min(1, position * kBaseGradientReach)
+          Math.min(
+            1,
+            Math.max(
+              0,
+              (position - kBaseGradientStart) /
+                (kBaseGradientEnd - kBaseGradientStart)
+            )
+          ),
+          rgbs[2]
         ),
         forToolbar
       );
@@ -1629,12 +1729,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       );
     }
     const layers = [
-      `linear-gradient(var(--zen-gradient-base-angle), ${baseStops.join(", ")})`,
+      `linear-gradient(var(--zen-gradient-base-angle), ${baseStops.join(", ")}) 0 0 / 100% 100% no-repeat`,
     ];
     if (rgbs.length > 2) {
-      layers.unshift(
-        `linear-gradient(to bottom, transparent, ${this.#colorStop(rgbs[2], forToolbar, kOverlayMaxAlpha)})`
-      );
+      layers.unshift(...this.#overlayLayers(rgbs, forToolbar));
     }
     return layers.join(", ");
   }
@@ -1648,9 +1746,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       ? accentColor
       : this.compositeOverUnderlay(accentColor);
     const titles = this.titleColors(accentColor);
-    const darkText = titles.dark;
     const bias = this.canBeTransparent ? parseFloat(this.darkModeBias) || 0 : 0;
-    const lightText = this.blendColors(titles.light, bg, (1 - bias) * 100);
+    const darkText = this.blendColors(titles.dark, bg, kTextOpacity * 100);
+    const lightText = this.blendColors(
+      titles.light,
+      bg,
+      (kTextOpacity - bias) * 100
+    );
 
     const darkContrast = this.contrastRatio(bg, darkText);
     const lightContrast = this.contrastRatio(bg, lightText);
@@ -1758,29 +1860,18 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   titleColors(accentColor) {
-    const [h, sat, l] = unitRgbToHsl(srgbToP3(accentColor.map(c => c / 255)));
-    const shadedDark = p3ToSrgb(hslToUnitRgb(h, sat, Math.max(l, 0.6) * 0.525));
     return {
-      light: unitToRgb(mixUnit(shadedDark, [0, 0, 0], 0.7)),
-      dark: unitToRgb(mixUnit(shadedDark, [1, 1, 1], 0.85)),
+      light: this.blendColors(accentColor, [0, 0, 0], kTextTint * 100),
+      dark: this.blendColors(accentColor, [255, 255, 255], kTextTint * 100),
     };
-  }
-
-  // How much of the accent the toolbar text carries.
-  get textAccentMix() {
-    return kMinTextMix + (1 - kMinTextMix) * this.layerIntensity;
   }
 
   // The toolbar text colour as a style map, for the window, space elements
   // and library previews alike.
   toolbarTextStyles(accentColor, isDarkMode) {
     const titles = this.titleColors(accentColor);
-    const [r, g, b] = this.blendColors(
-      isDarkMode ? titles.dark : titles.light,
-      isDarkMode ? [255, 255, 255] : [0, 0, 0],
-      this.textAccentMix * 100
-    );
-    return { "--toolbox-textcolor": `rgb(${r}, ${g}, ${b})` };
+    const [r, g, b] = isDarkMode ? titles.dark : titles.light;
+    return { "--toolbox-textcolor": `rgba(${r}, ${g}, ${b}, ${kTextOpacity})` };
   }
 
   getMostDominantColor(allColors) {

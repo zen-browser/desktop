@@ -989,7 +989,14 @@ export class ZenLibrary extends MozLitElement {
   }
 
   onKeyDown(e) {
-    if (!this.hasAttribute("open") || e.key !== "Escape") {
+    if (
+      !this.hasAttribute("open") ||
+      e.key !== "Escape" ||
+      e.ctrlKey ||
+      e.altKey ||
+      e.metaKey ||
+      e.shiftKey
+    ) {
       return;
     }
     for (const section of this._content?.children ?? []) {

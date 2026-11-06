@@ -473,7 +473,7 @@ zen-library {
 @media (-moz-platform: macos) {
   #zen-sidebar-foot-buttons,
   #zen-library-footer {
-    --zen-toolbar-button-size: 20px;
+    --zen-toolbar-button-size: 18px;
   }
 }
 

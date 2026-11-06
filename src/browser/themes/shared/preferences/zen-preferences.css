@@ -415,6 +415,7 @@ groupbox h2 {
 #setting-control-sidebarChatbotFieldset,
 #setting-control-supportFirefox,
 .mission-message,
+html|setting-group[groupid="dataCollection"],
 html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid="browserTheme"]) {
   display: none !important;
 }

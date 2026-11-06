@@ -140,6 +140,13 @@ class nsZenWorkspaces {
       "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",
       false
     );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "_crossSpaceCtrlTabPref",
+      "zen.tabs.ctrl-tab.cross-space",
+      false,
+      () => this.#fixCtrlTabBehavior()
+    );
     this.containerSpecificEssentials = Services.prefs.getBoolPref(
       "zen.workspaces.separate-essentials",
       false
@@ -2764,6 +2771,36 @@ class nsZenWorkspaces {
         detail: { activeIndex: this.activeWorkspace },
       })
     );
+  }
+
+  /**
+   * Whether Ctrl+Tab switches between the recently used tabs of every space,
+   * instead of only those of the active space.
+   */
+  get crossSpaceCtrlTab() {
+    return !!this._crossSpaceCtrlTabPref && this.workspaceEnabled;
+  }
+
+  /**
+   * The tabs Ctrl+Tab picks from, in recently used order. It still leaves out
+   * the ones it never shows, like closing or hidden tabs.
+   */
+  get ctrlTabCandidates() {
+    if (!this.crossSpaceCtrlTab) {
+      return gBrowser.tabs;
+    }
+    // The active space brings the essentials that belong to it, the other
+    // spaces only add their own tabs.
+    const tabs = new Set(gBrowser.tabs);
+    for (const tab of this.allStoredTabs) {
+      if (
+        !tab.hasAttribute("zen-essential") &&
+        !tab.hasAttribute("zen-glance-tab")
+      ) {
+        tabs.add(tab);
+      }
+    }
+    return [...tabs];
   }
 
   // Intentionally keep it as async!

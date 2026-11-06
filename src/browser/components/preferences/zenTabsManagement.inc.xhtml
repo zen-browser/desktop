@@ -32,16 +32,43 @@
       <checkbox id="zenTabsCloseOnBackWithNoHistory"
             data-l10n-id="zen-tabs-close-on-back-with-no-history"
             preference="zen.tabs.close-on-back-with-no-history"/>
-      <checkbox data-l10n-id="zen-tabs-cycle-ignore-pending-tabs"
+      <checkbox data-l10n-id="zen-tabs-select-recently-used-on-close"
+            preference="zen.tabs.select-recently-used-on-close"/>
+</groupbox>
+
+<hbox id="zenTabSwitcherCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-tab-switcher-title"/>
+</hbox>
+
+<groupbox id="zenTabSwitcherGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-tab-switcher-header"/></label>
+      <description id="zenTabSwitcherDescription"
+            class="description-deemphasized zen-tab-switcher-shortcut-label"
+            data-l10n-id="zen-tab-switcher-description">
+            <html:a class="text-link" data-l10n-name="keyboard-shortcuts" href="about:keyboard"/>
+      </description>
+
+      <checkbox id="zenTabSwitcherRecentlyUsedOrder"
+            class="zen-tab-switcher-shortcut-label"
+            data-l10n-id="zen-tab-switcher-recently-used-order"
+            preference="browser.ctrlTab.sortByRecentlyUsed"/>
+      <checkbox id="zenTabSwitcherCrossSpace"
+            class="indent"
+            data-l10n-id="zen-tab-switcher-cross-space"
+            preference="zen.tabs.ctrl-tab.cross-space"/>
+      <checkbox class="zen-tab-switcher-shortcut-label"
+            data-l10n-id="zen-tab-switcher-ignore-pending-tabs"
             preference="zen.tabs.ctrl-tab.ignore-pending-tabs"/>
-      <checkbox data-l10n-id="zen-tabs-cycle-by-attribute"
+      <checkbox class="zen-tab-switcher-shortcut-label"
+            data-l10n-id="zen-tab-switcher-cycle-by-attribute"
             preference="zen.tabs.ctrl-tab.ignore-essential-tabs"/>
       <description id="zenTabsCycleByAttributeWarning"
             class="description-deemphasized"
-            data-l10n-id="zen-tabs-cycle-by-attribute-warning"
+            data-l10n-id="zen-tab-switcher-cycle-by-attribute-warning"
             hidden="true"/>
-      <checkbox data-l10n-id="zen-tabs-select-recently-used-on-close"
-            preference="zen.tabs.select-recently-used-on-close"/>
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"

@@ -713,8 +713,76 @@ var gZenLooksAndFeel = {
   },
 };
 
+var gZenTabSwitcherSettings = {
+  init() {
+    // Firefox's own checkbox for this pref, which this one replaces, does the
+    // same so a later migration doesn't undo the user's choice.
+    document.getElementById("zenTabSwitcherRecentlyUsedOrder").addEventListener("command", () => {
+      Services.prefs.clearUserPref("browser.ctrlTab.migrated");
+    });
+
+    document.getElementById("zenTabSwitcherDescription").addEventListener("click", (event) => {
+      if (event.target.closest("a")) {
+        event.preventDefault();
+        window.browsingContext.topChromeWindow.switchToTabHavingURI("about:keyboard", true);
+      }
+    });
+
+    const updateCrossSpace = () => {
+      document.getElementById("zenTabSwitcherCrossSpace").disabled = !Services.prefs.getBoolPref(
+        "browser.ctrlTab.sortByRecentlyUsed",
+        false
+      );
+    };
+    updateCrossSpace();
+    Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", updateCrossSpace);
+
+    // Labels mention the cycle shortcut, which can be changed in
+    // about:keyboard. CustomKeys updates the key element in every window, so
+    // follow it there to keep them current.
+    const cycleKey =
+      window.browsingContext.topChromeWindow?.document.getElementById("zen-tab-switcher-cycle");
+    this.updateShortcutLabels(cycleKey);
+    const keyObserver = new MutationObserver(() => this.updateShortcutLabels(cycleKey));
+    if (cycleKey) {
+      keyObserver.observe(cycleKey, {
+        attributes: true,
+        attributeFilter: ["key", "keycode", "modifiers"],
+      });
+    }
+
+    window.addEventListener("unload", () => {
+      Services.prefs.removeObserver("browser.ctrlTab.sortByRecentlyUsed", updateCrossSpace);
+      keyObserver.disconnect();
+    });
+  },
+
+  /**
+   * @param {Element|null} cycleKey The <key> element holding the cycle shortcut.
+   */
+  updateShortcutLabels(cycleKey) {
+    const { ShortcutUtils } = ChromeUtils.importESModule(
+      "resource://gre/modules/ShortcutUtils.sys.mjs"
+    );
+    const shortcut =
+      cycleKey?.hasAttribute("key") || cycleKey?.hasAttribute("keycode")
+        ? ShortcutUtils.prettifyShortcut(cycleKey)
+        : "none";
+    for (const element of document.querySelectorAll(".zen-tab-switcher-shortcut-label")) {
+      // The description's translation is markup, so the shortcut is escaped
+      // there. Labels are plain text.
+      const isMarkup = element.id == "zenTabSwitcherDescription";
+      document.l10n.setArgs(element, {
+        shortcut: isMarkup ? shortcut.replaceAll("&", "&amp;").replaceAll("<", "&lt;") : shortcut,
+      });
+    }
+  },
+};
+
 var gZenWorkspacesSettings = {
   init() {
+    gZenTabSwitcherSettings.init();
+
     var tabsUnloaderPrefListener = {
       async observe() {
         let buttonIndex = await confirmRestartPrompt(true, 1, true, true);
@@ -851,6 +919,11 @@ Preferences.addAll([
   },
   {
     id: "zen.tabs.ctrl-tab.ignore-pending-tabs",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.tabs.ctrl-tab.cross-space",
     type: "bool",
     default: false,
   },

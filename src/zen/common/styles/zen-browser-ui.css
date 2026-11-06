@@ -281,6 +281,13 @@ body,
   gap: var(--zen-element-separation);
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
+@media -moz-pref("zen.view.experimental-no-window-controls") {
+  .titlebar-buttonbox-container {
+    display: none !important;
+  }
+}
+
 @media not (-moz-platform: macos) {
   .titlebar-buttonbox-container {
     height: 100%;

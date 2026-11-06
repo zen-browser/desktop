@@ -1450,7 +1450,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   get underlay() {
-    return [255, 255, 255];
+    return this.isDarkMode ? [19, 19, 19] : [255, 255, 255];
   }
 
   // Composites an [r, g, b] colour over the underlay at the current layer

@@ -37,6 +37,12 @@ zen-glance-trigger-shift-click =
 zen-glance-trigger-meta-click =
     .label = Meta (Command) + Click
 
+zen-media-controls-title = Media Controls
+zen-media-controls-header = Sidebar media player
+zen-media-controls-description = Control media playing in other tabs from the bottom of the sidebar
+zen-media-controls-video-enabled =
+    .label = Show the video, not just the controls
+
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!
 zen-look-and-feel-compact-view-enabled =

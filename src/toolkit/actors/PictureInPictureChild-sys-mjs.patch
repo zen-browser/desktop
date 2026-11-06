@@ -1,8 +1,8 @@
 diff --git a/toolkit/actors/PictureInPictureChild.sys.mjs b/toolkit/actors/PictureInPictureChild.sys.mjs
-index 49dd388d8304245e9e840cc32577eed45d36d62c..dde63be2eb6c442acb387b14bf05c18ce9419fa4 100644
+index 03282197633ad237bbd6fe3d9f3cd3a2fa53291d..ecfb755f2fd40ff7f68e5e07e72fc22edf515519 100644
 --- a/toolkit/actors/PictureInPictureChild.sys.mjs
 +++ b/toolkit/actors/PictureInPictureChild.sys.mjs
-@@ -318,6 +318,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {
+@@ -346,6 +346,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {
        if (
          video &&
          PictureInPictureChild.videoIsPlaying(video) &&
@@ -10,3 +10,45 @@ index 49dd388d8304245e9e840cc32577eed45d36d62c..dde63be2eb6c442acb387b14bf05c18c
          PictureInPictureChild.videoIsPiPEligible(video)
        ) {
          this.togglePictureInPicture({ video, reason: "AutoPip" }, false);
+@@ -2256,8 +2257,14 @@ export class PictureInPictureChild extends JSWindowActorChild {
+   async receiveMessage(message) {
+     switch (message.name) {
+       case "PictureInPicture:SetupPlayer": {
+-        const { videoRef, isPipApiRequest, initDimension } = message.data;
+-        return await this.setupPlayer(videoRef, isPipApiRequest, initDimension);
++        const { videoRef, isPipApiRequest, initDimension, zenSkipActivation } =
++          message.data;
++        return await this.setupPlayer(
++          videoRef,
++          isPipApiRequest,
++          initDimension,
++          zenSkipActivation
++        );
+       }
+       case "PictureInPicture:Play": {
+         this.play();
+@@ -2549,7 +2556,12 @@ export class PictureInPictureChild extends JSWindowActorChild {
+    *   Resolves once the player window has been set up properly, or a pre-existing
+    *   Picture-in-Picture window has gone away due to an unexpected error.
+    */
+-  async setupPlayer(videoRef, isPipApiRequest, initWindowDimension) {
++  async setupPlayer(
++    videoRef,
++    isPipApiRequest,
++    initWindowDimension,
++    zenSkipActivation = false
++  ) {
+     const video = await lazy.ContentDOMReference.resolve(videoRef);
+ 
+     this.weakVideo = Cu.getWeakReference(video);
+@@ -2636,7 +2648,9 @@ export class PictureInPictureChild extends JSWindowActorChild {
+     // to make sure the video can be played regardless of autoplay permissions.
+     // N.B: If the PIP window was created using the PIP API, it consumed a user
+     // activation it's unclear that we should be granting it another one.
+-    if (!isPipApiRequest) {
++    // The sidebar media card docks videos without any user request, so it
++    // must not hand the page a user activation.
++    if (!isPipApiRequest && !zenSkipActivation) {
+       originatingVideo.ownerDocument.notifyUserGestureActivation();
+     }
+ 

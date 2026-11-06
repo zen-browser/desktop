@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-places.js b/browser/base/content/browser-places.js
-index b04e9afe4041b9bcd62527a22f468b84bf0de5d9..9e20e5a9d58fb6752037708f3d1404e00c98b132 100644
+index 20220bd..0bc72b7 100644
 --- a/browser/base/content/browser-places.js
 +++ b/browser/base/content/browser-places.js
-@@ -262,6 +262,8 @@ var StarUI = {
+@@ -263,6 +263,8 @@ var StarUI = {
        });
      }
  
@@ -11,7 +11,16 @@ index b04e9afe4041b9bcd62527a22f468b84bf0de5d9..9e20e5a9d58fb6752037708f3d1404e0
      let onPanelReady = fn => {
        let target = this.panel;
        if (target.parentNode) {
-@@ -313,6 +315,21 @@ var StarUI = {
+@@ -280,7 +282,7 @@ var StarUI = {
+       );
+     };
+ 
+-    let hiddenRows = ["location", "keyword"];
++    let hiddenRows = [];
+ 
+     if (this.userHasTags === undefined) {
+       // Cache must be initialized
+@@ -314,6 +316,21 @@ var StarUI = {
      }
    },
  
@@ -33,7 +42,7 @@ index b04e9afe4041b9bcd62527a22f468b84bf0de5d9..9e20e5a9d58fb6752037708f3d1404e0
    removeBookmarkButtonCommand: function SU_removeBookmarkButtonCommand() {
      this._removeBookmarksOnPopupHidden = true;
      this.panel.hidePopup();
-@@ -1841,6 +1858,7 @@ var BookmarkingUI = {
+@@ -1925,6 +1942,7 @@ var BookmarkingUI = {
        document.getElementById("context-bookmarkpage"),
        PanelMultiView.getViewNode(document, "panelMenuBookmarkThisPage"),
        document.getElementById("pageAction-panel-bookmark"),

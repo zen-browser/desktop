@@ -50,3 +50,29 @@ add_task(async function test_unread_dot_from_essential_title() {
 
   await BrowserTestUtils.removeTab(tab);
 });
+
+add_task(async function test_unread_dot_pref_disabled() {
+  const tab = await addTab("data:text/html,<title>(3) Inbox</title>");
+  let preferenceChanged = false;
+
+  try {
+    gBrowser.pinTab(tab);
+    gZenPinnedTabManager.addToEssentials(tab);
+    ok(hasUnreadDot(tab), "The enabled preference shows the dot");
+
+    await SpecialPowers.pushPrefEnv({
+      set: [["zen.theme.essentials-unread-dot", false]],
+    });
+    preferenceChanged = true;
+    ok(!hasUnreadDot(tab), "The disabled preference hides the dot");
+
+    await SpecialPowers.popPrefEnv();
+    preferenceChanged = false;
+    ok(hasUnreadDot(tab), "Re-enabling the preference restores the dot");
+  } finally {
+    if (preferenceChanged) {
+      await SpecialPowers.popPrefEnv();
+    }
+    await BrowserTestUtils.removeTab(tab);
+  }
+});

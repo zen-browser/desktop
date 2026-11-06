@@ -2,6 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Prefill Cmd+F with the page selection, as Ctrl+F already does elsewhere.
+# Keep this unlocked so users can retain the macOS find-pasteboard behavior.
+- name: accessibility.typeaheadfind.prefillwithselection
+  value: true
+  condition: "defined(XP_MACOSX)"
+
 - name: browser.startup.page
   value: 3
 

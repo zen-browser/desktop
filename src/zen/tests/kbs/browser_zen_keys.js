@@ -179,6 +179,49 @@ add_task(async function test_customized_zen_key_runs_command() {
   }
 });
 
+add_task(async function test_compact_mode_can_reuse_find_selection_shortcut() {
+  if (!isMac) {
+    return;
+  }
+
+  const sandbox = sinon.createSandbox();
+  const toggle = sandbox.stub(gZenCompactModeManager, "toggle");
+  try {
+    // about:keyboard clears the competing key after the user accepts its
+    // conflict prompt. The native find shortcut must no longer consume Cmd+E.
+    CustomKeys.clearKey("key_findSelection");
+    CustomKeys.changeKey("zen-compact-mode-toggle", {
+      modifiers: "accel",
+      key: "E",
+    });
+    ok(
+      isUnassigned(document.getElementById("key_findSelection")),
+      "The competing find shortcut is cleared"
+    );
+
+    await SimpleTest.promiseFocus(gBrowser.selectedBrowser);
+    EventUtils.synthesizeKey("e", { accelKey: true }, window);
+    await TestUtils.waitForCondition(
+      () => toggle.called,
+      "Cmd+E to invoke Compact Mode instead of find selection"
+    );
+    await TestUtils.waitForTick();
+    sinon.assert.calledOnce(toggle);
+    sinon.assert.calledWithExactly(toggle, true);
+
+    CustomKeys.resetKey("zen-compact-mode-toggle");
+    CustomKeys.resetKey("key_findSelection");
+    is(
+      document.getElementById("key_findSelection").getAttribute("key"),
+      "E",
+      "Restoring defaults restores find selection"
+    );
+  } finally {
+    sandbox.restore();
+    CustomKeys.resetAll();
+  }
+});
+
 add_task(async function test_legacy_migration_keeps_customkeys_settings() {
   const legacyPath = ZenKeyboardShortcuts.legacyFilePath;
   const libraryKey = document.getElementById("zen-library-toggle");

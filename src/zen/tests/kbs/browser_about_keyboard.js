@@ -21,7 +21,7 @@ add_task(async function test_zen_keys_are_listed() {
   };
 
   await BrowserTestUtils.withNewTab("about:keyboard", async browser => {
-    await SpecialPowers.spawn(browser, [expected], async args => {
+    await SpecialPowers.spawn(browser, [expected, isMac], async (args, mac) => {
       const doc = content.document;
       if (!doc.getElementById("table").firstElementChild) {
         await ContentTaskUtils.waitForEvent(
@@ -88,6 +88,30 @@ add_task(async function test_zen_keys_are_listed() {
         !openFile.classList.contains("customized"),
         "Open file is not marked as customized"
       );
+
+      const findSelection = doc.querySelector(
+        '.key[data-id="key_findSelection"]'
+      );
+      if (mac) {
+        ok(findSelection, "The hidden Cmd+E shortcut is listed on macOS");
+        is(
+          findSelection.closest("moz-card").wrappedJSObject.heading,
+          doc.querySelector('.key[data-id="key_find"]').closest("moz-card")
+            .wrappedJSObject.heading,
+          "Find selection joins the Edit category"
+        );
+        is(
+          findSelection.dataset.label,
+          await doc.l10n.formatValue("customkeys-edit-find-selection"),
+          "Find selection has a localized label"
+        );
+        ok(
+          !findSelection.classList.contains("internal"),
+          "Find selection can be reassigned or cleared for Compact Mode"
+        );
+      } else {
+        ok(!findSelection, "Find selection is only listed on macOS");
+      }
     });
   });
 });

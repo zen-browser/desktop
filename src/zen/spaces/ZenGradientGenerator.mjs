@@ -22,6 +22,7 @@ const kOverlayMaxAlpha = 0.9;
 const kOverlayStrips = 64;
 const kOverlayAngle = 180;
 const kOverlayReferenceAspect = 16 / 10;
+const kCustomGradientAngle = -30;
 const kTextures = ["none", "grain", "sand", "denim", "tweed"];
 const kDefaultTexture = "grain";
 const kGrainDefault = 10 / 16;
@@ -1646,6 +1647,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   #getSingleRGBColor(color, forToolbar = false) {
+    // A custom colour is painted exactly as picked.
+    if (color.isCustom) {
+      return color.c;
+    }
     return this.#colorStop(this.#colorToRGB(color), forToolbar);
   }
 
@@ -1700,6 +1705,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       return forToolbar ? this.getToolbarModifiedBase() : getBrowserBg();
     } else if (themedColors.length === 1) {
       return this.#getSingleRGBColor(themedColors[0], forToolbar);
+    }
+    if (themedColors.find(color => color.isCustom)) {
+      const stops = themedColors.map((color, index) => {
+        const position = (index / (themedColors.length - 1)) * 100;
+        return `${this.#getSingleRGBColor(color, forToolbar)} ${position}%`;
+      });
+      return `linear-gradient(${kCustomGradientAngle}deg, ${stops.join(", ")})`;
     }
     const ordered = [...themedColors].sort(
       (a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0)

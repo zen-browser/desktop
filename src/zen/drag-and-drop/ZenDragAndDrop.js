@@ -232,7 +232,7 @@
         // image which we can't control, so force some extra contrast for
         // the tab to be more visible. This is a hacky workaround.
         tabClone.style.colorScheme = "light";
-        tabClone.style.setProperty("--tab-selected-textcolor", "black");
+        tabClone.style.setProperty("--tab-text-color-selected", "black");
       }
       if (i > 0) {
         tabClone.style.transform = `translate(${i * 4}px, -${i * (tabRect.height - 4)}px)`;
@@ -770,12 +770,12 @@
         if (isExplicitMode) {
           tab.style.colorScheme = isDarkMode ? "dark" : "light";
           tab.style.setProperty(
-            "--tab-selected-textcolor",
+            "--tab-text-color-selected",
             isDarkMode ? "white" : "black"
           );
         } else {
           tab.style.colorScheme = "";
-          tab.style.removeProperty("--tab-selected-textcolor");
+          tab.style.removeProperty("--tab-text-color-selected");
         }
       }
     }

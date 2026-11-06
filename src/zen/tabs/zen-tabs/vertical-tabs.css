@@ -789,6 +789,17 @@ zen-library {
     background: transparent !important;
   }
 
+  & .tabbrowser-tab > .tab-stack > .tab-content > .tab-close-button {
+    --zen-tab-button-line-length: 8px;
+
+    &::before,
+    &::after {
+      @starting-style {
+        width: 6px;
+      }
+    }
+  }
+
   :root[customizing] & #zen-sidebar-foot-buttons {
     min-width: unset !important;
   }

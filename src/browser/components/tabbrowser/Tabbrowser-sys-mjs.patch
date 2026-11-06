@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/Tabbrowser.sys.mjs b/browser/components/tabbrowser/Tabbrowser.sys.mjs
-index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0a9269b24 100644
+index 430e1137a15f0aa8c5f39fd76127f825b2751c69..924eaf5d052c9097c34236882185c25055dbc7ee 100644
 --- a/browser/components/tabbrowser/Tabbrowser.sys.mjs
 +++ b/browser/components/tabbrowser/Tabbrowser.sys.mjs
 @@ -535,6 +535,7 @@ export class Tabbrowser {
@@ -941,15 +941,27 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      // Do not allow transfering a private tab to a non-private window
      // and vice versa.
      if (
-@@ -7377,6 +7648,7 @@ export class Tabbrowser {
+@@ -7376,10 +7647,18 @@ export class Tabbrowser {
+     // First, start teardown of the other browser.  Make sure to not
      // fire the beforeunload event in the process.  Close the other
      // window if this was its last tab.
++    // Tabs in other spaces aren't part of `tabs`, so check them as well.
      if (
 +      zenCloseOther &&
        !remoteBrowser.#beginRemoveTab(aOtherTab, {
          adoptedByTab: aOurTab,
-         closeWindowWithLastTab: true,
-@@ -7388,7 +7660,7 @@ export class Tabbrowser {
+-        closeWindowWithLastTab: true,
++        closeWindowWithLastTab:
++          !aOtherTab.documentGlobal.gZenWorkspaces.allStoredTabs.some(
++            tab =>
++              tab != aOtherTab &&
++              tab.isOpen &&
++              !tab.hasAttribute("zen-empty-tab")
++          ),
+       })
+     ) {
+       return false;
+@@ -7388,7 +7667,7 @@ export class Tabbrowser {
      // If this is the last tab of the window, hide the window
      // immediately without animation before the docshell swap, to avoid
      // about:blank being painted.
@@ -958,7 +970,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      if (closeWindow) {
        let win = aOtherTab.documentGlobal;
        win.windowUtils.suppressAnimation(true);
-@@ -7527,11 +7799,13 @@ export class Tabbrowser {
+@@ -7527,11 +7806,13 @@ export class Tabbrowser {
      }
  
      // Finish tearing down the tab that's going away.
@@ -972,7 +984,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
  
      this.setTabTitle(aOurTab);
  
-@@ -7770,10 +8044,10 @@ export class Tabbrowser {
+@@ -7770,10 +8051,10 @@ export class Tabbrowser {
      }
    }
  
@@ -985,7 +997,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
        aTab.selected ||
        aTab.closing ||
        // Tabs that are sharing the screen, microphone or camera cannot be hidden.
-@@ -7864,7 +8138,8 @@ export class Tabbrowser {
+@@ -7864,7 +8145,8 @@ export class Tabbrowser {
     * @param {boolean} [options.replaceLastTab=false]
     *   When true, opens a newtab to prevent the window from closing.
     */
@@ -995,7 +1007,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      if (this.tabs.length == 1) {
        if (!replaceLastTab) {
          return null;
-@@ -7885,7 +8160,7 @@ export class Tabbrowser {
+@@ -7885,7 +8167,7 @@ export class Tabbrowser {
      // tell a new window to take the "dropped" tab
      let args = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
      args.appendElement(/** @type {nsISupports} */ (aTab.splitview ?? aTab));
@@ -1004,7 +1016,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
        private: lazy.PrivateBrowsingUtils.isWindowPrivate(this.documentGlobal),
        features: Object.entries(features)
          .map(([key, value]) => `${key}=${value}`)
-@@ -7893,6 +8168,8 @@ export class Tabbrowser {
+@@ -7893,6 +8175,8 @@ export class Tabbrowser {
        openerWindow: this.documentGlobal,
        args,
      });
@@ -1013,7 +1025,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
    }
  
    /**
-@@ -8026,7 +8303,7 @@ export class Tabbrowser {
+@@ -8026,7 +8310,7 @@ export class Tabbrowser {
     * @returns {element is MozTabbrowserTabGroup}
     */
    static isTabGroup(element) {
@@ -1022,7 +1034,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
    }
  
    /**
-@@ -8049,6 +8326,22 @@ export class Tabbrowser {
+@@ -8049,6 +8333,22 @@ export class Tabbrowser {
      return !!(element?.tagName == "tab-split-view-wrapper");
    }
  
@@ -1045,7 +1057,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
    #updateTabsAfterInsert() {
      for (let i = 0; i < this.tabs.length; i++) {
        this.tabs[i]._index = i;
-@@ -8100,8 +8393,8 @@ export class Tabbrowser {
+@@ -8100,8 +8400,8 @@ export class Tabbrowser {
      }
  
      // Don't allow mixing pinned and unpinned tabs.
@@ -1056,7 +1068,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      } else {
        tabIndex = Math.max(tabIndex, this.pinnedTabCount);
      }
-@@ -8147,8 +8440,8 @@ export class Tabbrowser {
+@@ -8147,8 +8447,8 @@ export class Tabbrowser {
      this.#handleTabMove(
        element,
        () => {
@@ -1067,7 +1079,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
            neighbor = neighbor.group;
          }
          if (neighbor?.splitview) {
-@@ -8159,6 +8452,12 @@ export class Tabbrowser {
+@@ -8159,6 +8459,12 @@ export class Tabbrowser {
              return;
            }
          }
@@ -1080,7 +1092,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
  
          if (movingForwards && neighbor) {
            neighbor.after(element);
-@@ -8235,23 +8534,31 @@ export class Tabbrowser {
+@@ -8235,23 +8541,31 @@ export class Tabbrowser {
    ) {
      if (Tabbrowser.isTabGroupLabel(targetElement)) {
        targetElement = targetElement.group;
@@ -1118,7 +1130,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      } else if (!element.pinned && targetElement && targetElement.pinned) {
        // If the caller asks to move an unpinned element next to a pinned
        // tab, move the unpinned element to be the first unpinned element
-@@ -8264,12 +8571,35 @@ export class Tabbrowser {
+@@ -8264,12 +8578,35 @@ export class Tabbrowser {
        //    move the tab group right before the first unpinned tab.
        // 4. Moving a tab group and the first unpinned tab is grouped:
        //    move the tab group right before the first unpinned tab's tab group.
@@ -1155,7 +1167,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
  
      // We want to include the splitview wrapper if it's the targetElement, but
      // not in the case where we want to reverse tabs within the same splitview.
-@@ -8278,6 +8608,7 @@ export class Tabbrowser {
+@@ -8278,6 +8615,7 @@ export class Tabbrowser {
      }
  
      let getContainer = () =>
@@ -1163,7 +1175,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
        element.pinned
          ? this.tabContainer.pinnedTabsContainer
          : this.tabContainer;
-@@ -8286,11 +8617,15 @@ export class Tabbrowser {
+@@ -8286,11 +8624,15 @@ export class Tabbrowser {
        element,
        () => {
          if (moveBefore) {
@@ -1180,7 +1192,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
          }
        },
        { metricsContext }
-@@ -8366,11 +8701,15 @@ export class Tabbrowser {
+@@ -8366,11 +8708,15 @@ export class Tabbrowser {
     *   The context for the operation for telemetry purposes.
     */
    moveTabToExistingGroup(aTab, aGroup, { metricsContext } = {}) {
@@ -1199,7 +1211,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      }
      if (aTab.group && aTab.group.id === aGroup.id) {
        return;
-@@ -8449,6 +8788,7 @@ export class Tabbrowser {
+@@ -8449,6 +8795,7 @@ export class Tabbrowser {
  
      let state = {
        tabIndex: tab.index,
@@ -1207,7 +1219,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      };
      if (tab.visible) {
        state.elementIndex = tab.elementIndex;
-@@ -8486,7 +8826,7 @@ export class Tabbrowser {
+@@ -8486,7 +8833,7 @@ export class Tabbrowser {
      let changedSplitView =
        previousTabState.splitViewId != currentTabState.splitViewId;
  
@@ -1216,7 +1228,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
        tab.dispatchEvent(
          new this.documentGlobal.CustomEvent("TabMove", {
            bubbles: true,
-@@ -8553,6 +8893,10 @@ export class Tabbrowser {
+@@ -8553,6 +8900,10 @@ export class Tabbrowser {
  
      moveActionCallback();
  
@@ -1227,7 +1239,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      // Clear tabs cache after moving nodes because the order of tabs may have
      // changed.
      this.tabContainer._invalidateCachedTabs();
-@@ -8612,7 +8956,25 @@ export class Tabbrowser {
+@@ -8612,7 +8963,25 @@ export class Tabbrowser {
     * @returns {object}
     *    The new tab in the current window, null if the tab couldn't be adopted.
     */
@@ -1254,7 +1266,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      // Swap the dropped tab with a new one we create and then close
      // it in the other window (making it seem to have moved between
      // windows). We also ensure that the tab we create to swap into has
-@@ -8655,6 +9017,8 @@ export class Tabbrowser {
+@@ -8655,6 +9024,8 @@ export class Tabbrowser {
      }
      params.skipLoad = true;
      let newTab = this.addWebTab("about:blank", params);
@@ -1263,7 +1275,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
  
      aTab.container.tabDragAndDrop.finishAnimateTabMove();
  
-@@ -8664,6 +9028,10 @@ export class Tabbrowser {
+@@ -8664,6 +9035,10 @@ export class Tabbrowser {
        return null;
      }
  
@@ -1274,7 +1286,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      if (selectTab) {
        this.selectedTab = newTab;
      }
-@@ -9476,7 +9844,7 @@ export class Tabbrowser {
+@@ -9476,7 +9851,7 @@ export class Tabbrowser {
        // preventDefault(). It will still raise the window if appropriate.
        return;
      }
@@ -1283,7 +1295,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      this.documentGlobal.focus();
      aEvent.preventDefault();
    }
-@@ -9493,7 +9861,6 @@ export class Tabbrowser {
+@@ -9493,7 +9868,6 @@ export class Tabbrowser {
  
    on_TabGroupCollapse(aEvent) {
      aEvent.target.tabs.forEach(tab => {
@@ -1291,7 +1303,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
      });
    }
  
-@@ -9842,7 +10209,9 @@ export class Tabbrowser {
+@@ -9842,7 +10216,9 @@ export class Tabbrowser {
  
        let filter = Tabbrowser.#tabFilters.get(tab);
        if (filter) {
@@ -1301,7 +1313,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
  
          let listener = Tabbrowser.#tabListeners.get(tab);
          if (listener) {
-@@ -10636,6 +11005,7 @@ class TabProgressListener {
+@@ -10636,6 +11012,7 @@ class TabProgressListener {
            aWebProgress.isTopLevel
          ) {
            this._tab.setAttribute("busy", "true");
@@ -1309,7 +1321,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
            this.#tabbrowser._tabAttrModified(this._tab, ["busy"]);
            this._tab._notselectedsinceload = !this._tab.selected;
          }
-@@ -10716,6 +11086,7 @@ class TabProgressListener {
+@@ -10716,6 +11093,7 @@ class TabProgressListener {
        // known defaults. Note we use the original URL since about:newtab
        // redirects to a prerendered page.
        const shouldRemoveFavicon =
@@ -1317,7 +1329,7 @@ index 430e1137a15f0aa8c5f39fd76127f825b2751c69..311f8696f6e5dbe9e8641009adb0f2d0
          !this._browser.mIconURL &&
          !ignoreBlank &&
          !(originalLocation.spec in FAVICON_DEFAULTS);
-@@ -10893,13 +11264,6 @@ class TabProgressListener {
+@@ -10893,13 +11271,6 @@ class TabProgressListener {
            this._browser.originalURI = aRequest.originalURI;
          }
  

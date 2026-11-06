@@ -46,6 +46,18 @@ window.gZenVerticalTabsManager = {
       this._postCustomize.bind(this)
     );
 
+    const noWindowControlsMedia = window.matchMedia(
+      "-moz-pref('zen.view.experimental-no-window-controls') or (not -moz-pref('browser.tabs.inTitlebar')) or ((not (-moz-gtk-csd-close-button)) and (not (-moz-gtk-csd-minimize-button)) and (not (-moz-gtk-csd-maximize-button)))"
+    );
+    const updateWindowControls = () => {
+      document.documentElement.setAttribute(
+        "zen-has-window-controls",
+        !noWindowControlsMedia.matches
+      );
+    };
+    noWindowControlsMedia.addEventListener("change", updateWindowControls);
+    updateWindowControls();
+
     this._updateEvent();
 
     if (!this.isWindowsStyledButtons) {

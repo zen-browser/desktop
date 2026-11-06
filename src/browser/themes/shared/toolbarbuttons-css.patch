@@ -51,8 +51,9 @@ index 2de4cfbb51e29108cdd92a2c0a80cbf6ef0ae4af..a1d4b9d173dc86672210161e7356302b
  
      @media (-moz-platform: macos) {
        padding-top: calc(var(--toolbarbutton-padding-inner) + 1px);
-@@ -326,7 +310,7 @@ toolbar .toolbaritem-combined-buttons {
+@@ -326,7 +310,8 @@ toolbar .toolbaritem-combined-buttons {
  #nav-bar-overflow-button {
++  position: relative;
    list-style-image: url("chrome://global/skin/icons/chevron.svg");
  
 -  #nav-bar:not([overflowing], [nonemptyoverflow], [customizing]) > & {
@@ -60,7 +61,7 @@ index 2de4cfbb51e29108cdd92a2c0a80cbf6ef0ae4af..a1d4b9d173dc86672210161e7356302b
      display: none;
    }
  
-@@ -427,7 +411,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
+@@ -427,7 +412,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
       */
      align-items: stretch;
      > .toolbarbutton-icon {
@@ -69,7 +70,7 @@ index 2de4cfbb51e29108cdd92a2c0a80cbf6ef0ae4af..a1d4b9d173dc86672210161e7356302b
      }
      > .toolbarbutton-badge-stack {
        align-items: center;
-@@ -603,7 +587,7 @@ toolbarspring {
+@@ -603,7 +588,7 @@ toolbarspring {
    }
  }
  

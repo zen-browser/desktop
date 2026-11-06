@@ -31,6 +31,9 @@
 - name: services.sync.prefs.sync.zen.ctrlTab.show-pending-tabs
   value: true
 
+- name: services.sync.prefs.sync.zen.ctrlTab.include-all-spaces
+  value: true
+
 # URL bar
 
 - name: services.sync.prefs.sync.zen.urlbar.behavior

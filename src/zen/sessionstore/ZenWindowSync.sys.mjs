@@ -1179,15 +1179,16 @@ class nsZenWindowSync {
       aPreviousTab?._zenContentsVisible &&
       !activeTabs.includes(aPreviousTab)
     ) {
-      let tabsToSwap = aPreviousTab.group?.hasAttribute("split-view-group")
-        ? aPreviousTab.group.tabs
-        : [aPreviousTab];
+      // A split's tabs include its guest essentials, which are not in the
+      // split's tab group, so ask the splitter rather than the group.
+      const splitTabsOf = tab =>
+        tab.documentGlobal.gZenViewSplitter?.getSplitForTab(tab)?.tabs;
+      let tabsToSwap = splitTabsOf(aPreviousTab) ?? [aPreviousTab];
       for (const tab of tabsToSwap) {
         const otherTabToShow = this.#getActiveTabFromOtherWindows(
           aWindow,
           tab.id,
-          t =>
-            t?.splitView ? t.group.tabs.some(st => st.selected) : t?.selected
+          t => (t && splitTabsOf(t)?.some(st => st.selected)) || t?.selected
         );
         if (otherTabToShow) {
           otherTabToShow._zenContentsVisible = true;
@@ -1452,7 +1453,15 @@ class nsZenWindowSync {
       );
     });
     if (ignoreExistingId && tab?.splitView) {
-      this.on_ZenSplitViewTabsSplit({ target: tab.group });
+      const splitter = tab.documentGlobal.gZenViewSplitter;
+      const split = splitter?.getSplitForTab(tab);
+      const group = splitter?.getMemberGroup(split);
+      if (group) {
+        this.on_ZenSplitViewTabsSplit({
+          target: group,
+          detail: { tabs: split.tabs },
+        });
+      }
     }
   }
 
@@ -1743,7 +1752,8 @@ class nsZenWindowSync {
   on_ZenSplitViewTabsSplit(aEvent) {
     const tabGroup = aEvent.target;
     const window = tabGroup.documentGlobal;
-    const tabs = tabGroup.tabs;
+    // Includes guest essentials, which are not in the group.
+    const tabs = aEvent.detail?.tabs ?? tabGroup.tabs;
     this.#runOnAllWindows(window, win => {
       const otherWindowTabs = tabs
         .map(tab => this.getItemFromWindow(win, tab.id))
@@ -1757,8 +1767,8 @@ class nsZenWindowSync {
             groupFetchId: tabGroup.id,
           }
         );
-        if (group) {
-          let otherTabGroup = group.tabs[0].group;
+        const otherTabGroup = win.gZenViewSplitter.getMemberGroup(group);
+        if (otherTabGroup) {
           otherTabGroup.id = tabGroup.id;
           this.#syncItemWithOriginal(
             aEvent.target,

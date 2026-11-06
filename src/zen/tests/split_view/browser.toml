@@ -21,3 +21,5 @@ support-files = [
 ["browser_split_view_with_folders.js"]
 
 ["browser_split_view_with_glance.js"]
+
+["browser_split_view_essential_guests.js"]

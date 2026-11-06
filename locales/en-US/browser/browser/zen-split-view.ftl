@@ -15,6 +15,13 @@ zen-split-link =
     .label = Split Link to New Tab
     .accesskey = S
 
+# Badge on a split view in the sidebar when some of its tabs are essentials,
+# which stay in the essentials section instead of the split's card.
+# $names (String) - the titles of those essential tabs, comma-separated
+zen-split-view-guests-badge =
+    .title = Also in this split: { $names }
+    .aria-label = Also in this split: { $names }
+
 zen-split-view-modifier-header = Split View
 zen-split-view-modifier-activate-reallocation =
     .label = Activate reallocation

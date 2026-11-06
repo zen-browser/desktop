@@ -111,6 +111,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     );
 
     window.addEventListener("TabClose", this.handleTabClose.bind(this));
+    // A guest that stops being an essential leaves its split.
+    window.addEventListener("TabRemovedFromEssentials", event =>
+      this.removeTabFromGroup(event.target, undefined, { forUnsplit: true })
+    );
     window.addEventListener(
       "TabBrowserDiscarded",
       this.handleTabBrowserDiscarded.bind(this)
@@ -171,6 +175,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   async handleTabBrowserDiscarded(event) {
     const tab = event.target;
+    // Unloads the members only: a guest essential stays as it is.
     if (tab.group?.hasAttribute("split-view-group")) {
       gBrowser.explicitUnloadTabs(tab.group.tabs);
       for (const t of tab.group.tabs) {
@@ -226,8 +231,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     const group = this._data[groupIndex];
     const tabIndex = group.tabs.indexOf(tab);
+    // A split needs at least one member; guests alone dissolve it.
+    const membersLeft = group.tabs.filter(
+      t => t !== tab && !this.isSplitGuest(t)
+    ).length;
 
-    if (group.tabs.length < 3) {
+    if (group.tabs.length < 3 || !membersLeft) {
       // We need to remove all remaining tabs from the group when unsplitting
       let remainingTabs = [...group.tabs]; // Copy array since we'll modify it
       if (!dontRebuildGrid) {
@@ -249,10 +258,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       group.tabs.splice(tabIndex, 1);
 
       this.resetTabState(tab, forUnsplit);
-      if (tab.group && tab.group.hasAttribute("split-view-group")) {
-        gBrowser.ungroupTab(tab);
-        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
-      }
+      this.#detachFromSplitGroup(tab);
+      this.#updateGuestBadge(group);
 
       const node = this.getSplitNodeFromTab(tab);
       const toUpdate = this.removeNode(node);
@@ -1137,14 +1144,31 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *
    * @param {string} eventName - The name of the event to dispatch.
    * @param {HTMLElement} item - The item on which to dispatch the event.
+   * @param {object} [extraDetail] - More fields for the event's detail.
    */
-  #dispatchItemEvent(eventName, item) {
+  #dispatchItemEvent(eventName, item, extraDetail = {}) {
+    if (!item) {
+      return;
+    }
     const event = new CustomEvent(eventName, {
-      detail: { item },
+      detail: { item, ...extraDetail },
       bubbles: true,
       cancelable: false,
     });
     item.dispatchEvent(event);
+  }
+
+  /**
+   * Takes a member out of its split's tab group; guests have no group to
+   * leave. Either way, listeners learn the tab left its split.
+   *
+   * @param {Tab} tab
+   */
+  #detachFromSplitGroup(tab) {
+    if (tab.group?.hasAttribute("split-view-group")) {
+      gBrowser.ungroupTab(tab);
+    }
+    this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
   }
 
   /**
@@ -1155,10 +1179,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   removeGroup(groupIndex) {
     const group = this._data[groupIndex];
     for (const tab of group.tabs.reverse()) {
-      if (tab.group?.hasAttribute("split-view-group")) {
-        gBrowser.ungroupTab(tab);
-        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
-      }
+      this.#detachFromSplitGroup(tab);
     }
     if (this.currentView === groupIndex) {
       this.deactivateCurrentSplitView();
@@ -1180,7 +1201,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       ? gBrowser.selectedTabs
       : [contextTab];
     let isExistingSplitView = selectedTabs.every(tab =>
-      tab.group?.hasAttribute("split-view-group")
+      this.getSplitForTab(tab)
     );
     const splitTabCommand = document.getElementById("context_zenSplitTabs");
     document.l10n.setAttributes(splitTabCommand, "tab-zen-split-tabs", {
@@ -1264,8 +1285,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Shares the split view of the context tab.
    */
   contextShareSplitView() {
-    const group = TabContextMenu.contextTab?.group;
-    if (group?.hasAttribute("split-view-group")) {
+    const group = this.getMemberGroup(
+      this.getSplitForTab(TabContextMenu.contextTab)
+    );
+    if (group) {
       gZenShareManager.shareSplitView(group);
     }
   }
@@ -1370,48 +1393,136 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Essentials can't live in a tab group, so an essential joins a split as a
+   * guest: it is in the split's tabs and layout but stays in Essentials,
+   * while the split's other tabs (its members) live in the split's group.
+   *
+   * @param {Tab} tab
+   * @returns {boolean} Whether the tab joins splits as a guest.
+   */
+  isSplitGuest(tab) {
+    return !!tab?.hasAttribute("zen-essential");
+  }
+
+  /**
+   * @param {Tab} tab
+   * @returns {object|null} The split the tab is in, as a member or a guest.
+   */
+  getSplitForTab(tab) {
+    return this._data.find(split => split.tabs.includes(tab)) ?? null;
+  }
+
+  /**
+   * @param {object} split - A split from `_data`.
+   * @returns {MozTabbrowserTabGroup|null} The tab group holding the split's
+   *   members, if it has one.
+   */
+  getMemberGroup(split) {
+    const group = split?.tabs.find(tab => !this.isSplitGuest(tab))?.group;
+    return group?.hasAttribute("split-view-group") ? group : null;
+  }
+
+  /**
+   * Shows a badge on the split's group card while essentials are its
+   * guests, since they appear in Essentials and not in the card.
+   *
+   * @param {object} split - A split from `_data`.
+   */
+  #updateGuestBadge(split) {
+    const container = this.getMemberGroup(split)?.querySelector(
+      ".tab-group-container"
+    );
+    if (!container) {
+      return;
+    }
+    const guests = this.#classifySplitTabs(split.tabs).guests;
+    let badge = container.querySelector(".zen-split-guests-badge");
+    if (!guests.length) {
+      badge?.remove();
+      return;
+    }
+    if (!badge) {
+      badge = document.createElement("div");
+      badge.className = "zen-split-guests-badge";
+      badge.setAttribute("role", "img");
+      container.append(badge);
+    }
+    document.l10n.setAttributes(badge, "zen-split-view-guests-badge", {
+      count: guests.length,
+      names: guests.map(tab => tab.label).join(", "),
+    });
+  }
+
+  /**
+   * @param {Tab[]} tabs
+   * @returns {{members: Tab[], guests: Tab[]}}
+   */
+  #classifySplitTabs(tabs) {
+    const members = [];
+    const guests = [];
+    for (const tab of tabs) {
+      (this.isSplitGuest(tab) ? guests : members).push(tab);
+    }
+    return { members, guests };
+  }
+
+  /**
+   * Moves tabs joining an existing split into the same section as the
+   * split's members. Guests never move.
+   *
    * @param {Array} tabs
    * @param {Tab} relativeTab
    */
   #moveTabsToContainer(tabs, relativeTab) {
-    const relativeTabIsPinned = relativeTab.pinned;
-    const relativeTabIsEssential = relativeTab.hasAttribute("zen-essential");
+    const reference = this.isSplitGuest(relativeTab)
+      ? (this.getSplitForTab(relativeTab)?.tabs.find(
+          tab => !this.isSplitGuest(tab)
+        ) ?? relativeTab)
+      : relativeTab;
 
-    if (relativeTabIsEssential) {
+    if (this.isSplitGuest(reference)) {
+      // A split made only of essential copies; keep the old behaviour.
       gZenPinnedTabManager.addToEssentials(tabs);
-    } else {
-      for (const tab of tabs) {
-        if (relativeTabIsPinned) {
-          gBrowser.pinTab(tab);
-        } else {
-          gBrowser.unpinTab(tab);
-        }
+      return;
+    }
+    for (const tab of tabs) {
+      if (this.isSplitGuest(tab)) {
+        continue;
+      }
+      if (reference.pinned) {
+        gBrowser.pinTab(tab);
+      } else {
+        gBrowser.unpinTab(tab);
       }
     }
   }
 
+  /**
+   * Replaces tabs that can't share the split's group with duplicates, in
+   * place. Essentials stay as guests unless every tab is an essential, since
+   * a split needs at least one member.
+   *
+   * @param {Tab[]} tabs
+   */
   #useTabsToSplit(tabs) {
-    // If there's ANY pinned tab on the list, we clone the pinned tab
-    // state to all the tabs
-    const allArePinned = tabs.every(tab => tab.pinned);
-    const thereIsOnePinned = tabs.some(tab => tab.pinned);
-    const thereIsOneEssential = tabs.some(tab =>
-      tab.hasAttribute("zen-essential")
-    );
+    const { members } = this.#classifySplitTabs(tabs);
+    const onlyEssentials = !members.length;
+    // Pinned members are duplicated when the members can't share a section.
+    const allMembersPinned = members.every(tab => tab.pinned);
+    const someMemberPinned = members.some(tab => tab.pinned);
     const thereIsOneLiveFolder = tabs.some(tab =>
       tab.hasAttribute("zen-live-folder-item-id")
     );
+    const duplicatePinnedMembers =
+      (someMemberPinned && !allMembersPinned) || thereIsOneLiveFolder;
 
-    if (
-      thereIsOneEssential ||
-      (thereIsOnePinned && !allArePinned) ||
-      thereIsOneLiveFolder
-    ) {
-      for (let i = 0; i < tabs.length; i++) {
-        const tab = tabs[i];
-        if (tab.pinned) {
-          tabs[i] = gBrowser.duplicateTab(tab, true);
-        }
+    for (let i = 0; i < tabs.length; i++) {
+      const tab = tabs[i];
+      const duplicate = this.isSplitGuest(tab)
+        ? onlyEssentials
+        : tab.pinned && duplicatePinnedMembers;
+      if (duplicate) {
+        tabs[i] = gBrowser.duplicateTab(tab, true);
       }
     }
   }
@@ -1436,7 +1547,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   ) {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
-      // TODO: Add support for splitting essential tabs
       tabs = tabs
         .filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"))
         // use glance parent tab instead of glance tab
@@ -1478,17 +1588,25 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           for (let i = 0; i < tabs.length; i++) {
             const tab = tabs[i];
             if (!group.tabs.includes(tab)) {
-              gBrowser.moveTabToExistingGroup(
-                tab,
-                this._getSplitViewGroup(tabs, groupFetchId)
-              );
+              if (!this.isSplitGuest(tab)) {
+                gBrowser.moveTabToExistingGroup(
+                  tab,
+                  this.getMemberGroup(group) ??
+                    this._getSplitViewGroup(tabs, groupFetchId)
+                );
+              }
               group.tabs.push(tab);
               this.addTabToSplit(tab, group.layoutTree, false);
               tab.splitView = true;
             }
           }
         }
-        this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group);
+        this.#updateGuestBadge(group);
+        this.#dispatchItemEvent(
+          "ZenSplitViewTabsSplit",
+          this.getMemberGroup(group),
+          { tabs: group.tabs }
+        );
         if (!shouldActivateSplit) {
           return group;
         }
@@ -1505,7 +1623,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       let splitGroup = this._getSplitViewGroup(tabs, groupFetchId);
       const groupId = splitGroup?.id;
       if (splitGroup) {
-        for (const tab of tabs) {
+        for (const tab of this.#classifySplitTabs(tabs).members) {
           if (!tab.group || tab.group !== splitGroup) {
             gBrowser.moveTabToExistingGroup(tab, splitGroup);
           }
@@ -1528,7 +1646,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         }
       }
 
-      this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);
+      this.#updateGuestBadge(splitData);
+      this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup, {
+        tabs: splitData.tabs,
+      });
       // eslint-disable-next-line consistent-return
       return splitData;
     });
@@ -1547,7 +1668,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   updateSplitView(tab) {
     const oldView = this.currentView;
-    const newView = this._data.findIndex(group => group.tabs.includes(tab));
+    let newView = this._data.findIndex(group => group.tabs.includes(tab));
+    if (newView >= 0 && !this.#canShowSplit(this._data[newView])) {
+      this.#showGuestAlone(tab);
+      newView = -1;
+    }
 
     if (newView === oldView && oldView < 0) {
       return;
@@ -1558,6 +1683,59 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     this.disableTabRearrangeView();
     this.activateSplitView(this._data[newView]);
+  }
+
+  /**
+   * Essentials are shared between spaces, but a split's members live in one
+   * space. A split with guests is shown only in its members' space, and only
+   * if every guest is visible there.
+   *
+   * @param {object} split - A split from `_data`.
+   * @returns {boolean}
+   */
+  #canShowSplit(split) {
+    const { members, guests } = this.#classifySplitTabs(split.tabs);
+    if (!guests.length || !gZenWorkspaces.workspaceEnabled) {
+      return true;
+    }
+    const space = gZenWorkspaces.getActiveWorkspaceFromCache();
+    if (!space) {
+      return true;
+    }
+    const spaces = gZenWorkspaces.getWorkspaces();
+    return (
+      members.every(
+        tab =>
+          !tab.hasAttribute("zen-workspace-id") ||
+          tab.getAttribute("zen-workspace-id") === space.uuid
+      ) &&
+      guests.every(tab =>
+        gZenWorkspaces._shouldShowTab(
+          tab,
+          space.uuid,
+          space.containerTabId,
+          spaces
+        )
+      )
+    );
+  }
+
+  /**
+   * Shows a guest on its own, outside its split, without leaving the split.
+   * Its panel would otherwise stay hidden as an inactive split pane.
+   *
+   * @param {Tab} tab
+   */
+  #showGuestAlone(tab) {
+    const container = tab.linkedBrowser?.closest(".browserSidebarContainer");
+    if (!container) {
+      return;
+    }
+    container.removeAttribute("is-zen-split");
+    container.style.inset = "";
+    this._removeHeader(container);
+    this.resetContainerStyle(container);
+    container.removeEventListener("mousedown", this.handleTabEvent);
   }
 
   /**
@@ -2085,10 +2263,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
     // Check if tabs from split view they must be from the same group
     if (this.currentView >= 0) {
-      const splitViewId = this._data[this.currentView].groupId;
-      const sameSplitView = selected_tabs.every(
-        tab => !tab?.group || tab.group.id === splitViewId
-      );
+      const currentSplit = this._data[this.currentView];
+      const sameSplitView = selected_tabs.every(tab => {
+        const split = this.getSplitForTab(tab);
+        return !split || split === currentSplit;
+      });
       if (!sameSplitView) {
         return;
       }
@@ -2226,25 +2405,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // const hoverSide = this.calculateHoverSide(event.clientX, event.clientY, browserRect);
       const hoverSide = dropSide;
 
-      // We are here if none of the tabs have been previously split
-      // If there's ANY pinned tab on the list, we clone the pinned tab
-      // state to all the tabs
-      let tempTabs = [draggedTab, droppedOnTab];
-      const allArePinned = tempTabs.every(tab => tab.pinned);
-      const thereIsOnePinned = tempTabs.some(tab => tab.pinned);
-      const thereIsOneEssential = tempTabs.some(tab =>
-        tab.hasAttribute("zen-essential")
-      );
-
-      if (thereIsOneEssential || (thereIsOnePinned && !allArePinned)) {
-        for (let i = 0; i < tempTabs.length; i++) {
-          const tab = tempTabs[i];
-          if (tab.pinned) {
-            tempTabs[i] = gBrowser.duplicateTab(tab, true);
-          }
-        }
-      }
-
+      const tempTabs = [draggedTab, droppedOnTab];
+      this.#useTabsToSplit(tempTabs);
       [draggedTab, droppedOnTab] = tempTabs;
 
       if (droppedOnTab.splitView) {
@@ -2259,9 +2421,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           group.tabs.length < this.MAX_TABS
         ) {
           // First move the tab to the split view group
-          let splitGroup = droppedOnTab.group;
+          let splitGroup = this.getMemberGroup(group);
           if (
             splitGroup &&
+            !this.isSplitGuest(draggedTab) &&
             (!draggedTab.group || draggedTab.group !== splitGroup)
           ) {
             this.#moveTabsToContainer([draggedTab], droppedOnTab);
@@ -2388,9 +2551,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {TabGroup} The tab group for split view tabs
    */
   _getSplitViewGroup(tabs, id = null) {
-    if (tabs.some(tab => tab.hasAttribute("zen-essential"))) {
-      return null;
-    }
+    // Guests stay in Essentials; only members go into the group.
+    tabs = tabs?.filter(tab => !this.isSplitGuest(tab));
 
     // Try to find an existing split view group
     let splitGroup = tabs?.find(tab =>
@@ -2460,10 +2622,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
         // Backwards compatibility
         group.setAttribute("split-view-group", "true");
+
+        // Guests are not in the group, so take the saved tab list. Ids of
+        // tabs that no longer exist resolve to nothing and are dropped.
+        const savedTabs = (groupData.tabs ?? [])
+          .map(id => document.getElementById(id))
+          .filter(tab => gBrowser.isTab(tab));
+        const tabs = savedTabs.length ? savedTabs : group.tabs;
+
         if (!groupData?.layoutTree) {
-          this.splitTabs(group.tabs, group.gridType);
-          delete this._sessionRestoring;
-          return;
+          this.splitTabs(tabs, groupData.gridType, -1);
+          continue;
         }
 
         const deserializeNode = nodeData => {
@@ -2493,7 +2662,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         };
 
         const layout = deserializeNode(groupData.layoutTree);
-        const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
+        const splitData = this.splitTabs(tabs, groupData.gridType, -1);
         if (splitData) {
           splitData.layoutTree = layout;
         } else {
@@ -2508,10 +2677,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   onAfterWorkspaceSessionRestore() {
-    if (
-      gBrowser.selectedTab.group?.hasAttribute("split-view-group") &&
-      !gBrowser.selectedTab.pinned
-    ) {
+    const split = this.getSplitForTab(gBrowser.selectedTab);
+    if (split && !this.getMemberGroup(split)?.pinned) {
       // Activate all browsers in the split view
       this.currentView = -1;
       this.onLocationChange(gBrowser.selectedTab.linkedBrowser);
@@ -2613,8 +2780,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               if (
                 newSelectedTab === emptyTab ||
                 newSelectedTab === selectedTab ||
-                selectedTab.getAttribute("zen-workspace-id") !==
-                  newSelectedTab.getAttribute("zen-workspace-id")
+                // Essentials have no space; they join any space's tab.
+                (!this.isSplitGuest(selectedTab) &&
+                  selectedTab.getAttribute("zen-workspace-id") !==
+                    newSelectedTab.getAttribute("zen-workspace-id"))
               ) {
                 cleanup(onSwitch, groupIndex);
                 return;

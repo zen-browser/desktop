@@ -931,13 +931,11 @@
       const movingTabsSet = dragData.movingTabsSet;
       const dropElement = event.target.closest(".tabbrowser-tab");
 
-      // TODO: After Cheff adds split view support for essentials, don't forget to remove the check
       if (
         !dropElement ||
         !isTab(dropElement) ||
-        dropElement.hasAttribute("zen-essential") ||
         dropElement.hasAttribute("zen-glance-tab") ||
-        dropElement?.group?.hasAttribute("split-view-group") ||
+        dropElement.splitView ||
         movingTabsSet.size > 1
       ) {
         this._clearDragOverSplit();
@@ -947,7 +945,7 @@
       if (
         movingTabsSet.has(this._targetForDrop(dropElement)) ||
         !isTab(draggedTab) ||
-        draggedTab?.group?.hasAttribute("split-view-group") ||
+        draggedTab.splitView ||
         draggedTab.hasAttribute("zen-live-folder-item-id") ||
         dropElement.hasAttribute("zen-live-folder-item-id")
       ) {

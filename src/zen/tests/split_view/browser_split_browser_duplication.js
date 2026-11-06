@@ -96,7 +96,7 @@ add_task(async function test_Split_View_Duplication_Both_Pinned() {
   await BrowserTestUtils.removeTab(tab1);
 });
 
-add_task(async function test_Split_View_Duplication_Pinned_Essential() {
+add_task(async function test_Split_View_Pinned_With_Essential_Guest() {
   const existingTabs = gBrowser.tabs;
   const [pinned, essential] = await Promise.all([
     addTabTo(gBrowser, getUrlForNthTab(1)),
@@ -106,24 +106,20 @@ add_task(async function test_Split_View_Duplication_Pinned_Essential() {
   gBrowser.pinTab(pinned);
   await pinEvent;
   gZenPinnedTabManager.addToEssentials(essential);
-  Assert.strictEqual(
-    gBrowser.tabs.length,
-    4,
-    "There should be four tabs after pinning the first tab and adding the second to essentials"
-  );
   await createSplitView([pinned, essential], "grid");
   Assert.strictEqual(
     gBrowser.tabs.length,
-    4 + 2,
-    "There should be six tabs after creating a split view with the pinned and essential tabs"
+    4,
+    "Neither tab is duplicated: the essential joins as a guest"
   );
   ok(
-    !pinned.group,
-    "The pinned tab should not be in a split group after duplication with an essential tab"
+    pinned.group?.hasAttribute("split-view-group"),
+    "The pinned tab is the split's member, in its group"
   );
+  ok(!essential.group, "The essential stays out of the split's group");
   ok(
-    !essential.group,
-    "The essential tab should not be in a split group after duplication with a pinned tab"
+    essential.hasAttribute("zen-essential"),
+    "The essential stays an essential"
   );
   for (const tab of gBrowser.tabs) {
     if (existingTabs.includes(tab)) {

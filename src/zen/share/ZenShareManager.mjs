@@ -95,9 +95,16 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   #serializeSplitGroup(group) {
-    const tabs = group.tabs
+    // The split's tabs include guest essentials, which are not in the group.
+    const splitTabs =
+      gZenViewSplitter.getSplitForTab(group.tabs[0])?.tabs ?? group.tabs;
+    const tabs = splitTabs
       .filter(tab => !tab.hasAttribute("zen-empty-tab"))
-      .map(tab => this.#serializeTab(tab, { pinned: tab.pinned }))
+      .map(tab =>
+        this.#serializeTab(tab, {
+          pinned: tab.pinned && !gZenViewSplitter.isSplitGuest(tab),
+        })
+      )
       .filter(Boolean);
     return tabs.length >= 2
       ? { type: "splitView", tabs: tabs.slice(0, gZenViewSplitter.MAX_TABS) }

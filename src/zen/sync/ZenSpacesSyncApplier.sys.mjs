@@ -837,7 +837,11 @@ class nsZenSpacesSyncApplier {
         const hasGroup = existing?.hasAttribute?.("split-view-group");
         if (hasGroup) {
           const wanted = new Set(data.tabs || []);
-          for (const tab of [...existing.tabs]) {
+          // Includes guest essentials, which are not in the group.
+          const current =
+            win.gZenViewSplitter.getSplitForTab(existing.tabs[0])?.tabs ??
+            existing.tabs;
+          for (const tab of [...current]) {
             if (tab.id && !wanted.has(tab.id)) {
               win.gZenViewSplitter.removeTabFromGroup(tab, undefined, {
                 changeTab: false,

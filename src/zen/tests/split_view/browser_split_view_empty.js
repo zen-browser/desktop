@@ -111,6 +111,19 @@ add_task(async function test_Split_View_Empty() {
   });
 });
 
+add_task(async function test_Split_View_Empty_From_Essential() {
+  await BrowserTestUtils.withNewTab("https://example.com", async function () {
+    const essential = gBrowser.selectedTab;
+    gZenPinnedTabManager.addToEssentials(essential);
+    await createEmptySplitAndCheck(essential);
+    ok(
+      essential.hasAttribute("zen-essential"),
+      "The essential stays an essential"
+    );
+    gZenPinnedTabManager.removeEssentials(essential);
+  });
+});
+
 add_task(async function test_Split_View_Empty_With_Urlbar_Already_Open() {
   await SimpleTest.promiseFocus(window);
   await BrowserTestUtils.withNewTab("https://example.com", async function () {

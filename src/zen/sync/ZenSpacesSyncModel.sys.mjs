@@ -667,7 +667,11 @@ class nsZenSpacesSyncModel {
   #projectSplits(map, ctx) {
     const tabById = new Map(ctx.tabs.map(t => [t.zenSyncId, t]));
     for (const split of ctx.splits) {
-      const member = tabById.get(split.tabs[0]);
+      // Guest essentials don't decide where the split lives.
+      const member =
+        split.tabs
+          .map(id => tabById.get(id))
+          .find(tab => tab && !tab.zenEssential) ?? tabById.get(split.tabs[0]);
       map.set(split.groupId, {
         kind: RECORD_KINDS.SPLIT,
         data: {

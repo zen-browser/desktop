@@ -2723,12 +2723,22 @@ class nsZenWorkspaces {
       }
     }
 
-    // Avoid forcing a startup toolbar rebuild when there are no
-    // workspace-specific bookmark assignments to apply.
-    const hasWorkspaceBookmarks = !!Object.keys(
-      this._workspaceBookmarksCache?.bookmarks || {}
-    ).length;
-    if (!onInit || hasWorkspaceBookmarks) {
+    // Rebuilding the bookmark views removes every bookmarks toolbar button and
+    // adds them back over the next frames, which flickers. Only rebuild when
+    // there are space bookmarks to apply on startup, or when the new space
+    // shows different bookmarks than the previous one.
+    // Command line switches set the active space early, so the previous space
+    // can equal the new one and the old toolbar contents are unknown.
+    const workspaceBookmarks = this._workspaceBookmarksCache?.bookmarks || {};
+    const bookmarksChanged = onInit
+      ? !!Object.keys(workspaceBookmarks).length
+      : previousWorkspace?.uuid === workspace.uuid ||
+        this.#showsDifferentBookmarks(
+          workspaceBookmarks,
+          previousWorkspace?.uuid,
+          workspace.uuid
+        );
+    if (bookmarksChanged) {
       this._invalidateBookmarkContainers();
     }
 
@@ -2770,6 +2780,15 @@ class nsZenWorkspaces {
   async #fixCtrlTabBehavior() {
     ctrlTab.uninit();
     ctrlTab.readPref();
+  }
+
+  // A bookmark shows in a space when it has no space assigned or is assigned
+  // to that space, so two spaces differ only by bookmarks assigned to exactly
+  // one of them.
+  #showsDifferentBookmarks(workspaceBookmarks, uuidA, uuidB) {
+    const bookmarksA = new Set(workspaceBookmarks[uuidA]);
+    const bookmarksB = new Set(workspaceBookmarks[uuidB]);
+    return bookmarksA.symmetricDifference(bookmarksB).size > 0;
   }
 
   _invalidateBookmarkContainers() {

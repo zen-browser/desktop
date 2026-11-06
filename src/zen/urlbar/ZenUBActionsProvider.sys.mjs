@@ -176,7 +176,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     if (window.gZenWorkspaces.privateWindowOrDisabled) {
       return [];
     }
-    const workspaces = window.gZenWorkspaces.getWorkspaces();
+    const workspaces = window.gZenWorkspaces.getVisibleWorkspaces();
     if (!workspaces?.length) {
       return [];
     }

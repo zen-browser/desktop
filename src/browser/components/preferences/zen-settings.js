@@ -795,6 +795,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.workspaces.archive.normal-tabs",
+    type: "string",
+    default: "keep",
+  },
+  {
     id: "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",
     type: "bool",
     default: true,

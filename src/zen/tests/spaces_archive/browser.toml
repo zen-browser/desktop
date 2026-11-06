@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+prefs = ["zen.workspaces.separate-essentials=false"]
+support-files = [
+  "head.js",
+]
+
+["browser_archive_active.js"]
+
+["browser_archive_basic.js"]
+
+["browser_archive_library.js"]
+
+["browser_archive_navigation.js"]
+
+["browser_archive_switch_to_tab.js"]
+
+["browser_archive_tab_policy.js"]
+
+["browser_archive_tab_select.js"]
+
+["browser_archive_undo.js"]

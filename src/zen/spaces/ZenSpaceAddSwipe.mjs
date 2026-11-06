@@ -92,7 +92,7 @@ export class ZenSpaceAddSwipe {
    * @returns {boolean} True if it should show
    */
   readySwipeAddSpace() {
-    const spaces = gZenWorkspaces.getWorkspaces();
+    const spaces = gZenWorkspaces.getVisibleWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
     const libraryOnRight = lazy.ZenLibrary.libraryOnRight;

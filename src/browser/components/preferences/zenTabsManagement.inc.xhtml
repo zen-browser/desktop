@@ -29,6 +29,15 @@
       <checkbox id="zenWorkspacesForceContainerTabsToWorkspace"
             data-l10n-id="zen-settings-workspaces-force-container-tabs-to-workspace"
             preference="zen.workspaces.force-container-workspace"/>
+      <hbox align="center">
+            <label id="zenWorkspacesArchiveNormalTabsLabel" data-l10n-id="zen-settings-workspaces-archive-normal-tabs-label"/>
+            <menulist id="zenWorkspacesArchiveNormalTabs" preference="zen.workspaces.archive.normal-tabs">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-settings-workspaces-archive-normal-tabs-keep" value="keep"/>
+                        <menuitem data-l10n-id="zen-settings-workspaces-archive-normal-tabs-close" value="close"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
       <checkbox id="zenTabsCloseOnBackWithNoHistory"
             data-l10n-id="zen-tabs-close-on-back-with-no-history"
             preference="zen.tabs.close-on-back-with-no-history"/>

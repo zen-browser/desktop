@@ -160,7 +160,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
   }
 
   async #updateIcons() {
-    const workspaces = gZenWorkspaces.getWorkspaces();
+    const workspaces = gZenWorkspaces.getVisibleWorkspaces();
     const reusable = new Map();
     for (const button of this.children) {
       const uuid = button.getAttribute("zen-workspace-id");

@@ -329,6 +329,11 @@ class nsZenSpacesSyncApplier {
           theme: data.theme ?? null,
           containerTabId: this.#resolveContainerId(data.containerGuid),
         };
+        // Clients that don't know about archiving leave the flag out, which
+        // must not bring an archived space back.
+        if (typeof data.archived === "boolean") {
+          fields.archived = data.archived;
+        }
         // A space record re-syncs whenever its child ordering changes, so
         // only propagate (and especially repaint) when its own fields did.
         const index = list.findIndex(s => s.uuid === data.uuid);
@@ -341,6 +346,8 @@ class nsZenSpacesSyncApplier {
             canonicalJSON(fields.theme ?? null);
         const containerChanged =
           !current || (current.containerTabId ?? 0) !== fields.containerTabId;
+        const archivedChanged =
+          "archived" in fields && !!current?.archived !== fields.archived;
         if (containerChanged) {
           syncLog(
             `space ${data.uuid} containerTabId ` +
@@ -351,7 +358,7 @@ class nsZenSpacesSyncApplier {
         if (!current) {
           list.push(fields);
           changed = true;
-        } else if (visualChanged || containerChanged) {
+        } else if (visualChanged || containerChanged || archivedChanged) {
           list[index] = { ...current, ...fields };
           changed = true;
         }

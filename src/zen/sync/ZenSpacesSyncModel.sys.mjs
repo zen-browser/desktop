@@ -625,6 +625,7 @@ class nsZenSpacesSyncModel {
           name: space.name ?? "",
           icon: space.icon ?? null,
           theme: space.theme ?? null,
+          archived: !!space.archived,
           containerGuid: this.guidForContextId(space.containerTabId, {
             create: true,
           }),

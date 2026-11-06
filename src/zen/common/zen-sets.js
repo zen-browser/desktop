@@ -42,6 +42,7 @@
       gZenWorkspaces.changeTabWorkspace(
         event.sourceEvent.target.getAttribute("zen-workspace-id")
       ),
+    cmd_zenCtxArchiveWorkspace: () => gZenWorkspaces.contextArchiveWorkspace(),
     cmd_zenCtxDeleteWorkspace: event =>
       gZenWorkspaces.contextDeleteWorkspace(event),
     cmd_zenCtxShareWorkspace: () => gZenWorkspaces.contextShareWorkspace(),

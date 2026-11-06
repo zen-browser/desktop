@@ -188,6 +188,14 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
     recent.toggleAttribute("checked", picked === MOST_RECENT_SPACE);
     const items = [recent];
     for (const space of this.#spaces) {
+      // Archived spaces can't be picked, but a route that already points at
+      // one keeps showing it.
+      if (
+        window.gZenWorkspaces.isWorkspaceArchived(space) &&
+        space.uuid !== picked
+      ) {
+        continue;
+      }
       const item = document.createXULElement("menuitem");
       item.dataset.value = space.uuid;
       item.setAttribute("label", space.name);
@@ -506,6 +514,9 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
   #renderRoute(route) {
     const matchType = MATCH_TYPES.find(type => type.id === route.matchType);
     const spaceName = this.#spaceName(route.openIn);
+    const isArchived = window.gZenWorkspaces.isWorkspaceArchived(
+      this.#space(route.openIn)
+    );
     return html`
       <div
         class="zen-library-row zen-library-routing-row"
@@ -536,6 +547,14 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
                     class="zen-library-routing-value"
                     data-l10n-id="library-space-routing-most-recent-space"
                   ></span>`
+            }
+            ${
+              isArchived
+                ? html`<span
+                    class="zen-library-routing-archived"
+                    data-l10n-id="library-space-routing-target-archived"
+                  ></span>`
+                : nothing
             }
           </div>
         </div>

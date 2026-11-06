@@ -343,6 +343,14 @@ export class nsZenWorkspace extends MozXULElement {
     this.#updateOverflow();
   }
 
+  get archived() {
+    return this.hasAttribute("archived");
+  }
+
+  set archived(value) {
+    this.toggleAttribute("archived", !!value);
+  }
+
   get hasPinnedTabs() {
     return this.hasAttribute("haspinnedtabs");
   }

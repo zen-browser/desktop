@@ -4,7 +4,7 @@
 
 zen-action-toggle-compact-mode = Увімк. / Вимк. компактний режим
 zen-action-open-theme-picker = Відкрити вибір теми
-zen-action-open-library = Open Library
+zen-action-open-library = Відкрити бібліотеку
 zen-action-new-split-view = Новий розділений перегляд
 zen-action-unsplit-view = Expand current view
 zen-action-new-space = New Space

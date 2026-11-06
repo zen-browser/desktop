@@ -3,78 +3,86 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Параметри активної теки
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Останнє оновлення: { $time }
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Оновити
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Створено мною
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Призначено мені
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Мої запити на рецензії
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Включити чернетки запитів на злиття
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = RSS-стрічка
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Інтервал оновлення
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 хвилина
+            [few] { $mins } хвилини
+            [many] { $mins } хвилин
+           *[other] { $mins } хвилин
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 година
+            [few] { $hours } години
+            [many] { $hours } годин
+           *[other] { $hours } годин
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Часовий діапазон
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] Остання година
+            [few] Останні { $hours } години
+            [many] Останні { $hours } годин
+           *[other] Останні { $hours } годин
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = За весь час
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] Останній день
+            [few] Останні { $days } дні
+            [many] Останні { $days } днів
+           *[other] Останні { $days } днів
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Обмеження елементів
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = URL-адреса каналу
+zen-live-folder-rss-prompt-feed-url = Введіть, будь ласка, URL-адресу каналу
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } елементів
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Не вдалося оновити
+    .tooltiptext = Не вдалося оновити. Спробуйте ще раз.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Не ввійшли до GitHub
+    .tooltiptext = Увійти знову до GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = Фільтр не встановлено
+    .tooltiptext = Якщо фільтр не встановлено, дані не оновлюватимуться.
+zen-live-folder-rss-invalid-url-title = Не вдалося створити активну теку
+zen-live-folder-rss-invalid-url-description = URL-адреса каналу недійсна. Перевірте адресу та спробуйте ще раз
 zen-live-folder-github-option-repo-filter = 
-    .label = Repositories
+    .label = Репозиторії
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull Requests
+    .label = Запити на злиття
 zen-live-folder-github-issues = 
-    .label = Issues
+    .label = Проблеми
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+    .label = Цей список сформовано на основі ваших поточних активних запитів на злиття.
+zen-live-folders-promotion-title = Активну теку створено!
+zen-live-folders-promotion-description = Останні матеріали з ваших RSS-каналів або запитів на злиття на GitHub з’являтимуться тут автоматично.

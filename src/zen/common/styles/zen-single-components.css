@@ -144,6 +144,7 @@
 
     gap: 5px;
     display: grid;
+    align-content: start;
     grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
 
     .zen-emojis-picker-emoji {

@@ -89,6 +89,10 @@ zen-icons-picker-svg =
   .label = Icons
 zen-emojis-picker-search =
   .placeholder = Search emojis
+  .aria-label = Search emojis
+zen-icons-picker-search =
+  .placeholder = Search icons
+  .aria-label = Search icons
 
 urlbar-search-mode-zen_actions = Actions
 zen-site-data-settings = Settings

@@ -18,3 +18,7 @@ support-files = [
 ["browser_media_shows_on_tab_switch.js"]
 
 ["browser_media_stack.js"]
+
+["browser_media_video_docking.js"]
+
+["browser_media_video_popout.js"]

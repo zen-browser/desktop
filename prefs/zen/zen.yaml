@@ -35,6 +35,10 @@
 - name: zen.mediacontrols.enabled
   value: true
 
+# Show the playing video in the sidebar media card, not only its controls.
+- name: zen.mediacontrols.video.enabled
+  value: true
+
 - name: zen.haptic-feedback.enabled
   value: true
 

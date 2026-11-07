@@ -19,6 +19,8 @@ prefs = [
 
 ["browser_library_folder_first_expand.js"]
 
+["browser_library_media_refresh.js"]
+
 ["browser_library_rapid_toggle.js"]
 
 ["browser_library_space_routing.js"]

@@ -985,19 +985,12 @@
     );
   }
 
-  const kSizeLockProperties = [
-    "min-width",
-    "max-width",
-    "min-height",
-    "max-height",
-  ];
+  const kSizeLockProperties = ["min-width", "min-height"];
 
   function lockWindowSize(width, height) {
     const style = document.documentElement.style;
     style.setProperty("min-width", `${width}px`, "important");
-    style.setProperty("max-width", `${width}px`, "important");
     style.setProperty("min-height", `${height}px`, "important");
-    style.setProperty("max-height", `${height}px`, "important");
   }
 
   function unlockWindowSize() {

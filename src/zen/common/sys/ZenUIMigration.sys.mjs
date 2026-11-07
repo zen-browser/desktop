@@ -15,9 +15,18 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 8;
+  MIGRATION_VERSION = 9;
 
   init(isNewProfile) {
+    // Issue #16449: "Remember browsing and download history" flipped from
+    // disabled to enabled across an update. No Zen code writes
+    // places.history.enabled / browser.download.enableDownloadsHistory, so
+    // the flip is the user pref being lost and the setting falling back to
+    // its `true` default. Snapshot any user-set values before migrations
+    // run and restore them afterwards, so a migration step (or a degraded
+    // profile load) cannot silently change the user's choice. Prefs with
+    // no user value (fresh profile, never toggled) are never forced.
+    const historyPrefs = this.#snapshotHistoryPrefs();
     if (!isNewProfile) {
       try {
         this._migrate();
@@ -25,6 +34,7 @@ class nsZenUIMigration {
         console.error("ZenUIMigration: Error during migration", e);
       }
     }
+    this.#restoreHistoryPrefs(historyPrefs);
     this.#migrateLibraryButton();
     this.clearVariables();
     if (this.shouldRestart) {
@@ -215,6 +225,73 @@ class nsZenUIMigration {
       Services.prefs.clearUserPref("gfx.blacklist.video-overlay.failureid");
       this.shouldRestart = true;
     }
+  }
+
+  _migrateV9() {
+    // Issue #16449: "Remember browsing and download history" flipped from
+    // disabled to enabled across an update. No Zen code writes
+    // places.history.enabled or browser.download.enableDownloadsHistory, so
+    // the flip is a user pref being *lost* (profile refresh / prefs.js not
+    // re-read) and the setting falling back to its `true` default. If a
+    // user value still exists, pin it: writing it back is a no-op for a
+    // healthy profile and a restore for a degraded one. If no user value
+    // exists (fresh profile, user never toggled), write nothing, so the
+    // default stands.
+    this.#preserveHistoryPrefs();
+  }
+
+  // The two prefs behind Settings > Privacy & Security > "Remember browsing
+  // and download history" (issue #16449). See init() for why they are
+  // snapshotted on every startup.
+  static get HISTORY_PREFS() {
+    return ["places.history.enabled", "browser.download.enableDownloadsHistory"];
+  }
+
+  /**
+   * Capture every user-set history pref. Prefs that were never user-set
+   * (fresh profiles, or users who simply never toggled the setting) are
+   * omitted from the snapshot so the restore step never forces a value the
+   * user did not choose.
+   *
+   * @returns {Map<string, boolean>} pref name -> user value, only for
+   *   prefs with a user value at snapshot time.
+   */
+  #snapshotHistoryPrefs() {
+    const snapshot = new Map();
+    for (const pref of nsZenUIMigration.HISTORY_PREFS) {
+      if (Services.prefs.prefHasUserValue(pref)) {
+        snapshot.set(pref, Services.prefs.getBoolPref(pref));
+      }
+    }
+    return snapshot;
+  }
+
+  /**
+   * Re-assert every snapshotted history pref. Called after the migration
+   * steps so that a step (or an external code path) which cleared or
+   * overwrote the user value cannot silently flip the setting back to the
+   * `true` default. A pref with no user value is left alone.
+   */
+  #restoreHistoryPrefs(snapshot) {
+    for (const [pref, value] of snapshot) {
+      if (
+        !Services.prefs.prefHasUserValue(pref) ||
+        Services.prefs.getBoolPref(pref) !== value
+      ) {
+        Services.prefs.setBoolPref(pref, value);
+      }
+    }
+  }
+
+  /**
+   * Idempotent version of the init() snapshot/restore pair, for use as a
+   * migration step. Reads the current user values and writes them back so
+   * that a migration step that ran in between (or a profile refresh that
+   * wiped them) cannot change the user's choice.
+   */
+  #preserveHistoryPrefs() {
+    const snapshot = this.#snapshotHistoryPrefs();
+    this.#restoreHistoryPrefs(snapshot);
   }
 }
 

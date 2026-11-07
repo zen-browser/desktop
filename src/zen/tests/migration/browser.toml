@@ -17,4 +17,6 @@ support-files = [
 
 ["browser_bookmark_folders.js"]
 
+["browser_history_prefs.js"]
+
 ["browser_wizard_key.js"]

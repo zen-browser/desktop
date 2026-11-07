@@ -65,9 +65,9 @@ library-media-turn-off =
     .label = 關閉媒體庫
 library-media-search-placeholder = 
     .placeholder = 搜尋媒體檔…
-library-media-loading = 正在尋找娛體檔…
-library-media-opt-in-title = 您的娛體檔就在Libray裡
-library-media-opt-in-body = 電腦中的截圖、圖片、及影像檔將會顯示於Zen library中，讓您可快速取得。
+library-media-loading = 正在尋找媒體檔…
+library-media-opt-in-title = 您的媒體檔就在Libray中
+library-media-opt-in-body = 電腦中的截圖、圖片、及影像將會顯示於Zen library中，讓您可快速取得。
 library-media-opt-in-button = 顯示媒體檔
 library-media-opt-in-note = 媒體檔僅會留存於電腦中且不會被除您之外的人所看見。
 library-media-filter-title = 篩選媒體檔…
@@ -107,11 +107,11 @@ library-space-routing-search-placeholder =
 library-space-routing-new-button = 建立
 library-space-routing-new-title = 新導向
 library-space-routing-edit-title = 編輯導向
-library-space-routing-when-the-link = 連結匹配條件
+library-space-routing-when-the-link = 當連結符合下列匹配條件時
 library-space-routing-contains = 含有
 library-space-routing-equal-to = 完全一致
 library-space-routing-regex = 正規表達式
-library-space-routing-open-it-in = 開啟於
+library-space-routing-open-it-in = 則開啟於
 # Shown as text in a route's row and as the label of an item in the menu
 # that picks where a route lands, which XUL draws from an attribute.
 -library-space-routing-most-recent = 最近使用的工作區

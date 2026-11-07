@@ -6,6 +6,10 @@
 
 @namespace html "http://www.w3.org/1999/xhtml";
 
+:root {
+  --zen-squircle-value: 1;
+}
+
 .pane-container {
   margin: 0 auto;
 }
@@ -411,6 +415,7 @@ groupbox h2 {
 #setting-control-sidebarChatbotFieldset,
 #setting-control-supportFirefox,
 .mission-message,
+html|setting-group[groupid="dataCollection"],
 html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid="browserTheme"]) {
   display: none !important;
 }

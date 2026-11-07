@@ -1676,7 +1676,11 @@ class nsZenWindowSync {
       }
 
       const newGroup = isFolder
-        ? win.gZenFolders.createFolder([], {})
+        ? win.gZenFolders.createFolder([], {
+            label: tabGroup.label,
+            workspaceId: tabGroup.getAttribute("zen-workspace-id"),
+            isLiveFolder: tabGroup.isLiveFolder,
+          })
         : win.gBrowser.addTabGroup([]);
       newGroup.id = tabGroup.id;
       newGroup.alreadySynced = true;

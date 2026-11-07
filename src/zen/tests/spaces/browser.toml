@@ -16,6 +16,8 @@ support-files = [
 
 ["browser_default_containers.js"]
 
+["browser_detach_last_tab_in_space.js"]
+
 ["browser_double_click_newtab.js"]
 
 ["browser_issue_10455.js"]

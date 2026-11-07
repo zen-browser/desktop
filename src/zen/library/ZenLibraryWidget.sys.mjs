@@ -358,10 +358,12 @@ class ZenLibraryDownloadStack {
   #updateList() {
     const shown = this.#downloads.slice(-ENTRIES);
     const unused = ENTRIES - shown.length;
+    const badgeDownload = this.#badgeDownload;
     this.#entries.forEach((entry, i) => {
       const download = shown[i - unused];
       entry.hidden = !download;
       entry.download = download ?? null;
+      entry.toggleAttribute("badge-target", entry.download === badgeDownload);
       if (!download) {
         return;
       }

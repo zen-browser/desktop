@@ -106,7 +106,37 @@ add_task(async function test_badge_tracks_an_older_pending_download() {
     newer.onchange();
 
     const button = document.getElementById("zen-library-button");
+    const entries = [
+      ...document.querySelectorAll(".zen-library-download-list-download"),
+    ];
+    const olderBadge = entries
+      .find(entry => entry.download === older)
+      .querySelector(".zen-library-download-badge");
+    const newerBadge = entries
+      .find(entry => entry.download === newer)
+      .querySelector(".zen-library-download-badge");
     button.dispatchEvent(new MouseEvent("mouseenter"));
+    Assert.equal(
+      getComputedStyle(olderBadge).visibility,
+      "hidden",
+      "the pending row yields to the flying badge"
+    );
+    Assert.equal(
+      getComputedStyle(newerBadge).visibility,
+      "visible",
+      "the completed row keeps its own icon"
+    );
+    await TestUtils.waitForCondition(
+      () =>
+        getComputedStyle(document.getElementById("library-button-badge"))
+          .visibility === "hidden",
+      "the flying badge hands off to the row"
+    );
+    Assert.equal(
+      getComputedStyle(olderBadge).visibility,
+      "visible",
+      "the pending row shows its badge when the flight ends"
+    );
     button.dispatchEvent(new MouseEvent("mouseleave"));
     await TestUtils.waitForCondition(
       () =>

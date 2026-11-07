@@ -1273,6 +1273,11 @@ zen-library-history-section {
     border-radius: 14px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s ease;
+
+    &::before,
+    &::after {
+      border-radius: inherit;
+    }
   }
 
   &[dragging] {

@@ -3,7 +3,7 @@
 
 "use strict";
 
-add_task(async function test_Pinned_Split_Tabs_Show_Unload_Button() {
+add_task(async function test_Pinned_Split_Group_Shows_One_Unload_Button() {
   await basicSplitNTabs(async tabs => {
     const pinEvent = BrowserTestUtils.waitForEvent(tabs[0], "TabPinned");
     gBrowser.pinTab(tabs[0]);
@@ -16,26 +16,35 @@ add_task(async function test_Pinned_Split_Tabs_Show_Unload_Button() {
       "The split group should be hovered"
     );
 
+    const lastTab = tabs.at(-1);
     for (const tab of tabs) {
       ok(
         tab.pinned && !tab.hasAttribute("pending"),
         "Tab is pinned and loaded"
       );
-      const resetButton = tab.querySelector(".tab-reset-button");
-      const closeButton = tab.querySelector(".tab-close-button");
-      const resetStyle = window.getComputedStyle(resetButton);
-      Assert.notEqual(
-        resetStyle.display,
-        "none",
-        "The unload button should be rendered for a pinned split tab"
+      const resetStyle = window.getComputedStyle(
+        tab.querySelector(".tab-reset-button")
       );
+      if (tab == lastTab) {
+        Assert.equal(
+          resetStyle.display,
+          "block",
+          "The last tab should render the unload button for the split"
+        );
+        Assert.equal(
+          resetStyle.visibility,
+          "visible",
+          "The unload button should be visible while hovering the split group"
+        );
+      } else {
+        Assert.equal(
+          resetStyle.display,
+          "none",
+          "Only the last tab should render the unload button"
+        );
+      }
       Assert.equal(
-        resetStyle.visibility,
-        "visible",
-        "The unload button should be visible while hovering the split group"
-      );
-      Assert.equal(
-        window.getComputedStyle(closeButton).display,
+        window.getComputedStyle(tab.querySelector(".tab-close-button")).display,
         "none",
         "The close button should stay hidden for a pinned split tab"
       );

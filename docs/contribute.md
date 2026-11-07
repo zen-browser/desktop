@@ -30,3 +30,7 @@ Before you set up your local development environment, **read our [Building Guide
 # Code Of Conduct
 
 Please read our [Code of Conduct](../CODE_OF_CONDUCT.md) before contributing.
+
+# GPU Hang Reports on macOS
+
+For sustained GPU-helper CPU use, see [Collecting GPU hang diagnostics on macOS](gpu-hang-diagnostics.md) before restarting the browser. The guide covers capturing evidence, manual recovery, and the information needed to distinguish Zen issues from upstream graphics problems.

@@ -1,0 +1,7 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Keyword homepage POST</ShortName>
+  <SearchForm>https://example.com/catalog/</SearchForm>
+  <Url type="text/html" method="POST" template="https://example.com/search">
+    <Param name="q" value="{searchTerms}"/>
+  </Url>
+</OpenSearchDescription>

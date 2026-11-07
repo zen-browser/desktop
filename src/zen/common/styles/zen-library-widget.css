@@ -62,7 +62,7 @@
     animation: 0.4s library-badge-download ease;
   }
 
-  /* The badge flies from its spot on the button to the newest entry's badge
+  /* The badge flies from its spot on the button to the matching entry's badge
    * along an arc, the target being set as the list opens. */
   & #library-button-badge {
     position: absolute;
@@ -118,7 +118,7 @@
 }
 
 #library-button-badge,
-#zen-sidebar-foot-buttons[zen-library-badge] #zen-library-download-list > :last-child .zen-library-download-badge {
+#zen-sidebar-foot-buttons[zen-library-badge] #zen-library-download-list > [badge-target] .zen-library-download-badge {
   visibility: hidden;
 }
 
@@ -135,7 +135,7 @@
         --zen-library-progress var(--zen-library-open-duration) var(--zen-library-open-easing);
     }
 
-    & #zen-library-download-list > :last-child .zen-library-download-badge {
+    & #zen-library-download-list > [badge-target] .zen-library-download-badge {
       visibility: visible;
       transition: visibility 0s var(--zen-library-open-duration);
     }

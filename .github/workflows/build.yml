@@ -393,7 +393,7 @@ jobs:
     name: Windows build step 1 (PGO build)
     uses: ./.github/workflows/windows-release-build.yml
     if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.windows-hit != 'true' && (inputs.update_branch == 'twilight' || needs.pgo-cache.outputs.windows-cs-hit != 'true') }}
-    needs: [build-data, buildid, pgo-cache]
+    needs: [build-data, buildid, pgo-cache, source]
     permissions:
       contents: write
     secrets: inherit
@@ -412,7 +412,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [windows-step-1, build-data, pgo-cache]
+    needs: [windows-step-1, build-data, pgo-cache, source]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       profile-data-path-archive: zen.win64-pgo-stage-1.zip
@@ -426,7 +426,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, windows-step-2, buildid, pgo-cache]
+    needs: [build-data, windows-step-2, buildid, pgo-cache, source]
     with:
       use-sccache: ${{ inputs.use-sccache }}
       build-version: ${{ needs.build-data.outputs.version }}
@@ -445,7 +445,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [windows-step-cs-1, build-data, pgo-cache]
+    needs: [windows-step-cs-1, build-data, pgo-cache, source]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       profile-data-path-archive: zen.win64-pgo-stage-1.zip
@@ -462,7 +462,7 @@ jobs:
     secrets: inherit
     # windows-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
-    needs: [build-data, windows-step-2, windows-step-cs-2, buildid, pgo-cache]
+    needs: [build-data, windows-step-2, windows-step-cs-2, buildid, pgo-cache, source]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
@@ -480,7 +480,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, buildid, pgo-cache]
+    needs: [build-data, buildid, pgo-cache, source]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
@@ -494,7 +494,7 @@ jobs:
     name: macOS build step 1 (PGO build)
     uses: ./.github/workflows/macos-release-build.yml
     if: ${{ !inputs.disable-pgo && needs.pgo-cache.outputs.mac-hit != 'true' }}
-    needs: [build-data, buildid, pgo-cache]
+    needs: [build-data, buildid, pgo-cache, source]
     permissions:
       contents: write
     secrets: inherit
@@ -512,7 +512,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [mac-step-1, build-data, pgo-cache]
+    needs: [mac-step-1, build-data, pgo-cache, source]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
@@ -526,7 +526,7 @@ jobs:
     secrets: inherit
     # mac-step-2 is skipped when PGO is disabled, so don't inherit its skip
     if: ${{ !failure() && !cancelled() }}
-    needs: [build-data, mac-step-2, buildid, pgo-cache]
+    needs: [build-data, mac-step-2, buildid, pgo-cache, source]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
@@ -544,7 +544,7 @@ jobs:
       contents: write
     secrets: inherit
     if: ${{ !failure() && !cancelled() }}
-    needs: [build-data, mac-step-3]
+    needs: [build-data, mac-step-3, source]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}

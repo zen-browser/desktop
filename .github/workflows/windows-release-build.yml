@@ -61,6 +61,7 @@ jobs:
       SCCACHE_CACHE_SIZE: "2G"
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: 0
+      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -86,7 +87,7 @@ jobs:
           cache: npm
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@main
+        uses: mozilla-actions/sccache-action@v0.0.11
         if: ${{ inputs.use-sccache }}
         with:
           disable_annotations: true
@@ -112,9 +113,20 @@ jobs:
       - name: Load Surfer CI setup
         run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
-      - name: Download Firefox and dependencies
+      - name: Download imported source artifact
         if: ${{ !((inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'aarch64') }}
-        run: npm run download
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.source.tar.zst
+          path: .
+
+      - name: Restore imported source
+        if: ${{ !((inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'aarch64') }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zstd
+          mkdir -p engine
+          tar --zstd -xf zen.source.tar.zst -C engine
 
       - name: win-cross Cache
         env:
@@ -182,18 +194,6 @@ jobs:
           echo Setup Visual Studio
           ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml ~/win-cross/vs2026
 
-      - name: Import
-        if: ${{ !((inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'aarch64') }}
-        env:
-          SURFER_COMPAT: ${{ matrix.arch }}
-          SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
-          SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
-          SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
-          SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
-        run: |
-          . "$HOME/.cargo/env"
-          npm run import -- --verbose
-
       - name: Bootstrap
         if: ${{ !((inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'aarch64') }}
         run: |
@@ -237,9 +237,6 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-      - name: Build language packs
-        if: ${{ !((inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'aarch64') }}
-        run: sh scripts/download-language-packs.sh
 
       - name: Download artifact (if use profdata)
         uses: actions/download-artifact@v4

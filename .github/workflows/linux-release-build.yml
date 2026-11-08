@@ -51,6 +51,7 @@ jobs:
       SCCACHE_CACHE_SIZE: "2G"
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: 0
+      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
     name: Build Linux - ${{ matrix.arch }}
 
     steps:
@@ -72,7 +73,7 @@ jobs:
           cache: npm
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@main
+        uses: mozilla-actions/sccache-action@v0.0.11
         if: ${{ inputs.use-sccache }}
         with:
           disable_annotations: true
@@ -103,8 +104,18 @@ jobs:
       - name: Load Surfer CI setup
         run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
-      - name: Download Firefox source and dependencies
-        run: npm run download
+      - name: Download imported source artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.source.tar.zst
+          path: .
+
+      - name: Restore imported source
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zstd
+          mkdir -p engine
+          tar --zstd -xf zen.source.tar.zst -C engine
 
       - name: Fix Rust version
         run: |
@@ -121,20 +132,6 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-
-      - name: Import
-        env:
-          SURFER_COMPAT: ${{ matrix.arch }}
-          SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
-          SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
-          SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
-          SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
-        run: |
-          . "$HOME/.cargo/env"
-          npm run import
-
-      - name: Build language packs
-        run: sh scripts/download-language-packs.sh
 
       - name: Bootstrap
         run: |

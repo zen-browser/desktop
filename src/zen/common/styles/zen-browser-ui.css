@@ -233,7 +233,6 @@ body,
   /* See bug #8814, don't add overflow here as it causes issues
    * with firefox's rendering of the tab bar */
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-pref("zen.view.grey-out-inactive-windows")) {
     &:-moz-window-inactive {
       background: InactiveCaption;
@@ -244,7 +243,6 @@ body,
     z-index: var(--zen-main-app-child-z-index, 1);
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-windows-accent-color-in-titlebar) and ((-moz-windows-mica) or -moz-pref("browser.theme.windows.accent-color-in-tabs.enabled")) {
     background: ActiveCaption;
     color: CaptionText;
@@ -281,7 +279,6 @@ body,
   gap: var(--zen-element-separation);
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.view.experimental-no-window-controls") {
   .titlebar-buttonbox-container {
     display: none !important;
@@ -304,7 +301,6 @@ body,
     }
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media -moz-pref("zen.widget.mac.mono-window-controls") {
     :root:not([window-modal-open="true"]) .titlebar-buttonbox-container {
       color: var(--toolbox-textcolor);

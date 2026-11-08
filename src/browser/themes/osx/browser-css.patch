@@ -1,13 +1,13 @@
 diff --git a/browser/themes/osx/browser.css b/browser/themes/osx/browser.css
-index 486e269838d07f9c1c7bef3601900f0538cfe73b..b41da95b6ea96ccf3bb4f536f4444e3b47702544 100644
+index 5a86ecb4cf4b90a132a70d6c9c07afe911ee9621..530f666c4c389fb61ebe4acc9a233370ae98a150 100644
 --- a/browser/themes/osx/browser.css
 +++ b/browser/themes/osx/browser.css
-@@ -37,7 +37,7 @@
- 
- .titlebar-buttonbox {
+@@ -43,7 +43,7 @@
    &:-moz-locale-dir(ltr) {
+     /* Traffic-light spacing; rem space tokens don't preserve 12px under macOS 11px root. */
+     /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens */
 -    margin-inline: 12px 0;
 +    margin-inline: 12px 4px;
  
      @media (-moz-mac-rtl) {
-       margin-inline: 12px;
+       /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens */

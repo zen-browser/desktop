@@ -23,13 +23,13 @@
 
 #define TRIGGER_PRES_CONTEXT_RESTYLE() \
   WalkPresContexts(                    \
-      [&](nsPresContext* aPc) { MARK_MEDIA_FEATURE_CHANGED(aPc); });
+      this, [&](nsPresContext* aPc) { MARK_MEDIA_FEATURE_CHANGED(aPc); });
 
 using BrowsingContext = mozilla::dom::BrowsingContext;
 
 template <typename Callback>
-void BrowsingContext::WalkPresContexts(Callback&& aCallback) {
-  PreOrderWalk([&](BrowsingContext* aContext) {
+static void WalkPresContexts(BrowsingContext* aTop, Callback&& aCallback) {
+  aTop->PreOrderWalk([&](BrowsingContext* aContext) {
     if (nsIDocShell* shell = aContext->GetDocShell()) {
       if (RefPtr pc = shell->GetPresContext()) {
         aCallback(pc.get());

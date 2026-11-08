@@ -1,5 +1,5 @@
 diff --git a/browser/components/migration/content/migration-wizard.mjs b/browser/components/migration/content/migration-wizard.mjs
-index f6ada525e6f4fdb0a5ab311d0d47f8bb87d00ccc..b88780ceef6c6df9959f0a7ae95969ed9d12d8ed 100644
+index cadf7a21603f37d16bc2d48f8d83f85fc7292f0a..341f3db4a0ee77b70bd411e01953c67eedd0996e 100644
 --- a/browser/components/migration/content/migration-wizard.mjs
 +++ b/browser/components/migration/content/migration-wizard.mjs
 @@ -108,6 +108,9 @@ export class MigrationWizard extends HTMLElement {
@@ -49,14 +49,13 @@ index f6ada525e6f4fdb0a5ab311d0d47f8bb87d00ccc..b88780ceef6c6df9959f0a7ae95969ed
      );
    }
  
-@@ -720,10 +734,17 @@ export class MigrationWizard extends HTMLElement {
+@@ -724,9 +738,14 @@ export class MigrationWizard extends HTMLElement {
      }
  
      if (state.migratorKey) {
 -      let panelItem = this.#browserProfileSelectorList.querySelector(
 -        `panel-item[key="${state.migratorKey}"]`
 -      );
--      this.#onBrowserProfileSelectionChanged(panelItem);
 +      let panelItems = [
 +        ...this.#browserProfileSelectorList.querySelectorAll(
 +          `panel-item[key="${state.migratorKey}"]`
@@ -65,13 +64,10 @@ index f6ada525e6f4fdb0a5ab311d0d47f8bb87d00ccc..b88780ceef6c6df9959f0a7ae95969ed
 +      let panelItem =
 +        panelItems.find(item => item.profile?.id == state.profileId) ||
 +        panelItems[0];
-+      if (panelItem) {
-+        this.#onBrowserProfileSelectionChanged(panelItem);
-+      }
-     }
- 
-     let fileImportErrorMessageEl = selectionPage.querySelector(
-@@ -1287,6 +1308,8 @@ export class MigrationWizard extends HTMLElement {
+       if (panelItem) {
+         this.#onBrowserProfileSelectionChanged(panelItem);
+       }
+@@ -1293,6 +1312,8 @@ export class MigrationWizard extends HTMLElement {
          "migration-list-autofill-label",
        [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.PAYMENT_METHODS]:
          "migration-list-payment-methods-label",

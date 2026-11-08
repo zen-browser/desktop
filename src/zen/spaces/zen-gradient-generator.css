@@ -361,7 +361,6 @@
   max-height: var(--size-item-large);
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.theme.gradient.show-custom-colors") {
   #PanelUI-zen-gradient-generator-custom-colors {
     display: none !important;

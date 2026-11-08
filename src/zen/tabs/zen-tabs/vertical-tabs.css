@@ -30,7 +30,6 @@
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar="true"] {
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-platform: macos) and (not -moz-pref("zen.view.mac.show-three-dot-menu")) {
     &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
       position: absolute;
@@ -53,7 +52,6 @@
    Vertical Tabs Mode Specific Styles (`zen.tabs.vertical` pref)
    ========================================================================== */
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.tabs.vertical") {
   :root:not([zen-window-buttons-reversed="true"]) {
     & .titlebar-buttonbox-container {
@@ -535,6 +533,8 @@ zen-library {
   position: absolute;
   line-height: 1.2;
   bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .tabbrowser-tab[zen-show-sublabel] {
@@ -1155,7 +1155,6 @@ zen-library {
   -moz-user-focus: ignore !important;
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.tabs.show-newtab-vertical") {
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
@@ -1220,7 +1219,6 @@ zen-library {
       --zen-colors-border: var(--zen-colors-tertiary);
     }
 
-    /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.view.show-newtab-button-top") {
       order: -1;
     }
@@ -1318,7 +1316,6 @@ zen-library {
     background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-background-color-selected));
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media -moz-pref("zen.theme.essentials-favicon-bg") {
     &[visuallyselected] > .tab-stack > .tab-background {
       &::after {
@@ -1474,7 +1471,6 @@ zen-library {
   color: color-mix(in srgb, currentColor 70%, transparent);
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media (-moz-pref("zen.theme.hide-tab-throbber")) {
   .tab-throbber {
     display: none !important;

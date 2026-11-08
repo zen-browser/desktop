@@ -19,14 +19,6 @@
     outline: 1px solid rgba(255, 255, 255, .15);
     outline-offset: -1px;
     background-attachment: fixed !important;
-    background-size: 100vw 100vh !important;
-  }
-
-  :root[zen-right-side='true'] & {
-    &::before,
-    &::after {
-      background-position: right top;
-    }
   }
 
   &,

@@ -730,7 +730,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         }
       }
     );
-    zenAddEssential.hidden = isEssential || !!contextTab.group;
+    zenAddEssential.hidden =
+      isEssential || contextTab.group?.hasAttribute("split-view-group");
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {
         num: gBrowser._numZenEssentials,
@@ -1043,6 +1044,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   canEssentialBeAdded(tab) {
+    if (tab.group?.hasAttribute("split-view-group")) {
+      return false;
+    }
     const isExistingEssentialTab = tab.hasAttribute("zen-essential");
     return (
       !(

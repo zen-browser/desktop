@@ -39,9 +39,11 @@ body,
   --zen-grain-texture: url(chrome://browser/content/zen-images/grain-bg.png);
   --zen-grain-tile: 155px;
   --zen-grain-alpha: 0.7;
+  --zen-grain-rendering: pixelated;
   --zen-grain-texture-old: url(chrome://browser/content/zen-images/grain-bg.png);
   --zen-grain-tile-old: 155px;
   --zen-grain-alpha-old: 0.7;
+  --zen-grain-rendering-old: pixelated;
 
   &[zen-grain-texture="none"] {
     --zen-grain-texture: none;
@@ -58,12 +60,18 @@ body,
     --zen-grain-texture: url(chrome://browser/content/zen-images/denim-bg.png);
     --zen-grain-tile: 100px;
     --zen-grain-alpha: 0.85;
+    --zen-grain-rendering: auto;
   }
 
   &[zen-grain-texture="tweed"] {
-    --zen-grain-texture: url(chrome://browser/content/zen-images/tweed-bg.png);
+    --zen-grain-texture: image-set(
+      url(chrome://browser/content/zen-images/tweed-bg-1x.png) 1x,
+      url(chrome://browser/content/zen-images/tweed-bg-1.5x.png) 1.5x,
+      url(chrome://browser/content/zen-images/tweed-bg.png) 2x
+    );
     --zen-grain-tile: 100px;
     --zen-grain-alpha: 0.85;
+    --zen-grain-rendering: auto;
   }
 
   &[zen-grain-texture-old="none"] {
@@ -81,12 +89,18 @@ body,
     --zen-grain-texture-old: url(chrome://browser/content/zen-images/denim-bg.png);
     --zen-grain-tile-old: 100px;
     --zen-grain-alpha-old: 0.85;
+    --zen-grain-rendering-old: auto;
   }
 
   &[zen-grain-texture-old="tweed"] {
-    --zen-grain-texture-old: url(chrome://browser/content/zen-images/tweed-bg.png);
+    --zen-grain-texture-old: image-set(
+      url(chrome://browser/content/zen-images/tweed-bg-1x.png) 1x,
+      url(chrome://browser/content/zen-images/tweed-bg-1.5x.png) 1.5x,
+      url(chrome://browser/content/zen-images/tweed-bg.png) 2x
+    );
     --zen-grain-tile-old: 100px;
     --zen-grain-alpha-old: 0.85;
+    --zen-grain-rendering-old: auto;
   }
 }
 
@@ -180,6 +194,7 @@ body,
     &::after {
       background-image: var(--zen-grain-texture);
       background-size: var(--zen-grain-tile) var(--zen-grain-tile);
+      image-rendering: var(--zen-grain-rendering);
       opacity: calc(
         var(--zen-grainy-background-opacity, 0) * var(--zen-grain-alpha) * var(--zen-background-opacity, 1)
       );
@@ -188,6 +203,7 @@ body,
     &::before {
       background-image: var(--zen-grain-texture-old);
       background-size: var(--zen-grain-tile-old) var(--zen-grain-tile-old);
+      image-rendering: var(--zen-grain-rendering-old);
       opacity: calc(
         var(--zen-grainy-background-opacity-old, 0) * var(--zen-grain-alpha-old) *
           (1 - var(--zen-background-opacity, 1))

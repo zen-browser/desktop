@@ -77,7 +77,7 @@ jobs:
       buildids: ${{ steps.get.outputs.bid }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -131,7 +131,7 @@ jobs:
       build_time: ${{ steps.data.outputs.buildtime }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -187,7 +187,7 @@ jobs:
     needs: [build-data]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -230,7 +230,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -288,7 +288,7 @@ jobs:
       windows-cs-hit: ${{ steps.probe.outputs.windows-cs }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Decide whether a cached profile may be reused
         id: gate
@@ -560,7 +560,7 @@ jobs:
     needs: [linux, build-data]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -582,7 +582,16 @@ jobs:
         with:
           name: zen.linux-${{ matrix.arch }}.tar.xz
 
+      - name: Cache AppImage tools
+        uses: useblacksmith/cache@v5
+        with:
+          path: |
+            appimagetool-x86_64.AppImage
+            uruntime-appimage-squashfs-lite-*
+          key: appimage-tools-v1
+
       - name: Execute AppImage build
+        if: ${{ always() }}
         run: |
           set -eux
           export ARCH=${{ matrix.arch }}
@@ -601,14 +610,17 @@ jobs:
           APPDIR=build/AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
           mv zen/* $APPDIR/
-          wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
-          wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-squashfs-lite-$ARCH"
-          chmod +x *.AppImage
-          chmod +x ./uruntime-appimage-squashfs-lite-"$ARCH"
+          if [ ! -x ./appimagetool-x86_64.AppImage ]; then
+            wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+            chmod +x ./appimagetool-x86_64.AppImage
+          fi
+          if [ ! -x ./uruntime-appimage-squashfs-lite-"$ARCH" ]; then
+            wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-squashfs-lite-$ARCH"
+            chmod +x ./uruntime-appimage-squashfs-lite-"$ARCH"
+            # keep the uruntime mountpoint (massively speeds up launch time)
+            sed -i 's|URUNTIME_MOUNT=[0-9]|URUNTIME_MOUNT=0|' ./uruntime-appimage-squashfs-lite-"$ARCH"
+          fi
           chmod +x ./build/AppDir/AppRun
-
-          # keep the uruntime mountpoint (massively speeds up launch time)
-          sed -i 's|URUNTIME_MOUNT=[0-9]|URUNTIME_MOUNT=0|' ./uruntime-appimage-squashfs-lite-"$ARCH"
 
           echo "AppDir: $APPDIR"
           ls -al
@@ -652,7 +664,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -661,7 +673,7 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Checkout updates repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: zen-browser/updates-server
           path: updates-server
@@ -831,7 +843,7 @@ jobs:
 
     steps:
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: zen-browser/release-utils
           token: ${{ secrets.DEPLOY_KEY }}
@@ -855,7 +867,7 @@ jobs:
           commit_user_email: zen-browser-auto@users.noreply.github.com
 
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: zen-browser/flatpak
           token: ${{ secrets.DEPLOY_KEY }}
@@ -890,7 +902,7 @@ jobs:
 
     steps:
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: flathub/app.zen_browser.zen
           token: ${{ secrets.DEPLOY_KEY }}
@@ -906,7 +918,7 @@ jobs:
           name: zen.linux-aarch64.tar.xz
 
       - name: Update repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: zen-browser
           token: ${{ secrets.DEPLOY_KEY }}

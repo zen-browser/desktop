@@ -61,7 +61,7 @@ jobs:
           tool-cache: false
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}

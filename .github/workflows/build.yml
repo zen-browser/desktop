@@ -25,7 +25,7 @@ on:
         description: "Use sccache"
         required: true
         type: "boolean"
-        default: false
+        default: true
       disable-pgo:
         description: "Build without PGO (skips the profile generation stages)"
         required: false
@@ -57,7 +57,7 @@ on:
         description: "Use sccache"
         required: true
         type: "boolean"
-        default: false
+        default: true
       disable-pgo:
         description: "Build without PGO (skips the profile generation stages)"
         required: false
@@ -140,6 +140,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         run: |
@@ -195,6 +196,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         run: |
@@ -237,6 +239,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Setup Git
         run: |
@@ -566,6 +569,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         run: |
@@ -608,7 +612,6 @@ jobs:
 
           echo "AppDir: $APPDIR"
           ls -al
-          find .
           ls -al "$APPDIR"
           ./appimagetool-x86_64.AppImage -u "$UPINFO" "$APPDIR" zen-"$ARCH".AppImage --runtime-file ./uruntime-appimage-squashfs-lite-"$ARCH"
           mkdir dist

@@ -49,7 +49,7 @@ on:
         description: "Use sccache"
         required: true
         type: boolean
-        default: false
+        default: true
 
 jobs:
   windows-build:
@@ -58,6 +58,7 @@ jobs:
     runs-on: ${{ (inputs.release-branch == 'release' && !inputs.generate-pgo && matrix.arch == 'x86_64') && 'blacksmith-16vcpu-ubuntu-2404' || 'blacksmith-8vcpu-ubuntu-2404' }}
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
+      SCCACHE_CACHE_SIZE: "2G"
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: 0
     strategy:
@@ -82,6 +83,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
@@ -231,6 +233,10 @@ jobs:
           echo "" >> ../configs/common/mozconfig
           echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-$WINDOWS_RS_VERSION" >> ../configs/common/mozconfig
 
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
       - name: Build language packs
         if: ${{ !((inputs.generate-pgo || inputs.cs-pgo == 'generate') && matrix.arch == 'aarch64') }}
         run: sh scripts/download-language-packs.sh

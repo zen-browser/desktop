@@ -41,7 +41,7 @@ on:
         description: "Use sccache"
         required: true
         type: boolean
-        default: false
+        default: true
 
 jobs:
   mac-build:
@@ -49,6 +49,7 @@ jobs:
     runs-on: 'blacksmith-8vcpu-ubuntu-2404'
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
+      SCCACHE_CACHE_SIZE: "2G"
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: 0
     strategy:
@@ -72,6 +73,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
@@ -131,6 +133,11 @@ jobs:
           else
             rustup target add x86_64-apple-darwin
           fi
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
 
       - name: Import
         env:

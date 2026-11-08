@@ -19,7 +19,7 @@ on:
         description: "Use sccache"
         required: true
         type: boolean
-        default: false
+        default: true
       disable-pgo:
         description: "Build without PGO at all"
         required: false
@@ -48,6 +48,7 @@ jobs:
         arch: [x86_64, aarch64]
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
+      SCCACHE_CACHE_SIZE: "2G"
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: 0
     name: Build Linux - ${{ matrix.arch }}
@@ -68,6 +69,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
@@ -114,6 +116,11 @@ jobs:
           else
             rustup target add x86_64-unknown-linux-gnu
           fi
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
 
       - name: Import
         env:

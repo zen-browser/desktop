@@ -206,14 +206,12 @@
   display: none !important;
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.urlbar.single-toolbar-show-copy-url", false) {
   :root[zen-single-toolbar="true"] #zen-copy-url-button {
     display: none !important;
   }
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-pip-button") {
   #picture-in-picture-button {
     display: none !important;
@@ -269,7 +267,6 @@
 
   & .urlbar-background {
     --zen-urlbar-background-base: light-dark(rgb(255, 255, 255), rgb(24 24 24));
-    /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce)) {
       &:not(:-moz-window-inactive) {
         --zen-urlbar-background-transparent: light-dark(
@@ -284,7 +281,6 @@
     outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgb(75, 75, 75)) !important;
     outline-offset: var(--zen-urlbar-outline-offset) !important;
 
-    /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce))  {
       backdrop-filter: var(--zen-backdrop-underlay) blur(40px) !important;
     }
@@ -503,7 +499,6 @@
   transition: none;
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-protections-icon") {
   #tracking-protection-icon-container {
     display: none !important;
@@ -737,7 +732,6 @@
   display: none !important;
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-contextual-id") {
   #userContext-icons {
     display: none !important;

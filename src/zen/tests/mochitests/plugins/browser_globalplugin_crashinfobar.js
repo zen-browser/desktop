@@ -24,6 +24,12 @@ add_task(async function () {
       props.setPropertyAsACString("pluginDumpID", "1234");
       Services.obs.notifyObservers(props, "gmp-plugin-crash");
 
+      let notificationPromise = BrowserTestUtils.waitForNotificationBar(
+        gBrowser,
+        browser,
+        "plugin-crashed"
+      );
+
       await SpecialPowers.spawn(browser, [], async function () {
         const GMP_CRASH_EVENT = {
           pluginID: 1,
@@ -41,10 +47,7 @@ add_task(async function () {
         content.dispatchEvent(crashEvent);
       });
 
-      let notification = await waitForNotificationBar(
-        "plugin-crashed",
-        browser
-      );
+      let notification = await notificationPromise;
 
       let notificationBox = gBrowser.getNotificationBox(browser);
       ok(notification, "Infobar was shown.");

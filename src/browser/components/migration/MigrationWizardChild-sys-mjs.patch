@@ -1,5 +1,5 @@
 diff --git a/browser/components/migration/MigrationWizardChild.sys.mjs b/browser/components/migration/MigrationWizardChild.sys.mjs
-index 5b817c59eb8857184d7835676f9651972a0d8657..88a52542684d1073729c6836b2c56110564bce5a 100644
+index 476d8b29f5538cec11994ffb3861b26ecac5a242..9bf510e0fb5aaca9fc4f49366b1406dacdccf70e 100644
 --- a/browser/components/migration/MigrationWizardChild.sys.mjs
 +++ b/browser/components/migration/MigrationWizardChild.sys.mjs
 @@ -59,7 +59,8 @@ export class MigrationWizardChild extends JSWindowActorChild {
@@ -33,17 +33,17 @@ index 5b817c59eb8857184d7835676f9651972a0d8657..88a52542684d1073729c6836b2c56110
          break;
        }
  
-@@ -195,12 +201,17 @@ export class MigrationWizardChild extends JSWindowActorChild {
+@@ -198,12 +204,17 @@ export class MigrationWizardChild extends JSWindowActorChild {
      }
    }
  
--  async #requestState(allowOnlyFileMigrators) {
+-  async #requestState(allowOnlyFileMigrators, migratorKey) {
 +  async #requestState(allowOnlyFileMigrators, migratorKey, profileId) {
      this.setComponentState({
        page: MigrationWizardConstants.PAGES.LOADING,
      });
  
--    await this.#populateMigrators(allowOnlyFileMigrators);
+-    await this.#populateMigrators(allowOnlyFileMigrators, migratorKey);
 +    await this.#populateMigrators(
 +      allowOnlyFileMigrators,
 +      migratorKey,

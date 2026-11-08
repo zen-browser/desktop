@@ -7,6 +7,20 @@ const { ZenMigrationUtils } = ChromeUtils.importESModule(
   "resource:///modules/zen/ZenMigrationUtils.sys.mjs"
 );
 
+const { MigratorBase } = ChromeUtils.importESModule(
+  "moz-src:///browser/components/migration/MigratorBase.sys.mjs"
+);
+
+// These tests read browser data from temporary folders, which the OS does not
+// block, so reading them must not wait for the user to select a folder.
+{
+  const original = MigratorBase.needsFolderSelectionToReadData;
+  MigratorBase.needsFolderSelectionToReadData = () => false;
+  registerCleanupFunction(() => {
+    MigratorBase.needsFolderSelectionToReadData = original;
+  });
+}
+
 function buildArcSidebar() {
   const items = [];
   const push = item => items.push(item.id, { childrenIds: [], ...item });

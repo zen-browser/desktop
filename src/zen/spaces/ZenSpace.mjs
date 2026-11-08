@@ -56,6 +56,7 @@ export class nsZenWorkspace extends MozXULElement {
   #tabVisibilityObserver = null;
   #scrollToTabListeners = null;
   #watchedTab = null;
+  #watchedTabWasVisible = false;
   #scrollToTabShown = false;
   #scrollToTabSeq = 0;
 
@@ -456,6 +457,7 @@ export class nsZenWorkspace extends MozXULElement {
     this.#tabVisibilityObserver?.disconnect();
     this.#tabVisibilityObserver = null;
     this.#watchedTab = null;
+    this.#watchedTabWasVisible = false;
   }
 
   /** Points the observer at whichever tab this space currently has selected. */
@@ -466,8 +468,11 @@ export class nsZenWorkspace extends MozXULElement {
     const selected = gBrowser.selectedTab;
     const tab = this.#canOfferScrollToTab(selected) ? selected : null;
 
-    if (this.#watchedTab && this.#watchedTab !== tab) {
-      this.#tabVisibilityObserver.unobserve(this.#watchedTab);
+    if (this.#watchedTab !== tab) {
+      if (this.#watchedTab) {
+        this.#tabVisibilityObserver.unobserve(this.#watchedTab);
+      }
+      this.#watchedTabWasVisible = false;
     }
     this.#watchedTab = tab;
 
@@ -493,12 +498,16 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   #onSelectedTabVisibility(entry) {
+    if (entry?.isIntersecting) {
+      this.#watchedTabWasVisible = true;
+    }
     if (
       !entry ||
       entry.isIntersecting ||
       entry.target.hasAttribute("glance-closing") ||
       !this.overflows ||
-      !this.#canOfferScrollToTab(this.#watchedTab)
+      !this.#canOfferScrollToTab(this.#watchedTab) ||
+      !this.#watchedTabWasVisible
     ) {
       this.#hideScrollToTab();
       return;

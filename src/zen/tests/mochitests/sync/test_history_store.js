@@ -15,6 +15,12 @@ const TIMESTAMP1 = (Date.now() - 103406528) * 1000;
 const TIMESTAMP2 = (Date.now() - 6592903) * 1000;
 const TIMESTAMP3 = (Date.now() - 123894) * 1000;
 
+const AITAB_PREF = "browser.smartwindow.aitab.enabled";
+const SMARTPAGE_URLS = [
+  "about:smartpage?page=best-running-shoes",
+  "about:SmartPage?page=best-running-shoes",
+];
+
 function isDateApproximately(actual, expected, skewMillis = 1000) {
   let lowerBound = expected - skewMillis;
   let upperBound = expected + skewMillis;
@@ -547,11 +553,48 @@ add_task(async function test_applyIncomingBatch_filters_file_uris() {
       ],
     },
   ]);
-  Assert.equal(false, await store.itemExists(guid));
+  Assert.ok(!(await store.itemExists(guid)));
   let queryres = await PlacesUtils.history.fetch(uri.spec, {
     includeVisits: true,
   });
   Assert.equal(null, queryres);
+});
+
+add_task(async function test_getAllIDs_filters_smartpage_uris() {
+  Services.prefs.setBoolPref(AITAB_PREF, true);
+
+  await PlacesTestUtils.addVisits(SMARTPAGE_URLS);
+
+  do_check_empty(await store.getAllIDs());
+
+  await PlacesUtils.history.clear();
+  Services.prefs.clearUserPref(AITAB_PREF);
+});
+
+add_task(async function test_applyIncomingBatch_filters_smartpage_uris() {
+  Services.prefs.setBoolPref(AITAB_PREF, true);
+
+  for (let spec of SMARTPAGE_URLS) {
+    Assert.ok(
+      PlacesUtils.history.canAddURI(CommonUtils.makeURI(spec)),
+      `${spec} can be stored`
+    );
+    const guid = Utils.makeGUID();
+    let record = await store.createRecord(guid);
+    record.cleartext = {
+      id: guid,
+      histUri: spec,
+      title: "Best Running Shoes",
+      visits: [
+        { date: TIMESTAMP3, type: Ci.nsINavHistoryService.TRANSITION_TYPED },
+      ],
+    };
+    await applyEnsureNoFailures([record]);
+    Assert.ok(!(await store.itemExists(guid)));
+    Assert.equal(null, await PlacesUtils.history.fetch(spec));
+  }
+
+  Services.prefs.clearUserPref(AITAB_PREF);
 });
 
 add_task(async function cleanup() {

@@ -49,8 +49,13 @@ function linearToSrgb(c) {
   return Math.min(255, Math.max(0, toGamma(c) * 255));
 }
 
-function rgbToOklab([r, g, b]) {
-  const [lr, lg, lb] = [r, g, b].map(srgbToLinear);
+function rgbToOklab(color) {
+  const r = color[0];
+  const g = color[1];
+  const b = color[2];
+  const lr = srgbToLinear(r);
+  const lg = srgbToLinear(g);
+  const lb = srgbToLinear(b);
   const l = Math.cbrt(
     0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb
   );
@@ -67,15 +72,17 @@ function rgbToOklab([r, g, b]) {
   ];
 }
 
-function oklabToRgb([L, a, b]) {
-  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
-  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
-  const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
-  return [
-    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-  ].map(linearToSrgb);
+function oklabToRgb(color) {
+  const labL = color[0];
+  const labA = color[1];
+  const labB = color[2];
+  const l = (labL + 0.3963377774 * labA + 0.2158037573 * labB) ** 3;
+  const m = (labL - 0.1055613458 * labA - 0.0638541728 * labB) ** 3;
+  const s = (labL - 0.0894841775 * labA - 1.291485548 * labB) ** 3;
+  const lr = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+  const lg = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+  const lb = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s;
+  return [linearToSrgb(lr), linearToSrgb(lg), linearToSrgb(lb)];
 }
 
 function parseSinePath(pathStr) {

@@ -23,13 +23,45 @@ zen-glance-trigger-label = Paleidimo būdas
 zen-glance-enabled = 
     .label = Įjungti „Glance“
 zen-glance-trigger-ctrl-click = 
-    .label = Vald + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Lyg2 + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = „Meta“ (komanda) + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Rodyti kompaktiniame rodinyje
 zen-look-and-feel-compact-view-description = Rodyti tik tas įrankių juostas, kurias naudojate.
 zen-look-and-feel-compact-view-enabled = 

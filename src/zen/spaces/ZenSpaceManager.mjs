@@ -2889,8 +2889,6 @@ class nsZenWorkspaces {
     icon = undefined,
     dontChange = false,
     containerTabId = 0,
-    // beforeChangeCallback runs before changing workspace; insertion IDs place
-    // the new space next to an existing one instead of at the end.
     {
       beforeChangeCallback = null,
       insertAfterId = null,

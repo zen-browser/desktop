@@ -26,7 +26,13 @@ function dragStart(tab) {
     cancelable: true,
     dataTransfer: new DataTransfer(),
   });
+  // Registered after Zen's capturing guard, so it only runs when the guard did
+  // not cancel the event. It stops the synthetic drag from reaching the real
+  // tab drag handlers, which expect a genuine drag session.
+  const stop = e => e.stopPropagation();
+  document.addEventListener("dragstart", stop, true);
   tab.dispatchEvent(event);
+  document.removeEventListener("dragstart", stop, true);
   return event;
 }
 
@@ -130,9 +136,12 @@ add_task(async function test_closing_tab_mid_touch() {
   );
   pointer(tab, "pointerdown", "touch", 41);
   BrowserTestUtils.removeTab(tab);
-  // The guard for the closed tab is gone; later touches must not throw.
+  Assert.ok(!tab.linkedBrowser, "tab is closed");
+  // The closed tab's guard is gone; touch handling still works for others.
   const other = gBrowser.selectedTab;
+  const original = other.getAttribute("draggable");
   pointer(other, "pointerdown", "touch", 42);
+  Assert.equal(other.getAttribute("draggable"), "false", "still guards");
   pointer(other, "pointerup", "touch", 42);
-  Assert.ok(true, "no error after closing a touched tab");
+  Assert.equal(other.getAttribute("draggable"), original, "still restores");
 });

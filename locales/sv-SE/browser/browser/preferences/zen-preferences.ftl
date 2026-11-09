@@ -23,13 +23,45 @@ zen-glance-trigger-label = Utlösare metod
 zen-glance-enabled = 
     .label = Aktivera Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Skift + Klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Visa i kompakt vy
 zen-look-and-feel-compact-view-description = Visa bara verktygsfälten du använder!
 zen-look-and-feel-compact-view-enabled = 

@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
-index 625b58d963cfb10fd00ba44941433fb3c054f506..0fbe830530a8f42096636db4d71818a57a13c22b 100644
+index e1dd88342ed104792adf44c8a6ab03cf881178e1..eece106ebf5fad2804fd557e9b103862ca7da42d 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
-@@ -854,7 +854,7 @@ export class UrlbarView {
+@@ -846,7 +846,7 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -11,7 +11,7 @@ index 625b58d963cfb10fd00ba44941433fb3c054f506..0fbe830530a8f42096636db4d71818a5
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -1014,10 +1014,6 @@ export class UrlbarView {
+@@ -1006,10 +1006,6 @@ export class UrlbarView {
      }
  
      // If search mode isn't active, close the view.
@@ -22,7 +22,7 @@ index 625b58d963cfb10fd00ba44941433fb3c054f506..0fbe830530a8f42096636db4d71818a5
  
      // Search mode is active. Without results the view has nothing to show but
      // the one-offs, so open it only when they will show.
-@@ -3428,6 +3424,8 @@ export class UrlbarView {
+@@ -3429,6 +3425,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -31,7 +31,7 @@ index 625b58d963cfb10fd00ba44941433fb3c054f506..0fbe830530a8f42096636db4d71818a5
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -4103,7 +4101,7 @@ export class UrlbarView {
+@@ -4104,7 +4102,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {
@@ -40,12 +40,12 @@ index 625b58d963cfb10fd00ba44941433fb3c054f506..0fbe830530a8f42096636db4d71818a5
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
-@@ -4721,6 +4719,13 @@ export class UrlbarView {
+@@ -4722,6 +4720,13 @@ export class UrlbarView {
    }
  
    on_blur() {
 +    if (
-+      this.input.document.commandDispatcher.focusedElement ==
++      document.commandDispatcher.focusedElement ==
 +        this.input.inputField &&
 +      !UrlbarPrefs.get("closeOnWindowBlur")
 +    ) {

@@ -78,7 +78,7 @@ add_task(async function () {
           {
             entries: [
               {
-                url: "http://mozilla.org/",
+                url: "http://example.org/",
                 triggeringPrincipal_base64,
                 title: FORGET,
               },
@@ -86,7 +86,7 @@ add_task(async function () {
           },
         ],
         selected: 2,
-        title: "mozilla.org",
+        title: "example.org",
         _closedTabs: [],
         closedGroups: [],
       },
@@ -96,7 +96,7 @@ add_task(async function () {
           {
             entries: [
               {
-                url: "http://mozilla.org/",
+                url: "http://example.org/",
                 triggeringPrincipal_base64,
                 title: FORGET,
               },
@@ -123,7 +123,7 @@ add_task(async function () {
           {
             entries: [
               {
-                url: "http://mozilla.org/",
+                url: "http://example.org/",
                 triggeringPrincipal_base64,
                 title: FORGET,
               },
@@ -162,12 +162,12 @@ add_task(async function () {
             state: {
               entries: [
                 {
-                  url: "http://mozilla.org/",
+                  url: "http://example.org/",
                   triggeringPrincipal_base64,
                   title: FORGET,
                 },
                 {
-                  url: "http://mozilla.org/again",
+                  url: "http://example.org/again",
                   triggeringPrincipal_base64,
                   title: "doesn't matter",
                 },
@@ -199,7 +199,7 @@ add_task(async function () {
 
   // purge domain & check that we purged correctly for closed windows
   let clearHistoryPromise = promiseClearHistory();
-  await ForgetAboutSite.removeDataFromBaseDomain("mozilla.org");
+  await ForgetAboutSite.removeDataFromBaseDomain("example.org");
   await clearHistoryPromise;
 
   let closedWindowData = ss.getClosedWindowData();

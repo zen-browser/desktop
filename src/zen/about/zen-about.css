@@ -20,7 +20,6 @@
   background: -moz-Dialog;
   color: var(--zen-about-text-color);
   font: message-box;
-  font-size: 11px;
   /* The root bounds are what size the window. */
   min-width: var(--zen-about-width);
   max-width: var(--zen-about-width);
@@ -48,14 +47,13 @@
 
 #zen-about-name {
   margin: 0;
-  font-size: 15px;
+  font-size: 1.25em;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
 .zen-about-muted {
   margin: 0;
-  font-size: 10px;
   color: var(--zen-about-muted-color);
 }
 
@@ -76,7 +74,7 @@
 }
 
 #zen-about-copied {
-  font-size: 9px;
+  font-size: 0.9em;
   font-weight: 500;
   color: AccentColor;
 
@@ -109,7 +107,6 @@
 
 #zen-about-update-text {
   margin: 0;
-  font-size: 10px;
 
   &[hidden] {
     display: none;
@@ -166,7 +163,6 @@
   background: var(--zen-about-button-background);
   color: inherit;
   font: inherit;
-  font-size: 10px;
   font-weight: 500;
   transition:
     background 0.1s,
@@ -225,7 +221,6 @@
   justify-content: center;
   gap: 6px;
   margin: 0;
-  font-size: 10px;
 
   /* Inline-block keeps the link underline off the separator. */
   & a + a::before {

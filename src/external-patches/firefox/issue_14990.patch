@@ -1,9 +1,8 @@
 diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/components/sessionstore/SessionWriter.sys.mjs
+index 3b2d308893..df2738d386 100644
 --- a/browser/components/sessionstore/SessionWriter.sys.mjs
 +++ b/browser/components/sessionstore/SessionWriter.sys.mjs
-@@ -82,10 +82,18 @@ export const SessionWriter = new (class {
- 
-   #maxSerializeForward = null;
+@@ -114,6 +114,14 @@ export const SessionWriter = new (class {
  
    #upgradeBackupNeeded = false;
  
@@ -18,11 +17,7 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
    /**
     * Initialize (or reinitialize) the writer.
     *
-    * @param {string} origin Which of sessionstore.js or its backups
-    *   was used. One of the `STATE_*` constants defined above.
-@@ -190,48 +198,68 @@ export const SessionWriter = new (class {
-         }
-       }
+@@ -252,6 +260,12 @@ export const SessionWriter = new (class {
  
        let startWriteMs = Date.now();
        let fileStat;
@@ -35,28 +30,28 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
  
        if (options.isFinalWrite) {
          // We are shutting down. At this stage, we know that
-         // $Paths.clean is either absent or corrupted. If it was
-         // originally present and valid, it has been moved to
+@@ -260,10 +274,11 @@ export const SessionWriter = new (class {
          // $Paths.cleanBackup a long time ago. We can therefore write
          // with the guarantees that we erase no important data.
+         step = "write_clean";
 -        await IOUtils.writeJSON(this.#paths.clean, state, {
 +        uncompressedBytes = await IOUtils.writeJSON(this.#paths.clean, state, {
            tmpPath: this.#paths.clean + ".tmp",
            compress: true,
+           encrypt,
 +          lengthHint: jsonLengthHint,
          });
-         fileStat = await IOUtils.stat(this.#paths.clean);
-       } else if (this.#state == STATE_RECOVERY) {
-         // At this stage, either $Paths.recovery was written >= 15
-         // seconds ago during this session or we have just started
-         // from $Paths.recovery left from the previous session. Either
-         // way, $Paths.recovery is good. We can move $Path.backup to
+         sessionWritten = true;
+         step = "stat";
+@@ -276,12 +291,17 @@ export const SessionWriter = new (class {
          // $Path.recoveryBackup without erasing a good file with a bad
          // file.
+         step = "write_recovery";
 -        await IOUtils.writeJSON(this.#paths.recovery, state, {
 -          tmpPath: this.#paths.recovery + ".tmp",
 -          backupFile: this.#paths.recoveryBackup,
 -          compress: true,
+-          encrypt,
 -        });
 +        uncompressedBytes = await IOUtils.writeJSON(
 +          this.#paths.recovery,
@@ -65,17 +60,21 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
 +            tmpPath: this.#paths.recovery + ".tmp",
 +            backupFile: this.#paths.recoveryBackup,
 +            compress: true,
++            encrypt,
 +            lengthHint: jsonLengthHint,
 +          }
 +        );
+         sessionWritten = true;
+         step = "stat";
          fileStat = await IOUtils.stat(this.#paths.recovery);
-       } else {
-         // In other cases, either $Path.recovery is not necessary, or
+@@ -290,11 +310,16 @@ export const SessionWriter = new (class {
          // it doesn't exist or it has been corrupted. Regardless,
          // don't backup $Path.recovery.
+         step = "write_recovery";
 -        await IOUtils.writeJSON(this.#paths.recovery, state, {
 -          tmpPath: this.#paths.recovery + ".tmp",
 -          compress: true,
+-          encrypt,
 -        });
 +        uncompressedBytes = await IOUtils.writeJSON(
 +          this.#paths.recovery,
@@ -83,11 +82,14 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
 +          {
 +            tmpPath: this.#paths.recovery + ".tmp",
 +            compress: true,
++            encrypt,
 +            lengthHint: jsonLengthHint,
 +          }
 +        );
+         sessionWritten = true;
+         step = "stat";
          fileStat = await IOUtils.stat(this.#paths.recovery);
-       }
+@@ -302,6 +327,9 @@ export const SessionWriter = new (class {
  
        telemetry.writeFileMs = Date.now() - startWriteMs;
        telemetry.fileSizeBytes = fileStat.size;
@@ -97,11 +99,7 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
        lazy.sessionStoreLogger.debug(
          `SessionWriter.write wrote ${telemetry.fileSizeBytes} bytes in ${telemetry.writeFileMs}ms`
        );
-     } catch (ex) {
-       // Don't throw immediately
-@@ -373,10 +401,11 @@ export const SessionWriter = new (class {
-     } catch (ex) {
-       exn = exn || ex;
+@@ -453,6 +481,7 @@ export const SessionWriter = new (class {
      }
  
      this.#state = STATE_EMPTY;
@@ -109,10 +107,9 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
      if (exn) {
        throw exn;
      }
- 
-     return { result: true };
 diff --git a/browser/components/sessionstore/test/unit/test_write_json_length_hint.js b/browser/components/sessionstore/test/unit/test_write_json_length_hint.js
 new file mode 100644
+index 0000000000..fd4a44848e
 --- /dev/null
 +++ b/browser/components/sessionstore/test/unit/test_write_json_length_hint.js
 @@ -0,0 +1,73 @@
@@ -190,71 +187,15 @@ new file mode 100644
 +  );
 +});
 diff --git a/browser/components/sessionstore/test/unit/xpcshell.toml b/browser/components/sessionstore/test/unit/xpcshell.toml
+index e201c2ebf7..1a7af31d13 100644
 --- a/browser/components/sessionstore/test/unit/xpcshell.toml
 +++ b/browser/components/sessionstore/test/unit/xpcshell.toml
-@@ -39,7 +39,12 @@
- skip-if = [
-   "condprof", # Bug 1769154
- ]
- 
- ["test_startup_session_async.js"]
- 
+@@ -70,3 +70,8 @@ skip-if = [
  ["test_tab_group_state.js"]
+ 
+ ["test_write_outcome.js"]
 +
 +["test_write_json_length_hint.js"]
 +support-files = [
 +  "data/sessionstore_complete.json",
 +]
-diff --git a/dom/chrome-webidl/IOUtils.webidl b/dom/chrome-webidl/IOUtils.webidl
---- a/dom/chrome-webidl/IOUtils.webidl
-+++ b/dom/chrome-webidl/IOUtils.webidl
-@@ -101,12 +101,12 @@
-    *
-    * @param path      An absolute file path
-    * @param value     The value to be serialized.
-    * @param options   Options for writing the file. The "append" mode is not supported.
-    *
--   * @return Resolves with the number of bytes successfully written to the file,
--   *         otherwise rejects with a DOMException.
-+   * @return Resolves with the pre-compression size of the serialized JSON in
-+   *         bytes (UTF-8), otherwise rejects with a DOMException.
-    */
-   [NewObject]
-   Promise<WriteJSONResult> writeJSON(DOMString path, any value, optional WriteJSONOptions options = {});
-   /**
-    * Moves the file from |sourcePath| to |destPath|, creating necessary parents.
-@@ -564,10 +564,16 @@
-   boolean flush = false;
-   /**
-    * If true, compress the data with LZ4-encoding before writing to the file.
-    */
-   boolean compress = false;
-+  /**
-+   * For |writeJSON|, a hint for the expected JSON string length in UTF-16 code
-+   * units. When provided, the JSON serializer pre-allocates a buffer of this
-+   * size to avoid incremental reallocations.
-+   */
-+  unsigned long long jsonLengthHint = 0;
- };
- 
- /**
-  * Options to be passed to the |IOUtils.writeJSON| method.
-  */
-diff --git a/xpcom/ioutils/IOUtils.cpp b/xpcom/ioutils/IOUtils.cpp
---- a/xpcom/ioutils/IOUtils.cpp
-+++ b/xpcom/ioutils/IOUtils.cpp
-@@ -629,10 +629,13 @@
-         }
- 
-         JSContext* cx = aGlobal.Context();
-         JS::Rooted<JS::Value> value(cx, aValue);
-         nsString string;
-+        if (opts.mLengthHint) {
-+          string.SetCapacity(opts.mLengthHint);
-+        }
-         if (!JS_StringifyWithLengthHint(cx, &value, nullptr,
-                                         JS::NullHandleValue, AppendJSON,
-                                         &string, opts.mLengthHint)) {
-           JS::Rooted<JS::Value> exn(cx, JS::UndefinedValue());
-           if (JS_GetPendingException(cx, &exn)) {
-

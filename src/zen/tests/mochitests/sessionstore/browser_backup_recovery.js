@@ -14,7 +14,17 @@ var gSSData;
 var gSSBakData;
 
 function promiseRead(path) {
-  return IOUtils.readUTF8(path, { decompress: true });
+  let opts = { decompress: true };
+  if (
+    Services.prefs.getBoolPref(
+      "browser.sessionstore.encryption.available",
+      false
+    ) &&
+    Services.prefs.getBoolPref("browser.sessionstore.encryption.enabled", false)
+  ) {
+    opts.decrypt = "sessionstore";
+  }
+  return IOUtils.readUTF8(path, opts);
 }
 
 async function reInitSessionFile() {

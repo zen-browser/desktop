@@ -1,8 +1,8 @@
 diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
-index 0f4b2915ad211349c424d1db2bd91c38f140782f..7485e7d537618ac17f1552197ef7fbd245950a1c 100644
+index 15a12b67bd..e9b790e7a9 100644
 --- a/browser/app/profile/firefox.js
 +++ b/browser/app/profile/firefox.js
-@@ -2974,6 +2974,7 @@ pref("browser.migrate.opera.enabled", true);
+@@ -2985,6 +2985,7 @@ pref("browser.migrate.opera.enabled", true);
  pref("browser.migrate.opera-gx.enabled", true);
  pref("browser.migrate.safari.enabled", true);
  pref("browser.migrate.vivaldi.enabled", true);
@@ -12,7 +12,7 @@ index 0f4b2915ad211349c424d1db2bd91c38f140782f..7485e7d537618ac17f1552197ef7fbd2
  
 diff --git a/browser/components/migration/ArcMigrationUtils.sys.mjs b/browser/components/migration/ArcMigrationUtils.sys.mjs
 new file mode 100644
-index 0000000000000000000000000000000000000000..bc21ad7167505b75946e04a6dcee0b2e4769f870
+index 0000000000..bc21ad7167
 --- /dev/null
 +++ b/browser/components/migration/ArcMigrationUtils.sys.mjs
 @@ -0,0 +1,193 @@
@@ -210,7 +210,7 @@ index 0000000000000000000000000000000000000000..bc21ad7167505b75946e04a6dcee0b2e
 +  },
 +};
 diff --git a/browser/components/migration/ChromeMigrationUtils.sys.mjs b/browser/components/migration/ChromeMigrationUtils.sys.mjs
-index 8e9e34c92c85d655216ccf8cb8dfdf9599329e69..b4f6d90514853e1de8d39fbccde5ffe757d597a4 100644
+index 8e9e34c92c..b4f6d90514 100644
 --- a/browser/components/migration/ChromeMigrationUtils.sys.mjs
 +++ b/browser/components/migration/ChromeMigrationUtils.sys.mjs
 @@ -272,6 +272,19 @@ export var ChromeMigrationUtils = {
@@ -303,7 +303,7 @@ index 8e9e34c92c85d655216ccf8cb8dfdf9599329e69..b4f6d90514853e1de8d39fbccde5ffe7
     * Get the directory objects sorted by version number.
     *
 diff --git a/browser/components/migration/ChromeProfileMigrator.sys.mjs b/browser/components/migration/ChromeProfileMigrator.sys.mjs
-index e88b69dc79989828d51f693923f1c044c889a5d3..9ef7a91712be47a333467b35bdb10afcb820f0c4 100644
+index bb5ec78d20..94e214dc35 100644
 --- a/browser/components/migration/ChromeProfileMigrator.sys.mjs
 +++ b/browser/components/migration/ChromeProfileMigrator.sys.mjs
 @@ -15,6 +15,8 @@ import { MigratorBase } from "moz-src:///browser/components/migration/MigratorBa
@@ -314,11 +314,22 @@ index e88b69dc79989828d51f693923f1c044c889a5d3..9ef7a91712be47a333467b35bdb10afc
 +    "moz-src:///browser/components/migration/ArcMigrationUtils.sys.mjs",
    ChromeMigrationUtils:
      "moz-src:///browser/components/migration/ChromeMigrationUtils.sys.mjs",
-   FormHistory: "resource://gre/modules/FormHistory.sys.mjs",
-@@ -152,14 +154,45 @@ export class ChromeProfileMigrator extends MigratorBase {
-         return false;
+   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
+@@ -166,7 +168,9 @@ export class ChromeProfileMigrator extends MigratorBase {
+       // Folders such as ~/Library are hidden in the file picker, so open it
+       // in the folder that the user needs to select.
+       if (originalDataPath) {
+-        fp.displayDirectory = new lazy.FileUtils.File(originalDataPath);
++        fp.displayDirectory = new lazy.FileUtils.File(
++          this._getPermissionFolder(originalDataPath)
++        );
        }
- 
+       // Now wait for the filepicker to open and close. If the user picks
+       // the local state folder, the OS should grant us read access to everything
+@@ -182,14 +186,45 @@ export class ChromeProfileMigrator extends MigratorBase {
+       this.#hasUserSelectedDataFolder = true;
+       // Resources looked up before the folder was selected may be empty.
+       this._resourcesByProfile = null;
 -      let file = fp.file;
 -      if (file && file.path != originalDataPath) {
 -        this.#dataPathRemappings.set(originalDataPath, file.path);
@@ -364,7 +375,7 @@ index e88b69dc79989828d51f693923f1c044c889a5d3..9ef7a91712be47a333467b35bdb10afc
    async canGetPermissions() {
      if (
        !Services.prefs.getBoolPref(
-@@ -1296,3 +1329,55 @@ export class VivaldiProfileMigrator extends ChromeProfileMigrator {
+@@ -1326,3 +1361,55 @@ export class VivaldiProfileMigrator extends ChromeProfileMigrator {
    _keychainServiceName = "Vivaldi Safe Storage";
    _keychainAccountName = "Vivaldi";
  }
@@ -421,7 +432,7 @@ index e88b69dc79989828d51f693923f1c044c889a5d3..9ef7a91712be47a333467b35bdb10afc
 +  }
 +}
 diff --git a/browser/components/migration/MigrationUtils.sys.mjs b/browser/components/migration/MigrationUtils.sys.mjs
-index 1289865805d2d6cbb7813da5fabf000284d7ac4c..96293a109d35de3ef2a65002665fd4d9d1565ab9 100644
+index 2e0a7baeac..6e437198df 100644
 --- a/browser/components/migration/MigrationUtils.sys.mjs
 +++ b/browser/components/migration/MigrationUtils.sys.mjs
 @@ -72,6 +72,11 @@ const MIGRATOR_MODULES = Object.freeze({
@@ -436,7 +447,7 @@ index 1289865805d2d6cbb7813da5fabf000284d7ac4c..96293a109d35de3ef2a65002665fd4d9
    BraveProfileMigrator: {
      moduleURI:
        "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs",
-@@ -830,11 +835,14 @@ class MigrationUtils {
+@@ -849,11 +854,14 @@ class MigrationUtils {
      });
    }
  
@@ -456,7 +467,7 @@ index 1289865805d2d6cbb7813da5fabf000284d7ac4c..96293a109d35de3ef2a65002665fd4d9
      return insertionPromise.then(
        insertedItems => {
          this._importQuantities.bookmarks += insertedItems.length;
-@@ -1197,6 +1205,7 @@ class MigrationUtils {
+@@ -1216,6 +1224,7 @@ class MigrationUtils {
      opera: 12,
      "opera-gx": 14,
      vivaldi: 13,
@@ -675,7 +686,7 @@ literal 0
 HcmV?d00001
 
 diff --git a/browser/components/migration/jar.mn b/browser/components/migration/jar.mn
-index bf1d7516edf24ac5354e65eec616aa70adc04053..553daeb0b4c066a8453864539817403f5bc177e9 100644
+index bf1d7516ed..553daeb0b4 100644
 --- a/browser/components/migration/jar.mn
 +++ b/browser/components/migration/jar.mn
 @@ -16,6 +16,7 @@ browser.jar:
@@ -687,7 +698,7 @@ index bf1d7516edf24ac5354e65eec616aa70adc04053..553daeb0b4c066a8453864539817403f
  
     content/browser/migration/brands/brave.png                 (content/brands/brave.png)
 diff --git a/browser/components/migration/metrics.yaml b/browser/components/migration/metrics.yaml
-index 82675cbf4bdbe105b9ffe35f1c8444a57d6a9157..cfa76d4a4122a1be9e4a7f5eb470c67c2e54a65e 100644
+index 82675cbf4b..cfa76d4a41 100644
 --- a/browser/components/migration/metrics.yaml
 +++ b/browser/components/migration/metrics.yaml
 @@ -392,8 +392,8 @@ browser.migration:
@@ -702,7 +713,7 @@ index 82675cbf4bdbe105b9ffe35f1c8444a57d6a9157..cfa76d4a4122a1be9e4a7f5eb470c67c
      bugs:
        - https://bugzilla.mozilla.org/show_bug.cgi?id=731025
 diff --git a/browser/components/migration/moz.build b/browser/components/migration/moz.build
-index 37b89e1df6c93773dda170629b57b43daaf02c14..9da6c1a40c4cad3cc0df2aa7a02c93ddee697d92 100644
+index c2c35ea320..d7f47fc56b 100644
 --- a/browser/components/migration/moz.build
 +++ b/browser/components/migration/moz.build
 @@ -21,6 +21,7 @@ XPIDL_SOURCES += [
@@ -715,7 +726,7 @@ index 37b89e1df6c93773dda170629b57b43daaf02c14..9da6c1a40c4cad3cc0df2aa7a02c93dd
      "FileMigrators.sys.mjs",
 diff --git a/browser/components/migration/tests/unit/test_Arc_spaces.js b/browser/components/migration/tests/unit/test_Arc_spaces.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..e09428e7526c62cc4b2618ea6450babe1ab007e9
+index 0000000000..e09428e752
 --- /dev/null
 +++ b/browser/components/migration/tests/unit/test_Arc_spaces.js
 @@ -0,0 +1,468 @@
@@ -1188,7 +1199,7 @@ index 0000000000000000000000000000000000000000..e09428e7526c62cc4b2618ea6450babe
 +  );
 +});
 diff --git a/browser/components/migration/tests/unit/xpcshell.toml b/browser/components/migration/tests/unit/xpcshell.toml
-index 75b6dd8f1bf8fe1bc2bad6f21299b8ecab009a99..ee40b908f2c7778640472505614d83e16b44894b 100644
+index bb9171b3c0..eca942099e 100644
 --- a/browser/components/migration/tests/unit/xpcshell.toml
 +++ b/browser/components/migration/tests/unit/xpcshell.toml
 @@ -24,6 +24,12 @@ run-if = [
@@ -1205,7 +1216,7 @@ index 75b6dd8f1bf8fe1bc2bad6f21299b8ecab009a99..ee40b908f2c7778640472505614d83e1
  
  ["test_ChromeMigrationUtils.js"]
 diff --git a/browser/locales/en-US/browser/migrationWizard.ftl b/browser/locales/en-US/browser/migrationWizard.ftl
-index d27c77501a658c75a177150e7a2df4ceda4387ae..5139958846f224b0c981733682111b3e936f1258 100644
+index a248f3964f..e7e7f4a9b5 100644
 --- a/browser/locales/en-US/browser/migrationWizard.ftl
 +++ b/browser/locales/en-US/browser/migrationWizard.ftl
 @@ -26,6 +26,7 @@ migration-wizard-selection-option-with-profile = { $sourceBrowser } — { $profi
@@ -1230,12 +1241,12 @@ index d27c77501a658c75a177150e7a2df4ceda4387ae..5139958846f224b0c981733682111b3e
 +
  ## These strings are shown if the selected browser data directory is unreadable.
  ## In practice, this tends to only occur on Linux when Firefox
- ## is installed as a Snap.
+ ## is installed as a Snap, and on macOS 27 and later.
 diff --git a/toolkit/components/telemetry/Histograms.json b/toolkit/components/telemetry/Histograms.json
-index bfb182d59e5c1cab220b81a45a4d5da7e972f608..874361bbf23bfcb07b412bd92bf83c0489511902 100644
+index 22e3aa1746..bf6a007a18 100644
 --- a/toolkit/components/telemetry/Histograms.json
 +++ b/toolkit/components/telemetry/Histograms.json
-@@ -947,7 +947,7 @@
+@@ -524,7 +524,7 @@
      "alert_emails": ["gijs@mozilla.com", "mak@mozilla.com"],
      "expires_in_version": "never",
      "kind": "enumerated",

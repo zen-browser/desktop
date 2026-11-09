@@ -1,0 +1,13 @@
+diff --git a/tools/update-packaging/make_full_update.sh b/tools/update-packaging/make_full_update.sh
+index 1d28d683eed9dff0cf047fec8da957f92dab8043..42568b78a510b7ea253e85ec098a653a14f6e45e 100755
+--- a/tools/update-packaging/make_full_update.sh
++++ b/tools/update-packaging/make_full_update.sh
+@@ -46,7 +46,7 @@ mar_command="$MAR -V ${MOZ_PRODUCT_VERSION:?} -H ${MAR_CHANNEL_ID:?}"
+ 
+ archive="$1"
+ targetdir="$2"
+-appname="$3"
++appname="${3:-zen}"
+ 
+ if [ -z "$appname" ]; then
+   print_usage

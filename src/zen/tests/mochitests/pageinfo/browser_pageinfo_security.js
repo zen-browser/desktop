@@ -497,6 +497,45 @@ add_task(async function test_SavedPasswords() {
   }
 });
 
+// Test that "View Saved Passwords" opens about:logins in a focused browser window.
+add_task(async function test_ViewSavedPasswords_focusesBrowserWindow() {
+  await BrowserTestUtils.withNewTab(TEST_ORIGIN, async function () {
+    let pageInfo = BrowserCommands.pageInfo(TEST_ORIGIN, "securityTab");
+    await BrowserTestUtils.waitForEvent(pageInfo, "load");
+    await SimpleTest.promiseFocus(pageInfo);
+    let pageInfoDoc = pageInfo.document;
+    let viewPasswordsButton = pageInfoDoc.getElementById(
+      "security-view-password"
+    );
+    await TestUtils.waitForCondition(
+      () => BrowserTestUtils.isVisible(viewPasswordsButton),
+      "View Saved Passwords button should be visible."
+    );
+    is(
+      Services.focus.activeWindow,
+      pageInfo,
+      "Page Info window is focused before clicking the button"
+    );
+
+    let tabPromise = BrowserTestUtils.waitForNewTab(
+      gBrowser,
+      "about:logins?filter=example.com&entryPoint=Pageinfo"
+    );
+    viewPasswordsButton.click();
+    let tab = await tabPromise;
+
+    is(gBrowser.selectedTab, tab, "about:logins tab is selected");
+    await TestUtils.waitForCondition(
+      () => Services.focus.activeWindow == window,
+      "Browser window containing about:logins should be focused"
+    );
+    ok(!pageInfo.closed, "Page Info window stays open");
+
+    BrowserTestUtils.removeTab(tab);
+    pageInfo.close();
+  });
+});
+
 // Clean up in case we missed anything...
 add_task(async function cleanup() {
   await SiteDataTestUtils.clear();

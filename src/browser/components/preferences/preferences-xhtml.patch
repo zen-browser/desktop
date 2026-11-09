@@ -1,17 +1,17 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index e8da75f2c27e312e0170520959d3daf883f56048..e1be6c694ab7d9d7268a48e3ae76154971ca939a 100644
+index 8e0c6483d6edd587cc425abe16f4a756f88e492b..f19d2ad7e04e927445e60ff439be6ab6bd0983b3 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
-@@ -39,6 +39,8 @@
-   <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-pane.css" />
+@@ -40,6 +40,8 @@
    <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-control.css" />
+   <link rel="stylesheet" href="chrome://browser/content/ipprotection/vpn-site-rules-list.css" />
  
 +#include zen-preferences-links.xhtml
 +
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -121,6 +123,26 @@
+@@ -123,6 +125,26 @@
          iconsrc="chrome://browser/skin/preferences/category-general.svg"
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
@@ -38,7 +38,7 @@ index e8da75f2c27e312e0170520959d3daf883f56048..e1be6c694ab7d9d7268a48e3ae761549
        <html:moz-page-nav-button id="category-sync"
          hidden="true"
          view="paneSync"
-@@ -257,6 +279,9 @@
+@@ -259,6 +281,9 @@
  #include privacy.inc.xhtml
  #include sync.inc.xhtml
  #include moreFromMozilla.inc.xhtml

@@ -57,6 +57,8 @@ disabled="Disabled by import_external_tests.py"
 ["browser_aboutSessionRestore.js"]
 disabled="Disabled by import_external_tests.py"
 
+["browser_aboutSessionRestore_telemetry.js"]
+
 ["browser_async_duplicate_tab.js"]
 support-files = ["file_async_duplicate_tab.html"]
 
@@ -70,9 +72,6 @@ run-if = [
 
 ["browser_async_window_flushing.js"]
 https_first_disabled = true
-skip-if = [
-  "os == 'mac' && os_version == '10.15' && arch == 'x86_64' && opt", # Bug 1775616
-]
 
 ["browser_attributes.js"]
 
@@ -201,8 +200,6 @@ skip-if = [
 ["browser_label_and_icon.js"]
 https_first_disabled = true
 skip-if = [
-  "os == 'mac' && os_version == '10.15' && arch == 'x86_64' && opt", # Bug 1638958
-  "os == 'mac' && os_version == '14.70' && arch == 'x86_64' && opt && socketprocess_networking", # Bug 1868915
   "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Disabled due to bleedover with other tests when run in regular suites; passes in "failures" jobs
 ]
 
@@ -339,7 +336,6 @@ tags = "os_integration"
 ["browser_should_restore_tab.js"]
 skip-if = [
   "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && debug && socketprocess_networking", # Bug 1848488
-  "os == 'win' && os_version == '11.26100' && arch == 'x86' && debug && verify-standalone",
   "os == 'win' && os_version == '11.26200' && arch == 'x86' && debug && verify-standalone",
 ]
 

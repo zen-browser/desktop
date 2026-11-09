@@ -195,6 +195,131 @@ add_task(async function test_syncStartup_syncIDMismatchResetsClient() {
   }
 });
 
+async function syncStartupWithRegistry(payload) {
+  let collection = new ServerCollection();
+  collection.insert(
+    "flying",
+    encryptPayload({ id: "flying", denomination: "LNER Class A3 4472" })
+  );
+  let server = sync_httpd_setup({
+    "/1.1/foo/storage/meta/syncids": new ServerWBO(
+      "syncids",
+      payload
+    ).handler(),
+    "/1.1/foo/storage/rotary": collection.handler(),
+  });
+  await SyncTestingInfrastructure(server);
+  Service.syncID = "abcdefghij";
+
+  let engine = makeRotaryEngine();
+  try {
+    await engine._syncStartup();
+    let metaGlobal = await Service.recordManager.get(engine.metaURL);
+    return {
+      published: metaGlobal.payload.engines.rotary,
+      syncID: await engine.getSyncID(),
+      wiped: !collection.payload("flying"),
+    };
+  } finally {
+    await cleanAndGo(engine, server);
+  }
+}
+
+add_task(async function test_syncStartup_adoptsRegisteredSyncID() {
+  _("A missing meta/global entry adopts a matching meta/syncids entry.");
+  let result = await syncStartupWithRegistry({
+    version: 1,
+    globalSyncID: "abcdefghij",
+    engines: { rotary: { version: 1, syncID: "registered0" } },
+  });
+  Assert.equal(result.syncID, "registered0");
+  Assert.equal(result.published.syncID, "registered0");
+  Assert.ok(!result.wiped, "Adopting a generation doesn't wipe the server.");
+});
+
+add_task(async function test_syncStartup_ignoresUnusableRegistry() {
+  _("Registry entries for another account or engine version are ignored.");
+  let registries = [
+    {
+      version: 1,
+      globalSyncID: "oldaccount0",
+      engines: { rotary: { version: 1, syncID: "registered0" } },
+    },
+    {
+      version: 1,
+      globalSyncID: "abcdefghij",
+      engines: { rotary: { version: 0, syncID: "registered0" } },
+    },
+    {
+      version: 2,
+      globalSyncID: "abcdefghij",
+      engines: { rotary: { version: 1, syncID: "registered0" } },
+    },
+  ];
+  for (let payload of registries) {
+    let result = await syncStartupWithRegistry(payload);
+    Assert.notEqual(result.syncID, "registered0");
+    Assert.equal(result.published.syncID, result.syncID);
+    Assert.ok(result.wiped, "Falls back to resetting, as before.");
+  }
+});
+
+add_task(async function test_syncStartup_newerRegisteredVersion() {
+  _(
+    "A newer engine version in meta/syncids stops the engine without resetting."
+  );
+  let collection = new ServerCollection();
+  collection.insert(
+    "flying",
+    encryptPayload({ id: "flying", denomination: "LNER Class A3 4472" })
+  );
+  let server = sync_httpd_setup({
+    "/1.1/foo/storage/meta/syncids": new ServerWBO("syncids", {
+      version: 1,
+      globalSyncID: "abcdefghij",
+      engines: { rotary: { version: 2, syncID: "registered0" } },
+    }).handler(),
+    "/1.1/foo/storage/rotary": collection.handler(),
+  });
+  await SyncTestingInfrastructure(server);
+  Service.syncID = "abcdefghij";
+
+  let engine = makeRotaryEngine();
+  try {
+    await Assert.rejects(
+      engine._syncStartup(),
+      ex => ex.failureCode == VERSION_OUT_OF_DATE
+    );
+    Assert.ok(collection.payload("flying"), "The server wasn't wiped.");
+  } finally {
+    await cleanAndGo(engine, server);
+  }
+});
+
+add_task(async function test_syncStartup_registryErrorDoesNotReset() {
+  _("A server error fetching meta/syncids fails the engine without resetting.");
+  let collection = new ServerCollection();
+  collection.insert(
+    "flying",
+    encryptPayload({ id: "flying", denomination: "LNER Class A3 4472" })
+  );
+  let server = sync_httpd_setup({
+    "/1.1/foo/storage/meta/syncids": httpd_handler(500, "Server Error"),
+    "/1.1/foo/storage/rotary": collection.handler(),
+  });
+  await SyncTestingInfrastructure(server);
+
+  let engine = makeRotaryEngine();
+  try {
+    await engine.ensureCurrentSyncID("localsyncid");
+    await Assert.rejects(engine._syncStartup(), ex => ex.status == 500);
+    Assert.equal(await engine.getSyncID(), "localsyncid");
+    Assert.ok(collection.payload("flying"), "The server wasn't wiped.");
+  } finally {
+    await cleanAndGo(engine, server);
+  }
+});
+
 add_task(async function test_processIncoming_emptyServer() {
   _("SyncEngine._processIncoming working with an empty server backend");
 

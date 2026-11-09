@@ -12,6 +12,9 @@ support-files = ["test_attachments_downloader/**"]
 
 ["test_remote_settings.js"]
 
+["test_remote_settings_disabled_env.js"]
+environment = ["MOZ_REMOTE_SETTINGS_DISABLED=1"]
+
 ["test_remote_settings_dump_lastmodified.js"]
 
 ["test_remote_settings_jexl_filters.js"]

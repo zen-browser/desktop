@@ -361,7 +361,6 @@
   max-height: var(--size-item-large);
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.theme.gradient.show-custom-colors") {
   #PanelUI-zen-gradient-generator-custom-colors {
     display: none !important;
@@ -397,6 +396,7 @@
   & .zen-theme-picker-texture-face {
     background-image: var(--zen-grain-texture);
     background-size: var(--zen-grain-tile) var(--zen-grain-tile);
+    image-rendering: var(--zen-grain-rendering);
     opacity: calc(var(--zen-grain-alpha) * max(0.5, var(--zen-grainy-background-opacity, 0)));
     width: 60%;
     height: 60%;

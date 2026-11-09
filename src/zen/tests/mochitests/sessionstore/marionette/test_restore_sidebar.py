@@ -115,7 +115,7 @@ class TestSessionRestore(SessionStoreTestCase):
             window.SidebarController.show("viewHistorySidebar").then(() => {
              let sidebarBox = window.document.getElementById("sidebar-box")
              sidebarBox.style.width = "100px";
-             window.SidebarController.toggle();
+             return window.SidebarController.toggle();
             }).then(resolve);
             """
         )

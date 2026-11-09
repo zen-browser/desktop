@@ -10,9 +10,6 @@ run-if = [
   "os == 'mac'",
 ]
 tags = "os_integration"
-skip-if = [
-  "os == 'mac' && os_version == '14.70' && arch == 'x86_64'", # Bug 1869703
-]
 
 ["browser_420786.js"]
 support-files = ["large.png"]

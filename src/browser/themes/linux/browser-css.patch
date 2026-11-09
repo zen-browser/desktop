@@ -1,5 +1,5 @@
 diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
-index 2e59f3dcae141899c48d59d0c4b8ec38c52e966f..fa79fca3c831526dd8869c237314f95e439e0ba6 100644
+index acc3bf35bdb580018d47dd8cce7a519825f4dda3..9234b9d3615da96c8de7d2d15a8a6ac5385e6abd 100644
 --- a/browser/themes/linux/browser.css
 +++ b/browser/themes/linux/browser.css
 @@ -56,6 +56,8 @@
@@ -9,5 +9,5 @@ index 2e59f3dcae141899c48d59d0c4b8ec38c52e966f..fa79fca3c831526dd8869c237314f95e
 +      #zen-main-app-wrapper,
 +      #zen-browser-background,
        dialog::backdrop {
-         border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
-         border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
+         /* GTK exposes the titlebar radius via an environment variable. */
+         /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens */

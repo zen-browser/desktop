@@ -9,6 +9,8 @@
         content/browser/zen-images/sand-bg.png                                  (../../zen/images/sand-bg.png)
         content/browser/zen-images/denim-bg.png                                 (../../zen/images/denim-bg.png)
         content/browser/zen-images/tweed-bg.png                                 (../../zen/images/tweed-bg.png)
+        content/browser/zen-images/tweed-bg-1x.png                              (../../zen/images/tweed-bg-1x.png)
+        content/browser/zen-images/tweed-bg-1.5x.png                            (../../zen/images/tweed-bg-1.5x.png)
         content/browser/zen-images/note-indicator.svg                           (../../zen/images/note-indicator.svg)
 
         content/browser/zen-images/downloads/download.svg                       (../../zen/images/downloads/download.svg)

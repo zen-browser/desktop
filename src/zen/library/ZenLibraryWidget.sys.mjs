@@ -172,7 +172,7 @@ class ZenLibraryDownloadStack {
    */
   #aimBadge() {
     const entry = this.#entries.find(
-      entry => entry.download === this.#badgeDownload
+      candidate => candidate.download === this.#badgeDownload
     );
     if (!entry || entry.hidden) {
       this.#badge.style.removeProperty("--zen-library-badge-to-x");

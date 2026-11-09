@@ -145,3 +145,27 @@ add_task(async function test_closing_tab_mid_touch() {
   pointer(other, "pointerup", "touch", 42);
   Assert.equal(other.getAttribute("draggable"), original, "still restores");
 });
+
+add_task(async function test_mouse_does_not_clear_concurrent_touch() {
+  await withTabs(2, ([a, b], [origA, origB]) => {
+    pointer(a, "pointerdown", "touch", 50);
+    pointer(b, "pointerdown", "mouse", 51);
+    Assert.equal(a.getAttribute("draggable"), "false", "held touch guarded");
+    Assert.ok(dragStart(a).defaultPrevented, "touch drag still cancelled");
+    Assert.equal(b.getAttribute("draggable"), origB, "mouse tab untouched");
+    Assert.ok(!dragStart(b).defaultPrevented, "mouse drag stays native");
+    pointer(a, "pointerup", "touch", 50);
+    Assert.equal(a.getAttribute("draggable"), origA, "touch restored");
+  });
+});
+
+add_task(async function test_reused_pointer_id_drops_lost_touch() {
+  await withTabs(2, ([a, b], [origA]) => {
+    // Touch 60 on `a` never ended; a new touch with the same id elsewhere
+    // proves it is gone, so `a` must not stay non-draggable.
+    pointer(a, "pointerdown", "touch", 60);
+    pointer(b, "pointerdown", "touch", 60);
+    Assert.equal(a.getAttribute("draggable"), origA, "lost touch released");
+    Assert.equal(b.getAttribute("draggable"), "false", "new touch guarded");
+  });
+});

@@ -60,6 +60,11 @@
     throw new Error(`Element "${element.tagName}" is not expected to move`);
   };
 
+  // How long dragstart is still cancelled after the last finger lifted.
+  const TOUCH_GUARD_GRACE_MS = 350;
+  // How long a held touch may stay silent before its guard is dropped.
+  const TOUCH_GUARD_IDLE_MS = 15000;
+
   window.ZenDragAndDrop = class extends window.TabDragAndDrop {
     #dragOverBackground = null;
     #lastDropTarget = null;
@@ -156,6 +161,11 @@
         e => this.#onTouchGuardDown(e),
         capture
       );
+      document.addEventListener(
+        "pointermove",
+        e => this.#onTouchGuardMove(e),
+        { capture, passive: true }
+      );
       for (const type of ["pointerup", "pointercancel"]) {
         document.addEventListener(type, e => this.#onTouchGuardUp(e), capture);
       }
@@ -190,6 +200,14 @@
       }
     }
 
+    // Safety net for a touch whose pointerup/pointercancel never arrives: a
+    // guard with no pointer activity for this long is released. Any
+    // pointermove of a held finger re-arms it.
+    #armTouchGuard(tab, guard, delay) {
+      clearTimeout(guard.timer);
+      guard.timer = setTimeout(() => this.#releaseTouchGuard(tab), delay);
+    }
+
     #releaseTouchGuard(tab) {
       const guard = this.#touchGuards.get(tab);
       if (guard) {
@@ -201,9 +219,13 @@
 
     #onTouchGuardDown(event) {
       if (event.pointerType !== "touch") {
-        // Real mouse/pen input must be able to drag immediately.
-        for (const tab of [...this.#touchGuards.keys()]) {
-          this.#releaseTouchGuard(tab);
+        // Mouse/pen must be able to drag immediately, so end guards that only
+        // linger after a finger lifted. A guard with a finger still down is
+        // kept: that touch is concurrent and still needs protection.
+        for (const [tab, guard] of [...this.#touchGuards]) {
+          if (!guard.pointers.size) {
+            this.#releaseTouchGuard(tab);
+          }
         }
         return;
       }
@@ -221,8 +243,44 @@
         this.#touchGuards.set(tab, guard);
       }
       clearTimeout(guard.timer);
+      // Pointer ids are unique among live pointers, so an id seen again here
+      // means an earlier touch ended without us hearing about it.
+      this.#forgetPointer(event.pointerId, tab);
       guard.pointers.add(event.pointerId);
+      this.#armTouchGuard(tab, guard, TOUCH_GUARD_IDLE_MS);
       this.#setTabDraggable(tab, "false");
+    }
+
+    #forgetPointer(pointerId, exceptTab) {
+      for (const [tab, guard] of [...this.#touchGuards]) {
+        if (tab !== exceptTab && guard.pointers.delete(pointerId)) {
+          this.#endTouch(tab, guard);
+        }
+      }
+    }
+
+    #onTouchGuardMove(event) {
+      if (event.pointerType !== "touch" || !this.#touchGuards.size) {
+        return;
+      }
+      for (const [tab, guard] of this.#touchGuards) {
+        if (guard.pointers.has(event.pointerId)) {
+          this.#armTouchGuard(tab, guard, TOUCH_GUARD_IDLE_MS);
+          return;
+        }
+      }
+    }
+
+    // Called once the last finger on `tab` is gone.
+    #endTouch(tab, guard) {
+      if (guard.pointers.size) {
+        return;
+      }
+      // Gecko may deliver pointercancel/dragstart after the finger is gone,
+      // so keep swallowing dragstart briefly while the tab itself is already
+      // draggable again.
+      this.#setTabDraggable(tab, guard.draggable);
+      this.#armTouchGuard(tab, guard, TOUCH_GUARD_GRACE_MS);
     }
 
     #onTouchGuardUp(event) {
@@ -230,13 +288,7 @@
         if (!guard.pointers.delete(event.pointerId)) {
           continue;
         }
-        if (!guard.pointers.size) {
-          // Gecko may deliver pointercancel/dragstart after the finger is
-          // gone, so keep swallowing dragstart briefly while the tab itself
-          // is already draggable again.
-          this.#setTabDraggable(tab, guard.draggable);
-          guard.timer = setTimeout(() => this.#releaseTouchGuard(tab), 350);
-        }
+        this.#endTouch(tab, guard);
         return;
       }
     }

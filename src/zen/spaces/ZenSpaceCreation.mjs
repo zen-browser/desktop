@@ -54,7 +54,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
                   data-l10n-id="zen-workspace-creation-name" />
               </hbox>
               <hbox class="zen-workspace-creation-profile-wrapper">
-                <label class="zen-workspace-creation-profile-label" data-l10n-id="zen-workspace-creation-profile" />
+                <label class="zen-workspace-creation-profile-label" data-l10n-id="zen-workspace-creation-container" />
                 <button class="zen-workspace-creation-profile" />
               </hbox>
               <button
@@ -258,7 +258,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: lazy.l10n.formatValueSync("zen-workspace-default-profile"),
+        name: lazy.l10n.formatValueSync("zen-workspace-no-container"),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;
@@ -339,7 +339,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     if (defaultItem) {
       defaultItem.removeAttribute("data-l10n-id");
       defaultItem.label = lazy.l10n.formatValueSync(
-        "zen-workspace-default-profile"
+        "zen-workspace-no-container"
       );
     }
   }

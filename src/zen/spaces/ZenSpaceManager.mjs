@@ -1449,7 +1449,7 @@ class nsZenWorkspaces {
     if (defaultItem) {
       defaultItem.removeAttribute("data-l10n-id");
       defaultItem.label = lazy.l10n.formatValueSync(
-        "zen-workspace-default-profile"
+        "zen-workspace-no-container"
       );
     }
   }

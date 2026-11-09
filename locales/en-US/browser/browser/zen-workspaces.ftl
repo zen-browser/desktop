@@ -29,8 +29,8 @@ zen-workspaces-panel-change-name =
 zen-workspaces-panel-change-icon =
     .label = Change Icon…
 
-zen-workspaces-panel-context-default-profile =
-    .label = Set Profile
+zen-workspaces-panel-context-set-container =
+    .label = Set Container
 
 zen-workspaces-panel-unload =
     .label = Unload Space
@@ -77,11 +77,11 @@ zen-move-tab-to-workspace-button =
 zen-workspaces-panel-context-manage =
     .label = Manage Spaces…
 
-zen-workspace-creation-profile = Profile
-    .tooltiptext = Profiles are used to separate cookies and site data between spaces.
+zen-workspace-creation-container = Container
+    .tooltiptext = Containers separate cookies and site data between spaces.
 zen-workspace-creation-header = Create a Space
 zen-workspace-creation-label = Spaces are used to organize your tabs and sessions.
-zen-workspace-default-profile = Default
+zen-workspace-no-container = No Container
 
 zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

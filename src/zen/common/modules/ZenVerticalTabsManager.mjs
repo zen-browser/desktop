@@ -82,7 +82,7 @@ window.gZenVerticalTabsManager = {
   initSetProfileContextMenu() {
     const fragment = window.MozXULElement.parseXULToFragment(`
       <menu id="zen-toolbar-context-set-profile"
-            data-lazy-l10n-id="zen-workspaces-panel-context-default-profile">
+            data-lazy-l10n-id="zen-workspaces-panel-context-set-container">
         <menupopup />
       </menu>
       <menuseparator id="zen-toolbar-context-set-profile-separator"/>

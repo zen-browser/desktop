@@ -18,7 +18,7 @@
           data-l10n-id="zen-workspaces-change-theme"
           command="cmd_zenOpenZenThemePicker"/>
   <menu id="context_zenWorkspacesOpenInContainerTab"
-    data-l10n-id="zen-workspaces-panel-context-default-profile"
+    data-l10n-id="zen-workspaces-panel-context-set-container"
     selection-type="single"
     node-type="link"
     hide-if-private-browsing="true"

@@ -3071,7 +3071,9 @@ class nsZenWorkspaces {
         const essentialContainer = this.getEssentialsSection(
           workspaceObject.containerTabId
         );
-        const essentialNumChildren = essentialContainer.children.length;
+        const essentialNumChildren = [...essentialContainer.children].filter(
+          child => !child.hasAttribute("zen-drag-placeholder")
+        ).length;
         let essentialHackType = 0;
         if (essentialNumChildren === 6 || essentialNumChildren === 9) {
           essentialHackType = 1;

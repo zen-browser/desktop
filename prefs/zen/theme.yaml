@@ -18,7 +18,7 @@
   value: true
 
 - name: zen.theme.acrylic-urlbar
-  value: "@IS_TWILIGHT@"
+  value: true
   cpptype: bool
   mirror: once
   type: static

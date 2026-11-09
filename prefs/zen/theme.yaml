@@ -18,7 +18,7 @@
   value: true
 
 - name: zen.theme.essentials-unread-dot
-  value: true
+  value: "@IS_TWILIGHT@"
 
 - name: zen.theme.acrylic-urlbar
   value: "@IS_TWILIGHT@"

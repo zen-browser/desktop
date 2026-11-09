@@ -23,13 +23,45 @@ zen-glance-trigger-label = Modh spreagtha
 zen-glance-enabled = 
     .label = Cumasaigh sracfhéachaint
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Ordú) + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Taispeáin i ndlúth d’amharc
 zen-look-and-feel-compact-view-description = Ná taispeáin ach na barraí uirlisí a úsáideann tú!
 zen-look-and-feel-compact-view-enabled = 

@@ -161,11 +161,10 @@
         e => this.#onTouchGuardDown(e),
         capture
       );
-      document.addEventListener(
-        "pointermove",
-        e => this.#onTouchGuardMove(e),
-        { capture, passive: true }
-      );
+      document.addEventListener("pointermove", e => this.#onTouchGuardMove(e), {
+        capture,
+        passive: true,
+      });
       for (const type of ["pointerup", "pointercancel"]) {
         document.addEventListener(type, e => this.#onTouchGuardUp(e), capture);
       }

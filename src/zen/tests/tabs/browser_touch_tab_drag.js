@@ -44,7 +44,10 @@ async function withTabs(count, callback) {
     );
   }
   try {
-    await callback(tabs, tabs.map(tab => tab.getAttribute("draggable")));
+    await callback(
+      tabs,
+      tabs.map(tab => tab.getAttribute("draggable"))
+    );
   } finally {
     // A mouse press releases any touch guard still pending.
     pointer(tabs[0], "pointerdown", "mouse", 9000);

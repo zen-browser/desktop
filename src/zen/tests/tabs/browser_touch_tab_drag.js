@@ -3,7 +3,11 @@
 
 "use strict";
 
-function sendTabPointer(target, type, pointerType, pointerId) {
+// Touch must never start a native tab drag (it detaches the tab into a new
+// window); mouse and pen keep native drag. Events are synthetic so the test
+// is deterministic and needs no real touchscreen.
+
+function pointer(target, type, pointerType, pointerId) {
   const event = new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
@@ -16,7 +20,7 @@ function sendTabPointer(target, type, pointerType, pointerId) {
   return event;
 }
 
-function sendTabDragStart(tab) {
+function dragStart(tab) {
   const event = new DragEvent("dragstart", {
     bubbles: true,
     cancelable: true,
@@ -26,213 +30,109 @@ function sendTabDragStart(tab) {
   return event;
 }
 
-add_task(async function test_touch_drag_cannot_detach_tab() {
-  const tab = await BrowserTestUtils.openNewForegroundTab(
-    gBrowser,
-    "about:blank"
-  );
-  const original = tab.getAttribute("draggable");
-
+async function withTabs(count, callback) {
+  const tabs = [];
+  for (let i = 0; i < count; i++) {
+    tabs.push(
+      await BrowserTestUtils.openNewForegroundTab(gBrowser, "about:blank")
+    );
+  }
   try {
-    const down = sendTabPointer(tab, "pointerdown", "touch", 101);
-    Assert.ok(!down.defaultPrevented, "native tab selection is not cancelled");
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      "false",
-      "touch disables native drag"
-    );
+    await callback(tabs, tabs.map(tab => tab.getAttribute("draggable")));
+  } finally {
+    // A mouse press releases any touch guard still pending.
+    pointer(tabs[0], "pointerdown", "mouse", 9000);
+    tabs.forEach(tab => BrowserTestUtils.removeTab(tab));
+  }
+}
 
-    const drag = sendTabDragStart(tab);
-    Assert.ok(drag.defaultPrevented, "a touch-origin tab drag is cancelled");
+add_task(async function test_touch_blocks_drag_and_release_restores() {
+  await withTabs(1, ([tab], [original]) => {
+    const down = pointer(tab, "pointerdown", "touch", 1);
+    Assert.ok(!down.defaultPrevented, "touch down is not cancelled (tap)");
+    Assert.equal(tab.getAttribute("draggable"), "false", "drag disabled");
+    Assert.ok(dragStart(tab).defaultPrevented, "dragstart is cancelled");
 
-    sendTabPointer(tab, "pointerup", "touch", 101);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      original,
-      "touch release restores draggability"
-    );
-
-    const lateDrag = sendTabDragStart(tab);
+    pointer(tab, "pointerup", "touch", 1);
+    Assert.equal(tab.getAttribute("draggable"), original, "state restored");
     Assert.ok(
-      lateDrag.defaultPrevented,
-      "a delayed touch drag is also cancelled"
+      dragStart(tab).defaultPrevented,
+      "a dragstart delivered just after release is still cancelled"
     );
 
-    sendTabPointer(tab, "pointerdown", "mouse", 102);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      original,
-      "mouse input clears the touch guard"
-    );
-  } finally {
-    sendTabPointer(tab, "pointerdown", "mouse", 103);
-    BrowserTestUtils.removeTab(tab);
-  }
+    pointer(tab, "pointerdown", "mouse", 2);
+    Assert.ok(!dragStart(tab).defaultPrevented, "mouse press ends the guard");
+  });
 });
 
-add_task(async function test_touch_cancel_restores_tab_drag() {
-  const tab = await BrowserTestUtils.openNewForegroundTab(
-    gBrowser,
-    "about:blank"
-  );
-  const original = tab.getAttribute("draggable");
-
-  try {
-    sendTabPointer(tab, "pointerdown", "touch", 201);
-    Assert.equal(tab.getAttribute("draggable"), "false", "touch drag blocked");
-    sendTabPointer(tab, "pointercancel", "touch", 201);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      original,
-      "cancel restores native drag"
-    );
-    sendTabPointer(tab, "pointerdown", "pen", 202);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      original,
-      "pen input keeps native drag enabled"
-    );
-  } finally {
-    sendTabPointer(tab, "pointerdown", "mouse", 203);
-    BrowserTestUtils.removeTab(tab);
-  }
+add_task(async function test_mouse_and_pen_keep_native_drag() {
+  await withTabs(1, ([tab], [original]) => {
+    for (const type of ["mouse", "pen"]) {
+      pointer(tab, "pointerdown", type, 10);
+      Assert.equal(tab.getAttribute("draggable"), original, `${type} state`);
+      Assert.ok(!dragStart(tab).defaultPrevented, `${type} drag not blocked`);
+      pointer(tab, "pointerup", type, 10);
+    }
+  });
 });
 
-add_task(async function test_pinned_tab_keeps_its_state_on_touch() {
-  const tab = await BrowserTestUtils.openNewForegroundTab(
-    gBrowser,
-    "about:blank"
-  );
-  gBrowser.pinTab(tab);
-  const original = tab.getAttribute("draggable");
+add_task(async function test_cancel_and_blur_restore() {
+  await withTabs(2, ([a, b], [origA, origB]) => {
+    pointer(a, "pointerdown", "touch", 20);
+    pointer(a, "pointercancel", "touch", 20);
+    Assert.equal(a.getAttribute("draggable"), origA, "cancel restores");
 
-  try {
-    sendTabPointer(tab, "pointerdown", "touch", 301);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      "false",
-      "pinned touch drag blocked"
-    );
-    sendTabPointer(tab, "pointerup", "touch", 301);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      original,
-      "pinned tab draggable state restored"
-    );
-    Assert.ok(tab.pinned, "touch does not unpin the tab");
-  } finally {
-    sendTabPointer(tab, "pointerdown", "mouse", 302);
-    BrowserTestUtils.removeTab(tab);
-  }
-});
-
-add_task(async function test_simultaneous_touch_on_two_tabs() {
-  const first = await BrowserTestUtils.openNewForegroundTab(
-    gBrowser,
-    "about:blank"
-  );
-  const second = await BrowserTestUtils.openNewForegroundTab(
-    gBrowser,
-    "about:blank"
-  );
-  const firstOriginal = first.getAttribute("draggable");
-  const secondOriginal = second.getAttribute("draggable");
-
-  try {
-    sendTabPointer(first, "pointerdown", "touch", 401);
-    sendTabPointer(second, "pointerdown", "touch", 402);
-    Assert.equal(
-      first.getAttribute("draggable"),
-      "false",
-      "first tab stays protected"
-    );
-    Assert.equal(
-      second.getAttribute("draggable"),
-      "false",
-      "second tab stays protected"
-    );
-    Assert.ok(
-      sendTabDragStart(first).defaultPrevented,
-      "first touch drag is blocked"
-    );
-    Assert.ok(
-      sendTabDragStart(second).defaultPrevented,
-      "second touch drag is blocked"
-    );
-
-    sendTabPointer(first, "pointerup", "touch", 401);
-    Assert.equal(
-      first.getAttribute("draggable"),
-      firstOriginal,
-      "first release restores first tab"
-    );
-    Assert.equal(
-      second.getAttribute("draggable"),
-      "false",
-      "second tab remains protected"
-    );
-    sendTabPointer(second, "pointercancel", "touch", 402);
-    Assert.equal(
-      second.getAttribute("draggable"),
-      secondOriginal,
-      "second cancel restores second tab"
-    );
-  } finally {
-    sendTabPointer(first, "pointerdown", "mouse", 403);
-    BrowserTestUtils.removeTab(second);
-    BrowserTestUtils.removeTab(first);
-  }
-});
-
-add_task(async function test_two_fingers_on_one_tab() {
-  const tab = await BrowserTestUtils.openNewForegroundTab(
-    gBrowser,
-    "about:blank"
-  );
-  const original = tab.getAttribute("draggable");
-
-  try {
-    sendTabPointer(tab, "pointerdown", "touch", 501);
-    sendTabPointer(tab, "pointerdown", "touch", 502);
-    sendTabPointer(tab, "pointerup", "touch", 501);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      "false",
-      "remaining finger holds touch guard"
-    );
-    Assert.ok(
-      sendTabDragStart(tab).defaultPrevented,
-      "remaining finger cannot detach tab"
-    );
-    sendTabPointer(tab, "pointerup", "touch", 502);
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      original,
-      "last release restores original state"
-    );
-  } finally {
-    sendTabPointer(tab, "pointerdown", "mouse", 503);
-    BrowserTestUtils.removeTab(tab);
-  }
-});
-
-add_task(async function test_window_blur_restores_touch_tab() {
-  const tab = await BrowserTestUtils.openNewForegroundTab(
-    gBrowser,
-    "about:blank"
-  );
-  const original = tab.getAttribute("draggable");
-  try {
-    sendTabPointer(tab, "pointerdown", "touch", 601);
-    Assert.equal(tab.getAttribute("draggable"), "false", "touch guard engaged");
+    pointer(b, "pointerdown", "touch", 21);
     window.dispatchEvent(new Event("blur"));
-    Assert.equal(
-      tab.getAttribute("draggable"),
-      original,
-      "blur restores original state"
-    );
-  } finally {
-    sendTabPointer(tab, "pointerdown", "mouse", 602);
-    BrowserTestUtils.removeTab(tab);
-  }
+    Assert.equal(b.getAttribute("draggable"), origB, "blur restores");
+    Assert.ok(!dragStart(b).defaultPrevented, "blur drops the guard");
+  });
+});
+
+add_task(async function test_multi_touch() {
+  await withTabs(2, ([a, b], [origA, origB]) => {
+    // Two fingers on one tab: the guard lasts until the last finger lifts.
+    pointer(a, "pointerdown", "touch", 30);
+    pointer(a, "pointerdown", "touch", 31);
+    pointer(a, "pointerup", "touch", 30);
+    Assert.equal(a.getAttribute("draggable"), "false", "still guarded");
+    pointer(a, "pointerup", "touch", 31);
+    Assert.equal(a.getAttribute("draggable"), origA, "restored");
+
+    // Fingers on two tabs are guarded independently.
+    pointer(a, "pointerdown", "touch", 32);
+    pointer(b, "pointerdown", "touch", 33);
+    pointer(a, "pointerup", "touch", 32);
+    Assert.equal(a.getAttribute("draggable"), origA, "first restored");
+    Assert.equal(b.getAttribute("draggable"), "false", "second guarded");
+    Assert.ok(dragStart(b).defaultPrevented, "second drag cancelled");
+    pointer(b, "pointercancel", "touch", 33);
+    Assert.equal(b.getAttribute("draggable"), origB, "second restored");
+  });
+});
+
+add_task(async function test_pinned_tab() {
+  await withTabs(1, async ([tab]) => {
+    gBrowser.pinTab(tab);
+    const original = tab.getAttribute("draggable");
+    pointer(tab, "pointerdown", "touch", 40);
+    Assert.equal(tab.getAttribute("draggable"), "false", "pinned guarded");
+    pointer(tab, "pointerup", "touch", 40);
+    Assert.equal(tab.getAttribute("draggable"), original, "pinned restored");
+    Assert.ok(tab.pinned, "touch does not unpin");
+  });
+});
+
+add_task(async function test_closing_tab_mid_touch() {
+  const tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "about:blank"
+  );
+  pointer(tab, "pointerdown", "touch", 41);
+  BrowserTestUtils.removeTab(tab);
+  // The guard for the closed tab is gone; later touches must not throw.
+  const other = gBrowser.selectedTab;
+  pointer(other, "pointerdown", "touch", 42);
+  pointer(other, "pointerup", "touch", 42);
+  Assert.ok(true, "no error after closing a touched tab");
 });

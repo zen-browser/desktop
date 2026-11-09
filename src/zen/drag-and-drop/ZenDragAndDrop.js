@@ -72,7 +72,9 @@
     #dragImageEssential = false;
 
     #dragOverSplit = {};
-    #touchDrags = new Map();
+    // Tabs with an active touch: tab -> { draggable, pointers, timer }.
+    #touchGuards = new Map();
+
     constructor(tabbrowserTabs) {
       super(tabbrowserTabs);
 
@@ -140,117 +142,102 @@
           capture: true,
         }
       );
-      // Native tab DnD is too sensitive to touchscreen movement: a small
-      // slide during a tap can detach the tab into a new window. Keep
-      // touch-originated drags out of the native drag pipeline without
-      // changing pointer events, mouse dragging, or external drops.
+      this.#initTouchGuard();
+    }
+
+    // A slight finger slide on a tab would otherwise start a native drag and
+    // detach the tab into a new window. Touch never starts a tab drag; mouse
+    // and pen are untouched. Pointer events are not cancelled, so tap, scroll
+    // and long-press behave as before.
+    #initTouchGuard() {
+      const capture = true;
       document.addEventListener(
         "pointerdown",
-        event => this.#onTouchPointerDown(event),
-        true
+        e => this.#onTouchGuardDown(e),
+        capture
       );
       for (const type of ["pointerup", "pointercancel"]) {
-        document.addEventListener(
-          type,
-          event => this.#onTouchPointerEnd(event),
-          true
-        );
+        document.addEventListener(type, e => this.#onTouchGuardUp(e), capture);
       }
+      // Runs before the tab drag handlers (document capture phase).
       document.addEventListener(
         "dragstart",
-        event => this.#onTabDragStart(event),
-        true
+        e => {
+          const tab = e.target?.closest?.(".tabbrowser-tab");
+          if (tab && this.#touchGuards.has(tab)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
+        },
+        capture
       );
-      this._tabbrowserTabs.addEventListener("TabClose", event => {
-        this.#clearTouchTab(event.target);
+      this._tabbrowserTabs.addEventListener("TabClose", e =>
+        this.#releaseTouchGuard(e.target)
+      );
+      window.addEventListener("blur", () => {
+        for (const tab of [...this.#touchGuards.keys()]) {
+          this.#releaseTouchGuard(tab);
+        }
       });
-      window.addEventListener("blur", () => this.#clearAllTouchDrags());
     }
 
-    #restoreTouchTab(tab, state) {
-      if (state.restored) {
-        return;
-      }
-      state.restored = true;
-      tab.draggable = state.draggable;
-      if (state.attribute === null) {
+    #setTabDraggable(tab, value) {
+      tab.draggable = value === "true";
+      if (value === null) {
         tab.removeAttribute("draggable");
       } else {
-        tab.setAttribute("draggable", state.attribute);
+        tab.setAttribute("draggable", value);
       }
     }
 
-    #clearTouchTab(tab) {
-      const state = this.#touchDrags.get(tab);
-      if (!state) {
-        return;
-      }
-      if (state.timer !== null) {
-        clearTimeout(state.timer);
-      }
-      this.#restoreTouchTab(tab, state);
-      this.#touchDrags.delete(tab);
-    }
-
-    #clearAllTouchDrags() {
-      for (const tab of this.#touchDrags.keys()) {
-        this.#clearTouchTab(tab);
+    #releaseTouchGuard(tab) {
+      const guard = this.#touchGuards.get(tab);
+      if (guard) {
+        clearTimeout(guard.timer);
+        this.#touchGuards.delete(tab);
+        this.#setTabDraggable(tab, guard.draggable);
       }
     }
 
-    #onTouchPointerDown(event) {
+    #onTouchGuardDown(event) {
       if (event.pointerType !== "touch") {
-        if (event.pointerType === "mouse" || event.pointerType === "pen") {
-          this.#clearAllTouchDrags();
+        // Real mouse/pen input must be able to drag immediately.
+        for (const tab of [...this.#touchGuards.keys()]) {
+          this.#releaseTouchGuard(tab);
         }
         return;
       }
-      if (event.button !== 0) {
-        return;
-      }
       const tab = event.target?.closest?.(".tabbrowser-tab");
-      if (!tab || !isTab(tab)) {
+      if (event.button !== 0 || !tab || !isTab(tab)) {
         return;
       }
-
-      let state = this.#touchDrags.get(tab);
-      if (!state) {
-        state = {
-          draggable: tab.draggable,
-          attribute: tab.getAttribute("draggable"),
+      let guard = this.#touchGuards.get(tab);
+      if (!guard) {
+        guard = {
+          draggable: tab.getAttribute("draggable"),
           pointers: new Set(),
           timer: null,
-          restored: false,
         };
-        this.#touchDrags.set(tab, state);
-      } else if (state.timer !== null) {
-        clearTimeout(state.timer);
-        state.timer = null;
+        this.#touchGuards.set(tab, guard);
       }
-      state.restored = false;
-      state.pointers.add(event.pointerId);
-      tab.draggable = false;
-      tab.setAttribute("draggable", "false");
+      clearTimeout(guard.timer);
+      guard.pointers.add(event.pointerId);
+      this.#setTabDraggable(tab, "false");
     }
 
-    #onTouchPointerEnd(event) {
-      for (const [tab, state] of this.#touchDrags) {
-        if (!state.pointers.delete(event.pointerId)) {
+    #onTouchGuardUp(event) {
+      for (const [tab, guard] of this.#touchGuards) {
+        if (!guard.pointers.delete(event.pointerId)) {
           continue;
         }
-        if (state.pointers.size === 0) {
-          this.#restoreTouchTab(tab, state);
-          state.timer = setTimeout(() => this.#clearTouchTab(tab), 350);
+        if (!guard.pointers.size) {
+          // Gecko may deliver pointercancel/dragstart after the finger is
+          // gone, so keep swallowing dragstart briefly while the tab itself
+          // is already draggable again.
+          this.#setTabDraggable(tab, guard.draggable);
+          guard.timer = setTimeout(() => this.#releaseTouchGuard(tab), 350);
         }
-        break;
-      }
-    }
-
-    #onTabDragStart(event) {
-      const tab = event.target?.closest?.(".tabbrowser-tab");
-      if (tab && this.#touchDrags.has(tab)) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
+        return;
       }
     }
 

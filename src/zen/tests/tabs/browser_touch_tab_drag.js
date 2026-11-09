@@ -48,7 +48,9 @@ async function withTabs(count, callback) {
   } finally {
     // A mouse press releases any touch guard still pending.
     pointer(tabs[0], "pointerdown", "mouse", 9000);
-    tabs.forEach(tab => BrowserTestUtils.removeTab(tab));
+    for (const tab of tabs) {
+      await BrowserTestUtils.removeTab(tab);
+    }
   }
 }
 
@@ -135,7 +137,7 @@ add_task(async function test_closing_tab_mid_touch() {
     "about:blank"
   );
   pointer(tab, "pointerdown", "touch", 41);
-  BrowserTestUtils.removeTab(tab);
+  await BrowserTestUtils.removeTab(tab);
   Assert.ok(!tab.linkedBrowser, "tab is closed");
   // The closed tab's guard is gone; touch handling still works for others.
   const other = gBrowser.selectedTab;

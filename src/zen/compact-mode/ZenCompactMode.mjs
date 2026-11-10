@@ -104,7 +104,7 @@ class CompactToggleCoordinator {
   intended = null;
   #manager;
   #generation = 0;
-  #flip = null; // { key, sidebar: [x,y], content: [x,y] }
+  #flip = null; // { key, sidebar: [x,y], content: [x,y], toolbar: [x,y] }
   #urlbarWasFocused = false;
 
   constructor(manager) {
@@ -121,6 +121,11 @@ class CompactToggleCoordinator {
 
   get #browser() {
     return document.getElementById("browser");
+  }
+
+  get #transitions() {
+    const m = this.#manager;
+    return [m._sidebarTransition, m._contentTransition, m._toolbarTransition];
   }
 
   shouldAnimate() {
@@ -142,41 +147,36 @@ class CompactToggleCoordinator {
     this.#urlbarWasFocused = gURLBar.focused;
     gZenWorkspaces._processingResize = true;
     document.documentElement.setAttribute("zen-spring-toggling", "true");
-    if (m._ignoreNextHover) {
-      m._setElementExpandAttribute(this.#sidebar, false);
-    }
-    this.#browser.style.overflow = "clip";
+    try {
+      if (m._ignoreNextHover) {
+        m._setElementExpandAttribute(this.#sidebar, false);
+      }
+      this.#browser.style.overflow = "clip";
 
-    if (compact) {
-      const before = this.#measure();
-      this.#commit(true);
-      const after = this.#measure();
-      const hidden = m._peekHiddenOffset();
-      // After the snap CSS already holds the floating sidebar at the hidden
-      // translate; express the in-flow position as a translate from rest 0.
-      const sidebarFromRest = [
-        before.anchor.x - (after.anchor.x - hidden),
-        before.anchor.y - after.anchor.y,
-      ];
-      const contentFrom = rectDelta(before.content, after.content);
-      this.#flip = { key: this.#flipKey(), sidebar: sidebarFromRest, content: contentFrom };
-      const spring = springFromPrefs(Services.prefs, "hide");
-      this.#track(
-        m._sidebarTransition.moveTo(hidden, {
+      if (compact) {
+        const before = this.measureInFlow();
+        this.#commit(true);
+        this.#restoreFocus();
+        const flip = this.seedFlip(before);
+        const spring = springFromPrefs(Services.prefs, "hide");
+        const from = offset => ({
           spring,
-          from: sidebarFromRest,
+          from: offset,
           velocity: [0, 0],
           holdAtEnd: true,
-        }),
-        m._contentTransition.moveTo([0, 0], {
-          spring,
-          from: contentFrom,
-          velocity: [0, 0],
-          holdAtEnd: true,
-        })
-      );
-    } else {
-      this.#retarget(false, { contentFrom: [0, 0] });
+        });
+        const hidden = m._peekHiddenOffset();
+        this.#track(
+          m._sidebarTransition.moveTo(hidden, from(flip.sidebar)),
+          m._contentTransition.moveTo([0, 0], from(flip.content)),
+          m._toolbarTransition?.moveTo([0, 0], from(flip.toolbar))
+        );
+      } else {
+        this.#retarget(false, { fromRest: true });
+      }
+    } catch (e) {
+      this.#cleanup();
+      reportError(e);
     }
   }
 
@@ -188,57 +188,104 @@ class CompactToggleCoordinator {
     this.#retarget(compact, {});
   }
 
-  #retarget(compact, { contentFrom }) {
+  // In-flow geometry, measured right before compact attributes are applied.
+  measureInFlow() {
+    return this.#measure();
+  }
+
+  // Records the FLIP offsets of a switch into compact (spring or not), from
+  // `before` (measureInFlow) and the committed compact layout. The sidebar
+  // offset is relative to its floating rest (translate 0).
+  seedFlip(before) {
+    const after = this.#measure({ sidebarAtRest: true });
+    this.#flip = {
+      key: this.#flipKey(),
+      sidebar: rectDelta(before.anchor, after.anchor),
+      content: rectDelta(before.content, after.content),
+      toolbar:
+        before.urlbar && after.urlbar
+          ? rectDelta(before.urlbar, after.urlbar)
+          : [0, 0],
+    };
+    return this.#flip;
+  }
+
+  #retarget(compact, { fromRest = false }) {
     const m = this.#manager;
     if (compact) {
       const spring = springFromPrefs(Services.prefs, "hide");
       this.#track(
         m._sidebarTransition.moveTo(m._peekHiddenOffset(), { spring, holdAtEnd: true }),
-        m._contentTransition.moveTo([0, 0], { spring, holdAtEnd: true })
+        m._contentTransition.moveTo([0, 0], { spring, holdAtEnd: true }),
+        m._toolbarTransition?.moveTo([0, 0], { spring, holdAtEnd: true })
       );
       return;
     }
     const spring = springFromPrefs(Services.prefs, "show");
     const target = this.#showTarget();
+    const opts = {
+      spring,
+      holdAtEnd: true,
+      ...(fromRest ? { from: [0, 0], velocity: [0, 0] } : {}),
+    };
     this.#track(
       m._sidebarTransition.moveTo(target.sidebar, { spring, holdAtEnd: true }),
-      m._contentTransition.moveTo(target.content, {
-        spring,
-        holdAtEnd: true,
-        ...(contentFrom ? { from: contentFrom, velocity: [0, 0] } : {}),
-      })
+      m._contentTransition.moveTo(target.content, opts),
+      m._toolbarTransition?.moveTo(target.toolbar, opts)
     );
   }
 
-  #track(a, b) {
+  #track(...runs) {
     const generation = ++this.#generation;
-    Promise.all([a.settled, b.settled]).then(
+    Promise.all(runs.filter(Boolean).map(r => r.settled)).then(
       () => {
         if (generation === this.#generation) {
           this.#finish();
         }
       },
-      () => {}
+      () => {
+        // The current run was discarded by someone else (e.g. the peek driver
+        // went inactive on DOM fullscreen / customize and released the shared
+        // sidebar transition): settle at the committed layout, no commit.
+        if (generation === this.#generation) {
+          this.intended = this.#manager.preference;
+          this.#cleanup();
+        }
+      }
     );
   }
 
   #finish() {
-    const m = this.#manager;
-    if (this.intended === false && m.preference) {
-      this.#commit(false); // show-end snap; disconnects the peek driver
+    try {
+      if (this.intended === false && this.#manager.preference) {
+        this.#commit(false); // show-end snap; disconnects the peek driver
+        this.#restoreFocus();
+      }
+    } catch (e) {
+      reportError(e);
+    } finally {
+      this.#cleanup();
     }
-    m._sidebarTransition.release();
-    m._contentTransition.release();
+  }
+
+  #cleanup() {
+    const m = this.#manager;
+    for (const transition of this.#transitions) {
+      transition?.release();
+    }
     this.#browser.style.removeProperty("overflow");
     delete m._ignoreNextHover;
     gZenWorkspaces._processingResize = false;
-    if (this.#urlbarWasFocused) {
-      gURLBar.focus();
-    }
     this.active = false;
     this.intended = null;
     // Last: lets the peek driver (if still connected) take over from rest.
     document.documentElement.removeAttribute("zen-spring-toggling");
+  }
+
+  #restoreFocus() {
+    if (this.#urlbarWasFocused && !gURLBar.focused) {
+      gURLBar.focus();
+    }
   }
 
   #commit(compact) {
@@ -261,22 +308,42 @@ class CompactToggleCoordinator {
     );
   }
 
-  #measure() {
-    return {
-      // Not #titlebar: compact mode reparents the top buttons and urlbar into
-      // it and pads it, so its box moves ~80px while the controls move ~7px.
-      // The tab list moves rigidly with the visible controls.
-      anchor: gBrowser.tabContainer.getBoundingClientRect(),
-      content: this.#content.getBoundingClientRect(),
-    };
+  #measure({ sidebarAtRest = false } = {}) {
+    // Hold the sidebar at translate 0 for the measurement (same task, never
+    // painted) so the offset is relative to its rest whatever moved it.
+    const probe = sidebarAtRest
+      ? this.#sidebar.animate(
+          { translate: ["none", "none"] },
+          { duration: 1e9, fill: "both" }
+        )
+      : null;
+    try {
+      const urlbar = document.getElementById("urlbar");
+      return {
+        // Not #titlebar: compact mode reparents the top buttons and urlbar into
+        // it and pads it, so its box moves ~80px while the controls move ~7px.
+        // The tab list moves rigidly with the visible controls.
+        anchor: gBrowser.tabContainer.getBoundingClientRect(),
+        content: this.#content.getBoundingClientRect(),
+        // The top toolbar (multi-toolbar) sits outside the content and is
+        // resized at the snap; anchor its FLIP on the URL bar, the element the
+        // eye follows. In the sidebar (single toolbar) it moves with it.
+        urlbar:
+          urlbar && !this.#sidebar.contains(urlbar)
+            ? urlbar.getBoundingClientRect()
+            : null,
+      };
+    } finally {
+      probe?.cancel();
+    }
   }
 
   #flipKey() {
     const root = document.documentElement;
     return JSON.stringify([
       Math.round(this.#sidebar.getBoundingClientRect().width),
-      window.innerWidth,
-      window.innerHeight,
+      window.devicePixelRatio,
+      this.#manager.canHideSidebar,
       Services.prefs.getBoolPref("zen.view.compact.hide-toolbar"),
       ...kFlipKeyAttributes.map(a => root.getAttribute(a)),
     ]);
@@ -286,9 +353,27 @@ class CompactToggleCoordinator {
     if (this.#flip && this.#flip.key === this.#flipKey()) {
       return this.#flip;
     }
+    // No measured FLIP for this layout. Right side: the content's left edge
+    // does not move. Left side: the in-flow content starts where the in-flow
+    // sidebar ends; estimate that as the floating sidebar minus its float
+    // padding on both sides, minus the floating content inset (exact for the
+    // expanded sidebar, 2px over for the collapsed one; measured 2026-11-10).
+    if (this.#manager.sidebarIsOnRight) {
+      return { sidebar: [0, 0], content: [0, 0], toolbar: [0, 0] };
+    }
+    const float =
+      parseFloat(
+        window
+          .getComputedStyle(this.#sidebar)
+          .getPropertyValue("--zen-compact-float")
+      ) || 0;
     const width = this.#sidebar.getBoundingClientRect().width;
-    const sign = this.#manager.sidebarIsOnRight ? -1 : 1;
-    return { sidebar: [0, 0], content: [sign * width, 0] };
+    const inset = this.#content.getBoundingClientRect().x;
+    return {
+      sidebar: [0, 0],
+      content: [Math.max(0, width - 2 * float - inset), 0],
+      toolbar: [0, 0],
+    };
   }
 }
 
@@ -372,6 +457,10 @@ window.gZenCompactModeManager = {
       });
       this._contentTransition = new SidebarTransition(
         document.getElementById("zen-tabbox-wrapper"),
+        transitionOptions
+      );
+      this._toolbarTransition = new SidebarTransition(
+        document.getElementById("zen-appcontent-navbar-wrapper"),
         transitionOptions
       );
       this._peekDriver = PeekDriver.forSidebar(this.sidebar, {
@@ -650,6 +739,12 @@ window.gZenCompactModeManager = {
       return;
     }
     const setAttrs = () => this._setCompactAttributes(value);
+    // Seed the toggle coordinator's FLIP cache on every switch into compact
+    // (startup restore, gated toggles) so a later spring exit lands exactly.
+    const flipBefore =
+      value && this.canHideSidebar
+        ? this._springToggle?.measureInFlow()
+        : undefined;
     const isUrlbarFocused = gURLBar.focused;
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
@@ -678,6 +773,13 @@ window.gZenCompactModeManager = {
     window.dispatchEvent(
       new CustomEvent("ZenCompactMode:Toggled", { detail: this.preference })
     );
+    if (flipBefore && this.preference) {
+      try {
+        this._springToggle.seedFlip(flipBefore);
+      } catch (e) {
+        reportError(e);
+      }
+    }
   },
 
   get canHideSidebar() {

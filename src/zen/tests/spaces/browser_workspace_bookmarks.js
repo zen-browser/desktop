@@ -172,3 +172,83 @@ add_task(async function test_workspace_bookmark() {
     );
   });
 });
+
+add_task(async function test_separator_updates_with_workspace_bookmarks() {
+  await gZenWorkspaces.promiseInitialized;
+  const toolbar = document.getElementById("PlacesToolbar");
+  await TestUtils.waitForCondition(() => toolbar._placesView);
+  const view = toolbar._placesView;
+  const bookmarks = PlacesUtils.bookmarks;
+  const parentGuid = bookmarks.toolbarGuid;
+  const createdGuids = new Set();
+  async function insertBookmark(info) {
+    const { guid } = await bookmarks.insert({ parentGuid, ...info });
+    createdGuids.add(guid);
+    return guid;
+  }
+  const originalCache = gZenWorkspaces._workspaceBookmarksCache;
+  const otherSpace = await gZenWorkspaces.createAndSaveWorkspace(
+    "Other space",
+    undefined,
+    true
+  );
+  const toolbarGuids = () =>
+    Array.from(view._rootElt.children, child => child._placesNode.bookmarkGuid);
+  async function rebuildToolbar() {
+    await view.promiseRebuilt();
+    view.invalidateContainer(view._resultNode);
+    await view.promiseRebuilt();
+  }
+
+  try {
+    const visible = await insertBookmark({ url: TEST_URI });
+    const hidden = await insertBookmark({ url: TEST_URI });
+    gZenWorkspaces._workspaceBookmarksCache = {
+      bookmarks: { [otherSpace.uuid]: [hidden] },
+    };
+    await rebuildToolbar();
+    const initial = toolbarGuids();
+    Assert.ok(initial.includes(visible), "The current bookmark is visible");
+    Assert.ok(
+      !initial.includes(hidden),
+      "The other space's bookmark is hidden"
+    );
+
+    const tail = await insertBookmark({ type: bookmarks.TYPE_SEPARATOR });
+    Assert.deepEqual(
+      toolbarGuids(),
+      [...initial, tail],
+      "Add a separator after the last visible bookmark"
+    );
+    await bookmarks.remove(tail);
+    createdGuids.delete(tail);
+
+    const head = await insertBookmark({
+      index: 0,
+      type: bookmarks.TYPE_SEPARATOR,
+    });
+    await rebuildToolbar();
+    Assert.deepEqual(
+      toolbarGuids(),
+      [head, ...initial],
+      "The separator is displayed first"
+    );
+    await bookmarks.remove(head);
+    createdGuids.delete(head);
+    Assert.deepEqual(
+      toolbarGuids(),
+      initial,
+      "Removing a separator keeps the other space's bookmark hidden"
+    );
+  } finally {
+    gZenWorkspaces._workspaceBookmarksCache = originalCache;
+    try {
+      for (const guid of createdGuids) {
+        await bookmarks.remove(guid);
+      }
+    } finally {
+      await rebuildToolbar();
+      await gZenWorkspaces.removeWorkspace(otherSpace.uuid);
+    }
+  }
+});

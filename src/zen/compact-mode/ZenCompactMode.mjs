@@ -5,8 +5,14 @@
 /* eslint-disable consistent-return */
 
 import { SidebarTransition } from "chrome://browser/content/zen-components/ZenSidebarTransition.mjs";
-import { PeekDriver } from "chrome://browser/content/zen-components/ZenPeekDriver.mjs";
-import { timeScaleFromPrefs } from "chrome://browser/content/zen-components/ZenSpring.mjs";
+import {
+  PeekDriver,
+  computeHiddenOffset,
+} from "chrome://browser/content/zen-components/ZenPeekDriver.mjs";
+import {
+  springFromPrefs,
+  timeScaleFromPrefs,
+} from "chrome://browser/content/zen-components/ZenSpring.mjs";
 
 const lazy = {};
 
@@ -77,6 +83,214 @@ ChromeUtils.defineESModuleGetters(
   { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
   { global: "current" }
 );
+
+const kFlipKeyAttributes = [
+  "zen-sidebar-expanded",
+  "zen-right-side",
+  "zen-single-toolbar",
+  "zen-no-padding",
+];
+
+function rectDelta(before, after) {
+  return [before.x - after.x, before.y - after.y];
+}
+
+// Runs the compact-mode toggle as compositor springs with a single layout
+// snap: enter commits layout first and FLIPs from the old geometry; exit
+// animates first and commits on settle. Interruptible: a request during
+// motion retargets from the current position and velocity.
+class CompactToggleCoordinator {
+  active = false;
+  intended = null;
+  #manager;
+  #generation = 0;
+  #flip = null; // { key, sidebar: [x,y], content: [x,y] }
+  #urlbarWasFocused = false;
+
+  constructor(manager) {
+    this.#manager = manager;
+  }
+
+  get #sidebar() {
+    return this.#manager.sidebar;
+  }
+
+  get #content() {
+    return document.getElementById("zen-tabbox-wrapper");
+  }
+
+  get #browser() {
+    return document.getElementById("browser");
+  }
+
+  shouldAnimate() {
+    const m = this.#manager;
+    return (
+      !!m._sidebarTransition &&
+      lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR &&
+      m.canHideSidebar &&
+      typeof m._wasInCompactMode === "undefined" &&
+      !m._preventAnimateCollapse &&
+      !m.isSidebarPotentiallyOpen()
+    );
+  }
+
+  start(compact) {
+    const m = this.#manager;
+    this.active = true;
+    this.intended = compact;
+    this.#urlbarWasFocused = gURLBar.focused;
+    gZenWorkspaces._processingResize = true;
+    document.documentElement.setAttribute("zen-spring-toggling", "true");
+    if (m._ignoreNextHover) {
+      m._setElementExpandAttribute(this.#sidebar, false);
+    }
+    this.#browser.style.overflow = "clip";
+
+    if (compact) {
+      const before = this.#measure();
+      this.#commit(true);
+      const after = this.#measure();
+      const hidden = m._peekHiddenOffset();
+      // After the snap CSS already holds the floating sidebar at the hidden
+      // translate; express the in-flow position as a translate from rest 0.
+      const sidebarFromRest = [
+        before.anchor.x - (after.anchor.x - hidden),
+        before.anchor.y - after.anchor.y,
+      ];
+      const contentFrom = rectDelta(before.content, after.content);
+      this.#flip = { key: this.#flipKey(), sidebar: sidebarFromRest, content: contentFrom };
+      const spring = springFromPrefs(Services.prefs, "hide");
+      this.#track(
+        m._sidebarTransition.moveTo(hidden, {
+          spring,
+          from: sidebarFromRest,
+          velocity: [0, 0],
+          holdAtEnd: true,
+        }),
+        m._contentTransition.moveTo([0, 0], {
+          spring,
+          from: contentFrom,
+          velocity: [0, 0],
+          holdAtEnd: true,
+        })
+      );
+    } else {
+      this.#retarget(false, { contentFrom: [0, 0] });
+    }
+  }
+
+  request(compact) {
+    if (!this.active || compact === this.intended) {
+      return;
+    }
+    this.intended = compact;
+    this.#retarget(compact, {});
+  }
+
+  #retarget(compact, { contentFrom }) {
+    const m = this.#manager;
+    if (compact) {
+      const spring = springFromPrefs(Services.prefs, "hide");
+      this.#track(
+        m._sidebarTransition.moveTo(m._peekHiddenOffset(), { spring, holdAtEnd: true }),
+        m._contentTransition.moveTo([0, 0], { spring, holdAtEnd: true })
+      );
+      return;
+    }
+    const spring = springFromPrefs(Services.prefs, "show");
+    const target = this.#showTarget();
+    this.#track(
+      m._sidebarTransition.moveTo(target.sidebar, { spring, holdAtEnd: true }),
+      m._contentTransition.moveTo(target.content, {
+        spring,
+        holdAtEnd: true,
+        ...(contentFrom ? { from: contentFrom, velocity: [0, 0] } : {}),
+      })
+    );
+  }
+
+  #track(a, b) {
+    const generation = ++this.#generation;
+    Promise.all([a.settled, b.settled]).then(
+      () => {
+        if (generation === this.#generation) {
+          this.#finish();
+        }
+      },
+      () => {}
+    );
+  }
+
+  #finish() {
+    const m = this.#manager;
+    if (this.intended === false && m.preference) {
+      this.#commit(false); // show-end snap; disconnects the peek driver
+    }
+    m._sidebarTransition.release();
+    m._contentTransition.release();
+    this.#browser.style.removeProperty("overflow");
+    delete m._ignoreNextHover;
+    gZenWorkspaces._processingResize = false;
+    if (this.#urlbarWasFocused) {
+      gURLBar.focus();
+    }
+    this.active = false;
+    this.intended = null;
+    // Last: lets the peek driver (if still connected) take over from rest.
+    document.documentElement.removeAttribute("zen-spring-toggling");
+  }
+
+  #commit(compact) {
+    const m = this.#manager;
+    m._setCompactAttributes(compact);
+    m._dispatchLayoutUpdate();
+    // Fullscreen + compact changes element separation; do it inside the snap
+    // so the hidden offset does not change mid-spring.
+    ZenThemeModifier.updateElementSeparation();
+    m.updateContextMenu();
+    if (compact) {
+      ZenHasPolyfill.connectObserver(m.sidebarObserverId);
+      m._peekDriver?.connect(); // starts in yield: zen-spring-toggling is set
+    } else {
+      ZenHasPolyfill.disconnectObserver(m.sidebarObserverId);
+      m._peekDriver?.disconnect();
+    }
+    window.dispatchEvent(
+      new CustomEvent("ZenCompactMode:Toggled", { detail: compact })
+    );
+  }
+
+  #measure() {
+    return {
+      // Not #titlebar: compact mode reparents the top buttons and urlbar into
+      // it and pads it, so its box moves ~80px while the controls move ~7px.
+      // The tab list moves rigidly with the visible controls.
+      anchor: gBrowser.tabContainer.getBoundingClientRect(),
+      content: this.#content.getBoundingClientRect(),
+    };
+  }
+
+  #flipKey() {
+    const root = document.documentElement;
+    return JSON.stringify([
+      Math.round(this.#sidebar.getBoundingClientRect().width),
+      window.innerWidth,
+      window.innerHeight,
+      Services.prefs.getBoolPref("zen.view.compact.hide-toolbar"),
+      ...kFlipKeyAttributes.map(a => root.getAttribute(a)),
+    ]);
+  }
+
+  #showTarget() {
+    if (this.#flip && this.#flip.key === this.#flipKey()) {
+      return this.#flip;
+    }
+    const width = this.#sidebar.getBoundingClientRect().width;
+    const sign = this.#manager.sidebarIsOnRight ? -1 : 1;
+    return { sidebar: [0, 0], content: [sign * width, 0] };
+  }
+}
 
 window.gZenCompactModeManager = {
   _flashTimeouts: {},
@@ -164,6 +378,7 @@ window.gZenCompactModeManager = {
         transition: this._sidebarTransition,
         isRightSide: () => this.sidebarIsOnRight,
       });
+      this._springToggle = new CompactToggleCoordinator(this);
       document.documentElement.setAttribute("zen-spring-driven", "true");
     }
 
@@ -207,6 +422,11 @@ window.gZenCompactModeManager = {
     }
     if (!this.shouldBeCompact) {
       value = false;
+    }
+    if (this._springToggle?.active) {
+      this._springToggle.request(value);
+      delete this._ignoreNextHover;
+      return;
     }
     this.log("Setting compact mode preference to", value);
     if (
@@ -409,17 +629,27 @@ window.gZenCompactModeManager = {
     window.dispatchEvent(new CustomEvent("ZenCompactMode:LayoutUpdate"));
   },
 
+  _setCompactAttributes(value) {
+    // We use this element in order to make it persis across restarts, by using the XULStore.
+    // main-window can't store attributes other than window sizes, so we use this instead
+    lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
+    document.documentElement.setAttribute("zen-compact-mode", value);
+    if (typeof this._wasInCompactMode === "undefined") {
+      Services.prefs.setBoolPref("zen.view.compact.enable-at-startup", value);
+    }
+  },
+
+  _peekHiddenOffset() {
+    return computeHiddenOffset(this.sidebar, window, () => this.sidebarIsOnRight);
+  },
+
   async _updateEvent() {
     const value = !this.preference;
-    const setAttrs = () => {
-      // We use this element in order to make it persis across restarts, by using the XULStore.
-      // main-window can't store attributes other than window sizes, so we use this instead
-      lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
-      document.documentElement.setAttribute("zen-compact-mode", value);
-      if (typeof this._wasInCompactMode === "undefined") {
-        Services.prefs.setBoolPref("zen.view.compact.enable-at-startup", value);
-      }
-    };
+    if (this._springToggle?.shouldAnimate()) {
+      this._springToggle.start(value);
+      return;
+    }
+    const setAttrs = () => this._setCompactAttributes(value);
     const isUrlbarFocused = gURLBar.focused;
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
@@ -628,9 +858,15 @@ window.gZenCompactModeManager = {
   },
 
   toggle(ignoreHover = false) {
+    // While a spring toggle runs, `preference` is the committed layout; the
+    // user's intent is what we invert.
+    const current = this._springToggle?.active
+      ? this._springToggle.intended
+      : this.preference;
     // Only ignore the next hover when we are enabling compact mode
-    this._ignoreNextHover = ignoreHover && !this.preference;
-    return (this.preference = !this.preference);
+    this._ignoreNextHover = ignoreHover && !current;
+    this.preference = !current;
+    return !current;
   },
 
   _updateSidebarIsOnRight() {

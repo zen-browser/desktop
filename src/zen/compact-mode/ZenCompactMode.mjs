@@ -89,14 +89,21 @@ const kFlipKeyAttributes = [
   "zen-right-side",
   "zen-single-toolbar",
   "zen-no-padding",
-  // The compact styles do not apply here, so a FLIP measured in these states
-  // must not be reused outside them.
-  "customizing",
-  "inDOMFullscreen",
 ];
 
 function rectDelta(before, after) {
   return [before.x - after.x, before.y - after.y];
+}
+
+// The compact styles only apply outside customize mode and DOM fullscreen
+// (see zen-compact-mode.css). Outside them the peek driver is inactive and
+// nothing moves or measures as it would in compact mode.
+function compactStylesApply() {
+  const root = document.documentElement;
+  return (
+    !root.hasAttribute("customizing") &&
+    root.getAttribute("inDOMFullscreen") !== "true"
+  );
 }
 
 // Runs the compact-mode toggle as compositor springs with a single layout
@@ -134,13 +141,9 @@ class CompactToggleCoordinator {
 
   shouldAnimate() {
     const m = this.#manager;
-    const root = document.documentElement;
     return (
       !!m._sidebarTransition &&
-      // Same gate as the compact styles (zen-compact-mode.css): outside it
-      // nothing moves as measured and the peek driver is inactive.
-      !root.hasAttribute("customizing") &&
-      root.getAttribute("inDOMFullscreen") !== "true" &&
+      compactStylesApply() &&
       lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR &&
       m.canHideSidebar &&
       typeof m._wasInCompactMode === "undefined" &&
@@ -770,8 +773,12 @@ window.gZenCompactModeManager = {
     const setAttrs = () => this._setCompactAttributes(value);
     // Seed the toggle coordinator's FLIP cache on every switch into compact
     // (startup restore, gated toggles) so a later spring exit lands exactly.
+    // Not while the compact styles are off: nothing would move, and the FLIP
+    // measured before stays valid for when they apply again.
     const flipBefore =
-      value && this.canHideSidebar ? this._springToggle?.measure() : undefined;
+      value && this.canHideSidebar && compactStylesApply()
+        ? this._springToggle?.measure()
+        : undefined;
     const isUrlbarFocused = gURLBar.focused;
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown

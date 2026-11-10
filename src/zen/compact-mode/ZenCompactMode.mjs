@@ -89,6 +89,10 @@ const kFlipKeyAttributes = [
   "zen-right-side",
   "zen-single-toolbar",
   "zen-no-padding",
+  // The compact styles do not apply here, so a FLIP measured in these states
+  // must not be reused outside them.
+  "customizing",
+  "inDOMFullscreen",
 ];
 
 function rectDelta(before, after) {
@@ -130,8 +134,13 @@ class CompactToggleCoordinator {
 
   shouldAnimate() {
     const m = this.#manager;
+    const root = document.documentElement;
     return (
       !!m._sidebarTransition &&
+      // Same gate as the compact styles (zen-compact-mode.css): outside it
+      // nothing moves as measured and the peek driver is inactive.
+      !root.hasAttribute("customizing") &&
+      root.getAttribute("inDOMFullscreen") !== "true" &&
       lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR &&
       m.canHideSidebar &&
       typeof m._wasInCompactMode === "undefined" &&

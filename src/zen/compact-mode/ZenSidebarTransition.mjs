@@ -16,6 +16,7 @@ export class SupersededError extends Error {
 }
 
 const vec2 = v => (Array.isArray(v) ? [v[0] ?? 0, v[1] ?? 0] : [v, 0]);
+const defaultReportError = globalThis.reportError?.bind(globalThis) ?? (e => queueMicrotask(() => { throw e; }));
 const format = ([x, y]) => `${x}px ${y}px`;
 
 export class SidebarTransition {
@@ -25,16 +26,18 @@ export class SidebarTransition {
   #timeScale;
   #reducedMotion;
   #fps;
+  #reportError;
   #value = [0, 0];
   #run = null; // { spring, startTime, scale, anim, reject, done }
 
-  constructor(el, { clock, animate, timeScale, reducedMotion, fps = 120 } = {}) {
+  constructor(el, { clock, animate, timeScale, reducedMotion, fps = 120, reportError } = {}) {
     this.#el = el;
-    this.#clock = clock ?? (() => el.ownerDocument.timeline.currentTime);
+    this.#clock = clock ?? (() => el.ownerDocument.timeline.currentTime ?? performance.now());
     this.#animate = animate ?? ((target, keyframes, options) => target.animate(keyframes, options));
     this.#timeScale = timeScale ?? (() => 1);
     this.#reducedMotion = reducedMotion ?? (() => false);
     this.#fps = fps;
+    this.#reportError = reportError ?? (e => defaultReportError(e));
   }
 
   get value() {
@@ -74,8 +77,11 @@ export class SidebarTransition {
       this.#run = null;
       this.#discard(previous);
       this.#value = target;
-      onSettle?.(target.slice());
+      const error = this.#callSettle(onSettle, target);
       resolve(target.slice());
+      if (error) {
+        this.#reportError(error.e);
+      }
       return { settled };
     }
 
@@ -98,12 +104,15 @@ export class SidebarTransition {
         }
         run.done = true;
         this.#value = target;
-        onSettle?.(target.slice());
+        const error = this.#callSettle(onSettle, target);
         if (!holdAtEnd) {
           this.#run = null;
           anim.cancel();
         }
         resolve(target.slice());
+        if (error) {
+          this.#reportError(error.e);
+        }
       },
       () => {}
     );
@@ -124,6 +133,16 @@ export class SidebarTransition {
     this.#discard(previous);
     this.#value = position;
     this.#el.style.removeProperty("translate");
+  }
+
+  // Returns { e } if onSettle threw, so callers can finish cleanup first.
+  #callSettle(onSettle, target) {
+    try {
+      onSettle?.(target.slice());
+    } catch (e) {
+      return { e };
+    }
+    return null;
   }
 
   #discard(run) {

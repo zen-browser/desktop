@@ -90,7 +90,7 @@ void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
  * @brief Received by a content process when the boost stylesheet of a domain
  * is set, replaced or removed, and once per registered boost at startup.
  * @param aDomain The host the stylesheet applies to.
- * @param aStyleSheet The stylesheet as a data: URI spec; empty removes it.
+ * @param aStyleSheet The stylesheet as a data.
  */
 mozilla::ipc::IPCResult
 mozilla::dom::ContentChild::RecvZenUpdateBoostStyleSheet(

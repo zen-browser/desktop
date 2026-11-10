@@ -94,7 +94,7 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend,
    * Documents loaded afterwards pick the sheet up when they are created.
    * Reached from ContentChild::RecvZenUpdateBoostStyleSheet.
    * @param aDomain The host the stylesheet applies to.
-   * @param aStyleSheet The stylesheet as a data: URI spec; empty removes it.
+   * @param aStyleSheet The stylesheet as a data.
    */
   static void UpdateContentStyleSheet(const nsACString& aDomain,
                                       const nsACString& aStyleSheet);

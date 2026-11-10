@@ -131,7 +131,8 @@
         "type": { "const": "tab" },
         "url": {
           "type": "string",
-          "format": "uri"
+          "format": "uri",
+          "pattern": "^https?://"
         },
         "label": { "type": "string" },
         "image": { "type": "string" },

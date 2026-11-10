@@ -87,6 +87,9 @@ export class nsZenPreloadedFeature {
 window.gZenCommonActions = {
   copyCurrentURLToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
+    if (currentUrl.spec === "about:blank") {
+      return;
+    }
     let displaySpec = currentUrl.displaySpec;
 
     try {
@@ -128,6 +131,9 @@ window.gZenCommonActions = {
 
   copyCurrentURLAsMarkdownToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
+    if (currentUrl.spec === "about:blank") {
+      return;
+    }
     const tabTitle = gBrowser.selectedTab.label;
     let displaySpec = currentUrl.displaySpec;
 

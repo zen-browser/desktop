@@ -7,6 +7,9 @@ import { bakeKeyframes, createSpring } from "./ZenSpring.mjs";
 // One element's `translate`, animated by WAAPI so it runs on the compositor.
 // Retargets analytically from the current sample, so interrupting never jumps
 // and velocity carries over. Leaves no inline style at rest.
+// Spring time is read from the animation's own currentTime: the document
+// timeline freezes while the refresh driver is idle, and startTime is left
+// unset so the animation starts on the next frame (pending reads as 0).
 
 export class SupersededError extends Error {
   constructor() {
@@ -21,7 +24,6 @@ const format = ([x, y]) => `${x}px ${y}px`;
 
 export class SidebarTransition {
   #el;
-  #clock;
   #animate;
   #timeScale;
   #reducedMotion;
@@ -30,11 +32,10 @@ export class SidebarTransition {
   #onMovingChange;
   #moving = false;
   #value = [0, 0];
-  #run = null; // { spring, startTime, scale, anim, reject, done }
+  #run = null; // { spring, scale, anim, reject, done }
 
-  constructor(el, { clock, animate, timeScale, reducedMotion, fps = 120, reportError, onMovingChange } = {}) {
+  constructor(el, { animate, timeScale, reducedMotion, fps = 120, reportError, onMovingChange } = {}) {
     this.#el = el;
-    this.#clock = clock ?? (() => el.ownerDocument.timeline.currentTime ?? performance.now());
     this.#animate = animate ?? ((target, keyframes, options) => target.animate(keyframes, options));
     this.#timeScale = timeScale ?? (() => 1);
     this.#reducedMotion = reducedMotion ?? (() => false);
@@ -51,18 +52,17 @@ export class SidebarTransition {
     return !!this.#run && !this.#run.done;
   }
 
-  sample(now = this.#clock()) {
+  sample() {
     const run = this.#run;
     if (!run || run.done) {
       return { position: this.#value.slice(), velocity: [0, 0] };
     }
-    const t = Math.max(0, (now - run.startTime) / 1000 / run.scale);
+    const t = Math.max(0, (run.anim.currentTime ?? 0) / 1000 / run.scale);
     return { position: run.spring.position(t), velocity: run.spring.velocity(t) };
   }
 
   moveTo(to, { spring, from, velocity, holdAtEnd = false, onSettle } = {}) {
-    const now = this.#clock();
-    const current = this.sample(now);
+    const current = this.sample();
     const target = vec2(to);
     const start = from === undefined ? current.position : vec2(from);
     const v0 = velocity === undefined ? current.velocity : vec2(velocity);
@@ -96,8 +96,7 @@ export class SidebarTransition {
       keyframes.map(p => ({ translate: format(p) })),
       { duration: duration * 1000 * scale, easing: "linear", fill: "forwards" }
     );
-    anim.startTime = now;
-    const run = { spring: curve, startTime: now, scale, anim, reject, done: false };
+    const run = { spring: curve, scale, anim, reject, done: false };
     this.#run = run;
     this.#discard(previous); // after the new animation exists: no frame without one
     this.#setMoving(true);

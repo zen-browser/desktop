@@ -56,7 +56,7 @@ index 2de4cfbb51e29108cdd92a2c0a80cbf6ef0ae4af..a1d4b9d173dc86672210161e7356302b
    list-style-image: url("chrome://global/skin/icons/chevron.svg");
  
 -  #nav-bar:not([overflowing], [nonemptyoverflow], [customizing]) > & {
-+  toolbar:not([overflowing], [nonemptyoverflow], [customizing]) > & {
++  :root:not(:has(#zen-sidebar-top-buttons:is([overflowing], [nonemptyoverflow]))) toolbar:not([overflowing], [nonemptyoverflow], [customizing]) > & {
      display: none;
    }
  

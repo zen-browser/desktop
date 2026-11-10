@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Relative import: keeps the module loadable outside chrome:// URLs.
 import { bakeKeyframes, createSpring } from "./ZenSpring.mjs";
 
 // One element's `translate`, animated by WAAPI so it runs on the compositor.
@@ -30,7 +31,7 @@ export class SidebarTransition {
   #onMovingChange;
   #moving = false;
   #value = [0, 0];
-  #run = null; // { spring, scale, anim, reject, done }
+  #run = null; // { spring, scale, anim, reject, done, startTime }
 
   constructor(
     el,
@@ -46,6 +47,10 @@ export class SidebarTransition {
     this.#onMovingChange = onMovingChange ?? (() => {});
   }
 
+  // The logical position: the live sample while moving, otherwise the rest
+  // value of the last moveTo/jumpTo/release. After jumpTo or release no
+  // animation holds the element, so the DOM shows whatever the stylesheet
+  // says, which is not necessarily this value.
   get value() {
     return this.sample().position;
   }
@@ -59,7 +64,7 @@ export class SidebarTransition {
     if (!run || run.done) {
       return { position: this.#value.slice(), velocity: [0, 0] };
     }
-    const t = Math.max(0, (run.anim.currentTime ?? 0) / 1000 / run.scale);
+    const t = this.#elapsed(run);
     return {
       position: run.spring.position(t),
       velocity: run.spring.velocity(t),
@@ -86,6 +91,7 @@ export class SidebarTransition {
 
     const previous = this.#run;
     if (this.#reducedMotion() || curve.settleTime === 0) {
+      // Instant: no animation is left behind, so holdAtEnd does not apply.
       this.#run = null;
       this.#discard(previous);
       this.#value = target;
@@ -101,11 +107,24 @@ export class SidebarTransition {
       keyframes.map(p => ({ translate: format(p) })),
       { duration: duration * 1000 * scale, easing: "linear", fill: "forwards" }
     );
-    const run = { spring: curve, scale, anim, reject, done: false };
+    const run = {
+      spring: curve,
+      scale,
+      anim,
+      reject,
+      done: false,
+      startTime: null,
+    };
     this.#run = run;
-    this.#discard(previous); // after the new animation exists: no frame without one
+    // After the new animation exists, so no frame is painted without one.
+    this.#discard(previous);
     this.#setMoving(true);
 
+    // Remember when it started, to sample it even after an external cancel.
+    anim.ready?.then(
+      () => (run.startTime = anim.startTime),
+      () => {}
+    );
     anim.finished.then(
       () => {
         if (this.#run !== run) {
@@ -120,7 +139,18 @@ export class SidebarTransition {
         }
         resolve(target.slice());
       },
-      () => {}
+      () => {
+        // Our own cancels detach the run first, so this one was cancelled by
+        // someone else (e.g. getAnimations()): rest where it last was and
+        // report it as superseded so its owner can clean up.
+        if (this.#run !== run) {
+          return;
+        }
+        this.#value = run.spring.position(this.#elapsed(run));
+        this.#run = null;
+        this.#setMoving(false);
+        run.reject(new SupersededError());
+      }
     );
     return { settled };
   }
@@ -141,6 +171,20 @@ export class SidebarTransition {
     this.#value = position;
     this.#el.style.removeProperty("translate");
     this.#setMoving(false);
+  }
+
+  // Spring time of a run, in seconds. A cancelled animation reads a null
+  // currentTime; reconstruct it from its timeline rather than reading 0.
+  #elapsed(run) {
+    let ms = run.anim.currentTime;
+    if (ms === null || ms === undefined) {
+      const now = run.anim.timeline?.currentTime;
+      ms =
+        run.startTime !== null && Number.isFinite(now)
+          ? now - run.startTime
+          : 0;
+    }
+    return Math.max(0, ms / 1000 / run.scale);
   }
 
   #setMoving(moving) {

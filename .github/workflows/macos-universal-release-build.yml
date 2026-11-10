@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -31,6 +31,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Setup Python
         uses: actions/setup-python@v5

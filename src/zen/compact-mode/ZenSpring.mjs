@@ -137,8 +137,8 @@ const PREF_BASE = "zen.view.compact.animation";
 const RESPONSE_RANGE = [0.05, 2];
 const DAMPING_RATIO_RANGE = [0.1, 2];
 
-function positiveFloat(prefs, name, fallback) {
-  const value = parseFloat(prefs.getStringPref(name, String(fallback)));
+function positiveFloat(prefs, pref, fallback) {
+  const value = parseFloat(prefs.getStringPref(pref, String(fallback)));
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
@@ -146,9 +146,9 @@ function clamp(value, [min, max]) {
   return Math.min(max, Math.max(min, value));
 }
 
-export function springFromPrefs(prefs, name) {
-  const fallback = DEFAULT_SPRINGS[name];
-  const base = `${PREF_BASE}.spring.${name}`;
+export function springFromPrefs(prefs, kind) {
+  const fallback = DEFAULT_SPRINGS[kind];
+  const base = `${PREF_BASE}.spring.${kind}`;
   return {
     response: clamp(
       positiveFloat(prefs, `${base}.response`, fallback.response),

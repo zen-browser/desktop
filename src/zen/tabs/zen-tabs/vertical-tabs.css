@@ -1302,7 +1302,6 @@ zen-library {
     justify-content: center;
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media -moz-pref("zen.theme.essentials-unread-dot") {
     &[zen-title-unread] > .tab-stack > .tab-content {
       background-image: radial-gradient(

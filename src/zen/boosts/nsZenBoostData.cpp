@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <cmath>
+#include <limits>
 
 #include "nsZenBoostData.h"
 #include "nsZenBoostsStyle.h"
@@ -36,8 +37,12 @@ static bool ReadFloat(JSContext* aCx, JS::Handle<JSObject*> aObject,
   if (!JS_GetProperty(aCx, aObject, aName, &value)) {
     return false;
   }
-  if (value.isNumber() && std::isfinite(value.toNumber())) {
-    *aResult = static_cast<float>(value.toNumber());
+  if (!value.isNumber()) {
+    return true;
+  }
+  const double number = value.toNumber();
+  if (std::abs(number) <= double(std::numeric_limits<float>::max())) {
+    *aResult = static_cast<float>(number);
   }
   return true;
 }

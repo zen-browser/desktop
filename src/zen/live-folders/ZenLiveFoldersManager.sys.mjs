@@ -19,6 +19,8 @@ ChromeUtils.defineLazyGetter(
 );
 
 const DEFAULT_FETCH_INTERVAL = 30 * 60 * 1000;
+// A GitHub page load refreshes a GitHub folder at most once per this window.
+const PAGE_LOAD_REFRESH_COOLDOWN = 60 * 1000;
 const providers = [
   {
     path: "resource:///modules/zen/RssLiveFolder.sys.mjs",
@@ -73,6 +75,7 @@ class nsZenLiveFoldersManager {
     }
 
     Services.obs.removeObserver(this, "wake_notification");
+    Services.obs.removeObserver(this, "http-on-examine-response");
     if (this.#boundHandleEvent) {
       lazy.ZenWindowSync.removeSyncHandler(this.#boundHandleEvent);
       this.#boundHandleEvent = null;
@@ -93,12 +96,13 @@ class nsZenLiveFoldersManager {
   // --------------
   #initEventListeners() {
     Services.obs.addObserver(this, "wake_notification");
+    Services.obs.addObserver(this, "http-on-examine-response");
 
     this.#boundHandleEvent = this.handleEvent.bind(this);
     lazy.ZenWindowSync.addSyncHandler(this.#boundHandleEvent);
   }
 
-  observe(_subject, topic, _data) {
+  observe(subject, topic, _data) {
     switch (topic) {
       case "wake_notification": {
         // Woke from sleep, re-schedule all fetch
@@ -107,6 +111,40 @@ class nsZenLiveFoldersManager {
           liveFolder.start();
         }
         break;
+      }
+      case "http-on-examine-response": {
+        this.#onDocumentResponse(subject);
+        break;
+      }
+    }
+  }
+
+  // Refreshes GitHub folders when a GitHub page loads in a tab, so new items
+  // show up without waiting for the timer. The folders' own fetches are not
+  // document loads, so they never trigger this.
+  #onDocumentResponse(subject) {
+    const channel = subject.QueryInterface(Ci.nsIHttpChannel);
+    if (
+      channel.loadInfo.externalContentPolicyType !==
+      Ci.nsIContentPolicy.TYPE_DOCUMENT
+    ) {
+      return;
+    }
+    // Private windows must not trigger requests made with the normal session.
+    if (channel.loadInfo.originAttributes.privateBrowsingId) {
+      return;
+    }
+
+    const now = Date.now();
+    for (const liveFolder of this.liveFolders.values()) {
+      if (
+        liveFolder.constructor.type === "github" &&
+        new URL(liveFolder.state.url).host === channel.URI.host &&
+        now - liveFolder.state.lastFetched > PAGE_LOAD_REFRESH_COOLDOWN
+      ) {
+        // Stamp now so page loads during this fetch do not start another one.
+        liveFolder.state.lastFetched = now;
+        liveFolder.refresh();
       }
     }
   }

@@ -4,6 +4,10 @@
 
 /* eslint-disable consistent-return */
 
+import { SidebarTransition } from "chrome://browser/content/zen-components/ZenSidebarTransition.mjs";
+import { PeekDriver } from "chrome://browser/content/zen-components/ZenPeekDriver.mjs";
+import { timeScaleFromPrefs } from "chrome://browser/content/zen-components/ZenSpring.mjs";
+
 const lazy = {};
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -24,6 +28,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "COMPACT_MODE_CAN_ANIMATE_SIDEBAR",
   "zen.view.compact.animate-sidebar",
+  true
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "COMPACT_MODE_USE_SPRINGS",
+  "zen.view.compact.animation.use-springs",
   true
 );
 
@@ -128,6 +139,32 @@ window.gZenCompactModeManager = {
     );
 
     this.addHasPolyfillObserver();
+
+    if (lazy.COMPACT_MODE_USE_SPRINGS) {
+      const transitionOptions = {
+        timeScale: () => timeScaleFromPrefs(Services.prefs),
+        reducedMotion: () =>
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      };
+      // The "keep #titlebar visible" hold follows the sidebar animation itself
+      // (one owner, like Arc), not whoever requested the move.
+      this._sidebarTransition = new SidebarTransition(this.sidebar, {
+        ...transitionOptions,
+        onMovingChange: moving =>
+          moving
+            ? this.sidebar.setAttribute("zen-peek-moving", "true")
+            : this.sidebar.removeAttribute("zen-peek-moving"),
+      });
+      this._contentTransition = new SidebarTransition(
+        document.getElementById("zen-tabbox-wrapper"),
+        transitionOptions
+      );
+      this._peekDriver = PeekDriver.forSidebar(this.sidebar, {
+        transition: this._sidebarTransition,
+        isRightSide: () => this.sidebarIsOnRight,
+      });
+      document.documentElement.setAttribute("zen-spring-driven", "true");
+    }
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
     window.addEventListener("sizemodechange", () =>
@@ -402,8 +439,10 @@ window.gZenCompactModeManager = {
     }
     if (this.preference) {
       ZenHasPolyfill.connectObserver(this.sidebarObserverId);
+      this._peekDriver?.connect();
     } else {
       ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
+      this._peekDriver?.disconnect();
     }
     window.dispatchEvent(
       new CustomEvent("ZenCompactMode:Toggled", { detail: this.preference })
@@ -597,6 +636,7 @@ window.gZenCompactModeManager = {
     this._sidebarIsOnRight = Services.prefs.getBoolPref(
       "zen.tabs.vertical.right-side"
     );
+    this._peekDriver?.sync({ instant: true });
   },
 
   toggleSidebar() {

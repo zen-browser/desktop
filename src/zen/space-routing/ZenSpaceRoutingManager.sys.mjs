@@ -492,6 +492,20 @@ class nsZenSpaceRoutingManager {
           return true;
         }
         break;
+      case "domain-contains": {
+        const host = this.#urlPart(uriString, "host");
+        if (host?.includes(reference)) {
+          return true;
+        }
+        break;
+      }
+      case "path-contains": {
+        const pathname = this.#urlPart(uriString, "pathname");
+        if (pathname?.includes(reference)) {
+          return true;
+        }
+        break;
+      }
       case "equal-to":
         if (this.#normalizeURL(uri) == this.#normalizeURL(reference)) {
           return true;
@@ -516,6 +530,23 @@ class nsZenSpaceRoutingManager {
       }
     }
     return false;
+  }
+
+  /**
+   * Extracts a lower-cased part of a url. A leading "www." is dropped
+   * from the host, the same way "equal-to" ignores it.
+   *
+   * @param {string} uriString - The url
+   * @param {"host"|"pathname"} part - The part to extract
+   * @returns {string|null} The part, or null if the url can't be parsed
+   */
+  #urlPart(uriString, part) {
+    const url = URL.parse(uriString);
+    if (!url) {
+      return null;
+    }
+    const value = url[part].toLowerCase();
+    return part === "host" ? value.replace(/^www\./, "") : value;
   }
 
   /**

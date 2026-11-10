@@ -22,6 +22,8 @@ const MOST_RECENT_SPACE = "most-recent-space";
 
 const MATCH_TYPES = [
   { id: "contains", l10nId: "library-space-routing-contains" },
+  { id: "domain-contains", l10nId: "library-space-routing-domain-contains" },
+  { id: "path-contains", l10nId: "library-space-routing-path-contains" },
   { id: "equal-to", l10nId: "library-space-routing-equal-to" },
   { id: "regex", l10nId: "library-space-routing-regex" },
 ];
@@ -390,9 +392,9 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
             type="text"
             .value=${draft.reference}
             placeholder=${
-              draft.matchType === "regex"
-                ? "zen-browser\\.app"
-                : "zen-browser.app"
+              { regex: "zen-browser\\.app", "path-contains": "/docs" }[
+                draft.matchType
+              ] ?? "zen-browser.app"
             }
             ?invalid=${!!draft.reference.trim() && !this.#draftIsValid}
             @input=${event => {

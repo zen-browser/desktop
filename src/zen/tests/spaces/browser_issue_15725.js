@@ -41,7 +41,8 @@ add_task(async function test_creation_form_workspace_cycle() {
               const expectedId =
                 !wrap && atBoundary
                   ? creationId
-                  : spaces[(expectedIndex + spaces.length) % spaces.length].uuid;
+                  : spaces[(expectedIndex + spaces.length) % spaces.length]
+                      .uuid;
               await gZenWorkspaces.changeWorkspaceShortcut(offset, true);
               Assert.equal(
                 gZenWorkspaces.activeWorkspace,

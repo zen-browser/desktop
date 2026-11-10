@@ -4,7 +4,7 @@
 
 // Analytic damped-spring solver (unit mass). Parameterised like SwiftUI/Motion:
 // `response` = undamped period in seconds, `dampingRatio` = ζ (1 = critical).
-// Pure: no DOM, no Services — importable from node tests.
+// Pure: no DOM or Services dependencies.
 
 export const SETTLE_POSITION_PX = 0.5;
 export const SETTLE_VELOCITY_PX_S = 1;
@@ -12,7 +12,8 @@ const MAX_DURATION_S = 10;
 const SCAN_STEP_S = 1 / 240;
 const CRITICAL_EPSILON = 1e-6;
 
-// Defaults fitted to Arc's sidebar animations (see PR description); must match prefs/zen/compact-mode.yaml.
+// Defaults fitted to Arc's sidebar animations. Keep in sync with the
+// zen.view.compact.animation.spring.* prefs in prefs/zen/compact-mode.yaml.
 export const DEFAULT_SPRINGS = Object.freeze({
   show: Object.freeze({ response: 0.1, dampingRatio: 0.88 }),
   hide: Object.freeze({ response: 0.09, dampingRatio: 0.9 }),
@@ -108,10 +109,7 @@ export function createSpring(
       return out(axes.map((a, i) => target[i] + a.x(t)));
     },
     velocity(t) {
-      if (t >= settleTime && settleTime > 0) {
-        return out(new Array(n).fill(0));
-      }
-      if (settleTime === 0) {
+      if (settleTime === 0 || t >= settleTime) {
         return out(new Array(n).fill(0));
       }
       return out(axes.map(a => a.v(Math.max(0, t))));
@@ -134,20 +132,31 @@ export function bakeKeyframes(spring, fps = 120) {
 
 const PREF_BASE = "zen.view.compact.animation";
 
+// Bounds for the spring prefs, so about:config extremes stay a usable spring
+// instead of an instant snap or a multi-second wobble.
+const RESPONSE_RANGE = [0.05, 2];
+const DAMPING_RATIO_RANGE = [0.1, 2];
+
 function positiveFloat(prefs, name, fallback) {
   const value = parseFloat(prefs.getStringPref(name, String(fallback)));
   return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+function clamp(value, [min, max]) {
+  return Math.min(max, Math.max(min, value));
 }
 
 export function springFromPrefs(prefs, name) {
   const fallback = DEFAULT_SPRINGS[name];
   const base = `${PREF_BASE}.spring.${name}`;
   return {
-    response: positiveFloat(prefs, `${base}.response`, fallback.response),
-    dampingRatio: positiveFloat(
-      prefs,
-      `${base}.damping-ratio`,
-      fallback.dampingRatio
+    response: clamp(
+      positiveFloat(prefs, `${base}.response`, fallback.response),
+      RESPONSE_RANGE
+    ),
+    dampingRatio: clamp(
+      positiveFloat(prefs, `${base}.damping-ratio`, fallback.dampingRatio),
+      DAMPING_RATIO_RANGE
     ),
   };
 }

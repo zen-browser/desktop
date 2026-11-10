@@ -19,12 +19,6 @@ export class SupersededError extends Error {
 }
 
 const vec2 = v => (Array.isArray(v) ? [v[0] ?? 0, v[1] ?? 0] : [v, 0]);
-const defaultReportError =
-  globalThis.reportError?.bind(globalThis) ??
-  (e =>
-    queueMicrotask(() => {
-      throw e;
-    }));
 const format = ([x, y]) => `${x}px ${y}px`;
 
 export class SidebarTransition {
@@ -33,7 +27,6 @@ export class SidebarTransition {
   #timeScale;
   #reducedMotion;
   #fps;
-  #reportError;
   #onMovingChange;
   #moving = false;
   #value = [0, 0];
@@ -41,14 +34,7 @@ export class SidebarTransition {
 
   constructor(
     el,
-    {
-      animate,
-      timeScale,
-      reducedMotion,
-      fps = 120,
-      reportError,
-      onMovingChange,
-    } = {}
+    { animate, timeScale, reducedMotion, fps = 120, onMovingChange } = {}
   ) {
     this.#el = el;
     this.#animate =
@@ -57,7 +43,6 @@ export class SidebarTransition {
     this.#timeScale = timeScale ?? (() => 1);
     this.#reducedMotion = reducedMotion ?? (() => false);
     this.#fps = fps;
-    this.#reportError = reportError ?? (e => defaultReportError(e));
     this.#onMovingChange = onMovingChange ?? (() => {});
   }
 
@@ -81,7 +66,7 @@ export class SidebarTransition {
     };
   }
 
-  moveTo(to, { spring, from, velocity, holdAtEnd = false, onSettle } = {}) {
+  moveTo(to, { spring, from, velocity, holdAtEnd = false } = {}) {
     const current = this.sample();
     const target = vec2(to);
     const start = from === undefined ? current.position : vec2(from);
@@ -105,11 +90,7 @@ export class SidebarTransition {
       this.#discard(previous);
       this.#value = target;
       this.#setMoving(false);
-      const error = this.#callSettle(onSettle, target);
       resolve(target.slice());
-      if (error) {
-        this.#reportError(error.e);
-      }
       return { settled };
     }
 
@@ -132,16 +113,12 @@ export class SidebarTransition {
         }
         run.done = true;
         this.#value = target;
-        const error = this.#callSettle(onSettle, target);
         if (!holdAtEnd) {
           this.#run = null;
           anim.cancel();
           this.#setMoving(false);
         }
         resolve(target.slice());
-        if (error) {
-          this.#reportError(error.e);
-        }
       },
       () => {}
     );
@@ -172,16 +149,6 @@ export class SidebarTransition {
     }
     this.#moving = moving;
     this.#onMovingChange(moving);
-  }
-
-  // Returns { e } if onSettle threw, so callers can finish cleanup first.
-  #callSettle(onSettle, target) {
-    try {
-      onSettle?.(target.slice());
-    } catch (e) {
-      return { e };
-    }
-    return null;
   }
 
   #discard(run) {

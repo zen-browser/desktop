@@ -31,7 +31,6 @@ export class PeekDriver {
   #hiddenOffset;
   #subscribe;
   #springs;
-  #setMoving;
   #schedule;
   #warn;
   #mode = "off";
@@ -41,13 +40,12 @@ export class PeekDriver {
   #pending = false;
   #warnedUnknown = false;
 
-  constructor({ transition, probe, hiddenOffset, subscribe, springs, setMoving, schedule, warn }) {
+  constructor({ transition, probe, hiddenOffset, subscribe, springs, schedule, warn }) {
     this.#transition = transition;
     this.#probe = probe;
     this.#hiddenOffset = hiddenOffset;
     this.#subscribe = subscribe;
     this.#springs = springs;
-    this.#setMoving = setMoving ?? (() => {});
     this.#schedule = schedule ?? (cb => queueMicrotask(cb));
     this.#warn = warn ?? ((...args) => console.warn(...args));
   }
@@ -80,7 +78,6 @@ export class PeekDriver {
     this.#mode = "off";
     this.#target = null;
     this.#transition.release();
-    this.#setMoving(false);
   }
 
   sync({ instant = false } = {}) {
@@ -135,7 +132,6 @@ export class PeekDriver {
     if (state === "inactive") {
       if (this.#mode !== "inactive") {
         this.#transition.release();
-        this.#setMoving(false);
       }
       this.#mode = "inactive";
       this.#target = null;
@@ -145,8 +141,11 @@ export class PeekDriver {
     if (state === "yield") {
       // The yield owner (toggle coordinator) keeps the shared transition's
       // value valid, so leaving yield may animate from the current sample.
+      // Keep a pending jump (set by inactive) across yield; init/driving have none.
+      if (this.#mode !== "inactive" && this.#mode !== "yield") {
+        this.#needsJump = false;
+      }
       this.#mode = "yield";
-      this.#needsJump = false;
       return;
     }
     const target = state === "revealed" ? 0 : this.#hiddenOffset();
@@ -159,7 +158,6 @@ export class PeekDriver {
       this.#needsJump = false;
       this.#target = target;
       this.#transition.jumpTo(target);
-      this.#setMoving(false);
       return;
     }
     if (wasDriving && target === this.#target) {
@@ -167,18 +165,9 @@ export class PeekDriver {
     }
     this.#target = target;
     const springs = this.#springs();
-    this.#setMoving(true);
-    const { settled } = this.#transition.moveTo(target, {
+    this.#transition.moveTo(target, {
       spring: state === "revealed" ? springs.in : springs.out,
     });
-    settled.then(
-      () => {
-        if (this.#mode === "driving" && this.#target === target) {
-          this.#setMoving(false);
-        }
-      },
-      () => {}
-    );
   }
 
   static forSidebar(el, { transition, isRightSide }) {
@@ -193,8 +182,6 @@ export class PeekDriver {
         in: springFromPrefs(win.Services.prefs, "peek-in"),
         out: springFromPrefs(win.Services.prefs, "peek-out"),
       }),
-      setMoving: moving =>
-        moving ? el.setAttribute("zen-peek-moving", "true") : el.removeAttribute("zen-peek-moving"),
       schedule: cb => win.queueMicrotask(cb),
     });
   }

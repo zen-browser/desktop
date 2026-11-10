@@ -27,10 +27,12 @@ export class SidebarTransition {
   #reducedMotion;
   #fps;
   #reportError;
+  #onMovingChange;
+  #moving = false;
   #value = [0, 0];
   #run = null; // { spring, startTime, scale, anim, reject, done }
 
-  constructor(el, { clock, animate, timeScale, reducedMotion, fps = 120, reportError } = {}) {
+  constructor(el, { clock, animate, timeScale, reducedMotion, fps = 120, reportError, onMovingChange } = {}) {
     this.#el = el;
     this.#clock = clock ?? (() => el.ownerDocument.timeline.currentTime ?? performance.now());
     this.#animate = animate ?? ((target, keyframes, options) => target.animate(keyframes, options));
@@ -38,6 +40,7 @@ export class SidebarTransition {
     this.#reducedMotion = reducedMotion ?? (() => false);
     this.#fps = fps;
     this.#reportError = reportError ?? (e => defaultReportError(e));
+    this.#onMovingChange = onMovingChange ?? (() => {});
   }
 
   get value() {
@@ -77,6 +80,7 @@ export class SidebarTransition {
       this.#run = null;
       this.#discard(previous);
       this.#value = target;
+      this.#setMoving(false);
       const error = this.#callSettle(onSettle, target);
       resolve(target.slice());
       if (error) {
@@ -96,6 +100,7 @@ export class SidebarTransition {
     const run = { spring: curve, startTime: now, scale, anim, reject, done: false };
     this.#run = run;
     this.#discard(previous); // after the new animation exists: no frame without one
+    this.#setMoving(true);
 
     anim.finished.then(
       () => {
@@ -108,6 +113,7 @@ export class SidebarTransition {
         if (!holdAtEnd) {
           this.#run = null;
           anim.cancel();
+          this.#setMoving(false);
         }
         resolve(target.slice());
         if (error) {
@@ -124,6 +130,7 @@ export class SidebarTransition {
     this.#run = null;
     this.#discard(previous);
     this.#value = vec2(value);
+    this.#setMoving(false);
   }
 
   release() {
@@ -133,6 +140,15 @@ export class SidebarTransition {
     this.#discard(previous);
     this.#value = position;
     this.#el.style.removeProperty("translate");
+    this.#setMoving(false);
+  }
+
+  #setMoving(moving) {
+    if (this.#moving === moving) {
+      return;
+    }
+    this.#moving = moving;
+    this.#onMovingChange(moving);
   }
 
   // Returns { e } if onSettle threw, so callers can finish cleanup first.

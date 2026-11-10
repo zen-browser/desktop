@@ -32,6 +32,9 @@
 
     height: var(--zen-element-separation);
     transition: height var(--zen-hidden-toolbar-transition);
+    :root[zen-spring-toggling='true'] & {
+      transition: none;
+    }
     overflow: clip;
     contain: layout paint;
 

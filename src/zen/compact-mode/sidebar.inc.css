@@ -80,9 +80,13 @@
       position: fixed;
       z-index: 10;
       translate: var(--zen-compact-hidden-translate);
+      --zen-peek: hidden;
       transition:
         translate 0.15s ease,
         visibility 0.15s ease;
+      :root[zen-spring-driven='true'] & {
+        transition: visibility 0.15s ease;
+      }
       bottom: var(--zen-compact-float);
       padding: 0 var(--zen-compact-float) !important;
       width: unset !important;
@@ -152,6 +156,10 @@
     position: relative;
     transition: visibility 0.15s; /* Same as the toolbox */
     visibility: hidden;
+    :root[zen-spring-driven='true'] #navigator-toolbox[zen-peek-moving='true'] & {
+      transition: none;
+      visibility: visible;
+    }
     :root[zen-sidebar-expanded='true'] & {
       width: var(--zen-sidebar-width);
     }
@@ -274,6 +282,9 @@
       );
       --zen-compact-mode-time: 0.25s;
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
+      :root[zen-spring-driven='true'] & {
+        transition: none;
+      }
 
       :root:not([supress-primary-adjustment='true']) & {
         #titlebar {
@@ -282,7 +293,14 @@
         }
 
         translate: none;
+        --zen-peek: revealed;
       }
+    }
+  }
+
+  #navigator-toolbox {
+    :root[zen-spring-toggling='true'] & {
+      --zen-peek: yield !important;
     }
   }
 }

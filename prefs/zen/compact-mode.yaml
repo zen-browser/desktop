@@ -44,3 +44,35 @@
 - name: zen.view.compact.enable-at-startup
   hidden: true
   value: false
+
+# Spring-driven compact mode animations (compositor thread, interruptible).
+- name: zen.view.compact.animation.use-springs
+  value: true
+
+# Slow-motion factor for inspecting/tuning the springs (1 = real time).
+- name: zen.view.compact.animation.time-scale
+  value: 1.0
+
+- name: zen.view.compact.animation.spring.show.response
+  value: 0.35
+
+- name: zen.view.compact.animation.spring.show.damping-ratio
+  value: 0.9
+
+- name: zen.view.compact.animation.spring.hide.response
+  value: 0.3
+
+- name: zen.view.compact.animation.spring.hide.damping-ratio
+  value: 1.0
+
+- name: zen.view.compact.animation.spring.peek-in.response
+  value: 0.3
+
+- name: zen.view.compact.animation.spring.peek-in.damping-ratio
+  value: 0.85
+
+- name: zen.view.compact.animation.spring.peek-out.response
+  value: 0.25
+
+- name: zen.view.compact.animation.spring.peek-out.damping-ratio
+  value: 1.0

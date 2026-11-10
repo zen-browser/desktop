@@ -57,9 +57,25 @@ window.gZenVerticalTabsManager = {
   },
 
   toggleExpand() {
-    const newVal = !Services.prefs.getBoolPref("zen.view.sidebar-expanded");
-    Services.prefs.setBoolPref("zen.view.sidebar-expanded", newVal);
-    Services.prefs.setBoolPref("zen.view.use-single-toolbar", false);
+    const kExpanded = "zen.view.sidebar-expanded";
+    const kSingleToolbar = "zen.view.use-single-toolbar";
+    const kSingleToolbarBeforeCollapse = "zen.view.use-single-toolbar.before-collapse";
+    if (Services.prefs.getBoolPref(kExpanded)) {
+      // The collapsed layout has no single toolbar, so remember the layout the
+      // user had and put it back when the sidebar is expanded again.
+      Services.prefs.setBoolPref(
+        kSingleToolbarBeforeCollapse,
+        Services.prefs.getBoolPref(kSingleToolbar)
+      );
+      Services.prefs.setBoolPref(kSingleToolbar, false);
+      Services.prefs.setBoolPref(kExpanded, false);
+    } else {
+      Services.prefs.setBoolPref(kExpanded, true);
+      Services.prefs.setBoolPref(
+        kSingleToolbar,
+        Services.prefs.getBoolPref(kSingleToolbarBeforeCollapse, false)
+      );
+    }
   },
 
   get navigatorToolbox() {

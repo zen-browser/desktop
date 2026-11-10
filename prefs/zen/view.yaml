@@ -16,6 +16,11 @@
 - name: zen.view.use-single-toolbar
   value: true
 
+# The single toolbar setting saved when the sidebar is collapsed, so expanding
+# it again restores the layout the user had chosen.
+- name: zen.view.use-single-toolbar.before-collapse
+  value: false
+
 - name: zen.view.sidebar-expanded
   value: true
 

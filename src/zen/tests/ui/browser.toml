@@ -19,4 +19,6 @@ support-files = [
 
 ["browser_toasts.js"]
 
+["browser_toggle_sidebar_keeps_layout.js"]
+
 ["browser_zen_commands.js"]

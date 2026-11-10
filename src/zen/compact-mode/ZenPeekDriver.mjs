@@ -171,7 +171,7 @@ export class PeekDriver {
   }
 
   static forSidebar(el, { transition, isRightSide }) {
-    const win = el.ownerGlobal;
+    const win = el.ownerDocument.defaultView;
     const doc = el.ownerDocument;
     return new PeekDriver({
       transition,

@@ -215,7 +215,10 @@ class CompactToggleCoordinator {
     if (compact) {
       const spring = springFromPrefs(Services.prefs, "hide");
       this.#track(
-        m._sidebarTransition.moveTo(m._peekHiddenOffset(), { spring, holdAtEnd: true }),
+        m._sidebarTransition.moveTo(m._peekHiddenOffset(), {
+          spring,
+          holdAtEnd: true,
+        }),
         m._contentTransition.moveTo([0, 0], { spring, holdAtEnd: true }),
         m._toolbarTransition?.moveTo([0, 0], { spring, holdAtEnd: true })
       );
@@ -729,7 +732,11 @@ window.gZenCompactModeManager = {
   },
 
   _peekHiddenOffset() {
-    return computeHiddenOffset(this.sidebar, window, () => this.sidebarIsOnRight);
+    return computeHiddenOffset(
+      this.sidebar,
+      window,
+      () => this.sidebarIsOnRight
+    );
   },
 
   async _updateEvent() {

@@ -13,16 +13,32 @@ const KNOWN_STATES = new Set(["revealed", "hidden", "yield"]);
 // Attributes that change `--zen-peek` or the hidden offset (contract-tested
 // against sidebar.inc.css / zen-compact-mode.css).
 export const SIDEBAR_ATTRIBUTES = Object.freeze([
-  "zen-has-hover", "zen-user-show", "zen-has-empty-tab", "flash-popup",
-  "has-popup-menu", "movingtab", "zen-compact-mode-active", "zen-right-side",
+  "zen-has-hover",
+  "zen-user-show",
+  "zen-has-empty-tab",
+  "flash-popup",
+  "has-popup-menu",
+  "movingtab",
+  "zen-compact-mode-active",
+  "zen-right-side",
 ]);
 export const ROOT_ATTRIBUTES = Object.freeze([
-  "zen-compact-mode", "customizing", "inDOMFullscreen", "zen-compact-animating",
-  "zen-spring-toggling", "zen-renaming-tab", "supress-primary-adjustment",
-  "zen-right-side", "zen-sidebar-expanded", "zen-no-padding", "zen-single-toolbar",
+  "zen-compact-mode",
+  "customizing",
+  "inDOMFullscreen",
+  "zen-compact-animating",
+  "zen-spring-toggling",
+  "zen-renaming-tab",
+  "supress-primary-adjustment",
+  "zen-right-side",
+  "zen-sidebar-expanded",
+  "zen-no-padding",
+  "zen-single-toolbar",
 ]);
 export const OBSERVED_PREFS = Object.freeze([
-  "zen.view.compact.hide-tabbar", "zen.view.compact.hide-toolbar", "zen.view.use-single-toolbar",
+  "zen.view.compact.hide-tabbar",
+  "zen.view.compact.hide-toolbar",
+  "zen.view.use-single-toolbar",
 ]);
 
 export class PeekDriver {
@@ -40,7 +56,15 @@ export class PeekDriver {
   #pending = false;
   #warnedUnknown = false;
 
-  constructor({ transition, probe, hiddenOffset, subscribe, springs, schedule, warn }) {
+  constructor({
+    transition,
+    probe,
+    hiddenOffset,
+    subscribe,
+    springs,
+    schedule,
+    warn,
+  }) {
     this.#transition = transition;
     this.#probe = probe;
     this.#hiddenOffset = hiddenOffset;
@@ -177,7 +201,8 @@ export class PeekDriver {
       transition,
       probe: () => win.getComputedStyle(el).getPropertyValue("--zen-peek"),
       hiddenOffset: () => computeHiddenOffset(el, win, isRightSide),
-      subscribe: onChange => observeSidebar(el, doc.documentElement, win, onChange),
+      subscribe: onChange =>
+        observeSidebar(el, doc.documentElement, win, onChange),
       springs: () => ({
         in: springFromPrefs(win.Services.prefs, "peek-in"),
         out: springFromPrefs(win.Services.prefs, "peek-out"),
@@ -190,7 +215,10 @@ export class PeekDriver {
 // Mirrors `--zen-compact-hidden-distance: calc(100% - var(--zen-compact-float) - 1px)`
 // in sidebar.inc.css. Validated against the real offset in the spike (Task 2 Step 4).
 export function computeHiddenOffset(el, win, isRightSide) {
-  const float = parseFloat(win.getComputedStyle(el).getPropertyValue("--zen-compact-float")) || 0;
+  const float =
+    parseFloat(
+      win.getComputedStyle(el).getPropertyValue("--zen-compact-float")
+    ) || 0;
   const width = el.getBoundingClientRect().width;
   const distance = width - float - 1;
   return isRightSide() ? distance : -distance;
@@ -198,8 +226,14 @@ export function computeHiddenOffset(el, win, isRightSide) {
 
 function observeSidebar(el, root, win, onChange) {
   const mutations = new win.MutationObserver(onChange);
-  mutations.observe(el, { attributes: true, attributeFilter: [...SIDEBAR_ATTRIBUTES] });
-  mutations.observe(root, { attributes: true, attributeFilter: [...ROOT_ATTRIBUTES] });
+  mutations.observe(el, {
+    attributes: true,
+    attributeFilter: [...SIDEBAR_ATTRIBUTES],
+  });
+  mutations.observe(root, {
+    attributes: true,
+    attributeFilter: [...ROOT_ATTRIBUTES],
+  });
   const resize = new win.ResizeObserver(onChange);
   resize.observe(el);
   const prefObserver = { observe: () => onChange() };

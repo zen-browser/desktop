@@ -19,7 +19,12 @@ export class SupersededError extends Error {
 }
 
 const vec2 = v => (Array.isArray(v) ? [v[0] ?? 0, v[1] ?? 0] : [v, 0]);
-const defaultReportError = globalThis.reportError?.bind(globalThis) ?? (e => queueMicrotask(() => { throw e; }));
+const defaultReportError =
+  globalThis.reportError?.bind(globalThis) ??
+  (e =>
+    queueMicrotask(() => {
+      throw e;
+    }));
 const format = ([x, y]) => `${x}px ${y}px`;
 
 export class SidebarTransition {
@@ -34,9 +39,21 @@ export class SidebarTransition {
   #value = [0, 0];
   #run = null; // { spring, scale, anim, reject, done }
 
-  constructor(el, { animate, timeScale, reducedMotion, fps = 120, reportError, onMovingChange } = {}) {
+  constructor(
+    el,
+    {
+      animate,
+      timeScale,
+      reducedMotion,
+      fps = 120,
+      reportError,
+      onMovingChange,
+    } = {}
+  ) {
     this.#el = el;
-    this.#animate = animate ?? ((target, keyframes, options) => target.animate(keyframes, options));
+    this.#animate =
+      animate ??
+      ((target, keyframes, options) => target.animate(keyframes, options));
     this.#timeScale = timeScale ?? (() => 1);
     this.#reducedMotion = reducedMotion ?? (() => false);
     this.#fps = fps;
@@ -58,7 +75,10 @@ export class SidebarTransition {
       return { position: this.#value.slice(), velocity: [0, 0] };
     }
     const t = Math.max(0, (run.anim.currentTime ?? 0) / 1000 / run.scale);
-    return { position: run.spring.position(t), velocity: run.spring.velocity(t) };
+    return {
+      position: run.spring.position(t),
+      velocity: run.spring.velocity(t),
+    };
   }
 
   moveTo(to, { spring, from, velocity, holdAtEnd = false, onSettle } = {}) {
@@ -66,7 +86,11 @@ export class SidebarTransition {
     const target = vec2(to);
     const start = from === undefined ? current.position : vec2(from);
     const v0 = velocity === undefined ? current.velocity : vec2(velocity);
-    const curve = createSpring(spring, { from: start, to: target, velocity: v0 });
+    const curve = createSpring(spring, {
+      from: start,
+      to: target,
+      velocity: v0,
+    });
 
     let resolve, reject;
     const settled = new Promise((res, rej) => {

@@ -61,7 +61,10 @@ function broadcast(values, n) {
   });
 }
 
-export function createSpring({ response, dampingRatio }, { from, to, velocity = 0 }) {
+export function createSpring(
+  { response, dampingRatio },
+  { from, to, velocity = 0 }
+) {
   if (!(response > 0)) {
     throw new RangeError("ZenSpring: response must be > 0");
   }
@@ -69,13 +72,21 @@ export function createSpring({ response, dampingRatio }, { from, to, velocity = 
     throw new RangeError("ZenSpring: dampingRatio must be > 0");
   }
   const isVector = [from, to, velocity].some(Array.isArray);
-  const n = Math.max(...[from, to, velocity].map(v => (Array.isArray(v) ? v.length : 1)));
+  const n = Math.max(
+    ...[from, to, velocity].map(v => (Array.isArray(v) ? v.length : 1))
+  );
   const [f, target, v0] = broadcast([from, to, velocity], n);
   const omega0 = (2 * Math.PI) / response;
-  const axes = target.map((goal, i) => axis(omega0, dampingRatio, f[i] - goal, v0[i]));
+  const axes = target.map((goal, i) =>
+    axis(omega0, dampingRatio, f[i] - goal, v0[i])
+  );
 
   const settledAt = t =>
-    axes.every(a => Math.abs(a.x(t)) < SETTLE_POSITION_PX && Math.abs(a.v(t)) < SETTLE_VELOCITY_PX_S);
+    axes.every(
+      a =>
+        Math.abs(a.x(t)) < SETTLE_POSITION_PX &&
+        Math.abs(a.v(t)) < SETTLE_VELOCITY_PX_S
+    );
   let settleTime = 0;
   for (let t = 0; t <= MAX_DURATION_S; t += SCAN_STEP_S) {
     if (!settledAt(t)) {
@@ -133,7 +144,11 @@ export function springFromPrefs(prefs, name) {
   const base = `${PREF_BASE}.spring.${name}`;
   return {
     response: positiveFloat(prefs, `${base}.response`, fallback.response),
-    dampingRatio: positiveFloat(prefs, `${base}.damping-ratio`, fallback.dampingRatio),
+    dampingRatio: positiveFloat(
+      prefs,
+      `${base}.damping-ratio`,
+      fallback.dampingRatio
+    ),
   };
 }
 

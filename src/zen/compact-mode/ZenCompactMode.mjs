@@ -525,8 +525,21 @@ window.gZenCompactModeManager = {
       value = false;
     }
     if (this._springToggle?.active) {
+      // Mid-flight, every write to `preference` (toggle(), shortcuts, other
+      // callers) is the latest intent: retarget instead of starting a toggle.
+      if (value === this._springToggle.intended) {
+        delete this._ignoreNextHover;
+        return;
+      }
+      delete this._isTabBeingDragged;
+      this._stopTrackingMouseOutsideWindow();
+      this.sidebar.removeAttribute("zen-user-show");
+      // Like start(): an ignored hover collapses now and is forgotten once
+      // the toggle settles.
+      if (this._ignoreNextHover) {
+        this._setElementExpandAttribute(this.sidebar, false);
+      }
       this._springToggle.request(value);
-      delete this._ignoreNextHover;
       return;
     }
     this.log("Setting compact mode preference to", value);

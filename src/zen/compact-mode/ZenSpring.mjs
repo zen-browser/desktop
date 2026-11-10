@@ -132,8 +132,9 @@ export function bakeKeyframes(spring, fps = 120) {
 
 const PREF_BASE = "zen.view.compact.animation";
 
-// Bounds for the spring prefs, so about:config extremes stay a usable spring
-// instead of an instant snap or a multi-second wobble.
+// Bounds for the spring prefs, so about:config extremes can't produce a
+// degenerate spring (an instant snap or huge settle times). The edges still
+// allow a slow, ringing spring (e.g. damping ratio 0.1).
 const RESPONSE_RANGE = [0.05, 2];
 const DAMPING_RATIO_RANGE = [0.1, 2];
 

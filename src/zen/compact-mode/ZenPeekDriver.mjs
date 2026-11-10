@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Relative import: keeps the module loadable outside chrome:// URLs.
 import { springFromPrefs } from "./ZenSpring.mjs";
 
 // Mirrors the CSS-computed `--zen-peek` state of the compact sidebar onto a
@@ -10,8 +11,8 @@ import { springFromPrefs } from "./ZenSpring.mjs";
 
 const KNOWN_STATES = new Set(["revealed", "hidden", "yield"]);
 
-// Attributes that change `--zen-peek` or the hidden offset (contract-tested
-// against sidebar.inc.css / zen-compact-mode.css).
+// Attributes that change `--zen-peek` or the hidden offset; keep in sync with
+// the selectors in sidebar.inc.css and zen-compact-mode.css.
 export const SIDEBAR_ATTRIBUTES = Object.freeze([
   "zen-has-hover",
   "zen-user-show",
@@ -165,7 +166,8 @@ export class PeekDriver {
     if (state === "yield") {
       // The yield owner (toggle coordinator) keeps the shared transition's
       // value valid, so leaving yield may animate from the current sample.
-      // Keep a pending jump (set by inactive) across yield; init/driving have none.
+      // Keep a pending jump (set by inactive) across yield; init/driving have
+      // none.
       if (this.#mode !== "inactive" && this.#mode !== "yield") {
         this.#needsJump = false;
       }
@@ -212,8 +214,8 @@ export class PeekDriver {
   }
 }
 
-// Mirrors `--zen-compact-hidden-distance: calc(100% - var(--zen-compact-float) - 1px)`
-// in sidebar.inc.css. Validated against the real offset in the spike (Task 2 Step 4).
+// Mirrors `--zen-compact-hidden-distance` in sidebar.inc.css:
+// calc(100% - var(--zen-compact-float) - 1px), signed by the sidebar side.
 export function computeHiddenOffset(el, win, isRightSide) {
   const float =
     parseFloat(

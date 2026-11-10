@@ -163,7 +163,7 @@ class CompactToggleCoordinator {
       this.#browser.style.overflow = "clip";
 
       if (compact) {
-        const before = this.measureInFlow();
+        const before = this.measure();
         this.#commit(true);
         this.#restoreFocus();
         const flip = this.seedFlip(before);
@@ -197,16 +197,12 @@ class CompactToggleCoordinator {
     this.#retarget(compact, {});
   }
 
-  // In-flow geometry, measured right before compact attributes are applied.
-  measureInFlow() {
-    return this.#measure();
-  }
-
   // Records the FLIP offsets of a switch into compact (spring or not), from
-  // `before` (measureInFlow) and the committed compact layout. The sidebar
-  // offset is relative to its floating rest (translate 0).
+  // `before` (measure() right before the compact attributes were applied)
+  // and the committed compact layout. The sidebar offset is relative to its
+  // floating rest (translate 0).
   seedFlip(before) {
-    const after = this.#measure({ sidebarAtRest: true });
+    const after = this.measure({ sidebarAtRest: true });
     this.#flip = {
       key: this.#flipKey(),
       sidebar: rectDelta(before.anchor, after.anchor),
@@ -256,11 +252,11 @@ class CompactToggleCoordinator {
         }
       },
       () => {
-        // The current run was discarded by someone else (e.g. the peek driver
-        // went inactive on DOM fullscreen / customize and released the shared
-        // sidebar transition): settle at the committed layout, no commit.
+        // The current run was discarded by someone else (the peek driver went
+        // inactive on DOM fullscreen / customize and released the shared
+        // sidebar transition, or an animation was cancelled externally):
+        // settle at the committed layout, no commit.
         if (generation === this.#generation) {
-          this.intended = this.#manager.preference;
           this.#cleanup();
         }
       }
@@ -320,7 +316,9 @@ class CompactToggleCoordinator {
     );
   }
 
-  #measure({ sidebarAtRest = false } = {}) {
+  // Geometry the FLIP is computed from. Without `sidebarAtRest` it is the
+  // in-flow layout when called before the compact attributes are applied.
+  measure({ sidebarAtRest = false } = {}) {
     // Hold the sidebar at translate 0 for the measurement (same task, never
     // painted) so the offset is relative to its rest whatever moved it.
     const probe = sidebarAtRest
@@ -369,7 +367,7 @@ class CompactToggleCoordinator {
     // does not move. Left side: the in-flow content starts where the in-flow
     // sidebar ends; estimate that as the floating sidebar minus its float
     // padding on both sides, minus the floating content inset (exact for the
-    // expanded sidebar, 2px over for the collapsed one; measured 2026-11-10).
+    // expanded sidebar, about 2px over for the collapsed one).
     if (this.#manager.sidebarIsOnRight) {
       return { sidebar: [0, 0], content: [0, 0], toolbar: [0, 0] };
     }
@@ -453,10 +451,12 @@ window.gZenCompactModeManager = {
     this.addHasPolyfillObserver();
 
     if (lazy.COMPACT_MODE_USE_SPRINGS) {
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      );
       const transitionOptions = {
         timeScale: () => timeScaleFromPrefs(Services.prefs),
-        reducedMotion: () =>
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+        reducedMotion: () => reducedMotion.matches,
       };
       // The "keep #titlebar visible" hold follows the sidebar animation itself
       // (one owner, like Arc), not whoever requested the move.
@@ -771,9 +771,7 @@ window.gZenCompactModeManager = {
     // Seed the toggle coordinator's FLIP cache on every switch into compact
     // (startup restore, gated toggles) so a later spring exit lands exactly.
     const flipBefore =
-      value && this.canHideSidebar
-        ? this._springToggle?.measureInFlow()
-        : undefined;
+      value && this.canHideSidebar ? this._springToggle?.measure() : undefined;
     const isUrlbarFocused = gURLBar.focused;
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown

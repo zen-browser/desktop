@@ -46,6 +46,7 @@
   value: false
 
 # Spring-driven compact mode animations (compositor thread, interruptible).
+# Read once per window at startup: changing it requires a restart.
 - name: zen.view.compact.animation.use-springs
   value: true
 
@@ -53,6 +54,10 @@
 - name: zen.view.compact.animation.time-scale
   value: 1.0
 
+# Spring constants (response = period in seconds, damping-ratio 1 = critical),
+# fitted to Arc's sidebar. Keep in sync with DEFAULT_SPRINGS in
+# src/zen/compact-mode/ZenSpring.mjs. Clamped there to response 0.05-2 and
+# damping-ratio 0.1-2.
 - name: zen.view.compact.animation.spring.show.response
   value: 0.10
 

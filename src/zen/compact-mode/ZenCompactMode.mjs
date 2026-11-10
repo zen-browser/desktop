@@ -129,6 +129,7 @@ window.gZenCompactModeManager = {
           "zen.tabs.vertical.right-side",
           tabIsRightObserver
         );
+        this._peekDriver?.disconnect();
       },
       { once: true }
     );

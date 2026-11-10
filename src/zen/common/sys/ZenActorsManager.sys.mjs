@@ -83,9 +83,6 @@ if (!Services.appinfo.inSafeMode) {
     },
     child: {
       esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
-      events: {
-        DOMDocElementInserted: {},
-      },
     },
     safeForUntrustedWebProcess: true,
     remoteTypes: ["web", "file"],

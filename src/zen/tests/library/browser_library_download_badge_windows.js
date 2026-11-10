@@ -147,7 +147,10 @@ add_task(async function test_badge_tracks_an_older_pending_download() {
     );
 
     const badge = document.getElementById("library-button-badge");
-    Assert.ok(badgeShowing(window), "the older download keeps the badge visible");
+    Assert.ok(
+      badgeShowing(window),
+      "the older download keeps the badge visible"
+    );
     Assert.ok(badge.hasAttribute("downloading"), "the badge shows progress");
     const arc = badge.querySelector(".zen-library-download-progress-arc");
     Assert.equal(parseFloat(arc.style.strokeDasharray), 25);
@@ -164,7 +167,10 @@ add_task(async function test_badge_tracks_an_older_pending_download() {
 
     older.hasPartialData = false;
     older.onchange();
-    Assert.ok(!badgeShowing(window), "a canceled download is no longer pending");
+    Assert.ok(
+      !badgeShowing(window),
+      "a canceled download is no longer pending"
+    );
   } finally {
     await list.remove(older);
     await list.remove(newer);

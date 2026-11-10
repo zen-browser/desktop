@@ -12,11 +12,12 @@ const MAX_DURATION_S = 10;
 const SCAN_STEP_S = 1 / 240;
 const CRITICAL_EPSILON = 1e-6;
 
+// Defaults fitted to Arc's sidebar animations (see PR description); must match prefs/zen/compact-mode.yaml.
 export const DEFAULT_SPRINGS = Object.freeze({
-  show: Object.freeze({ response: 0.35, dampingRatio: 0.9 }),
-  hide: Object.freeze({ response: 0.3, dampingRatio: 1 }),
-  "peek-in": Object.freeze({ response: 0.3, dampingRatio: 0.85 }),
-  "peek-out": Object.freeze({ response: 0.25, dampingRatio: 1 }),
+  show: Object.freeze({ response: 0.1, dampingRatio: 0.88 }),
+  hide: Object.freeze({ response: 0.09, dampingRatio: 0.9 }),
+  "peek-in": Object.freeze({ response: 0.16, dampingRatio: 0.82 }),
+  "peek-out": Object.freeze({ response: 0.16, dampingRatio: 0.84 }),
 });
 
 function axis(omega0, zeta, x0, v0) {

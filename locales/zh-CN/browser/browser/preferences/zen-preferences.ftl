@@ -25,42 +25,42 @@ zen-glance-enabled =
 zen-glance-trigger-ctrl-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌃ + Click
-           *[other] Ctrl + Click
+            [macos] ⌃ + 单击
+           *[other] Ctrl + 单击
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Control + Click
-           *[other] Ctrl + Click
+            [macos] Control + 单击
+           *[other] Ctrl + 单击
         }
 zen-glance-trigger-alt-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌥ + Click
-           *[other] Alt + Click
+            [macos] ⌥ + 单击
+           *[other] Alt + 单击
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Option + Click
-           *[other] Alt + Click
+            [macos] Option + 单击
+           *[other] Alt + 单击
         }
 zen-glance-trigger-shift-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⇧ + Click
-           *[other] Shift + Click
+            [macos] ⇧ + 单击
+           *[other] Shift + 单击
         }
-    .aria-label = Shift + Click
+    .aria-label = Shift + 单击
 zen-glance-trigger-meta-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌘ + Click
-           *[other] Meta (Command) + Click
+            [macos] ⌘ + 单击
+           *[other] Meta (Command) + 单击
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Command + Click
-           *[other] Meta (Command) + Click
+            [macos] Command + 单击
+           *[other] Meta (Command) + 单击
         }
 zen-look-and-feel-compact-view-header = 以简洁视图显示
 zen-look-and-feel-compact-view-description = 仅显示您使用的工具栏！
@@ -86,8 +86,8 @@ zen-settings-workspaces-sync =
     .label = 跨设备同步侧边栏
     .description = 通过您的 Mozilla 帐户保持您的工作空间、固定标签页和文件夹在您所有的设备上同步。
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = 包含未固定的标签页
+    .description = 同时同步每个工作区中的普通标签页，而不仅仅是固定标签页和文件夹。
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = 仅同步工作区中的已固定标签页
 zen-tabs-cycle-by-attribute = 
@@ -214,7 +214,7 @@ zen-workspace-shortcut-switch-9 = 切换到工作区 9
 zen-workspace-shortcut-switch-10 = 切换到工作区 10
 zen-workspace-shortcut-create = 新建工作区
 zen-sidebar-shortcut-toggle = 折叠/展开侧边栏
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = 切换资料库
 zen-pinned-tab-shortcut-reset = 重置固定标签页至其固定的 URL
 zen-split-view-shortcut-grid = 切换网格分屏视图
 zen-split-view-shortcut-vertical = 切换垂直分屏视图

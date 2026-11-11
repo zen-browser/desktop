@@ -35,6 +35,15 @@ const TYPES = {
 
 const NAMED_COLORS = { white: [255, 255, 255, 1], black: [0, 0, 0, 1] };
 
+const FIREFOX_COLORS = new Map(
+  Object.entries(NAMED_COLORS).flatMap(([name, [r, g, b]]) =>
+    [10, 20, 30, 40, 50, 60, 70, 80, 90].map(alpha => [
+      `var(--color-${name}-alpha-${alpha})`,
+      [r, g, b, alpha / 100],
+    ])
+  )
+);
+
 /**
  * Parses a literal CSS color.
  *
@@ -48,6 +57,9 @@ function parseColor(text) {
   }
   if (value === "transparent") {
     return [0, 0, 0, 0];
+  }
+  if (FIREFOX_COLORS.has(value)) {
+    return FIREFOX_COLORS.get(value);
   }
   let match = value.match(/^#([0-9a-f]{3,8})$/);
   if (match && [3, 4, 6, 8].includes(match[1].length)) {
@@ -90,6 +102,27 @@ function toHex([r, g, b, a]) {
       .toString(16)
       .padStart(2, "0");
   return `#${hex(r)}${hex(g)}${hex(b)}${a < 1 ? hex(a * 255) : ""}`;
+}
+
+/**
+ * Replaces a literal color with the Firefox primitive of the same color, if
+ * there is one.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
+export function preferFirefoxColor(text) {
+  const color = parseColor(text);
+  if (!color) {
+    return text;
+  }
+  const hex = toHex(color);
+  for (const [name, primitive] of FIREFOX_COLORS) {
+    if (toHex(primitive) === hex) {
+      return name;
+    }
+  }
+  return text;
 }
 
 function sameColor(a, b) {
@@ -371,8 +404,12 @@ function fromStudio(name, entry) {
   if (!/^--zen-[a-z0-9-]+$/.test(name)) {
     return { reason: "the name must be lowercase and start with zen-" };
   }
-  const css = value =>
-    type === "boxShadow" ? shadowToCss(value) : String(value);
+  const css = value => {
+    if (type === "boxShadow") {
+      return shadowToCss(value);
+    }
+    return type === "color" ? preferFirefoxColor(String(value)) : String(value);
+  };
   let value;
   if (entry.light !== undefined && entry.dark !== undefined) {
     value = { light: css(entry.light), dark: css(entry.dark) };
@@ -393,6 +430,7 @@ export function importStudioTokens(source = PULL_DIR) {
 
   const changed = [];
   const missing = [];
+  const ignored = [];
   const known = new Set();
   const files = new Map();
   const open = file => {
@@ -430,7 +468,10 @@ export function importStudioTokens(source = PULL_DIR) {
         studioToken.type === "boxShadow" || studioToken.type === "color"
           ? same(current, text)
           : current === text;
-      return equal ? current : text;
+      if (equal) {
+        return current;
+      }
+      return studioToken.type === "color" ? preferFirefoxColor(text) : text;
     };
     let value;
     if (typeof def.value === "object") {
@@ -445,14 +486,21 @@ export function importStudioTokens(source = PULL_DIR) {
     } else {
       value = update(def.value, next.base);
     }
-    if (JSON.stringify(value) !== JSON.stringify(def.value)) {
-      def.value = value;
-      file.dirty = true;
-      changed.push(token.name);
+    if (JSON.stringify(value) === JSON.stringify(def.value)) {
+      continue;
     }
+    if (!toStudio({ group: token.group, value, external: false })) {
+      ignored.push({
+        name: token.name,
+        reason: `its new value is not a literal ${studioToken.type} value`,
+      });
+      continue;
+    }
+    def.value = value;
+    file.dirty = true;
+    changed.push(token.name);
   }
   const added = [];
-  const ignored = [];
   const defined = new Set(tokens.map(token => token.name));
   for (const [name, entry] of incoming) {
     if (known.has(name)) {

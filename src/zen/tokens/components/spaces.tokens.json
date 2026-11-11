@@ -22,12 +22,12 @@
   "text-color": {
     "--zen-spaces-theme-picker-button-color": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.7)",
-        "dark": "rgba(255, 255, 255, 0.9)"
+        "light": "var(--color-black-alpha-70)",
+        "dark": "var(--color-white-alpha-90)"
       }
     },
     "--zen-workspace-scroll-to-tab-color": {
-      "value": { "light": "rgba(0, 0, 0, 0.8)", "dark": "#ffffff" }
+      "value": { "light": "var(--color-black-alpha-80)", "dark": "#ffffff" }
     }
   },
   "icon-color": {

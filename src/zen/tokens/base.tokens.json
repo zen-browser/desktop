@@ -121,38 +121,38 @@
   "versatile-color": {
     "--zen-color-contrast-10": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.1)",
-        "dark": "rgba(255, 255, 255, 0.1)"
+        "light": "var(--color-black-alpha-10)",
+        "dark": "var(--color-white-alpha-10)"
       }
     },
     "--zen-color-contrast-30": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.3)",
-        "dark": "rgba(255, 255, 255, 0.3)"
+        "light": "var(--color-black-alpha-30)",
+        "dark": "var(--color-white-alpha-30)"
       }
     },
     "--zen-color-contrast-40": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.4)",
-        "dark": "rgba(255, 255, 255, 0.4)"
+        "light": "var(--color-black-alpha-40)",
+        "dark": "var(--color-white-alpha-40)"
       }
     },
     "--zen-color-contrast-50": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.5)",
-        "dark": "rgba(255, 255, 255, 0.5)"
+        "light": "var(--color-black-alpha-50)",
+        "dark": "var(--color-white-alpha-50)"
       }
     },
     "--zen-color-contrast-70": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.7)",
-        "dark": "rgba(255, 255, 255, 0.7)"
+        "light": "var(--color-black-alpha-70)",
+        "dark": "var(--color-white-alpha-70)"
       }
     },
     "--zen-color-contrast-80": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.8)",
-        "dark": "rgba(255, 255, 255, 0.8)"
+        "light": "var(--color-black-alpha-80)",
+        "dark": "var(--color-white-alpha-80)"
       }
     }
   },

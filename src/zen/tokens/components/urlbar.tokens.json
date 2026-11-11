@@ -5,12 +5,12 @@
     "--zen-urlbar-background-transparent": { "external": true },
     "--zen-urlbar-label-tint-color": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.5)",
-        "dark": "rgba(255, 255, 255, 0.2)"
+        "light": "var(--color-black-alpha-50)",
+        "dark": "var(--color-white-alpha-20)"
       }
     },
     "--zen-urlbar-selected-favicon-background": {
-      "value": "rgba(255, 255, 255, 0.9)"
+      "value": "var(--color-white-alpha-90)"
     }
   },
   "versatile-color": {
@@ -24,7 +24,7 @@
   },
   "border-color": {
     "--zen-urlbar-floating-outline-color": {
-      "value": { "light": "rgba(0, 0, 0, 0.2)", "dark": "#4a4a4a" }
+      "value": { "light": "var(--color-black-alpha-20)", "dark": "#4a4a4a" }
     }
   },
   "size": {

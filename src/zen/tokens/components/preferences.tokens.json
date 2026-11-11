@@ -8,8 +8,8 @@
     },
     "--zen-preferences-color-picker-deck-background": {
       "value": {
-        "light": "rgba(255, 255, 255, 0.3)",
-        "dark": "rgba(0, 0, 0, 0.3)"
+        "light": "var(--color-white-alpha-30)",
+        "dark": "var(--color-black-alpha-30)"
       }
     }
   },

@@ -32,7 +32,7 @@
       }
     },
     "--zen-boosts-share-success-background": {
-      "value": { "light": "rgba(255, 255, 255, 0.8)", "dark": "#1c1c1ce6" }
+      "value": { "light": "var(--color-white-alpha-80)", "dark": "#1c1c1ce6" }
     },
     "--zen-boosts-share-footer-background": { "external": true },
     "--zen-boosts-share-header-background": { "external": true },
@@ -50,7 +50,9 @@
     "--zen-boosts-secondary-color": { "external": true },
     "--zen-boosts-selector-button-color": { "external": true },
     "--zen-boosts-selector-preview-color": { "external": true },
-    "--zen-boosts-font-button-color": { "value": "rgba(0, 0, 0, 0.6)" },
+    "--zen-boosts-font-button-color": {
+      "value": "var(--color-black-alpha-60)"
+    },
     "--zen-boosts-mode-button-color": { "value": "#e2e2e2" },
     "--zen-boosts-zap-bar-color": { "value": "#d1d1d1" },
     "--zen-boosts-zap-bar-button-color": { "value": "#1c1c1c" },

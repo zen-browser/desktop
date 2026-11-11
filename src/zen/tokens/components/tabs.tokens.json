@@ -22,7 +22,7 @@
     "--zen-tabs-reset-pin-separator-background": {
       "value": {
         "light": "rgba(66, 61, 61, 0.3)",
-        "dark": "rgba(255, 255, 255, 0.3)"
+        "dark": "var(--color-white-alpha-30)"
       }
     },
     "--zen-essential-tab-hover-bg": { "external": true }

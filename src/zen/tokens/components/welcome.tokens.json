@@ -6,8 +6,8 @@
     "--zen-welcome-border": { "external": true },
     "--zen-welcome-check-border-color": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.3)",
-        "dark": "rgba(255, 255, 255, 0.4)"
+        "light": "var(--color-black-alpha-30)",
+        "dark": "var(--color-white-alpha-40)"
       }
     }
   },

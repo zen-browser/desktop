@@ -10,12 +10,12 @@
   "background-color": {
     "--zen-split-view-active-tab-bg": { "external": true },
     "--zen-split-view-fake-browser-background": {
-      "value": "rgba(255, 255, 255, 0.1)"
+      "value": "var(--color-white-alpha-10)"
     },
     "--zen-split-view-tab-separator-background": {
       "value": {
-        "light": "rgba(0, 0, 0, 0.1)",
-        "dark": "rgba(255, 255, 255, 0.2)"
+        "light": "var(--color-black-alpha-10)",
+        "dark": "var(--color-white-alpha-20)"
       }
     }
   },

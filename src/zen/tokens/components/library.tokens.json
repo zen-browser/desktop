@@ -20,7 +20,7 @@
   "border-color": {
     "--zen-library-scroll-border": { "external": true },
     "--zen-library-boost-icon-border-color": {
-      "value": "rgba(255, 255, 255, 0.6)"
+      "value": "var(--color-white-alpha-60)"
     },
     "--zen-library-media-preview-stage-border-color": {
       "value": {
@@ -62,32 +62,37 @@
       "value": { "light": "#f1f1f1", "dark": "#4a4a4a" }
     },
     "--zen-library-download-badge-mix-color": {
-      "value": { "light": "#ffffff", "dark": "rgba(0, 0, 0, 0.5)" }
+      "value": { "light": "#ffffff", "dark": "var(--color-black-alpha-50)" }
     },
     "--zen-library-media-opt-in-background": {
       "value": { "light": "#fafafa", "dark": "#1c1c1c" }
     },
-    "--zen-library-media-play-background": { "value": "rgba(0, 0, 0, 0.5)" },
+    "--zen-library-media-play-background": {
+      "value": "var(--color-black-alpha-50)"
+    },
     "--zen-library-boost-icon-background": {
-      "value": "rgba(255, 255, 255, 0.6)"
+      "value": "var(--color-white-alpha-60)"
     },
     "--zen-library-boost-icon-strike-background": {
       "value": {
-        "light": "rgba(255, 255, 255, 0.8)",
-        "dark": "rgba(255, 255, 255, 0.5)"
+        "light": "var(--color-white-alpha-80)",
+        "dark": "var(--color-white-alpha-50)"
       }
     },
     "--zen-library-media-preview-backdrop-background": {
       "value": {
-        "light": "rgba(255, 255, 255, 0.5)",
-        "dark": "rgba(0, 0, 0, 0.5)"
+        "light": "var(--color-white-alpha-50)",
+        "dark": "var(--color-black-alpha-50)"
       }
     },
     "--zen-library-media-preview-panel-background": {
       "value": { "light": "#f5f5f5", "dark": "#1c1c1c" }
     },
     "--zen-library-media-preview-stage-background": {
-      "value": { "light": "rgba(0, 0, 0, 0.05)", "dark": "rgba(0, 0, 0, 0.3)" }
+      "value": {
+        "light": "rgba(0, 0, 0, 0.05)",
+        "dark": "var(--color-black-alpha-30)"
+      }
     }
   },
   "text-color": {

@@ -74,13 +74,23 @@ jobs:
             echo "No tokens changed in Tokens Studio." >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Find or create the issue
+      - name: Find, create or close the issue
         id: issue
-        if: steps.pull.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_TITLE: Update design tokens from Tokens Studio
+          CHANGED: ${{ steps.pull.outputs.changed }}
         run: |
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "\"$ISSUE_TITLE\" in:title" --json number,title \
+            --jq "map(select(.title == \"$ISSUE_TITLE\")) | .[0].number // empty")
+          if [ "$CHANGED" != "true" ]; then
+            if [ -n "$number" ]; then
+              gh issue close "$number" --repo "$GITHUB_REPOSITORY" --reason "not planned" \
+                --comment "The tokens in Tokens Studio match the repository again."
+            fi
+            exit 0
+          fi
           {
             echo "The design tokens in the Tokens Studio project differ from the ones in the repository."
             echo
@@ -90,9 +100,6 @@ jobs:
             echo
             echo "Opened by the [Design Tokens workflow]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)."
           } > "$RUNNER_TEMP/issue-body.md"
-          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
-            --search "\"$ISSUE_TITLE\" in:title" --json number,title \
-            --jq "map(select(.title == \"$ISSUE_TITLE\")) | .[0].number // empty")
           if [ -n "$number" ]; then
             gh issue edit "$number" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/issue-body.md"
           else
@@ -103,7 +110,6 @@ jobs:
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7
-        if: steps.pull.outputs.changed == 'true'
         with:
           token: ${{ secrets.DEPLOY_KEY }}
           git-token: ${{ secrets.DEPLOY_KEY }}

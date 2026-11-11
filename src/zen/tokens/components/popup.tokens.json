@@ -23,20 +23,20 @@
   "background-color": {
     "--zen-toast-shortcut-background": {
       "value": {
-        "light": "rgba(255, 255, 255, 0.4)",
-        "dark": "rgba(255, 255, 255, 0.1)"
+        "light": "var(--color-white-alpha-40)",
+        "dark": "var(--color-white-alpha-10)"
       }
     },
     "--zen-toast-button-background": {
       "value": {
-        "light": "rgba(255, 255, 255, 0.5)",
-        "dark": "rgba(255, 255, 255, 0.1)"
+        "light": "var(--color-white-alpha-50)",
+        "dark": "var(--color-white-alpha-10)"
       }
     }
   },
   "border-color": {
     "--zen-toast-button-border-top-color": {
-      "value": { "light": "transparent", "dark": "rgba(255, 255, 255, 0.1)" }
+      "value": { "light": "transparent", "dark": "var(--color-white-alpha-10)" }
     },
     "--zen-toast-button-outline-color": {
       "value": { "light": "transparent", "dark": "rgba(255, 255, 255, 0.03)" }

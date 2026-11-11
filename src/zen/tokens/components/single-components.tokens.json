@@ -19,7 +19,7 @@
       }
     },
     "--zen-site-data-header-button-border-color": {
-      "value": { "light": "rgba(0, 0, 0, 0.4)", "dark": "#101010" }
+      "value": { "light": "var(--color-black-alpha-40)", "dark": "#101010" }
     }
   },
   "box-shadow": {

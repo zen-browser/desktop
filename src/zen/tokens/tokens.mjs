@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { readdirSync, readFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 
 export const TOKENS_DIR = import.meta.dirname;
 
@@ -35,7 +35,7 @@ export function loadZenTokens() {
   const tokens = [];
   const seen = new Map();
   for (const path of tokenFiles()) {
-    const file = relative(TOKENS_DIR, path);
+    const file = relative(TOKENS_DIR, path).split(sep).join("/");
     const groups = JSON.parse(readFileSync(path, "utf8"));
     for (const [group, entries] of Object.entries(groups)) {
       if (group.startsWith("$")) {

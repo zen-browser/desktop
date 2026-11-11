@@ -6,7 +6,7 @@
   },
   "background-color": {
     "--zen-media-progress-bar-background": {
-      "value": "rgba(255, 255, 255, 0.2)"
+      "value": "var(--color-white-alpha-20)"
     }
   }
 }

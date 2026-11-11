@@ -5,11 +5,13 @@
   },
   "background-color": {
     "--zen-bookmark-panel-favicon-container-background": {
-      "value": { "light": "#ffffff", "dark": "rgba(255, 255, 255, 0.1)" }
+      "value": { "light": "#ffffff", "dark": "var(--color-white-alpha-10)" }
     }
   },
   "border-color": {
-    "--zen-dialog-box-border-light-color": { "value": "rgba(0, 0, 0, 0.2)" },
+    "--zen-dialog-box-border-light-color": {
+      "value": "var(--color-black-alpha-20)"
+    },
     "--zen-dialog-box-outline-color": {
       "value": { "light": "transparent", "dark": "rgba(161, 161, 161, 0.5)" }
     }

@@ -45,7 +45,7 @@
     "--zen-toolbar-element-bg-hover": {
       "value": {
         "light": "rgba(0, 0, 0, 0.08)",
-        "dark": "rgba(255, 255, 255, 0.1)"
+        "dark": "var(--color-white-alpha-10)"
       }
     },
     "--zen-transparent-browser-background": { "external": true }

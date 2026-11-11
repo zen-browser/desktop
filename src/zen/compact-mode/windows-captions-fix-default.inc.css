@@ -5,7 +5,7 @@
  */
 
 & .titlebar-buttonbox-container {
-  max-height: 0px;
+  max-height: 0;
   /* We need to hide them since on Windows the native
    * panels when hovering over them can interfere with the
    * web content. See gh-16267 */

@@ -1,0 +1,92 @@
+{
+  "versatile-color": {
+    "--zen-accent-button-background": { "external": true },
+    "--zen-accent-button-color": { "external": true },
+    "--zen-boosts-primary-color": { "external": true },
+    "--zen-colors-border": { "external": true },
+    "--zen-colors-primary": { "external": true },
+    "--zen-dialog-background": {
+      "value": { "light": "#fafafa", "dark": "#1c1c1c" }
+    },
+    "--zen-primary-color": { "external": true },
+    "--zen-sidebar-themed-icon-fill": { "external": true },
+    "--zen-welcome-app-color": { "external": true },
+    "--zen-branding-dark": { "value": "#101010" },
+    "--zen-branding-paper": { "value": "#e2e2e2" }
+  },
+  "opacity": {
+    "--zen-background-opacity": { "external": true },
+    "--zen-grainy-background-opacity": { "external": true }
+  },
+  "box-shadow": {
+    "--zen-big-shadow": { "value": "rgba(0, 0, 0, 0.24) 0px 3px 8px" },
+    "--zen-sidebar-notification-shadow": {
+      "value": "0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3))"
+    }
+  },
+  "border-radius": {
+    "--zen-border-radius": { "external": true },
+    "--zen-native-inner-radius": { "external": true }
+  },
+  "background-color": {
+    "--zen-branding-bg-reverse": { "external": true },
+    "--zen-colors-hover-bg": { "external": true },
+    "--zen-colors-secondary": { "external": true },
+    "--zen-colors-tertiary": { "external": true },
+    "--zen-library-download-progress": { "external": true },
+    "--zen-main-browser-background": { "external": true },
+    "--zen-main-browser-background-old": { "external": true },
+    "--zen-main-browser-background-toolbar": { "external": true },
+    "--zen-main-browser-background-toolbar-old": { "external": true },
+    "--zen-sidebar-notification-bg": { "external": true },
+    "--zen-theme-picker-dot-color": { "external": true },
+    "--zen-themed-toolbar-bg-transparent": { "external": true },
+    "--zen-toolbar-element-bg": { "external": true },
+    "--zen-toolbar-element-bg-hover": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.08)",
+        "dark": "rgba(255, 255, 255, 0.1)"
+      }
+    },
+    "--zen-transparent-browser-background": { "external": true }
+  },
+  "space": {
+    "--zen-button-padding": { "value": "0.6rem 1.2rem" },
+    "--zen-folder-indent": { "external": true },
+    "--zen-scroll-to-tab-bottom": { "external": true },
+    "--zen-scroll-to-tab-top": { "external": true },
+    "--zen-sidebar-compact-top-offset": { "external": true },
+    "--zen-urlbar-top": { "external": true },
+    "--zen-toolbar-button-inner-padding": { "value": "6px" }
+  },
+  "border-color": {
+    "--zen-colors-border-contrast": { "external": true },
+    "--zen-input-border-color": {
+      "value": { "light": "#cccccc", "dark": "rgb(66, 65, 77)" }
+    }
+  },
+  "size": {
+    "--zen-element-separation": { "external": true, "also": ["space"] },
+    "--zen-library-content-width": { "external": true },
+    "--zen-library-sprite-size": { "external": true },
+    "--zen-sidebar-width": { "external": true },
+    "--zen-split-row-gap": { "external": true, "also": ["space"] },
+    "--zen-thumb-height": { "external": true },
+    "--zen-thumb-width": { "external": true },
+    "--zen-toolbar-height": { "external": true, "also": ["space"] },
+    "--zen-toolbar-height-with-bookmarks": {
+      "external": true,
+      "also": ["space"]
+    },
+    "--zen-toolbox-max-width": { "external": true, "also": ["space"] },
+    "--zen-toolbox-min-width": { "external": true },
+    "--zen-toolbox-padding": { "external": true, "also": ["space"] },
+    "--zen-urlbar-width": { "external": true },
+    "--zen-workspace-indicator-height": { "external": true }
+  },
+  "outline": {
+    "--zen-sidebar-notification-outline": {
+      "value": "1px solid light-dark(transparent, rgba(255, 255, 255, 0.1))"
+    }
+  }
+}

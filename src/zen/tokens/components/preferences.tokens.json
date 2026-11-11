@@ -1,0 +1,24 @@
+{
+  "box-shadow": {
+    "--zen-compact-mode-styles-shadow": { "external": true }
+  },
+  "background-color": {
+    "--zen-preferences-button-background": {
+      "value": { "light": "#f1f1f1", "dark": "#383838" }
+    },
+    "--zen-preferences-color-picker-deck-background": {
+      "value": {
+        "light": "rgba(255, 255, 255, 0.3)",
+        "dark": "rgba(0, 0, 0, 0.3)"
+      }
+    }
+  },
+  "space": {
+    "--zen-preferences-navigation-padding": { "value": "4%" }
+  },
+  "size": {
+    "--zen-preferences-color-picker-size": { "value": "180px" },
+    "--zen-preferences-theme-dialog-min-width": { "value": "650px" },
+    "--zen-preferences-layout-preview-width": { "value": "250px" }
+  }
+}

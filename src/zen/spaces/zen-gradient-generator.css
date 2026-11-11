@@ -20,7 +20,7 @@
 #PanelUI-zen-gradient-generator-controls {
   align-items: center;
   gap: var(--panel-padding);
-  padding-top: 10px;
+  padding-top: var(--zen-space-10);
 }
 
 #zen-theme-picker-color {
@@ -28,10 +28,10 @@
   width: 100%;
 
   & label {
-    font-size: 12px;
+    font-size: var(--zen-font-size-12);
     margin-left: 0;
-    font-weight: 600;
-    margin-bottom: 5px;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--zen-space-5);
   }
 
   & input,
@@ -48,13 +48,13 @@
   }
 
   & #PanelUI-zen-gradient-generator-custom-opacity {
-    max-width: 50px;
+    max-width: var(--zen-size-50);
   }
 }
 
 #PanelUI-zen-gradient-generator-custom-input {
   position: relative;
-  padding-right: 6px !important;
+  padding-right: var(--zen-space-6) !important;
 }
 
 #PanelUI-zen-gradient-generator-color-custom-add {
@@ -65,13 +65,13 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: var(--zen-space-10);
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-xlarge);
   padding: 0 var(--panel-padding);
 
   @media (-moz-platform: macos) {
-    gap: 2rem;
+    gap: var(--space-xxlarge);
   }
 
   #PanelUI-zen-gradient-opacity-wrapper {
@@ -80,9 +80,9 @@
 
   & label {
     margin-left: 0;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     margin-inline: 0;
-    margin-bottom: 2px;
+    margin-bottom: var(--zen-space-2);
     @media (-moz-platform: macos) {
       font-size: larger;
     }
@@ -96,7 +96,7 @@
 #PanelUI-zen-gradient-generator-color-pages {
   display: flex;
   justify-content: space-around;
-  margin: 0 10px;
+  margin: 0 var(--zen-space-10);
   align-items: center;
   width: 100%;
   overflow: auto;
@@ -109,10 +109,10 @@
     padding: 0 1px;
 
     & > box {
-      width: 26px;
-      height: 26px;
-      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
-      border-radius: 50%;
+      width: var(--zen-size-26);
+      height: var(--zen-size-26);
+      box-shadow: var(--zen-box-shadow-hairline);
+      border-radius: var(--zen-border-radius-round);
       cursor: pointer;
       position: relative;
       transition: transform 0.1s;
@@ -143,7 +143,7 @@
 }
 
 #PanelUI-zen-gradient-generator-custom-list {
-  margin-top: 15px;
+  margin-top: var(--zen-space-15);
 
   &:empty {
     display: none;
@@ -151,28 +151,28 @@
 
   & .zen-theme-picker-custom-list-item {
     display: flex;
-    padding: 5px;
+    padding: var(--zen-space-5);
     position: relative;
 
     & .zen-theme-picker-dot.custom {
       background: var(--zen-theme-picker-dot-color);
       border: 1px solid var(--zen-colors-border);
-      border-radius: 5px;
+      border-radius: var(--zen-border-radius-5);
       width: var(--icon-size-medium);
       height: var(--icon-size-medium);
-      margin-right: 10px;
+      margin-right: var(--zen-space-10);
     }
 
     & .zen-theme-picker-custom-list-item-label {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: var(--zen-font-size-12);
+      font-weight: var(--font-weight-semibold);
       margin: 0;
       display: flex;
       align-items: center;
     }
 
     & .zen-theme-picker-custom-list-item-remove {
-      padding: 2px 4px !important;
+      padding: var(--zen-space-2) var(--zen-space-4) !important;
       margin: 0 !important;
       margin-left: auto !important;
       transition: opacity 0.1s;
@@ -187,7 +187,7 @@
 
 #PanelUI-zen-gradient-slider-wave {
   position: absolute;
-  left: -5px;
+  left: calc(-1 * var(--zen-space-5));
   width: 100%;
   height: 100%;
   pointer-events: none;
@@ -199,14 +199,14 @@
   &::before {
     content: "";
     position: absolute;
-    width: calc(100% - 8px);
+    width: calc(100% - var(--zen-size-8));
     height: var(--size-item-small);
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-    border-radius: 999px;
+    background: var(--zen-color-contrast-10);
+    border-radius: var(--border-radius-circle);
     pointer-events: none;
     z-index: -1;
     top: 50%;
-    left: 8px;
+    left: var(--zen-space-8);
     transform: translateY(-50%);
   }
 
@@ -214,7 +214,7 @@
     overflow: visible;
     min-width: calc(100% * 1.1);
     scale: 1.2;
-    margin-left: 4px;
+    margin-left: var(--zen-space-4);
   }
 }
 
@@ -222,11 +222,11 @@
   margin: 0 !important;
   background: transparent;
   z-index: 2;
-  padding: 0 5px;
+  padding: 0 var(--zen-space-5);
 
   &::-moz-range-thumb {
     background: light-dark(black, white);
-    border-radius: 999px;
+    border-radius: var(--border-radius-circle);
     height: var(--zen-thumb-height);
     width: var(--zen-thumb-width);
     cursor: pointer;
@@ -241,8 +241,8 @@
   }
 
   &::-moz-range-track {
-    border-radius: 999px;
-    height: 18px;
+    border-radius: var(--border-radius-circle);
+    height: var(--zen-size-18);
   }
 
   &::-moz-range-progress {
@@ -256,7 +256,7 @@
   border-radius: calc(var(--panel-border-radius) - 4px);
 
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
-  background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
+  background: var(--zen-spaces-theme-picker-background);
   background-image: radial-gradient(light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.05)) 1px, transparent 0);
   background-position: -23px -23px;
   background-size: 6px 6px;
@@ -266,21 +266,21 @@
     z-index: 2;
     width: var(--icon-size-medium);
     height: var(--icon-size-medium);
-    border-radius: 50%;
+    border-radius: var(--zen-border-radius-round);
     background: var(--zen-theme-picker-dot-color);
     @media (-prefers-color-scheme: dark) {
-      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--zen-box-shadow-ring);
     }
     cursor: pointer;
-    border: 3px solid #ffffff;
+    border: 3px solid white;
     transform: translate(-50%, -50%);
     pointer-events: none;
     transform-origin: left top;
-    margin: 10px 0 0 10px;
+    margin: var(--zen-space-10) 0 0 var(--zen-space-10);
 
     &:first-of-type {
-      width: 38px;
-      height: 38px;
+      width: var(--zen-size-38);
+      height: var(--zen-size-38);
       border-width: 6px;
       pointer-events: all;
       transition: transform 0.2s;
@@ -297,12 +297,12 @@
 }
 
 #PanelUI-zen-gradient-generator-view {
-  gap: 10px;
+  gap: var(--zen-space-10);
 }
 
 #PanelUI-zen-gradient-generator-color-click-to-add {
   position: absolute;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -324,21 +324,21 @@
   left: 50%;
   z-index: 1;
   transform: translateX(-50%);
-  gap: 5px;
+  gap: var(--zen-space-5);
 
   & button {
     border: none !important;
     padding: 0 !important;
     transition: background 0.2s;
     appearance: none;
-    max-height: 30px;
-    max-width: 30px;
-    min-height: 30px;
-    min-width: 30px !important;
-    color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.9));
+    max-height: var(--zen-size-30);
+    max-width: var(--zen-size-30);
+    min-height: var(--zen-size-30);
+    min-width: var(--zen-size-30) !important;
+    color: var(--zen-spaces-theme-picker-button-color);
 
     & .button-box {
-      gap: 0.1rem;
+      gap: calc(0.1 * var(--space-large));
     }
 
     & .button-text {
@@ -346,18 +346,18 @@
     }
 
     &:not([disabled]):hover {
-      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+      background: var(--zen-color-contrast-10);
     }
 
     &[disabled] {
-      opacity: 0.5;
+      opacity: var(--zen-opacity-50);
       cursor: not-allowed;
     }
   }
 }
 
 #PanelUI-zen-gradient-generator-scheme {
-  top: 15px;
+  top: var(--zen-space-15);
   max-height: var(--size-item-large);
 }
 
@@ -368,13 +368,13 @@
 }
 
 #PanelUI-zen-gradient-generator-texture-wrapper {
-  width: 5rem;
-  height: 5rem;
+  width: var(--zen-spaces-texture-wrapper-size);
+  height: var(--zen-spaces-texture-wrapper-size);
   position: relative;
 
   @media (-moz-platform: macos) {
-    width: 6rem;
-    height: 6rem;
+    width: var(--zen-spaces-texture-wrapper-size-macos);
+    height: var(--zen-spaces-texture-wrapper-size-macos);
   }
 
   &::after {
@@ -383,7 +383,7 @@
     width: 60%;
     height: 60%;
     border: 1px solid color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
-    border-radius: 50%;
+    border-radius: var(--zen-border-radius-round);
     /* 3d effect */
     background: linear-gradient(-45deg, transparent -10%, light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) 110%);
     z-index: 2;
@@ -402,7 +402,7 @@
     height: 60%;
     pointer-events: none;
     top: 50%;
-    border-radius: 50%;
+    border-radius: var(--zen-border-radius-round);
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1;
@@ -414,38 +414,38 @@
   }
 
   & .zen-theme-picker-texture-dot {
-    height: 4px;
-    width: 4px;
-    border-radius: 50%;
-    background: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+    height: var(--zen-size-4);
+    width: var(--zen-size-4);
+    border-radius: var(--zen-border-radius-round);
+    background: var(--zen-color-contrast-30);
     position: absolute;
     transition: opacity 0.2s;
     transform: translate(-50%, -50%);
     pointer-events: none;
     &:not(.active) {
-      opacity: 0.4;
+      opacity: var(--zen-opacity-40);
     }
   }
 
   & #PanelUI-zen-gradient-generator-texture-handler {
-    width: 6px;
+    width: var(--zen-size-6);
     height: var(--size-item-xsmall);
-    background: light-dark(#757575, #d1d1d1);
+    background: var(--zen-spaces-texture-handler-background);
     position: absolute;
     transition: height 0.1s;
     z-index: 2;
-    border-radius: 2px;
+    border-radius: var(--zen-border-radius-2);
     cursor: pointer;
     &:hover {
-      height: 14px;
+      height: var(--zen-size-14);
     }
   }
 }
 
 #PanelUI-zen-gradient-generator-color-page-left,
 #PanelUI-zen-gradient-generator-color-page-right {
-  max-width: 28px;
-  max-height: 28px;
+  max-width: var(--zen-size-28);
+  max-height: var(--zen-size-28);
   margin: 0 !important;
 }
 
@@ -455,6 +455,6 @@
   }
 
   #PanelUI-zen-gradient-slider-wave svg path {
-    stroke: light-dark(rgba(77, 77, 77, 0.5), rgba(161, 161, 161, 0.5)) !important;
+    stroke: var(--zen-spaces-slider-wave-disabled-stroke) !important;
   }
 }

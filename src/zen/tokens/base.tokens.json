@@ -1,0 +1,167 @@
+{
+  "space": {
+    "--zen-space-2": { "value": "2px" },
+    "--zen-space-3": { "value": "3px" },
+    "--zen-space-4": { "value": "4px" },
+    "--zen-space-5": { "value": "5px" },
+    "--zen-space-5-5": { "value": "5.5px" },
+    "--zen-space-6": { "value": "6px" },
+    "--zen-space-7": { "value": "7px" },
+    "--zen-space-8": { "value": "8px" },
+    "--zen-space-9": { "value": "9px" },
+    "--zen-space-10": { "value": "10px" },
+    "--zen-space-12": { "value": "12px" },
+    "--zen-space-13": { "value": "13px" },
+    "--zen-space-14": { "value": "14px" },
+    "--zen-space-15": { "value": "15px" },
+    "--zen-space-16": { "value": "16px" },
+    "--zen-space-18": { "value": "18px" },
+    "--zen-space-20": { "value": "20px" },
+    "--zen-space-22": { "value": "22px" },
+    "--zen-space-24": { "value": "24px" },
+    "--zen-space-25": { "value": "25px" },
+    "--zen-space-26": { "value": "26px" },
+    "--zen-space-28": { "value": "28px" },
+    "--zen-space-32": { "value": "32px" },
+    "--zen-space-36": { "value": "36px" },
+    "--zen-space-40": { "value": "40px" },
+    "--zen-space-45": { "value": "45px" },
+    "--zen-space-48": { "value": "48px" },
+    "--zen-space-50": { "value": "50px" },
+    "--zen-space-64": { "value": "64px" },
+    "--zen-space-100": { "value": "100px" }
+  },
+  "size": {
+    "--zen-size-1-5": { "value": "1.5px" },
+    "--zen-size-2": { "value": "2px" },
+    "--zen-size-2-5": { "value": "2.5px" },
+    "--zen-size-3": { "value": "3px" },
+    "--zen-size-4": { "value": "4px" },
+    "--zen-size-5": { "value": "5px" },
+    "--zen-size-6": { "value": "6px" },
+    "--zen-size-8": { "value": "8px" },
+    "--zen-size-9": { "value": "9px" },
+    "--zen-size-10": { "value": "10px" },
+    "--zen-size-13": { "value": "13px" },
+    "--zen-size-14": { "value": "14px" },
+    "--zen-size-15": { "value": "15px" },
+    "--zen-size-18": { "value": "18px" },
+    "--zen-size-22": { "value": "22px" },
+    "--zen-size-25": { "value": "25px" },
+    "--zen-size-26": { "value": "26px" },
+    "--zen-size-28": { "value": "28px" },
+    "--zen-size-30": { "value": "30px" },
+    "--zen-size-34": { "value": "34px" },
+    "--zen-size-36": { "value": "36px" },
+    "--zen-size-38": { "value": "38px" },
+    "--zen-size-40": { "value": "40px" },
+    "--zen-size-42": { "value": "42px" },
+    "--zen-size-44": { "value": "44px" },
+    "--zen-size-46": { "value": "46px" },
+    "--zen-size-50": { "value": "50px" },
+    "--zen-size-52": { "value": "52px" },
+    "--zen-size-56": { "value": "56px" },
+    "--zen-size-60": { "value": "60px" },
+    "--zen-size-64": { "value": "64px" },
+    "--zen-size-70": { "value": "70px" },
+    "--zen-size-80": { "value": "80px" }
+  },
+  "border-radius": {
+    "--zen-border-radius-1": { "value": "1px" },
+    "--zen-border-radius-2": { "value": "2px" },
+    "--zen-border-radius-4": { "value": "4px" },
+    "--zen-border-radius-5": { "value": "5px" },
+    "--zen-border-radius-6": { "value": "6px" },
+    "--zen-border-radius-8": { "value": "8px" },
+    "--zen-border-radius-10": { "value": "10px" },
+    "--zen-border-radius-12": { "value": "12px" },
+    "--zen-border-radius-14": { "value": "14px" },
+    "--zen-border-radius-15": { "value": "15px" },
+    "--zen-border-radius-16": { "value": "16px" },
+    "--zen-border-radius-18": { "value": "18px" },
+    "--zen-border-radius-20": { "value": "20px" },
+    "--zen-border-radius-22": { "value": "22px" },
+    "--zen-border-radius-24": { "value": "24px" },
+    "--zen-border-radius-30": { "value": "30px" },
+    "--zen-border-radius-round": { "value": "50%" }
+  },
+  "font-size": {
+    "--zen-font-size-8": { "value": "8px" },
+    "--zen-font-size-10": { "value": "10px" },
+    "--zen-font-size-11": { "value": "11px" },
+    "--zen-font-size-12": { "value": "12px" },
+    "--zen-font-size-13": { "value": "13px" },
+    "--zen-font-size-14": { "value": "14px" },
+    "--zen-font-size-15": { "value": "15px" },
+    "--zen-font-size-16": { "value": "16px" },
+    "--zen-font-size-8pt": { "value": "8pt" },
+    "--zen-font-size-10pt": { "value": "10pt" },
+    "--zen-font-size-11pt": { "value": "11pt" },
+    "--zen-font-size-20pt": { "value": "20pt" }
+  },
+  "font-weight": {
+    "--zen-font-weight-medium": { "value": "500" }
+  },
+  "opacity": {
+    "--zen-opacity-10": { "value": "0.1" },
+    "--zen-opacity-15": { "value": "0.15" },
+    "--zen-opacity-20": { "value": "0.2" },
+    "--zen-opacity-30": { "value": "0.3" },
+    "--zen-opacity-35": { "value": "0.35" },
+    "--zen-opacity-40": { "value": "0.4" },
+    "--zen-opacity-45": { "value": "0.45" },
+    "--zen-opacity-50": { "value": "0.5" },
+    "--zen-opacity-60": { "value": "0.6" },
+    "--zen-opacity-70": { "value": "0.7" },
+    "--zen-opacity-75": { "value": "0.75" },
+    "--zen-opacity-80": { "value": "0.8" },
+    "--zen-opacity-85": { "value": "0.85" },
+    "--zen-opacity-90": { "value": "0.9" }
+  },
+  "versatile-color": {
+    "--zen-color-contrast-10": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.1)",
+        "dark": "rgba(255, 255, 255, 0.1)"
+      }
+    },
+    "--zen-color-contrast-30": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.3)",
+        "dark": "rgba(255, 255, 255, 0.3)"
+      }
+    },
+    "--zen-color-contrast-40": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.4)",
+        "dark": "rgba(255, 255, 255, 0.4)"
+      }
+    },
+    "--zen-color-contrast-50": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.5)",
+        "dark": "rgba(255, 255, 255, 0.5)"
+      }
+    },
+    "--zen-color-contrast-70": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.7)",
+        "dark": "rgba(255, 255, 255, 0.7)"
+      }
+    },
+    "--zen-color-contrast-80": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.8)",
+        "dark": "rgba(255, 255, 255, 0.8)"
+      }
+    }
+  },
+  "box-shadow": {
+    "--zen-box-shadow-hairline": { "value": "0 0 1px 1px rgba(0, 0, 0, 0.1)" },
+    "--zen-box-shadow-ring": { "value": "0 0 0 2px rgba(0, 0, 0, 0.1)" },
+    "--zen-box-shadow-glow-small": {
+      "value": "0 0 6px 1px rgba(0, 0, 0, 0.1)"
+    },
+    "--zen-box-shadow-glow": { "value": "0 0 6px 2px rgba(0, 0, 0, 0.1)" }
+  }
+}

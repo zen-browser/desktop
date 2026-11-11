@@ -1,0 +1,45 @@
+{
+  "space": {
+    "--uc-arrowpanel-menuicon-margin-inline": { "external": true },
+    "--uc-arrowpanel-menuitem-margin-block": { "external": true },
+    "--uc-arrowpanel-menuitem-margin-inline": { "external": true },
+    "--uc-panel-zoom-button-inline-padding": { "external": true },
+    "--uc-panel-zoom-button-padding": { "external": true },
+    "--uc-panel-zoom-padding-block": { "external": true },
+    "--uc-permission-item-padding-inline": { "external": true },
+    "--uc-permission-itemcontainer-padding-block": { "external": true },
+    "--zen-toast-padding": { "external": true }
+  },
+  "size": {
+    "--zen-toast-max-height": { "external": true },
+    "--zen-bookmark-workspace-list-max-height": { "value": "200px" }
+  },
+  "box-shadow": {
+    "--zen-toast-shadow": {
+      "value": "light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0 0 22px 2px"
+    },
+    "--zen-toast-button-shadow": { "value": "0 0 1px 1px rgba(0, 0, 0, 0.05)" }
+  },
+  "background-color": {
+    "--zen-toast-shortcut-background": {
+      "value": {
+        "light": "rgba(255, 255, 255, 0.4)",
+        "dark": "rgba(255, 255, 255, 0.1)"
+      }
+    },
+    "--zen-toast-button-background": {
+      "value": {
+        "light": "rgba(255, 255, 255, 0.5)",
+        "dark": "rgba(255, 255, 255, 0.1)"
+      }
+    }
+  },
+  "border-color": {
+    "--zen-toast-button-border-top-color": {
+      "value": { "light": "transparent", "dark": "rgba(255, 255, 255, 0.1)" }
+    },
+    "--zen-toast-button-outline-color": {
+      "value": { "light": "transparent", "dark": "rgba(255, 255, 255, 0.03)" }
+    }
+  }
+}

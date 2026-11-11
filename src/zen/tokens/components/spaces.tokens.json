@@ -1,0 +1,50 @@
+{
+  "opacity": {
+    "--zen-grain-alpha": { "external": true }
+  },
+  "size": {
+    "--zen-grain-tile": { "external": true },
+    "--zen-spaces-texture-wrapper-size": { "value": "5rem" },
+    "--zen-spaces-texture-wrapper-size-macos": { "value": "6rem" }
+  },
+  "background-color": {
+    "--zen-scrollbar-overflow-background": { "external": true },
+    "--zen-spaces-theme-picker-background": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.05)",
+        "dark": "rgba(255, 255, 255, 0.03)"
+      }
+    },
+    "--zen-spaces-texture-handler-background": {
+      "value": { "light": "#757575", "dark": "#d1d1d1" }
+    }
+  },
+  "text-color": {
+    "--zen-spaces-theme-picker-button-color": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.7)",
+        "dark": "rgba(255, 255, 255, 0.9)"
+      }
+    },
+    "--zen-workspace-scroll-to-tab-color": {
+      "value": { "light": "rgba(0, 0, 0, 0.8)", "dark": "#ffffff" }
+    }
+  },
+  "icon-color": {
+    "--zen-spaces-slider-wave-disabled-stroke": {
+      "value": {
+        "light": "rgba(77, 77, 77, 0.5)",
+        "dark": "rgba(161, 161, 161, 0.5)"
+      }
+    }
+  },
+  "border-radius": {
+    "--zen-workspaces-actions-image-radius": { "external": true }
+  },
+  "box-shadow": {
+    "--zen-workspace-scroll-to-tab-shadow": { "external": true }
+  },
+  "space": {
+    "--zen-workspace-indicator-gap": { "external": true }
+  }
+}

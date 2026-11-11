@@ -1,0 +1,12 @@
+{
+  "size": {
+    "--zen-media-stack-gap": { "external": true, "also": ["space"] },
+    "--zen-media-stack-peek": { "external": true },
+    "--zen-media-progress-height": { "external": true }
+  },
+  "background-color": {
+    "--zen-media-progress-bar-background": {
+      "value": "rgba(255, 255, 255, 0.2)"
+    }
+  }
+}

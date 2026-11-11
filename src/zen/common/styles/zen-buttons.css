@@ -27,7 +27,7 @@ dialog::part(dialog-button) {
 
   position: relative;
   border: none;
-  border-radius: calc(10px * var(--zen-squircle-value));
+  border-radius: calc(var(--zen-border-radius-10) * var(--zen-squircle-value));
 }
 
 @media (-moz-platform: macos) {
@@ -36,10 +36,10 @@ dialog::part(dialog-button) {
       padding-inline-end: 3.7em;
 
       &::after {
-        border-radius: 4px;
-        font-weight: 600;
+        border-radius: var(--zen-border-radius-4);
+        font-weight: var(--font-weight-semibold);
         position: absolute;
-        padding: 3px 0;
+        padding: var(--zen-space-3) 0;
         top: 50%;
         transform: translateY(-50%);
         text-align: center;
@@ -48,18 +48,18 @@ dialog::part(dialog-button) {
       &[dlgtype="accept"]::after {
         content: "⏎";
         right: 0.6em;
-        font-size: 12px;
-        width: 36px;
-        color: light-dark(rgba(255, 255, 255, 0.80), rgba(0, 0, 0, 0.60));
+        font-size: var(--zen-font-size-12);
+        width: var(--zen-size-36);
+        color: var(--zen-button-accept-shortcut-color);
       }
 
       &[dlgtype="cancel"]::after {
         content: "ESC";
         right: 1em;
-        font-size: 8px;
-        width: 30px;
-        color: light-dark(rgba(28, 28, 28, 0.7), rgba(255, 255, 255, 0.6)) !important;
-        outline: 1px solid light-dark(rgba(28, 28, 28, 0.1), rgba(255, 255, 255, 0.1)) !important;
+        font-size: var(--zen-font-size-8);
+        width: var(--zen-size-30);
+        color: var(--zen-button-cancel-shortcut-color) !important;
+        outline: 1px solid var(--zen-color-contrast-10) !important;
       }
     }
   }
@@ -71,7 +71,7 @@ dialog::part(dialog-button) {
 
     background-color: transparent !important;
     box-shadow: none !important;
-    padding-inline-end: 1.2rem !important;
+    padding-inline-end: calc(1.2 * var(--space-large)) !important;
 
     &:hover {
       --button-background-color: light-dark(
@@ -95,7 +95,7 @@ xul|button:not(#zen-workspaces-button):active {
 
 .footer-button,
 dialog::part(dialog-button) {
-  font-weight: 500 !important;
+  font-weight: var(--zen-font-weight-medium) !important;
 
   transition: scale 0.2s;
   &:active {
@@ -117,13 +117,13 @@ dialog::part(dialog-button) {
 .zen-big-accent-button {
   appearance: none;
   border: none;
-  border-radius: 12px;
-  padding: 1.2rem 1rem;
+  border-radius: var(--zen-border-radius-12);
+  padding: calc(1.2 * var(--space-large)) var(--space-large);
   background: transparent;
   color: var(--zen-accent-button-color);
   font: inherit;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: var(--zen-big-accent-button-font-size);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   will-change: transform;
   transition: scale 0.15s ease-out;
@@ -135,7 +135,8 @@ dialog::part(dialog-button) {
 
   &:active:hover {
     scale: 1;
-    color: color-mix(in srgb, var(--zen-accent-button-color) 80%, transparent);
+    --zen-big-accent-button-active-color: color-mix(in srgb, var(--zen-accent-button-color) 80%, transparent);
+    color: var(--zen-big-accent-button-active-color);
   }
 
   &.primary {
@@ -147,7 +148,7 @@ dialog::part(dialog-button) {
     }
 
     &:active:hover {
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--zen-big-accent-button-primary-active-color);
     }
   }
 }

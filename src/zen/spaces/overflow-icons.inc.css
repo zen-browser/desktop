@@ -7,13 +7,13 @@
 &::after {
   content: '';
   position: absolute;
-  width: 4px;
-  border-radius: 99px;
-  height: 4px;
+  width: var(--zen-size-4);
+  border-radius: var(--border-radius-circle);
+  height: var(--zen-size-4);
   background: color-mix(
     in srgb,
     var(--zen-primary-color) 10%,
-    light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4)) 90%
+    var(--zen-color-contrast-40) 90%
   );
   left: 50%;
   top: 50%;
@@ -30,7 +30,7 @@
 }
 
 &:not(:hover) {
-  min-width: 10px;
+  min-width: var(--zen-size-10);
 
   &::after {
     opacity: 1;

@@ -1,0 +1,41 @@
+{
+  "versatile-color": {
+    "--zen-drag-indicator-bg": { "external": true }
+  },
+  "border-color": {
+    "--zen-drag-indicator-height": {
+      "external": true,
+      "also": ["size", "space"]
+    }
+  },
+  "border-radius": {
+    "--zen-essential-bg-margin": { "external": true, "also": ["space"] },
+    "--zen-essential-drag-image-bg-radius": { "external": true }
+  },
+  "background-color": {
+    "--zen-essential-tab-selected-bg": { "external": true },
+    "--zen-essential-tab-selected-bg-hover": { "external": true },
+    "--zen-pinned-separator-color": { "external": true },
+    "--zen-tabs-essential-glance-tab-background": {
+      "value": { "light": "#fafafa", "dark": "#404040" }
+    },
+    "--zen-tabs-reset-pin-separator-background": {
+      "value": {
+        "light": "rgba(66, 61, 61, 0.3)",
+        "dark": "rgba(255, 255, 255, 0.3)"
+      }
+    },
+    "--zen-essential-tab-hover-bg": { "external": true }
+  },
+  "size": {
+    "--zen-tab-button-line-length": { "external": true }
+  },
+  "font-size": {
+    "--zen-tabs-macos-font-size": { "value": "1.25rem" }
+  },
+  "text-color": {
+    "--zen-tabs-dimmed-text-color": {
+      "value": "color-mix(in srgb, currentColor 70%, transparent)"
+    }
+  }
+}

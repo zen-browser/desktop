@@ -3,6 +3,19 @@
 
 "use strict";
 
+// The unload button only shows in the expanded sidebar, and the test window
+// can start with it collapsed. Toggling the pref applies the layout again.
+add_setup(async function () {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.view.sidebar-expanded", false]],
+  });
+  await SpecialPowers.popPrefEnv();
+  await TestUtils.waitForCondition(
+    () => document.documentElement.hasAttribute("zen-sidebar-expanded"),
+    "The sidebar should be expanded"
+  );
+});
+
 add_task(async function test_Pinned_Split_Group_Shows_One_Unload_Button() {
   await basicSplitNTabs(async tabs => {
     const pinEvent = BrowserTestUtils.waitForEvent(tabs[0], "TabPinned");
@@ -49,5 +62,18 @@ add_task(async function test_Pinned_Split_Group_Shows_One_Unload_Button() {
         "The close button should stay hidden for a pinned split tab"
       );
     }
+
+    EventUtils.synthesizeMouseAtCenter(
+      lastTab.querySelector(".tab-reset-button"),
+      {}
+    );
+    await TestUtils.waitForCondition(
+      () => tabs.every(tab => tab.hasAttribute("pending")),
+      "Clicking the unload button should unload every tab in the split"
+    );
+
+    EventUtils.synthesizeMouseAtCenter(gBrowser.tabpanels, {
+      type: "mousemove",
+    });
   });
 });

@@ -55,8 +55,8 @@ panel {
 /* app menu */
 .addon-banner-item,
 .panel-banner-item {
-  margin: 2px 4px 2px;
-  padding-inline: 4px 12px;
+  margin: var(--zen-space-2) var(--zen-space-4) var(--zen-space-2);
+  padding-inline: var(--zen-space-4) var(--zen-space-12);
   padding-block: var(--arrowpanel-menuitem-padding-block);
   border-radius: var(--arrowpanel-menuitem-border-radius);
 }
@@ -114,7 +114,7 @@ panel {
 
 /* #appMenu-zoomReduce-button2, */
 #appMenu-zoom-controls > #appMenu-fullscreen-button2 {
-  margin-inline-start: calc((var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) * 2 + 1px);
+  margin-inline-start: calc(var(--panel-separator-margin-vertical) * 2 + var(--uc-arrowpanel-menuitem-margin-block) * 2 + 1px);
 }
 
 #appMenu-zoom-controls > #appMenu-fullscreen-button2::before {
@@ -155,7 +155,7 @@ panel {
 }
 
 .subviewbutton[shortcut]::after {
-  opacity: 0.7;
+  opacity: var(--zen-opacity-70);
 }
 
 .PanelUI-subView > .panel-header + toolbarseparator {
@@ -184,7 +184,7 @@ panel {
 }
 
 .identity-popup-security-connection.identity-button {
-  margin-inline-end: calc(-1 * (var(--arrowpanel-menuitem-padding-inline) - 10px));
+  margin-inline-end: calc(var(--zen-space-10) - var(--arrowpanel-menuitem-padding-inline));
 }
 
 #identity-popup-mainView-panel-header-span,
@@ -206,7 +206,7 @@ panel {
 .permission-popup-permission-item,
 .permission-popup-boost-item,
 #permission-popup-storage-access-permission-list-header {
-  padding-block: 4px;
+  padding-block: var(--zen-space-4);
   margin-block: 0;
 }
 
@@ -221,8 +221,8 @@ panel {
 }
 
 .panel-subview-footer-button {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: var(--zen-space-10);
+  padding-bottom: var(--zen-space-10);
 }
 
 #identity-popup-clear-sitedata-footer {
@@ -263,9 +263,9 @@ menuseparator {
 .workspace-trigger {
   width: 100%;
   text-align: left;
-  padding: 8px 12px;
+  padding: var(--zen-space-8) var(--zen-space-12);
   border: 1px solid var(--input-border-color);
-  border-radius: 4px;
+  border-radius: var(--zen-border-radius-4);
   background-color: var(--zen-colors-tertiary);
   display: flex;
   align-items: center;
@@ -275,14 +275,14 @@ menuseparator {
 #editBMPanel_workspaceList {
   flex-direction: column;
   width: 100%;
-  max-height: 200px;
+  max-height: var(--zen-bookmark-workspace-list-max-height);
   overflow-y: auto;
-  margin-top: 4px;
+  margin-top: var(--zen-space-4);
   border: 1px solid var(--zen-colors-border);
-  border-radius: 4px;
+  border-radius: var(--zen-border-radius-4);
   background-color: var(--zen-colors-tertiary);
-  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
-  padding: 4px 0;
+  box-shadow: var(--zen-box-shadow-hairline);
+  padding: var(--zen-space-4) 0;
 }
 
 #editBMPanel_workspaceList li {
@@ -294,12 +294,12 @@ menuseparator {
 #editBMPanel_workspaceList li > label {
   display: flex;
   align-items: center;
-  padding: 4px 12px;
+  padding: var(--zen-space-4) var(--zen-space-12);
   cursor: pointer;
 }
 
 #editBMPanel_workspaceList input[type="checkbox"] {
-  margin-right: 8px;
+  margin-right: var(--zen-space-8);
 }
 
 /* Section: Toast notifications */
@@ -336,55 +336,55 @@ menuseparator {
       --zen-toast-max-height: 48px;
     }
 
-    gap: 8px;
+    gap: var(--zen-space-8);
     z-index: 1000;
     padding: var(--zen-toast-padding);
-    border-radius: 14px;
+    border-radius: var(--zen-border-radius-14);
     background: linear-gradient(to bottom, var(--zen-primary-color) -40%, color-mix(in srgb, var(--zen-primary-color), #0f0f0f 20%));
-    box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0 0 22px 2px;
+    box-shadow: var(--zen-toast-shadow);
     border: none;
     display: flex;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     align-items: center;
     width: max-content;
     position: absolute;
     transform-origin: top center;
     max-height: var(--zen-toast-max-height);
     min-height: var(--zen-toast-max-height);
-    font-size: 14px;
+    font-size: var(--zen-font-size-14);
 
     & .description {
-      opacity: 0.6;
+      opacity: var(--zen-opacity-60);
       font-size: smaller;
     }
 
     & label {
-      margin: 0 4px;
+      margin: 0 var(--zen-space-4);
 
       & span {
-        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-        border-radius: 4px;
-        padding: 5px 7px;
-        font-size: 12px;
-        font-weight: 600;
-        margin: 0 2px;
+        background: var(--zen-toast-shortcut-background);
+        border-radius: var(--zen-border-radius-4);
+        padding: var(--zen-space-5) var(--zen-space-7);
+        font-size: var(--zen-font-size-12);
+        font-weight: var(--font-weight-semibold);
+        margin: 0 var(--zen-space-2);
         word-spacing: 2px;
       }
     }
 
     & button {
       width: min-content;
-      padding: 0 8px !important;
+      padding: 0 var(--zen-space-8) !important;
       min-width: unset !important;
-      min-height: 28px;
+      min-height: var(--zen-size-28);
       margin: 0 !important;
-      border-radius: calc(4px * var(--zen-squircle-value)) !important;
-      border-top: 2px solid light-dark(transparent, rgba(255, 255, 255, 0.1));
-      color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
-      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.05);
-      background: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1)) !important;
+      border-radius: var(--border-radius-small) !important;
+      border-top: 2px solid var(--zen-toast-button-border-top-color);
+      color: var(--zen-color-contrast-80) !important;
+      box-shadow: var(--zen-toast-button-shadow);
+      background: var(--zen-toast-button-background) !important;
 
-      outline: 0.5px solid light-dark(transparent, rgba(255, 255, 255, 0.02));
+      outline: 0.5px solid var(--zen-toast-button-outline-color);
       outline-offset: -0.5px;
 
       :root[zen-right-side="true"] & {
@@ -396,8 +396,8 @@ menuseparator {
       }
 
       & .button-icon {
-        width: 14px;
-        opacity: 0.6;
+        width: var(--zen-size-14);
+        opacity: var(--zen-opacity-60);
       }
     }
   }

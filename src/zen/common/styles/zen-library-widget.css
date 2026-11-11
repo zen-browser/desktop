@@ -148,8 +148,8 @@
 
 .zen-library-download-badge:not([downloading]) {
   background-image: var(--download-image);
-  width: 20px;
-  height: 20px;
+  width: var(--icon-size-medium);
+  height: var(--icon-size-medium);
   border-radius: var(--border-radius-xsmall);
   background-size: cover;
   scale: 2;
@@ -164,13 +164,13 @@
   align-self: start;
   transform: translateX(-2px);
 
-  background-color: color-mix(in srgb, var(--zen-primary-color), light-dark(white, rgba(0,0,0,.5)) 80%);
+  background-color: color-mix(in srgb, var(--zen-primary-color), var(--zen-library-download-badge-mix-color) 80%);
   border: 3px solid transparent;
-  box-shadow: 0 0 6px 2px rgba(0,0,0,.1);
-  color: var(--progress);
-  width: 25px;
-  height: 25px;
-  border-radius: 100%;
+  box-shadow: var(--zen-box-shadow-glow);
+  color: var(--zen-library-widget-progress-color);
+  width: var(--zen-size-25);
+  height: var(--zen-size-25);
+  border-radius: var(--zen-border-radius-round);
 
   position: relative;
 }
@@ -182,7 +182,7 @@
   position: absolute;
   content: '';
   background-size: contain;
-  inset: 2px;
+  inset: var(--zen-space-2);
   fill: currentColor;
   -moz-context-properties: fill;
 }
@@ -191,13 +191,13 @@
   position: absolute;
   inset: 1px;
 
-  --border-width: 4px;
-  margin: calc(-1 * var(--border-width));
+  --zen-library-widget-progress-border-width: 4px;
+  margin: calc(-1 * var(--zen-library-widget-progress-border-width));
 
   --thickness: 3px;
-  --progress: var(--zen-accent-button-background);
+  --zen-library-widget-progress-color: var(--zen-accent-button-background);
 
-  border-radius: 100px;
+  border-radius: var(--border-radius-circle);
 
   & circle {
     fill: none;
@@ -209,7 +209,7 @@
   }
 
   & .zen-library-download-progress-arc {
-    stroke: var(--progress);
+    stroke: var(--zen-library-widget-progress-color);
     stroke-dasharray: 0 100;
     rotate: -90deg;
     transform-origin: center;
@@ -238,17 +238,17 @@
   display: flex;
   flex-direction: column;
   padding: 0;
-  padding-top: 10px;
-  gap: 4px;
+  padding-top: var(--zen-space-10);
+  gap: var(--zen-space-4);
 
   .zen-library-download-list-download {
     -moz-window-dragging: no-drag;
 
-    height: 52px;
-    border-radius: 16px;
+    height: var(--zen-size-52);
+    border-radius: var(--zen-border-radius-16);
     display: flex;
     position: relative;
-    padding: 0 4px;
+    padding: 0 var(--zen-space-4);
 
     --zen-library-entry-index: 0;
     --zen-library-entry-delay: calc(var(--zen-library-entry-index) * 12ms);
@@ -294,8 +294,8 @@
       flex: 1;
 
       & .zen-library-download-list-title {
-        font-size: 11pt;
-        opacity: 0.9;
+        font-size: var(--zen-font-size-11pt);
+        opacity: var(--zen-opacity-90);
 
         text-overflow: ellipsis;
         display: block;
@@ -303,12 +303,12 @@
         white-space: nowrap;
 
         @media not (-moz-platform: macos) {
-          font-size: 10pt;
+          font-size: var(--zen-font-size-10pt);
         }
       }
       & .zen-library-download-list-subtitle {
-        font-size: 9pt;
-        opacity: 0.6;
+        font-size: var(--zen-font-size-12);
+        opacity: var(--zen-opacity-60);
 
         text-overflow: ellipsis;
         display: block;
@@ -316,16 +316,16 @@
         white-space: nowrap;
 
         @media not (-moz-platform: macos) {
-          font-size: 8pt;
+          font-size: var(--zen-font-size-8pt);
         }
       }
     }
 
     & .zen-library-download-badge {
-      margin: auto 20px auto 8px;
+      margin: auto var(--zen-space-20) auto var(--zen-space-8);
 
       &[downloading] {
-        margin-right: 15px;
+        margin-right: var(--zen-space-15);
       }
 
       :root:not([zen-sidebar-expanded="true"]) & {
@@ -335,11 +335,11 @@
 
     & .zen-library-download-action {
       display: none;
-      margin: auto 4px auto 0;
+      margin: auto var(--zen-space-4) auto 0;
 
       & > .toolbarbutton-icon {
-        width: 28px;
-        height: 28px;
+        width: var(--zen-size-28);
+        height: var(--zen-size-28);
       }
 
       :root:not([zen-sidebar-expanded="true"]) & {

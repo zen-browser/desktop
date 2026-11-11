@@ -23,14 +23,14 @@
   background: transparent;
   appearance: unset !important;
   height: fit-content;
-  gap: 3px;
+  gap: var(--zen-space-3);
   width: 100%;
 
   & toolbarbutton {
     margin: 0;
-    max-width: 30px;
+    max-width: var(--zen-size-30);
     border-radius: var(--toolbarbutton-border-radius);
-    height: 30px;
+    height: var(--zen-size-30);
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -39,42 +39,42 @@
     fill-opacity: 0.6;
     -moz-context-properties: fill-opacity, fill;
     fill: currentColor;
-    scroll-margin: 0 20px;
+    scroll-margin: 0 var(--zen-space-20);
 
     @media (-moz-platform: macos) {
-      height: 32px;
-      max-width: 32px;
+      height: var(--size-item-large);
+      max-width: var(--size-item-large);
     }
 
     & .zen-workspace-icon {
       pointer-events: none;
       line-height: 0;
       position: absolute;
-      font-size: 12px;
+      font-size: var(--zen-font-size-12);
 
 
       &:is(img) {
-        width: 14px;
+        width: var(--zen-size-14);
       }
 
       @media (-moz-platform: macos) {
-        font-size: 13px;
+        font-size: var(--zen-font-size-13);
 
         &:is(img) {
-          width: 16px;
+          width: var(--size-item-small);
         }
       }
 
       &[no-icon='true'] {
-        width: 8px;
-        height: 8px;
-        background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
-        border-radius: 50%;
+        width: var(--zen-size-8);
+        height: var(--zen-size-8);
+        background: var(--zen-color-contrast-40);
+        border-radius: var(--zen-border-radius-round);
       }
     }
 
     filter: grayscale(1);
-    opacity: 0.7;
+    opacity: var(--zen-opacity-70);
     transition:
       filter 0.2s,
       opacity 0.2s,
@@ -103,12 +103,12 @@
     }
 
     :root:not([zen-sidebar-expanded='true']) & {
-      min-width: 36px;
+      min-width: var(--zen-size-36);
     }
   }
 
   &[reorder-mode='true'] toolbarbutton:not([dragged='true']) {
-    opacity: 0.2 !important;
+    opacity: var(--zen-opacity-20) !important;
     filter: grayscale(1) !important;
   }
 
@@ -129,6 +129,7 @@
 %include overflow-icons.inc.css
     }
 
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector -- hovering any sibling space button restyles the active one; there is no attribute for that */
     &:has(toolbarbutton:hover) toolbarbutton[active='true']:not([dragged='true']) {
 %include overflow-icons.inc.css
     }
@@ -145,12 +146,12 @@
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
-  margin-left: 0.2rem;
+  margin-left: calc(0.2 * var(--space-large));
   display: none;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 13px;
+  font-size: var(--zen-font-size-13);
 }
 
 /** Keep these selectors in sync with the ones in vertical-tabs.css */
@@ -160,7 +161,7 @@
   }
 
   & #zen-workspaces-button .zen-workspace-sidebar-icon {
-    margin-inline-end: 5px;
+    margin-inline-end: var(--zen-space-5);
   }
 
   & #zen-workspaces-button {
@@ -175,19 +176,19 @@
 
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
-  --indicator-gap: calc(var(--toolbarbutton-padding-inner) - 1px);
+  --zen-workspace-indicator-gap: calc(var(--toolbarbutton-padding-inner) - 1px);
   padding: calc(3px + var(--tab-padding-inline) + var(--zen-toolbox-padding));
-  font-weight: 500;
+  font-weight: var(--zen-font-weight-medium);
   position: relative;
   max-height: var(--zen-workspace-indicator-height);
   min-height: var(--zen-workspace-indicator-height);
-  gap: var(--indicator-gap);
+  gap: var(--zen-workspace-indicator-gap);
   align-items: center;
   flex-direction: row !important;
   max-width: 100%;
   width: 100%;
   font-size: small;
-  padding-right: 12px;
+  padding-right: var(--zen-space-12);
   -moz-window-dragging: no-drag;
 
   &::before {
@@ -196,10 +197,10 @@
     pointer-events: none;
     content: '';
     position: absolute;
-    top: 4px;
+    top: var(--zen-space-4);
     left: calc(var(--zen-toolbox-padding) + 2px);
     width: calc(100% - var(--zen-toolbox-padding) * 2.5);
-    height: calc(100% - 8px);
+    height: calc(100% - var(--zen-size-8));
   }
 
   :root[zen-private-window] & {
@@ -221,36 +222,36 @@
 
   & .zen-current-workspace-indicator-icon {
     position: relative;
-    width: 16px;
-    height: 16px;
+    width: var(--size-item-small);
+    height: var(--size-item-small);
     justify-content: center;
     align-items: center;
     fill-opacity: 1;
     -moz-context-properties: fill-opacity, fill;
     fill: var(--zen-sidebar-themed-icon-fill);
-    font-size: 16px;
-    padding-top: 2px;
-    color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
+    font-size: var(--zen-font-size-16);
+    padding-top: var(--zen-space-2);
+    color: var(--zen-color-contrast-80);
 
     & img {
       transform: translateY(-1px);
     }
 
     &[zen-emoji-open='true']::before {
-      border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));
-      border-radius: 6px;
-      width: calc(100% + 6px);
-      height: calc(100% + 6px);
+      border: 1px dashed var(--zen-color-contrast-50);
+      border-radius: var(--zen-border-radius-6);
+      width: calc(100% + var(--zen-size-6));
+      height: calc(100% + var(--zen-size-6));
       content: '';
       position: absolute;
-      top: -4px;
-      left: -4px;
+      top: calc(-1 * var(--zen-space-4));
+      left: calc(-1 * var(--zen-space-4));
       pointer-events: none;
     }
 
     @media (-moz-platform: windows) {
       & img {
-        margin-bottom: -2px;
+        margin-bottom: calc(-1 * var(--zen-space-2));
       }
     }
   }
@@ -261,15 +262,15 @@
     text-overflow: ellipsis;
     cursor: auto;
     white-space: nowrap;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     margin: 0;
 
     :root[zen-unsynced-window] & {
       pointer-events: none;
       background: var(--zen-toolbar-element-bg);
-      padding: 4px 8px;
-      border-radius: 99px;
-      font-size: 10px;
+      padding: var(--zen-space-4) var(--zen-space-8);
+      border-radius: var(--border-radius-circle);
+      font-size: var(--zen-font-size-10);
     }
 
     :root:not([zen-unsynced-window]) & {
@@ -286,9 +287,10 @@
     visibility: collapse;
 
     & image {
-      border-radius: max(calc(var(--border-radius-medium) - 4px), 4px) !important;
-      width: 26px;
-      height: 26px;
+      --zen-workspaces-actions-image-radius: max(calc(var(--border-radius-medium) - 4px), 4px);
+      border-radius: var(--zen-workspaces-actions-image-radius) !important;
+      width: var(--zen-size-26);
+      height: var(--zen-size-26);
       margin-right: -1px;
     }
 
@@ -299,9 +301,9 @@
     :root[zen-unsynced-window] & {
       .toolbarbutton-text {
         display: flex;
-        font-size: 10px;
-        min-height: 22px;
-        padding: 6px 8px;
+        font-size: var(--zen-font-size-10);
+        min-height: var(--zen-size-22);
+        padding: var(--zen-space-6) var(--zen-space-8);
       }
 
       .toolbarbutton-icon {
@@ -329,15 +331,16 @@
   z-index: 3;
 
   align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
-  border-radius: 999px;
+  gap: var(--zen-space-4);
+  padding: var(--zen-space-6) var(--zen-space-8);
+  border-radius: var(--border-radius-circle);
 
-  color: light-dark(rgba(0, 0, 0, .8), white);
+  color: var(--zen-workspace-scroll-to-tab-color);
   -moz-window-dragging: no-drag;
 
   background: light-dark(color-mix(in srgb, var(--zen-accent-button-background) 10%, white), color-mix(in srgb, var(--zen-accent-button-background) 50%, black));
-  box-shadow: var(--tab-box-shadow-selected), 0 0px 10px rgba(0, 0, 0, 0.1);
+  --zen-workspace-scroll-to-tab-shadow: var(--tab-box-shadow-selected), 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--zen-workspace-scroll-to-tab-shadow);
 
   transition: scale 0.15s ease-in-out;
 
@@ -360,14 +363,14 @@
   }
 
   & .zen-workspace-scroll-to-tab-icon {
-    width: 16px;
-    height: 16px;
+    width: var(--size-item-small);
+    height: var(--size-item-small);
     border-radius: var(--border-radius-xsmall);
   }
 
   & .zen-workspace-scroll-to-tab-arrow {
-    width: 14px;
-    height: 14px;
+    width: var(--zen-size-14);
+    height: var(--zen-size-14);
     -moz-context-properties: fill;
     fill: currentColor;
     list-style-image: url("chrome://browser/skin/zen-icons/forward.svg");
@@ -421,7 +424,7 @@ zen-workspace {
       scrollbar-width: auto;
       scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
       overflow-y: auto;
-      padding-block-end: calc((var(--tab-min-height) * 3) + (var(--tab-margin-block) * 4));
+      padding-block-end: calc(var(--tab-min-height) * 3 + var(--tab-margin-block) * 4);
       overscroll-behavior: auto;
     }
 
@@ -496,13 +499,13 @@ zen-workspace {
     transition: margin-inline-end 0.1s;
 
     &[no-icon='true']:not([zen-emoji-open='true']) {
-      margin-inline-end: calc(-1 * (var(--indicator-gap) + 16px));
+      margin-inline-end: calc(-1 * var(--zen-workspace-indicator-gap) - var(--zen-space-16));
     }
   }
 
   .zen-current-workspace-indicator-chevron {
-    width: 16px;
-    height: 16px;
+    width: var(--size-item-small);
+    height: var(--size-item-small);
     transition: transform 0.1s, opacity 0.15s;
     transform: rotate(90deg);
     padding: 1px;

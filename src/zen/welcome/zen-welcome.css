@@ -31,8 +31,8 @@
 }
 
 :root[zen-welcome-stage] {
-  min-width: 875px;
-  min-height: 560px;
+  min-width: var(--zen-welcome-window-min-width);
+  min-height: var(--zen-welcome-window-min-height);
 }
 
 #zen-welcome {
@@ -61,8 +61,8 @@
     opacity: 0;
     list-style-image: url(chrome://browser/skin/zen-icons/forward.svg);
     padding: 1em !important;
-    min-width: 100px;
-    background: rgb(62, 115, 62) !important;
+    min-width: var(--zen-welcome-start-button-min-width);
+    background: var(--zen-welcome-start-button-background) !important;
     fill: white !important;
 
     will-change: transform;
@@ -81,8 +81,8 @@
 
   #zen-welcome-title {
     text-align: center;
-    font-size: 5.2rem;
-    font-weight: 700;
+    font-size: var(--zen-welcome-title-font-size);
+    font-weight: var(--font-weight-bold);
     line-height: 1.05;
     letter-spacing: -0.03em;
     max-width: 50%;
@@ -111,12 +111,12 @@
   justify-content: start;
   align-items: stretch;
   background: var(--zen-welcome-content-bg);
-  color: light-dark(#111111, #ffffff);
-  border-radius: 1.4rem;
+  color: var(--zen-welcome-pages-text-color);
+  border-radius: var(--zen-welcome-pages-border-radius);
   position: relative;
   width: 86%;
   height: 82%;
-  box-shadow: 0 3px 8px rgba(0,0,0,.05);
+  box-shadow: var(--zen-welcome-pages-shadow);
   overflow: hidden;
 
   @media (max-width: 1000px) {
@@ -132,32 +132,32 @@
     flex-direction: column;
     width: 38%;
     height: 100%;
-    padding: 4rem 3.8rem 3.6rem;
+    padding: calc(4 * var(--space-large)) calc(3.8 * var(--space-large)) calc(3.6 * var(--space-large));
     box-sizing: border-box;
     overflow: hidden;
     background: var(--zen-welcome-sidebar-bg);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--zen-welcome-sidebar-shadow);
   }
 
   #zen-welcome-back {
     align-self: flex-start;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin: 0 0 2.2rem;
+    gap: var(--space-small);
+    margin: 0 0 calc(2.2 * var(--space-large));
     padding: 0;
     appearance: none;
     border: none;
     background: none;
     font: inherit;
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: var(--zen-welcome-back-font-size);
+    font-weight: var(--font-weight-semibold);
     color: var(--zen-welcome-accent);
 
     &::before {
       content: "";
-      width: 16px;
-      height: 16px;
+      width: var(--size-item-small);
+      height: var(--size-item-small);
       background: url(chrome://browser/skin/zen-icons/back.svg) center / contain
         no-repeat;
       -moz-context-properties: fill;
@@ -184,16 +184,16 @@
     }
 
     & h1 {
-      margin: 0 0 2.4rem;
-      font-size: 3rem;
-      font-weight: 700;
+      margin: 0 0 calc(2.4 * var(--space-large));
+      font-size: var(--zen-welcome-heading-font-size);
+      font-weight: var(--font-weight-bold);
       line-height: 1.1;
       letter-spacing: -0.02em;
     }
 
     & p {
-      margin: 0 0 1.2rem;
-      font-size: 1.25rem;
+      margin: 0 0 calc(1.2 * var(--space-large));
+      font-size: var(--zen-welcome-description-font-size);
       line-height: 1.6;
       color: var(--zen-welcome-text-secondary);
     }
@@ -202,7 +202,7 @@
   #zen-welcome-page-sidebar-buttons {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-large);
   }
 
   #zen-welcome-page-content {
@@ -218,7 +218,7 @@
       z-index: 0;
       background-image: url(chrome://browser/content/zen-images/grain-bg.png);
       background-size: 155px 155px;
-      opacity: 0.3;
+      opacity: var(--zen-opacity-30);
       pointer-events: none;
     }
   }
@@ -231,8 +231,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2.5rem;
-    padding: 3rem 4rem;
+    gap: calc(2.5 * var(--space-large));
+    padding: calc(3 * var(--space-large)) calc(4 * var(--space-large));
     box-sizing: border-box;
 
     &[exiting] {
@@ -242,15 +242,15 @@
     &[page="essentials"] {
       justify-content: flex-end;
       align-items: flex-end;
-      padding: 3rem 0 0 6rem;
+      padding: calc(3 * var(--space-large)) 0 0 calc(6 * var(--space-large));
     }
 
     &[page="search"],
     &[page="import"] {
       justify-content: safe center;
       overflow-y: auto;
-      padding-top: 6rem;
-      padding-bottom: 6rem;
+      padding-top: calc(6 * var(--space-large));
+      padding-bottom: calc(6 * var(--space-large));
       scrollbar-width: none;
 
       mask-image: linear-gradient(
@@ -261,11 +261,11 @@
       );
 
       .zen-welcome-option {
-        max-width: 24rem;
-        min-height: 7.5rem;
-        padding: 0 0 0 1.8rem;
+        max-width: var(--zen-welcome-option-compact-max-width);
+        min-height: var(--zen-welcome-option-compact-min-height);
+        padding: 0 0 0 calc(1.8 * var(--space-large));
         overflow: hidden;
-        font-weight: 600;
+        font-weight: var(--font-weight-semibold);
       }
 
       .engine-icon-wrapper {
@@ -289,19 +289,19 @@
         object-fit: cover;
         scale: 3;
         filter: blur(30px) saturate(1.8);
-        opacity: 0.2;
+        opacity: var(--zen-opacity-20);
       }
 
       .engine-icon {
         position: relative;
-        width: 26px;
-        height: 26px;
-        border-radius: 10px;
+        width: var(--zen-size-26);
+        height: var(--zen-size-26);
+        border-radius: var(--zen-border-radius-10);
       }
 
       .zen-welcome-option-label {
         order: -1;
-        padding-right: 1rem;
+        padding-right: var(--space-large);
       }
 
       .zen-welcome-option-radio {
@@ -311,17 +311,17 @@
 
     &[page="import"] {
       .zen-welcome-option {
-        gap: 2rem;
-        min-height: 9rem;
-        padding: 0 0 0 2.5rem;
-        border-radius: 24px;
+        gap: var(--space-xxlarge);
+        min-height: var(--zen-welcome-import-option-min-height);
+        padding: 0 0 0 calc(2.5 * var(--space-large));
+        border-radius: var(--zen-border-radius-24);
       }
 
       .zen-welcome-import-source {
         display: flex;
         flex-direction: column;
         width: 100%;
-        max-width: 24rem;
+        max-width: var(--zen-welcome-option-compact-max-width);
 
         .zen-welcome-option {
           max-width: none;
@@ -344,19 +344,19 @@
         flex-direction: column;
         min-height: 0;
         overflow: hidden;
-        margin: 0 0.6rem;
-        border-radius: 0 0 18px 18px;
+        margin: 0 calc(0.6 * var(--space-large));
+        border-radius: 0 0 var(--zen-border-radius-18) var(--zen-border-radius-18);
         background: var(--zen-welcome-surface-bg);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--zen-welcome-surface-shadow);
       }
 
       .zen-welcome-import-profile {
         display: flex;
         align-items: center;
-        gap: 0.9rem;
-        padding: 1rem 1.3rem;
-        font-size: 1.05rem;
-        font-weight: 500;
+        gap: calc(0.9 * var(--space-large));
+        padding: var(--space-large) calc(1.3 * var(--space-large));
+        font-size: var(--zen-welcome-import-profile-font-size);
+        font-weight: var(--zen-font-weight-medium);
         cursor: pointer;
 
         &:not(:last-child) {
@@ -376,22 +376,23 @@
         .zen-welcome-import-profile-check {
           position: relative;
           flex-shrink: 0;
-          width: 22px;
-          height: 22px;
+          width: var(--zen-size-22);
+          height: var(--zen-size-22);
           box-sizing: border-box;
-          border-radius: 50%;
-          border: 1.5px solid
-            light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.4));
+          border-radius: var(--zen-border-radius-round);
+          border: 1.5px solid var(--zen-welcome-check-border-color);
 
           &::after {
             content: "";
             position: absolute;
-            left: 6px;
-            top: 3px;
-            width: 5px;
-            height: 10px;
+            left: var(--zen-space-6);
+            top: var(--zen-space-3);
+            width: var(--zen-size-5);
+            height: var(--zen-size-10);
             border: solid white;
-            border-width: 0 2px 2px 0;
+            border-width: 0;
+            border-right-width: 2px;
+            border-bottom-width: 2px;
             transform: rotate(45deg);
             opacity: 0;
           }
@@ -413,8 +414,8 @@
       }
 
       .engine-icon {
-        width: 42px;
-        height: 42px;
+        width: var(--zen-size-42);
+        height: var(--zen-size-42);
       }
     }
   }
@@ -422,16 +423,16 @@
   .zen-welcome-option {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--space-large);
     width: 100%;
-    max-width: 30rem;
-    padding: 1.8rem 1.9rem;
-    font-size: 1.3rem;
+    max-width: var(--zen-welcome-option-max-width);
+    padding: calc(1.8 * var(--space-large)) calc(1.9 * var(--space-large));
+    font-size: var(--zen-welcome-option-font-size);
     box-sizing: border-box;
-    border-radius: 20px;
+    border-radius: var(--zen-border-radius-20);
     border: 1px solid var(--zen-welcome-border);
     background: var(--zen-welcome-surface-bg);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--zen-welcome-surface-shadow);
     cursor: pointer;
     will-change: transform;
     transition: scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -445,30 +446,29 @@
     }
 
     & strong {
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
     }
 
     & .engine-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: var(--zen-size-28);
+      height: var(--zen-size-28);
+      border-radius: var(--zen-border-radius-6);
     }
 
     .zen-welcome-option-radio {
       position: relative;
       flex-shrink: 0;
-      width: 22px;
-      height: 22px;
+      width: var(--zen-size-22);
+      height: var(--zen-size-22);
       box-sizing: border-box;
-      border-radius: 50%;
-      border: 1px solid
-        light-dark(rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.5));
+      border-radius: var(--zen-border-radius-round);
+      border: 1px solid var(--zen-color-contrast-50);
 
       &::after {
         content: "";
         position: absolute;
-        inset: 3px;
-        border-radius: 50%;
+        inset: var(--zen-space-3);
+        border-radius: var(--zen-border-radius-round);
         background: currentColor;
         opacity: 0;
       }
@@ -498,31 +498,31 @@
   .zen-welcome-mock-browser {
     width: 92%;
     height: 100%;
-    border-top-left-radius: 2.4rem;
-    background: light-dark(#e3e3e5, #232326);
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+    border-top-left-radius: var(--zen-welcome-mock-browser-border-radius);
+    background: var(--zen-welcome-mock-browser-background);
+    box-shadow: var(--zen-welcome-mock-browser-shadow);
     overflow: hidden;
 
     .zen-welcome-mock-browser-sidebar {
       display: flex;
       flex-direction: column;
-      gap: 1.6rem;
+      gap: calc(1.6 * var(--space-large));
       width: 80%;
       height: 100%;
-      padding: 2.6rem 2.4rem;
+      padding: calc(2.6 * var(--space-large)) calc(2.4 * var(--space-large));
       box-sizing: border-box;
       background: var(--zen-welcome-surface-bg);
     }
 
     .zen-welcome-mock-browser-dots {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 0.6rem;
+      gap: var(--space-large);
+      margin-bottom: calc(0.6 * var(--space-large));
 
       & > div {
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
+        width: var(--zen-size-22);
+        height: var(--zen-size-22);
+        border-radius: var(--zen-border-radius-round);
         background: var(--zen-welcome-tile-bg);
       }
     }
@@ -530,17 +530,20 @@
     #zen-welcome-essentials {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+      gap: var(--space-xlarge);
     }
 
     .zen-welcome-essential {
       appearance: none;
       aspect-ratio: 1;
       padding: 0;
-      border-radius: 2rem;
+      border-radius: var(--zen-welcome-essential-border-radius);
       border: 3px solid transparent;
-      background: var(--zen-welcome-tile-bg) var(--zen-welcome-app-icon)
-        center / 35% no-repeat;
+      background-color: var(--zen-welcome-tile-bg);
+      background-image: var(--zen-welcome-app-icon);
+      background-position: center;
+      background-size: 35%;
+      background-repeat: no-repeat;
       cursor: pointer;
       will-change: transform;
       transition: scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -566,8 +569,8 @@
 
     .zen-welcome-mock-tab {
       flex-shrink: 0;
-      height: 4.5rem;
-      border-radius: 1.6rem;
+      height: var(--zen-welcome-mock-tab-height);
+      border-radius: var(--zen-welcome-mock-tab-border-radius);
       background: var(--zen-welcome-tile-bg);
     }
   }

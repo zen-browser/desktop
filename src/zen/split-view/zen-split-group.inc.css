@@ -37,15 +37,14 @@ tab-group[split-view-group] {
     align-items: center;
 
     border-radius: var(--border-radius-medium);
-    padding: 0 2px;
-    margin-inline: var(--tab-margin-block);
+    padding: 0 var(--zen-space-2);
     margin-block: var(--tab-margin-block);
     min-height: var(--tab-min-height);
     outline: var(--tab-outline);
     outline-offset: var(--tab-outline-offset);
     outline-color: var(--tab-selected-outline-color);
     transition: scale 0.1s ease;
-    margin-inline: 2px !important;
+    margin-inline: var(--zen-space-2) !important;
 
     :root:not([zen-sidebar-expanded='true']) & {
       padding: 0;
@@ -72,14 +71,14 @@ tab-group[split-view-group] {
       container-name: browser-tab;
 
       flex: 1 !important;
-      padding-inline: 2px !important;
+      padding-inline: var(--zen-space-2) !important;
       overflow: clip;
 
       &:not(:last-child)::after {
         content: '';
         width: 1px;
-        height: 16px;
-        background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
+        height: var(--size-item-small);
+        background-color: var(--zen-split-view-tab-separator-background);
         position: absolute;
         right: 0;
         top: 50%;
@@ -87,7 +86,7 @@ tab-group[split-view-group] {
       }
 
       :root:not([zen-sidebar-expanded='true']) &:not(:last-child)::after {
-        width: 16px;
+        width: var(--size-item-small);
         height: 1px;
         top: auto;
         bottom: 0;
@@ -97,15 +96,15 @@ tab-group[split-view-group] {
 
       & .tab-content {
         min-width: 0;
-        padding: 0 4px !important;
+        padding: 0 var(--zen-space-4) !important;
         :root[zen-sidebar-expanded='true'] & {
           justify-content: unset !important;
         }
       }
     }
 
-    tab-group[split-view-group]:where([hasactivetab]) &,
-    &:has(> tab:is([multiselected, visuallyselected])) {
+    tab-group[split-view-group]:where([hasactivetab]) & {
+      /* stylelint-disable-next-line stylelint-plugin-mozilla/use-paired-color-tokens -- the tabs inside set their own text color */
       background-color: var(--tab-background-color-selected);
       box-shadow: var(--tab-box-shadow-selected);
 
@@ -121,6 +120,7 @@ tab-group[split-view-group] {
       }
     }
 
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector -- must not scale while a tab icon inside is being pressed */
     &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
     }
@@ -174,10 +174,10 @@ tab-group[split-view-group] .tabbrowser-tab {
 tab-group[split-view-group] .tab-group-label-container {
   position: absolute;
   width: -moz-available;
-  height: 36px;
+  height: var(--zen-size-36);
   visibility: hidden;
   padding: 0 !important;
-  margin: 2px 0 0 0 !important;
+  margin: var(--zen-space-2) 0 0 0 !important;
 }
 
 tab-group[split-view-group] .tab-close-button {

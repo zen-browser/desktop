@@ -27,5 +27,6 @@ DIRS += [
     "space-routing",
     "sync",
     "tabs",
+    "webapps",
     "window-drag",
 ]

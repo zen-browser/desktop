@@ -144,7 +144,7 @@ window.gZenCompactModeManager = {
     );
 
     SessionStore.promiseAllWindowsRestored.then(() => {
-      this.preference = this._wasInCompactMode;
+      this.preference = this._wasInCompactMode || this.isTaskbarTabWindow;
     });
   },
 
@@ -161,6 +161,14 @@ window.gZenCompactModeManager = {
 
   get shouldBeCompact() {
     return !document.documentElement.hasAttribute("popup-window");
+  },
+
+  /**
+   * Web app (Taskbar Tab) windows always start in compact mode so the site
+   * fills the window, and never persist their state to regular windows.
+   */
+  get isTaskbarTabWindow() {
+    return document.documentElement.hasAttribute("taskbartab");
   },
 
   set preference(value) {
@@ -376,8 +384,11 @@ window.gZenCompactModeManager = {
     const setAttrs = () => {
       // We use this element in order to make it persis across restarts, by using the XULStore.
       // main-window can't store attributes other than window sizes, so we use this instead
-      lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
       document.documentElement.setAttribute("zen-compact-mode", value);
+      if (this.isTaskbarTabWindow) {
+        return;
+      }
+      lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
       if (typeof this._wasInCompactMode === "undefined") {
         Services.prefs.setBoolPref("zen.view.compact.enable-at-startup", value);
       }
@@ -412,6 +423,7 @@ window.gZenCompactModeManager = {
 
   get canHideSidebar() {
     return (
+      this.isTaskbarTabWindow ||
       Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") ||
       gZenVerticalTabsManager._hasSetSingleToolbar
     );

@@ -236,13 +236,16 @@ class nsZenWindowSync {
       hasUnsyncedArg = true;
     }
     delete aWindow._zenStartupSyncFlag;
+    const isTaskbarTab =
+      aWindow.document.documentElement.hasAttribute("taskbartab");
     if (
-      !forcedSync &&
-      (hasUnsyncedArg ||
-        !aWindow.gZenWorkspaces.shouldHaveWorkspaces ||
-        (typeof aWindow.arguments?.[0] === "string" &&
-          aWindow.arguments.length > 1 &&
-          !!this.#browserWindowsList.length))
+      isTaskbarTab ||
+      (!forcedSync &&
+        (hasUnsyncedArg ||
+          !aWindow.gZenWorkspaces.shouldHaveWorkspaces ||
+          (typeof aWindow.arguments?.[0] === "string" &&
+            aWindow.arguments.length > 1 &&
+            !!this.#browserWindowsList.length)))
     ) {
       this.log(
         "Not syncing new window due to unsynced argument or existing synced windows"

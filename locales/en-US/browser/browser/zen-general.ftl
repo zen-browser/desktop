@@ -167,3 +167,11 @@ zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window =
     .label = New Blank Window
 
+zen-web-app-urlbar-button-install =
+    .tooltiptext = Install page as app
+zen-web-app-urlbar-button-uninstall =
+    .tooltiptext = Uninstall app and move page back to { -brand-short-name }
+tab-context-zen-install-web-app =
+    .label = Install Page as App
+    .accesskey = I
+

@@ -1,8 +1,8 @@
 diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
-index 25eb66b96a30c86e08376577f4636e159a02c76e..9b997ab559ddade67a7390539b3b4f9275c27a20 100644
+index 443061243b70c13cc545c9515164a6b9f278bf85..54b4156d1413595010b7fddac05ffb1082ef567c 100644
 --- a/browser/components/customizableui/CustomizeMode.sys.mjs
 +++ b/browser/components/customizableui/CustomizeMode.sys.mjs
-@@ -503,7 +503,7 @@ export class CustomizeMode {
+@@ -522,7 +522,7 @@ export class CustomizeMode {
        this.#transitioning = true;
  
        let customizer = document.getElementById("customization-container");
@@ -11,7 +11,7 @@ index 25eb66b96a30c86e08376577f4636e159a02c76e..9b997ab559ddade67a7390539b3b4f92
        browser.hidden = true;
        customizer.hidden = false;
  
-@@ -640,7 +640,7 @@ export class CustomizeMode {
+@@ -659,7 +659,7 @@ export class CustomizeMode {
      }
  
      let customizer = document.getElementById("customization-container");
@@ -20,7 +20,7 @@ index 25eb66b96a30c86e08376577f4636e159a02c76e..9b997ab559ddade67a7390539b3b4f92
      customizer.hidden = true;
      browser.hidden = false;
  
-@@ -1176,6 +1176,7 @@ export class CustomizeMode {
+@@ -1195,6 +1195,7 @@ export class CustomizeMode {
      return (
        aNode.localName == "toolbarbutton" ||
        aNode.localName == "toolbaritem" ||
@@ -28,3 +28,60 @@ index 25eb66b96a30c86e08376577f4636e159a02c76e..9b997ab559ddade67a7390539b3b4f92
        aNode.localName == "toolbarseparator" ||
        aNode.localName == "toolbarspring" ||
        aNode.localName == "toolbarspacer"
+@@ -2603,6 +2604,13 @@ export class CustomizeMode {
+     );
+   }
+ 
++  #isReversedToolbar(area) {
++    return (
++      area.id === "zen-sidebar-foot-buttons" &&
++      this.#window.getComputedStyle(area).flexDirection === "row-reverse"
++    );
++  }
++
+   /**
+    * Handles the dragover event for any customizable area.
+    *
+@@ -2694,17 +2702,22 @@ export class CustomizeMode {
+           let itemRect = this.#getBoundsWithoutFlushing(dragOverItem);
+           let dropTargetCenter = itemRect.left + itemRect.width / 2;
+           let existingDir = dragOverItem.getAttribute("dragover");
+-          let dirFactor = this.#window.RTL_UI ? -1 : 1;
++          const reversed = this.#isReversedToolbar(targetArea);
++          const beforeOnRight = this.#window.RTL_UI !== reversed;
++          const dirFactor = beforeOnRight ? -1 : 1;
++          const useStart = (existingDir == "before") !== reversed;
++          const borderWidth =
++            parseInt(
++              useStart
++                ? dragOverItem.style.borderInlineStartWidth
++                : dragOverItem.style.borderInlineEndWidth
++            ) || 0;
+           if (existingDir == "before") {
+-            dropTargetCenter +=
+-              ((parseInt(dragOverItem.style.borderInlineStartWidth) || 0) / 2) *
+-              dirFactor;
++            dropTargetCenter += (borderWidth / 2) * dirFactor;
+           } else {
+-            dropTargetCenter -=
+-              ((parseInt(dragOverItem.style.borderInlineEndWidth) || 0) / 2) *
+-              dirFactor;
++            dropTargetCenter -= (borderWidth / 2) * dirFactor;
+           }
+-          let before = this.#window.RTL_UI
++          let before = beforeOnRight
+             ? aEvent.clientX > dropTargetCenter
+             : aEvent.clientX < dropTargetCenter;
+           dragValue = before ? "before" : "after";
+@@ -3153,8 +3166,10 @@ export class CustomizeMode {
+           propertyToMeasure
+         ];
+         let layoutSide = aPlace == "toolbar" ? "Inline" : "Block";
++        const reversed =
++          aPlace == "toolbar" && this.#isReversedToolbar(targetArea);
+         let prop, otherProp;
+-        if (aValue == "before") {
++        if ((aValue == "before") !== reversed) {
+           prop = "border" + layoutSide + "StartWidth";
+           otherProp = "border-" + layoutSide.toLowerCase() + "-end-width";
+         } else {

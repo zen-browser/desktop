@@ -25,42 +25,42 @@ zen-glance-enabled =
 zen-glance-trigger-ctrl-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌃ + Click
-           *[other] Ctrl + Click
+            [macos] ⌃ + clic
+           *[other] Ctrl + clic
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Control + Click
-           *[other] Ctrl + Click
+            [macos] Control + clic
+           *[other] Ctrl + clic
         }
 zen-glance-trigger-alt-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌥ + Click
-           *[other] Alt + Click
+            [macos] ⌥ + clic
+           *[other] Alt + clic
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Option + Click
-           *[other] Alt + Click
+            [macos] Opció + clic
+           *[other] Alt + clic
         }
 zen-glance-trigger-shift-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⇧ + Click
-           *[other] Shift + Click
+            [macos] ⇧ + clic
+           *[other] Majúscules + clic
         }
-    .aria-label = Shift + Click
+    .aria-label = Majúscules + clic
 zen-glance-trigger-meta-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌘ + Click
-           *[other] Meta (Command) + Click
+            [macos] ⌘ + clic
+           *[other] Meta (Comandament) + clic
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Command + Click
-           *[other] Meta (Command) + Click
+            [macos] Comandament + clic
+           *[other] Meta (Comandament) + clic
         }
 zen-look-and-feel-compact-view-header = Mostra en vista compacta
 zen-look-and-feel-compact-view-description = Mostreu només les barres d'eines que feu servir

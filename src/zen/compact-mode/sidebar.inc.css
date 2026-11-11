@@ -9,11 +9,6 @@
     width: calc(100% - var(--zen-toolbox-padding) * 2 - 4px);
     left: unset;
     right: calc(var(--zen-toolbox-padding) + 2px);
-    transform: translateY(-4px);
-
-    :root:not([zen-single-toolbar="true"]) & {
-      transform: translateY(calc(-100% - 2px));
-    }
   }
 
   #zen-tabbox-wrapper {

@@ -1544,7 +1544,11 @@
       this.#dragOverBackground = document.createElement("div");
       this.#dragOverBackground.id = "zen-dragover-background";
       this.#dragOverBackground.style.height = `${rect.height - margin * 2}px`;
-      this.#dragOverBackground.style.top = `${rect.top + margin}px`;
+      const toolboxTop =
+        window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).top +
+        gNavToolbox.clientTop -
+        gNavToolbox.scrollTop;
+      this.#dragOverBackground.style.top = `${rect.top - toolboxTop + margin}px`;
       gNavToolbox.appendChild(this.#dragOverBackground);
       this.#lastDropTarget = element;
       return true;

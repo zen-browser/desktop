@@ -1963,9 +1963,7 @@ class nsZenWorkspaces {
     if (!this.workspaceEnabled) {
       return workspace;
     }
-    this.#currentSpaceSwitchContext.animations.forEach(animation => {
-      animation.complete();
-    });
+    this.finishSwitchAnimations();
     await this.#currentSpaceSwitchContext.promise;
     let { resolve, promise } = Promise.withResolvers();
     this.#currentSpaceSwitchContext = {
@@ -1983,6 +1981,12 @@ class nsZenWorkspaces {
     this.#inChangingWorkspace = false;
     resolve();
     return workspace;
+  }
+
+  finishSwitchAnimations() {
+    this.#currentSpaceSwitchContext.animations.forEach(animation => {
+      animation.complete();
+    });
   }
 
   _cancelSwipeAnimation() {
@@ -2721,7 +2725,10 @@ class nsZenWorkspaces {
         onInit,
       }
     );
-    this._organizeWorkspaceStripLocations(workspace, true);
+    // A swipe that took over from this switch is dragging the strip now.
+    if (!this._swipeManager?.isGestureActive) {
+      this._organizeWorkspaceStripLocations(workspace, true);
+    }
     gZenUIManager.tabsWrapper.style.scrollbarWidth = "";
 
     // Notify listeners

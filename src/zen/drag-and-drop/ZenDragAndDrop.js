@@ -1779,6 +1779,36 @@
       };
     }
 
+    /**
+     * The essentials are a grid whose column count follows the sidebar's
+     * width and the number of tabs in it, so measuring it once at the start
+     * of a drag leaves every shift after a reflow answering for a layout
+     * that is no longer there.
+     *
+     * Counted off offsetTop rather than off the tabs' boxes, because by
+     * this point the tabs carry the transforms the drag has given them and
+     * their boxes say where they have been moved to, not where the grid
+     * put them.
+     *
+     * @param {Element?} container - The grid the tabs are laid out in
+     * @returns {number?} How many tabs a row holds, or null when there are
+     *   none to count
+     */
+    #countEssentialColumns(container) {
+      const first = container?.firstElementChild;
+      if (!first) {
+        return null;
+      }
+      let columns = 0;
+      for (const child of container.children) {
+        if (child.offsetTop !== first.offsetTop) {
+          break;
+        }
+        columns++;
+      }
+      return columns || null;
+    }
+
     // eslint-disable-next-line complexity
     #animateVerticalPinnedGridDragOver(event) {
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
@@ -1806,6 +1836,7 @@
         this._fakeEssentialTab.style.height =
           "calc(var(--tab-min-height) + var(--tab-margin-block) * 2)";
         this._fakeEssentialTab.elementIndex = numEssentials;
+        this._fakeEssentialTab.setAttribute("zen-drag-placeholder", "true");
         delete dragData.animDropElementIndex;
         if (!draggedTab.hasAttribute("zen-essential")) {
           event.target
@@ -1844,6 +1875,10 @@
       let elementMoving = usingFakeElement
         ? this._fakeEssentialTab
         : draggedTab;
+      this.#maxTabsPerRow =
+        this.#countEssentialColumns(
+          elementMoving.closest(".zen-essentials-container")
+        ) ?? this.#maxTabsPerRow;
       if (usingFakeElement) {
         movingTabs = [this._fakeEssentialTab];
       }

@@ -324,12 +324,14 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       // The window is really going now, so stop listening. A quit request can
       // still be canceled, so that path leaves the observer in place.
       Services.obs.removeObserver(this, "quit-application-requested");
+      this.#glances.clear();
     } else {
+      // A vetoed close leaves the Glance live, and successful closes remove
+      // their own entries when they finish.
       for (const [, glance] of this.#glances) {
         gBrowser.removeTab(glance.tab, { animate: false });
       }
     }
-    this.#glances.clear();
   }
 
   /**

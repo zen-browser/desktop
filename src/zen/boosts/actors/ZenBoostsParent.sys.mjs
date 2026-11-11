@@ -13,7 +13,6 @@ export class ZenBoostsParent extends JSWindowActorParent {
 
   static OBSERVERS = [
     "zen-boosts-update",
-    "zen-space-gradient-update",
     "zen-boosts-disable-zap",
     "zen-boosts-disable-picker",
   ];
@@ -89,10 +88,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
   observe(subject, topic) {
     switch (topic) {
       case "zen-boosts-update":
-      case "zen-space-gradient-update":
-        this.sendAsyncMessage("ZenBoost:BoostDataUpdated", {
-          unloadStyles: true,
-        });
+        this.sendAsyncMessage("ZenBoost:BoostDataUpdated");
         break;
       case "zen-boosts-disable-zap":
         this.sendAsyncMessage("ZenBoost:DisableZapMode");
@@ -104,28 +100,10 @@ export class ZenBoostsParent extends JSWindowActorParent {
   }
 
   /**
-   * Updates the boost size override on webpage
-   *
-   * @param {number} sizeOverride - The size to apply on the webpage as a override
-   * @param {boolean} disable - Whether to disable the override (sets override to the default 1)
-   */
-  updateBoostSizeOverride(sizeOverride, disable = false) {
-    if (
-      sizeOverride &&
-      isFinite(sizeOverride) &&
-      (sizeOverride !== 1 || disable)
-    ) {
-      const fullZoom = this.browsingContext.topChromeWindow.FullZoom;
-      fullZoom.setZoom(sizeOverride, this.browsingContext.top.embedderElement);
-    }
-  }
-
-  /**
    * Handles messages received from child actors.
-   * Retrieves boost data for a domain when requested.
    *
    * @param {object} message - The message object containing name and data.
-   * @returns {Promise<object | null>} A promise that resolves to the boost data or null.
+   * @returns {Promise<object | null>} A promise that resolves to the reply or null.
    */
   async receiveMessage(message) {
     switch (message.name) {
@@ -197,45 +175,20 @@ export class ZenBoostsParent extends JSWindowActorParent {
         }
         break;
       }
-      case "ZenBoost:GetBoostForDomain": {
+      case "ZenBoost:GetZapSelectors": {
         const domain = message.data;
-        const embedder = this.browsingContext.top.embedderElement;
-
-        if (!embedder || !domain) {
+        if (
+          !domain ||
+          !lazy.gZenBoostsManager.registeredBoostForDomain(domain)
+        ) {
           break;
         }
-
-        const exists = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
-        if (!exists) {
-          break;
-        }
-
-        const boost = lazy.gZenBoostsManager.loadActiveBoostFromStore(domain);
-        let workspaceGradient = [];
-        if (boost.boostEntry.boostData.autoTheme) {
-          const currentWorkspace =
-            await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
-          workspaceGradient = currentWorkspace.theme.gradientColors;
-        }
-
-        const styleData =
-          await lazy.gZenBoostsManager.getStyleSheetForBoost(domain);
-
+        const { boostData } =
+          lazy.gZenBoostsManager.loadActiveBoostFromStore(domain).boostEntry;
         return {
-          ...boost,
-          workspaceGradient,
-          styleSheet: styleData
-            ? {
-                uuid: styleData.uuid,
-                uri: styleData.uri.spec,
-              }
-            : null,
+          zapSelectors: boostData.zapSelectors ?? [],
+          focusSelectors: boostData.focusSelectors ?? [],
         };
-      }
-      case "ZenBoost:UpdateBoostSize": {
-        const { sizeOverride } = message.data;
-        this.updateBoostSizeOverride(sizeOverride);
-        break;
       }
       case "ZenBoost:ZapBarState": {
         this.#setZapBarVisible(!!message.data?.visible);

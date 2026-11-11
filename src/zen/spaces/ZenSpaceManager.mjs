@@ -1454,7 +1454,10 @@ class nsZenWorkspaces {
     }
   }
 
-  saveWorkspace(workspaceData, { insertAfterId = null } = {}) {
+  saveWorkspace(
+    workspaceData,
+    { insertAfterId = null, insertBeforeId = null } = {}
+  ) {
     if (this.privateWindowOrDisabled) {
       return;
     }
@@ -1462,11 +1465,16 @@ class nsZenWorkspaces {
     const index = workspacesData.findIndex(
       ws => ws.uuid === workspaceData.uuid
     );
+    const insertBeforeIndex = insertBeforeId
+      ? workspacesData.findIndex(ws => ws.uuid === insertBeforeId)
+      : -1;
     const insertAfterIndex = insertAfterId
       ? workspacesData.findIndex(ws => ws.uuid === insertAfterId)
       : -1;
     if (index !== -1) {
       workspacesData[index] = workspaceData;
+    } else if (insertBeforeIndex !== -1) {
+      workspacesData.splice(insertBeforeIndex, 0, workspaceData);
     } else if (insertAfterIndex !== -1) {
       workspacesData.splice(insertAfterIndex + 1, 0, workspaceData);
     } else {
@@ -1649,7 +1657,12 @@ class nsZenWorkspaces {
     const previousWorkspace = this.getActiveWorkspace();
     document.documentElement.setAttribute("zen-creating-workspace", "true");
     await this.createAndSaveWorkspace("Space", undefined, false, 0, {
-      insertAfterId: previousWorkspace?.uuid,
+      insertAfterId: !gZenVerticalTabsManager._prefsRightSide
+        ? previousWorkspace?.uuid
+        : null,
+      insertBeforeId: gZenVerticalTabsManager._prefsRightSide
+        ? previousWorkspace?.uuid
+        : null,
       beforeChangeCallback: async workspace => {
         createForm = document.createXULElement("zen-workspace-creation");
         createForm.setAttribute("workspace-id", workspace.uuid);
@@ -2875,9 +2888,11 @@ class nsZenWorkspaces {
     icon = undefined,
     dontChange = false,
     containerTabId = 0,
-    // beforeChangeCallback runs before changing workspace, insertAfterId places
-    // the new space right after an existing one instead of at the end.
-    { beforeChangeCallback = null, insertAfterId = null } = {}
+    {
+      beforeChangeCallback = null,
+      insertAfterId = null,
+      insertBeforeId = null,
+    } = {}
   ) {
     if (!this.workspaceEnabled) {
       return null;
@@ -2898,7 +2913,7 @@ class nsZenWorkspaces {
       this.#createWorkspaceTabsSection(workspaceData, extraTabs);
       this._organizeWorkspaceStripLocations(workspaceData);
     }
-    this.saveWorkspace(workspaceData, { insertAfterId });
+    this.saveWorkspace(workspaceData, { insertAfterId, insertBeforeId });
     if (!dontChange) {
       if (beforeChangeCallback) {
         try {
@@ -3071,7 +3086,9 @@ class nsZenWorkspaces {
         const essentialContainer = this.getEssentialsSection(
           workspaceObject.containerTabId
         );
-        const essentialNumChildren = essentialContainer.children.length;
+        const essentialNumChildren = [...essentialContainer.children].filter(
+          child => !child.hasAttribute("zen-drag-placeholder")
+        ).length;
         let essentialHackType = 0;
         if (essentialNumChildren === 6 || essentialNumChildren === 9) {
           essentialHackType = 1;

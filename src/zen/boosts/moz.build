@@ -7,7 +7,6 @@ EXTRA_JS_MODULES.zen.boosts += [
   "ZenBoostsEditor.mjs",
   "ZenBoostShareDialog.mjs",
   "ZenBoostsManager.sys.mjs",
-  "ZenBoostStyles.sys.mjs",
   "ZenSelectorComponent.sys.mjs",
   "ZenZapDissolve.sys.mjs",
   "ZenZapOverlayChild.sys.mjs",
@@ -18,16 +17,34 @@ FINAL_TARGET_FILES.actors += [
     "actors/ZenBoostsParent.sys.mjs",
 ]
 
+XPIDL_SOURCES += [
+    "nsIZenBoostsBackend.idl",
+]
+
 EXPORTS.mozilla += [
+    "nsZenBoostData.h",
     "nsZenBoostsBackend.h",
+    "nsZenBoostsContentSheets.h",
+    "nsZenBoostsStyle.h",
 ]
 
 SOURCES += [
     "nsZenBCOverrides.cpp",
+    "nsZenBoostData.cpp",
     "nsZenBoostsBackend.cpp",
+    "nsZenBoostsColorFilter.cpp",
+    "nsZenBoostsContentSheets.cpp",
+    "nsZenBoostsStyle.cpp",
 ]
 
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+include("/ipc/chromium/chromium-config.mozbuild")
+
 FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen_boosts"
 
 TEST_DIRS += [
     "gtest",

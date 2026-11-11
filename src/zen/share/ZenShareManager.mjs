@@ -17,6 +17,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const SHARE_DOCUMENT_VERSION = "1";
 
+const SHAREABLE_URL_RE = /^https?:\/\//i;
 const SHAREABLE_ICON_RE = /^(data:|chrome:)/;
 const FOLDER_ICON_RE = /^chrome:\/\//;
 
@@ -235,7 +236,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
 
   #serializeTab(tab, { pinned = false } = {}) {
     const url = tab.linkedBrowser?.currentURI?.spec;
-    if (!url || !/^https?:\/\//.test(url)) {
+    if (!url || !SHAREABLE_URL_RE.test(url)) {
       return null;
     }
     const item = { type: "tab", url };
@@ -461,13 +462,16 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     const tabs = item.tabs.map(child => {
       // Eager browsers so every pane renders as soon as the split shows.
       const tab = this.#importTab(child, workspaceId, { lazyBrowser: false });
+      if (!tab) {
+        return null;
+      }
       if (pinned) {
         gBrowser.pinTab(tab);
       }
       this.#placeTab(tab, workspaceId, pinned);
       return tab;
     });
-    gZenViewSplitter.splitTabs(tabs, "grid", 0);
+    gZenViewSplitter.splitTabs(tabs.filter(Boolean), "grid", 0);
     gBrowser.removeTab(shareTab, {
       closeWindowWithLastTab: false,
       skipSessionStore: true,
@@ -637,6 +641,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         : `page-icon:${entry.url}`;
     row.querySelector(".zen-share-overlay-row-label").textContent =
       entry.label || entry.url;
+    if (!SHAREABLE_URL_RE.test(entry.url || "")) {
+      return row;
+    }
     row.addEventListener("click", () => {
       const stackRect = row.closest(".browserStack").getBoundingClientRect();
       const data = {
@@ -724,10 +731,12 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
           for (const child of item.items) {
             if (child.type === "tab") {
               const tab = this.#importTab(child, newWorkspace.uuid);
-              if (child.isPinned) {
-                gBrowser.pinTab(tab);
+              if (tab) {
+                if (child.isPinned) {
+                  gBrowser.pinTab(tab);
+                }
+                this.#placeTab(tab, newWorkspace.uuid, !!child.isPinned);
               }
-              this.#placeTab(tab, newWorkspace.uuid, !!child.isPinned);
             } else if (child.type === "folder") {
               this.#importFolder(child, newWorkspace.uuid);
             } else if (child.type === "splitView") {
@@ -777,8 +786,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       for (const child of item.items) {
         if (child.type === "tab") {
           const tab = this.#importTab(child, workspaceId);
-          gBrowser.pinTab(tab);
-          folder.addTabs([tab]);
+          if (tab) {
+            gBrowser.pinTab(tab);
+            folder.addTabs([tab]);
+          }
         } else if (child.type === "folder") {
           this.#importFolder(child, workspaceId, folder);
         } else if (child.type === "splitView") {
@@ -796,6 +807,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     const pinned = item.tabs.every(child => child.isPinned);
     const tabs = item.tabs.map(child => {
       const tab = this.#importTab(child, workspaceId);
+      if (!tab) {
+        return null;
+      }
       if (folder) {
         gBrowser.pinTab(tab);
         folder.addTabs([tab]);
@@ -807,7 +821,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       }
       return tab;
     });
-    gZenViewSplitter.splitTabs(tabs, "grid", -1);
+    gZenViewSplitter.splitTabs(tabs.filter(Boolean), "grid", -1);
   }
 
   #placeTab(tab, workspaceId, pinned) {
@@ -825,6 +839,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   #importTab(item, workspaceId, { lazyBrowser = true } = {}) {
+    if (!SHAREABLE_URL_RE.test(item.url || "")) {
+      console.error("ZenShare: refusing to import url", item.url);
+      return null;
+    }
     const tab = gBrowser.addTrustedTab(item.url, {
       createLazyBrowser: lazyBrowser,
       inBackground: true,

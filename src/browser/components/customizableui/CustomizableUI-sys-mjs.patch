@@ -180,7 +180,7 @@ index 93be435e7b7ebfb1cfc80c6532701740a2d50b29..aaaeac10c45d72b8f8b24961e780c255
          }
 -        sum += parseFloat(style.marginLeft) + parseFloat(style.marginRight);
 +        sum += parseFloat(style.marginLeft) + (win.gZenVerticalTabsManager._hasSetSingleToolbar ? Math.max(0, parseFloat(style.marginRight)) : parseFloat(style.marginRight));
-+        if (toolbar.id == 'zen-sidebar-top-buttons' && toolbar.hasAttribute("overflowing")) {
++        if (win.gZenVerticalTabsManager._hasSetSingleToolbar && child != aExceptChild && toolbar.id == 'zen-sidebar-top-buttons' && toolbar.hasAttribute("overflowing")) {
 +          sum += 2; // Add extra padding that we remove from the CSS
 +        }
          if (child != aExceptChild) {

@@ -10,6 +10,8 @@ support-files = [
 
 ["browser_basic_split_view.js"]
 
+["browser_issue_16182.js"]
+
 ["browser_split_browser_duplication.js"]
 
 ["browser_split_groups.js"]

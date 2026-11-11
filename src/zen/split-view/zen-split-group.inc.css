@@ -121,7 +121,7 @@ tab-group[split-view-group] {
       }
     }
 
-    &:active:not(:has(.tab-content > image:active)) {
+    &:active:not(:has(.tab-content > :is(image, .tab-close-button, .tab-reset-button):active)) {
       scale: var(--zen-active-tab-scale);
     }
 
@@ -134,7 +134,8 @@ tab-group[split-view-group] {
       display: none !important;
     }
 
-    :root[zen-sidebar-expanded='true'] & > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button {
+    :root[zen-sidebar-expanded='true'] & > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button,
+    :root[zen-sidebar-expanded='true'] & > .tabbrowser-tab[pinned]:not([pending], [zen-essential]):last-child .tab-reset-button {
       display: block !important;
       visibility: collapse !important;
 
@@ -143,8 +144,20 @@ tab-group[split-view-group] {
     }
 
     @container browser-tab (min-width: 70px) {
-      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button {
+      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab:not([pinned]:not([pending])) .tab-close-button,
+      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab[pinned]:not([pending], [zen-essential]):last-child .tab-reset-button {
         visibility: visible !important;
+      }
+
+      /* Unloading acts on the whole split, so one button sits at the end of the group, outside the last tab's background */
+      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab[pinned]:not([pending], [zen-essential]):last-child {
+        & .tab-background {
+          margin-inline-end: calc(var(--size-item-medium) + 8px) !important;
+        }
+
+        & .tab-reset-button {
+          margin-inline-start: 4px;
+        }
       }
     }
 

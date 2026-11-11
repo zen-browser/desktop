@@ -26,16 +26,21 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      this.tabDragAndDrop.init();
    }
  
-@@ -427,7 +431,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -427,7 +431,12 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
      // and we're not hitting the scroll buttons.
++    const scrollbox = gZenWorkspaces.activeWorkspaceElement?.scrollbox;
++    const clickedPadding =
++      scrollbox?.overflowing &&
++      event.originalTarget === scrollbox.scrollbox;
      if (
        event.button != 0 ||
 -      event.target != this.arrowScrollbox ||
-+        !event.target.classList.contains("zen-workspace-empty-space") ||
++      (!event.target.classList.contains("zen-workspace-empty-space") &&
++        !clickedPadding) ||
        event.composedTarget.localName == "toolbarbutton"
      ) {
        return;
-@@ -512,7 +516,6 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -512,7 +521,6 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
            });
          }
        } else if (isTabGroupLabel(event.target)) {
@@ -43,7 +48,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
        } else if (
          event.originalTarget.closest("scrollbox") &&
          !Services.prefs.getBoolPref(
-@@ -548,6 +551,9 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -548,6 +556,9 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    on_keydown(event) {
@@ -53,7 +58,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      let { altKey, shiftKey } = event;
      let [accel, nonAccel] =
        AppConstants.platform == "macosx"
-@@ -830,7 +836,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -830,7 +841,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    get newTabButton() {
@@ -62,7 +67,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    get verticalMode() {
-@@ -846,6 +852,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -846,6 +857,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    get overflowing() {
@@ -70,7 +75,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      return this.hasAttribute("overflow");
    }
  
-@@ -859,29 +866,55 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -859,29 +871,55 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
      if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery") {
        pinnedChildren.pop();
      }
@@ -137,7 +142,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    get allSplitViews() {
-@@ -970,28 +1003,35 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -970,28 +1008,35 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
        return this.#focusableItems;
      }
  
@@ -184,7 +189,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
  
      this.#focusableItems = focusableItems;
  
-@@ -1006,6 +1046,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1006,6 +1051,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
     * @returns {DragAndDropElement[]}
     */
    get dragAndDropElements() {
@@ -192,7 +197,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      if (this.#dragAndDropElements) {
        return this.#dragAndDropElements;
      }
-@@ -1079,6 +1120,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1079,6 +1125,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    _invalidateCachedTabs() {
      this.#allTabs = null;
      this._invalidateCachedVisibleTabs();
@@ -200,7 +205,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    _invalidateCachedVisibleTabs() {
-@@ -1098,7 +1140,8 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1098,7 +1145,8 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
  
    isContainerVerticalPinnedGrid(tab) {
      return (
@@ -210,7 +215,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
        this.verticalMode &&
        this.hasAttribute("expanded") &&
        !this.expandOnHover
-@@ -1231,7 +1274,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1231,7 +1279,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
  
      if (node == null) {
        // We have a container for non-tab elements at the end of the scrollbox.
@@ -219,7 +224,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      }
  
      /** @type {Element} */ (node).before(tab);
-@@ -1276,7 +1319,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1276,7 +1324,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
          // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
          // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
          // Attach the long click popup to all of them.
@@ -228,7 +233,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
          const newTab2 = this.newTabButton;
          const newTabVertical = document.getElementById(
            "vertical-tabs-newtab-button"
-@@ -1391,7 +1434,10 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1391,7 +1439,10 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
        return;
      }
      let selectedTab = /** @type {MozTabbrowserTab} */ (this.selectedItem);
@@ -239,7 +244,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    /**
-@@ -1528,7 +1574,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1528,7 +1579,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    _notifyBackgroundTab(aTab) {

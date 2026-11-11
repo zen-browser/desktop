@@ -113,3 +113,77 @@ add_task(async function test_default_external_route_getter_setter() {
     "The default external route can be changed again"
   );
 });
+
+add_task(async function test_duplicate_conditions() {
+  clearAllRoutes();
+  const manager = gZenSpaceRoutingManager;
+  const original = addRoute({ reference: "Example.com", openIn: "ws-1" });
+  const draft = manager.createNewRoute();
+  Assert.ok(manager.updateRoute(draft), "Empty drafts remain editable");
+  for (const openIn of ["ws-1", "ws-2"]) {
+    const duplicate = { ...draft, reference: "example.COM", openIn };
+    Assert.equal(
+      manager.getDuplicateRoute(duplicate).id,
+      original.id,
+      "Finds duplicates regardless of destination"
+    );
+    Assert.ok(!manager.updateRoute(duplicate), "Rejects a duplicate");
+    Assert.equal(
+      manager.getRoute(draft.id).reference,
+      "",
+      "Rejection is atomic"
+    );
+  }
+  Assert.ok(
+    manager.updateRoute(original),
+    "An unchanged route excludes itself"
+  );
+  Assert.ok(
+    manager.updateRoute({ ...original, openIn: "ws-2" }),
+    "Destination-only edits remain possible"
+  );
+  Assert.ok(
+    manager.updateRoute({
+      ...draft,
+      reference: "example.com",
+      matchType: "equal-to",
+    }),
+    "Different types are distinct"
+  );
+  const other = manager.createNewRoute();
+  Assert.ok(
+    !manager.updateRoute({
+      ...other,
+      reference: "https://www.EXAMPLE.com/",
+      matchType: "equal-to",
+    }),
+    "Equality uses the matcher's URL normalization"
+  );
+  Assert.ok(
+    manager.updateRoute({
+      ...other,
+      reference: "\\D",
+      matchType: "regex",
+    }),
+    "Regex can be added"
+  );
+  const regex = manager.createNewRoute();
+  Assert.ok(
+    manager.updateRoute({ ...regex, reference: "\\d", matchType: "regex" }),
+    "Regex syntax is not case folded"
+  );
+  Assert.ok(
+    !manager.updateRoute({ ...regex, reference: "\\D", matchType: "regex" }),
+    "Editing into another condition is rejected"
+  );
+  Assert.equal(
+    manager.getRoute(regex.id).reference,
+    "\\d",
+    "Original edit survives rejection"
+  );
+  Assert.ok(
+    manager.isRouteMatching("https://example.com/path", original),
+    "Ordinary matching is unchanged"
+  );
+  clearAllRoutes();
+});

@@ -26,7 +26,7 @@ add_task(async function test_no_match_returns_most_recent_space() {
 add_task(async function test_first_matching_route_wins() {
   clearAllRoutes();
   addRoute({ reference: "github", matchType: "contains", openIn: "ws-first" });
-  addRoute({ reference: "github", matchType: "contains", openIn: "ws-second" });
+  addRoute({ reference: "github.com", matchType: "contains", openIn: "ws-second" });
 
   Assert.equal(
     gZenSpaceRoutingManager.routeUri("https://github.com/zen", {}),

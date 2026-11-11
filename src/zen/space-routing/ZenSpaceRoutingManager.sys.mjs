@@ -546,11 +546,22 @@ class nsZenSpaceRoutingManager {
    * Shows the routes, which live in the library.
    *
    * @param {Window} parentWindow - The window to show them in
+   * @param {object|null} draft - An optional route to show in the form
    */
-  openSpaceRoutingSettings(parentWindow) {
-    // The library is a custom element of the window it belongs to, which is
-    // the only place a shared module can reach it from.
-    parentWindow.customElements.get("zen-library")?.toggle("space-routing");
+  async openSpaceRoutingSettings(parentWindow, draft = null) {
+    const Library = parentWindow.customElements.get("zen-library");
+    if (!Library || !Services.prefs.getBoolPref("zen.library.enabled")) {
+      return;
+    }
+    const library = Library.getInstance();
+    library.activeTab = "space-routing";
+    await Library.animateProgress(1);
+    await library.updateComplete;
+    if (draft) {
+      parentWindow.document
+        .querySelector("zen-library-space-routing-section")
+        ?.showDraft(draft);
+    }
   }
 
   /**
@@ -590,16 +601,67 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Finds an identical condition across all routes, excluding the route itself.
+   * Empty drafts are not conditions. Regex source is compared literally:
+   * case folding syntax such as \D would change its meaning.
+   *
+   * @param {object} route - The proposed route
+   * @returns {object|null} A copy of the existing route, if any
+   */
+  getDuplicateRoute(route) {
+    if (!route?.reference?.trim()) {
+      return null;
+    }
+    const key = candidate => {
+      if (candidate.matchType === "regex") {
+        return candidate.reference;
+      }
+      const reference = candidate.reference.toLowerCase();
+      return candidate.matchType === "equal-to"
+        ? this.#normalizeURL(reference)
+        : reference;
+    };
+    const duplicate = (this.#file?.data?.routes ?? []).find(
+      existing =>
+        existing.id !== route.id &&
+        existing.reference.trim() &&
+        existing.matchType === route.matchType &&
+        key(existing) === key(route)
+    );
+    return duplicate ? structuredClone(duplicate) : null;
+  }
+
+  /**
+   * Allows existing duplicate configurations to be saved unchanged, while
+   * rejecting new duplicates and changes to a duplicate's destination.
+   *
+   * @param {object} route - The proposed route
+   * @returns {boolean} Whether the route may be saved
+   */
+  canSaveRoute(route) {
+    const existing = this.#file?.data?.routes.find(r => r.id === route.id);
+    return (
+      (existing &&
+        existing.matchType === route.matchType &&
+        existing.reference === route.reference &&
+        existing.openIn === route.openIn) ||
+      !this.getDuplicateRoute(route)
+    );
+  }
+
+  /**
    * Will update an existing route
    *
    * @param {object} route - The updated route
+   * @returns {boolean} Whether the update was accepted
    */
   updateRoute(route) {
     const idx = this.#file.data.routes.findIndex(r => r.id === route.id);
-    if (idx === -1) {
-      return;
+    if (idx === -1 || !this.canSaveRoute(route)) {
+      return false;
     }
     this.#file.data.routes[idx] = structuredClone(route);
+    return true;
   }
 
   /**
@@ -668,9 +730,15 @@ class nsZenSpaceRoutingManager {
     }
 
     newRoute.reference = routeReference;
-    this.updateRoute(newRoute);
+    const accepted = this.updateRoute(newRoute);
+    if (!accepted) {
+      this.removeRoute(newRoute.id);
+    }
     this.saveRoutes();
-    this.openSpaceRoutingSettings(parentWindow);
+    return this.openSpaceRoutingSettings(
+      parentWindow,
+      accepted ? newRoute : { ...newRoute, id: null }
+    );
   }
 
   /**

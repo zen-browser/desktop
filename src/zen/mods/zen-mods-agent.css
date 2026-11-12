@@ -97,6 +97,12 @@
       font-weight: var(--font-weight-bold) !important;
     }
 
+    /* These have a cascade of their own; they take their element's. */
+    & *::first-line,
+    & *::first-letter {
+      all: inherit !important;
+    }
+
     /* The exit button keeps its own look; it just can't be made away with. */
     & > #fullscreen-exit-button:not([hidden]) {
       visibility: visible !important;

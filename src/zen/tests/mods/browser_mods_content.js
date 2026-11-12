@@ -152,6 +152,10 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
           unicode-bidi: bidi-override !important;
           direction: rtl !important;
         }
+        .pointerlockfswarning *::first-line {
+          color: transparent !important;
+          font-size: 0 !important;
+        }
         .pointerlockfswarning::after {
           content: "" !important;
           position: absolute !important;
@@ -223,6 +227,14 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
     "Readable, not dots"
   );
   is(text.unicodeBidi, "normal", "And not reversed");
+
+  const firstLine = window.getComputedStyle(
+    warning.querySelector(".pointerlockfswarning-domain-text"),
+    "::first-line"
+  );
+
+  is(firstLine.color, "rgb(250, 250, 250)", "Its first line too");
+  is(firstLine.fontSize, "21px", "At its size");
   is(
     window.getComputedStyle(warning, "::after").content,
     "none",

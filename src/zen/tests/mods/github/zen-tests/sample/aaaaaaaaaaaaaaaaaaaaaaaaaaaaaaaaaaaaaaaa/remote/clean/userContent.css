@@ -2,3 +2,4 @@
 @import "./parts/ok.css";
 body { background: url("a.png"), url("chrome://global/skin/icons/info.svg"); }
 body::before { content: "https://example.org"; }
+body { filter: url("parts/fx.svg#f"); mask: url("parts/fx.svg#m"); }

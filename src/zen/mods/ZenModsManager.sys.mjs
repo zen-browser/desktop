@@ -105,6 +105,21 @@ const DEFERRED_FUNCTIONS = new Set(["var", "env", "attr"]);
 // At-rules whose URLs say where they apply, not what they load.
 const MATCHING_AT_RULES = new Set(["namespace", "-moz-document", "document"]);
 const CHARSET_RE = /^@charset "([^"]*)";/;
+// Files a sheet may point at that Gecko never reads as a document.
+const PLAIN_FILE_RE = /\.(?:png|jpe?g|gif|webp|avif|ico|bmp|woff2?|ttf|otf)$/i;
+const DTD_RE = /<!ENTITY|<!DOCTYPE[^>]*\b(?:SYSTEM|PUBLIC)\b/i;
+const SVG_NS = "http://www.w3.org/2000/svg";
+// What could reach past an SVG document: HTML with its own links, or
+// animations that change a link once it's checked.
+const SVG_UNSAFE_ELEMENTS = new Set([
+  "script",
+  "foreignObject",
+  "set",
+  "animate",
+  "animateMotion",
+  "animateTransform",
+  "discard",
+]);
 const CLOSING_TOKENS = new Set([
   "CloseParenthesis",
   "CloseSquareBracket",
@@ -547,6 +562,7 @@ async function hasRemoteStyles(folder, entry) {
     Services.appShell.hiddenDOMWindow;
   const queue = [entry];
   const seen = new Set();
+  const documents = new Set();
 
   while (queue.length) {
     const relative = queue.shift();
@@ -624,14 +640,92 @@ async function hasRemoteStyles(folder, entry) {
         return true;
       }
 
+      let path;
+
+      try {
+        path = decodeURIComponent(target.pathname.slice(SHEET_ROOT.length));
+      } catch {
+        return true;
+      }
+
       if (isImport) {
-        try {
-          queue.push(
-            decodeURIComponent(target.pathname.slice(SHEET_ROOT.length))
-          );
-        } catch {
-          return true;
-        }
+        queue.push(path);
+      } else if (!PLAIN_FILE_RE.test(path)) {
+        documents.add(path);
+      }
+    }
+  }
+
+  for (const path of documents) {
+    const parts = pathParts(path);
+
+    if (
+      !parts ||
+      (await documentLoads(PathUtils.join(folder, ...parts), win))
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * An SVG or other document a sheet points at, as a filter, a mask and the
+ * like, loads its own stylesheets: in Zen's windows those reach the web.
+ * Only references within the document itself pass.
+ *
+ * @param {string} path - A file of the mod
+ * @param {Window} win - Where the parsers live
+ * @returns {Promise<boolean>} Whether it may load anything
+ */
+async function documentLoads(path, win) {
+  let text;
+
+  try {
+    if (!(await IOUtils.exists(path))) {
+      return false;
+    }
+
+    text = await IOUtils.readUTF8(path);
+  } catch {
+    return true;
+  }
+
+  const doc = new win.DOMParser().parseFromString(text, "image/svg+xml");
+  const isOwn = value => value.trim().startsWith("#");
+  const cssLoads = css =>
+    cssUrls(css, win).some(
+      ({ url, isImport }) => isImport || !isOwn(url ?? "")
+    );
+
+  if (
+    DTD_RE.test(text) ||
+    doc.documentElement.localName === "parsererror" ||
+    [...doc.childNodes].some(
+      node => node.nodeType === node.PROCESSING_INSTRUCTION_NODE
+    )
+  ) {
+    return true;
+  }
+
+  for (const element of doc.getElementsByTagName("*")) {
+    if (
+      element.namespaceURI !== SVG_NS ||
+      SVG_UNSAFE_ELEMENTS.has(element.localName) ||
+      (element.localName === "style" && cssLoads(element.textContent))
+    ) {
+      return true;
+    }
+
+    for (const { localName, value } of element.attributes) {
+      const isLink = localName === "href" || localName === "src";
+
+      if (
+        (isLink && !isOwn(value)) ||
+        (value.includes("(") && cssLoads(value))
+      ) {
+        return true;
       }
     }
   }

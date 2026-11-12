@@ -242,6 +242,10 @@ add_task(async function test_every_way_styles_reach_the_web_is_caught() {
     // On Windows, file: reads these as network paths.
     "network-path": true,
     backslash: true,
+    // An SVG used as a filter or mask is a document with its own loads.
+    "svg-stylesheet": true,
+    "svg-image": true,
+    "svg-style-url": true,
     // @namespace and @-moz-document only say where rules apply.
     matching: false,
     clean: false,

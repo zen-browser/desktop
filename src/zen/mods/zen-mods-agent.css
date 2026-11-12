@@ -5,11 +5,11 @@
 /* Registered as an agent sheet, whose !important beats the user origin's,
  * where the mods' sheets are: no mod can hide what tells the user that a
  * page went fullscreen or locked the pointer. The values are Firefox's
- * own, and the UA's for popovers, which center it. translate stays free so
- * the warning still slides in: a mod can still push it away with it, which
- * the store's review has to catch. */
+ * own, and the UA's for popovers, which center it. Transitions outrank
+ * every origin, so pinning translate state by state keeps the slide in. */
 
-@-moz-document url("chrome://browser/content/browser.xhtml") {
+@-moz-document url("chrome://browser/content/browser.xhtml")
+{
   .pointerlockfswarning:popover-open {
     display: flex !important;
     visibility: visible !important;
@@ -21,6 +21,12 @@
     transform: none !important;
     scale: none !important;
     rotate: none !important;
+    translate: 0 -100px !important;
+    transition: translate 300ms ease-in !important;
+    offset-path: none !important;
+    clip: auto !important;
+    zoom: 1 !important;
+    mix-blend-mode: normal !important;
     position: fixed !important;
     inset: 0 0 auto !important;
     margin: 0 auto !important;
@@ -33,16 +39,52 @@
     overflow: visible !important;
     /* Firefox's own values, in fullscreen-and-pointerlock.css, not tokens. */
     /* stylelint-disable stylelint-plugin-mozilla/use-design-tokens */
+    font: message-box !important;
     font-size: 21px !important;
     color: #fafafa !important;
+    -webkit-text-fill-color: currentcolor !important;
     background-color: rgba(45, 62, 72, 0.9) !important;
     /* stylelint-enable stylelint-plugin-mozilla/use-design-tokens */
 
-    & > :not([hidden]) {
+    &[onscreen] {
+      translate: 0 50px !important;
+    }
+
+    &[ontop] {
+      translate: 0 -10px !important;
+    }
+
+    :root[macOSNativeFullscreen] &[ontop] {
+      translate: 0 80px !important;
+    }
+
+    &:is([onscreen], [ontop]) {
+      @starting-style {
+        translate: 0 -100px !important;
+      }
+    }
+
+    & > :not([hidden]),
+    & .pointerlockfswarning-domain {
       visibility: visible !important;
       opacity: 1 !important;
+      font-family: inherit !important;
       font-size: inherit !important;
       color: inherit !important;
+      -webkit-text-fill-color: inherit !important;
+      text-indent: 0 !important;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    /* Only the text Firefox shows: the domain's, or the generic one. */
+    & > .pointerlockfswarning-domain-text:not([hidden]),
+    & > .pointerlockfswarning-domain-text[hidden] + .pointerlockfswarning-generic-text {
+      display: block !important;
+    }
+
+    & .pointerlockfswarning-domain {
+      display: inline !important;
     }
   }
 }

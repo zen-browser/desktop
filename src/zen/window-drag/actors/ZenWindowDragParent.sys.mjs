@@ -25,8 +25,6 @@ export class ZenWindowDragParent extends JSWindowActorParent {
           break;
         }
         if (Cu.isInAutomation) {
-          // Tests can't exercise a real OS drag session; let them observe
-          // the decision instead.
           Services.obs.notifyObservers(win, "zen-window-drag-started");
           break;
         }

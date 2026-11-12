@@ -49,7 +49,7 @@ export class nsZenToastManager {
         .animate(
           toast,
           { opacity: [1, 0], scale: [1, 0.5] },
-          { duration: 0.2, bounce: 0 }
+          { duration: 0.2, bounce: 0, reduceMotion: false }
         )
         .then(() => {
           toast.remove();
@@ -63,7 +63,7 @@ export class nsZenToastManager {
       await gZenUIManager.motion.animate(
         toast,
         { scale: 0.2 },
-        { duration: 0.1, bounce: 0 }
+        { duration: 0.1, bounce: 0, reduceMotion: false }
       );
     } else {
       toast.addEventListener("mouseover", () => this.#clearTimer(messageId));
@@ -78,7 +78,7 @@ export class nsZenToastManager {
     await gZenUIManager.motion.animate(
       toast,
       { scale: 1 },
-      { type: "spring", bounce: 0.2, duration: 0.5 }
+      { type: "spring", bounce: 0.2, duration: 0.5, reduceMotion: false }
     );
     this.#scheduleHide(messageId, hide, timeout);
   }

@@ -1,0 +1,133 @@
+name: Design Tokens
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [tokens-release]
+  pull_request:
+    branches:
+      - dev
+    paths:
+      - "src/zen/tokens/**"
+      - "src/zen/common/styles/zen-tokens.css"
+      - "scripts/build_tokens.mjs"
+      - "scripts/tokens_studio.mjs"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Generated files are up to date
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Check generated token files
+        run: node scripts/build_tokens.mjs --check
+
+  pull:
+    name: Pull tokens from Tokens Studio
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    concurrency:
+      group: design-tokens-pull
+      cancel-in-progress: true
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Pull and apply token values
+        id: pull
+        env:
+          STUDIO_SERVICE_TOKEN: ${{ secrets.STUDIO_SERVICE_TOKEN }}
+        run: |
+          npx -y @tokens-studio/studio-cli@0.3 pull --ci
+          node scripts/build_tokens.mjs --from-studio | tee "$RUNNER_TEMP/tokens-pull.log"
+          {
+            echo "log<<TOKENS_PULL_EOF"
+            cat "$RUNNER_TEMP/tokens-pull.log"
+            echo "TOKENS_PULL_EOF"
+          } >> "$GITHUB_OUTPUT"
+          if [ -n "$(git status --porcelain -- src/zen/tokens src/zen/common/styles/zen-tokens.css)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No tokens changed in Tokens Studio." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Find, create or close the issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_TITLE: Update design tokens from Tokens Studio
+          CHANGED: ${{ steps.pull.outputs.changed }}
+        run: |
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "\"$ISSUE_TITLE\" in:title" --json number,title \
+            --jq "map(select(.title == \"$ISSUE_TITLE\")) | .[0].number // empty")
+          if [ "$CHANGED" != "true" ]; then
+            if [ -n "$number" ]; then
+              gh issue close "$number" --repo "$GITHUB_REPOSITORY" --reason "not planned" \
+                --comment "The tokens in Tokens Studio match the repository again."
+            fi
+            exit 0
+          fi
+          {
+            echo "The design tokens in the Tokens Studio project differ from the ones in the repository."
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/tokens-pull.log"
+            echo '```'
+            echo
+            echo "Opened by the [Design Tokens workflow]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)."
+          } > "$RUNNER_TEMP/issue-body.md"
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/issue-body.md"
+          else
+            url=$(gh issue create --repo "$GITHUB_REPOSITORY" --title "$ISSUE_TITLE" --body-file "$RUNNER_TEMP/issue-body.md")
+            number="${url##*/}"
+          fi
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.DEPLOY_KEY }}
+          git-token: ${{ secrets.DEPLOY_KEY }}
+          add-paths: |
+            src/zen/tokens
+            src/zen/common/styles/zen-tokens.css
+          commit-message: "gh-${{ steps.issue.outputs.number }}: Update design tokens from Tokens Studio"
+          branch: "chore/design-tokens"
+          title: "gh-${{ steps.issue.outputs.number }}: Update design tokens from Tokens Studio"
+          body: |
+            Closes #${{ steps.issue.outputs.number }}
+
+            This PR applies the token values from the Tokens Studio project.
+
+            ```
+            ${{ steps.pull.outputs.log }}
+            ```
+
+            These values change how the browser looks: check the affected UI before merging.
+          base: dev
+          delete-branch: true

@@ -4,6 +4,87 @@
 
 import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+const kMinLayerAlpha = 0.2;
+const kMaxLayerAlpha = 0.88;
+const kMinTranslucentLayerAlpha = 0.85;
+const kMinWindowAlpha = 0.35;
+const kMaxWindowAlpha = 1;
+const kTextOpacity = 0.9;
+const kTextTint = 0.12;
+const kGradientStops = 12;
+const kGradientChroma = 0;
+const kGradientHueEase = 0;
+const kBaseGradientStart = 0;
+const kBaseGradientEnd = 0.75;
+const kOverlayStart = 0;
+const kOverlayEnd = 1;
+const kOverlayMaxAlpha = 0.9;
+const kOverlayStrips = 64;
+const kOverlayAngle = 180;
+const kOverlayReferenceAspect = 16 / 10;
+const kCustomGradientAngle = -30;
+const kTextures = ["none", "grain", "sand", "denim", "tweed"];
+const kDefaultTexture = "grain";
+const kGrainDefault = 10 / 16;
+
+function toLinear(c) {
+  const a = Math.abs(c);
+  return (
+    Math.sign(c) * (a <= 0.04045 ? a / 12.92 : ((a + 0.055) / 1.055) ** 2.4)
+  );
+}
+
+function toGamma(c) {
+  const a = Math.abs(c);
+  return (
+    Math.sign(c) * (a <= 0.0031308 ? a * 12.92 : 1.055 * a ** (1 / 2.4) - 0.055)
+  );
+}
+
+function srgbToLinear(channel) {
+  return toLinear(channel / 255);
+}
+
+function linearToSrgb(c) {
+  return Math.min(255, Math.max(0, toGamma(c) * 255));
+}
+
+function rgbToOklab(color) {
+  const r = color[0];
+  const g = color[1];
+  const b = color[2];
+  const lr = srgbToLinear(r);
+  const lg = srgbToLinear(g);
+  const lb = srgbToLinear(b);
+  const l = Math.cbrt(
+    0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb
+  );
+  const m = Math.cbrt(
+    0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb
+  );
+  const s = Math.cbrt(
+    0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb
+  );
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
+}
+
+function oklabToRgb(color) {
+  const labL = color[0];
+  const labA = color[1];
+  const labB = color[2];
+  const l = (labL + 0.3963377774 * labA + 0.2158037573 * labB) ** 3;
+  const m = (labL - 0.1055613458 * labA - 0.0638541728 * labB) ** 3;
+  const s = (labL - 0.0894841775 * labA - 1.291485548 * labB) ** 3;
+  const lr = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+  const lg = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+  const lb = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s;
+  return [linearToSrgb(lr), linearToSrgb(lg), linearToSrgb(lb)];
+}
+
 function parseSinePath(pathStr) {
   const points = [];
   const commands = pathStr.match(/[MCL]\s*[\d\s.\-,]+/g);
@@ -79,6 +160,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   dots = [];
   useAlgo = "";
   #lastNoiseTexture = null;
+  #lastNoiseTextureType = null;
+  currentTextureType = kDefaultTexture;
   #currentLightness = 50;
 
   #allowTransparencyOnSidebar = Services.prefs.getBoolPref(
@@ -215,7 +298,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
                   data-lazy-l10n-id="zen-workspaces-change-theme"
                   command="cmd_zenOpenZenThemePicker"/>
       `);
-    document.getElementById("toolbar-context-customize").before(menu);
+    document.getElementById("zen-toolbar-context-set-profile").before(menu);
   }
 
   openThemePicker(event) {
@@ -258,6 +341,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
         const type =
           target.getAttribute("data-type") || EXPLICIT_LIGHTNESS_TYPE;
+        const exactColor = target.getAttribute("data-color");
         // Generate new gradient from the single color given
         const [x, y] = rawPosition.split(",").map(pos => parseInt(pos));
         let dots = [
@@ -281,6 +365,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
         dots = this.calculateCompliments(dots, "update", this.useAlgo);
         this.handleColorPositions(dots, true);
+        if (exactColor) {
+          this.dots[0]?.element.style.setProperty(
+            "--zen-theme-picker-dot-color",
+            `rgb(${exactColor})`
+          );
+        }
         this.updateCurrentWorkspace();
       });
   }
@@ -363,6 +453,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       dot.style.top = `${Math.sin(position) * 50 + 50}%`;
       wrapper.appendChild(dot);
     }
+    this._textureFace = document.createElement("div");
+    this._textureFace.classList.add(
+      "zen-theme-picker-texture-face",
+      "no-squircles"
+    );
+    wrapper.appendChild(this._textureFace);
     this._textureHandler = document.createElement("div");
     this._textureHandler.id = "PanelUI-zen-gradient-generator-texture-handler";
     this._textureHandler.classList.add("no-squircles");
@@ -371,9 +467,55 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       this.onTextureHandlerMouseDown.bind(this)
     );
     wrapper.appendChild(this._textureHandler);
+    wrapper.addEventListener("click", this.onTextureWrapperClick.bind(this));
+    wrapper.addEventListener("wheel", this.onTextureWrapperWheel.bind(this), {
+      passive: true,
+    });
+  }
+
+  onTextureWrapperClick(event) {
+    if (event.target === this._textureHandler || this._textureMoved) {
+      this._textureMoved = false;
+      return;
+    }
+    this.cycleTexture(1);
+  }
+
+  // Trackpad swipes over the knob step through the texture styles.
+  onTextureWrapperWheel(event) {
+    const now = Date.now();
+    if (now - (this._lastTextureWheelEvent ?? 0) > 200) {
+      this._textureWheelDelta = 0;
+    }
+    this._lastTextureWheelEvent = now;
+    this._textureWheelDelta = (this._textureWheelDelta ?? 0) + event.deltaX;
+    if (
+      Math.abs(this._textureWheelDelta) < 40 ||
+      now - (this._lastTextureCycle ?? 0) < 350
+    ) {
+      return;
+    }
+    this.cycleTexture(Math.sign(this._textureWheelDelta));
+    this._textureWheelDelta = 0;
+    this._lastTextureCycle = now;
+  }
+
+  cycleTexture(step) {
+    const index = kTextures.indexOf(this.currentTextureType);
+    this.currentTextureType =
+      kTextures[(index + step + kTextures.length) % kTextures.length];
+    if (this.currentTextureType === "none") {
+      this.currentTexture = 0;
+    } else if (!this.currentTexture) {
+      this.currentTexture = kGrainDefault;
+    }
+    /* eslint-disable-next-line mozilla/valid-services */
+    Services.zen.playHapticFeedback();
+    this.updateCurrentWorkspace();
   }
 
   onTextureHandlerMouseDown(event) {
+    this._textureMoved = false;
     event.preventDefault();
     this._onTextureMouseMove = this.onTextureMouseMove.bind(this);
     this._onTextureMouseUp = this.onTextureMouseUp.bind(this);
@@ -382,6 +524,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   onTextureMouseMove(event) {
+    this._textureMoved = true;
     event.preventDefault();
     const wrapper = document.getElementById(
       "PanelUI-zen-gradient-generator-texture-wrapper"
@@ -404,6 +547,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.currentTexture = Math.round(this.currentTexture * 16) / 16;
     if (this.currentTexture === 1) {
       this.currentTexture = 0;
+    }
+    if (this.currentTexture > 0 && this.currentTextureType === "none") {
+      this.currentTextureType = kDefaultTexture;
     }
     if (previousTexture !== this.currentTexture) {
       this.updateCurrentWorkspace();
@@ -518,8 +664,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     // important: If any sort of sizing is changed, make sure changes are reflected here
     const padding = 0;
     const rect = {
-      width: 380 + padding * 2,
-      height: 380 + padding * 2,
+      width: 364 + padding * 2,
+      height: 364 + padding * 2,
     };
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
@@ -568,16 +714,33 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       saturation = 0;
       lightness = Math.round((1 - normalizedDistance) * 100);
     }
-    const [r, g, b] = this.hslToRgb(
-      hue / 360,
-      saturation / 100,
-      lightness / 100
-    );
+    let r, g, b;
+    if (type === EXPLICIT_LIGHTNESS_TYPE) {
+      [r, g, b] = this.hsbToRgb(hue, normalizedDistance, lightness / 100);
+    } else {
+      [r, g, b] = this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
+    }
     return [
       Math.min(255, Math.max(0, r)),
       Math.min(255, Math.max(0, g)),
       Math.min(255, Math.max(0, b)),
     ];
+  }
+
+  hsbToRgb(hue, saturation, brightness) {
+    const c = brightness * saturation;
+    const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+    const m = brightness - c;
+    const sector = Math.floor((((hue % 360) + 360) % 360) / 60) % 6;
+    const [r, g, b] = [
+      [c, x, 0],
+      [x, c, 0],
+      [0, c, x],
+      [0, x, c],
+      [x, 0, c],
+      [c, 0, x],
+    ][sector];
+    return [r + m, g + m, b + m].map(v => Math.round(v * 255));
   }
 
   getJSONPos(x, y) {
@@ -1259,54 +1422,243 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     );
   }
 
-  blendWithWhiteOverlay(baseColor, opacity) {
-    let colorToBlend;
-    let colorToBlendOpacity;
-    if (this.isMica) {
-      colorToBlend = this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
-      colorToBlendOpacity = 0.3;
-    } else if (AppConstants.platform === "macosx") {
-      colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.6;
+  // Position of the intensity slider inside its allowed range, 0 to 1.
+  get layerIntensity() {
+    const range = lazy.MAX_OPACITY - lazy.MIN_OPACITY;
+    if (!range) {
+      return 1;
     }
-    if (colorToBlend) {
-      const blendedAlpha = Math.min(
-        1,
-        opacity +
-          lazy.MIN_OPACITY +
-          colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
-      );
-      baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
-      if (!this.canBeTransparent) {
-        opacity += colorToBlendOpacity * (1 - opacity);
+    return Math.min(
+      1,
+      Math.max(0, (this.currentOpacity - lazy.MIN_OPACITY) / range)
+    );
+  }
+
+  // Alpha of the colour layer over the underlay.
+  get layerAlpha() {
+    return (
+      kMinLayerAlpha +
+      (kMaxLayerAlpha - kMinLayerAlpha) * this.layerIntensity ** 2
+    );
+  }
+
+  get translucentLayerAlpha() {
+    return (
+      kMinTranslucentLayerAlpha +
+      (kMaxLayerAlpha - kMinTranslucentLayerAlpha) * this.layerIntensity ** 2
+    );
+  }
+
+  // Alpha used for the colour layer where the window itself shows through.
+  get windowAlpha() {
+    return (
+      kMinWindowAlpha +
+      (kMaxWindowAlpha - kMinWindowAlpha) * this.layerIntensity ** 2
+    );
+  }
+
+  get underlay() {
+    return this.isDarkMode ? [19, 19, 19] : [255, 255, 255];
+  }
+
+  // Composites an [r, g, b] colour over the underlay at the current layer
+  // alpha, which is the colour that ends up painted.
+  compositeOverUnderlay(rgb, alpha = this.layerAlpha) {
+    const underlay = this.underlay;
+    return rgb.map((channel, i) =>
+      Math.round(channel * alpha + underlay[i] * (1 - alpha))
+    );
+  }
+
+  #compositeExact(rgb, alpha) {
+    const underlay = this.underlay;
+    return rgb.map((channel, i) => channel * alpha + underlay[i] * (1 - alpha));
+  }
+
+  mixInLinear(rgb1, rgb2, t) {
+    return rgb1.map((v, i) =>
+      linearToSrgb(
+        srgbToLinear(v) + (srgbToLinear(rgb2[i]) - srgbToLinear(v)) * t
+      )
+    );
+  }
+
+  mixBase(rgb1, rgb2, t, via = null) {
+    const lab1 = rgbToOklab(rgb1);
+    const lab2 = rgbToOklab(rgb2);
+    const plain = lab1.map((v, i) => v + (lab2[i] - v) * t);
+    const [c1, c2] = [
+      Math.hypot(lab1[1], lab1[2]),
+      Math.hypot(lab2[1], lab2[2]),
+    ];
+    const [h1, h2] = [
+      Math.atan2(lab1[2], lab1[1]),
+      Math.atan2(lab2[2], lab2[1]),
+    ];
+    const wrap = angle => {
+      while (angle > Math.PI) {
+        angle -= 2 * Math.PI;
+      }
+      while (angle < -Math.PI) {
+        angle += 2 * Math.PI;
+      }
+      return angle;
+    };
+    let dh = wrap(h2 - h1);
+    const labVia = via && rgbToOklab(via);
+    if (labVia && Math.hypot(labVia[1], labVia[2]) > 1e-4) {
+      const toVia = wrap(Math.atan2(labVia[2], labVia[1]) - h1);
+      const onShortArc =
+        dh >= 0 ? toVia >= 0 && toVia <= dh : toVia <= 0 && toVia >= dh;
+      if (!onShortArc) {
+        dh -= Math.sign(dh || 1) * 2 * Math.PI;
       }
     }
-    return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${opacity})`;
+    // Ease the hue so the gradient lingers near both end hues and crosses the
+    // ones in between more quickly, keeping them a tint rather than a band.
+    const smooth = t * t * (3 - 2 * t);
+    const eased = t + (smooth - t) * kGradientHueEase;
+    // A colour with no chroma has no hue of its own, so follow the other one.
+    const hue = c1 < 1e-4 ? h2 : c2 < 1e-4 ? h1 : h1 + dh * eased;
+    const chroma = c1 + (c2 - c1) * t;
+    const vivid = [plain[0], chroma * Math.cos(hue), chroma * Math.sin(hue)];
+    return oklabToRgb(
+      plain.map((v, i) => v + (vivid[i] - v) * kGradientChroma)
+    );
+  }
+
+  mixInOklab(rgb1, rgb2, t) {
+    const lab1 = rgbToOklab(rgb1);
+    const lab2 = rgbToOklab(rgb2);
+    return oklabToRgb(lab1.map((v, i) => v + (lab2[i] - v) * t));
+  }
+
+  #colorToRGB(color) {
+    if (typeof color.c !== "string") {
+      return color.c;
+    }
+    const rgba = InspectorUtils.colorToRGBA(color.c, document);
+    return rgba ? [rgba.r, rgba.g, rgba.b] : [0, 0, 0];
+  }
+
+  #isTranslucent(forToolbar = false) {
+    return forToolbar
+      ? this.#allowTransparencyOnSidebar
+      : this.canBeTransparent;
+  }
+
+  #paint(rgb, forToolbar = false) {
+    return this.#compositeExact(rgb, this.#paintAlpha(forToolbar));
+  }
+
+  #paintAlpha(forToolbar = false) {
+    return this.#isTranslucent(forToolbar)
+      ? this.translucentLayerAlpha
+      : this.layerAlpha;
+  }
+
+  #colorStop(rgb, forToolbar = false, alphaScale = 1) {
+    const [r, g, b] = this.compositeOverUnderlay(
+      rgb,
+      this.#paintAlpha(forToolbar)
+    );
+    if (this.#isTranslucent(forToolbar)) {
+      const alpha = this.windowAlpha * alphaScale;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    return alphaScale === 1
+      ? `rgb(${r}, ${g}, ${b})`
+      : `rgba(${r}, ${g}, ${b}, ${alphaScale})`;
+  }
+
+  #baseMixAt(u, v) {
+    const tan = 1 / kOverlayReferenceAspect;
+    const dx = Math.min(1, 1 / tan);
+    const dy = Math.min(1, tan);
+    const ax = 0.5 - dx / 2;
+    const ay = 0.5 - dy / 2;
+    const t = Math.min(
+      1,
+      Math.max(0, ((u - ax) * dx + (v - ay) * dy) / (dx * dx + dy * dy))
+    );
+    return Math.min(
+      1,
+      Math.max(
+        0,
+        (t - kBaseGradientStart) / (kBaseGradientEnd - kBaseGradientStart)
+      )
+    );
+  }
+
+  #overlayLayers(rgbs, forToolbar = false) {
+    const layers = [];
+    const width = `round(up, var(--zen-gradient-width) / ${kOverlayStrips}, 1px)`;
+    for (let i = 0; i < kOverlayStrips; i++) {
+      const u = (i + 0.5) / kOverlayStrips;
+      const stops = [`transparent ${kOverlayStart * 100}%`];
+      for (let j = 1; j < kGradientStops; j++) {
+        const t = j / (kGradientStops - 1);
+        const v = kOverlayStart + t * (kOverlayEnd - kOverlayStart);
+        const base = this.mixBase(
+          rgbs[0],
+          rgbs[1],
+          this.#baseMixAt(u, v),
+          rgbs[2]
+        );
+        const [color, alpha] = this.#solveOverlayStop(
+          base,
+          rgbs[2],
+          t,
+          forToolbar
+        );
+        stops.push(
+          `${this.#paintedStop(color, alpha, forToolbar)} ${(v * 100).toFixed(1)}%`
+        );
+      }
+      layers.push(
+        `linear-gradient(${kOverlayAngle}deg, ${stops.join(", ")}) calc(${i} * ${width}) 0 / ${width} 100% no-repeat`
+      );
+    }
+    return layers;
+  }
+
+  #solveOverlayStop(base, overlay, t, forToolbar = false) {
+    const under = this.#paint(base, forToolbar);
+    const target = this.#paint(
+      this.mixInLinear(base, overlay, t * kOverlayMaxAlpha),
+      forToolbar
+    );
+    let alpha = t * kOverlayMaxAlpha;
+    for (let channel = 0; channel < 3; channel++) {
+      const u = under[channel];
+      const v = target[channel];
+      if (v < u && u > 0) {
+        alpha = Math.max(alpha, (u - v) / u);
+      } else if (v > u && u < 255) {
+        alpha = Math.max(alpha, (v - u) / (255 - u));
+      }
+    }
+    alpha = Math.min(1, alpha);
+    const color = target.map((v, channel) =>
+      Math.min(255, Math.max(0, (v - under[channel] * (1 - alpha)) / alpha))
+    );
+    return [color, alpha];
+  }
+
+  #paintedStop(rgb, alpha, forToolbar) {
+    const [r, g, b] = rgb.map(v => v.toFixed(2));
+    const value = this.#isTranslucent(forToolbar)
+      ? this.windowAlpha * alpha
+      : alpha;
+    return `rgba(${r}, ${g}, ${b}, ${value.toFixed(4)})`;
   }
 
   #getSingleRGBColor(color, forToolbar = false) {
+    // A custom colour is painted exactly as picked.
     if (color.isCustom) {
       return color.c;
     }
-    let opacity = this.currentOpacity;
-    if (
-      (forToolbar && !this.#allowTransparencyOnSidebar) ||
-      (!forToolbar && !this.canBeTransparent)
-    ) {
-      color = this.blendColors(
-        color.c,
-        this.getToolbarModifiedBaseRaw().slice(0, 3),
-        this.canBeTransparent ? 90 : opacity * 100
-      );
-      opacity = 1; // Toolbar colors should always be fully opaque
-    } else {
-      color = color.c;
-    }
-    if (this.isLegacyVersion && this.isDarkMode) {
-      // In legacy version, we blend with white overlay or black overlay based on if we are in dark mode
-      color = this.blendColors(color, [0, 0, 0], 30);
-    }
-    return this.blendWithWhiteOverlay(color, opacity);
+    return this.#colorStop(this.#colorToRGB(color), forToolbar);
   }
 
   luminance([r, g, b]) {
@@ -1341,11 +1693,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.useAlgo = themedColors[0]?.algorithm ?? "";
     this.#currentLightness = themedColors[0]?.lightness ?? 50;
 
-    const rotation = -30; // TODO: Detect rotation based on the accent color
     if (themedColors.length === 0) {
       const getBrowserBg = () => {
         if (this.canBeTransparent) {
-          return this.isDarkMode ? "rgba(0, 0, 0, 0.4)" : "transparent";
+          if (this.isDarkMode) {
+            return "rgba(0, 0, 0, 0.4)";
+          }
+          // On macOS (vibrancy) and Windows (Mica) a transparent light background
+          // sits over a compositor material that keeps UI text readable. Linux has no
+          // such material when zen.widget.linux.transparency is enabled, so a fully
+          // transparent light theme leaves dark UI text unreadable (gh-15334).
+          return AppConstants.platform === "linux"
+            ? "rgba(255, 255, 255, 0.4)"
+            : "transparent";
         }
         return this.isDarkMode ? "#131313" : "#e9e9e9";
       };
@@ -1353,43 +1713,47 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     } else if (themedColors.length === 1) {
       return this.#getSingleRGBColor(themedColors[0], forToolbar);
     }
-    // If there are custom colors, we just return a linear gradient with all colors
     if (themedColors.find(color => color.isCustom)) {
-      // Just return a linear gradient with all colors
-      const gradientColors = themedColors.map(color =>
-        this.#getSingleRGBColor(color, forToolbar)
+      const stops = themedColors.map((color, index) => {
+        const position = (index / (themedColors.length - 1)) * 100;
+        return `${this.#getSingleRGBColor(color, forToolbar)} ${position}%`;
+      });
+      return `linear-gradient(${kCustomGradientAngle}deg, ${stops.join(", ")})`;
+    }
+    const ordered = [...themedColors].sort(
+      (a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0)
+    );
+    const rgbs = ordered.map(color => this.#colorToRGB(color));
+    const baseStops = [];
+    for (let i = 0; i < kGradientStops; i++) {
+      const position = i / (kGradientStops - 1);
+      const color = this.#colorStop(
+        this.mixBase(
+          rgbs[0],
+          rgbs[1],
+          Math.min(
+            1,
+            Math.max(
+              0,
+              (position - kBaseGradientStart) /
+                (kBaseGradientEnd - kBaseGradientStart)
+            )
+          ),
+          rgbs[2]
+        ),
+        forToolbar
       );
-      // Divide all colors evenly in the gradient
-      const colorStops = gradientColors
-        .map((color, index) => {
-          const position = (index / (gradientColors.length - 1)) * 100;
-          return `${color} ${position}%`;
-        })
-        .join(", ");
-      return `linear-gradient(${rotation}deg, ${colorStops})`;
+      baseStops.push(
+        `${color} calc(var(--zen-gradient-base-start) + ${position} * var(--zen-gradient-base-span))`
+      );
     }
-    if (themedColors.length === 2) {
-      if (!forToolbar) {
-        return [
-          `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 30%, transparent 120%)`,
-          `linear-gradient(${rotation + 180}deg, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 30%, transparent 120%)`,
-        ]
-          .reverse()
-          .join(", ");
-      }
-      return `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
-    } else if (themedColors.length === 3) {
-      let color1 = this.#getSingleRGBColor(themedColors[2], forToolbar);
-      let color2 = this.#getSingleRGBColor(themedColors[0], forToolbar);
-      let color3 = this.#getSingleRGBColor(themedColors[1], forToolbar);
-      return [
-        `linear-gradient(-5deg, ${color1} 10%, transparent 80%)`,
-        `radial-gradient(circle at 95% 0%, ${color3} 0%, transparent 75%)`,
-        `radial-gradient(circle at 0% 0%, ${color2} 10%, transparent 70%)`,
-      ].join(", ");
+    const layers = [
+      `linear-gradient(var(--zen-gradient-base-angle), ${baseStops.join(", ")}) 0 0 / 100% 100% no-repeat`,
+    ];
+    if (rgbs.length > 2) {
+      layers.unshift(...this.#overlayLayers(rgbs, forToolbar));
     }
-    // We shouldn't really reach here but just in case, we return an empty array
-    return [];
+    return layers.join(", ");
   }
 
   shouldBeDarkMode(accentColor) {
@@ -1397,35 +1761,16 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       return this.isDarkMode;
     }
 
-    if (!this.canBeTransparent) {
-      const toolbarBg = this.getToolbarModifiedBaseRaw();
-      accentColor = this.blendColors(
-        toolbarBg.slice(0, 3),
-        accentColor,
-        (1 - this.currentOpacity) * 100
-      );
-    }
-
-    const bg = accentColor;
-
-    // Get text colors (with alpha)
-    let darkText = this.getToolbarColor(true); // e.g. [r, g, b, a]
-    let lightText = this.getToolbarColor(false); // e.g. [r, g, b, a]
-
-    if (this.canBeTransparent) {
-      lightText[3] -= parseFloat(this.darkModeBias); // Reduce alpha for light text
-    }
-
-    // Composite text color over background
-    darkText = this.blendColors(
+    const bg = this.canBeTransparent
+      ? accentColor
+      : this.compositeOverUnderlay(accentColor);
+    const titles = this.titleColors(accentColor);
+    const bias = this.canBeTransparent ? parseFloat(this.darkModeBias) || 0 : 0;
+    const darkText = this.blendColors(titles.dark, bg, kTextOpacity * 100);
+    const lightText = this.blendColors(
+      titles.light,
       bg,
-      darkText.slice(0, 3),
-      (1 - darkText[3]) * 100
-    );
-    lightText = this.blendColors(
-      bg,
-      lightText.slice(0, 3),
-      (1 - lightText[3]) * 100
+      (kTextOpacity - bias) * 100
     );
 
     const darkContrast = this.contrastRatio(bg, darkText);
@@ -1434,28 +1779,68 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return darkContrast > lightContrast;
   }
 
-  static getTheme(colors = [], opacity = 0.5, texture = 0) {
+  static getTheme(
+    colors = [],
+    opacity = 0.5,
+    texture = 0,
+    textureType = kDefaultTexture
+  ) {
     return {
       type: "gradient",
       gradientColors: colors ? colors.filter(color => color) : [], // remove undefined
       opacity,
       texture,
+      textureType,
     };
   }
 
-  updateNoise(texture) {
-    if (texture === this.#lastNoiseTexture) {
+  updateNoise(texture, textureType = kDefaultTexture) {
+    if (
+      texture === this.#lastNoiseTexture &&
+      textureType === this.#lastNoiseTextureType
+    ) {
       return;
     }
     this.#lastNoiseTexture = texture;
-    [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
-      element => {
-        element.style.setProperty("--zen-grainy-background-opacity", texture);
-        element.setAttribute(
-          "zen-show-grainy-background",
-          texture > 0 ? "true" : "false"
-        );
-      }
+    this.#lastNoiseTextureType = textureType;
+    for (const element of [
+      lazy.browserBackgroundElement,
+      lazy.toolbarBackgroundElement,
+    ]) {
+      this.setGrainLayer(element, texture, textureType);
+    }
+  }
+
+  setGrainLayer(
+    element,
+    texture,
+    textureType = kDefaultTexture,
+    { old = false } = {}
+  ) {
+    const suffix = old ? "-old" : "";
+    element.setAttribute(`zen-grain-texture${suffix}`, textureType);
+    element.style.setProperty(
+      `--zen-grainy-background-opacity${suffix}`,
+      texture
+    );
+    const strength = slot =>
+      parseFloat(
+        element.style.getPropertyValue(`--zen-grainy-background-opacity${slot}`)
+      ) || 0;
+    element.setAttribute(
+      "zen-show-grainy-background",
+      strength("") > 0 || strength("-old") > 0 ? "true" : "false"
+    );
+  }
+
+  keepGrainAsOld(element) {
+    this.setGrainLayer(
+      element,
+      parseFloat(
+        element.style.getPropertyValue("--zen-grainy-background-opacity")
+      ) || 0,
+      element.getAttribute("zen-grain-texture") ?? kDefaultTexture,
+      { old: true }
     );
   }
 
@@ -1476,13 +1861,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     ];
   }
 
-  /**
-   * Get the primary color from a list of colors.
-   *
-   * @param {Array<number>} accentColor The accent color as an array of RGB values.
-   * @param {boolean} isDarkMode Whether the current theme is in dark mode.
-   * @returns {string} The primary color in hex format.
-   */
   getAccentColorForUI(accentColor, isDarkMode) {
     let [r, g, b] = accentColor;
     if (isDarkMode) {
@@ -1500,6 +1878,21 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return `rgb(${r}, ${g}, ${b})`;
   }
 
+  titleColors(accentColor) {
+    return {
+      light: this.blendColors(accentColor, [0, 0, 0], kTextTint * 100),
+      dark: this.blendColors(accentColor, [255, 255, 255], kTextTint * 100),
+    };
+  }
+
+  // The toolbar text colour as a style map, for the window, space elements
+  // and library previews alike.
+  toolbarTextStyles(accentColor, isDarkMode) {
+    const titles = this.titleColors(accentColor);
+    const [r, g, b] = isDarkMode ? titles.dark : titles.light;
+    return { "--toolbox-textcolor": `rgba(${r}, ${g}, ${b}, ${kTextOpacity})` };
+  }
+
   getMostDominantColor(allColors) {
     const color = this.getPrimaryColor(allColors);
     if (typeof color === "string") {
@@ -1507,20 +1900,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       return this.getNativeAccentColor();
     }
     return color;
-  }
-
-  getToolbarColor(isDarkMode = false, accentColor = undefined) {
-    const opacity = 0.9;
-    let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
-    if (accentColor) {
-      // Blend a bit with the accent color to make it more visible
-      baseColor = this.blendColors(
-        accentColor,
-        baseColor.slice(0, 3),
-        this.canBeTransparent ? 20 : 5
-      ).concat(opacity);
-    }
-    return baseColor;
   }
 
   get browserBackgroundElement() {
@@ -1601,6 +1980,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           )
         );
         [backgroundElement, toolbarElement].forEach(element => {
+          browser.gZenThemePicker.keepGrainAsOld(element);
           element.style.setProperty(
             "--zen-background-opacity",
             browser.gZenThemePicker.previousBackgroundOpacity ?? 1
@@ -1616,6 +1996,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
       browser.gZenThemePicker.currentOpacity = workspaceTheme.opacity ?? 0.5;
       browser.gZenThemePicker.currentTexture = workspaceTheme.texture ?? 0;
+      browser.gZenThemePicker.currentTextureType =
+        workspaceTheme.textureType ?? kDefaultTexture;
 
       let dominantColor = this.getMostDominantColor(
         workspaceTheme.gradientColors
@@ -1697,6 +2079,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       const textureSelectWrapper = browser.document.getElementById(
         "PanelUI-zen-gradient-generator-texture-wrapper"
       );
+      textureSelectWrapper.setAttribute(
+        "zen-grain-texture",
+        browser.gZenThemePicker.currentTextureType
+      );
       const textureWrapperWidth =
         browser.windowUtils.getBoundsWithoutFlushing(
           textureSelectWrapper
@@ -1740,7 +2126,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         true
       );
       if (appliesToWindow) {
-        browser.gZenThemePicker.updateNoise(workspaceTheme.texture);
+        browser.gZenThemePicker.updateNoise(
+          workspaceTheme.texture,
+          workspaceTheme.textureType
+        );
       }
 
       browser.gZenThemePicker.customColorList.innerHTML = "";
@@ -1793,18 +2182,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             }
           }
 
-          const primaryColor = this.getAccentColorForUI(
-            dominantColor,
-            isDarkMode
-          );
-          docElement.style.setProperty("--zen-primary-color", primaryColor);
-
-          // Set `--toolbox-textcolor` to have a contrast with the primary color
-          let textColor = this.getToolbarColor(isDarkMode, dominantColor);
           docElement.style.setProperty(
-            "--toolbox-textcolor",
-            `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
+            "--zen-primary-color",
+            this.getAccentColorForUI(dominantColor, isDarkMode)
           );
+          for (const [property, value] of Object.entries(
+            browser.gZenThemePicker.toolbarTextStyles(dominantColor, isDarkMode)
+          )) {
+            docElement.style.setProperty(property, value);
+          }
           docElement.style.setProperty(
             "--toolbar-color-scheme",
             isDarkMode ? "dark" : "light"
@@ -1994,7 +2380,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const gradient = nsZenThemePicker.getTheme(
       colors,
       this.currentOpacity,
-      this.currentTexture
+      this.currentTexture,
+      this.currentTextureType
     );
     let currentWorkspace = this.workspaceBeingEdited;
 
@@ -2106,14 +2493,20 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       isDarkMode = this.shouldBeDarkMode(dominantColor);
       isExplicitMode = true;
     }
+    const primaryColor = this.getAccentColorForUI(dominantColor, isDarkMode);
+    const paletteStyles = {
+      ...this.toolbarTextStyles(dominantColor, isDarkMode),
+      "--zen-primary-color": primaryColor,
+    };
     this.#gradientsCache[uuid] = {
       gradient,
       toolbarGradient,
       grain: theme.texture ?? 0,
+      grainTexture: theme.textureType ?? kDefaultTexture,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
-      primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
+      primaryColor,
+      paletteStyles,
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;

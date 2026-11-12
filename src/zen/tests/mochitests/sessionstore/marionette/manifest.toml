@@ -3,6 +3,7 @@ subsuite = "integration"
 tags = "local os_integration"
 
 ["test_automatic_startup_window_features_mismatch.py"]
+skip-if = [ "true" ] # Bug 2084381
 
 ["test_automatic_with_taskbar_tab_window_features_mismatch.py"]
 
@@ -57,6 +58,10 @@ skip-if = [
   "os == 'win' && os_version == '11.26200' && arch == 'x86'", # Bug 1727691
   "os == 'win' && os_version == '11.26200' && arch == 'x86_64'", # Bug 1727691
 ]
+
+["test_session_availability.py"]
+
+["test_session_decision.py"]
 
 ["test_set_browser_state_window_features_mismatch.py"]
 

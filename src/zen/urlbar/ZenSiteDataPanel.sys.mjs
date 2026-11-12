@@ -20,7 +20,6 @@ export class nsZenSiteDataPanel {
   #iconMap = {
     install: "extension",
     "site-protection": "shield",
-    "3rdPartyStorage": "cookie",
   };
 
   constructor(window) {
@@ -85,9 +84,9 @@ export class nsZenSiteDataPanel {
     this.anchor.addEventListener("click", this);
     const kCommandIDs = [
       "zen-site-data-header-share",
+      "zen-site-data-header-boost",
       "zen-site-data-header-bookmark",
       "zen-site-data-security-info",
-      "zen-site-data-boost",
       "zen-site-data-actions",
       "zen-site-data-new-addon-button",
     ];
@@ -249,19 +248,8 @@ export class nsZenSiteDataPanel {
     const section = list.closest(".zen-site-data-section");
     section.hidden = true;
 
-    const boostButton = this.document.getElementById("zen-site-data-boost");
     if (!canBoostSite) {
-      boostButton.removeAttribute("boosting");
-      boostButton.setAttribute("disabled", "true");
       return;
-    }
-
-    boostButton.removeAttribute("disabled");
-
-    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain)) {
-      boostButton.setAttribute("boosting", "true");
-    } else {
-      boostButton.removeAttribute("boosting");
     }
 
     /* Boosts panel */
@@ -387,24 +375,30 @@ export class nsZenSiteDataPanel {
 
   #setSiteHeader() {
     {
-      const button = this.document.getElementById(
-        "zen-site-data-header-reader-mode"
-      );
+      const button = this.document.getElementById("zen-site-data-reader-mode");
       const urlbarButton =
         this.window.document.getElementById("reader-mode-button");
       const isActive = urlbarButton?.hasAttribute("readeractive");
       const isVisible = !urlbarButton?.hidden || isActive;
 
       button.disabled = !isVisible;
-      if (isActive) {
-        button.classList.add("active");
-      } else {
-        button.classList.remove("active");
-      }
+      button.classList.toggle("active", Boolean(isActive));
       this.document.l10n.setAttributes(
         button,
-        urlbarButton?.getAttribute("data-l10n-id")
+        urlbarButton?.getAttribute("data-l10n-id") ||
+          "zen-site-data-header-reader-mode"
       );
+    }
+    {
+      const button = this.document.getElementById("zen-site-data-header-boost");
+      const canBoost = lazy.gZenBoostsManager.canBoostSite(
+        this.window.gBrowser.currentURI
+      );
+      if (canBoost) {
+        button.removeAttribute("disabled");
+      } else {
+        button.setAttribute("disabled", "true");
+      }
     }
     {
       const button = this.document.getElementById(
@@ -605,16 +599,12 @@ export class nsZenSiteDataPanel {
       });
     }
 
-    const separator = this.document.createXULElement("toolbarseparator");
-    list.appendChild(separator);
-    const settingElements = [];
-    const crossSiteCookieElements = [];
     for (let permission of permissions) {
-      let [id, key] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
+      let [id] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
 
-      if (id == "storage-access") {
-        // Ignore storage access permissions here, they are made visible inside
-        // the Content Blocking UI.
+      if (id == "storage-access" || id == "3rdPartyStorage") {
+        // Storage access and cross-site cookie permissions are per embedding
+        // site and belong to the Content Blocking UI, not to this list.
         continue;
       }
 
@@ -623,30 +613,10 @@ export class nsZenSiteDataPanel {
         continue;
       }
 
-      let [item, isCrossSiteCookie] = this.#createPermissionItem(
-        id,
-        key,
-        permission
-      );
-      if (item) {
-        if (isCrossSiteCookie) {
-          crossSiteCookieElements.push(item);
-        } else {
-          settingElements.push(item);
-        }
-      }
+      list.appendChild(this.#createPermissionItem(id, permission));
     }
 
-    for (let elem of settingElements) {
-      separator.before(elem);
-    }
-    for (let elem of crossSiteCookieElements) {
-      separator.after(elem);
-    }
-
-    separator.hidden =
-      !settingElements.length || !crossSiteCookieElements.length;
-    section.hidden = list.childElementCount < 2; // only the separator
+    section.hidden = !list.childElementCount;
   }
 
   #getPermissionStateLabelId(permission) {
@@ -669,9 +639,8 @@ export class nsZenSiteDataPanel {
     }
   }
 
-  #createPermissionItem(id, key, permission) {
+  #createPermissionItem(id, permission) {
     const { SitePermissions } = this.window;
-    const isCrossSiteCookie = id === "3rdPartyStorage";
 
     // Create a permission item for the site data panel.
     let container = this.document.createXULElement("hbox");
@@ -707,21 +676,14 @@ export class nsZenSiteDataPanel {
     let nameLabel = this.document.createXULElement("label");
     nameLabel.setAttribute("flex", "1");
     nameLabel.setAttribute("class", "permission-popup-permission-label");
-    if (isCrossSiteCookie) {
+    let label = SitePermissions.getPermissionLabel(permission.id);
+    if (label) {
+      nameLabel.textContent = label;
+    } else {
       this.document.l10n.setAttributes(
         nameLabel,
-        "zen-site-data-setting-cross-site"
+        "zen-site-data-setting-" + idNoSuffix
       );
-    } else {
-      let label = SitePermissions.getPermissionLabel(permission.id);
-      if (label) {
-        nameLabel.textContent = label;
-      } else {
-        this.document.l10n.setAttributes(
-          nameLabel,
-          "zen-site-data-setting-" + idNoSuffix
-        );
-      }
     }
     labelContainer.appendChild(nameLabel);
 
@@ -730,22 +692,17 @@ export class nsZenSiteDataPanel {
       "class",
       "zen-permission-popup-permission-state-label"
     );
-    if (isCrossSiteCookie) {
-      // The key should be the site for cross-site cookies.
-      stateLabel.textContent = key;
-    } else {
-      stateLabel.setAttribute(
-        "data-l10n-id",
-        this.#getPermissionStateLabelId(permission)
-      );
-    }
+    stateLabel.setAttribute(
+      "data-l10n-id",
+      this.#getPermissionStateLabelId(permission)
+    );
     labelContainer.appendChild(stateLabel);
 
     container.appendChild(img);
     container.appendChild(labelContainer);
 
     container.addEventListener("click", this);
-    return [container, isCrossSiteCookie];
+    return container;
   }
 
   #openGetAddons() {
@@ -767,7 +724,7 @@ export class nsZenSiteDataPanel {
         this.window.gIdentityHandler._openPopup(event);
         break;
       }
-      case "zen-site-data-boost": {
+      case "zen-site-data-header-boost": {
         const domain = this.#getCurrentDomain();
         const uri = this.window.gBrowser.currentURI;
         const boost = lazy.gZenBoostsManager.createNewBoost(domain);

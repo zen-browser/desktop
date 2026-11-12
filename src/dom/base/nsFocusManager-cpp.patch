@@ -1,0 +1,70 @@
+diff --git a/dom/base/nsFocusManager.cpp b/dom/base/nsFocusManager.cpp
+index 722f715e4593cd7ecc700a482b016c52be789edf..09c9661ecb3c179e64a4cc7811344224eed85507 100644
+--- a/dom/base/nsFocusManager.cpp
++++ b/dom/base/nsFocusManager.cpp
+@@ -52,6 +52,7 @@
+ #include "nsFrameSelection.h"
+ #include "nsFrameTraversal.h"
+ #include "nsGkAtoms.h"
++#include "nsGlobalWindowOuter.h"
+ #include "nsHTMLDocument.h"
+ #include "nsIAppWindow.h"
+ #include "nsIBaseWindow.h"
+@@ -669,6 +670,20 @@ nsFocusManager::MoveCaretToFocus(mozIDOMWindowProxy* aWindow) {
+   return NS_OK;
+ }
+ 
++static nsPIDOMWindowOuter* ZenKeptActiveOpener(nsPIDOMWindowOuter* aWindow) {
++  mozilla::dom::Document* doc = aWindow ? aWindow->GetExtantDoc() : nullptr;
++  mozilla::dom::Element* root = doc ? doc->GetRootElement() : nullptr;
++  if (!root || !root->HasAttribute(u"zen-keep-opener-active"_ns)) {
++    return nullptr;
++  }
++  return nsGlobalWindowOuter::Cast(aWindow)->GetSameProcessOpener();
++}
++
++static bool ZenIsActiveBrowserWindow(nsPIDOMWindowOuter* aWindow) {
++  BrowsingContext* bc = aWindow->GetBrowsingContext();
++  return bc && bc->GetIsActiveBrowserWindow();
++}
++
+ void nsFocusManager::WindowRaised(mozIDOMWindowProxy* aWindow,
+                                   uint64_t aActionId) {
+   if (!aWindow) {
+@@ -710,7 +725,9 @@ void nsFocusManager::WindowRaised(mozIDOMWindowProxy* aWindow,
+ 
+     // lower the existing window, if any. This shouldn't happen usually.
+     if (nsCOMPtr<nsPIDOMWindowOuter> activeWindow = mActiveWindow) {
++      mZenWindowBeingRaised = window;
+       WindowLowered(activeWindow, aActionId);
++      mZenWindowBeingRaised = nullptr;
+     }
+   } else if (bc->IsTop()) {
+     BrowsingContext* active = GetActiveBrowsingContext();
+@@ -764,6 +781,10 @@ void nsFocusManager::WindowRaised(mozIDOMWindowProxy* aWindow,
+     // ATOK, so we need to do it here.
+     BrowserParent::UnsetTopLevelWebFocusAll();
+     ActivateOrDeactivate(window, true);
++    if (nsCOMPtr<nsPIDOMWindowOuter> opener = ZenKeptActiveOpener(window);
++        opener && !ZenIsActiveBrowserWindow(opener)) {
++      ActivateOrDeactivate(opener, true);
++    }
+   }
+ 
+   // Retrieve the last focused element within the window that was raised.
+@@ -846,7 +867,14 @@ void nsFocusManager::WindowLowered(mozIDOMWindowProxy* aWindow,
+   }
+ 
+   if (XRE_IsParentProcess()) {
+-    ActivateOrDeactivate(window, false);
++    if (ZenKeptActiveOpener(mZenWindowBeingRaised) != window) {
++      ActivateOrDeactivate(window, false);
++    }
++    if (nsCOMPtr<nsPIDOMWindowOuter> opener = ZenKeptActiveOpener(window);
++        opener && opener != mZenWindowBeingRaised &&
++        ZenIsActiveBrowserWindow(opener)) {
++      ActivateOrDeactivate(opener, false);
++    }
+   }
+ 
+   // keep track of the window being lowered, so that attempts to raise the

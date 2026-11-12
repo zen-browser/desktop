@@ -18,10 +18,6 @@ nsresult StartNativeWindowMoveCocoa(nsIWidget* aWidget) {
       static_cast<NSWindow*>(aWidget->GetNativeData(NS_NATIVE_WINDOW));
   NS_ENSURE_TRUE(window, NS_ERROR_FAILURE);
 
-  // performWindowDragWithEvent: needs a left-button event to start the
-  // WindowServer drag session. The triggering mousedown happened in a
-  // content process, so synthesize an equivalent event at the current
-  // mouse location.
   NSPoint location = [window convertPointFromScreen:[NSEvent mouseLocation]];
   NSEvent* event =
       [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged

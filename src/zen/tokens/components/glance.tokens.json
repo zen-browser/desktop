@@ -1,0 +1,22 @@
+{
+  "background-color": {
+    "--zen-glance-button-background-base": {
+      "value": { "light": "#1c1c1c", "dark": "#e2e2e2" }
+    },
+    "--zen-glance-button-hover-background": {
+      "value": { "light": "#292929", "dark": "#cccccc" }
+    },
+    "--zen-glance-close-button-background": { "value": "rgb(220, 53, 69)" },
+    "--zen-glance-browser-background": {
+      "value": { "light": "#ffffff", "dark": "#101010" }
+    }
+  },
+  "box-shadow": {
+    "--zen-glance-button-shadow": {
+      "value": "0 0 12px 1px rgba(0, 0, 0, 0.07)"
+    }
+  },
+  "size": {
+    "--zen-glance-close-confirm-label-max-width": { "value": "4rem" }
+  }
+}

@@ -57,6 +57,23 @@ for (const [group, extensions] of Object.entries(GROUP_EXTENSIONS)) {
   }
 }
 
+// The library shows a space by building copies of its real tabs and folders,
+// which fire the same events the real ones do.
+export const LIBRARY_COPY_ATTRIBUTE = "zen-library-copy";
+
+/**
+ * Every copy is marked as it is made, tabs and folders alike, and what has to
+ * be held back are the events a tab or a folder raises about itself, so the
+ * element in hand is the whole answer.
+ *
+ * @param {EventTarget} target - What an event happened to
+ * @returns {boolean} Whether it is one of the library's copies, connected or
+ *   already thrown away
+ */
+export function isLibraryCopy(target) {
+  return !!target?.hasAttribute?.(LIBRARY_COPY_ATTRIBUTE);
+}
+
 /** The groups a file can be filtered by, in the order they are offered. */
 export const FILE_GROUPS = [
   "images",

@@ -115,7 +115,7 @@ class TestSessionRestore(SessionStoreTestCase):
             window.SidebarController.show("viewHistorySidebar").then(() => {
              let sidebarBox = window.document.getElementById("sidebar-box")
              sidebarBox.style.width = "100px";
-             window.SidebarController.toggle();
+             return window.SidebarController.toggle();
             }).then(resolve);
             """
         )
@@ -195,7 +195,7 @@ class TestSessionRestore(SessionStoreTestCase):
         self.marionette.execute_async_script(
             """
             let resolve = arguments[0];
-            let { BrowserInitState } = ChromeUtils.importESModule("resource:///modules/BrowserGlue.sys.mjs");
+            let { BrowserInitState } = ChromeUtils.importESModule("moz-src:///browser/components/BrowserGlue.sys.mjs");
             BrowserInitState.startupIdleTaskPromise.then(resolve);
             """
         )
@@ -271,7 +271,7 @@ class TestSessionRestore(SessionStoreTestCase):
         self.marionette.execute_async_script(
             """
             let resolve = arguments[0];
-            let { BrowserInitState } = ChromeUtils.importESModule("resource:///modules/BrowserGlue.sys.mjs");
+            let { BrowserInitState } = ChromeUtils.importESModule("moz-src:///browser/components/BrowserGlue.sys.mjs");
             BrowserInitState.startupIdleTaskPromise.then(resolve);
             """
         )

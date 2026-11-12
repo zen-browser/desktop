@@ -8,6 +8,7 @@ import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.m
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
   TabStateCache:
     "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenShareClient: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
@@ -16,6 +17,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const SHARE_DOCUMENT_VERSION = "1";
 
+const SHAREABLE_URL_RE = /^https?:\/\//i;
 const SHAREABLE_ICON_RE = /^(data:|chrome:)/;
 const FOLDER_ICON_RE = /^chrome:\/\//;
 
@@ -87,9 +89,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     }
     const item = this.#serializeSplitGroup(group);
     if (!item) {
-      this.#showCreateError(
-        new lazy.ZenShareError("empty", "nothing to share")
-      );
+      this.showCreateError(new lazy.ZenShareError("empty", "nothing to share"));
       return;
     }
     await this.#createAndCopyLink(item);
@@ -113,7 +113,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       return;
     }
     try {
-      const created = await lazy.ZenShareClient.createShare(
+      const created = await lazy.ZenShareClient.findOrCreateShare(
         { version: SHARE_DOCUMENT_VERSION, shared: item },
         { name: this.#displayName() }
       );
@@ -131,7 +131,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         timeout: 6000,
       });
     } catch (e) {
-      this.#showCreateError(e);
+      this.showCreateError(e);
     }
   }
 
@@ -164,7 +164,12 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     return args.accepted;
   }
 
-  #showCreateError(error) {
+  /**
+   * Tells the user why a share could not be created.
+   *
+   * @param {Error} error - A ZenShareError or anything else that was thrown.
+   */
+  showCreateError(error) {
     console.error("ZenShare: could not create share:", error);
     const descriptions = {
       auth: "zen-share-error-auth-description",
@@ -231,7 +236,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
 
   #serializeTab(tab, { pinned = false } = {}) {
     const url = tab.linkedBrowser?.currentURI?.spec;
-    if (!url || !/^https?:\/\//.test(url)) {
+    if (!url || !SHAREABLE_URL_RE.test(url)) {
       return null;
     }
     const item = { type: "tab", url };
@@ -380,9 +385,48 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     if (share.type === "split-view") {
       // Split views are light enough to open right away, no preview step.
       this.#openSharedSplitView(browser, share);
+    } else if (share.type === "boost") {
+      this.#openSharedBoost(browser, share);
     } else {
       this.#showImportOverlay(browser, share);
     }
+  }
+
+  async #openSharedBoost(browser, share) {
+    let preview;
+    try {
+      preview = await lazy.ZenShareClient.fetchSharePreview(share);
+    } catch (e) {
+      console.error("ZenShare: could not load shared boost:", e);
+      gZenUIManager.showToast("zen-boost-receive-error-toast", {
+        timeout: 6000,
+      });
+      return;
+    }
+    if (
+      preview.doc.shared.type !== "boost" ||
+      !lazy.gZenBoostsManager.isValidSharedDomain(preview.doc.shared.domain)
+    ) {
+      gZenUIManager.showToast("zen-boost-receive-error-toast", {
+        timeout: 6000,
+      });
+      return;
+    }
+    const tab = gBrowser.getTabForBrowser(browser);
+    if (!tab?.hasAttribute("zen-empty-tab")) {
+      gZenWorkspaces.selectEmptyTab();
+      if (tab) {
+        gBrowser.removeTab(tab, {
+          closeWindowWithLastTab: false,
+          skipSessionStore: true,
+        });
+      }
+    }
+    lazy.gZenBoostsManager.receiveBoost(
+      window,
+      preview.doc.shared,
+      preview.name
+    );
   }
 
   async #openSharedSplitView(browser, share) {
@@ -418,13 +462,16 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     const tabs = item.tabs.map(child => {
       // Eager browsers so every pane renders as soon as the split shows.
       const tab = this.#importTab(child, workspaceId, { lazyBrowser: false });
+      if (!tab) {
+        return null;
+      }
       if (pinned) {
         gBrowser.pinTab(tab);
       }
       this.#placeTab(tab, workspaceId, pinned);
       return tab;
     });
-    gZenViewSplitter.splitTabs(tabs, "grid", 0);
+    gZenViewSplitter.splitTabs(tabs.filter(Boolean), "grid", 0);
     gBrowser.removeTab(shareTab, {
       closeWindowWithLastTab: false,
       skipSessionStore: true,
@@ -594,6 +641,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         : `page-icon:${entry.url}`;
     row.querySelector(".zen-share-overlay-row-label").textContent =
       entry.label || entry.url;
+    if (!SHAREABLE_URL_RE.test(entry.url || "")) {
+      return row;
+    }
     row.addEventListener("click", () => {
       const stackRect = row.closest(".browserStack").getBoundingClientRect();
       const data = {
@@ -681,10 +731,12 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
           for (const child of item.items) {
             if (child.type === "tab") {
               const tab = this.#importTab(child, newWorkspace.uuid);
-              if (child.isPinned) {
-                gBrowser.pinTab(tab);
+              if (tab) {
+                if (child.isPinned) {
+                  gBrowser.pinTab(tab);
+                }
+                this.#placeTab(tab, newWorkspace.uuid, !!child.isPinned);
               }
-              this.#placeTab(tab, newWorkspace.uuid, !!child.isPinned);
             } else if (child.type === "folder") {
               this.#importFolder(child, newWorkspace.uuid);
             } else if (child.type === "splitView") {
@@ -729,16 +781,23 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     if (item.icon && FOLDER_ICON_RE.test(item.icon)) {
       gZenFolders.setFolderUserIcon(folder, item.icon);
     }
-    for (const child of item.items) {
-      if (child.type === "tab") {
-        const tab = this.#importTab(child, workspaceId);
-        gBrowser.pinTab(tab);
-        folder.addTabs([tab]);
-      } else if (child.type === "folder") {
-        this.#importFolder(child, workspaceId, folder);
-      } else if (child.type === "splitView") {
-        this.#importSplitView(child, workspaceId, folder);
+    folder.creating = true;
+    try {
+      for (const child of item.items) {
+        if (child.type === "tab") {
+          const tab = this.#importTab(child, workspaceId);
+          if (tab) {
+            gBrowser.pinTab(tab);
+            folder.addTabs([tab]);
+          }
+        } else if (child.type === "folder") {
+          this.#importFolder(child, workspaceId, folder);
+        } else if (child.type === "splitView") {
+          this.#importSplitView(child, workspaceId, folder);
+        }
       }
+    } finally {
+      folder.creating = false;
     }
     return folder;
   }
@@ -748,6 +807,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     const pinned = item.tabs.every(child => child.isPinned);
     const tabs = item.tabs.map(child => {
       const tab = this.#importTab(child, workspaceId);
+      if (!tab) {
+        return null;
+      }
       if (folder) {
         gBrowser.pinTab(tab);
         folder.addTabs([tab]);
@@ -759,11 +821,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       }
       return tab;
     });
-    gZenViewSplitter.splitTabs(tabs, "grid", -1);
+    gZenViewSplitter.splitTabs(tabs.filter(Boolean), "grid", -1);
   }
 
-  // Deterministic placement at the end of the right section;
-  // moveTabToWorkspace's anchor follows the new-tab-button position pref.
   #placeTab(tab, workspaceId, pinned) {
     const element = gZenWorkspaces.workspaceElement(workspaceId);
     const container = pinned
@@ -779,11 +839,16 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   #importTab(item, workspaceId, { lazyBrowser = true } = {}) {
+    if (!SHAREABLE_URL_RE.test(item.url || "")) {
+      console.error("ZenShare: refusing to import url", item.url);
+      return null;
+    }
     const tab = gBrowser.addTrustedTab(item.url, {
       createLazyBrowser: lazyBrowser,
       inBackground: true,
       skipAnimation: true,
       skipBackgroundNotify: true,
+      noInitialLabel: true,
       lazyTabTitle: item.label || undefined,
       skipRoute: true,
     });

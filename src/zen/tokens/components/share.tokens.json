@@ -1,0 +1,17 @@
+{
+  "size": {
+    "--zen-share-card-width": { "value": "325px" },
+    "--zen-share-add-button-min-width": { "value": "260px" }
+  },
+  "box-shadow": {
+    "--zen-share-card-shadow": {
+      "value": "0 1px 3px rgba(0, 0, 0, 0.07), 0 14px 40px -10px rgba(0, 0, 0, 0.28)"
+    },
+    "--zen-share-badge-shadow": { "value": "0 2px 10px rgba(0, 0, 0, 0.07)" }
+  },
+  "background-color": {
+    "--zen-share-badge-background": {
+      "value": { "light": "#ffffff", "dark": "#1c1c1c" }
+    }
+  }
+}

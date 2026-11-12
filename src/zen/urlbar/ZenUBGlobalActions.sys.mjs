@@ -36,7 +36,7 @@ function isNotEmptyTab(window) {
 const globalActionsTemplate = [
   {
     l10nId: "zen-action-toggle-compact-mode",
-    command: "cmd_zenCompactModeToggle",
+    command: "cmd_toggleCompactModeIgnoreHover",
     icon: "chrome://browser/skin/zen-icons/sidebar.svg",
   },
   {
@@ -216,12 +216,14 @@ const globalActionsTemplate = [
     command: "History:RestoreLastClosedTabOrWindowOrSession",
     icon: "chrome://browser/skin/zen-icons/history.svg",
     isAvailable: window => {
-      return lazy.SessionStore.getClosedTabCount(window) > 0;
+      return !!lazy.SessionStore.getClosedTabCount({
+        sourceWindow: window,
+      }).length;
     },
   },
   {
     l10nId: "zen-action-duplicate-tab",
-    command: "cmd_zenDuplicateTab",
+    command: "Browser:DuplicateTab",
     icon: "chrome://browser/skin/zen-icons/duplicate-tab.svg",
     isAvailable: window => {
       return isNotEmptyTab(window);

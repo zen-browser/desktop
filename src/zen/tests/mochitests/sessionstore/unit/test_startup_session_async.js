@@ -8,6 +8,7 @@
 
 function run_test() {
   let profd = do_get_profile();
+  Services.fog.initializeFOG();
   var SessionFile = ChromeUtils.importESModule(
     "moz-src:///browser/components/sessionstore/SessionFile.sys.mjs"
   ).SessionFile;
@@ -24,6 +25,16 @@ function run_test() {
   writeCompressedFile(oldExtSessionFile, SessionFile.Paths.clean).then(() => {
     afterSessionStartupInitialization(function cb() {
       Assert.equal(SessionStartup.sessionType, SessionStartup.DEFER_SESSION);
+      Assert.deepEqual(
+        shutdownSuccessEvents(),
+        [{ shutdown_ok: "false", shutdown_reason: "N/A" }],
+        "A clean shutdown is recorded once, with shutdown_ok inverted."
+      );
+      Assert.deepEqual(
+        shutdownOkCounts(),
+        { clean: 1, unclean: null },
+        "shutdown_ok counts the shutdown as clean."
+      );
       do_test_finished();
     });
   });

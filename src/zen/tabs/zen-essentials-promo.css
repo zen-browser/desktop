@@ -10,11 +10,11 @@ zen-essentials-promo {
   border-radius: var(--border-radius-medium);
   justify-content: center;
   align-items: center;
-  padding: 1.1rem 0;
+  padding: calc(1.1 * var(--space-large)) 0;
   flex-direction: column;
-  margin: 2px;
+  margin: var(--zen-space-2);
   text-align: center;
-  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--zen-box-shadow-hairline);
   transition: background 0.1s;
 
   &:not([dragover="true"]) {
@@ -29,8 +29,8 @@ zen-essentials-promo {
   & image {
     -moz-context-properties: fill;
     fill: currentColor;
-    width: 18px;
-    margin-bottom: 4px;
+    width: var(--zen-size-18);
+    margin-bottom: var(--zen-space-4);
   }
 
   & > * {
@@ -39,11 +39,11 @@ zen-essentials-promo {
   }
 
   & .zen-essentials-promo-title {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
 
   & .zen-essentials-promo-sublabel {
-    opacity: 0.8;
+    opacity: var(--zen-opacity-80);
     font-size: smaller;
     margin: 0;
   }

@@ -1,0 +1,27 @@
+diff --git a/browser/components/customkeys/CustomKeysParent.sys.mjs b/browser/components/customkeys/CustomKeysParent.sys.mjs
+index 3a3b05e5eecf89193be8931b77a2b8eb5b6271b7..ff432faa81ce172575f3e53e6ee4309f89297600 100644
+--- a/browser/components/customkeys/CustomKeysParent.sys.mjs
++++ b/browser/components/customkeys/CustomKeysParent.sys.mjs
+@@ -6,6 +6,13 @@ import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
+ import { CustomKeys } from "moz-src:///browser/components/customkeys/CustomKeys.sys.mjs";
+ import { ShortcutUtils } from "resource://gre/modules/ShortcutUtils.sys.mjs";
+ 
++const lazy = {};
++
++ChromeUtils.defineESModuleGetters(lazy, {
++  ZenKeyboardShortcuts:
++    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
++});
++
+ const KEY_NAMES_TO_CODES = {
+   ArrowDown: "VK_DOWN",
+   ArrowLeft: "VK_LEFT",
+@@ -279,7 +286,7 @@ export class CustomKeysParent extends JSWindowActorParent {
+         return data;
+       }
+       case "CustomKeys:GetKeys": {
+-        return this.getKeys();
++        return lazy.ZenKeyboardShortcuts.addKeys(this, this.getKeys());
+       }
+       case "CustomKeys:ResetAll": {
+         return CustomKeys.resetAll();

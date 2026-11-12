@@ -22,14 +22,14 @@
   outline: var(--zen-sidebar-notification-outline);
   outline-offset: -1.5px;
   box-shadow: var(--zen-sidebar-notification-shadow);
-  font-size: 12px;
+  font-size: var(--zen-font-size-12);
 }
 
 .zen-sidebar-notification-header {
   display: flex;
   position: relative;
   flex: 1;
-  padding: 16px;
+  padding: var(--zen-space-16);
   border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
@@ -38,31 +38,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 500;
+  font-weight: var(--zen-font-weight-medium);
   flex: 1;
   position: absolute;
   top: 50%;
   left: 0;
   transform: translateY(-50%);
-  width: calc(100% - 40px);
-  padding: 0 16px;
+  width: calc(100% - var(--zen-size-40));
+  padding: 0 var(--zen-space-16);
 }
 
 .zen-sidebar-notification-close-button {
   position: absolute;
-  right: 2px;
-  top: 2px;
-  border-radius: 4px;
+  right: var(--zen-space-2);
+  top: var(--zen-space-2);
+  border-radius: var(--zen-border-radius-4);
   border-top-right-radius: calc(var(--border-radius-medium) - 2px);
   z-index: 1;
-  padding: 4px;
-  width: 18px;
-  height: 18px;
+  padding: var(--zen-space-4);
+  width: var(--zen-size-18);
+  height: var(--zen-size-18);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.4;
+  opacity: var(--zen-opacity-40);
 
   &:hover {
     background: color-mix(in srgb, currentColor 15%, transparent);
@@ -72,7 +72,7 @@
     -moz-context-properties: fill, fill-opacity;
     fill-opacity: 1;
     fill: currentColor;
-    width: 14px;
+    width: var(--zen-size-14);
     pointer-events: none;
   }
 }
@@ -84,25 +84,26 @@
 
   & .zen-sidebar-notification-progress-bar {
     height: 100%;
-    background: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, transparent 10%, #6b6b6b));
+    --zen-sidebar-notification-progress-bar-background: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, transparent 10%, #6b6b6b));
+    background: var(--zen-sidebar-notification-progress-bar-background);
     transform-origin: left center;
   }
 }
 
 .zen-sidebar-notification-body {
-  padding: 6px;
+  padding: var(--zen-space-6);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--zen-space-2);
 
   & .zen-sidebar-notification-link-container {
     cursor: pointer;
-    padding: 4px;
+    padding: var(--zen-space-4);
     display: flex;
-    gap: 6px;
+    gap: var(--zen-space-6);
     align-items: center;
     transition: opacity 0.2s ease-in-out;
-    opacity: 0.7;
+    opacity: var(--zen-opacity-70);
 
     & .zen-sidebar-notification-link-text {
       cursor: inherit;

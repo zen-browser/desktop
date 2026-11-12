@@ -93,6 +93,74 @@ add_task(async function test_change_workspace_from_command_line() {
   );
 });
 
+add_task(async function test_command_line_space_container_used_immediately() {
+  const { ContextualIdentityService } = ChromeUtils.importESModule(
+    "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs"
+  );
+  const targetContainer =
+    ContextualIdentityService.getPublicIdentities()[0].userContextId;
+
+  const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
+  await gZenWorkspaces.createAndSaveWorkspace(
+    "Cmdline Container",
+    undefined,
+    /* dontChange */ true,
+    targetContainer
+  );
+  const target = gZenWorkspaces
+    .getWorkspaces()
+    .find(workspace => workspace.name === "Cmdline Container");
+  Assert.ok(target, "The target workspace should exist.");
+  registerCleanupFunction(async () => {
+    if (gZenWorkspaces.getWorkspaceFromId(target.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  });
+
+  Assert.strictEqual(
+    gZenWorkspaces.activeWorkspace,
+    originalWorkspaceUUID,
+    "We should still be on the original workspace."
+  );
+  Assert.notStrictEqual(
+    gZenWorkspaces.getWorkspaceFromId(originalWorkspaceUUID)?.containerTabId,
+    targetContainer,
+    "The two workspaces must use different containers for this to mean anything."
+  );
+
+  // Deliberately not awaited: BrowserContentHandler opens a URL from the same
+  // command line in the same tick, before the switch has finished.
+  const switching =
+    gZenWorkspaces.changeWorkspaceFromCommandLine("cmdline container");
+
+  Assert.strictEqual(
+    gZenWorkspaces.getContextIdIfNeeded(undefined, false, null)[0],
+    targetContainer,
+    "A tab opened while the switch runs gets the destination's container."
+  );
+
+  await switching;
+  Assert.strictEqual(
+    gZenWorkspaces.activeWorkspace,
+    target.uuid,
+    "The command line flag should switch to the target workspace."
+  );
+  Assert.strictEqual(
+    gZenWorkspaces.getContextIdIfNeeded(undefined, false, null)[0],
+    targetContainer,
+    "The container still comes from the destination once it is active."
+  );
+
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+  Assert.notStrictEqual(
+    gZenWorkspaces.getContextIdIfNeeded(undefined, false, null)[0],
+    targetContainer,
+    "Switching back makes new tabs follow the active space again."
+  );
+  await gZenWorkspaces.removeWorkspace(target.uuid);
+});
+
 add_task(async function test_unknown_workspace_does_not_switch() {
   const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
 
@@ -103,6 +171,92 @@ add_task(async function test_unknown_workspace_does_not_switch() {
     originalWorkspaceUUID,
     "An unknown workspace should not switch spaces."
   );
+});
+
+add_task(async function test_initial_tab_gets_cmdline_space_container() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["zen.testing.enabled", false],
+      ["zen.urlbar.open-on-startup", false],
+    ],
+  });
+  const { ContextualIdentityService } = ChromeUtils.importESModule(
+    "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs"
+  );
+  const container =
+    ContextualIdentityService.getPublicIdentities()[0].userContextId;
+
+  const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
+  await gZenWorkspaces.createAndSaveWorkspace(
+    "Cmdline Container Cold",
+    undefined,
+    /* dontChange */ true,
+    container
+  );
+  const target = gZenWorkspaces
+    .getWorkspaces()
+    .find(workspace => workspace.name === "Cmdline Container Cold");
+  Assert.ok(target, "The target workspace should exist.");
+  registerCleanupFunction(async () => {
+    Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
+    if (gZenWorkspaces.getWorkspaceFromId(target.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  });
+
+  // A window being created has no space cache of its own yet, so the lookup
+  // falls back to the session store. Collect into it the way a session save
+  // would, which is what has happened by the time a real cold start gets here.
+  const { ZenSessionStore } = ChromeUtils.importESModule(
+    "resource:///modules/zen/ZenSessionManager.sys.mjs"
+  );
+  ZenSessionStore.saveState(JSON.parse(SessionStore.getBrowserState()), true);
+  Assert.ok(
+    gZenWorkspaces
+      .getWorkspaces(true)
+      .some(workspace => workspace.uuid === target.uuid),
+    "The session store knows about the target workspace."
+  );
+
+  // Simulates the pref stashed by `--space` on a cold start, see
+  // BrowserContentHandler.sys.mjs.
+  Services.prefs.setStringPref(
+    "zen.workspaces.cmdline-initial-workspace",
+    "cmdline container cold"
+  );
+
+  const newWindow = await BrowserTestUtils.openNewBrowserWindow();
+  await newWindow.gZenWorkspaces.promiseInitialized;
+
+  Assert.strictEqual(
+    newWindow.gZenWorkspaces.activeWorkspace,
+    target.uuid,
+    "The new window should start on the requested workspace."
+  );
+  // Zen puts its own empty tab first, so the tab carrying the startup URI is
+  // the one that is not it.
+  const initialTab = [...newWindow.gBrowser.tabs].find(
+    tab => !tab.hasAttribute("zen-empty-tab")
+  );
+  Assert.ok(initialTab, "The new window has a real initial tab.");
+  // A tab's container is fixed when it is created, so this is the assertion
+  // that the flag was honoured before the initial tab existed.
+  Assert.strictEqual(
+    initialTab.getAttribute("usercontextid"),
+    String(container),
+    "The initial tab is created in the requested space's container."
+  );
+  Assert.strictEqual(
+    initialTab.getAttribute("zenDefaultUserContextId"),
+    "true",
+    "The container counts as the space's default, not one the tab asked for."
+  );
+
+  await BrowserTestUtils.closeWindow(newWindow);
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+  await gZenWorkspaces.removeWorkspace(target.uuid);
+  await SpecialPowers.popPrefEnv();
 });
 
 add_task(async function test_initial_workspace_pref_consumed_on_restore() {

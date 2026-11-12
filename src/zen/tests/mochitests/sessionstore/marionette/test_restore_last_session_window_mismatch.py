@@ -27,7 +27,7 @@ class PopupWindowMismatchTestMixin:
     """
     Bug 2065228: restoreLastSession() reuses the current top window for the
     first window of the saved session whenever that window isn't tied to a
-    __SS_lastSessionWindowID.
+    window ID from the last session.
 
     A window's popup-ness is fixed by the `toolbar` native chrome flag at
     creation time and can't be changed afterwards, so reusing a mismatched

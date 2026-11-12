@@ -19,16 +19,14 @@
                         data-l10n-id="zen-site-data-header-share"
                         flex="1"
                         closemenu="none" />
-        <toolbarbutton id="zen-site-data-header-reader-mode"
-                        class="zen-squircle-before"
-                        data-l10n-id="zen-site-data-header-reader-mode"
-                        command="View:ReaderView"
-                        tooltip="dynamic-shortcut-tooltip"
-                        flex="1" />
         <toolbarbutton id="zen-site-data-header-screenshot"
                         class="zen-squircle-before"
                         data-l10n-id="zen-site-data-header-screenshot"
                         command="Browser:Screenshot"
+                        flex="1" />
+        <toolbarbutton id="zen-site-data-header-boost"
+                        class="zen-squircle-before"
+                        data-l10n-id="zen-site-data-header-boost"
                         flex="1" />
         <toolbarbutton id="zen-site-data-header-bookmark"
                         class="zen-squircle-before"
@@ -99,8 +97,11 @@
       <hbox id="zen-site-data-footer">
         <toolbarbutton id="zen-site-data-security-info"
                        class="subviewbutton zen-interactive-button" />
-        <toolbarbutton id="zen-site-data-boost" data-l10n-id="zen-site-data-create-boost"
-                       class="subviewbutton zen-interactive-button" />
+        <toolbarbutton id="zen-site-data-reader-mode"
+                       class="subviewbutton zen-interactive-button"
+                       data-l10n-id="zen-site-data-header-reader-mode"
+                       command="View:ReaderView"
+                       tooltip="dynamic-shortcut-tooltip" />
         <toolbarbutton id="zen-site-data-actions"
                        class="subviewbutton zen-interactive-button"
                        closemenu="none"

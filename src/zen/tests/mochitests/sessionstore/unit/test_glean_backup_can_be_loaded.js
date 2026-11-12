@@ -4,8 +4,9 @@
 /*
  * Ensures that exactly one backupCanBeLoadedSessionFile event is recorded for
  * each session file we attempt to load, that the recorded outcome matches the
- * reason the file was accepted or rejected, and that corrupt_file counts files
- * we failed to load as corrupt.
+ * reason the file was accepted or rejected, that corrupt_file counts files
+ * we failed to load as corrupt, and that all_files_corrupt is only set when
+ * files existed but none of them loaded.
  */
 
 "use strict";
@@ -67,6 +68,13 @@ function corruptFileCounts() {
   };
 }
 
+function allFilesCorruptCounts() {
+  return {
+    allCorrupt: Glean.sessionRestore.allFilesCorrupt.true.testGetValue(),
+    notAllCorrupt: Glean.sessionRestore.allFilesCorrupt.false.testGetValue(),
+  };
+}
+
 add_setup(function () {
   Services.fog.initializeFOG();
   // Keep the load order independent of whatever upgrade backup the profile
@@ -90,6 +98,11 @@ add_task(async function test_readable_file_recorded_once() {
     corruptFileCounts(),
     { corrupt: null, notCorrupt: 1 },
     "The file that loaded is counted as not corrupt."
+  );
+  Assert.deepEqual(
+    allFilesCorruptCounts(),
+    { allCorrupt: null, notAllCorrupt: 1 },
+    "A file loaded, so not all files are corrupt."
   );
 });
 
@@ -122,6 +135,11 @@ add_task(async function test_corrupt_file_recorded_once() {
     corruptFileCounts(),
     { corrupt: 1, notCorrupt: 1 },
     "The corrupt file is counted as corrupt, the file that loaded as not corrupt."
+  );
+  Assert.deepEqual(
+    allFilesCorruptCounts(),
+    { allCorrupt: null, notAllCorrupt: 1 },
+    "One file we fell back to successfully loaded, so not all files are corrupt."
   );
 });
 
@@ -193,6 +211,11 @@ add_task(async function test_missing_files_recorded_once_each() {
     { corrupt: null, notCorrupt: null },
     "Files that don't exist are not counted at all."
   );
+  Assert.deepEqual(
+    allFilesCorruptCounts(),
+    { allCorrupt: null, notAllCorrupt: 1 },
+    "With no files at all, they are not reported as all corrupt."
+  );
 });
 
 add_task(async function test_unhandled_error_counted_as_corrupt() {
@@ -214,4 +237,35 @@ add_task(async function test_unhandled_error_counted_as_corrupt() {
     { corrupt: 1, notCorrupt: 1 },
     "A file we couldn't use is counted as corrupt, and only the file that loaded is counted as not corrupt."
   );
+});
+
+add_task(async function test_all_files_corrupt() {
+  await promise_reset_session({
+    clean: CORRUPT_SESSION,
+    recovery: CORRUPT_SESSION,
+  });
+
+  await SessionFile.read();
+
+  Assert.deepEqual(
+    allFilesCorruptCounts(),
+    { allCorrupt: 1, notAllCorrupt: null },
+    "Files existed but none loaded, so all files are corrupt."
+  );
+});
+
+add_task(async function test_only_legacy_files_all_corrupt() {
+  await promise_reset_session();
+  let legacyClean = SessionFile.Paths.clean.replace("jsonlz4", "js");
+  await IOUtils.writeUTF8(legacyClean, CORRUPT_SESSION);
+
+  await SessionFile.read();
+
+  Assert.deepEqual(
+    allFilesCorruptCounts(),
+    { allCorrupt: 1, notAllCorrupt: null },
+    "An unloadable legacy file counts as a file that existed."
+  );
+
+  await IOUtils.remove(legacyClean);
 });

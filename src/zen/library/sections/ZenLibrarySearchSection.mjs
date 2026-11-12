@@ -193,6 +193,35 @@ export class ZenLibrarySearchSection extends MozLitElement {
     `;
   }
 
+  renderTopButton() {
+    if (!this.filterGroups.length) {
+      return null;
+    }
+    return html`
+      <button
+        class="zen-library-filter-button"
+        @click=${() => {
+          this.filtersOpen = true;
+        }}
+      >
+        <img
+          src="chrome://browser/skin/zen-icons/circle-bars-filter.svg"
+          draggable="false"
+          alt=""
+        />
+        <span data-l10n-id="library-filter-button"></span>
+      </button>
+    `;
+  }
+
+  renderPanel() {
+    return this.#renderFilterPanel();
+  }
+
+  renderFooter() {
+    return null;
+  }
+
   #renderFilterPanel() {
     return html`
       <div class="zen-library-filter-header" ?inert=${!this.filtersOpen}>
@@ -237,6 +266,14 @@ export class ZenLibrarySearchSection extends MozLitElement {
     this.focusSearch();
   }
 
+  onEscape() {
+    if (!this.filtersOpen) {
+      return false;
+    }
+    this.filtersOpen = false;
+    return true;
+  }
+
   /** Called when the library opens on this section, already shown. */
   async onLibraryOpened() {
     await this.updateComplete;
@@ -249,7 +286,7 @@ export class ZenLibrarySearchSection extends MozLitElement {
   }
 
   render() {
-    const hasFilters = !!this.filterGroups.length;
+    const topButton = this.renderTopButton();
     return html`
       <div class="zen-library-search-top" ?open=${this.filtersOpen}>
         <div class="zen-library-search-header" ?inert=${this.filtersOpen}>
@@ -264,31 +301,15 @@ export class ZenLibrarySearchSection extends MozLitElement {
               @input=${this.#onSearchInput}
             />
           </div>
-          ${when(
-            hasFilters,
-            () => html`
-              <button
-                class="zen-library-filter-button"
-                @click=${() => {
-                  this.filtersOpen = true;
-                }}
-              >
-                <img
-                  src="chrome://browser/skin/zen-icons/circle-bars-filter.svg"
-                  draggable="false"
-                  alt=""
-                />
-                <span data-l10n-id="library-filter-button"></span>
-              </button>
-            `
-          )}
+          ${topButton}
         </div>
-        ${when(hasFilters, () => this.#renderFilterPanel())}
+        ${when(!!topButton, () => this.renderPanel())}
       </div>
       <div class="zen-library-search-results">
         ${this.renderItems()}
         <div class="zen-library-search-sentinel"></div>
       </div>
+      ${this.renderFooter()}
     `;
   }
 }

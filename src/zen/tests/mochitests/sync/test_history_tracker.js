@@ -11,6 +11,8 @@ const { Service } = ChromeUtils.importESModule(
   "resource://services-sync/service.sys.mjs"
 );
 
+const AITAB_PREF = "browser.smartwindow.aitab.enabled";
+
 let engine;
 let tracker;
 
@@ -178,6 +180,34 @@ add_task(async function test_dont_track_expiration() {
   await cleanup();
 });
 
+add_task(async function test_track_delete_after_expiration_in_batch() {
+  _("An expiration doesn't stop later removals in the same batch.");
+  tracker.start();
+
+  let expiredGUID = Utils.makeGUID();
+  let removedGUID = Utils.makeGUID();
+  PlacesObservers.notifyListeners([
+    new PlacesVisitRemoved({
+      url: "http://getfirefox.com/expired",
+      pageGuid: expiredGUID,
+      reason: PlacesVisitRemoved.REASON_EXPIRED,
+      isRemovedFromStore: true,
+    }),
+    new PlacesVisitRemoved({
+      url: "http://getfirefox.com/removed",
+      pageGuid: removedGUID,
+      reason: PlacesVisitRemoved.REASON_DELETED,
+      isRemovedFromStore: true,
+    }),
+  ]);
+  await tracker.asyncObserver.promiseObserversComplete();
+
+  await verifyTrackedItems([removedGUID]);
+  Assert.equal(tracker.score, SCORE_INCREMENT_XLARGE);
+
+  await cleanup();
+});
+
 add_task(async function test_stop_tracking() {
   _("Let's stop tracking again.");
   await tracker.stop();
@@ -210,10 +240,36 @@ add_task(async function test_filter_file_uris() {
     transition: PlacesUtils.history.TRANSITION_LINK,
   });
   await visitAddedPromise;
+  await verifyTrackerEmpty();
+
+  let visitRemovedPromise = promiseVisit("removed", uri);
+  await PlacesUtils.history.remove(uri);
+  await visitRemovedPromise;
+  await tracker.asyncObserver.promiseObserversComplete();
 
   await verifyTrackerEmpty();
   await tracker.stop();
   await cleanup();
+});
+
+add_task(async function test_filter_smartpage_uris() {
+  Services.prefs.setBoolPref(AITAB_PREF, true);
+  tracker.start();
+
+  let uri = CommonUtils.makeURI("about:smartpage?page=best-running-shoes");
+  let visitAddedPromise = promiseVisit("added", uri);
+  await PlacesTestUtils.addVisits(uri);
+  await visitAddedPromise;
+  await verifyTrackerEmpty();
+
+  let visitRemovedPromise = promiseVisit("removed", uri);
+  await PlacesUtils.history.remove(uri);
+  await visitRemovedPromise;
+  await tracker.asyncObserver.promiseObserversComplete();
+
+  await verifyTrackerEmpty();
+  await cleanup();
+  Services.prefs.clearUserPref(AITAB_PREF);
 });
 
 add_task(async function test_filter_hidden() {

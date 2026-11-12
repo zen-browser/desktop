@@ -16,7 +16,7 @@
 
 .private-browsing-indicator-icon {
   list-style-image: url("account-private.svg") !important;
-  border-radius: 100% !important;
+  border-radius: var(--zen-border-radius-round) !important;
 }
 
 #zenCreateNewPopup menuitem {
@@ -94,7 +94,7 @@
 }
 
 #downloads-indicator-icon {
-  max-height: 16px;
+  max-height: var(--size-item-small);
 }
 
 #appMenu-translate-button,
@@ -158,7 +158,7 @@
 }
 
 #context-navigation > menuitem {
-  padding: 4px;
+  padding: var(--zen-space-4);
 }
 
 #history-panelmenu,
@@ -216,6 +216,14 @@
 #zen-sidebar-add-panel-button,
 #PanelUI-zen-gradient-generator-color-custom-add image {
   list-style-image: url("plus.svg") !important;
+}
+
+#tabs-newtab-button[zen-paste-and-search] {
+  list-style-image: url("edit-paste.svg") !important;
+
+  @media (-moz-platform: macos) {
+    list-style-image: url("clipboard.svg") !important;
+  }
 }
 
 #cut-button {
@@ -462,7 +470,7 @@
   list-style-image: url("split.svg");
 
   &[disabled="true"] {
-    opacity: 0.5;
+    opacity: var(--zen-opacity-50);
     cursor: not-allowed;
   }
 }
@@ -508,7 +516,7 @@
 }
 
 #zen-site-data-icon-button {
-  padding: 0 4px !important;
+  padding: 0 var(--zen-space-4) !important;
   border-radius: var(--urlbar-icon-border-radius) !important;
 
   & image {
@@ -538,7 +546,7 @@
     position: absolute;
     display: block;
     top: 0;
-    left: calc(4px + 30%);
+    left: calc(var(--zen-space-4) + 30%);
     height: 100%;
     aspect-ratio: 1;
     translate: -50%;
@@ -728,8 +736,39 @@
 }
 
 #reader-mode-button > .urlbar-icon,
-#zen-site-data-header-reader-mode {
+#zen-site-data-reader-mode {
   list-style-image: url("reader-mode.svg") !important;
+}
+
+#zen-site-data-reader-mode {
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  appearance: none;
+  width: var(--zen-size-30);
+  height: var(--zen-size-30);
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  & .toolbarbutton-icon {
+    width: var(--size-item-small);
+  }
+
+  & .toolbarbutton-text {
+    display: none;
+  }
+
+  &.active {
+    fill: var(--zen-primary-color);
+  }
+}
+
+#zen-site-data-header-boost {
+  list-style-image: url("paintbrush.svg") !important;
+
+  @media (-moz-platform: macos) {
+    list-style-image: url("boost-hollow.svg") !important;
+  }
 }
 
 #unified-extensions-manage-extensions {
@@ -779,7 +818,7 @@
 /* FIX header icons for the app menu sub menus (eg. fx account, history...) */
 .panel-header > h1 {
   text-align: left;
-  margin-left: 8px !important;
+  margin-left: var(--zen-space-8) !important;
 }
 
 /* header icons for the app menu sub menus (eg. fx account, history...) */
@@ -796,9 +835,9 @@
   --header-image: var(--avatar-image-url);
   --fp-enabled: 1;
   transform: scale(1.25);
-  border-radius: 99px;
+  border-radius: var(--border-radius-circle);
   display: inline-block;
-  height: 16px;
+  height: var(--size-item-small);
 }
 
 #PanelUI-bookmarks .panel-header > h1 > span::before {
@@ -876,7 +915,7 @@
 
 .zen-media-card[mic-muted] .zen-media-mute-mic-button {
   list-style-image: url("microphone-blocked-fill.svg");
-  fill: rgb(224, 41, 29);
+  fill: var(--zen-icons-media-blocked-fill);
 }
 
 .zen-media-mute-camera-button {
@@ -885,7 +924,7 @@
 
 .zen-media-card[camera-muted] .zen-media-mute-camera-button {
   list-style-image: url("video-blocked-fill.svg");
-  fill: rgb(224, 41, 29);
+  fill: var(--zen-icons-media-blocked-fill);
 }
 
 .zen-media-pip-button {
@@ -915,7 +954,7 @@
 
 @media -moz-pref("zen.view.window.scheme", 2) {
   #PanelUI-zen-gradient-generator-scheme-auto {
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    background: var(--zen-color-contrast-10);
   }
 }
 
@@ -925,7 +964,7 @@
 
 @media -moz-pref("zen.view.window.scheme", 0) {
   #PanelUI-zen-gradient-generator-scheme-dark {
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    background: var(--zen-color-contrast-10);
   }
 }
 
@@ -935,7 +974,7 @@
 
 @media -moz-pref("zen.view.window.scheme", 1) {
   #PanelUI-zen-gradient-generator-scheme-light {
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    background: var(--zen-color-contrast-10);
   }
 }
 
@@ -944,49 +983,24 @@
   fill: currentColor;
 }
 
-#zen-site-data-boost {
-  border-radius: 6px;
-  appearance: none;
-  padding: 6px 10px 6px 10px;
-
-  position: relative;
-
-  list-style-image: url("boost.svg");
-
-  & .toolbarbutton-text {
-    display: none;
-  }
-
-  @media -moz-pref("zen.boosts.enabled", false) {
-    display: none;
-  }
-
-  & image {
-    -moz-context-properties: fill, fill-opacity;
-    fill: currentColor;
-    width: 14px;
-    fill-opacity: 0.7;
-  }
-}
-
 .boost-brush {
   list-style-image: url("boost.svg") !important;
-  padding: 10px;
+  padding: var(--zen-space-10);
 }
 
 #zen-site-data-security-info {
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
   appearance: none;
-  border-radius: 6px;
-  padding: 6px 10px 6px 8px;
+  border-radius: var(--zen-border-radius-6);
+  padding: var(--zen-space-6) var(--zen-space-10) var(--zen-space-6) var(--zen-space-8);
 
   &[identity="secure"] {
-    list-style-image: url("security.svg");
+    list-style-image: url("security-fill.svg");
   }
 
   &[identity="not-secure"] {
-    list-style-image: url("security-broken.svg");
+    list-style-image: url("security-broken-fill.svg");
   }
 
   &[identity="extension"] {
@@ -994,20 +1008,21 @@
   }
 
   &:not([identity="secure"]) * {
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens, stylelint-plugin-mozilla/no-base-design-tokens -- no semantic token has this light/dark pair and the color must follow Firefox's palette */
     color: light-dark(var(--color-red-70), var(--color-red-30));
   }
 
   & .toolbarbutton-text {
-    font-weight: 600;
-    padding-inline-start: 4px !important;
+    font-weight: var(--font-weight-semibold);
+    padding-inline-start: var(--zen-space-4) !important;
   }
 
   & .toolbarbutton-icon {
-    width: 16px;
+    width: var(--size-item-small);
   }
 
   & > * {
-    opacity: 0.8;
+    opacity: var(--zen-opacity-80);
   }
 }
 
@@ -1015,9 +1030,9 @@
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
   appearance: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 99px;
+  width: var(--zen-size-30);
+  height: var(--zen-size-30);
+  border-radius: var(--border-radius-circle);
   margin-left: auto !important;
   list-style-image: url("menu.svg");
   justify-content: center;
@@ -1029,10 +1044,9 @@
   }
 }
 
-#zen-copy-url-button image,
-.sr-url-icon {
+#zen-copy-url-button image {
   list-style-image: url("link.svg");
-  fill-opacity: 0.65;
+  fill-opacity: 0.8;
 }
 
 #zen-boost-case[case-mode="none"] {
@@ -1055,8 +1069,40 @@
   list-style-image: url("brackets-curly.svg");
 }
 
+#zen-boost-share {
+  list-style-image: url("share.svg");
+}
+
+.zbs-info-button {
+  list-style-image: url("info.svg");
+}
+
+.zbs-pane-left[icon="back"] {
+  list-style-image: url("arrow-left.svg") !important;
+}
+
+.zbs-pane-left[icon="check"] {
+  list-style-image: url("check.svg") !important;
+}
+
+.zbs-pane-left[icon="signature"] {
+  list-style-image: url("signature.svg") !important;
+}
+
+.zbs-pane-right[icon="menu"] {
+  list-style-image: url("menu.svg") !important;
+}
+
+.zbs-pane-right[icon="remove"] {
+  list-style-image: url("close.svg") !important;
+}
+
 #zen-boost-zap {
   list-style-image: url("bolt.svg");
+}
+
+#zen-boost-focus {
+  list-style-image: url("search-glass.svg");
 }
 
 #zen-boost-controls {
@@ -1079,14 +1125,14 @@
   }
 
   @media (-moz-platform: windows) {
-    list-style-image: none;
     list-style: none;
     display: inline-flex;
 
     &::before {
+      /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword -- icon font glyph, a generic fallback would change which font is picked */
       font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets";
       content: "\e8bb";
-      font-size: 12px;
+      font-size: var(--zen-font-size-12);
     }
   }
 }

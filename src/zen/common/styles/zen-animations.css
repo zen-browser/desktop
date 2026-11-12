@@ -71,6 +71,7 @@
 /* Mark: URL Bar */
 @keyframes zen-urlbar-searchmode {
   0% {
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- depends on var(); a custom property declared inside @keyframes would animate discretely */
     box-shadow: 0 0 20px
       color-mix(
         in srgb,
@@ -84,6 +85,7 @@
   }
 
   100% {
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- depends on var(); a custom property declared inside @keyframes would animate discretely */
     box-shadow: 0 0 250px
       color-mix(in srgb, var(--zen-primary-color), transparent 100%);
   }
@@ -113,6 +115,30 @@
   }
 }
 
+@keyframes zen-dialog-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes zen-dialog-fade-out-shifted {
+  from {
+    opacity: 1;
+    transform: translateY(-10%);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(calc(-10% - 10px));
+  }
+}
+
 @keyframes zen-text-gradient {
   0% {
     background-position: 0% 50%;
@@ -125,7 +151,7 @@
 @keyframes zen-progress-bar-pulse {
   from {
     transform: scale(0.85) translate(-50%, -50%);
-    opacity: 0.6;
+    opacity: var(--zen-opacity-60);
   }
 
   to {
@@ -152,6 +178,6 @@
   to {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
-    width: 10rem;
+    width: var(--zen-loading-progress-bar-settled-width);
   }
 }

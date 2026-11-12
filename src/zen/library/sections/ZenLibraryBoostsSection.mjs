@@ -253,6 +253,20 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
           <span class="zen-library-row-subtitle">${boost.domain}</span>
         </div>
         <div class="zen-library-row-actions">
+          <toolbarbutton
+            class="toolbarbutton-1"
+            data-l10n-id="library-boosts-delete-button"
+            @click=${event => {
+              event.stopPropagation();
+              this.#delete(boost);
+            }}
+          >
+            <img
+              class="toolbarbutton-icon"
+              src="chrome://browser/skin/zen-icons/trash.svg"
+              alt=""
+            />
+          </toolbarbutton>
           <moz-toggle
             ?pressed=${boost.enabled}
             data-l10n-id="library-boosts-toggle"

@@ -370,13 +370,22 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         case "reset-switch":
         case "switch":
           if (behavior.includes("unload")) {
-            if (pinnedTabs.some(tab => tab.selected)) {
-              const selectedTabs = pinnedTabs.filter(tab => tab.selected);
-              const tabToBlurTo = gBrowser._findTabToBlurTo(
-                selectedTabs[0],
-                pinnedTabs
-              );
-              gBrowser.selectedTab = tabToBlurTo;
+            const allAreUnloaded = pinnedTabs.every(
+              tab =>
+                tab.hasAttribute("pending") &&
+                !tab.hasAttribute("zen-essential")
+            );
+            for (const tabItem of pinnedTabs) {
+              if (allAreUnloaded && closeIfPending) {
+                await this.onCloseTabShortcut(event, tabItem, {
+                  behavior: "close",
+                });
+                return;
+              }
+            }
+            const successful = await gBrowser.explicitUnloadTabs(pinnedTabs);
+            if (!successful) {
+              return;
             }
             for (const tab of pinnedTabs) {
               if (tab.hasAttribute("glance-id")) {
@@ -415,23 +424,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             }
             if (folderToUnload) {
               await gZenFolders.animateUnloadAll(folderToUnload);
-            }
-            const allAreUnloaded = pinnedTabs.every(
-              tab =>
-                tab.hasAttribute("pending") &&
-                !tab.hasAttribute("zen-essential")
-            );
-            for (const tabItem of pinnedTabs) {
-              if (allAreUnloaded && closeIfPending) {
-                await this.onCloseTabShortcut(event, tabItem, {
-                  behavior: "close",
-                });
-                return;
-              }
-            }
-            let successful = await gBrowser.explicitUnloadTabs(pinnedTabs);
-            if (!successful) {
-              return;
             }
             for (const tab of pinnedTabs) {
               tab.removeAttribute("discarded");
@@ -492,6 +484,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     // otherwise when we reset the pinned tab, it will scroll to the previous position
     // which can be confusing for the user, especially if they have a long page.
     delete state.scroll;
+
+    // Session storage is restored along with the tab, and sites that route on
+    // the client read their last view back out of it, so the page would come
+    // back showing where the tab had got to rather than the URL being reset to.
+    delete state.storage;
 
     SessionStore.setTabState(tab, state);
     this.resetPinChangedUrl(tab);
@@ -725,7 +722,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         }
       }
     );
-    zenAddEssential.hidden = isEssential || !!contextTab.group;
+    zenAddEssential.hidden =
+      isEssential || contextTab.group?.hasAttribute("split-view-group");
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {
         num: gBrowser._numZenEssentials,
@@ -1038,6 +1036,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   canEssentialBeAdded(tab) {
+    if (tab.group?.hasAttribute("split-view-group")) {
+      return false;
+    }
     const isExistingEssentialTab = tab.hasAttribute("zen-essential");
     return (
       !(

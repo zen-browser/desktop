@@ -30,7 +30,9 @@ add_task(
     win.gBrowser.removeTabGroup(tabGroup);
     await removePromise;
 
-    const closedGroupState = SessionStore.getClosedTabGroups(win);
+    const closedGroupState = SessionStore.getClosedTabGroups({
+      sourceWindow: win,
+    });
 
     Assert.equal(
       closedGroupState.length,

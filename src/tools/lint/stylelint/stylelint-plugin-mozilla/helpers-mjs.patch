@@ -1,0 +1,16 @@
+diff --git a/tools/lint/stylelint/stylelint-plugin-mozilla/helpers.mjs b/tools/lint/stylelint/stylelint-plugin-mozilla/helpers.mjs
+index 36e70140b1fbce80635490bed016ba0dfc6206a6..85a96990c6fffc8191719ee355ac875bcfe3bea5 100644
+--- a/tools/lint/stylelint/stylelint-plugin-mozilla/helpers.mjs
++++ b/tools/lint/stylelint/stylelint-plugin-mozilla/helpers.mjs
+@@ -6,7 +6,10 @@
+ 
+ import valueParser from "postcss-value-parser";
+ 
+-import { tokensTable } from "../../../../toolkit/themes/shared/design-system/dist/semantic-categories.mjs";
++import { tokensTable as mozTokensTable } from "../../../../toolkit/themes/shared/design-system/dist/semantic-categories.mjs";
++import { mergeZenTokens } from "../../../../zen/tokens/tokens.mjs";
++
++const tokensTable = mergeZenTokens(mozTokensTable);
+ 
+ /**
+  * The list of system colors that are valid and intended to be used for high contrast/forced colors mode situations.

@@ -2,18 +2,24 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs",
-});
-
-// Set by build/pgo/profileserver.py for the run that exists only to collect
-// this tour's data.
-const TRAINING_ENV_VAR = "ZEN_PGO_UI_TRAINING";
 const TRAINING_URLS_ENV_VAR = "ZEN_PGO_UI_TRAINING_URLS";
 
 const LOAD_TIMEOUT_MS = 15000;
+const STARTUP_TIMEOUT_MS = 60000;
+
+function log(message) {
+  dump(`[ZenPGOTraining] ${message}\n`);
+}
+
+function withTimeout(window, promise, timeout, what) {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(
+      () => reject(new Error(`${what} timed out after ${timeout}ms`)),
+      timeout
+    );
+    promise.then(resolve, reject).finally(() => window.clearTimeout(timer));
+  });
+}
 
 function trainingPages() {
   return Services.env
@@ -39,35 +45,79 @@ const REPEATS = {
   urlbar: 50,
   splitView: 20,
   folder: 30,
+  boost: 10,
 };
 
 const WAIT_TIMEOUT_MS = 5000;
 const STEP_BUDGET_MS = 60000;
 
+const FOLDER_BUDGET_MS = 120000;
+
+// Has to stay below UI_TRAINING_TIMEOUT in build/pgo/profileserver.py
+const TOUR_BUDGET_MS = 720000;
+
 const TAB_COUNT = 100;
 const FOLDER_TAB_COUNT = 25;
 const SPACE_TAB_COUNT = 25;
+
+function accent(r, g, b, contrast) {
+  return (((contrast >>> 0) << 24) | (b << 16) | (g << 8) | r) >>> 0;
+}
+
+const BOOST_ACCENTS = [
+  accent(80, 120, 200, 200),
+  accent(200, 90, 60, 180),
+  accent(60, 180, 120, 220),
+];
 
 /**
  * Exercises Zen's own UI while the instrumented browser collects PGO data.
  */
 export const ZenPGOTraining = {
+  _window: null,
+  _pages: null,
   _started: false,
 
   onWindowReady(window) {
-    if (this._started || !Services.env.exists(TRAINING_ENV_VAR)) {
+    const pages = trainingPages();
+    log(`window ready, ${pages.length} training pages`);
+    if (!pages.length || this._window) {
       return;
     }
-    this._started = true;
-    this.run(window).catch(e => console.error("[ZenPGOTraining]", e));
+    this._window = window;
+    this._pages = pages;
+    this._takeOverOnQuit(window);
+    log("waiting for the corpus to finish");
   },
 
-  async run(window) {
+  _takeOverOnQuit(window) {
+    const canCloseWindow = window.CanCloseWindow;
+    window.CanCloseWindow = () => {
+      if (this._started) {
+        // The tour is done and quitting for real.
+        return canCloseWindow.call(window);
+      }
+      this._started = true;
+      log("corpus asked to quit, taking over the browser");
+      // Asked from inside the quit itself, so the tour starts once that has
+      // been turned away rather than during it.
+      window.setTimeout(() => this.run(window, this._pages), 0);
+      return false;
+    };
+  },
+
+  async run(window, pages) {
     try {
-      const pages = trainingPages();
-      await window.gZenStartup.promiseInitialized;
+      await withTimeout(
+        window,
+        window.gZenStartup.promiseInitialized,
+        STARTUP_TIMEOUT_MS,
+        "startup"
+      );
       const tour = new TrainingTour(window, pages);
       await tour.run();
+    } catch (e) {
+      log(`gave up: ${e}`);
     } finally {
       Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
     }
@@ -77,9 +127,11 @@ export const ZenPGOTraining = {
 class TrainingTour {
   #window;
   #pages;
+  #results = [];
   #tabs = [];
   #createdSpaces = [];
   #folder = null;
+  #deadline = Infinity;
 
   constructor(window, pages) {
     this.#window = window;
@@ -91,11 +143,14 @@ class TrainingTour {
   }
 
   async run() {
+    log(`start: ${TAB_COUNT} tabs over ${this.#pages.length} pages`);
+    this.#deadline = this.#now() + TOUR_BUDGET_MS;
     await this.#addTabs(TAB_COUNT);
     for (const step of this.#steps()) {
       await this.#runStep(step);
     }
     await this.#cleanup();
+    log(`done: ${this.#results.join(", ")}`);
   }
 
   #steps() {
@@ -165,6 +220,7 @@ class TrainingTour {
       {
         name: "folder",
         count: REPEATS.folder,
+        budget: FOLDER_BUDGET_MS,
         before: () => this.#createFolder(),
         after: () => this.#removeFolder(),
         step: async () => {
@@ -177,36 +233,58 @@ class TrainingTour {
           await this.#settle(4);
         },
       },
+      {
+        name: "boost",
+        count: REPEATS.boost,
+        before: () => this.#selectFirstTab(),
+        after: () => this.#clearBoost(),
+        step: i => this.#boost(i),
+      },
     ];
   }
 
-  async #runStep({ name, count, enabled, before, step, after }) {
+  async #runStep({ name, count, enabled, before, step, after, budget }) {
     if (enabled && !enabled()) {
-      console.warn(`[ZenPGOTraining] ${name}: skipped, feature is off`);
+      log(`${name}: skipped, feature is off`);
+      this.#results.push(`${name} skipped`);
       return;
     }
-    const deadline = this.#now() + STEP_BUDGET_MS;
+    if (this.#now() > this.#deadline) {
+      this.#results.push(`${name} out of time`);
+      return;
+    }
+    const deadline = Math.min(
+      this.#now() + (budget ?? STEP_BUDGET_MS),
+      this.#deadline
+    );
     let done = 0;
     try {
       await before?.();
       for (let i = 0; i < count; i++) {
-        if (this.#now() > deadline) {
+        const remaining = deadline - this.#now();
+        if (remaining <= 0) {
           break;
         }
-        await step(i);
+        await withTimeout(
+          this.#window,
+          Promise.resolve(step(i)),
+          remaining,
+          name
+        );
         done++;
       }
     } catch (e) {
-      console.warn(`[ZenPGOTraining] ${name}: stopped at ${done}`, e);
+      log(`${name}: stopped at ${done}: ${e}`);
     }
     try {
       await after?.();
     } catch (e) {
-      console.warn(`[ZenPGOTraining] ${name}: could not be restored`, e);
+      log(`${name}: could not be restored: ${e}`);
     }
     if (done < count) {
-      console.warn(`[ZenPGOTraining] ${name}: only ran ${done}/${count}`);
+      log(`${name}: only ran ${done}/${count}`);
     }
+    this.#results.push(`${name} ${done}/${count}`);
   }
 
   // Section: waiting
@@ -331,10 +409,18 @@ class TrainingTour {
   }
 
   async #library() {
+    const library = this.#document.querySelector("zen-library");
+    if (!library) {
+      return;
+    }
+    const settled = open =>
+      library.hasAttribute("open") === open &&
+      !library.hasAttribute("transitioning");
+
     this.#command("cmd_zenToggleLibrary");
-    await this.#until(() => lazy.ZenLibrary.isLibraryOpen);
+    await this.#until(() => settled(true));
     this.#command("cmd_zenToggleLibrary");
-    await this.#until(() => !lazy.ZenLibrary.isLibrarySlightlyOpen);
+    await this.#until(() => settled(false));
   }
 
   async #ensureTwoSpaces() {
@@ -403,6 +489,41 @@ class TrainingTour {
       }
     }
     await this.#settle(2);
+  }
+
+  #topBrowsingContext() {
+    return this.#window.gBrowser.selectedBrowser?.browsingContext?.top ?? null;
+  }
+
+  async #selectFirstTab() {
+    const tab = this.#tabs.find(t => t.isConnected);
+    if (tab) {
+      this.#window.gBrowser.selectedTab = tab;
+      await this.#settle(4);
+    }
+  }
+
+  async #boost(i) {
+    const bc = this.#topBrowsingContext();
+    if (!bc) {
+      return;
+    }
+    bc.zenBoostsData = BOOST_ACCENTS[i % BOOST_ACCENTS.length];
+    bc.zenBoostsComplementaryRotation = (i * 37) % 360;
+    bc.isZenBoostsInverted = i % 2 === 1;
+    await this.#settle(6);
+    this.#clearBoost();
+    await this.#settle(6);
+  }
+
+  #clearBoost() {
+    const bc = this.#topBrowsingContext();
+    if (!bc) {
+      return;
+    }
+    bc.zenBoostsData = 0;
+    bc.zenBoostsComplementaryRotation = 0;
+    bc.isZenBoostsInverted = false;
   }
 
   async #cleanup() {

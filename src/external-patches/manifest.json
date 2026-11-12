@@ -13,9 +13,11 @@
     "name": "Issue 15123"
   },
   {
-    "type": "phabricator",
-    "id": "D327914",
-    "name": "Backdrop filter reads web content"
+    // Bug 2079476, backported from mozilla-central (Firefox 161) revisions
+    // 8e142a8b9911, 898c1161a502, ae869c1635bd and f79fc2dbdfd6. Drop this
+    // once the engine is on 161 or later.
+    "type": "local",
+    "path": "firefox/backdrop_filter_reads_web_content.patch"
   },
   {
     "type": "local",
@@ -37,13 +39,10 @@
     "name": "Expose tiled attribute to all platforms"
   },
   {
-    "type": "phabricator",
-    "id": "D298708",
-    "name": "Issue 14990",
-    "replaces": {
-      "this._lastJsonLength = uncompressedBytes;": "this._lastJsonLength = uncompressedBytes.jsonLength;",
-      "          jsonLengthHint,": "          lengthHint: jsonLengthHint,"
-    }
+    // The IOUtils half of D298708 landed upstream in Firefox 160, so only the
+    // SessionWriter change is still ours.
+    "type": "local",
+    "path": "firefox/issue_14990.patch"
   },
   {
     "type": "phabricator",
@@ -58,5 +57,13 @@
     "type": "phabricator",
     "id": "D323514",
     "name": "Fix HEVC video stutters and dropped frames"
+  },
+  {
+    // D337289, rebased onto Firefox 160 and pointed at Zen's own profile
+    // migrator. Re-pull it from Phabricator by hand when the revision changes,
+    // and keep the ArcProfileMigrator moduleURI on
+    // resource:///modules/zen/ZenProfileMigrators.sys.mjs.
+    "type": "local",
+    "path": "firefox/arc_browser_migrator.patch"
   }
 ]

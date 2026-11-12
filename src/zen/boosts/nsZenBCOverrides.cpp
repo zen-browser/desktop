@@ -14,6 +14,7 @@
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/BrowsingContext.h"
+#include "mozilla/dom/ContentChild.h"
 
 #define MARK_MEDIA_FEATURE_CHANGED(_pc)                                \
   (_pc)->MediaFeatureValuesChanged(                                    \
@@ -23,13 +24,13 @@
 
 #define TRIGGER_PRES_CONTEXT_RESTYLE() \
   WalkPresContexts(                    \
-      [&](nsPresContext* aPc) { MARK_MEDIA_FEATURE_CHANGED(aPc); });
+      this, [&](nsPresContext* aPc) { MARK_MEDIA_FEATURE_CHANGED(aPc); });
 
 using BrowsingContext = mozilla::dom::BrowsingContext;
 
 template <typename Callback>
-void BrowsingContext::WalkPresContexts(Callback&& aCallback) {
-  PreOrderWalk([&](BrowsingContext* aContext) {
+static void WalkPresContexts(BrowsingContext* aTop, Callback&& aCallback) {
+  aTop->PreOrderWalk([&](BrowsingContext* aContext) {
     if (nsIDocShell* shell = aContext->GetDocShell()) {
       if (RefPtr pc = shell->GetPresContext()) {
         aCallback(pc.get());
@@ -83,4 +84,17 @@ void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
   }
   PresContextAffectingFieldChanged();
   TRIGGER_PRES_CONTEXT_RESTYLE();
+}
+
+/**
+ * @brief Received by a content process when the boost stylesheet of a domain
+ * is set, replaced or removed, and once per registered boost at startup.
+ * @param aDomain The host the stylesheet applies to.
+ * @param aStyleSheet The stylesheet as a data.
+ */
+mozilla::ipc::IPCResult
+mozilla::dom::ContentChild::RecvZenUpdateBoostStyleSheet(
+    const nsCString& aDomain, const nsCString& aStyleSheet) {
+  zen::nsZenBoostsBackend::UpdateContentStyleSheet(aDomain, aStyleSheet);
+  return IPC_OK();
 }

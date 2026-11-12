@@ -160,29 +160,9 @@ function singleChangedEvent() {
   return events[0];
 }
 
-// Since we're importing SelectableProfileService for this test, we lift some of
-// the setup from toolkit/profile/test/xpcshell/head.js which lets the service
-// be imported and executed in debug xpcshell tests.
-function setupProfileService() {
-  let profD = do_get_profile();
-
-  let dataHome = profD.clone();
-  dataHome.append("data");
-  dataHome.createUnique(Ci.nsIFile.DIRECTORY_TYPE, 0o755);
-
-  let dataHomeLocal = profD.clone();
-  dataHomeLocal.append("local");
-  dataHomeLocal.createUnique(Ci.nsIFile.DIRECTORY_TYPE, 0o755);
-
-  let xreDirProvider = Cc["@mozilla.org/xre/directory-provider;1"].getService(
-    Ci.nsIXREDirProvider
-  );
-  xreDirProvider.setUserDataDirectory(dataHome, false);
-  xreDirProvider.setUserDataDirectory(dataHomeLocal, true);
-}
-
 add_setup(function () {
-  setupProfileService();
+  do_get_profile();
+  Cc["@mozilla.org/xre/directory-provider;1"].getService(Ci.nsIXREDirProvider);
   Services.fog.initializeFOG();
 
   let shellCid = MockRegistrar.register(

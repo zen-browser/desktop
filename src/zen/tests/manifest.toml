@@ -79,7 +79,7 @@ xpcshell = true
 "../../../" = "../../../../services/"
 
 [safebrowsing]
-source = "browser/components/safebrowsing/content/test"
+source = "browser/base/content/test/browser-safebrowsing/"
 is_direct_path = true
 
 [scroll-to-text-fragment]
@@ -175,6 +175,10 @@ disable = [
 source = "services/sync/tests/unit"
 is_direct_path = true
 xpcshell = true
+disable = [
+  # Telemetry validation reports an extra error.
+  "test_errorhandler_1.js",
+]
 
 [sync.replace-manifest]
 "../../../" = "../../../../services/"

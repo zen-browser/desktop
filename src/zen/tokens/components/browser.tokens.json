@@ -1,0 +1,14 @@
+{
+  "background-color": {
+    "--zen-browser-content-background": {
+      "value": { "light": "#ffffff", "dark": "#202020" }
+    }
+  },
+  "space": {
+    "--zen-browser-container-margin-top-fix": { "external": true },
+    "--zen-window-buttons-reversed-margin-start": { "external": true }
+  },
+  "size": {
+    "--zen-browser-window-min-height": { "value": "495px" }
+  }
+}

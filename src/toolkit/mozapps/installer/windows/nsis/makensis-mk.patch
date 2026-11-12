@@ -1,8 +1,8 @@
 diff --git a/toolkit/mozapps/installer/windows/nsis/makensis.mk b/toolkit/mozapps/installer/windows/nsis/makensis.mk
-index d081f84b38e601eb6aae78b5ae45e1c771777ca7..00eec74413ef733b69d45e9542badae6a1dd7403 100755
+index 5770a1b7503795f12c4fb6c099f71f21116d07ae..07a837f91d90548101ce67e7c01b72c52efaa698 100755
 --- a/toolkit/mozapps/installer/windows/nsis/makensis.mk
 +++ b/toolkit/mozapps/installer/windows/nsis/makensis.mk
-@@ -63,6 +63,11 @@ endif
+@@ -27,6 +27,11 @@ NSIS_STAGE_ARGS = --config-dir=$(CONFIG_DIR) \
  
  ifdef ZIP_IN
  installer:: $(CONFIG_DIR)/setup.exe $(ZIP_IN)
@@ -11,6 +11,6 @@ index d081f84b38e601eb6aae78b5ae45e1c771777ca7..00eec74413ef733b69d45e9542badae6
 +	rm $(CONFIG_DIR)/setup.exe
 +	cp $(ZEN_SETUP_EXE_PATH) $(CONFIG_DIR)/setup.exe
 +endif
- 	$(NSINSTALL) -D '$(ABS_DIST)/$(PKG_PATH)'
- 	$(PYTHON3) $(MOZILLA_DIR)/mach repackage installer \
- 	  -o '$(ABS_DIST)/$(PKG_PATH)$(PKG_INST_BASENAME).exe' \
+ # In automation, the installers are created by repackage tasks, from setup.exe
+ # and the package, so don't spend time creating them in the build.
+ ifndef MOZ_AUTOMATION

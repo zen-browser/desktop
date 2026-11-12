@@ -63,7 +63,7 @@ jobs:
           tool-cache: false
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -72,6 +72,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
@@ -124,7 +125,7 @@ jobs:
 
       - name: Setup Rust
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
           source $HOME/.cargo/env
           if test "${{ matrix.arch }}" = "aarch64"; then
             rustup target add aarch64-apple-darwin
@@ -164,8 +165,7 @@ jobs:
         uses: actions/cache/restore@v5
         if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && inputs.pgo-cache-hit }}
         with:
-          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-${{ github.run_id }}
-          restore-keys: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}-
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
           path: ~/artifact
           fail-on-cache-miss: true
 

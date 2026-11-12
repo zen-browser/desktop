@@ -2,7 +2,7 @@ name: Zen Twilight Scheduled Releases
 
 on:
   schedule:
-    - cron: "0 23 */2 * *"
+    - cron: "0 22 */2 * *"
   workflow_dispatch:
     inputs:
       create_release:
@@ -20,7 +20,7 @@ jobs:
     with:
       create_release: ${{ github.event_name != 'workflow_dispatch' && true || inputs.create_release }}
       update_branch: twilight
-      use-sccache: true
+      use-sccache: false
       update_version: false
 
   post-build:
@@ -29,9 +29,10 @@ jobs:
     needs: twilight-release-schedule
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: npm

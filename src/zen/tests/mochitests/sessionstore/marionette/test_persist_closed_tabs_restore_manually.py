@@ -57,9 +57,10 @@ class TestSessionRestoreClosedTabs(SessionStoreTestCase):
             """
             let resolve = arguments[0];
             let tab = gBrowser.tabs[1];
+            let browser = tab.linkedBrowser;
             gBrowser.removeTab(tab);
             let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
-            TabStateFlusher.flush(tab).then(resolve);
+            TabStateFlusher.flush(browser).then(resolve);
             """
         )
 
@@ -129,9 +130,10 @@ class TestSessionRestoreClosedTabs(SessionStoreTestCase):
             """
             let resolve = arguments[0];
             let tab = gBrowser.tabs[1];
+            let browser = tab.linkedBrowser;
             gBrowser.removeTab(tab);
             let { TabStateFlusher } = ChromeUtils.importESModule("moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs");
-            TabStateFlusher.flush(tab).then(resolve);
+            TabStateFlusher.flush(browser).then(resolve);
             """
         )
 

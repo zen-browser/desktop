@@ -45,11 +45,7 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
       return;
     }
 
-    // Don't disturb a tab that is merely (re)loading the page it already shows:
-    // a reload, a session restore, or a tab that was already sitting on this URL
-    // before the rule was set. At STATE_START the browser's currentURI still
-    // points at the existing document, so an equal target means this isn't a
-    // new navigation worth routing.
+    // Don't disturb a tab that is merely (re)loading the page it already shows.
     let currentURI = null;
     try {
       currentURI = aBrowser.currentURI;
@@ -85,12 +81,11 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
 
     // A brand-new tab whose very first real navigation this is (a
     // target="_blank" link, window.open(), or a freshly opened tab) is still
-    // showing its initial about:blank document. There is nothing to preserve,
-    // so rather than cancelling the load and spawning a duplicate tab - which
-    // would leave this one behind empty - just move this very tab into the
-    // destination space and let the in-flight load finish in place.
+    // showing its initial about:blank document.
     const isInitialDocument =
-      aBrowser.browsingContext?.currentWindowGlobal?.isInitialDocument ?? false;
+      (aBrowser.browsingContext?.currentWindowGlobal?.isInitialDocument ??
+        false) ||
+      (currentURI?.spec === "about:blank" && !aBrowser.canGoBack);
     if (isInitialDocument) {
       const wasSelected = tab.selected;
       // Defer so we don't mutate the tab strip from inside a progress notification.
@@ -98,7 +93,10 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
         if (!tab.isConnected) {
           return;
         }
-        gBrowser.selectedTab = tab.owner;
+        const owner = tab.owner;
+        if (owner?.isConnected && !owner.hasAttribute("zen-empty-tab")) {
+          gBrowser.selectedTab = owner;
+        }
         win.gZenWorkspaces.moveTabToWorkspace(tab, targetWorkspaceId);
         if (wasSelected) {
           const targetWorkspace =

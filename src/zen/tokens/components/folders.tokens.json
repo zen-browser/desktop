@@ -1,0 +1,12 @@
+{
+  "icon-color": {
+    "--zen-folder-stroke": { "external": true }
+  },
+  "size": {
+    "--zen-folder-tabs-popup-width": { "value": "250px" },
+    "--zen-folder-tabs-list-max-height": { "value": "263px" }
+  },
+  "border-radius": {
+    "--zen-folder-tabs-list-item-edge-radius": { "external": true }
+  }
+}

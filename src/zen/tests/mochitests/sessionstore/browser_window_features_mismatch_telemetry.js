@@ -5,9 +5,9 @@
 
 ChromeUtils.defineESModuleGetters(this, {
   TaskbarTabsRegistry:
-    "resource:///modules/taskbartabs/TaskbarTabsRegistry.sys.mjs",
+    "moz-src:///browser/components/taskbartabs/TaskbarTabsRegistry.sys.mjs",
   TaskbarTabsWindowManager:
-    "resource:///modules/taskbartabs/TaskbarTabsWindowManager.sys.mjs",
+    "moz-src:///browser/components/taskbartabs/TaskbarTabsWindowManager.sys.mjs",
 });
 
 // Bug 2065228 - a window's chrome is fixed at creation time and can't

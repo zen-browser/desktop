@@ -237,6 +237,8 @@ add_task(async function test_every_way_styles_reach_the_web_is_caught() {
     "data-import": true,
     // Its styles for Zen, a font included.
     "chrome-font": true,
+    // Its styles for Zen may import a file of the user's, unlike pages.
+    "chrome-outside": false,
     // @namespace and @-moz-document only say where rules apply.
     matching: false,
     clean: false,

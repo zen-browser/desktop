@@ -537,11 +537,13 @@ function cssUrls(text, win) {
 /**
  * @param {string} folder - A mod's folder
  * @param {string} entry - One of its stylesheets
+ * @param {object} [options]
+ * @param {boolean} [options.isChrome] - It styles Zen's windows, not pages
  * @returns {Promise<boolean>} Whether that sheet, or one it imports, loads
  * anything from the web. A sheet that can't be read or checked counts as
  * one that does; one the mod lacks loads nothing.
  */
-async function hasRemoteStyles(folder, entry) {
+async function hasRemoteStyles(folder, entry, { isChrome = false } = {}) {
   const win =
     Services.wm.getMostRecentWindow("navigator:browser") ??
     Services.appShell.hiddenDOMWindow;
@@ -596,10 +598,16 @@ async function hasRemoteStyles(folder, entry) {
       const target =
         url === null ? null : URL.parse(url, `${SHEET_BASE}${relative}`);
 
-      const isInMod =
-        target?.protocol === "resource:" &&
-        target.host === "zen-mod" &&
-        target.pathname.startsWith(SHEET_ROOT);
+      const isFile =
+        target?.protocol === "resource:" && target.host === "zen-mod";
+      const isInMod = isFile && target.pathname.startsWith(SHEET_ROOT);
+
+      // Zen's windows may import a file of the user's past the mod, like the
+      // colors some tools write. Pages may not: past it lie every mod's
+      // sheets, unchecked.
+      if (isChrome && isImport && isFile && !isInMod) {
+        continue;
+      }
 
       // Imports bring more CSS: only the mod's own, which is checked too. A
       // data: sheet, say, would come in unchecked.
@@ -638,11 +646,15 @@ export class RemoteStylesError extends Error {
 /**
  * @param {string} folder - A mod's folder
  * @param {string} name - The mod's name
- * @param {(string|null)[]} entries - Its stylesheets, if it has them
+ * @param {{chrome?: string|null, content?: string|null}} entries - Its
+ * stylesheets for Zen and for pages, if it has them
  */
-async function assertLocalStyles(folder, name, entries) {
-  for (const entry of entries) {
-    if (entry && (await hasRemoteStyles(folder, entry))) {
+async function assertLocalStyles(folder, name, { chrome, content }) {
+  for (const [entry, isChrome] of [
+    [chrome, true],
+    [content, false],
+  ]) {
+    if (entry && (await hasRemoteStyles(folder, entry, { isChrome }))) {
       throw new RemoteStylesError(
         `[ZenMods]: ${entry} of ${name} loads from the web; mods may only use their own files.`
       );
@@ -1309,10 +1321,10 @@ class nsZenModsManager {
         mod.scriptsHash = await this.#hashScripts(modId, staging);
       }
 
-      await assertLocalStyles(staging, mod.name, [
-        mod.stylePath,
-        mod.contentStylePath,
-      ]);
+      await assertLocalStyles(staging, mod.name, {
+        chrome: mod.stylePath,
+        content: mod.contentStylePath,
+      });
     } catch (error) {
       await IOUtils.remove(staging, { recursive: true, ignoreAbsent: true });
 
@@ -2574,7 +2586,7 @@ class nsZenModsManager {
         }
       }
 
-      await assertLocalStyles(staging, mod.name, ["chrome.css"]);
+      await assertLocalStyles(staging, mod.name, { chrome: "chrome.css" });
     } catch (error) {
       await IOUtils.remove(staging, { recursive: true, ignoreAbsent: true });
 

@@ -17,6 +17,8 @@ support-files = [
 
 ["browser_mods_marketplace.js"]
 
+["browser_mods_stylesheet.js"]
+
 ["browser_mods_untrusted.js"]
 
 ["browser_mods_update.js"]

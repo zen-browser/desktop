@@ -28,13 +28,14 @@ class ZenStyleSheetCache final : public nsISupports {
   auto GetModsSheet() -> StyleSheet*;
 
   /**
-   * @brief Rebuild the mods stylesheets.
-   * This is re-parses the mods stylesheet and applies it to all
-   * the connected documents.
-   * @param aContents The contents of the mods stylesheet.
-   * @returns NS_OK on success, or an error code on failure.
+   * @brief Reload the mods stylesheet from disk.
+   * Loads the file again, @import rules included, and puts the new sheet
+   * where the old one was in every chrome document. Re-parsing the loaded
+   * sheet is not enough: its new @import rules load asynchronously through a
+   * loader without a document and stay empty.
+   * @returns NS_OK on success, or an error code if the file can't be loaded.
    */
-  nsresult RebuildModsStylesheets(const nsACString& aContents);
+  nsresult ReloadModsSheet();
 
   static auto Singleton() -> ZenStyleSheetCache*;
 

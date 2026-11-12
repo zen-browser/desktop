@@ -1,12 +1,14 @@
 diff --git a/layout/style/nsStyleSheetService.h b/layout/style/nsStyleSheetService.h
-index 4342cd44e7c16a9c4bb9d30247316fa2f2f7830a..ee6bdf1ddc1428a5449a220c435a261ddd8b5927 100644
+index e8c58ceffca2d702c93e5b5c4ebaf493d78299b2..05f109010b84b1dddeeb053fdb7e3fd52b9aaf97 100644
 --- a/layout/style/nsStyleSheetService.h
 +++ b/layout/style/nsStyleSheetService.h
-@@ -47,6 +47,8 @@ class nsStyleSheetService final : public nsIStyleSheetService,
+@@ -47,6 +47,10 @@ class nsStyleSheetService final : public nsIStyleSheetService,
  
    size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;
  
-+  void ZenMarkStylesAsChanged();
++  // Puts aNew where aOld is in every chrome document that uses aOld.
++  void ZenReplaceModsSheet(mozilla::StyleSheet& aOld,
++                           mozilla::StyleSheet& aNew);
 +
    static nsStyleSheetService* GetInstance();
    static nsStyleSheetService* gInstance;

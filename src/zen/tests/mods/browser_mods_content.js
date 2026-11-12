@@ -148,6 +148,9 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
           text-indent: -9999px !important;
           transform: scale(0) !important;
           clip-path: inset(50%) !important;
+          -webkit-text-security: disc !important;
+          unicode-bidi: bidi-override !important;
+          direction: rtl !important;
         }
         .pointerlockfswarning::after {
           content: "" !important;
@@ -214,6 +217,12 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
   is(text.textIndent, "0px", "In place");
   is(text.transform, "none", "Unshrunk");
   is(text.clipPath, "none", "Uncut");
+  isnot(
+    text.getPropertyValue("-webkit-text-security"),
+    "disc",
+    "Readable, not dots"
+  );
+  is(text.unicodeBidi, "normal", "And not reversed");
   is(
     window.getComputedStyle(warning, "::after").content,
     "none",

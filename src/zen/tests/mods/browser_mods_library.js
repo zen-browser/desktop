@@ -768,3 +768,93 @@ add_task(async function test_install_from_github() {
   await closeLibrary();
   await gZenModsManager.uninstallMod(mod.id);
 });
+
+add_task(async function test_browse_the_store() {
+  await useStore("store");
+
+  const section = await openModsSection();
+  const storeRow = modId => section.querySelector(`[data-store-id="${modId}"]`);
+  const storeRows = () =>
+    [...section.querySelectorAll("[data-store-id]")].map(
+      row => row.dataset.storeId
+    );
+
+  section.querySelector('.zen-library-mods-views [data-view="store"]').click();
+  await TestUtils.waitForCondition(
+    () => storeRows().length === 3,
+    "The store's mods are listed"
+  );
+  Assert.deepEqual(
+    storeRows(),
+    [MOD_A, MOD_B, "zen-test-mod-broken"],
+    "The most recently updated first"
+  );
+  ok(
+    storeRow(MOD_A).querySelector("img.zen-library-store-thumbnail"),
+    "A picture from the store shows"
+  );
+  ok(
+    !storeRow(MOD_B).querySelector("img"),
+    "One from anywhere else isn't loaded"
+  );
+
+  await search(section, "dark");
+  await TestUtils.waitForCondition(
+    () => storeRows().join() === MOD_A,
+    "Searching filters the store, tags included"
+  );
+  await search(section, "");
+  await TestUtils.waitForCondition(
+    () => storeRows().length === 3,
+    "Clearing the search shows them all"
+  );
+
+  storeRow(MOD_A)
+    .querySelector('[data-l10n-id="library-mods-store-install"]')
+    .click();
+  await TestUtils.waitForCondition(
+    () =>
+      storeRow(MOD_A)?.querySelector(
+        '[data-l10n-id="library-mods-store-installed"]'
+      ),
+    "Installing from the list marks the mod as installed"
+  );
+  ok(await gZenModsManager.isModInstalled(MOD_A), "And installs it");
+  ok(!section.hasAttribute("configuring"), "Without opening its details");
+
+  storeRow(MOD_B).click();
+  await section.updateComplete;
+
+  const detail = section.querySelector(".zen-library-store-detail");
+
+  await TestUtils.waitForCondition(
+    () => window.getComputedStyle(detail).opacity === "1",
+    "The details fade in"
+  );
+  ok(section.hasAttribute("configuring"), "They take the list's place");
+
+  detail.querySelector('[data-l10n-id="library-mods-store-install"]').click();
+  await TestUtils.waitForCondition(
+    () => detail.querySelector('[data-l10n-id="library-mods-store-remove"]'),
+    "Installing from the details offers to remove it"
+  );
+  ok(await gZenModsManager.isModInstalled(MOD_B), "The mod is installed");
+
+  const answered = handleNextConfirm(0);
+
+  detail.querySelector('[data-l10n-id="library-mods-store-remove"]').click();
+  await answered;
+  await TestUtils.waitForCondition(
+    async () => !(await gZenModsManager.isModInstalled(MOD_B)),
+    "Removing from the details removes it"
+  );
+
+  section.querySelector(".zen-library-filter-done").click();
+  section
+    .querySelector('.zen-library-mods-views [data-view="installed"]')
+    .click();
+  await waitForRows(section, [MOD_A], "The installed view lists what's in");
+
+  await closeLibrary();
+  await gZenModsManager.uninstallMod(MOD_A);
+});

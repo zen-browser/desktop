@@ -1249,6 +1249,48 @@ zen-library-history-section {
   font-weight: var(--font-weight-bold);
 }
 
+.zen-library-mods-views {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--zen-space-6);
+  /* In line with the search box above, whose padding is wider. */
+  margin: 0 var(--zen-space-4) var(--zen-space-8);
+
+  & .zen-library-filter-chip {
+    justify-content: center;
+  }
+}
+
+.zen-library-store-thumbnail {
+  object-fit: cover;
+}
+
+.zen-library-store-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-8);
+}
+
+.zen-library-store-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--zen-library-radius);
+  background: var(--zen-library-pill-bg);
+}
+
+.zen-library-store-description {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.zen-library-store-tags,
+.zen-library-store-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zen-space-6);
+}
+
 .zen-library-mod-title {
   display: flex;
   align-items: center;

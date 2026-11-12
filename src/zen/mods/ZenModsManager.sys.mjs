@@ -759,9 +759,9 @@ class nsZenModsManager {
   #documentScripts = new WeakMap();
 
   /**
-   * The `zen` each mod's document scripts got in each window.
+   * The `zen` each mod's document scripts got in each document.
    *
-   * @type {WeakMap<Window, Map<string, object>>}
+   * @type {WeakMap<Document, Map<string, object>>}
    */
   #documentAPIs = new WeakMap();
 
@@ -1897,7 +1897,7 @@ class nsZenModsManager {
       this.#documentScripts.set(doc, ran);
     }
 
-    this.#exposeAPI(doc.documentGlobal);
+    this.#exposeAPI(doc);
 
     for (const { modId, host, script } of this.#documentScriptsFor(doc.URL)) {
       if (ran.has(script.url)) {
@@ -1942,18 +1942,20 @@ class nsZenModsManager {
    * Gives `.uc.js` and `.uc.mjs` scripts what modules get in `init`: they
    * run in the window's own global, where nothing can be passed to them, so
    * the global `zen` hands each one its mod's, told apart by the file of the
-   * script that reads it. Anyone else reads undefined.
+   * script that reads it. Anyone else reads undefined. A frame that
+   * navigates gets a new global, so it's per document.
    *
-   * @param {Window} win
+   * @param {Document} doc
    */
-  #exposeAPI(win) {
-    if (this.#documentAPIs.has(win)) {
+  #exposeAPI(doc) {
+    if (this.#documentAPIs.has(doc)) {
       return;
     }
 
-    const apis = new Map();
+    const win = doc.documentGlobal;
 
-    this.#documentAPIs.set(win, apis);
+    const apis = new Map();
+    this.#documentAPIs.set(doc, apis);
     win.addEventListener(
       "unload",
       () => {

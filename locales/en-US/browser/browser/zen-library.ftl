@@ -245,6 +245,10 @@ library-mods-scripts-needs-restart = Restart
 library-mods-preference-none = None
 library-mods-preference-none-item =
     .label = None
+library-mods-restart-needed =
+    .message = Some of these changes apply after restarting { -brand-short-name }.
+library-mods-restart-button =
+    .label = Restart
 
 library-mods-remove-prompt-title = Remove this mod?
 # Variables:

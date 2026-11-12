@@ -31,6 +31,9 @@ const STORE_MOD_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 const WHITESPACE_RE = /\s/g;
 const NON_NAME_RE = /[^A-Za-z_-]+/g;
 
+// Preferences that only show text; a separator with a property is a toggle.
+const LABEL_TYPES = new Set(["text", "separator"]);
+
 const LOCAL_ID_PREFIX = "local-";
 const SCRIPT_HOST_PREFIX = "zen-mod-";
 const SCRIPT_FILE_RE = /\.m?js$/;
@@ -744,21 +747,33 @@ class nsZenModsManager {
     }
 
     const os = OS_NAMES[Services.appinfo.OS];
+    const valid = [];
 
-    return preferences.filter(preference => {
-      if (typeof preference?.property !== "string" || !preference.property) {
+    for (const preference of preferences) {
+      const hasProperty =
+        typeof preference?.property === "string" &&
+        Boolean(preference.property);
+
+      if (!hasProperty && !LABEL_TYPES.has(preference?.type)) {
         console.warn(
           `[ZenMods]: A preference of ${mod.name} has no property, skipping.`
         );
-
-        return false;
+        continue;
       }
 
-      return !(
+      if (
         Array.isArray(preference.disabledOn) &&
         preference.disabledOn.includes(os)
+      ) {
+        continue;
+      }
+
+      valid.push(
+        hasProperty ? preference : { ...preference, property: undefined }
       );
-    });
+    }
+
+    return valid;
   }
 
   /**
@@ -838,7 +853,7 @@ class nsZenModsManager {
     }
 
     for (const { property } of preferences) {
-      if (!stillUsed.has(property)) {
+      if (property && !stillUsed.has(property)) {
         Services.prefs.clearUserPref(property);
       }
     }
@@ -1330,6 +1345,7 @@ class nsZenModsManager {
     for (const { name, preferences } of applied) {
       for (const { type, property, defaultValue } of preferences) {
         if (
+          !property ||
           defaultValue === undefined ||
           Services.prefs.getPrefType(property) !== Services.prefs.PREF_INVALID
         ) {
@@ -1343,7 +1359,7 @@ class nsZenModsManager {
           continue;
         }
 
-        if (type === "checkbox") {
+        if (type === "checkbox" || type === "separator") {
           Services.prefs.setBoolPref(
             property,
             defaultValue === true || defaultValue === "true"

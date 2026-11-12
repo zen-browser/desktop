@@ -4,6 +4,7 @@
 
 import {
   html,
+  live,
   nothing,
   repeat,
 } from "chrome://global/content/vendor/lit.all.mjs";
@@ -23,7 +24,17 @@ const PREFERENCE_DEBOUNCE_MS = 300;
 const PANEL_BOTTOM_GAP = 12;
 const IMPORT_NAMES_SHOWN = 10;
 
-const PREFERENCE_TYPES = new Set(["checkbox", "dropdown", "string"]);
+const PREFERENCE_TYPES = new Set([
+  "checkbox",
+  "dropdown",
+  "string",
+  "color",
+  "number",
+  "text",
+  "separator",
+]);
+const MAX_CONDITION_DEPTH = 8;
+const FORMATTING_RE = /\\([*~\\])|\*+|~/g;
 
 const STATE_FILTERS = [
   { id: "enabled", l10nId: "library-mods-filter-enabled" },
@@ -50,6 +61,89 @@ const SCRIPTS_L10N_IDS = {
  */
 function isEnabled(mod) {
   return mod.enabled !== false;
+}
+
+/**
+ * Labels written for Sine's formatting (`*`, `**`, `~`) read as plain text:
+ * the markers go, and an escaped `\*` stays as `*`.
+ *
+ * @param {*} label
+ * @returns {string}
+ */
+function plainLabel(label) {
+  return String(label ?? "").replace(
+    FORMATTING_RE,
+    (marker, escaped) => escaped ?? ""
+  );
+}
+
+/**
+ * Whether a preference shows. Each of its `conditions` is
+ * `{if: {property, value}}`, `{not: {property, value}}` or a nested group
+ * with `conditions` of its own; one of them must hold, or all of them with
+ * `operator: "AND"`.
+ *
+ * @param {object} group - A preference, or a nested group of conditions
+ * @param {(property: string, value: *) => boolean} holds - Whether a
+ * preference has a value
+ * @param {number} [depth]
+ * @returns {boolean}
+ */
+function meetsConditions(group, holds, depth = 0) {
+  const { conditions, operator } = group;
+
+  if (!Array.isArray(conditions) || !conditions.length) {
+    return true;
+  }
+
+  if (depth >= MAX_CONDITION_DEPTH) {
+    console.warn(
+      "[ZenLibraryMods]: Conditions nested too deep, hiding the preference."
+    );
+
+    return false;
+  }
+
+  const meets = condition => {
+    if (Array.isArray(condition?.conditions)) {
+      return meetsConditions(condition, holds, depth + 1);
+    }
+
+    const test = condition?.if ?? condition?.not;
+
+    if (typeof test?.property !== "string") {
+      console.warn("[ZenLibraryMods]: Invalid condition, it never holds.");
+
+      return false;
+    }
+
+    return holds(test.property, test.value) === Boolean(condition.if);
+  };
+
+  return String(operator).toUpperCase() === "AND"
+    ? conditions.every(meets)
+    : conditions.some(meets);
+}
+
+/**
+ * Restarts the browser, unless something asks to stay open.
+ */
+function restartBrowser() {
+  const cancelQuit = Cc["@mozilla.org/supports-PRBool;1"].createInstance(
+    Ci.nsISupportsPRBool
+  );
+
+  Services.obs.notifyObservers(
+    cancelQuit,
+    "quit-application-requested",
+    "restart"
+  );
+
+  if (!cancelQuit.data) {
+    Services.startup.quit(
+      Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+    );
+  }
 }
 
 /**
@@ -378,6 +472,10 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   #pickerAnchor = null;
   #panelTimer = null;
   #pendingPreferences = new Map();
+
+  /** @type {Set<string>} Mods with a changed preference that needs a restart */
+  #restartNeeded = new Set();
+
   #resizeObserver = new ResizeObserver(() => this.#fitPanel());
 
   connectedCallback() {
@@ -445,8 +543,8 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
         ...mod,
         error: manager.getModError(mod.id),
         scriptsState: manager.getScriptsState(mod.id),
-        preferences: (await manager.getModPreferences(mod)).filter(
-          ({ type, property }) => {
+        preferences: (await manager.getModPreferences(mod))
+          .filter(({ type, property }) => {
             if (PREFERENCE_TYPES.has(type)) {
               return true;
             }
@@ -456,8 +554,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
             );
 
             return false;
-          }
-        ),
+          })
+          .map(preference => ({
+            ...preference,
+            label: plainLabel(preference.label),
+          })),
       }))
     );
 
@@ -804,10 +905,12 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
    * Text preferences are written once the user stops typing; closing the
    * panel writes what is still waiting.
    *
-   * @param {string} property
+   * @param {object} preference
    * @param {string} value
    */
-  #setStringPreference(property, value) {
+  #setStringPreference(preference, value) {
+    const { property } = preference;
+
     clearTimeout(this.#pendingPreferences.get(property)?.timer);
 
     const timer = setTimeout(() => {
@@ -816,6 +919,70 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }, PREFERENCE_DEBOUNCE_MS);
 
     this.#pendingPreferences.set(property, { timer, value });
+    this.#preferenceChanged(preference);
+  }
+
+  /**
+   * @param {string} property
+   * @returns {string} The text preference's value, with what the user is
+   * still typing
+   */
+  #stringValue(property) {
+    return (
+      this.#pendingPreferences.get(property)?.value ??
+      Services.prefs.getStringPref(property, "")
+    );
+  }
+
+  /**
+   * Shows what a changed preference brings: the preferences its conditions
+   * reveal and, if it only applies after a restart, the way to restart.
+   *
+   * @param {object} preference
+   */
+  #preferenceChanged(preference) {
+    if (preference.restart === true) {
+      this.#restartNeeded.add(this.configuring);
+    }
+
+    this.requestUpdate();
+  }
+
+  /**
+   * @param {string} property
+   * @param {*} expected - A value from a mod's `conditions`
+   * @returns {boolean} Whether the preference has that value, counting what
+   * the user is still typing
+   */
+  #holds(property, expected) {
+    const { prefs } = Services;
+    let value = this.#pendingPreferences.get(property)?.value;
+
+    if (value === undefined) {
+      switch (prefs.getPrefType(property)) {
+        case prefs.PREF_BOOL: {
+          value = prefs.getBoolPref(property);
+          break;
+        }
+
+        case prefs.PREF_INT: {
+          value = prefs.getIntPref(property);
+          break;
+        }
+
+        case prefs.PREF_STRING: {
+          value = prefs.getStringPref(property);
+          break;
+        }
+
+        default: {
+          // Never set: off and empty, the way its control shows it.
+          return expected === false || expected === "";
+        }
+      }
+    }
+
+    return String(value) === String(expected);
   }
 
   #flushPreferences() {
@@ -910,7 +1077,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     menu.replaceChildren(...items);
     this.#pickerOnPick = value => {
       Services.prefs.setStringPref(preference.property, value);
-      this.requestUpdate();
+      this.#preferenceChanged(preference);
     };
     this.#pickerAnchor = anchor;
     anchor.setAttribute("menu-open", "true");
@@ -973,10 +1140,50 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
         >
           ${repeat(
             mod.preferences,
-            preference => preference.property,
-            preference => this.#renderPreference(preference)
+            (preference, index) => preference.property ?? index,
+            preference =>
+              this.#renderSlot(
+                meetsConditions(preference, (property, value) =>
+                  this.#holds(property, value)
+                ),
+                this.#renderPreference(preference)
+              )
+          )}
+          ${this.#renderSlot(
+            this.#restartNeeded.has(mod.id),
+            html`<moz-message-bar
+              type="warning"
+              data-l10n-id="library-mods-restart-needed"
+            >
+              <moz-button
+                slot="actions"
+                data-l10n-id="library-mods-restart-button"
+                @click=${restartBrowser}
+              ></moz-button>
+            </moz-message-bar>`,
+            "zen-library-mod-restart"
           )}
         </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Wraps what may come and go in the panel, so it grows and shrinks into
+   * place instead of pushing the rest at once.
+   *
+   * @param {boolean} shown
+   * @param {*} content
+   * @param {string} [className]
+   */
+  #renderSlot(shown, content, className = "") {
+    return html`
+      <div
+        class="zen-library-mod-preference-slot ${className}"
+        ?collapsed=${!shown}
+        ?inert=${!shown}
+      >
+        <div>${content}</div>
       </div>
     `;
   }
@@ -985,16 +1192,50 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     const { property, label, type } = preference;
 
     switch (type) {
-      case "checkbox": {
+      case "checkbox":
+      case "separator": {
+        // A separator is a heading, and a toggle too if it has a property.
+        return html`
+          <div
+            class="zen-library-mod-preference"
+            ?separator=${type === "separator"}
+          >
+            <span class="zen-library-mod-preference-label">${label}</span>
+            ${
+              property
+                ? html`<moz-toggle
+                    .pressed=${Services.prefs.getBoolPref(property, false)}
+                    aria-label=${label}
+                    @toggle=${event => {
+                      Services.prefs.setBoolPref(
+                        property,
+                        event.target.pressed
+                      );
+                      this.#preferenceChanged(preference);
+                    }}
+                  ></moz-toggle>`
+                : nothing
+            }
+          </div>
+        `;
+      }
+
+      case "text": {
+        return html`<p class="zen-library-mod-preference-text">${label}</p>`;
+      }
+
+      case "color": {
         return html`
           <div class="zen-library-mod-preference">
             <span class="zen-library-mod-preference-label">${label}</span>
-            <moz-toggle
-              .pressed=${Services.prefs.getBoolPref(property, false)}
+            <input
+              class="zen-library-mod-color"
+              type="color"
               aria-label=${label}
-              @toggle=${event =>
-                Services.prefs.setBoolPref(property, event.target.pressed)}
-            ></moz-toggle>
+              .value=${live(this.#stringValue(property))}
+              @input=${event =>
+                this.#setStringPreference(preference, event.target.value)}
+            />
           </div>
         `;
       }
@@ -1033,21 +1274,19 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
         `;
       }
 
-      case "string": {
+      case "string":
+      case "number": {
         return html`
           <div class="zen-library-mod-preference" stacked>
             <span class="zen-library-mod-preference-label">${label}</span>
             <input
               class="zen-library-routing-reference"
-              type="text"
+              type=${type === "number" ? "number" : "text"}
               aria-label=${label}
-              .value=${
-                this.#pendingPreferences.get(property)?.value ??
-                Services.prefs.getStringPref(property, "")
-              }
+              .value=${live(this.#stringValue(property))}
               placeholder=${preference.placeholder ?? ""}
               @input=${event =>
-                this.#setStringPreference(property, event.target.value)}
+                this.#setStringPreference(preference, event.target.value)}
             />
           </div>
         `;

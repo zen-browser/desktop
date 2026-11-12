@@ -59,6 +59,7 @@ export class nsZenWorkspace extends MozXULElement {
   #watchedTabWasVisible = false;
   #scrollToTabShown = false;
   #scrollToTabSeq = 0;
+  #bookmarksRefreshSeq = 0;
 
   static get markup() {
     return `
@@ -81,6 +82,7 @@ export class nsZenWorkspace extends MozXULElement {
                              class="zen-workspace-close-unpinned-tabs-button" />
             </hbox>
           </vbox>
+          <vbox class="zen-workspace-bookmarks-section" hidden="true" />
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
             <!-- Let it as an ID to mantain compatibility with firefox's tabbrowser -->
             <hbox id="tabbrowser-arrowscrollbox-periphery">
@@ -105,6 +107,58 @@ export class nsZenWorkspace extends MozXULElement {
           <image class="zen-workspace-scroll-to-tab-arrow" />
         </hbox>
       `;
+  }
+
+  /**
+   * Renders the bookmarks assigned to this Space below the pinned-tabs divider.
+   * Gated by zen.spaces.bookmarks-in-sidebar.
+   */
+  async refreshBookmarks() {
+    const container = this.bookmarksContainer;
+    if (!container) {
+      return;
+    }
+    const seq = ++this.#bookmarksRefreshSeq;
+    const enabled = Services.prefs.getBoolPref(
+      "zen.spaces.bookmarks-in-sidebar",
+      false
+    );
+    const guids = enabled
+      ? gZenWorkspaces._workspaceBookmarksCache?.bookmarks?.[this.id] ?? []
+      : [];
+
+    const entries = [];
+    for (const guid of guids) {
+      const info = await PlacesUtils.bookmarks.fetch(guid).catch(() => null);
+      if (info?.url && info.type === PlacesUtils.bookmarks.TYPE_BOOKMARK) {
+        entries.push(info);
+      }
+    }
+    // A newer refresh started while we were awaiting; let it win.
+    if (seq !== this.#bookmarksRefreshSeq) {
+      return;
+    }
+
+    container.replaceChildren(
+      ...entries.map(info => this.#createBookmarkItem(info))
+    );
+    container.hidden = !entries.length;
+  }
+
+  #createBookmarkItem(info) {
+    const url = info.url.href;
+    const item = document.createXULElement("toolbarbutton");
+    item.className = "toolbarbutton-1 zen-workspace-bookmark-item";
+    item.setAttribute("label", info.title || url);
+    item.setAttribute("tooltiptext", url);
+    item.setAttribute("image", `page-icon:${url}`);
+    item.addEventListener("click", () => openTrustedLinkIn(url, "current"));
+    item.addEventListener("auxclick", event => {
+      if (event.button === 1) {
+        openTrustedLinkIn(url, "tab");
+      }
+    });
+    return item;
   }
 
   static get moveTabToButtonMarkup() {
@@ -159,6 +213,9 @@ export class nsZenWorkspace extends MozXULElement {
     this.indicator = this.querySelector(".zen-current-workspace-indicator");
     this.pinnedTabsContainer = this.querySelector(
       ".zen-workspace-pinned-tabs-section"
+    );
+    this.bookmarksContainer = this.querySelector(
+      ".zen-workspace-bookmarks-section"
     );
     this.pinnedTabsContainer.separatorElement =
       this.pinnedTabsContainer.querySelector(

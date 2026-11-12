@@ -40,6 +40,9 @@
 - name: zen.view.show-scroll-to-selected-tab
   value: true
 
+- name: zen.spaces.bookmarks-in-sidebar
+  value: false
+
 - name: zen.view.window.scheme
   value: 2
 

@@ -175,6 +175,16 @@ class nsZenWorkspaces {
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      const onBookmarkChanged = () => this.refreshSpaceBookmarks();
+      const onBookmarksPrefChanged = () => this.refreshSpaceBookmarks();
+      PlacesUtils.observers.addListener(
+        ["bookmark-removed", "bookmark-title-changed", "bookmark-url-changed"],
+        onBookmarkChanged
+      );
+      Services.prefs.addObserver(
+        "zen.spaces.bookmarks-in-sidebar",
+        onBookmarksPrefChanged
+      );
       const onContainerDeleted = subject => {
         const userContextId = subject?.wrappedJSObject?.userContextId;
         for (const workspace of this.getWorkspaces()) {
@@ -196,6 +206,14 @@ class nsZenWorkspaces {
         Services.obs.removeObserver(
           onContainerDeleted,
           "contextual-identity-deleted"
+        );
+        PlacesUtils.observers.removeListener(
+          ["bookmark-removed", "bookmark-title-changed", "bookmark-url-changed"],
+          onBookmarkChanged
+        );
+        Services.prefs.removeObserver(
+          "zen.spaces.bookmarks-in-sidebar",
+          onBookmarksPrefChanged
         );
       });
     }
@@ -2756,6 +2774,7 @@ class nsZenWorkspaces {
     if (!onInit || hasWorkspaceBookmarks) {
       this._invalidateBookmarkContainers();
     }
+    this.refreshSpaceBookmarks();
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);
@@ -2806,6 +2825,13 @@ class nsZenWorkspaces {
       }
     }
     BookmarkingUI.updateEmptyToolbarMessage();
+    this.refreshSpaceBookmarks();
+  }
+
+  refreshSpaceBookmarks() {
+    for (const element of document.querySelectorAll("zen-workspace")) {
+      element.refreshBookmarks();
+    }
   }
 
   updateWorkspacesChangeContextMenu() {

@@ -1226,6 +1226,28 @@ zen-library {
 }
 
 /* ==========================================================================
+   Mark: Space Bookmarks Section
+   ========================================================================== */
+
+.zen-workspace-bookmarks-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.zen-workspace-bookmark-item {
+  justify-content: flex-start;
+  min-height: 32px;
+  margin: 0;
+  padding-inline: 8px;
+  border-radius: var(--zen-element-separation, 6px);
+  -moz-box-align: center;
+  -moz-box-orient: horizontal;
+  color: var(--zen-colors-primary);
+}
+
+/* ==========================================================================
    Mark: Essentials Toolbar / Section Styles
    ========================================================================== */
 

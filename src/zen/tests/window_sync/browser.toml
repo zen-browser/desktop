@@ -13,6 +13,8 @@ support-files = [
 ["browser_issue_12140.js"]
 skip-if = ["os == 'mac'"] # macOS never marks closing windows for restore
 
+["browser_issue_15125.js"]
+
 ["browser_move_unloaded_tabs.js"]
 
 ["browser_sync_folder_space.js"]

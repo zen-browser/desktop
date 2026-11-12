@@ -1860,18 +1860,25 @@ class nsZenWorkspaces {
 
         const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
         if (tab.group?.hasAttribute("split-view-group")) {
-          gBrowser.zenHandleTabMove(tab.group, () => {
-            for (const subTab of tab.group.tabs) {
+          const splitGroup = tab.group;
+          const previousIndexes = splitGroup.tabs.map(subTab => subTab.index);
+          gBrowser.zenHandleTabMove(splitGroup, () => {
+            for (const subTab of splitGroup.tabs) {
               subTab.setAttribute("zen-workspace-id", workspaceID);
             }
-            container.insertBefore(tab.group, insertElement);
+            container.insertBefore(splitGroup, insertElement);
           });
+          splitGroup.tabs.forEach((subTab, i) =>
+            this.#notifyIfMovedInPlace(subTab, previousIndexes[i])
+          );
           continue;
         }
+        const previousIndex = tab.index;
         gBrowser.zenHandleTabMove(tab, () => {
           tab.setAttribute("zen-workspace-id", workspaceID);
           container.insertBefore(tab, insertElement);
         });
+        this.#notifyIfMovedInPlace(tab, previousIndex);
 
         if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
           // This tab is no longer the last selected tab in the previous workspace because it's being moved to
@@ -1887,6 +1894,22 @@ class nsZenWorkspaces {
     }
     gBrowser.tabContainer._invalidateCachedTabs();
     return true;
+  }
+
+  /**
+   * Tabs are ordered across all spaces, so a tab can change space while
+   * keeping its index, in which case no TabMove event is fired. Let listeners
+   * such as window sync know that the tab moved anyway.
+   *
+   * @param {MozTabbrowserTab} tab - The tab that was moved to another space.
+   * @param {number} previousIndex - The tab's index before the move.
+   */
+  #notifyIfMovedInPlace(tab, previousIndex) {
+    if (tab.index === previousIndex) {
+      tab.dispatchEvent(
+        new CustomEvent("ZenTabMovedToSpace", { bubbles: true })
+      );
+    }
   }
 
   #prepareNewWorkspace(space) {

@@ -88,6 +88,14 @@ class nsZenModsManager {
 
   #autoUpdateScheduled = false;
 
+  /**
+   * Why a mod doesn't apply as it should, until it's fixed. Kept in memory:
+   * the next session finds out again.
+   *
+   * @type {Map<string, {type: "missing-files"|"update-failed", message?: string}>}
+   */
+  #errors = new Map();
+
   get modsRootPath() {
     return PathUtils.join(PathUtils.profileDir, "chrome", "zen-themes");
   }
@@ -155,6 +163,13 @@ class nsZenModsManager {
     return structuredClone(this.#mods);
   }
 
+  /** @returns {Promise<object[]>} Copies of the installed mods, in load order */
+  async getOrderedMods() {
+    await this.init();
+
+    return structuredClone(this.#orderedMods());
+  }
+
   /**
    * @param {string} modId
    * @returns {Promise<boolean>}
@@ -163,6 +178,60 @@ class nsZenModsManager {
     await this.init();
 
     return Object.hasOwn(this.#mods, modId);
+  }
+
+  /**
+   * @param {string} modId
+   * @returns {{type: string, message?: string}|null} Why the mod doesn't apply
+   * as it should
+   */
+  getModError(modId) {
+    return this.#errors.get(modId) ?? null;
+  }
+
+  /**
+   * Mods load in the order the user gave them, and the ones without one after
+   * them, in the order they were installed. A later mod wins over an earlier
+   * one when both style the same thing.
+   *
+   * @returns {object[]}
+   */
+  #orderedMods() {
+    return Object.values(this.#mods)
+      .map((mod, index) => ({ mod, index }))
+      .sort(
+        (first, second) =>
+          (first.mod.order ?? Infinity) - (second.mod.order ?? Infinity) ||
+          first.index - second.index
+      )
+      .map(({ mod }) => mod);
+  }
+
+  /**
+   * @param {string[]} modIds - The installed mods, in the order to load them
+   * @returns {Promise<void>}
+   */
+  async setModsOrder(modIds) {
+    await this.init();
+
+    await this.#mutate(mods => {
+      for (const [index, modId] of modIds.entries()) {
+        if (mods[modId]) {
+          mods[modId].order = index;
+        }
+      }
+    });
+  }
+
+  /**
+   * Downloads a store mod again, keeping whether it's enabled and where it
+   * loads. Fixes a mod whose files went missing or broke.
+   *
+   * @param {string} modId
+   * @returns {Promise<void>}
+   */
+  async reinstallMod(modId) {
+    await this.installMod(await this.fetchStoreMod(modId));
   }
 
   /**
@@ -278,6 +347,7 @@ class nsZenModsManager {
 
     await this.#mutate(async mods => {
       delete mods[modId];
+      this.#errors.delete(modId);
 
       await IOUtils.remove(this.getModFolder(modId), {
         recursive: true,
@@ -429,11 +499,19 @@ class nsZenModsManager {
           `[ZenMods]: Could not update ${mod.name} (${mod.id}), keeping the installed version:`,
           error
         );
+
+        this.#errors.set(mod.id, {
+          type: "update-failed",
+          message: String(error?.message ?? error),
+        });
       }
     }
 
     if (staged.length) {
       await this.#commit(staged);
+    } else {
+      // Nothing was rebuilt, but the failed updates are news.
+      Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
     }
 
     Services.prefs.setIntPref(LAST_UPDATE_PREF, Math.floor(Date.now() / 1000));
@@ -516,16 +594,23 @@ class nsZenModsManager {
 
   /**
    * Puts staged mods in place and records them, keeping whether each one was
-   * enabled.
+   * enabled and where it loads.
    *
    * @param {{mod: object, staging: string}[]} staged
    */
   async #commit(staged) {
     await this.#mutate(async mods => {
       for (const { mod, staging } of staged) {
+        const previous = mods[mod.id];
+
         await this.#replaceFolder(staging, this.getModFolder(mod.id));
 
-        mods[mod.id] = { ...mod, enabled: mods[mod.id]?.enabled ?? true };
+        mods[mod.id] = {
+          ...mod,
+          enabled: previous?.enabled ?? true,
+          order: previous?.order,
+        };
+        this.#errors.delete(mod.id);
       }
     });
   }
@@ -710,7 +795,7 @@ class nsZenModsManager {
    */
   async #rebuild({ reload = true } = {}) {
     const mods = this.modsEnabled
-      ? Object.values(this.#mods).filter(mod => mod.enabled !== false)
+      ? this.#orderedMods().filter(mod => mod.enabled !== false)
       : [];
     const applied = [];
 
@@ -723,7 +808,13 @@ class nsZenModsManager {
         console.warn(
           `[ZenMods]: ${mod.name} (${mod.id}) has no styles, skipping.`
         );
+
+        this.#errors.set(mod.id, { type: "missing-files" });
         continue;
+      }
+
+      if (this.#errors.get(mod.id)?.type === "missing-files") {
+        this.#errors.delete(mod.id);
       }
 
       content += `@import url("zen-themes/${encodeURIComponent(mod.id)}/chrome.css");\n`;

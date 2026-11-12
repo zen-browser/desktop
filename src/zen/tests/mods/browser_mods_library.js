@@ -626,3 +626,55 @@ add_task(async function test_preferences_v2() {
     "Removing the mod clears its preferences"
   );
 });
+
+add_task(async function test_local_mods_reload_on_save() {
+  const folder = await IOUtils.createUniqueDirectory(
+    PathUtils.tempDir,
+    "zen-live-mod"
+  );
+  const stylePath = PathUtils.join(folder, "chrome.css");
+  const writeStyle = value =>
+    IOUtils.writeUTF8(
+      stylePath,
+      `:root { --zen-test-live: "${value}" !important; }`
+    );
+
+  await IOUtils.writeJSON(PathUtils.join(folder, "theme.json"), {
+    name: "Live Mod",
+    version: "1.0.0",
+  });
+  await writeStyle("v1");
+  registerCleanupFunction(() =>
+    IOUtils.remove(folder, { recursive: true, ignoreAbsent: true })
+  );
+
+  const modId = await gZenModsManager.installLocalMod(folder);
+
+  await waitForRootValue(window, "--zen-test-live", '"v1"', "The mod applies");
+
+  const section = await openModsSection();
+
+  await waitForRows(section, [modId], "The mod is listed");
+  await writeStyle("v2");
+  await waitForRootValue(
+    window,
+    "--zen-test-live",
+    '"v2"',
+    "Saving the mod while the Library shows it reloads it"
+  );
+
+  await closeLibrary();
+  await writeStyle("v3");
+
+  // Long enough for a few checks, if anything still checked.
+  // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
+  await new Promise(resolve => setTimeout(resolve, 2500));
+
+  is(
+    rootValue(window, "--zen-test-live"),
+    '"v2"',
+    "Nothing watches the folder once the Library is closed"
+  );
+
+  await gZenModsManager.uninstallMod(modId);
+});

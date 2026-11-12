@@ -24,6 +24,12 @@ const PAGES = [
 // Page styles that reach the web in every way the check has to catch,
 // and one that doesn't.
 const REMOTE = [
+  "remote/var-in-image-set/theme.json",
+  "remote/var-in-image-set/userContent.css",
+  "remote/charset/theme.json",
+  "remote/charset/userContent.css",
+  "remote/remote-image-scheme/theme.json",
+  "remote/remote-image-scheme/userContent.css",
   "remote/clean/a.png",
   "remote/clean/parts/ok.css",
   "remote/clean/theme.json",

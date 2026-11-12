@@ -1,4 +1,4 @@
 /* https://example.org/credits */
 @import "./parts/ok.css";
-body { background: url("a.png"); }
+body { background: url("a.png"), url("chrome://global/skin/icons/info.svg"); }
 body::before { content: "https://example.org"; }

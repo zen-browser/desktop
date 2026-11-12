@@ -221,6 +221,9 @@ add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
     "imported-no-space": true,
     "imported-encoded": true,
     "import-missing": true,
+    "var-in-image-set": true,
+    charset: true,
+    "remote-image-scheme": true,
     clean: false,
   };
 

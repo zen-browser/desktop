@@ -211,3 +211,32 @@ add_task(async function test_page_styles_from_github_cant_reach_the_web() {
 
   await gZenModsManager.uninstallMod(modId);
 });
+
+add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
+  const cases = {
+    "escaped-url": true,
+    "escaped-string": true,
+    "import-no-space": true,
+    "image-set": true,
+    "imported-no-space": true,
+    "imported-encoded": true,
+    "import-missing": true,
+    clean: false,
+  };
+
+  for (const [name, isBlocked] of Object.entries(cases)) {
+    const found = await gZenModsManager.fetchGitHubMod(
+      `zen-tests/sample/remote/${name}`
+    );
+    const modId = await gZenModsManager.installGitHubMod(found);
+    const mod = (await gZenModsManager.getMods())[modId];
+
+    is(
+      Boolean(mod.pageStylesBlocked),
+      isBlocked,
+      `Page styles of "${name}" are ${isBlocked ? "turned off" : "kept"}`
+    );
+
+    await gZenModsManager.uninstallMod(modId);
+  }
+});

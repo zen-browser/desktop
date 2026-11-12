@@ -1,0 +1,4 @@
+/* https://example.org/credits */
+@import "./parts/ok.css";
+body { background: url("a.png"); }
+body::before { content: "https://example.org"; }

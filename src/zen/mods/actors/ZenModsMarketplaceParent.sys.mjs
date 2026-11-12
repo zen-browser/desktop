@@ -49,8 +49,10 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
       case "ZenModsMarketplace:CheckForUpdates": {
         const updates = await lazy.gZenModsManager.checkForUpdates();
 
+        // The page only hears about its own mods, never where others come
+        // from.
         this.#sendToPage("ZenModsMarketplace:CheckForUpdatesFinished", {
-          updates,
+          updates: updates?.filter(mod => !mod.source) ?? null,
         });
         break;
       }

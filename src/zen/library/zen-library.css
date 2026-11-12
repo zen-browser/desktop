@@ -1291,6 +1291,11 @@ zen-library-history-section {
   gap: var(--zen-space-6);
 }
 
+/* The toggle shows for the keyboard too, not only on hover. */
+.zen-library-mod-row:focus-within .zen-library-row-actions moz-toggle {
+  display: block;
+}
+
 .zen-library-mod-title {
   display: flex;
   align-items: center;

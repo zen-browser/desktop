@@ -5,8 +5,9 @@
 /* Registered as an agent sheet, whose !important beats the user origin's,
  * where the mods' sheets are: no mod can hide what tells the user that a
  * page went fullscreen or locked the pointer. The values are Firefox's
- * own. translate stays free so the warning still slides in: a mod can
- * still push it away with it, which the store's review has to catch. */
+ * own, and the UA's for popovers, which center it. translate stays free so
+ * the warning still slides in: a mod can still push it away with it, which
+ * the store's review has to catch. */
 
 @-moz-document url("chrome://browser/content/browser.xhtml") {
   .pointerlockfswarning:popover-open {
@@ -21,9 +22,8 @@
     scale: none !important;
     rotate: none !important;
     position: fixed !important;
-    top: 0 !important;
-    bottom: auto !important;
-    margin-block: 0 !important;
+    inset: 0 0 auto !important;
+    margin: 0 auto !important;
     width: max-content !important;
     height: auto !important;
     min-width: 0 !important;

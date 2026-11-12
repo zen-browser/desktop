@@ -273,7 +273,7 @@ library-mods-scripts-prompt-accept = Allow scripts
 
 library-mods-install-folder-title = Choose the mod’s folder
 library-mods-install-folder-invalid = That folder isn’t a mod
-library-mods-install-folder-invalid-description = It needs a theme.json with a name and a version, and a chrome.css or scripts.
+library-mods-install-folder-invalid-description = It needs a theme.json with a name and a version, and styles or scripts.
 # Variables:
 #   $name (String) - The name of the mod
 library-mods-installed = Added { $name }

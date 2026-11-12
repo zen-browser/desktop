@@ -273,3 +273,140 @@ add_task(async function test_invalid_local_mods_are_refused() {
     );
   }
 });
+
+/**
+ * Writes a mod in the format other mod managers use: `style` as an object
+ * and `scripts` as a map, folders nested as keys.
+ *
+ * @returns {Promise<string>} The folder
+ */
+async function makeUserChromeMod() {
+  const folder = await IOUtils.createUniqueDirectory(
+    PathUtils.tempDir,
+    "zen-uc-mod"
+  );
+  const files = {
+    "userChrome.css": ':root { --zen-test-uc: "uc" !important; }',
+    "late.uc.js":
+      'window.zenTestOrder = [...(window.zenTestOrder ?? []), "late"];',
+    "broken.uc.js": 'throw new Error("This script fails on purpose");',
+    "elsewhere.uc.js": "window.zenTestElsewhere = true;",
+    "background.sys.mjs":
+      'Services.prefs.setBoolPref("zen.test.mods.background", true);',
+    "js/early.uc.js":
+      'window.zenTestOrder = [...(window.zenTestOrder ?? []), "early"];',
+    "js/module.uc.mjs": `
+      import { label } from "./helper.mjs";
+      window.zenTestOrder = [...(window.zenTestOrder ?? []), label];
+    `,
+    "js/helper.mjs": 'export const label = "module";',
+    "prefs/settings.json": JSON.stringify([
+      {
+        type: "string",
+        property: "zen.test.mods.uc.text",
+        label: "Text",
+        defaultValue: "hi",
+      },
+    ]),
+  };
+
+  for (const [path, content] of Object.entries(files)) {
+    const file = PathUtils.join(folder, ...path.split("/"));
+
+    await IOUtils.makeDirectory(PathUtils.parent(file), {
+      ignoreExisting: true,
+    });
+    await IOUtils.writeUTF8(file, content);
+  }
+
+  await IOUtils.writeJSON(PathUtils.join(folder, "theme.json"), {
+    name: "userChrome Mod",
+    version: "1.0.0",
+    style: { chrome: "userChrome.css", content: "userContent.css" },
+    preferences: "prefs/settings.json",
+    scripts: {
+      "late.uc.js": { loadOrder: 20 },
+      "broken.uc.js": { loadOrder: 15 },
+      "js/": {
+        "early.uc.js": { loadOrder: 1 },
+        "module.uc.mjs": {},
+      },
+      "background.sys.mjs": {},
+      "elsewhere.uc.js": { include: ["chrome://nowhere/*"] },
+      "../outside.uc.js": {},
+      "readme.md": {},
+    },
+  });
+  registerCleanupFunction(() => {
+    Services.prefs.clearUserPref("zen.test.mods.background");
+    return IOUtils.remove(folder, { recursive: true, ignoreAbsent: true });
+  });
+
+  return folder;
+}
+
+add_task(async function test_userchrome_scripts() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      [SCRIPTS_PREF, true],
+      ["zen.window-sync.enabled", false],
+    ],
+  });
+
+  const folder = await makeUserChromeMod();
+  const modId = await gZenModsManager.installLocalMod(folder, {
+    scriptsApproved: true,
+  });
+  const expectedOrder = ["early", "module", "late"];
+
+  await waitForRootValue(
+    window,
+    "--zen-test-uc",
+    '"uc"',
+    "The style named by style.chrome applies"
+  );
+  is(
+    Services.prefs.getStringPref("zen.test.mods.uc.text"),
+    "hi",
+    "The preferences file theme.json names is read"
+  );
+  await TestUtils.waitForCondition(
+    () => window.zenTestOrder?.length === expectedOrder.length,
+    "The scripts run in the open window"
+  );
+  Assert.deepEqual(
+    window.zenTestOrder,
+    expectedOrder,
+    "Classic scripts and modules run in their load order, modules import"
+  );
+  ok(
+    Services.prefs.getBoolPref("zen.test.mods.background", false),
+    "A .sys.mjs runs once"
+  );
+  ok(!window.zenTestElsewhere, "A script for other documents doesn't run");
+  is(
+    gZenModsManager.getModError(modId)?.type,
+    "script-failed",
+    "A script that throws marks its mod, without stopping the rest"
+  );
+
+  const otherWindow = await BrowserTestUtils.openNewBrowserWindow();
+
+  await TestUtils.waitForCondition(
+    () => otherWindow.zenTestOrder?.length === expectedOrder.length,
+    "The scripts run in new windows"
+  );
+  Assert.deepEqual(otherWindow.zenTestOrder, expectedOrder, "In order too");
+
+  await BrowserTestUtils.closeWindow(otherWindow);
+  await gZenModsManager.setModEnabled(modId, false);
+
+  is(
+    gZenModsManager.getScriptsState(modId),
+    "needs-restart",
+    "Scripts that ran in a document need a restart to go"
+  );
+
+  await gZenModsManager.uninstallMod(modId);
+  delete window.zenTestOrder;
+});

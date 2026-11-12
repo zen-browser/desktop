@@ -179,6 +179,30 @@ add_task(async function test_a_folder_of_a_branch() {
   await gZenModsManager.uninstallMod(modId);
 });
 
+add_task(async function test_a_link_to_its_theme_json() {
+  for (const link of [
+    "https://raw.githubusercontent.com/zen-tests/sample/main/pages/theme.json",
+    "raw.githubusercontent.com/zen-tests/sample/refs/heads/main/pages/theme.json",
+    "https://github.com/zen-tests/sample/blob/main/pages/theme.json?plain=1",
+  ]) {
+    const found = await gZenModsManager.fetchGitHubMod(link);
+
+    Assert.deepEqual(
+      [found.repo, found.ref, found.folder],
+      ["zen-tests/sample", "main", "pages"],
+      `${link} stands for the folder of the mod`
+    );
+  }
+
+  await Assert.rejects(
+    gZenModsManager.fetchGitHubMod(
+      "https://raw.githubusercontent.com/zen-tests/sample/main/pages/chrome.css"
+    ),
+    /Not a GitHub repository/,
+    "A link to any other file isn't a mod"
+  );
+});
+
 add_task(async function test_page_styles_from_github_cant_reach_the_web() {
   const found = await gZenModsManager.fetchGitHubMod("zen-tests/sample/pages");
 

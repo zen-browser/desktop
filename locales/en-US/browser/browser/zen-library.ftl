@@ -300,7 +300,7 @@ library-mods-scripts-prompt-message =
 library-mods-scripts-prompt-accept = Allow scripts
 
 library-mods-github-title = Install from GitHub
-library-mods-github-text = The repository, like owner/repo, or its address on github.com. Add the folder if the mod is in one.
+library-mods-github-text = The repository, like owner/repo, its address on github.com, or a link to the mod’s theme.json. Add the folder if the mod is in one.
 library-mods-github-not-found = Couldn’t find a mod there
 library-mods-github-not-found-description = It needs a public repository with a theme.json, a chrome.css or a userChrome.css.
 # Variables:

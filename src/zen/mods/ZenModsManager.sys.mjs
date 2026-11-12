@@ -69,7 +69,7 @@ const GITHUB_NAME_RE = /^[A-Za-z0-9_.-]{1,100}$/;
 const TRAILING_SLASHES_RE = /\/+$/;
 const DOT_GIT_RE = /\.git$/;
 const COMMIT_SHA_RE = /^[0-9a-f]{40}$/;
-const MAX_REMOTE_FILES = 300;
+const MAX_REMOTE_FILES = 1000;
 const MAX_REMOTE_BYTES = 20 * 1024 * 1024;
 const PARALLEL_DOWNLOADS = 6;
 const SCRIPT_HOST_PREFIX = "zen-mod-";
@@ -106,8 +106,10 @@ const CLOSING_TOKENS = new Set([
   "CloseSquareBracket",
   "CloseCurlyBracket",
 ]);
-// Stands in for where a mod's page sheet loads from, to resolve its URLs.
-const SHEET_BASE = "resource://zen-mod/";
+// Stands in for where a mod's page sheet loads from, to resolve its URLs. Its
+// folder is the mod's: past it lie the profile's own sheets.
+const SHEET_ROOT = "/mod/";
+const SHEET_BASE = `resource://zen-mod${SHEET_ROOT}`;
 const MAX_LOCAL_FILES = 1000;
 const LOCAL_POLL_MS = 1000;
 
@@ -499,7 +501,7 @@ function cssUrls(text, win) {
  * @param {string} entry - Its stylesheet for pages
  * @returns {Promise<boolean>} Whether that sheet, or one it imports, loads
  * anything from the web. A sheet that can't be read or checked counts as
- * one that does.
+ * one that does; one the mod lacks loads nothing.
  */
 async function hasRemoteStyles(folder, entry) {
   const win =
@@ -526,7 +528,14 @@ async function hasRemoteStyles(folder, entry) {
     let text;
 
     try {
-      text = await IOUtils.readUTF8(PathUtils.join(folder, ...parts));
+      const path = PathUtils.join(folder, ...parts);
+
+      // Gecko resolves the import the same way, and finds nothing either.
+      if (!(await IOUtils.exists(path))) {
+        continue;
+      }
+
+      text = await IOUtils.readUTF8(path);
     } catch {
       return true;
     }
@@ -550,7 +559,9 @@ async function hasRemoteStyles(folder, entry) {
         url === null ? null : URL.parse(url, `${SHEET_BASE}${relative}`);
 
       const isInMod =
-        target?.protocol === "resource:" && target.host === "zen-mod";
+        target?.protocol === "resource:" &&
+        target.host === "zen-mod" &&
+        target.pathname.startsWith(SHEET_ROOT);
 
       // Imports bring more CSS: only the mod's own, which is checked too. A
       // data: sheet, say, would come in unchecked.
@@ -564,7 +575,9 @@ async function hasRemoteStyles(folder, entry) {
 
       if (isImport) {
         try {
-          queue.push(decodeURIComponent(target.pathname.slice(1)));
+          queue.push(
+            decodeURIComponent(target.pathname.slice(SHEET_ROOT.length))
+          );
         } catch {
           return true;
         }

@@ -220,13 +220,20 @@ add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
     "image-set": true,
     "imported-no-space": true,
     "imported-encoded": true,
-    "import-missing": true,
+    // Loads nothing, like Gecko does with it.
+    "import-missing": false,
+    // Lands on the profile's sheet for Zen, which holds every mod's.
+    "import-escape": true,
     "var-in-image-set": true,
     charset: true,
     "remote-image-scheme": true,
     "data-import": true,
     clean: false,
   };
+
+  // Nothing loads the sheets meanwhile: in a test run, a content process
+  // that meets a missing import crashes on purpose.
+  Services.prefs.setBoolPref("zen.themes.disable-all", true);
 
   for (const [name, isBlocked] of Object.entries(cases)) {
     const found = await gZenModsManager.fetchGitHubMod(
@@ -243,4 +250,6 @@ add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
 
     await gZenModsManager.uninstallMod(modId);
   }
+
+  Services.prefs.clearUserPref("zen.themes.disable-all");
 });

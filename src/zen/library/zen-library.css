@@ -1271,7 +1271,8 @@ zen-library-history-section {
   font-size: var(--zen-font-size-11);
   font-weight: var(--font-weight-semibold);
 
-  &[scripts="running"] {
+  &[scripts="running"],
+  &[update] {
     background: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
   }
 

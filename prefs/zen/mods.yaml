@@ -9,7 +9,7 @@
   value: "@cond"
   condition: "defined(MOZILLA_OFFICIAL)"
 
-# Mod scripts run with every power the browser has; only local mods have them.
+# Mod scripts run with every power the browser has; store mods have none.
 - name: zen.mods.scripts.enabled
   value: false
 
@@ -30,6 +30,25 @@
 
 - name: zen.mods.store-assets-url
   value: "https://raw.githubusercontent.com/zen-browser/theme-store/"
+  condition: "!defined(MOZILLA_OFFICIAL)"
+
+# Mods from GitHub are only read through these prefixes.
+- name: zen.mods.github.api-url
+  value: "https://api.github.com/"
+  locked: true
+  condition: "defined(MOZILLA_OFFICIAL)"
+
+- name: zen.mods.github.api-url
+  value: "https://api.github.com/"
+  condition: "!defined(MOZILLA_OFFICIAL)"
+
+- name: zen.mods.github.raw-url
+  value: "https://raw.githubusercontent.com/"
+  locked: true
+  condition: "defined(MOZILLA_OFFICIAL)"
+
+- name: zen.mods.github.raw-url
+  value: "https://raw.githubusercontent.com/"
   condition: "!defined(MOZILLA_OFFICIAL)"
 
 # === Mark: Site Injection ===

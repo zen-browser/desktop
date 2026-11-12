@@ -26,6 +26,8 @@ const AUTO_UPDATE_PREF = "zen.mods.auto-update";
 const AUTO_UPDATE_DAYS_PREF = "zen.mods.auto-update-days";
 const LAST_UPDATE_PREF = "zen.mods.last-update";
 const MILESTONE_PREF = "zen.mods.milestone";
+const GITHUB_API_URL_PREF = "zen.mods.github.api-url";
+const GITHUB_RAW_URL_PREF = "zen.mods.github.raw-url";
 
 const STORE_MOD_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 const WHITESPACE_RE = /\s/g;
@@ -55,10 +57,19 @@ const MANAGER_FIELDS = [
 ];
 
 const LOCAL_ID_PREFIX = "local-";
+const GITHUB_ID_PREFIX = "github-";
+const GITHUB_URL_RE = /^(?:https?:\/\/)?(?:www\.)?github\.com\//i;
+const GITHUB_NAME_RE = /^[A-Za-z0-9_.-]{1,100}$/;
+const TRAILING_SLASHES_RE = /\/+$/;
+const DOT_GIT_RE = /\.git$/;
+const COMMIT_SHA_RE = /^[0-9a-f]{40}$/;
+const MAX_REMOTE_FILES = 300;
+const MAX_REMOTE_BYTES = 20 * 1024 * 1024;
+const PARALLEL_DOWNLOADS = 6;
 const SCRIPT_HOST_PREFIX = "zen-mod-";
 const SCRIPT_FILE_RE = /\.m?js$/;
 const MAX_SCRIPT_FILES = 200;
-const SCRIPT_SOURCES = new Set(["local"]);
+const SCRIPT_SOURCES = new Set(["local", "github"]);
 const STYLE_FILES = ["chrome.css", "userChrome.css"];
 const MAIN_WINDOW_URL = "chrome://browser/content/browser.xhtml";
 const DEFAULT_LOAD_ORDER = 10;
@@ -179,6 +190,69 @@ function pathParts(path) {
   );
 
   return isValid ? parts : null;
+}
+
+/**
+ * @param {string} path - A valid relative path
+ * @returns {string} The path, each part encoded for a URL
+ */
+function encodePath(path) {
+  return pathParts(path).map(encodeURIComponent).join("/");
+}
+
+/**
+ * Reads where a mod lives on GitHub from what the user typed.
+ *
+ * shortcut: in a /tree/ URL the branch is one segment, so branches with "/"
+ * in their name read as branch and folder; parse the full ref with the API if
+ * people need them.
+ *
+ * @param {*} input - "owner/repo", "owner/repo/folder" or a github.com URL,
+ * with "/tree/<branch>/<folder>" for a branch other than the default one
+ * @returns {{repo: string, ref: string|null, folder: string}} The
+ * repository as "owner/repo", the branch and the folder of the mod
+ */
+function parseGitHubSource(input) {
+  const text = String(input ?? "")
+    .trim()
+    .replace(GITHUB_URL_RE, "")
+    .replace(TRAILING_SLASHES_RE, "");
+  const [owner = "", repoName = "", ...rest] = text.split("/");
+  const repo = repoName.replace(DOT_GIT_RE, "");
+  const isName = name =>
+    GITHUB_NAME_RE.test(name) && name !== "." && name !== "..";
+
+  let ref = null;
+  let folder = rest;
+
+  if (rest[0] === "tree" && rest.length > 1) {
+    ref = rest[1];
+    folder = rest.slice(2);
+  }
+
+  const isValid =
+    isName(owner) &&
+    isName(repo) &&
+    (ref === null || isName(ref)) &&
+    (!folder.length || pathParts(folder.join("/")));
+
+  if (!isValid) {
+    throw new Error(`[ZenMods]: Not a GitHub repository: ${input}`);
+  }
+
+  return { repo: `${owner}/${repo}`, ref, folder: folder.join("/") };
+}
+
+/**
+ * @param {object} mod - A mod of the registry installed from GitHub
+ * @returns {{repo: string, ref: string|null, folder: string}}
+ */
+function gitHubSourceOf(mod) {
+  return parseGitHubSource(
+    [mod.repo, mod.ref && `tree/${mod.ref}`, mod.folder]
+      .filter(Boolean)
+      .join("/")
+  );
 }
 
 /**
@@ -500,11 +574,24 @@ class nsZenModsManager {
       return "none";
     }
 
-    if (!mod.scriptsApproved) {
+    if (!this.#areScriptsApproved(mod)) {
       return "needs-approval";
     }
 
     return this.#scripts.has(modId) ? "running" : "off";
+  }
+
+  /**
+   * @param {object} mod - An entry of the registry
+   * @returns {boolean} Whether the user allowed the mod's scripts: any
+   * version of a local mod's, but only the version they saw of a GitHub
+   * mod's
+   */
+  #areScriptsApproved(mod) {
+    return mod.source === "github"
+      ? Boolean(mod.approvedScriptsHash) &&
+          mod.approvedScriptsHash === mod.scriptsHash
+      : Boolean(mod.scriptsApproved);
   }
 
   /**
@@ -611,7 +698,274 @@ class nsZenModsManager {
    * @returns {Promise<void>}
    */
   async reinstallMod(modId) {
+    await this.init();
+
+    const mod = this.#mods[modId];
+
+    if (mod?.source === "github") {
+      await this.installGitHubMod(
+        await this.#readGitHubCommit(gitHubSourceOf(mod), mod.sha)
+      );
+      return;
+    }
+
     await this.installMod(await this.fetchStoreMod(modId));
+  }
+
+  /**
+   * Finds the mod a GitHub repository, or a folder in it, holds at the
+   * commit its branch points to now. Nothing is installed.
+   *
+   * @param {string} input - See parseGitHubSource
+   * @returns {Promise<object>} What installGitHubMod takes
+   */
+  async fetchGitHubMod(input) {
+    const source = parseGitHubSource(input);
+
+    return this.#readGitHubCommit(
+      source,
+      await this.#resolveGitHubCommit(source)
+    );
+  }
+
+  /**
+   * Installs a mod `fetchGitHubMod` found, or updates the one installed from
+   * the same place. Its files are a copy of that commit's.
+   *
+   * @param {object} found - What `fetchGitHubMod` returned
+   * @param {object} [options]
+   * @param {boolean} [options.scriptsApproved] - The user agreed to run the
+   * mod's scripts as they are in that commit
+   * @returns {Promise<string>} The mod's id
+   */
+  async installGitHubMod(found, { scriptsApproved = false } = {}) {
+    await this.init();
+
+    const existing = Object.values(this.#mods).find(
+      mod =>
+        mod.source === "github" &&
+        mod.repo === found.repo &&
+        (mod.folder ?? "") === found.folder
+    );
+    const modId =
+      existing?.id ??
+      `${GITHUB_ID_PREFIX}${Services.uuid.generateUUID().toString().slice(1, -1)}`;
+    const staged = await this.#stageGitHub(modId, found);
+
+    staged.mod.approvedScriptsHash = scriptsApproved
+      ? staged.mod.scriptsHash
+      : (existing?.approvedScriptsHash ?? null);
+
+    await this.#commit([staged]);
+
+    return modId;
+  }
+
+  /**
+   * Installs the update of a GitHub mod that waits because its scripts
+   * changed, now that the user allowed them.
+   *
+   * @param {string} modId
+   * @returns {Promise<void>}
+   */
+  async approveUpdate(modId) {
+    await this.init();
+
+    const mod = this.#mods[modId];
+
+    if (mod?.source !== "github" || !mod.pendingUpdate) {
+      throw new Error(`[ZenMods]: ${modId} has no update waiting.`);
+    }
+
+    await this.installGitHubMod(
+      await this.#readGitHubCommit(gitHubSourceOf(mod), mod.pendingUpdate.sha),
+      { scriptsApproved: true }
+    );
+  }
+
+  /**
+   * @param {string} repo - "owner/repo"
+   * @returns {string}
+   */
+  #gitHubApiUrl(repo) {
+    return `${Services.prefs.getStringPref(GITHUB_API_URL_PREF)}repos/${repo}/`;
+  }
+
+  /**
+   * @param {string} repo - "owner/repo"
+   * @param {string} folder
+   * @param {string} sha
+   * @returns {string} Where the mod's files are, at that commit
+   */
+  #gitHubRawUrl(repo, folder, sha) {
+    const path = folder ? `${encodePath(folder)}/` : "";
+
+    return `${Services.prefs.getStringPref(GITHUB_RAW_URL_PREF)}${repo}/${sha}/${path}`;
+  }
+
+  /**
+   * @param {{repo: string, ref: string|null}} source
+   * @returns {Promise<string>} The commit the branch points to now
+   */
+  async #resolveGitHubCommit({ repo, ref }) {
+    const api = this.#gitHubApiUrl(repo);
+    const response = await this.#download(
+      `${api}commits/${encodeURIComponent(ref ?? "HEAD")}`,
+      [api],
+      { Accept: "application/vnd.github.sha" }
+    );
+    const sha = new TextDecoder().decode(response).trim();
+
+    if (!COMMIT_SHA_RE.test(sha)) {
+      throw new Error(`[ZenMods]: GitHub returned no commit for ${repo}.`);
+    }
+
+    return sha;
+  }
+
+  /**
+   * Reads the mod in a commit: which files it has and what its `theme.json`
+   * declares. One without `theme.json` is named after its folder or
+   * repository.
+   *
+   * @param {{repo: string, ref: string|null, folder: string}} source
+   * @param {string} sha
+   * @returns {Promise<object>}
+   */
+  async #readGitHubCommit({ repo, ref, folder }, sha) {
+    if (!COMMIT_SHA_RE.test(sha)) {
+      throw new Error(`[ZenMods]: Invalid commit: ${sha}`);
+    }
+
+    const api = this.#gitHubApiUrl(repo);
+    const tree = JSON.parse(
+      new TextDecoder().decode(
+        await this.#download(`${api}git/trees/${sha}?recursive=1`, [api])
+      )
+    );
+
+    if (!Array.isArray(tree?.tree) || tree.truncated) {
+      throw new Error(`[ZenMods]: Could not list the files of ${repo}.`);
+    }
+
+    const prefix = folder ? `${folder}/` : "";
+    const files = tree.tree
+      .filter(
+        entry =>
+          entry?.type === "blob" &&
+          typeof entry.path === "string" &&
+          entry.path.startsWith(prefix)
+      )
+      .map(entry => ({
+        path: entry.path.slice(prefix.length),
+        size: Number(entry.size) || 0,
+      }))
+      .filter(({ path }) =>
+        pathParts(path)?.every(
+          part => !part.startsWith(".") && part !== "node_modules"
+        )
+      );
+    const totalBytes = files.reduce((total, { size }) => total + size, 0);
+
+    if (files.length > MAX_REMOTE_FILES || totalBytes > MAX_REMOTE_BYTES) {
+      throw new Error(`[ZenMods]: ${repo} is too big for a mod.`);
+    }
+
+    const paths = new Set(files.map(({ path }) => path));
+    const raw = this.#gitHubRawUrl(repo, folder, sha);
+    const manifest = parseManifest(
+      paths.has("theme.json")
+        ? JSON.parse(
+            new TextDecoder().decode(
+              await this.#download(`${raw}theme.json`, [raw])
+            )
+          )
+        : {}
+    );
+
+    for (const { path } of manifest.scripts) {
+      if (!paths.has(path)) {
+        throw new Error(`[ZenMods]: Script ${path} is missing.`);
+      }
+    }
+
+    manifest.stylePath = await findStyle(manifest.stylePath, path =>
+      paths.has(path)
+    );
+
+    if (!manifest.stylePath && !manifest.scripts.length) {
+      throw new Error(`[ZenMods]: ${repo} has neither styles nor scripts.`);
+    }
+
+    const [owner, repoName] = repo.split("/");
+
+    return {
+      ...manifest,
+      name: manifest.name || folder.split("/").at(-1) || repoName,
+      version: manifest.version || sha.slice(0, 7),
+      author: manifest.author || owner,
+      homepage: manifest.homepage || `https://github.com/${repo}`,
+      preferences: paths.has(manifest.preferencesPath),
+      source: "github",
+      repo,
+      ref,
+      folder,
+      sha,
+      files: [...paths],
+    };
+  }
+
+  /**
+   * Downloads a GitHub mod's files, as they are in its commit, into a fresh
+   * folder next to the installed ones.
+   *
+   * @param {string} modId
+   * @param {object} found - What `#readGitHubCommit` returned
+   * @returns {Promise<{mod: object, staging: string}>} The registry entry,
+   * with the hash of its scripts, and the folder with the files
+   */
+  async #stageGitHub(modId, found) {
+    const { repo, folder, sha, files } = found;
+    await IOUtils.makeDirectory(this.modsRootPath, { ignoreExisting: true });
+
+    const staging = await IOUtils.createUniqueDirectory(
+      this.modsRootPath,
+      ".github.staging"
+    );
+    const raw = this.#gitHubRawUrl(repo, folder, sha);
+    const downloadFile = async path => {
+      const target = PathUtils.join(staging, ...pathParts(path));
+
+      await IOUtils.makeDirectory(PathUtils.parent(target), {
+        ignoreExisting: true,
+      });
+      await IOUtils.write(
+        target,
+        await this.#download(`${raw}${encodePath(path)}`, [raw])
+      );
+    };
+
+    const mod = { ...found, id: modId, scriptsHash: null };
+
+    delete mod.files;
+
+    try {
+      for (let start = 0; start < files.length; start += PARALLEL_DOWNLOADS) {
+        await Promise.all(
+          files.slice(start, start + PARALLEL_DOWNLOADS).map(downloadFile)
+        );
+      }
+
+      if (mod.scripts.length) {
+        mod.scriptsHash = await this.#hashScripts(modId, staging);
+      }
+    } catch (error) {
+      await IOUtils.remove(staging, { recursive: true, ignoreAbsent: true });
+
+      throw error;
+    }
+
+    return { mod, staging };
   }
 
   /**
@@ -775,7 +1129,8 @@ class nsZenModsManager {
   }
 
   /**
-   * Lets a local mod's scripts run once scripts are allowed.
+   * Lets a mod's scripts run once scripts are allowed: any version of a
+   * local mod's, the installed version of a GitHub mod's.
    *
    * @param {string} modId
    * @returns {Promise<void>}
@@ -784,11 +1139,23 @@ class nsZenModsManager {
     await this.init();
 
     await this.#mutate(mods => {
-      if (mods[modId]?.source !== "local") {
-        throw new Error(`[ZenMods]: ${modId} is not a local mod.`);
-      }
+      const mod = mods[modId];
 
-      mods[modId].scriptsApproved = true;
+      switch (mod?.source) {
+        case "local": {
+          mod.scriptsApproved = true;
+          break;
+        }
+
+        case "github": {
+          mod.approvedScriptsHash = mod.scriptsHash;
+          break;
+        }
+
+        default: {
+          throw new Error(`[ZenMods]: ${modId} can't run scripts.`);
+        }
+      }
     });
   }
 
@@ -896,7 +1263,7 @@ class nsZenModsManager {
       ? this.#orderedMods().filter(
           mod =>
             mod.enabled !== false &&
-            mod.scriptsApproved &&
+            this.#areScriptsApproved(mod) &&
             declaredScripts(mod).length
         )
       : [];
@@ -921,6 +1288,10 @@ class nsZenModsManager {
           continue;
         }
 
+        if (mod.source === "github" && hash !== mod.approvedScriptsHash) {
+          throw new Error("The scripts changed since they were allowed.");
+        }
+
         const directory = Cc["@mozilla.org/file/local;1"].createInstance(
           Ci.nsIFile
         );
@@ -934,7 +1305,7 @@ class nsZenModsManager {
 
         const scripts = declaredScripts(mod).map(script => ({
           ...script,
-          url: `resource://${host}/${pathParts(script.path).map(encodeURIComponent).join("/")}`,
+          url: `resource://${host}/${encodePath(script.path)}`,
         }));
         const modules = scripts
           .filter(({ kind }) => kind === "module")
@@ -1317,8 +1688,9 @@ class nsZenModsManager {
   }
 
   /**
-   * Updates every store mod that has a newer version, and reinstalls the ones
-   * whose files are missing. Concurrent calls share the same check.
+   * Updates every store mod that has a newer version and every GitHub mod
+   * whose branch moved, and reinstalls the ones whose files are missing.
+   * Concurrent calls share the same check.
    *
    * @returns {Promise<object[]|null>} The updated mods, or null if the store
    * could not be reached
@@ -1367,14 +1739,69 @@ class nsZenModsManager {
   async #runUpdateCheck() {
     await this.init();
 
-    // Without mods there is nothing to ask the store about.
-    if (!Object.keys(this.#mods).length) {
-      Services.prefs.setIntPref(
-        LAST_UPDATE_PREF,
-        Math.floor(Date.now() / 1000)
-      );
+    const staged = [];
+    const pending = [];
+    const storeReached = await this.#stageStoreUpdates(staged);
 
-      return [];
+    for (const mod of Object.values(this.#mods)) {
+      if (mod.source !== "github") {
+        continue;
+      }
+
+      try {
+        await this.#stageGitHubUpdate(mod, staged, pending);
+      } catch (error) {
+        console.error(
+          `[ZenMods]: Could not update ${mod.name} (${mod.id}), keeping the installed version:`,
+          error
+        );
+
+        this.#errors.set(mod.id, {
+          type: "update-failed",
+          message: String(error?.message ?? error),
+        });
+      }
+    }
+
+    if (pending.length) {
+      await this.#mutate(mods => {
+        for (const { modId, update } of pending) {
+          if (mods[modId]) {
+            mods[modId].pendingUpdate = update;
+          }
+        }
+      });
+    }
+
+    if (staged.length) {
+      await this.#commit(staged);
+    } else if (!pending.length) {
+      // Nothing was rebuilt, but the failed updates are news.
+      Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
+    }
+
+    if (!storeReached) {
+      return null;
+    }
+
+    Services.prefs.setIntPref(LAST_UPDATE_PREF, Math.floor(Date.now() / 1000));
+
+    return staged.map(({ mod }) => mod);
+  }
+
+  /**
+   * Stages the store mods that have a newer version, and the ones whose
+   * files are missing.
+   *
+   * @param {object[]} staged - Where staged mods go
+   * @returns {Promise<boolean>} Whether the store could be reached, if any
+   * mod comes from it
+   */
+  async #stageStoreUpdates(staged) {
+    const storeMods = Object.values(this.#mods).filter(mod => !mod.source);
+
+    if (!storeMods.length) {
+      return true;
     }
 
     let index;
@@ -1386,18 +1813,16 @@ class nsZenModsManager {
     } catch (error) {
       console.error("[ZenMods]: Could not fetch the mods store:", error);
 
-      return null;
+      return false;
     }
 
     if (!index || typeof index !== "object") {
       console.error("[ZenMods]: The mods store index is invalid.");
 
-      return null;
+      return false;
     }
 
-    const staged = [];
-
-    for (const mod of Object.values(this.#mods)) {
+    for (const mod of storeMods) {
       const latest = index[mod.id];
 
       if (!latest) {
@@ -1407,14 +1832,10 @@ class nsZenModsManager {
       try {
         this.#validateStoreMod(latest, mod.id);
 
-        const stylePath = PathUtils.join(
-          this.getModFolder(mod.id),
-          "chrome.css"
-        );
         const isNewer =
           Services.vc.compare(latest.version, mod.version ?? "0.0.0") > 0;
 
-        if (!isNewer && (await IOUtils.exists(stylePath))) {
+        if (!isNewer && (await IOUtils.exists(this.#styleFile(mod)))) {
           continue;
         }
 
@@ -1439,16 +1860,56 @@ class nsZenModsManager {
       }
     }
 
-    if (staged.length) {
-      await this.#commit(staged);
-    } else {
-      // Nothing was rebuilt, but the failed updates are news.
-      Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
+    return true;
+  }
+
+  /**
+   * Stages a GitHub mod whose branch moved, or whose files are missing. An
+   * update that changes scripts the user allowed waits until they allow it.
+   *
+   * @param {object} mod - An entry of the registry
+   * @param {object[]} staged - Where staged mods go
+   * @param {object[]} pending - Where updates that wait go
+   */
+  async #stageGitHubUpdate(mod, staged, pending) {
+    const source = gitHubSourceOf(mod);
+    const sha = await this.#resolveGitHubCommit(source);
+    const stylePath = this.#styleFile(mod);
+    const hasFiles = !stylePath || (await IOUtils.exists(stylePath));
+
+    if ((sha === mod.sha && hasFiles) || sha === mod.pendingUpdate?.sha) {
+      return;
     }
 
-    Services.prefs.setIntPref(LAST_UPDATE_PREF, Math.floor(Date.now() / 1000));
+    const update = await this.#stageGitHub(
+      mod.id,
+      await this.#readGitHubCommit(source, sha)
+    );
+    const { scriptsHash } = update.mod;
 
-    return staged.map(({ mod }) => mod);
+    if (
+      mod.approvedScriptsHash &&
+      scriptsHash &&
+      scriptsHash !== mod.approvedScriptsHash
+    ) {
+      console.warn(
+        `[ZenMods]: The update of ${mod.name} (${mod.id}) changes its scripts, waiting for the user to allow them.`
+      );
+
+      await IOUtils.remove(update.staging, {
+        recursive: true,
+        ignoreAbsent: true,
+      });
+      pending.push({
+        modId: mod.id,
+        update: { sha, version: update.mod.version },
+      });
+
+      return;
+    }
+
+    update.mod.approvedScriptsHash = mod.approvedScriptsHash ?? null;
+    staged.push(update);
   }
 
   /**
@@ -1568,47 +2029,54 @@ class nsZenModsManager {
     await IOUtils.remove(previous, { recursive: true, ignoreAbsent: true });
   }
 
-  /**
-   * Mod files only come from the store, over HTTPS, also after redirects.
-   *
-   * @param {string} url
-   */
-  #assertStoreUrl(url) {
-    const parsed = URL.parse(url);
-    const allowed = [
+  /** @returns {string[]} Where store files may come from */
+  #storeUrls() {
+    return [
       Services.prefs.getStringPref(STORE_URL_PREF),
       Services.prefs.getStringPref(STORE_ASSETS_URL_PREF),
     ];
+  }
+
+  /**
+   * Mod files only come over HTTPS from where they're expected, also after
+   * redirects.
+   *
+   * @param {string} url
+   * @param {string[]} allowed - URL prefixes
+   */
+  #assertAllowedUrl(url, allowed) {
+    const parsed = URL.parse(url);
 
     if (parsed?.protocol !== "https:") {
       throw new Error(`[ZenMods]: Refusing a non-HTTPS mod URL: ${url}`);
     }
 
     if (!allowed.some(prefix => parsed.href.startsWith(prefix))) {
-      throw new Error(
-        `[ZenMods]: Refusing a mod URL outside the store: ${url}`
-      );
+      throw new Error(`[ZenMods]: Refusing a mod URL from elsewhere: ${url}`);
     }
   }
 
   /**
    * @param {string} url
+   * @param {string[]} [allowed] - URL prefixes it may come from; the store
+   * by default
+   * @param {Record<string, string>} [headers]
    * @returns {Promise<Uint8Array>}
    */
-  async #download(url) {
-    this.#assertStoreUrl(url);
+  async #download(url, allowed = this.#storeUrls(), headers = {}) {
+    this.#assertAllowedUrl(url, allowed);
 
     let lastError;
 
     for (let attempt = 1; attempt <= DOWNLOAD_ATTEMPTS; attempt++) {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, { headers });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status} for ${url}`);
         }
 
-        this.#assertStoreUrl(response.url);
+        this.#assertAllowedUrl(response.url, allowed);
 
         if (Number(response.headers.get("content-length")) > MAX_FILE_BYTES) {
           throw new Error(`${url} is larger than ${MAX_FILE_BYTES} bytes`);
@@ -1756,12 +2224,7 @@ class nsZenModsManager {
         const url =
           mod.source === "local"
             ? PathUtils.toFileURI(stylePath)
-            : `zen-themes/${[
-                mod.id,
-                ...pathParts(mod.stylePath ?? "chrome.css"),
-              ]
-                .map(encodeURIComponent)
-                .join("/")}`;
+            : `zen-themes/${encodeURIComponent(mod.id)}/${encodePath(mod.stylePath ?? "chrome.css")}`;
 
         content += `@import url("${url}");\n`;
       }

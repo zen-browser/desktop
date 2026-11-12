@@ -269,6 +269,74 @@ async function installFromFolder() {
   });
 }
 
+/**
+ * Installs a mod from a GitHub repository the user names. Zen doesn't
+ * review those, so the user agrees to the mod, and to its scripts if it has
+ * any, before anything is installed.
+ */
+async function installFromGitHub() {
+  const [title, text] = await document.l10n.formatValues([
+    { id: "library-mods-github-title" },
+    { id: "library-mods-github-text" },
+  ]);
+  const result = await Services.prompt.asyncPrompt(
+    window.browsingContext,
+    Services.prompt.MODAL_TYPE_WINDOW,
+    title,
+    text,
+    "",
+    null,
+    false
+  );
+  const input = result.getProperty("value")?.trim();
+
+  if (!result.getProperty("ok") || !input) {
+    return;
+  }
+
+  let found;
+
+  try {
+    found = await lazy.gZenModsManager.fetchGitHubMod(input);
+  } catch (error) {
+    console.warn(`[ZenLibraryMods]: No mod found at ${input}:`, error);
+    window.gZenUIManager.showToast("library-mods-github-not-found", {
+      descriptionId: "library-mods-github-not-found-description",
+    });
+    return;
+  }
+
+  const hasScripts = Boolean(found.scripts.length);
+  const agreed = await confirmAction(
+    [
+      "library-mods-github-prompt-title",
+      "library-mods-github-prompt-message",
+      "library-mods-github-prompt-accept",
+    ],
+    { name: found.name, repo: found.repo, scripts: hasScripts ? "yes" : "no" }
+  );
+
+  if (!agreed) {
+    return;
+  }
+
+  try {
+    await lazy.gZenModsManager.installGitHubMod(found, {
+      scriptsApproved: hasScripts,
+    });
+  } catch (error) {
+    console.error(`[ZenLibraryMods]: Could not install ${found.repo}:`, error);
+    window.gZenUIManager.showToast("library-mods-github-failed", {
+      l10nArgs: { name: found.name },
+    });
+    return;
+  }
+
+  window.gZenUIManager.showToast("library-mods-installed", {
+    l10nArgs: { name: found.name },
+  });
+}
+
 async function checkForUpdates() {
   const updates = await lazy.gZenModsManager.checkForUpdates();
 
@@ -441,6 +509,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
         command: installFromFolder,
         separatorBefore: true,
       },
+      { l10nId: "library-mods-install-github", command: installFromGitHub },
       { l10nId: "library-mods-import", command: importMods },
       { l10nId: "library-mods-export", command: exportMods },
       {
@@ -731,6 +800,38 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
   }
 
+  /**
+   * An update that changes a GitHub mod's scripts waits for the user.
+   *
+   * @param {object} mod
+   */
+  async #reviewUpdate(mod) {
+    const agreed = await confirmAction(
+      [
+        "library-mods-update-prompt-title",
+        "library-mods-update-prompt-message",
+        "library-mods-update-prompt-accept",
+      ],
+      { name: mod.name, version: mod.pendingUpdate.version }
+    );
+
+    if (!agreed) {
+      return;
+    }
+
+    try {
+      await lazy.gZenModsManager.approveUpdate(mod.id);
+      window.gZenUIManager.showToast("library-mods-updated", {
+        l10nArgs: { name: mod.name },
+      });
+    } catch (error) {
+      console.error(`[ZenLibraryMods]: Could not update ${mod.id}:`, error);
+      window.gZenUIManager.showToast("library-mods-update-failed", {
+        l10nArgs: { name: mod.name },
+      });
+    }
+  }
+
   async #approveScripts(mod) {
     if (await confirmScripts(mod.name)) {
       await lazy.gZenModsManager.approveScripts(mod.id);
@@ -762,6 +863,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
       <menupopup class="zen-library-mods-menu">
         <menuitem data-action="configure" data-l10n-id="library-mods-menu-configure"/>
         <menuitem data-action="homepage" data-l10n-id="library-mods-menu-homepage"/>
+        <menuitem data-action="review-update" data-l10n-id="library-mods-menu-review-update"/>
         <menuitem data-action="approve-scripts" data-l10n-id="library-mods-menu-approve-scripts"/>
         <menuitem data-action="reload" data-l10n-id="library-mods-menu-reload"/>
         <menuitem data-action="folder" data-l10n-id="library-mods-menu-folder"/>
@@ -786,6 +888,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
         case "homepage": {
           this.#openHomepage(mod);
+          break;
+        }
+
+        case "review-update": {
+          this.#reviewUpdate(mod);
           break;
         }
 
@@ -836,10 +943,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     const hidden = {
       configure: !mod.preferences.length,
       homepage: !mod.homepage,
+      "review-update": !mod.pendingUpdate,
       "approve-scripts": mod.scriptsState !== "needs-approval",
       reload: !isLocal,
       folder: !isLocal,
-      // Only the store has a copy to download again.
+      // A local mod has no copy elsewhere to download again.
       reinstall: isLocal,
     };
 
@@ -1361,6 +1469,24 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
                 ? html`<span
                     class="zen-library-mod-badge"
                     data-l10n-id="library-mods-badge-local"
+                  ></span>`
+                : nothing
+            }
+            ${
+              mod.source === "github"
+                ? html`<span
+                    class="zen-library-mod-badge"
+                    data-l10n-id="library-mods-badge-github"
+                    data-l10n-args=${JSON.stringify({ repo: mod.repo })}
+                  ></span>`
+                : nothing
+            }
+            ${
+              mod.pendingUpdate
+                ? html`<span
+                    class="zen-library-mod-badge"
+                    update
+                    data-l10n-id="library-mods-badge-update"
                   ></span>`
                 : nothing
             }

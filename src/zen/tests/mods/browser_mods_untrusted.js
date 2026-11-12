@@ -30,7 +30,7 @@ add_task(async function test_untrusted_urls_are_rejected() {
 
   const cases = [
     ["zen-test-bad-http", /non-HTTPS/, "plain HTTP"],
-    ["zen-test-bad-host", /outside the store/, "another host"],
+    ["zen-test-bad-host", /from elsewhere/, "another host"],
     ["zen-test-bad-redirect", /non-HTTPS/, "a redirect to plain HTTP"],
   ];
 

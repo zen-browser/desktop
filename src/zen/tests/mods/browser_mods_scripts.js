@@ -261,7 +261,7 @@ add_task(async function test_store_mods_never_run_scripts() {
   is(marker(), null, "Nothing runs");
   await Assert.rejects(
     gZenModsManager.approveScripts(MOD_B),
-    /not a local mod/,
+    /can.t run scripts/,
     "And can't be allowed"
   );
 

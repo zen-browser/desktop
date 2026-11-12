@@ -13,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenKeyboardShortcuts:
     "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+  ZenSpaceExtensions: "resource:///modules/zen/ZenSpaceExtensions.sys.mjs",
 });
 
 ChromeUtils.defineESModuleGetters(
@@ -175,6 +176,13 @@ class nsZenWorkspaces {
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      const applySpaceExtensions = () => this.#applySpaceExtensions();
+      window.addEventListener(
+        "AfterWorkspacesSessionRestore",
+        applySpaceExtensions
+      );
+      // Extensions are profile-wide, so the focused window decides.
+      window.addEventListener("activate", applySpaceExtensions);
       const onContainerDeleted = subject => {
         const userContextId = subject?.wrappedJSObject?.userContextId;
         for (const workspace of this.getWorkspaces()) {
@@ -1329,6 +1337,79 @@ class nsZenWorkspaces {
       "command",
       this.contextChangeContainerTab.bind(this)
     );
+
+    document
+      .getElementById("context_zenWorkspacesExtensions")
+      .addEventListener("command", this.contextToggleSpaceExtension.bind(this));
+  }
+
+  /**
+   * Turns extensions on/off to match the active space of this window.
+   */
+  #applySpaceExtensions() {
+    if (this.privateWindowOrDisabled) {
+      return;
+    }
+    lazy.ZenSpaceExtensions.applyForSpace(this.getActiveWorkspaceFromCache());
+  }
+
+  async #updateWorkspaceActionsMenuExtensions(workspaceId) {
+    const menu = document.getElementById("context_zenWorkspacesExtensions");
+    menu.hidden =
+      this.privateWindowOrDisabled || !lazy.ZenSpaceExtensions.enabled;
+    if (menu.hidden) {
+      return;
+    }
+    const popup = menu.menupopup;
+    const workspace = this.getWorkspaceFromId(
+      workspaceId || this.activeWorkspace
+    );
+    const addons = await lazy.ZenSpaceExtensions.getManageableAddons();
+    popup.replaceChildren();
+    if (!addons.length) {
+      const item = document.createXULElement("menuitem");
+      item.setAttribute("disabled", "true");
+      document.l10n.setAttributes(
+        item,
+        "zen-workspaces-panel-context-extensions-empty"
+      );
+      popup.appendChild(item);
+      return;
+    }
+    for (const addon of addons) {
+      const item = document.createXULElement("menuitem");
+      item.setAttribute("type", "checkbox");
+      item.setAttribute("closemenu", "none");
+      item.setAttribute("label", addon.name);
+      item.setAttribute("data-addon-id", addon.id);
+      item.setAttribute("zen-workspace-id", workspace.uuid);
+      if (!lazy.ZenSpaceExtensions.isDisabledInSpace(workspace, addon.id)) {
+        item.setAttribute("checked", "true");
+      }
+      popup.appendChild(item);
+    }
+  }
+
+  contextToggleSpaceExtension(event) {
+    const item = event.target.closest("menuitem[data-addon-id]");
+    if (!item) {
+      return;
+    }
+    const workspace = this.getWorkspaceFromId(
+      item.getAttribute("zen-workspace-id")
+    );
+    if (!workspace) {
+      return;
+    }
+    lazy.ZenSpaceExtensions.setDisabledInSpace(
+      workspace,
+      item.getAttribute("data-addon-id"),
+      !item.hasAttribute("checked")
+    );
+    this.saveWorkspace(workspace);
+    if (workspace.uuid === this.activeWorkspace) {
+      this.#applySpaceExtensions();
+    }
   }
 
   generateMenuItemForWorkspace(workspace, disableCurrent = false) {
@@ -1386,6 +1467,9 @@ class nsZenWorkspaces {
       workspaceId: target?.getAttribute("zen-workspace-id"),
       originalTarget: target,
     };
+    this.#updateWorkspaceActionsMenuExtensions(
+      this.#contextMenuData.workspaceId
+    );
     const workspaceName = document.getElementById("context_zenEditWorkspace");
     const themePicker = document.getElementById(
       "context_zenChangeWorkspaceTheme"
@@ -1975,6 +2059,7 @@ class nsZenWorkspaces {
       this.log("Changing workspace to", workspace?.uuid);
       await this.#performWorkspaceChange(workspace, ...args);
       this.updateWorkspacesChangeContextMenu();
+      this.#applySpaceExtensions();
     } catch (e) {
       console.error("gZenWorkspaces: Error changing workspace", e);
     }

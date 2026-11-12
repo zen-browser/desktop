@@ -32,6 +32,11 @@ zen-workspaces-panel-change-icon =
 zen-workspaces-panel-context-default-profile =
     .label = Set Profile
 
+zen-workspaces-panel-context-extensions =
+    .label = Extensions in This Space
+zen-workspaces-panel-context-extensions-empty =
+    .label = No extensions installed
+
 zen-workspaces-panel-unload =
     .label = Unload Space
 

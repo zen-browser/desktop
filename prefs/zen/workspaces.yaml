@@ -11,6 +11,10 @@
 - name: zen.workspaces.force-container-workspace
   value: false
 
+# Lets each space turn individual extensions off while it is active.
+- name: zen.workspaces.per-space-extensions.enabled
+  value: false
+
 # New profiles start without Firefox's Personal/Work/Banking/Shopping containers.
 - name: zen.containers.create-default-identities
   value: false

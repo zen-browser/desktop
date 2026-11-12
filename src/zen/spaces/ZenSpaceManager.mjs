@@ -175,7 +175,15 @@ class nsZenWorkspaces {
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
-      const onBookmarkChanged = () => this.refreshSpaceBookmarks();
+      const onBookmarkChanged = () => {
+        const enabled = Services.prefs.getBoolPref(
+          "zen.spaces.bookmarks-in-sidebar",
+          false
+        );
+        if (enabled) {
+          this.refreshSpaceBookmarks();
+        }
+      };
       const onBookmarksPrefChanged = () => this.refreshSpaceBookmarks();
       PlacesUtils.observers.addListener(
         ["bookmark-removed", "bookmark-title-changed", "bookmark-url-changed"],
@@ -2773,8 +2781,9 @@ class nsZenWorkspaces {
     ).length;
     if (!onInit || hasWorkspaceBookmarks) {
       this._invalidateBookmarkContainers();
+    } else {
+      this.refreshSpaceBookmarks();
     }
-    this.refreshSpaceBookmarks();
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);

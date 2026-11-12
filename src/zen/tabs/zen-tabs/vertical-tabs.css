@@ -1236,6 +1236,10 @@ zen-library {
   margin-bottom: 4px;
 }
 
+.zen-workspace-bookmarks-section[hidden] {
+  display: none;
+}
+
 .zen-workspace-bookmark-item {
   justify-content: flex-start;
   min-height: 32px;

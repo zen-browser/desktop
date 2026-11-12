@@ -123,21 +123,23 @@ export class nsZenWorkspace extends MozXULElement {
       "zen.spaces.bookmarks-in-sidebar",
       false
     );
-    const guids = enabled
-      ? gZenWorkspaces._workspaceBookmarksCache?.bookmarks?.[this.id] ?? []
-      : [];
-
-    const entries = [];
-    for (const guid of guids) {
-      const info = await PlacesUtils.bookmarks.fetch(guid).catch(() => null);
-      if (info?.url && info.type === PlacesUtils.bookmarks.TYPE_BOOKMARK) {
-        entries.push(info);
-      }
+    const cache = gZenWorkspaces._workspaceBookmarksCache;
+    // The cache is dropped while it reloads; that reload triggers another refresh.
+    if (enabled && !cache) {
+      return;
     }
+    const guids = enabled ? (cache.bookmarks?.[this.id] ?? []) : [];
+
+    const infos = await Promise.all(
+      guids.map(guid => PlacesUtils.bookmarks.fetch(guid).catch(() => null))
+    );
     // A newer refresh started while we were awaiting; let it win.
     if (seq !== this.#bookmarksRefreshSeq) {
       return;
     }
+    const entries = infos.filter(
+      info => info?.url && info.type === PlacesUtils.bookmarks.TYPE_BOOKMARK
+    );
 
     container.replaceChildren(
       ...entries.map(info => this.#createBookmarkItem(info))
@@ -152,7 +154,10 @@ export class nsZenWorkspace extends MozXULElement {
     item.setAttribute("label", info.title || url);
     item.setAttribute("tooltiptext", url);
     item.setAttribute("image", `page-icon:${url}`);
-    item.addEventListener("click", () => openTrustedLinkIn(url, "current"));
+    item.addEventListener("click", event => {
+      const where = event.ctrlKey || event.metaKey ? "tab" : "current";
+      openTrustedLinkIn(url, where);
+    });
     item.addEventListener("auxclick", event => {
       if (event.button === 1) {
         openTrustedLinkIn(url, "tab");

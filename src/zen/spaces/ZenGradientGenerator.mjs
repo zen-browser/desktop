@@ -1981,15 +1981,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         );
         [backgroundElement, toolbarElement].forEach(element => {
           browser.gZenThemePicker.keepGrainAsOld(element);
-          element.style.setProperty(
-            "--zen-background-opacity",
-            browser.gZenThemePicker.previousBackgroundOpacity ?? 1
-          );
+          element.style.setProperty("--zen-background-opacity", 1);
         });
-        if (browser.gZenThemePicker.previousBackgroundResolve) {
-          browser.gZenThemePicker.previousBackgroundResolve();
-        }
-        delete browser.gZenThemePicker.previousBackgroundOpacity;
       }
 
       browser.gZenThemePicker.resetCustomColorList();

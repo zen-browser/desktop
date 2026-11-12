@@ -57,6 +57,7 @@ const MANAGER_FIELDS = [
   "folder",
   "sha",
   "pendingUpdate",
+  "pageStylesBlocked",
   "enabled",
   "order",
 ];
@@ -84,6 +85,12 @@ const SCRIPT_KINDS = [
   [".sys.mjs", "module"],
 ];
 const REGEXP_SPECIAL_RE = /[.+?^${}()|[\]\\]/g;
+const REGEXP_ESCAPE_RE = /[.*+?^${}()|[\]\\]/g;
+const CSS_COMMENT_RE = /\/\*[\s\S]*?\*\//g;
+// url(), @import and image-set() reaching the web: a channel out of pages.
+const REMOTE_CSS_RE =
+  /(?:url\(\s*["']?|@import\s+["']|image-set\(\s*["'])\s*(?:https?:)?\/\//i;
+const CSS_IMPORT_RE = /@import\s+(?:url\(\s*)?["']?([^"')\s;]+)/gi;
 const MAX_LOCAL_FILES = 1000;
 const LOCAL_POLL_MS = 1000;
 
@@ -392,6 +399,76 @@ async function findStyle(declared, exists) {
 }
 
 /**
+ * @param {string} base - A file's path in a mod's folder, like "css/a.css"
+ * @param {string} target - A relative URL in that file, like "../b.css"
+ * @returns {string|null} The path it points to, if it stays in the folder
+ */
+function resolveRelative(base, target) {
+  const parts = base.split("/").slice(0, -1);
+
+  for (const part of target.split(/[?#]/)[0].split("/")) {
+    if (part === "..") {
+      if (!parts.length) {
+        return null;
+      }
+
+      parts.pop();
+    } else if (part && part !== ".") {
+      parts.push(part);
+    }
+  }
+
+  return parts.length ? parts.join("/") : null;
+}
+
+/**
+ * @param {string} folder - A mod's folder
+ * @param {string} entry - Its stylesheet for pages
+ * @returns {Promise<boolean>} Whether that sheet, or one it imports, loads
+ * something from the web
+ */
+async function hasRemoteStyles(folder, entry) {
+  const queue = [entry];
+  const seen = new Set();
+
+  while (queue.length && seen.size < MAX_REMOTE_FILES) {
+    const relative = queue.shift();
+
+    if (seen.has(relative)) {
+      continue;
+    }
+
+    seen.add(relative);
+
+    let text;
+
+    try {
+      text = await IOUtils.readUTF8(
+        PathUtils.join(folder, ...pathParts(relative))
+      );
+    } catch {
+      continue;
+    }
+
+    text = text.replace(CSS_COMMENT_RE, "");
+
+    if (REMOTE_CSS_RE.test(text)) {
+      return true;
+    }
+
+    for (const [, target] of text.matchAll(CSS_IMPORT_RE)) {
+      const imported = resolveRelative(relative, target);
+
+      if (imported) {
+        queue.push(imported);
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
  * @param {string[]} patterns - URLs where `*` matches anything, or "main"
  * for the browser window
  * @returns {RegExp|null}
@@ -455,7 +532,7 @@ class nsZenModsManager {
    * Why a mod doesn't apply as it should, until it's fixed. Kept in memory:
    * the next session finds out again.
    *
-   * @type {Map<string, {type: "missing-files"|"update-failed"|"script-failed", message?: string}>}
+   * @type {Map<string, {type: "missing-files"|"update-failed"|"script-failed"|"page-styles-blocked", message?: string}>}
    */
   #errors = new Map();
 
@@ -475,12 +552,10 @@ class nsZenModsManager {
    */
   #windowScripts = new WeakMap();
 
-  /** @type {Set<string>} Mods turned off whose scripts can't be undone */
-  #needsRestart = new Set();
-
   /**
-   * The resource hosts whose `.uc.js` or `.uc.mjs` scripts ran in some
-   * document: nothing takes those back but a restart.
+   * The resource hosts whose scripts ran somewhere they couldn't be undone:
+   * `.uc.js` and `.uc.mjs` in a document, or a module without `uninit` in a
+   * window that stopped it. Nothing takes those back but a restart.
    *
    * @type {Map<string, Set<string>>}
    */
@@ -578,7 +653,7 @@ class nsZenModsManager {
       ranHost => ranHost !== host
     );
 
-    if (this.#needsRestart.has(modId) || ranOutdated) {
+    if (ranOutdated) {
       return "needs-restart";
     }
 
@@ -635,6 +710,18 @@ class nsZenModsManager {
     // The sheet was loaded from disk at startup; only an outdated file needs
     // applying again.
     await this.#enqueue(() => this.#rebuild({ reload: false }));
+
+    // Mods restored without their files, from a backup say, download them
+    // again now rather than at the next scheduled update.
+    const hasMissingFiles = Object.values(this.#mods).some(
+      mod =>
+        mod.source !== "local" &&
+        this.#errors.get(mod.id)?.type === "missing-files"
+    );
+
+    if (hasMissingFiles) {
+      ChromeUtils.idleDispatch(() => this.checkForUpdates(), { timeout: 1000 });
+    }
   }
 
   /** @returns {Promise<Record<string, object>>} A copy of the installed mods */
@@ -807,6 +894,18 @@ class nsZenModsManager {
 
   /**
    * @param {string} repo - "owner/repo"
+   * @returns {string[]} Where its API answers may come from: a renamed or
+   * moved repository redirects to its numeric id
+   */
+  #gitHubApiPrefixes(repo) {
+    return [
+      this.#gitHubApiUrl(repo),
+      `${Services.prefs.getStringPref(GITHUB_API_URL_PREF)}repositories/`,
+    ];
+  }
+
+  /**
+   * @param {string} repo - "owner/repo"
    * @param {string} folder
    * @param {string} sha
    * @returns {string} Where the mod's files are, at that commit
@@ -818,6 +917,25 @@ class nsZenModsManager {
   }
 
   /**
+   * @param {string} repo - "owner/repo"
+   * @param {string} folder
+   * @param {string} sha
+   * @returns {(string|RegExp)[]} Where the mod's files may come from: a
+   * renamed repository redirects, and the commit pins what comes back
+   */
+  #gitHubRawPrefixes(repo, folder, sha) {
+    const root = Services.prefs.getStringPref(GITHUB_RAW_URL_PREF);
+    const path = folder ? `${encodePath(folder)}/` : "";
+
+    return [
+      this.#gitHubRawUrl(repo, folder, sha),
+      new RegExp(
+        `^${root.replace(REGEXP_ESCAPE_RE, "\\$&")}[^/]+/[^/]+/${sha}/${path.replace(REGEXP_ESCAPE_RE, "\\$&")}`
+      ),
+    ];
+  }
+
+  /**
    * @param {{repo: string, ref: string|null}} source
    * @returns {Promise<string>} The commit the branch points to now
    */
@@ -825,7 +943,7 @@ class nsZenModsManager {
     const api = this.#gitHubApiUrl(repo);
     const response = await this.#download(
       `${api}commits/${encodeURIComponent(ref ?? "HEAD")}`,
-      [api],
+      this.#gitHubApiPrefixes(repo),
       { Accept: "application/vnd.github.sha" }
     );
     const sha = new TextDecoder().decode(response).trim();
@@ -854,7 +972,10 @@ class nsZenModsManager {
     const api = this.#gitHubApiUrl(repo);
     const tree = JSON.parse(
       new TextDecoder().decode(
-        await this.#download(`${api}git/trees/${sha}?recursive=1`, [api])
+        await this.#download(
+          `${api}git/trees/${sha}?recursive=1`,
+          this.#gitHubApiPrefixes(repo)
+        )
       )
     );
 
@@ -874,11 +995,19 @@ class nsZenModsManager {
         path: entry.path.slice(prefix.length),
         size: Number(entry.size) || 0,
       }))
-      .filter(({ path }) =>
-        pathParts(path)?.every(
+      .filter(({ path, size }) => {
+        if (size > MAX_FILE_BYTES) {
+          console.warn(
+            `[ZenMods]: ${path} of ${repo} is larger than ${MAX_FILE_BYTES} bytes, skipping.`
+          );
+
+          return false;
+        }
+
+        return pathParts(path)?.every(
           part => !part.startsWith(".") && part !== "node_modules"
-        )
-      );
+        );
+      });
     const totalBytes = files.reduce((total, { size }) => total + size, 0);
 
     if (files.length > MAX_REMOTE_FILES || totalBytes > MAX_REMOTE_BYTES) {
@@ -891,7 +1020,10 @@ class nsZenModsManager {
       paths.has("theme.json")
         ? JSON.parse(
             new TextDecoder().decode(
-              await this.#download(`${raw}theme.json`, [raw])
+              await this.#download(
+                `${raw}theme.json`,
+                this.#gitHubRawPrefixes(repo, folder, sha)
+              )
             )
           )
         : {}
@@ -966,7 +1098,10 @@ class nsZenModsManager {
       });
       await IOUtils.write(
         target,
-        await this.#download(`${raw}${encodePath(path)}`, [raw])
+        await this.#download(
+          `${raw}${encodePath(path)}`,
+          this.#gitHubRawPrefixes(repo, folder, sha)
+        )
       );
     };
 
@@ -983,6 +1118,19 @@ class nsZenModsManager {
 
       if (mod.scripts.length) {
         mod.scriptsHash = await this.#hashScripts(modId, staging);
+      }
+
+      // Page styles from GitHub may not reach the web: with selectors on
+      // what pages hold, that would send it out.
+      if (
+        mod.contentStylePath &&
+        (await hasRemoteStyles(staging, mod.contentStylePath))
+      ) {
+        console.warn(
+          `[ZenMods]: The page styles of ${mod.name} load from the web, turning them off.`
+        );
+        mod.contentStylePath = null;
+        mod.pageStylesBlocked = true;
       }
     } catch (error) {
       await IOUtils.remove(staging, { recursive: true, ignoreAbsent: true });
@@ -1265,20 +1413,27 @@ class nsZenModsManager {
     }
 
     for (const [modId, previous] of started) {
-      if (this.#scripts.get(modId)?.hash === previous.hash) {
+      if (
+        previous.isStuck ||
+        this.#scripts.get(modId)?.hash === previous.hash
+      ) {
         continue;
       }
 
-      if (!this.#runHook(modId, previous.modules, "uninit", win)) {
-        this.#needsRestart.add(modId);
-        changed = true;
+      if (this.#runHook(modId, previous.modules, "uninit", win)) {
+        previous.api.dispose();
+        started.delete(modId);
+        continue;
       }
 
-      previous.api.dispose();
-      started.delete(modId);
+      // What it did stays in this window, so it isn't started here again,
+      // not even a newer version, until a restart.
+      previous.isStuck = true;
+      this.#markRan(modId, previous.host);
+      changed = true;
     }
 
-    for (const [modId, { hash, modules }] of this.#scripts) {
+    for (const [modId, { hash, host, modules }] of this.#scripts) {
       if (started.has(modId) || !modules.length) {
         continue;
       }
@@ -1291,7 +1446,7 @@ class nsZenModsManager {
       );
 
       changed ||= !this.#runHook(modId, modules, "init", win, api);
-      started.set(modId, { hash, modules, api });
+      started.set(modId, { hash, host, modules, api, isStuck: false });
     }
 
     if (changed) {
@@ -1445,7 +1600,6 @@ class nsZenModsManager {
         }
 
         this.#scripts.set(mod.id, { hash, host, modules, documentScripts });
-        this.#needsRestart.delete(mod.id);
 
         if (this.#errors.get(mod.id)?.type === "script-failed") {
           this.#errors.delete(mod.id);
@@ -1471,6 +1625,19 @@ class nsZenModsManager {
         });
       }
     }
+  }
+
+  /**
+   * @param {string} modId
+   * @param {string} host - A resource host of the mod's scripts whose code
+   * keeps running until a restart
+   */
+  #markRan(modId, host) {
+    if (!this.#ranHosts.has(modId)) {
+      this.#ranHosts.set(modId, new Set());
+    }
+
+    this.#ranHosts.get(modId).add(host);
   }
 
   /**
@@ -1531,11 +1698,7 @@ class nsZenModsManager {
 
       ran.add(script.url);
 
-      if (!this.#ranHosts.has(modId)) {
-        this.#ranHosts.set(modId, new Set());
-      }
-
-      this.#ranHosts.get(modId).add(host);
+      this.#markRan(modId, host);
 
       try {
         if (script.kind === "uc.js") {
@@ -1839,7 +2002,12 @@ class nsZenModsManager {
     }
 
     for (const { property } of preferences) {
-      if (property && !stillUsed.has(property)) {
+      // A preference with a default is the browser's, not the mod's.
+      if (
+        property &&
+        !stillUsed.has(property) &&
+        !Services.prefs.prefHasDefaultValue(property)
+      ) {
         Services.prefs.clearUserPref(property);
       }
     }
@@ -2217,7 +2385,7 @@ class nsZenModsManager {
    * redirects.
    *
    * @param {string} url
-   * @param {string[]} allowed - URL prefixes
+   * @param {(string|RegExp)[]} allowed - URL prefixes, or patterns
    */
   #assertAllowedUrl(url, allowed) {
     const parsed = URL.parse(url);
@@ -2226,15 +2394,21 @@ class nsZenModsManager {
       throw new Error(`[ZenMods]: Refusing a non-HTTPS mod URL: ${url}`);
     }
 
-    if (!allowed.some(prefix => parsed.href.startsWith(prefix))) {
+    const isAllowed = allowed.some(prefix =>
+      prefix instanceof RegExp
+        ? prefix.test(parsed.href)
+        : parsed.href.startsWith(prefix)
+    );
+
+    if (!isAllowed) {
       throw new Error(`[ZenMods]: Refusing a mod URL from elsewhere: ${url}`);
     }
   }
 
   /**
    * @param {string} url
-   * @param {string[]} [allowed] - URL prefixes it may come from; the store
-   * by default
+   * @param {(string|RegExp)[]} [allowed] - URL prefixes, or patterns, it may
+   * come from; the store by default
    * @param {Record<string, string>} [headers]
    * @returns {Promise<Uint8Array>}
    */
@@ -2387,12 +2561,21 @@ class nsZenModsManager {
         pageContent += `@import url("zen-themes/${encodeURIComponent(mod.id)}/${encodePath(mod.contentStylePath)}");\n`;
       }
 
+      if (mod.pageStylesBlocked) {
+        this.#errors.set(mod.id, { type: "page-styles-blocked" });
+      } else if (this.#errors.get(mod.id)?.type === "page-styles-blocked") {
+        this.#errors.delete(mod.id);
+      }
+
       if (!hasStyles && !mod.contentStylePath && !declaredScripts(mod).length) {
         console.warn(
           `[ZenMods]: ${mod.name} (${mod.id}) has no styles, skipping.`
         );
 
-        this.#errors.set(mod.id, { type: "missing-files" });
+        // Page styles that were turned off left nothing to apply, and say why.
+        if (!mod.pageStylesBlocked) {
+          this.#errors.set(mod.id, { type: "missing-files" });
+        }
         continue;
       }
 

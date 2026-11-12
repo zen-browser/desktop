@@ -53,6 +53,7 @@ const ERROR_L10N_IDS = {
   "missing-files": "library-mods-error-missing-files",
   "update-failed": "library-mods-error-update-failed",
   "script-failed": "library-mods-error-script-failed",
+  "page-styles-blocked": "library-mods-error-page-styles-blocked",
 };
 
 const SCRIPTS_L10N_IDS = {
@@ -330,7 +331,12 @@ async function installFromGitHub() {
       "library-mods-github-prompt-message",
       "library-mods-github-prompt-accept",
     ],
-    { name: found.name, repo: found.repo, scripts: hasScripts ? "yes" : "no" }
+    {
+      name: found.name,
+      repo: found.repo,
+      scripts: hasScripts ? "yes" : "no",
+      pages: found.contentStylePath ? "yes" : "no",
+    }
   );
 
   if (!agreed) {
@@ -1143,7 +1149,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   }
 
   onEscape() {
-    if (this.configuring && this.filtersOpen) {
+    if ((this.configuring || this.storeDetail) && this.filtersOpen) {
       this.#closePanel();
       return true;
     }

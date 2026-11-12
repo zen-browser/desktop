@@ -1,0 +1,2 @@
+@font-face { font-family: "Remote"; src: url("https://example.org/font.woff2"); }
+:root { --zen-test-pages-chrome: "chrome" !important; }

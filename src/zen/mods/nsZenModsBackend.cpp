@@ -105,7 +105,10 @@ auto nsStyleSheetService::ZenReplaceModsContentSheet(mozilla::StyleSheet* aOld,
 
     RefPtr<mozilla::dom::Document> doc = presShell->GetDocument();
 
-    if (!doc || doc->IsInChromeDocShell()) {
+    // Like Document::FillStyleSetUserAndUASheets: privileged pages, like
+    // about:preferences, never get the mods' styles.
+    if (!doc || doc->IsInChromeDocShell() ||
+        doc->NodePrincipal()->IsSystemPrincipal()) {
       continue;
     }
 

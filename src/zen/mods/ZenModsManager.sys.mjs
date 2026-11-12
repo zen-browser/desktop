@@ -86,11 +86,24 @@ const SCRIPT_KINDS = [
 ];
 const REGEXP_SPECIAL_RE = /[.+?^${}()|[\]\\]/g;
 const REGEXP_ESCAPE_RE = /[.*+?^${}()|[\]\\]/g;
-const CSS_COMMENT_RE = /\/\*[\s\S]*?\*\//g;
-// url(), @import and image-set() reaching the web: a channel out of pages.
-const REMOTE_CSS_RE =
-  /(?:url\(\s*["']?|@import\s+["']|image-set\(\s*["'])\s*(?:https?:)?\/\//i;
-const CSS_IMPORT_RE = /@import\s+(?:url\(\s*)?["']?([^"')\s;]+)/gi;
+// Functions whose strings are URLs the style system loads.
+const URL_FUNCTIONS = new Set([
+  "url",
+  "src",
+  "image",
+  "image-set",
+  "-webkit-image-set",
+  "cross-fade",
+  "-moz-image-rect",
+]);
+const NETWORK_PROTOCOLS = new Set(["http:", "https:", "ftp:", "ws:", "wss:"]);
+const CLOSING_TOKENS = new Set([
+  "CloseParenthesis",
+  "CloseSquareBracket",
+  "CloseCurlyBracket",
+]);
+// Stands in for where a mod's page sheet loads from, to resolve its URLs.
+const SHEET_BASE = "resource://zen-mod/";
 const MAX_LOCAL_FILES = 1000;
 const LOCAL_POLL_MS = 1000;
 
@@ -399,39 +412,89 @@ async function findStyle(declared, exists) {
 }
 
 /**
- * @param {string} base - A file's path in a mod's folder, like "css/a.css"
- * @param {string} target - A relative URL in that file, like "../b.css"
- * @returns {string|null} The path it points to, if it stays in the folder
+ * Lists the URLs a stylesheet loads, the way Gecko's own lexer reads them,
+ * escapes and all: unquoted `url()`s, and the strings in `url()`,
+ * `image-set()` and the like, and in `@import`.
+ *
+ * @param {string} text
+ * @param {Window} win - Where the lexer lives
+ * @returns {{url: string|null, isImport: boolean}[]} A null url is one the
+ * lexer couldn't read
  */
-function resolveRelative(base, target) {
-  const parts = base.split("/").slice(0, -1);
+function cssUrls(text, win) {
+  const parser = new win.InspectorCSSParser(text);
+  const blocks = [];
+  const urls = [];
+  let isImport = false;
 
-  for (const part of target.split(/[?#]/)[0].split("/")) {
-    if (part === "..") {
-      if (!parts.length) {
-        return null;
+  for (let token = parser.nextToken(); token; token = parser.nextToken()) {
+    switch (token.tokenType) {
+      case "AtKeyword": {
+        isImport = token.value.toLowerCase() === "import";
+        break;
       }
 
-      parts.pop();
-    } else if (part && part !== ".") {
-      parts.push(part);
+      case "Semicolon": {
+        isImport = false;
+        break;
+      }
+
+      case "Function": {
+        blocks.push(token.value.toLowerCase());
+        break;
+      }
+
+      case "ParenthesisBlock":
+      case "SquareBracketBlock":
+      case "CurlyBracketBlock": {
+        isImport = false;
+        blocks.push("");
+        break;
+      }
+
+      case "UnquotedUrl": {
+        urls.push({ url: token.value, isImport });
+        break;
+      }
+
+      case "BadUrl": {
+        urls.push({ url: null, isImport });
+        break;
+      }
+
+      case "QuotedString": {
+        if (isImport || blocks.some(name => URL_FUNCTIONS.has(name))) {
+          urls.push({ url: token.value, isImport });
+        }
+        break;
+      }
+
+      default: {
+        if (CLOSING_TOKENS.has(token.tokenType)) {
+          blocks.pop();
+        }
+      }
     }
   }
 
-  return parts.length ? parts.join("/") : null;
+  return urls;
 }
 
 /**
  * @param {string} folder - A mod's folder
  * @param {string} entry - Its stylesheet for pages
  * @returns {Promise<boolean>} Whether that sheet, or one it imports, loads
- * something from the web
+ * anything from the web. A sheet that can't be read or checked counts as
+ * one that does.
  */
 async function hasRemoteStyles(folder, entry) {
+  const win =
+    Services.wm.getMostRecentWindow("navigator:browser") ??
+    Services.appShell.hiddenDOMWindow;
   const queue = [entry];
   const seen = new Set();
 
-  while (queue.length && seen.size < MAX_REMOTE_FILES) {
+  while (queue.length) {
     const relative = queue.shift();
 
     if (seen.has(relative)) {
@@ -440,27 +503,37 @@ async function hasRemoteStyles(folder, entry) {
 
     seen.add(relative);
 
-    let text;
+    const parts = pathParts(relative);
 
-    try {
-      text = await IOUtils.readUTF8(
-        PathUtils.join(folder, ...pathParts(relative))
-      );
-    } catch {
-      continue;
-    }
-
-    text = text.replace(CSS_COMMENT_RE, "");
-
-    if (REMOTE_CSS_RE.test(text)) {
+    if (!parts || seen.size > MAX_REMOTE_FILES) {
       return true;
     }
 
-    for (const [, target] of text.matchAll(CSS_IMPORT_RE)) {
-      const imported = resolveRelative(relative, target);
+    let text;
 
-      if (imported) {
-        queue.push(imported);
+    try {
+      text = await IOUtils.readUTF8(PathUtils.join(folder, ...parts));
+    } catch {
+      return true;
+    }
+
+    for (const { url, isImport } of cssUrls(text, win)) {
+      const target =
+        url === null ? null : URL.parse(url, `${SHEET_BASE}${relative}`);
+
+      if (!target || NETWORK_PROTOCOLS.has(target.protocol)) {
+        return true;
+      }
+
+      const isInMod =
+        target.protocol === "resource:" && target.host === "zen-mod";
+
+      if (isImport && isInMod) {
+        try {
+          queue.push(decodeURIComponent(target.pathname.slice(1)));
+        } catch {
+          return true;
+        }
       }
     }
   }
@@ -1214,20 +1287,34 @@ class nsZenModsManager {
       existing?.id ??
       `${LOCAL_ID_PREFIX}${Services.uuid.generateUUID().toString().slice(1, -1)}`;
 
-    await this.#mirrorLocalMod(modId, path, Boolean(manifest.contentStylePath));
+    const mirror = PathUtils.join(this.modsRootPath, modId);
 
-    await this.#mutate(mods => {
-      mods[modId] = {
-        ...manifest,
-        id: modId,
-        source: "local",
-        path,
-        enabled: existing?.enabled ?? true,
-        order: existing?.order,
-        scriptsApproved: scriptsApproved || Boolean(existing?.scriptsApproved),
-      };
-      this.#errors.delete(modId);
-    });
+    // The copy is in place before the sheets import it, and goes only once
+    // they stop.
+    if (manifest.contentStylePath) {
+      await this.#mirrorLocalMod(mirror, path);
+    }
+
+    await this.#mutate(
+      mods => {
+        mods[modId] = {
+          ...manifest,
+          id: modId,
+          source: "local",
+          path,
+          enabled: existing?.enabled ?? true,
+          order: existing?.order,
+          scriptsApproved:
+            scriptsApproved || Boolean(existing?.scriptsApproved),
+        };
+        this.#errors.delete(modId);
+      },
+      async () => {
+        if (!manifest.contentStylePath) {
+          await IOUtils.remove(mirror, { recursive: true, ignoreAbsent: true });
+        }
+      }
+    );
 
     return modId;
   }
@@ -1237,23 +1324,15 @@ class nsZenModsManager {
    * mod with styles for pages gets a copy there. Its styles for Zen and its
    * scripts keep coming from the user's folder.
    *
-   * @param {string} modId
+   * @param {string} mirror - Where the copy goes
    * @param {string} path - The mod's folder
-   * @param {boolean} hasContentStyles
    */
-  async #mirrorLocalMod(modId, path, hasContentStyles) {
-    const mirror = PathUtils.join(this.modsRootPath, modId);
-
-    if (!hasContentStyles) {
-      await IOUtils.remove(mirror, { recursive: true, ignoreAbsent: true });
-      return;
-    }
-
+  async #mirrorLocalMod(mirror, path) {
     await IOUtils.makeDirectory(this.modsRootPath, { ignoreExisting: true });
 
     const staging = await IOUtils.createUniqueDirectory(
       this.modsRootPath,
-      `.${modId}.staging`
+      `.${PathUtils.filename(mirror)}.staging`
     );
 
     try {
@@ -1420,7 +1499,14 @@ class nsZenModsManager {
         continue;
       }
 
-      if (this.#runHook(modId, previous.modules, "uninit", win)) {
+      // A mod stops whole or not at all: stopping the modules that can
+      // would leave it half running, and starting it again would start
+      // twice the ones that can't.
+      const canStop = previous.modules.every(
+        module => typeof module.uninit === "function"
+      );
+
+      if (canStop && this.#runHook(modId, previous.modules, "uninit", win)) {
         previous.api.dispose();
         started.delete(modId);
         continue;
@@ -1980,18 +2066,22 @@ class nsZenModsManager {
 
     const folder = this.getModFolder(modId);
 
-    await this.#mutate(async mods => {
-      delete mods[modId];
-      this.#errors.delete(modId);
-
-      // A local mod's folder is the user's; only its copy in the profile goes.
-      await IOUtils.remove(
-        mod.source === "local"
-          ? PathUtils.join(this.modsRootPath, modId)
-          : folder,
-        { recursive: true, ignoreAbsent: true }
-      );
-    });
+    await this.#mutate(
+      mods => {
+        delete mods[modId];
+        this.#errors.delete(modId);
+      },
+      // Only once the sheets stop importing them: a process loading the old
+      // sheet meanwhile would find them gone. A local mod's folder is the
+      // user's; only its copy in the profile goes.
+      () =>
+        IOUtils.remove(
+          mod.source === "local"
+            ? PathUtils.join(this.modsRootPath, modId)
+            : folder,
+          { recursive: true, ignoreAbsent: true }
+        )
+    );
 
     const stillUsed = new Set();
 
@@ -2520,14 +2610,17 @@ class nsZenModsManager {
    * a time.
    *
    * @param {(mods: Record<string, object>) => *} change
+   * @param {() => Promise<void>} [afterRebuild] - Runs once the stylesheets
+   * no longer point at what it removes, before the next change
    * @returns {Promise<*>}
    */
-  #mutate(change) {
+  #mutate(change, afterRebuild) {
     return this.#enqueue(async () => {
       const result = await change(this.#mods);
 
       await this.#writeRegistry(this.#mods);
       await this.#rebuild();
+      await afterRebuild?.();
 
       return result;
     });

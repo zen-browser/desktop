@@ -21,6 +21,30 @@ const PAGES = [
   "pages/userContent.css",
   "pages/parts/more.css",
 ];
+// Page styles that reach the web in every way the check has to catch,
+// and one that doesn't.
+const REMOTE = [
+  "remote/clean/a.png",
+  "remote/clean/parts/ok.css",
+  "remote/clean/theme.json",
+  "remote/clean/userContent.css",
+  "remote/escaped-string/theme.json",
+  "remote/escaped-string/userContent.css",
+  "remote/escaped-url/theme.json",
+  "remote/escaped-url/userContent.css",
+  "remote/image-set/theme.json",
+  "remote/image-set/userContent.css",
+  "remote/import-missing/theme.json",
+  "remote/import-missing/userContent.css",
+  "remote/import-no-space/theme.json",
+  "remote/import-no-space/userContent.css",
+  "remote/imported-encoded/parts/x.css",
+  "remote/imported-encoded/theme.json",
+  "remote/imported-encoded/userContent.css",
+  "remote/imported-no-space/parts/x.css",
+  "remote/imported-no-space/theme.json",
+  "remote/imported-no-space/userContent.css",
+];
 // Listed, never downloaded: it's over the size a mod's file may have.
 const HUGE = "assets/huge.png";
 const SIZES = { [HUGE]: 3 * 1024 * 1024 };
@@ -28,6 +52,7 @@ const COMMITS = {
   ["a".repeat(40)]: [
     ...SHARED,
     ...PAGES,
+    ...REMOTE,
     HUGE,
     "sub/chrome.css",
     ".github/ci.yml",

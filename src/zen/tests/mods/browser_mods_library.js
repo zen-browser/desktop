@@ -194,7 +194,17 @@ add_task(async function test_preferences_apply_right_away() {
   const section = await openModsSection();
 
   await waitForRows(section, [MOD_A], "The mod is listed");
-  rowFor(section, MOD_A).click();
+
+  const row = rowFor(section, MOD_A);
+
+  row.focus();
+  is(
+    window.getComputedStyle(row.querySelector("moz-toggle")).display,
+    "block",
+    "With the keyboard on its row, a mod with preferences can be turned off"
+  );
+
+  row.click();
   await section.updateComplete;
 
   const panel = section.querySelector(".zen-library-mod-preferences");

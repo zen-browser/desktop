@@ -1,0 +1,1 @@
+body { background: image-set("a.png" 1x, "https://example.org/x.png" 2x); }

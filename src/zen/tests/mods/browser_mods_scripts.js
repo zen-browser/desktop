@@ -321,8 +321,11 @@ async function makeUserChromeMod() {
   );
   const files = {
     "userChrome.css": ':root { --zen-test-uc: "uc" !important; }',
-    "late.uc.js":
-      'window.zenTestOrder = [...(window.zenTestOrder ?? []), "late"];',
+    "late.uc.js": `
+      window.zenTestOrder = [...(window.zenTestOrder ?? []), "late"];
+      window.zenTestUcApi = { top: zen.mod.id, ownWindow: zen.window === window };
+      setTimeout(() => (window.zenTestUcApi.later = zen.mod.id));
+    `,
     "broken.uc.js": 'throw new Error("This script fails on purpose");',
     "elsewhere.uc.js": "window.zenTestElsewhere = true;",
     "background.sys.mjs":
@@ -332,6 +335,7 @@ async function makeUserChromeMod() {
     "js/module.uc.mjs": `
       import { label } from "./helper.mjs";
       window.zenTestOrder = [...(window.zenTestOrder ?? []), label];
+      window.zenTestUcModuleApi = zen.mod.name;
     `,
     "js/helper.mjs": 'export const label = "module";',
     "prefs/settings.json": JSON.stringify([
@@ -418,6 +422,17 @@ add_task(async function test_userchrome_scripts() {
     "A .sys.mjs runs once"
   );
   ok(!window.zenTestElsewhere, "A script for other documents doesn't run");
+  await TestUtils.waitForCondition(
+    () => window.zenTestUcApi?.later,
+    "A .uc.js reads zen in a callback"
+  );
+  Assert.deepEqual(
+    window.zenTestUcApi,
+    { top: modId, ownWindow: true, later: modId },
+    "A .uc.js gets its mod's API for its window as the global zen"
+  );
+  is(window.zenTestUcModuleApi, "userChrome Mod", "So does a .uc.mjs");
+  is(window.zen, undefined, "Code that isn't a mod's gets nothing");
   is(
     gZenModsManager.getModError(modId)?.type,
     "script-failed",
@@ -443,6 +458,8 @@ add_task(async function test_userchrome_scripts() {
 
   await gZenModsManager.uninstallMod(modId);
   delete window.zenTestOrder;
+  delete window.zenTestUcApi;
+  delete window.zenTestUcModuleApi;
 });
 
 add_task(async function test_mod_api() {

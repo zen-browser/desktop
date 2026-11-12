@@ -707,6 +707,13 @@ class nsZenModsManager {
   /** @type {WeakMap<Document, Set<string>>} The scripts each document ran */
   #documentScripts = new WeakMap();
 
+  /**
+   * The `zen` each mod's document scripts got in each window.
+   *
+   * @type {WeakMap<Window, Map<string, object>>}
+   */
+  #documentAPIs = new WeakMap();
+
   #isWatchingDocuments = false;
 
   /** @type {Set<object>} Who asked to reload local mods when they change */
@@ -1847,6 +1854,8 @@ class nsZenModsManager {
       this.#documentScripts.set(doc, ran);
     }
 
+    this.#exposeAPI(doc.documentGlobal);
+
     for (const { modId, host, script } of this.#documentScriptsFor(doc.URL)) {
       if (ran.has(script.url)) {
         continue;
@@ -1884,6 +1893,60 @@ class nsZenModsManager {
     if (failed) {
       Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
     }
+  }
+
+  /**
+   * Gives `.uc.js` and `.uc.mjs` scripts what modules get in `init`: they
+   * run in the window's own global, where nothing can be passed to them, so
+   * the global `zen` hands each one its mod's, told apart by the file of the
+   * script that reads it. Anyone else reads undefined.
+   *
+   * @param {Window} win
+   */
+  #exposeAPI(win) {
+    if (this.#documentAPIs.has(win)) {
+      return;
+    }
+
+    const apis = new Map();
+
+    this.#documentAPIs.set(win, apis);
+    win.addEventListener(
+      "unload",
+      () => {
+        for (const api of apis.values()) {
+          api.dispose();
+        }
+      },
+      { once: true }
+    );
+    Object.defineProperty(win, "zen", {
+      configurable: true,
+      get: () => {
+        const file = Components.stack.caller?.filename?.split(" ")[0];
+        const host = file && URL.parse(file)?.host;
+        const modId = [...this.#ranHosts].find(([, hosts]) =>
+          hosts.has(host)
+        )?.[0];
+
+        if (!modId) {
+          return undefined;
+        }
+
+        if (!apis.has(modId)) {
+          const { name = "", version = "" } = this.#mods[modId] ?? {};
+
+          apis.set(
+            modId,
+            new lazy.ZenModAPI(win, { id: modId, name, version }, error =>
+              this.#reportScriptError(modId, error)
+            )
+          );
+        }
+
+        return apis.get(modId);
+      },
+    });
   }
 
   /**

@@ -10,6 +10,10 @@ ChromeUtils.defineLazyGetter(lazy, "modsBackend", () =>
   Cc["@mozilla.org/zen/mods-backend;1"].getService(Ci.nsIZenModsBackend)
 );
 
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenModAPI: "resource:///modules/zen/mods/ZenModAPI.sys.mjs",
+});
+
 ChromeUtils.defineLazyGetter(lazy, "resProtocol", () =>
   Services.io
     .getProtocolHandler("resource")
@@ -467,7 +471,7 @@ class nsZenModsManager {
   /**
    * What each window started, so it can undo it even after the mod is gone.
    *
-   * @type {WeakMap<Window, Map<string, {hash: string, modules: object[]}>>}
+   * @type {WeakMap<Window, Map<string, {hash: string, modules: object[], api: object}>>}
    */
   #windowScripts = new WeakMap();
 
@@ -1184,16 +1188,24 @@ class nsZenModsManager {
         changed = true;
       }
 
+      previous.api.dispose();
       started.delete(modId);
     }
 
     for (const [modId, { hash, modules }] of this.#scripts) {
-      if (started.has(modId)) {
+      if (started.has(modId) || !modules.length) {
         continue;
       }
 
-      changed ||= !this.#runHook(modId, modules, "init", win);
-      started.set(modId, { hash, modules });
+      const mod = this.#mods[modId];
+      const api = new lazy.ZenModAPI(
+        win,
+        { id: modId, name: mod.name, version: mod.version },
+        error => this.#reportScriptError(modId, error)
+      );
+
+      changed ||= !this.#runHook(modId, modules, "init", win, api);
+      started.set(modId, { hash, modules, api });
     }
 
     if (changed) {
@@ -1210,8 +1222,10 @@ class nsZenModsManager {
    * @param {Window} win
    */
   forgetWindow(win) {
-    for (const [modId, { modules }] of this.#windowScripts.get(win) ?? []) {
+    for (const [modId, { modules, api }] of this.#windowScripts.get(win) ??
+      []) {
       this.#runHook(modId, modules, "uninit", win);
+      api.dispose();
     }
 
     this.#windowScripts.delete(win);
@@ -1225,9 +1239,10 @@ class nsZenModsManager {
    * @param {object[]} modules
    * @param {"init"|"uninit"} hook
    * @param {Window} win
+   * @param {object} [api] - What `init` gets from Zen for this window
    * @returns {boolean} Whether every module had the hook and it went well
    */
-  #runHook(modId, modules, hook, win) {
+  #runHook(modId, modules, hook, win, api) {
     let complete = true;
 
     for (const module of modules) {
@@ -1238,7 +1253,12 @@ class nsZenModsManager {
       }
 
       try {
-        module[hook](win);
+        const result = module[hook](win, api);
+
+        // An async init reports its failure when it comes.
+        if (typeof result?.catch === "function") {
+          result.catch(error => this.#reportScriptError(modId, error));
+        }
       } catch (error) {
         console.error(`[ZenMods]: ${hook} of ${modId} failed:`, error);
 
@@ -1251,6 +1271,22 @@ class nsZenModsManager {
     }
 
     return complete;
+  }
+
+  /**
+   * Marks a mod whose script failed after it started, and tells the UI.
+   *
+   * @param {string} modId
+   * @param {*} error
+   */
+  #reportScriptError(modId, error) {
+    console.error(`[ZenMods]: A script of ${modId} failed:`, error);
+
+    this.#errors.set(modId, {
+      type: "script-failed",
+      message: String(error?.message ?? error),
+    });
+    Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
   }
 
   /**

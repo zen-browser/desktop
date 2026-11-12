@@ -424,3 +424,143 @@ add_task(async function test_userchrome_scripts() {
   await gZenModsManager.uninstallMod(modId);
   delete window.zenTestOrder;
 });
+
+add_task(async function test_mod_api() {
+  await SpecialPowers.pushPrefEnv({ set: [[SCRIPTS_PREF, true]] });
+
+  const testPref = "zen.test.mods.api.pref";
+  const originalSpace = gZenWorkspaces.getActiveWorkspace();
+  const otherSpace =
+    await gZenWorkspaces.createAndSaveWorkspace("Mod API Test");
+
+  await gZenWorkspaces.changeWorkspace(originalSpace);
+  registerCleanupFunction(() =>
+    gZenWorkspaces.removeWorkspace(otherSpace.uuid)
+  );
+
+  const folder = await makeLocalMod({
+    script: `
+      export async function init(win, zen) {
+        const state = (win.zenTestApi = { events: 0, shortcuts: 0 });
+
+        state.version = zen.version;
+        state.mod = zen.mod.name;
+        const box = zen.add(win.document.createXULElement("box"));
+
+        box.id = "zen-test-api-box";
+        win.document.documentElement.append(box);
+        zen.listen(win, "zen-test-api-event", () => state.events++);
+        zen.observePref("${testPref}", name => (state.pref = name));
+        zen.addStyle(':root { --zen-test-api: "styled"; }');
+        zen.on("compact-mode", ({ enabled }) => (state.compact = enabled));
+        zen.on("workspace-change", () => {
+          throw new Error("A callback that fails on purpose");
+        });
+        zen.shortcut({
+          id: "test",
+          key: "j",
+          modifiers: ["accel", "alt", "shift"],
+          command: () => state.shortcuts++,
+        });
+
+        try {
+          zen.shortcut({
+            id: "taken",
+            key: "t",
+            modifiers: ["accel"],
+            command() {},
+          });
+        } catch (error) {
+          state.taken = error.message;
+        }
+
+        zen.onCleanup(() => (state.cleanedUp = true));
+
+        await zen.ready;
+        state.workspace = zen.workspace?.id;
+      }
+
+      export function uninit() {}
+    `,
+  });
+  const modId = await gZenModsManager.installLocalMod(folder, {
+    scriptsApproved: true,
+  });
+
+  await TestUtils.waitForCondition(
+    () => window.zenTestApi?.workspace,
+    "The mod's init gets the API and waits for the window to be ready"
+  );
+
+  const state = window.zenTestApi;
+
+  is(state.version, 1, "It knows the API's version");
+  is(state.mod, "Local Mod", "And which mod it is");
+  is(
+    state.workspace,
+    gZenWorkspaces.activeWorkspace,
+    "It reads the space in sight"
+  );
+  ok(document.getElementById("zen-test-api-box"), "It adds elements");
+  await waitForRootValue(window, "--zen-test-api", '"styled"', "And styles");
+
+  window.dispatchEvent(new CustomEvent("zen-test-api-event"));
+  is(state.events, 1, "It listens to events");
+
+  Services.prefs.setStringPref(testPref, "changed");
+  is(state.pref, testPref, "And to preferences");
+
+  window.dispatchEvent(
+    new CustomEvent("ZenCompactMode:Toggled", { detail: true })
+  );
+  is(state.compact, true, "And to Zen, through stable events");
+
+  gURLBar.focus();
+  EventUtils.synthesizeKey("j", {
+    accelKey: true,
+    altKey: true,
+    shiftKey: true,
+  });
+  is(state.shortcuts, 1, "Its shortcut runs its command");
+  ok(
+    state.taken?.includes("is taken"),
+    "A shortcut Zen or Firefox already uses is refused"
+  );
+
+  await gZenWorkspaces.changeWorkspace(otherSpace);
+  is(
+    gZenWorkspaces.activeWorkspace,
+    otherSpace.uuid,
+    "A mod callback that throws doesn't stop a space switch"
+  );
+  is(
+    gZenModsManager.getModError(modId)?.type,
+    "script-failed",
+    "It's reported on the mod"
+  );
+  await gZenWorkspaces.changeWorkspace(originalSpace);
+
+  await gZenModsManager.setModEnabled(modId, false);
+
+  ok(!document.getElementById("zen-test-api-box"), "Its elements go");
+  is(rootValue(window, "--zen-test-api"), "", "Its styles go");
+  window.dispatchEvent(new CustomEvent("zen-test-api-event"));
+  is(state.events, 1, "Its listeners go");
+  gURLBar.focus();
+  EventUtils.synthesizeKey("j", {
+    accelKey: true,
+    altKey: true,
+    shiftKey: true,
+  });
+  is(state.shortcuts, 1, "Its shortcut goes");
+  ok(state.cleanedUp, "Its own cleanup runs");
+  isnot(
+    gZenModsManager.getScriptsState(modId),
+    "needs-restart",
+    "So turning it off needs no restart"
+  );
+
+  Services.prefs.clearUserPref(testPref);
+  await gZenModsManager.uninstallMod(modId);
+  delete window.zenTestApi;
+});

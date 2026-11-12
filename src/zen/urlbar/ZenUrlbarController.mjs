@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
+import { isLocalDevelopmentURI } from "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs";
 
 const SEARCH_MODE_ANIMATION_RESET_MS = 1000;
 
@@ -371,7 +372,25 @@ export class nsZenUrlbarController {
     if (gURLBar.hasAttribute("breakout-extend")) {
       return aURL;
     }
+    if (
+      !gZenVerticalTabsManager._hasSetSingleToolbar &&
+      Services.prefs.getBoolPref("zen.developer-mode.enabled", false)
+    ) {
+      try {
+        if (isLocalDevelopmentURI(Services.io.newURI(aURL))) {
+          return aURL;
+        }
+      } catch {}
+    }
     if (gZenVerticalTabsManager._hasSetSingleToolbar && this.showDomainOnly) {
+      if (Services.prefs.getBoolPref("zen.developer-mode.enabled", false)) {
+        try {
+          const uri = Services.io.newURI(aURL);
+          if (isLocalDevelopmentURI(uri)) {
+            return uri.displayHostPort;
+          }
+        } catch {}
+      }
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
       let stripped = url.startsWith("https://") ? url.split("/")[2] : url;
       if (stripped.startsWith("www.")) {

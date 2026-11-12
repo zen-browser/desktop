@@ -177,3 +177,22 @@ zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window =
     .label = New Blank Window
 
+
+
+zen-developer-mode-toolbar =
+    .aria-label = Development tools
+zen-developer-mode-url =
+    .aria-label = Development page address
+    .title = Edit development page address
+zen-developer-mode-copy =
+    .aria-label = Copy full URL
+    .title = Copy full URL
+zen-developer-mode-console =
+    .aria-label = Toggle Web Console
+    .title = Open or close Web Console
+zen-developer-mode-network =
+    .aria-label = Toggle Network Monitor
+    .title = Open or close Network Monitor
+zen-developer-mode-inspect =
+    .aria-label = Toggle Inspector
+    .title = Inspect an element or close Inspector

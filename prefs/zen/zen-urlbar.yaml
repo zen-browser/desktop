@@ -50,3 +50,6 @@
 
 - name: browser.urlbar.shortcuts.workspaces
   value: true
+
+- name: zen.developer-mode.enabled
+  value: false

@@ -19,6 +19,7 @@ EXTRA_JS_MODULES.zen += [
 ]
 
 EXTRA_JS_MODULES.zen.ui += [
+    "sys/ui/ZenDeveloperMode.sys.mjs",
     "sys/ui/ZenProgressBar.sys.mjs",
     "sys/ui/ZenUIComponent.sys.mjs",
 ]

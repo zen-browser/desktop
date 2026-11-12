@@ -280,7 +280,8 @@ export class ZenModAPI {
 
   /**
    * Adds a keyboard shortcut. One Zen, Firefox or another mod already uses
-   * is refused rather than taken over.
+   * is refused rather than taken over. about:keyboard lists it under Mods,
+   * where the user can change its keys.
    *
    * @param {object} shortcut
    * @param {string} shortcut.id - Letters, digits, "_" and "-"
@@ -288,10 +289,12 @@ export class ZenModAPI {
    * @param {string} [shortcut.keycode] - A key without one, like "VK_F5"
    * @param {string[]} [shortcut.modifiers] - Of "accel", "alt", "shift",
    * "control" and "meta"
+   * @param {string} [shortcut.label] - What it does, for about:keyboard;
+   * the id by default
    * @param {(event: Event) => void} shortcut.command
    * @returns {() => void} Removes the shortcut
    */
-  shortcut({ id, key, keycode, modifiers = [], command }) {
+  shortcut({ id, key, keycode, modifiers = [], label, command }) {
     const hasKey = typeof key === "string" && key.length === 1;
     const hasKeycode = typeof keycode === "string" && KEYCODE_RE.test(keycode);
 
@@ -342,8 +345,14 @@ export class ZenModAPI {
     keyElement.setAttribute(hasKey ? "key" : "keycode", hasKey ? key : keycode);
     keyElement.setAttribute("modifiers", modifiers.join(","));
     keyElement.setAttribute("command", commandElement.id);
+    keyElement.setAttribute(
+      "data-zen-mod-shortcut",
+      `${this.#mod.name}: ${typeof label === "string" && label ? label : id}`
+    );
     keyset.append(commandElement, keyElement);
-    doc.documentElement.append(keyset);
+    // In the body, CustomKeys sees it come and applies what the user chose
+    // for it in about:keyboard.
+    (doc.body ?? doc.documentElement).append(keyset);
 
     return this.#track(() => keyset.remove());
   }

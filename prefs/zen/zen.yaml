@@ -52,3 +52,12 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+# Closes tabs nobody has looked at in a while, so a space goes back to the
+# handful of tabs actually in use. Pinned tabs and Essentials are never
+# touched. Off by default.
+- name: zen.tabs.auto-close.enabled
+  value: false
+
+- name: zen.tabs.auto-close.after-hours
+  value: 168 # A week

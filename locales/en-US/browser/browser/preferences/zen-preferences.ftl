@@ -100,6 +100,19 @@ zen-settings-normal-tabs-sync =
 zen-settings-workspaces-sync-unpinned-tabs =
     .label = Sync only pinned tabs in workspaces
 
+zen-tabs-auto-close-enabled =
+    .label = Close tabs I have not used in a while
+zen-tabs-auto-close-after-label = Close unused tabs after
+zen-tabs-auto-close-after-12-hours =
+    .label = 12 hours
+zen-tabs-auto-close-after-1-day =
+    .label = 1 day
+zen-tabs-auto-close-after-7-days =
+    .label = 7 days
+zen-tabs-auto-close-after-30-days =
+    .label = 30 days
+zen-tabs-auto-close-description = Pinned tabs, Essentials and tabs inside folders are never closed. Closed tabs can be reopened from the Library or with the restore closed tab shortcut.
+
 zen-tabs-cycle-by-attribute =
   .label = Ctrl+Tab cycles within Essential or Workspace tabs only
 zen-tabs-cycle-ignore-pending-tabs =

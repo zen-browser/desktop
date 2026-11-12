@@ -246,6 +246,8 @@ add_task(async function test_every_way_styles_reach_the_web_is_caught() {
     "svg-stylesheet": true,
     "svg-image": true,
     "svg-style-url": true,
+    // Read in another encoding, its strings end elsewhere.
+    "svg-encoding": true,
     // @namespace and @-moz-document only say where rules apply.
     matching: false,
     clean: false,

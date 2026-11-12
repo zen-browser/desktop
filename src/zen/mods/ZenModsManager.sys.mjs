@@ -108,6 +108,7 @@ const CHARSET_RE = /^@charset "([^"]*)";/;
 // Files a sheet may point at that Gecko never reads as a document.
 const PLAIN_FILE_RE = /\.(?:png|jpe?g|gif|webp|avif|ico|bmp|woff2?|ttf|otf)$/i;
 const DTD_RE = /<!ENTITY|<!DOCTYPE[^>]*\b(?:SYSTEM|PUBLIC)\b/i;
+const XML_ENCODING_RE = /^\s*<\?xml\b[^>]*\bencoding\s*=\s*["']([^"']*)["']/;
 const SVG_NS = "http://www.w3.org/2000/svg";
 // What could reach past an SVG document: HTML with its own links, or
 // animations that change a link once it's checked.
@@ -690,6 +691,20 @@ async function documentLoads(path, win) {
     text = await IOUtils.readUTF8(path);
   } catch {
     return true;
+  }
+
+  // Gecko reads a document that names another encoding with it, where a
+  // string may end somewhere else than it does here.
+  const encoding = text.match(XML_ENCODING_RE)?.[1];
+
+  if (encoding) {
+    try {
+      if (new TextDecoder(encoding).encoding !== "utf-8") {
+        return true;
+      }
+    } catch {
+      // Gecko doesn't load a document in an encoding it doesn't know.
+    }
   }
 
   const doc = new win.DOMParser().parseFromString(text, "image/svg+xml");

@@ -15,9 +15,13 @@ support-files = [
 
 ["browser_mods_install.js"]
 
+["browser_mods_library.js"]
+
 ["browser_mods_marketplace.js"]
 
 ["browser_mods_order.js"]
+
+["browser_mods_settings.js"]
 
 ["browser_mods_stylesheet.js"]
 

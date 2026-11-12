@@ -3,10 +3,6 @@
 
 "use strict";
 
-const { PromptTestUtils } = ChromeUtils.importESModule(
-  "resource://testing-common/PromptTestUtils.sys.mjs"
-);
-
 const ACTOR = "ZenModsMarketplace";
 const STORE_PAGE = `${MODS_ROOT}store_page.html`;
 
@@ -47,28 +43,13 @@ async function openStorePage() {
   return tab;
 }
 
-/**
- * Answers the next install prompt. PromptTestUtils.handleNextPrompt matches
- * window prompts by their opener, which window-modal subdialogs don't set.
- *
- * @param {number} buttonNumClick - 0 installs, 1 cancels
- */
-async function handleInstallPrompt(buttonNumClick) {
-  const [prompt] = await TestUtils.topicObserved("common-dialog-loaded");
-
-  is(prompt.Dialog.args.promptType, "confirmEx", "The install prompt opened");
-
-  await PromptTestUtils.handlePrompt(prompt.Dialog, { buttonNumClick });
-}
-
 add_setup(async function () {
   registerMarketplace([`${MODS_ROOT}*`]);
 
   registerCleanupFunction(() =>
-    registerMarketplace([
-      ...Services.prefs.getStringPref("zen.injections.match-urls").split(","),
-      "about:preferences",
-    ])
+    registerMarketplace(
+      Services.prefs.getStringPref("zen.injections.match-urls").split(",")
+    )
   );
 });
 
@@ -95,7 +76,7 @@ add_task(async function test_installing_from_a_page_asks_first() {
   await useStore("store");
 
   const tab = await openStorePage();
-  const declined = handleInstallPrompt(1);
+  const declined = handleNextConfirm(1);
 
   await BrowserTestUtils.synthesizeMouseAtCenter(
     "#install-theme",
@@ -115,7 +96,7 @@ add_task(async function test_installing_from_a_page_asks_first() {
     "Declining the prompt installs nothing"
   );
 
-  const accepted = handleInstallPrompt(0);
+  const accepted = handleNextConfirm(0);
 
   await BrowserTestUtils.synthesizeMouseAtCenter(
     "#install-theme",

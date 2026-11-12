@@ -279,9 +279,10 @@ export class ZenModAPI {
   }
 
   /**
-   * Adds a keyboard shortcut. One Zen, Firefox or another mod already uses
-   * is refused rather than taken over. about:keyboard lists it under Mods,
-   * where the user can change its keys.
+   * Adds a keyboard shortcut, which about:keyboard lists under Mods, where
+   * the user can change its keys. If Zen, Firefox or another mod already
+   * uses them, it's added without keys rather than taking theirs, so the
+   * keys the user gave it, or gives it there, still apply.
    *
    * @param {object} shortcut
    * @param {string} shortcut.id - Letters, digits, "_" and "-"
@@ -327,8 +328,8 @@ export class ZenModAPI {
     );
 
     if (taken) {
-      throw new Error(
-        `[ZenMods]: Shortcut ${id} is taken by ${taken.id || "another key"}.`
+      console.warn(
+        `[ZenMods]: Shortcut ${id} of ${this.#mod.name} is taken by ${taken.id || "another key"}; it has no keys until the user gives it some in about:keyboard.`
       );
     }
 
@@ -342,8 +343,13 @@ export class ZenModAPI {
     commandElement.id = `${elementId}-command`;
     commandElement.addEventListener("command", this.#guard(command));
     keyElement.id = elementId;
-    keyElement.setAttribute(hasKey ? "key" : "keycode", hasKey ? key : keycode);
-    keyElement.setAttribute("modifiers", modifiers.join(","));
+    if (!taken) {
+      keyElement.setAttribute(
+        hasKey ? "key" : "keycode",
+        hasKey ? key : keycode
+      );
+      keyElement.setAttribute("modifiers", modifiers.join(","));
+    }
     keyElement.setAttribute("command", commandElement.id);
     keyElement.setAttribute(
       "data-zen-mod-shortcut",

@@ -30,6 +30,8 @@ const REMOTE = [
   "remote/charset/userContent.css",
   "remote/remote-image-scheme/theme.json",
   "remote/remote-image-scheme/userContent.css",
+  "remote/data-import/theme.json",
+  "remote/data-import/userContent.css",
   "remote/clean/a.png",
   "remote/clean/parts/ok.css",
   "remote/clean/theme.json",

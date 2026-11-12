@@ -224,6 +224,7 @@ add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
     "var-in-image-set": true,
     charset: true,
     "remote-image-scheme": true,
+    "data-import": true,
     clean: false,
   };
 

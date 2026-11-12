@@ -202,6 +202,23 @@ library-mods-filter-state = Show
 library-mods-filter-enabled = Turned on
 library-mods-filter-disabled = Turned off
 library-mods-filter-error = With problems
+library-mods-filter-available = Not installed
+library-mods-filter-installed = Installed
+library-mods-filter-tags = Tags
+library-mods-view-installed = Installed
+library-mods-view-store = Store
+library-mods-store-search-placeholder =
+    .placeholder = Search the store…
+library-mods-store-loading = Loading the store…
+library-mods-store-error = Couldn’t reach the store
+library-mods-store-retry = Try again
+library-mods-store-installed = Installed
+library-mods-store-install = Install
+library-mods-store-remove = Remove
+library-mods-store-homepage = Homepage
+# Variables:
+#   $date (String) - When the mod was last updated, as the store writes it, like 2025-01-26
+library-mods-store-updated = Updated { $date }
 library-mods-empty = No mods yet
 library-mods-browse-store-button = Browse mods
 library-mods-no-results = No mods found
@@ -285,7 +302,7 @@ library-mods-github-not-found = Couldn’t find a mod there
 library-mods-github-not-found-description = It needs a public repository with a theme.json, a chrome.css or a userChrome.css.
 # Variables:
 #   $name (String) - The name of the mod
-library-mods-github-failed = Couldn’t install { $name }
+library-mods-install-failed = Couldn’t install { $name }
 
 library-mods-github-prompt-title = Install this mod from GitHub?
 # Variables:

@@ -36,6 +36,13 @@ const PREFERENCE_TYPES = new Set([
 const MAX_CONDITION_DEPTH = 8;
 const FORMATTING_RE = /\\([*~\\])|\*+|~/g;
 
+const MAX_TAG_FILTERS = 12;
+
+const STORE_FILTERS = [
+  { id: "available", l10nId: "library-mods-filter-available" },
+  { id: "installed", l10nId: "library-mods-filter-installed" },
+];
+
 const STATE_FILTERS = [
   { id: "enabled", l10nId: "library-mods-filter-enabled" },
   { id: "disabled", l10nId: "library-mods-filter-disabled" },
@@ -61,6 +68,16 @@ const SCRIPTS_L10N_IDS = {
  */
 function isEnabled(mod) {
   return mod.enabled !== false;
+}
+
+/**
+ * @param {object} mod - A store entry
+ * @returns {string[]} Its tags that are text
+ */
+function stringTags(mod) {
+  return Array.isArray(mod?.tags)
+    ? mod.tags.filter(tag => typeof tag === "string" && tag)
+    : [];
 }
 
 /**
@@ -326,7 +343,7 @@ async function installFromGitHub() {
     });
   } catch (error) {
     console.error(`[ZenLibraryMods]: Could not install ${found.repo}:`, error);
-    window.gZenUIManager.showToast("library-mods-github-failed", {
+    window.gZenUIManager.showToast("library-mods-install-failed", {
       l10nArgs: { name: found.name },
     });
     return;
@@ -523,13 +540,26 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   static properties = {
     mods: { state: true },
     configuring: { state: true },
+    view: { state: true },
+    storeMods: { state: true },
+    storeDetail: { state: true },
   };
 
   constructor() {
     super();
     this.mods = [];
     this.configuring = null;
+    this.view = "installed";
+
+    /** @type {object[]|"loading"|"error"|null} What the store publishes */
+    this.storeMods = null;
+
+    /** @type {string|null} The store mod whose details are open */
+    this.storeDetail = null;
   }
+
+  /** @type {Set<string>} Store mods being installed */
+  #installing = new Set();
 
   #observer = { observe: () => this.#load() };
   #loads = 0;
@@ -577,7 +607,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   }
 
   get searchPlaceholderL10nId() {
-    return "library-mods-search-placeholder";
+    return this.view === "store"
+      ? "library-mods-store-search-placeholder"
+      : "library-mods-search-placeholder";
   }
 
   get filterTitleL10nId() {
@@ -585,14 +617,41 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   }
 
   get filterGroups() {
-    return [
+    if (this.view === "installed") {
+      return [
+        {
+          id: "state",
+          titleL10nId: "library-mods-filter-state",
+          exclusive: true,
+          options: STATE_FILTERS,
+        },
+      ];
+    }
+
+    const tags = Array.isArray(this.storeMods)
+      ? [...new Set(this.storeMods.flatMap(mod => stringTags(mod)))]
+          .sort()
+          .slice(0, MAX_TAG_FILTERS)
+      : [];
+    const groups = [
       {
-        id: "state",
+        id: "store",
         titleL10nId: "library-mods-filter-state",
         exclusive: true,
-        options: STATE_FILTERS,
+        options: STORE_FILTERS,
       },
     ];
+
+    if (tags.length) {
+      groups.push({
+        id: "tag",
+        titleL10nId: "library-mods-filter-tags",
+        exclusive: true,
+        options: tags.map(tag => ({ id: tag, label: tag })),
+      });
+    }
+
+    return groups;
   }
 
   onSearchChanged() {
@@ -683,6 +742,84 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
   get #configuringMod() {
     return this.mods.find(mod => mod.id === this.configuring) ?? null;
+  }
+
+  get #storeDetailMod() {
+    return Array.isArray(this.storeMods)
+      ? (this.storeMods.find(mod => mod.id === this.storeDetail) ?? null)
+      : null;
+  }
+
+  /** @returns {object[]} The store mods the search box and filters leave */
+  get #shownStoreMods() {
+    const query = this.searchQuery.toLowerCase();
+    const installed = new Set(this.mods.map(mod => mod.id));
+    const tag = [...this.activeFilters]
+      .find(filter => filter.startsWith("tag:"))
+      ?.slice("tag:".length);
+
+    return this.storeMods.filter(mod => {
+      if (this.isFilterActive("store", "available") && installed.has(mod.id)) {
+        return false;
+      }
+
+      if (this.isFilterActive("store", "installed") && !installed.has(mod.id)) {
+        return false;
+      }
+
+      if (tag && !stringTags(mod).includes(tag)) {
+        return false;
+      }
+
+      return (
+        !query ||
+        [mod.name, mod.author, mod.description, ...stringTags(mod)].some(text =>
+          String(text ?? "")
+            .toLowerCase()
+            .includes(query)
+        )
+      );
+    });
+  }
+
+  /**
+   * @param {"installed"|"store"} view
+   */
+  async #showView(view) {
+    this.view = view;
+
+    if (view !== "store" || Array.isArray(this.storeMods)) {
+      return;
+    }
+
+    this.storeMods = "loading";
+
+    try {
+      this.storeMods = await lazy.gZenModsManager.fetchStoreIndex();
+    } catch (error) {
+      console.error("[ZenLibraryMods]: Could not load the store:", error);
+      this.storeMods = "error";
+    }
+  }
+
+  async #installFromStore(entry) {
+    this.#installing.add(entry.id);
+    this.requestUpdate();
+
+    try {
+      await lazy.gZenModsManager.installMod(entry);
+      window.gZenUIManager.showToast("library-mods-installed", {
+        l10nArgs: { name: entry.name },
+      });
+    } catch (error) {
+      console.error(`[ZenLibraryMods]: Could not install ${entry.id}:`, error);
+      window.gZenUIManager.showToast("library-mods-install-failed", {
+        l10nArgs: { name: entry.name },
+      });
+    } finally {
+      this.#installing.delete(entry.id);
+      this.requestUpdate();
+    }
   }
 
   // Actions
@@ -973,7 +1110,15 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
    */
   #configure(mod) {
     this.#cancelPanelTimer();
+    this.storeDetail = null;
     this.configuring = mod.id;
+    this.filtersOpen = true;
+  }
+
+  #openStoreDetail(entry) {
+    this.#cancelPanelTimer();
+    this.configuring = null;
+    this.storeDetail = entry.id;
     this.filtersOpen = true;
   }
 
@@ -985,6 +1130,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
       if (!this.filtersOpen) {
         this.configuring = null;
+        this.storeDetail = null;
       }
     }, PANEL_FADE_MS);
   }
@@ -1045,6 +1191,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     this.#cancelPanelTimer();
     this.filtersOpen = false;
     this.configuring = null;
+    this.storeDetail = null;
   }
 
   /**
@@ -1168,9 +1315,15 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
   updated(changedProperties) {
     super.updated(changedProperties);
-    this.toggleAttribute("configuring", Boolean(this.configuring));
+    this.toggleAttribute(
+      "configuring",
+      Boolean(this.configuring || this.storeDetail)
+    );
 
-    if (changedProperties.has("configuring")) {
+    if (
+      changedProperties.has("configuring") ||
+      changedProperties.has("storeDetail")
+    ) {
       this.#fitPanel();
     }
   }
@@ -1264,6 +1417,12 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   // Rendering
 
   renderPanel() {
+    const entry = this.#storeDetailMod;
+
+    if (entry) {
+      return this.#renderStoreDetail(entry);
+    }
+
     const mod = this.#configuringMod;
 
     if (!mod) {
@@ -1566,15 +1725,242 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     `;
   }
 
+  #renderViews() {
+    return html`
+      <div class="zen-library-mods-views" role="tablist">
+        ${["installed", "store"].map(
+          view => html`
+            <button
+              class="zen-library-filter-chip"
+              role="tab"
+              aria-selected=${this.view === view}
+              ?active=${this.view === view}
+              data-view=${view}
+              data-l10n-id=${`library-mods-view-${view}`}
+              @click=${() => this.#showView(view)}
+            ></button>
+          `
+        )}
+      </div>
+    `;
+  }
+
+  /**
+   * The mod's picture from the store, or its initial: chrome only loads
+   * pictures from the store's own addresses.
+   *
+   * @param {object} mod
+   */
+  #renderModImage(mod) {
+    if (lazy.gZenModsManager.isStoreUrl(mod.image)) {
+      return html`<img
+        class="zen-library-mod-icon zen-library-store-thumbnail"
+        src=${mod.image}
+        alt=""
+        loading="lazy"
+      />`;
+    }
+
+    const initial = [...String(mod.name ?? "").trim()][0] ?? "?";
+
+    return html`<div class="zen-library-mod-icon">
+      ${initial.toLocaleUpperCase()}
+    </div>`;
+  }
+
+  /**
+   * @param {object} mod - A store entry
+   * @param {boolean} isInstalled
+   */
+  #renderStoreAction(mod, isInstalled) {
+    if (isInstalled) {
+      return html`<span
+        class="zen-library-mod-badge"
+        data-l10n-id="library-mods-store-installed"
+      ></span>`;
+    }
+
+    return html`<button
+      class="zen-library-filter-chip"
+      data-l10n-id="library-mods-store-install"
+      ?disabled=${this.#installing.has(mod.id)}
+      @click=${event => {
+        event.stopPropagation();
+        this.#installFromStore(mod);
+      }}
+    ></button>`;
+  }
+
+  #renderStoreItems() {
+    if (this.storeMods === "loading" || this.storeMods === null) {
+      return html`<div
+        class="zen-library-empty"
+        data-l10n-id="library-mods-store-loading"
+      ></div>`;
+    }
+
+    if (this.storeMods === "error") {
+      return html`
+        <div class="zen-library-empty zen-library-mods-empty">
+          <span data-l10n-id="library-mods-store-error"></span>
+          <button
+            class="zen-library-filter-chip"
+            data-l10n-id="library-mods-store-retry"
+            @click=${() => {
+              this.storeMods = null;
+              this.#showView("store");
+            }}
+          ></button>
+        </div>
+      `;
+    }
+
+    const shown = this.#shownStoreMods;
+    const installed = new Set(this.mods.map(mod => mod.id));
+
+    if (!shown.length) {
+      return html`<div
+        class="zen-library-empty"
+        data-l10n-id="library-mods-no-results"
+      ></div>`;
+    }
+
+    return html`
+      <div class="zen-library-group">
+        ${repeat(
+          shown,
+          mod => mod.id,
+          mod => html`
+            <div
+              class="zen-library-row zen-library-mod-row"
+              data-store-id=${mod.id}
+              tabindex="0"
+              @click=${() => this.#openStoreDetail(mod)}
+              @keydown=${event => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  this.#openStoreDetail(mod);
+                }
+              }}
+            >
+              ${this.#renderModImage(mod)}
+              <div class="zen-library-row-text">
+                <span class="zen-library-row-title">${mod.name}</span>
+                <span class="zen-library-row-subtitle">${mod.description}</span>
+              </div>
+              <div class="zen-library-row-actions">
+                ${this.#renderStoreAction(mod, installed.has(mod.id))}
+              </div>
+            </div>
+          `
+        )}
+      </div>
+    `;
+  }
+
+  /**
+   * @param {object} entry - A store entry
+   */
+  #renderStoreDetail(entry) {
+    const installedMod = this.mods.find(mod => mod.id === entry.id);
+    const hasImage = lazy.gZenModsManager.isStoreUrl(entry.image);
+
+    return html`
+      <div class="zen-library-filter-header" ?inert=${!this.filtersOpen}>
+        <h2>${entry.name}</h2>
+        <button
+          class="zen-library-filter-done"
+          data-l10n-id="library-filter-done"
+          @click=${() => this.#closePanel()}
+        ></button>
+      </div>
+      <div class="zen-library-filter-panel">
+        <div
+          class="zen-library-filter-panel-inner zen-library-mod-preferences zen-library-store-detail"
+          ?inert=${!this.filtersOpen}
+        >
+          ${
+            hasImage
+              ? html`<img
+                  class="zen-library-store-image"
+                  src=${entry.image}
+                  alt=""
+                />`
+              : nothing
+          }
+          <p class="zen-library-store-description">${entry.description}</p>
+          <span
+            class="zen-library-row-subtitle"
+            data-l10n-id="library-mods-byline"
+            data-l10n-args=${JSON.stringify({
+              author: String(entry.author ?? ""),
+              version: String(entry.version ?? ""),
+            })}
+          ></span>
+          ${
+            typeof entry.updatedAt === "string" && entry.updatedAt
+              ? html`<span
+                  class="zen-library-row-subtitle"
+                  data-l10n-id="library-mods-store-updated"
+                  data-l10n-args=${JSON.stringify({ date: entry.updatedAt })}
+                ></span>`
+              : nothing
+          }
+          ${
+            stringTags(entry).length
+              ? html`<div class="zen-library-store-tags">
+                  ${stringTags(entry).map(
+                    tag =>
+                      html`<span class="zen-library-mod-badge">${tag}</span>`
+                  )}
+                </div>`
+              : nothing
+          }
+          <div class="zen-library-store-actions">
+            ${
+              installedMod
+                ? html`<button
+                    class="zen-library-filter-chip"
+                    data-l10n-id="library-mods-store-remove"
+                    @click=${() => this.#remove(installedMod)}
+                  ></button>`
+                : html`<button
+                    class="zen-library-filter-chip"
+                    active
+                    data-l10n-id="library-mods-store-install"
+                    ?disabled=${this.#installing.has(entry.id)}
+                    @click=${() => this.#installFromStore(entry)}
+                  ></button>`
+            }
+            ${
+              entry.homepage
+                ? html`<button
+                    class="zen-library-filter-chip"
+                    data-l10n-id="library-mods-store-homepage"
+                    @click=${() => this.#openHomepage(entry)}
+                  ></button>`
+                : nothing
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   renderItems() {
+    if (this.view === "store") {
+      return html`${this.#renderViews()}${this.#renderStoreItems()}`;
+    }
+
     if (!this.mods.length) {
       return html`
+        ${this.#renderViews()}
         <div class="zen-library-empty zen-library-mods-empty">
           <span data-l10n-id="library-mods-empty"></span>
           <button
             class="zen-library-filter-chip"
             data-l10n-id="library-mods-browse-store-button"
-            @click=${browseStore}
+            @click=${() => this.#showView("store")}
           ></button>
         </div>
       `;
@@ -1584,7 +1970,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
     if (!shown.length) {
       return html`
-        ${this.#renderAllDisabledNotice()}
+        ${this.#renderViews()} ${this.#renderAllDisabledNotice()}
         <div
           class="zen-library-empty"
           data-l10n-id="library-mods-no-results"
@@ -1602,13 +1988,13 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     // a mod lands.
     if (this.searchQuery || this.activeFilters.size) {
       return html`
-        ${this.#renderAllDisabledNotice()}
+        ${this.#renderViews()} ${this.#renderAllDisabledNotice()}
         <div class="zen-library-group">${rows}</div>
       `;
     }
 
     return html`
-      ${this.#renderAllDisabledNotice()}
+      ${this.#renderViews()} ${this.#renderAllDisabledNotice()}
       <moz-reorderable-list
         class="zen-library-group"
         itemselector=".zen-library-mod-row"

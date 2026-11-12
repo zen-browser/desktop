@@ -1588,6 +1588,56 @@ class nsZenModsManager {
   }
 
   /**
+   * @returns {Promise<object[]>} What the store publishes, the most recently
+   * updated first. Only data: nothing is installed.
+   */
+  async fetchStoreIndex() {
+    const url = `${Services.prefs.getStringPref(STORE_URL_PREF)}themes.json`;
+    const index = JSON.parse(
+      new TextDecoder().decode(await this.#download(url))
+    );
+
+    if (!index || typeof index !== "object") {
+      throw new Error("[ZenMods]: The mods store index is invalid.");
+    }
+
+    const entries = [];
+
+    for (const [modId, mod] of Object.entries(index)) {
+      try {
+        this.#validateStoreMod(mod, modId);
+        entries.push(mod);
+      } catch (error) {
+        console.warn(
+          `[ZenMods]: Invalid store entry ${modId}, skipping.`,
+          error
+        );
+      }
+    }
+
+    return entries.sort((first, second) =>
+      String(second.updatedAt ?? "").localeCompare(
+        String(first.updatedAt ?? "")
+      )
+    );
+  }
+
+  /**
+   * @param {*} url
+   * @returns {boolean} Whether the URL is the store's, like the images of
+   * its mods: chrome only loads those
+   */
+  isStoreUrl(url) {
+    try {
+      this.#assertAllowedUrl(String(url), this.#storeUrls());
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Fetches what the store publishes about a mod. The result is only data:
    * nothing is downloaded or installed yet.
    *

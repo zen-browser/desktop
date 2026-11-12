@@ -35,6 +35,8 @@ const REMOTE = [
   "remote/import-escape/theme.json",
   "remote/import-escape/userContent.css",
   "remote/import-escape/zen-themes.css",
+  "remote/chrome-outside/theme.json",
+  "remote/chrome-outside/userChrome.css",
   "remote/chrome-font/theme.json",
   "remote/chrome-font/userChrome.css",
   "remote/matching/theme.json",

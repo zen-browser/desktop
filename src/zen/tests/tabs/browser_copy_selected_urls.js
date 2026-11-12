@@ -9,7 +9,6 @@ const URL3 = "https://example.org/?tab=3";
 const BLANK_URL = "about:blank";
 
 add_task(async function test_copy_urls_of_multiselected_tabs() {
-  // setup tabs
   const tab1 = BrowserTestUtils.addTab(gBrowser, URL1);
   const tab2 = BrowserTestUtils.addTab(gBrowser, URL2);
   const tab3 = BrowserTestUtils.addTab(gBrowser, URL3);
@@ -21,21 +20,12 @@ add_task(async function test_copy_urls_of_multiselected_tabs() {
     BrowserTestUtils.removeTab(blankTab);
   });
 
-  // wait for non-blank tabs to load
   await Promise.all(
     [tab1, tab2, tab3].map(tab =>
       BrowserTestUtils.browserLoaded(tab.linkedBrowser)
     )
   );
 
-  // create the following structure:
-  //
-  // folder
-  // ├─ subfolder
-  // │  └─ tab2
-  // └─ tab1
-  // about:blank
-  // tab3
   const subfolder = await gZenFolders.createFolder([tab2], {
     renameFolder: false,
     label: "subfolder",
@@ -58,19 +48,14 @@ add_task(async function test_copy_urls_of_multiselected_tabs() {
   Assert.equal(tab3.group, null, "tab3 is loose");
 
   registerCleanupFunction(() => {
-    // A toast that is still visible is reused with its old count, so don't
-    // leave one for the next test.
     document.getElementById("zen-toast-container").replaceChildren();
   });
 
-  // select tabs
   await BrowserTestUtils.switchTab(gBrowser, blankTab);
   gBrowser.addToMultiSelectedTabs(tab3);
   gBrowser.addToMultiSelectedTabs(tab2);
   gBrowser.addToMultiSelectedTabs(tab1);
 
-  // test multi-copy
-  // in sidebar order, without the unshareable blank tab
   const expectedTabs = [tab2, tab1, tab3];
 
   await SimpleTest.promiseClipboardChange(

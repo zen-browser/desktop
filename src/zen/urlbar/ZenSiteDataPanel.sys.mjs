@@ -765,7 +765,7 @@ export class nsZenSiteDataPanel {
             buttonRect.height
           );
         } else {
-          this.window.gZenCommonActions.copyCurrentURLToClipboard();
+          this.window.gZenCommonActions.copyCurrentTabURLToClipboard();
         }
         if (AppConstants.platform !== "macosx") {
           this.unifiedPanel.hidePopup();

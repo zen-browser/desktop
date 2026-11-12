@@ -85,6 +85,8 @@ function removeTabs(aTabs) {
 /**
  * Creates a source space (made active) and a destination space placed so that
  * it is the first non-active space, then runs aCallback.
+ *
+ * @param {Function} aCallback - Receives `{ source, destination }`.
  */
 async function withSpaces(aCallback) {
   await gZenWorkspaces.promiseInitialized;
@@ -188,9 +190,10 @@ add_task(async function test_MoveTabWithUnchangedIndex() {
 
         const indexBefore = tab.index;
         gZenWorkspaces.moveTabToWorkspace(tab, destination.uuid);
-        Assert.ok(
-          tab.index === indexBefore,
-          `Precondition: the move keeps the global tab index (${indexBefore} -> ${tab.index}), so no TabMove is fired`
+        Assert.equal(
+          tab.index,
+          indexBefore,
+          "Precondition: the move keeps the global tab index, so no TabMove is fired"
         );
 
         await waitForTabsInSpace(win, [tab], destination.uuid);

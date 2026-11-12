@@ -182,19 +182,20 @@ async function confirmAction([titleId, messageId, acceptId], args = {}) {
     prompts.BUTTON_POS_0 * prompts.BUTTON_TITLE_IS_STRING +
     prompts.BUTTON_POS_1 * prompts.BUTTON_TITLE_CANCEL;
 
-  return (
-    prompts.confirmEx(
-      window,
-      title,
-      message,
-      flags,
-      accept,
-      null,
-      null,
-      null,
-      {}
-    ) === 0
+  const result = await prompts.asyncConfirmEx(
+    window.browsingContext,
+    prompts.MODAL_TYPE_INTERNAL_WINDOW,
+    title,
+    message,
+    flags,
+    accept,
+    null,
+    null,
+    null,
+    false
   );
+
+  return result.getProperty("buttonNumClicked") === 0;
 }
 
 /**
@@ -299,7 +300,7 @@ async function installFromGitHub() {
   ]);
   const result = await Services.prompt.asyncPrompt(
     window.browsingContext,
-    Services.prompt.MODAL_TYPE_WINDOW,
+    Services.prompt.MODAL_TYPE_INTERNAL_WINDOW,
     title,
     text,
     "",

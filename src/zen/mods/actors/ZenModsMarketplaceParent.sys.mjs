@@ -9,14 +9,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenModsMarketplaceParent extends JSWindowActorParent {
-  /**
-   * The mods page in about:preferences asks on the user's behalf; anything
-   * else is a web page and only gets to request.
-   */
-  get #fromSettings() {
-    return this.manager.documentPrincipal.isSystemPrincipal;
-  }
-
   async receiveMessage(message) {
     switch (message.name) {
       case "ZenModsMarketplace:InstallMod": {
@@ -25,7 +17,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
         try {
           const mod = await lazy.gZenModsManager.fetchStoreMod(modId);
 
-          if (this.#fromSettings || (await this.#confirmInstall(mod))) {
+          if (await this.#confirmInstall(mod)) {
             console.warn(
               `[ZenModsMarketplaceParent]: Installing mod ${mod.id}`
             );

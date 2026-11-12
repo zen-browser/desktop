@@ -193,3 +193,108 @@ library-boosts-delete-button =
     .title = Delete boost
 library-boosts-menu-edit =
     .label = Edit Boost
+
+library-mods-section-title = Mods
+library-mods-search-placeholder =
+    .placeholder = Search mods…
+library-mods-filter-title = Filter mods
+library-mods-filter-state = Show
+library-mods-filter-enabled = Turned on
+library-mods-filter-disabled = Turned off
+library-mods-filter-error = With problems
+library-mods-empty = No mods yet
+library-mods-browse-store-button = Browse mods
+library-mods-no-results = No mods found
+library-mods-all-disabled = All mods are turned off
+library-mods-enable-all-button = Turn on
+# Variables:
+#   $author (String) - Who published the mod
+#   $version (String) - The installed version of the mod
+library-mods-byline = { $author } · { $version }
+library-mods-error-missing-files = Files missing, reinstall it
+library-mods-error-update-failed = Last update failed
+library-mods-toggle =
+    .aria-label = Turn on mod
+library-mods-configure-button =
+    .title = Mod preferences
+library-mods-menu-configure =
+    .label = Preferences
+library-mods-menu-homepage =
+    .label = Open mod page
+library-mods-menu-reinstall =
+    .label = Reinstall
+library-mods-menu-remove =
+    .label = Remove
+library-mods-preference-none = None
+library-mods-preference-none-item =
+    .label = None
+
+library-mods-remove-prompt-title = Remove this mod?
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-remove-prompt-message = “{ $name }” and its preferences will be removed.
+library-mods-remove-prompt-accept = Remove
+
+library-mods-import-title = Import mods
+library-mods-export-title = Export mods
+library-mods-import-prompt-title = Import these mods?
+# Variables:
+#   $count (Number) - How many mods will be installed
+#   $names (String) - The names of the first mods, one per line
+#   $more (Number) - How many mods are not in $names
+library-mods-import-prompt-message =
+    { $count ->
+        [one] This mod will be installed from the store:
+       *[other] These { $count } mods will be installed from the store:
+    }
+    { $names }
+    { $more ->
+        [0] { "" }
+       *[other] and { $more } more
+    }
+library-mods-import-prompt-accept = Install
+
+# Variables:
+#   $count (Number) - How many mods were installed
+library-mods-imported =
+    { $count ->
+        [one] Imported one mod
+       *[other] Imported { $count } mods
+    }
+library-mods-import-nothing = That file has no new mods from the store
+library-mods-import-invalid = That file isn’t a mods export
+# Variables:
+#   $count (Number) - How many mods were saved to the file
+library-mods-exported =
+    { $count ->
+        [one] Exported one mod
+       *[other] Exported { $count } mods
+    }
+# Variables:
+#   $count (Number) - How many mods were updated
+library-mods-updates-installed =
+    { $count ->
+        [one] Updated one mod
+       *[other] Updated { $count } mods
+    }
+library-mods-updates-none = Your mods are up to date
+library-mods-updates-failed = Couldn’t reach the mods store
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-reinstalled = Reinstalled { $name }
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-reinstall-failed = Couldn’t reinstall { $name }
+
+library-mods-check-for-updates =
+    .label = Check for updates
+library-mods-disable-all =
+    .label = Turn off all mods
+library-mods-enable-all =
+    .label = Turn on mods
+library-mods-import =
+    .label = Import…
+library-mods-export =
+    .label = Export…
+library-mods-browse-store =
+    .label = Browse mods

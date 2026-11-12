@@ -4,10 +4,9 @@
 
 import { nsZenPreloadedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-const { gZenModsManager, sanitizeModName, ZEN_MODS_UPDATE_TOPIC } =
-  ChromeUtils.importESModule(
-    "resource:///modules/zen/mods/ZenModsManager.sys.mjs"
-  );
+const { gZenModsManager, ZEN_MODS_UPDATE_TOPIC } = ChromeUtils.importESModule(
+  "resource:///modules/zen/mods/ZenModsManager.sys.mjs"
+);
 
 const DOT_RE = /\./g;
 
@@ -154,42 +153,6 @@ class nsZenMods extends nsZenPreloadedFeature {
     }
 
     this.#watchedPrefs.clear();
-  }
-
-  // What the mods page in about:preferences uses until it moves to the
-  // Library.
-
-  getMods() {
-    return gZenModsManager.getMods();
-  }
-
-  getModPreferences(mod) {
-    return gZenModsManager.getModPreferences(mod);
-  }
-
-  removeMod(modId) {
-    return gZenModsManager.uninstallMod(modId);
-  }
-
-  enableMod(modId) {
-    return gZenModsManager.setModEnabled(modId, true);
-  }
-
-  disableMod(modId) {
-    return gZenModsManager.setModEnabled(modId, false);
-  }
-
-  sanitizeModName(modName) {
-    return sanitizeModName(modName);
-  }
-
-  debounce(callback, wait) {
-    let timer;
-
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => callback(...args), wait);
-    };
   }
 }
 

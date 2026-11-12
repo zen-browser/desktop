@@ -344,6 +344,11 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
   background-image: url("chrome://browser/skin/zen-icons/library/library-space-routing-sprite.svg");
 }
 
+/* Placeholder until mods get a sprite of their own. */
+[data-section="mods"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-sprite.svg");
+}
+
 .zen-library-media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -1136,7 +1141,7 @@ zen-library-history-section {
 
 /* Boosts */
 
-.zen-library-row-actions moz-toggle {
+:is(.zen-library-row-actions, .zen-library-mod-preference) moz-toggle {
   --toggle-width: 44px;
   --toggle-height: 24px;
   --toggle-dot-margin: 2px;
@@ -1145,7 +1150,9 @@ zen-library-history-section {
   --toggle-background-color-hover: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
   --toggle-background-color-active: var(--toggle-background-color-hover);
   --toggle-dot-background-color: light-dark(white, rgb(235, 235, 235));
+}
 
+.zen-library-row-actions moz-toggle {
   display: none;
 
   .zen-library-row:is(:hover, [menu-open]) & {
@@ -1217,6 +1224,99 @@ zen-library-history-section {
       transform: translate(-50%, -50%) rotate(45deg);
       pointer-events: none;
     }
+  }
+}
+
+/* Mods */
+
+.zen-library-mod-row {
+  contain-intrinsic-size: auto 46px;
+
+  &[disabled] :is(.zen-library-row-text, .zen-library-mod-icon) {
+    opacity: var(--zen-opacity-50);
+  }
+}
+
+.zen-library-mod-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--zen-size-34);
+  height: var(--zen-size-34);
+  border-radius: var(--zen-border-radius-10);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-weight: var(--font-weight-bold);
+}
+
+.zen-library-mod-error {
+  color: var(--text-color-error);
+  opacity: 1;
+}
+
+.zen-library-mods-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--zen-space-8);
+  margin: var(--zen-space-4) var(--zen-space-2) var(--zen-space-8);
+  padding: var(--zen-space-8) var(--zen-space-8) var(--zen-space-8) var(--zen-space-14);
+  border-radius: var(--zen-library-radius);
+  background: var(--zen-library-pill-bg);
+}
+
+.zen-library-mods-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--zen-space-12);
+  /* Only the text is quiet; the way to the store isn't. */
+  opacity: 1;
+
+  & span {
+    opacity: var(--zen-opacity-60);
+  }
+}
+
+.zen-library-mod-preference {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--zen-space-12);
+  padding-block: var(--zen-space-8);
+
+  &[stacked] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--zen-space-6);
+  }
+
+  & .zen-library-routing-reference {
+    margin-top: 0;
+  }
+
+  & moz-toggle {
+    flex: none;
+  }
+}
+
+.zen-library-mod-preference-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+zen-library-mods-section[configuring] {
+  /* The preferences take the list's place, the way a route's form does. */
+  & .zen-library-search-top[open] ~ .zen-library-search-results {
+    opacity: 0;
+    pointer-events: none;
+    transform: none;
+  }
+
+  & .zen-library-mod-preferences {
+    max-height: var(--zen-library-mods-panel-height, 60vh);
+    overflow-y: auto;
+    scrollbar-width: thin;
   }
 }
 

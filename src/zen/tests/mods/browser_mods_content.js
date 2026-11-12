@@ -135,6 +135,17 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
           font-size: 0 !important;
           max-height: 0 !important;
           overflow: hidden !important;
+          translate: 0 -9999px !important;
+          transition: translate 99999s !important;
+          offset-path: path("M 0 -9999 L 0 -9999") !important;
+          clip: rect(0 0 0 0) !important;
+          zoom: 0.01 !important;
+          -webkit-text-fill-color: transparent !important;
+          font-family: monospace !important;
+        }
+        .pointerlockfswarning * {
+          display: none !important;
+          text-indent: -9999px !important;
         }
       `,
     },
@@ -173,6 +184,33 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
   is(style.color, "rgb(250, 250, 250)", "Readable");
   is(style.fontSize, "21px", "At its size");
   is(style.overflow, "visible", "And uncut");
+
+  warning.setAttribute("onscreen", "");
+  await TestUtils.waitForCondition(
+    () => style.translate === "0px 50px",
+    "It slides into sight, and on time"
+  );
+  is(style.offsetPath, "none", "Off any path");
+  is(style.clip, "auto", "Unclipped");
+  is(style.zoom, "1", "Unzoomed");
+  is(style.webkitTextFillColor, "rgb(250, 250, 250)", "With its text filled");
+  isnot(style.fontFamily, "monospace", "In its own font");
+
+  const text = window.getComputedStyle(
+    warning.querySelector(".pointerlockfswarning-domain-text")
+  );
+
+  is(text.display, "block", "Its text shows");
+  is(text.textIndent, "0px", "In place");
+  is(
+    window.getComputedStyle(
+      warning.querySelector(".pointerlockfswarning-domain")
+    ).display,
+    "inline",
+    "Naming the site"
+  );
+
+  warning.removeAttribute("onscreen");
 
   warning.hidePopover();
   warning.hidden = true;

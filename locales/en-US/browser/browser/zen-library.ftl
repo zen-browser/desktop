@@ -292,7 +292,7 @@ library-mods-scripts-prompt-title = Allow this mod to run scripts?
 #   $name (String) - The name of the mod
 #   $state (String) - "on" when scripts are allowed in about:config, "off" otherwise
 library-mods-scripts-prompt-message =
-    “{ $name }” comes with scripts. Scripts can do anything { -brand-short-name } can, like reading the pages you visit, so only allow scripts you trust.
+    “{ $name }” comes with scripts. Scripts can do anything { -brand-short-name } can, like reading the pages you visit. You run them at your own risk, so only allow them once you’ve reviewed their code.
     { $state ->
         [on] { "" }
        *[off] They stay off until zen.mods.scripts.enabled is turned on in about:config.
@@ -300,6 +300,7 @@ library-mods-scripts-prompt-message =
 library-mods-scripts-prompt-accept = Allow scripts
 
 library-mods-github-title = Install from GitHub
+library-mods-disclaimer = Mods are made by their authors, not by { -brand-short-name }. You install and run them at your own risk, so only install mods whose code you’ve reviewed.
 library-mods-github-text = The repository, like owner/repo, its address on github.com, or a link to the mod’s theme.json. Add the folder if the mod is in one.
 library-mods-github-not-found = Couldn’t find a mod there
 library-mods-github-not-found-description = It needs a public repository with a theme.json, a chrome.css or a userChrome.css.
@@ -314,7 +315,7 @@ library-mods-github-prompt-title = Install this mod from GitHub?
 #   $scripts (String) - "yes" when the mod comes with scripts, "no" otherwise
 #   $pages (String) - "yes" when the mod also styles websites, "no" otherwise
 library-mods-github-prompt-message =
-    “{ $name }” comes from github.com/{ $repo }. { -brand-short-name } doesn’t review mods from GitHub, so only install the ones you trust.
+    “{ $name }” comes from github.com/{ $repo }. { -brand-short-name } doesn’t review mods from GitHub: you install it at your own risk, so only do it once you’ve reviewed its code.
     { $pages ->
         [yes] It also changes how websites look.
        *[no] { "" }

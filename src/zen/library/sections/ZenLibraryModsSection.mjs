@@ -1866,6 +1866,10 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
 
     return html`
+      <p
+        class="zen-library-mods-disclaimer"
+        data-l10n-id="library-mods-disclaimer"
+      ></p>
       <div class="zen-library-group">
         ${repeat(
           shown,

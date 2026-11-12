@@ -43,7 +43,7 @@ zen-mods-install-prompt-title = Install this mod?
 # Variables:
 #   $name (String) - The name of the mod
 #   $author (String) - Who published the mod
-zen-mods-install-prompt-message = “{ $name }” by { $author } will change how { -brand-short-name } looks. Mods can hide or imitate parts of the browser, so only install mods from authors you trust.
+zen-mods-install-prompt-message = “{ $name }” by { $author } will change how { -brand-short-name } looks. Mods can hide or imitate parts of the browser. You install it at your own risk, so only do it once you’ve reviewed its code.
 zen-mods-install-prompt-accept = Install
 
 # note: Do not translate the "<br/>" tags in the following string

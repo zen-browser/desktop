@@ -38,6 +38,8 @@ const LOCAL_ID_PREFIX = "local-";
 const SCRIPT_HOST_PREFIX = "zen-mod-";
 const SCRIPT_FILE_RE = /\.m?js$/;
 const MAX_SCRIPT_FILES = 200;
+const MAX_LOCAL_FILES = 1000;
+const LOCAL_POLL_MS = 1000;
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const DOWNLOAD_ATTEMPTS = 3;
@@ -72,6 +74,47 @@ function sanitizeModName(name) {
  */
 function isNotFound(error) {
   return DOMException.isInstance(error) && error.name === "NotFoundError";
+}
+
+/**
+ * Lists the files in a mod's folder, the hidden ones and `node_modules`
+ * aside, sorted by path.
+ *
+ * @param {string} folder
+ * @param {RegExp|null} match - Only the files whose name matches
+ * @param {number} limit - More files than this is an error
+ * @returns {Promise<{path: string, info: object}[]>} Each file and its
+ * `IOUtils.stat`
+ */
+async function listModFiles(folder, match, limit) {
+  const files = [];
+  const visit = async directory => {
+    for (const child of await IOUtils.getChildren(directory)) {
+      const name = PathUtils.filename(child);
+
+      if (name.startsWith(".") || name === "node_modules") {
+        continue;
+      }
+
+      const info = await IOUtils.stat(child);
+
+      if (info.type === "directory") {
+        await visit(child);
+      } else if (!match || match.test(name)) {
+        files.push({ path: child, info });
+      }
+
+      if (files.length > limit) {
+        throw new Error(`[ZenMods]: More than ${limit} files in ${folder}.`);
+      }
+    }
+  };
+
+  await visit(folder);
+
+  return files.sort((first, second) =>
+    first.path < second.path ? -1 : Number(first.path > second.path)
+  );
 }
 
 /**
@@ -159,6 +202,11 @@ class nsZenModsManager {
 
   /** @type {Set<string>} Mods turned off whose scripts can't be undone */
   #needsRestart = new Set();
+
+  /** @type {Set<object>} Who asked to reload local mods when they change */
+  #localWatchers = new Set();
+
+  #isPollingLocalMods = false;
 
   get modsRootPath() {
     return PathUtils.join(PathUtils.profileDir, "chrome", "zen-themes");
@@ -455,6 +503,73 @@ class nsZenModsManager {
   }
 
   /**
+   * Reloads local mods when their files change, for as long as someone
+   * watches. Checking the folders costs a little, so the Library only
+   * watches while it shows the mods.
+   *
+   * @returns {() => void} Stops watching
+   */
+  watchLocalMods() {
+    const watcher = {};
+
+    this.#localWatchers.add(watcher);
+
+    if (!this.#isPollingLocalMods) {
+      this.#pollLocalMods();
+    }
+
+    return () => this.#localWatchers.delete(watcher);
+  }
+
+  async #pollLocalMods() {
+    const signatures = new Map();
+
+    this.#isPollingLocalMods = true;
+    await this.init();
+
+    while (this.#localWatchers.size) {
+      for (const mod of Object.values(this.#mods)) {
+        if (mod.source !== "local" || mod.enabled === false) {
+          continue;
+        }
+
+        let signature;
+
+        try {
+          const files = await listModFiles(mod.path, null, MAX_LOCAL_FILES);
+
+          signature = files
+            .map(
+              ({ path, info }) => `${path}:${info.lastModified}:${info.size}`
+            )
+            .join("\n");
+        } catch (error) {
+          // A folder that's gone, or too big, changes again when it's fixed.
+          signature = String(error);
+        }
+
+        const previous = signatures.get(mod.id);
+
+        signatures.set(mod.id, signature);
+
+        if (previous === undefined || previous === signature) {
+          continue;
+        }
+
+        try {
+          await this.reloadLocalMod(mod.id);
+        } catch (error) {
+          console.warn(`[ZenMods]: Could not reload ${mod.name}:`, error);
+        }
+      }
+
+      await new Promise(resolve => setTimeout(resolve, LOCAL_POLL_MS));
+    }
+
+    this.#isPollingLocalMods = false;
+  }
+
+  /**
    * Lets a local mod's scripts run once scripts are allowed.
    *
    * @param {string} modId
@@ -656,39 +771,14 @@ class nsZenModsManager {
    * @returns {Promise<string>} A hex SHA-256
    */
   async #hashScripts(modId, folder) {
-    const files = [];
-    const visit = async directory => {
-      for (const child of await IOUtils.getChildren(directory)) {
-        const name = PathUtils.filename(child);
-
-        if (name.startsWith(".") || name === "node_modules") {
-          continue;
-        }
-
-        if ((await IOUtils.stat(child)).type === "directory") {
-          await visit(child);
-        } else if (SCRIPT_FILE_RE.test(name)) {
-          files.push(child);
-        }
-
-        if (files.length > MAX_SCRIPT_FILES) {
-          throw new Error(
-            `[ZenMods]: More than ${MAX_SCRIPT_FILES} script files in ${folder}.`
-          );
-        }
-      }
-    };
-
-    await visit(folder);
-    files.sort();
-
+    const files = await listModFiles(folder, SCRIPT_FILE_RE, MAX_SCRIPT_FILES);
     const encoder = new TextEncoder();
     const chunks = [encoder.encode(modId)];
 
-    for (const file of files) {
+    for (const { path } of files) {
       chunks.push(
-        encoder.encode(`\0${file.slice(folder.length)}\0`),
-        await IOUtils.read(file)
+        encoder.encode(`\0${path.slice(folder.length)}\0`),
+        await IOUtils.read(path)
       );
     }
 

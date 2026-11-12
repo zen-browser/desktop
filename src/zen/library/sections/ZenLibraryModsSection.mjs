@@ -476,6 +476,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   /** @type {Set<string>} Mods with a changed preference that needs a restart */
   #restartNeeded = new Set();
 
+  /** @type {(() => void)|null} */
+  #stopWatching = null;
+
   #resizeObserver = new ResizeObserver(() => this.#fitPanel());
 
   connectedCallback() {
@@ -488,6 +491,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this.#watchLocalMods(false);
     Services.obs.removeObserver(this.#observer, MODS_TOPIC);
     Services.prefs.removeObserver(DISABLE_ALL_PREF, this.#observer);
     this.#resizeObserver.disconnect();
@@ -893,8 +897,42 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     return super.onEscape();
   }
 
+  onShown() {
+    super.onShown?.();
+
+    if (customElements.get("zen-library").isLibraryOpen) {
+      this.#watchLocalMods(true);
+    }
+  }
+
+  onHidden() {
+    super.onHidden?.();
+    this.#watchLocalMods(false);
+  }
+
+  onLibraryOpened() {
+    this.#watchLocalMods(true);
+
+    return super.onLibraryOpened();
+  }
+
+  /**
+   * Local mods reload when their files change while the user looks at them.
+   *
+   * @param {boolean} watch
+   */
+  #watchLocalMods(watch) {
+    if (watch) {
+      this.#stopWatching ??= lazy.gZenModsManager.watchLocalMods();
+    } else {
+      this.#stopWatching?.();
+      this.#stopWatching = null;
+    }
+  }
+
   onLibraryClosing() {
     super.onLibraryClosing?.();
+    this.#watchLocalMods(false);
     this.#flushPreferences();
     this.#cancelPanelTimer();
     this.filtersOpen = false;

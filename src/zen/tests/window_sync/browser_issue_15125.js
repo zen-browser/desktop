@@ -155,52 +155,63 @@ add_task(async function test_MoveSeveralTabsToSpace_DefaultPlacement() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.view.show-newtab-button-top", false]],
   });
-  await runMultiTabMove();
-  await SpecialPowers.popPrefEnv();
+  try {
+    await runMultiTabMove();
+  } finally {
+    await SpecialPowers.popPrefEnv();
+  }
 });
 
 add_task(async function test_MoveSeveralTabsToSpace_NewTabButtonTop() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.view.show-newtab-button-top", true]],
   });
-  await runMultiTabMove();
-  await SpecialPowers.popPrefEnv();
+  try {
+    await runMultiTabMove();
+  } finally {
+    await SpecialPowers.popPrefEnv();
+  }
 });
 
+// Guards the workspace check in tabbrowser's #notifyOnTabMove: TabMove must be
+// synced when moving a tab to another space doesn't change its global index.
 add_task(async function test_MoveTabWithUnchangedIndex() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.view.show-newtab-button-top", false]],
   });
-  await withSpaces(async ({ source, destination }) => {
-    await withNewSyncedWindow(async win => {
-      const [tab] = addTabs(1, "unchanged-index");
-      try {
-        await waitForMirrors(win, [tab]);
-        Assert.equal(
-          tab.getAttribute("zen-workspace-id"),
-          source.uuid,
-          "The tab starts in the source space"
-        );
-        Assert.ok(
-          !gZenWorkspaces
-            .workspaceElement(destination.uuid)
-            .tabsContainer.querySelector("tab[id]:not([zen-empty-tab])"),
-          "The destination space has no normal tabs"
-        );
+  try {
+    await withSpaces(async ({ source, destination }) => {
+      await withNewSyncedWindow(async win => {
+        const [tab] = addTabs(1, "unchanged-index");
+        try {
+          await waitForMirrors(win, [tab]);
+          Assert.equal(
+            tab.getAttribute("zen-workspace-id"),
+            source.uuid,
+            "The tab starts in the source space"
+          );
+          Assert.ok(
+            !gZenWorkspaces
+              .workspaceElement(destination.uuid)
+              .tabsContainer.querySelector("tab[id]:not([zen-empty-tab])"),
+            "The destination space has no normal tabs"
+          );
 
-        const indexBefore = tab.index;
-        gZenWorkspaces.moveTabToWorkspace(tab, destination.uuid);
-        Assert.equal(
-          tab.index,
-          indexBefore,
-          "Precondition: the move keeps the global tab index"
-        );
+          const indexBefore = tab.index;
+          gZenWorkspaces.moveTabToWorkspace(tab, destination.uuid);
+          Assert.equal(
+            tab.index,
+            indexBefore,
+            "Precondition: the move keeps the global tab index"
+          );
 
-        await waitForTabsInSpace(win, [tab], destination.uuid);
-      } finally {
-        removeTabs([tab]);
-      }
+          await waitForTabsInSpace(win, [tab], destination.uuid);
+        } finally {
+          removeTabs([tab]);
+        }
+      });
     });
-  });
-  await SpecialPowers.popPrefEnv();
+  } finally {
+    await SpecialPowers.popPrefEnv();
+  }
 });

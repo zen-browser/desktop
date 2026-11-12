@@ -113,7 +113,7 @@ export class ZenSpacesSwipe {
   #handleSwipeMayStart(event) {
     const ws = gZenWorkspaces;
 
-    if (ws.privateWindowOrDisabled || ws.isChangingWorkspace) {
+    if (ws.privateWindowOrDisabled) {
       return;
     }
 
@@ -160,6 +160,8 @@ export class ZenSpacesSwipe {
     }
 
     gZenFolders.cancelPopupTimer();
+    // The strip can't follow the fingers while the last switch still animates it.
+    ws.finishSwitchAnimations();
 
     this.#toggleSwipeGestureAttr(true);
     document.addEventListener("popupshown", this, { once: true });

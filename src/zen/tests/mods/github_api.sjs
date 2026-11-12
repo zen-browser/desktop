@@ -15,8 +15,23 @@ const SHARED = [
   "main.uc.js",
   "assets/icon.svg",
 ];
+const PAGES = [
+  "pages/theme.json",
+  "pages/chrome.css",
+  "pages/userContent.css",
+  "pages/parts/more.css",
+];
+// Listed, never downloaded: it's over the size a mod's file may have.
+const HUGE = "assets/huge.png";
+const SIZES = { [HUGE]: 3 * 1024 * 1024 };
 const COMMITS = {
-  ["a".repeat(40)]: [...SHARED, "sub/chrome.css", ".github/ci.yml"],
+  ["a".repeat(40)]: [
+    ...SHARED,
+    ...PAGES,
+    HUGE,
+    "sub/chrome.css",
+    ".github/ci.yml",
+  ],
   ["b".repeat(40)]: SHARED,
   ["c".repeat(40)]: SHARED,
 };
@@ -47,7 +62,11 @@ function handleRequest(request, response) {
       JSON.stringify({
         sha: tree[1],
         truncated: false,
-        tree: COMMITS[tree[1]].map(path => ({ path, type: "blob", size: 64 })),
+        tree: COMMITS[tree[1]].map(path => ({
+          path,
+          type: "blob",
+          size: SIZES[path] ?? 64,
+        })),
       })
     );
     return;

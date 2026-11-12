@@ -81,6 +81,21 @@ add_task(async function test_page_styles() {
         "Zen's windows don't get them"
       );
 
+      await BrowserTestUtils.withNewTab("about:preferences", async prefs => {
+        const prefsValue = await SpecialPowers.spawn(prefs, [], () =>
+          content
+            .getComputedStyle(content.document.documentElement)
+            .getPropertyValue("--zen-test-page")
+            .trim()
+        );
+
+        is(
+          prefsValue,
+          "",
+          "Nor privileged pages like about:preferences, the way out of a broken mod"
+        );
+      });
+
       await IOUtils.writeUTF8(
         PathUtils.join(folder, "css", "userContent.css"),
         ':root { --zen-test-page: "edited" !important; }'
@@ -115,6 +130,11 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
           visibility: hidden !important;
           opacity: 0 !important;
           filter: opacity(0) !important;
+          transform: scale(0) !important;
+          color: transparent !important;
+          font-size: 0 !important;
+          max-height: 0 !important;
+          overflow: hidden !important;
         }
       `,
     },
@@ -134,14 +154,58 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
   warning.hidden = false;
   warning.showPopover();
 
+  ok(warning.matches(":popover-open"), "The warning is open");
+  info(
+    "Rules: " +
+      InspectorUtils.getMatchingCSSRules(warning)
+        .map(rule => rule.parentStyleSheet?.href?.split("/").pop())
+        .filter(Boolean)
+        .join(", ")
+  );
+
   const style = window.getComputedStyle(warning);
 
   is(style.display, "flex", "The fullscreen warning still shows");
   is(style.visibility, "visible", "It stays visible");
   is(style.opacity, "1", "And opaque");
   is(style.filter, "none", "Without filters");
+  is(style.transform, "none", "Unshrunk");
+  is(style.color, "rgb(250, 250, 250)", "Readable");
+  is(style.fontSize, "21px", "At its size");
+  is(style.overflow, "visible", "And uncut");
 
   warning.hidePopover();
   warning.hidden = true;
   await gZenModsManager.uninstallMod(modId);
+});
+
+add_task(async function test_removing_a_mod_keeps_the_browsers_preferences() {
+  const browserPref = "zen.mods.auto-update-days";
+  const folder = await makeStyledMod(
+    {
+      "chrome.css": ':root { --zen-test-prefs-mod: "on" !important; }',
+      "preferences.json": JSON.stringify([
+        { type: "number", property: browserPref, label: "Days" },
+        { type: "string", property: "zen.test.mods.own", label: "Own" },
+      ]),
+    },
+    "chrome.css"
+  );
+  const modId = await gZenModsManager.installLocalMod(folder);
+
+  Services.prefs.setIntPref(browserPref, 7);
+  Services.prefs.setStringPref("zen.test.mods.own", "set");
+  registerCleanupFunction(() => Services.prefs.clearUserPref(browserPref));
+
+  await gZenModsManager.uninstallMod(modId);
+
+  is(
+    Services.prefs.getIntPref(browserPref),
+    7,
+    "A preference the browser has keeps the user's value"
+  );
+  ok(
+    !Services.prefs.prefHasUserValue("zen.test.mods.own"),
+    "One only the mod had goes"
+  );
 });

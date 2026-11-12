@@ -4,8 +4,9 @@
 
 /* Registered as an agent sheet, whose !important beats the user origin's,
  * where the mods' sheets are: no mod can hide what tells the user that a
- * page went fullscreen or locked the pointer. Only the properties that
- * hide; the position stays Firefox's, so it still slides in. */
+ * page went fullscreen or locked the pointer. The values are Firefox's
+ * own. translate stays free so the warning still slides in: a mod can
+ * still push it away with it, which the store's review has to catch. */
 
 @-moz-document url("chrome://browser/content/browser.xhtml") {
   .pointerlockfswarning:popover-open {
@@ -16,10 +17,32 @@
     clip-path: none !important;
     mask: none !important;
     content-visibility: visible !important;
+    transform: none !important;
+    scale: none !important;
+    rotate: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    bottom: auto !important;
+    margin-block: 0 !important;
+    width: max-content !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 95% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    /* Firefox's own values, in fullscreen-and-pointerlock.css, not tokens. */
+    /* stylelint-disable stylelint-plugin-mozilla/use-design-tokens */
+    font-size: 21px !important;
+    color: #fafafa !important;
+    background-color: rgba(45, 62, 72, 0.9) !important;
+    /* stylelint-enable stylelint-plugin-mozilla/use-design-tokens */
 
     & > :not([hidden]) {
       visibility: visible !important;
       opacity: 1 !important;
+      font-size: inherit !important;
+      color: inherit !important;
     }
   }
 }

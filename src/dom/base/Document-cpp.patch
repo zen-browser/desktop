@@ -1,5 +1,5 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index dbc92f8446f98667b98287d70c22e8433349cef0..9ff4a138afab78583b63edc54bc30472bac6fec8 100644
+index dbc92f8446f98667b98287d70c22e8433349cef0..b9a0b669bde08e9aafee8360143d2de286087e5d 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
 @@ -483,6 +483,7 @@
@@ -10,15 +10,16 @@ index dbc92f8446f98667b98287d70c22e8433349cef0..9ff4a138afab78583b63edc54bc30472
  
  // clang-format off
  #include "mozilla/Encoding.h"
-@@ -3448,6 +3449,14 @@ void Document::FillStyleSetUserAndUASheets() {
+@@ -3448,6 +3449,15 @@ void Document::FillStyleSetUserAndUASheets() {
      }
    };
  
 +  if (IsInChromeDocShell()) {
 +    // The mods sheet is only used in the chrome docshell.
 +    MaybeAppend(zen::ZenStyleSheetCache::Singleton()->GetModsSheet());
-+  } else {
-+    // And their styles for pages everywhere else.
++  } else if (!NodePrincipal()->IsSystemPrincipal()) {
++    // And their styles for pages everywhere else, but for privileged pages
++    // like about:preferences, which must stay reachable when a mod breaks.
 +    MaybeAppend(zen::ZenStyleSheetCache::Singleton()->GetModsContentSheet());
 +  }
 +

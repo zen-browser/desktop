@@ -60,6 +60,10 @@ add_task(async function test_install_and_update_from_github() {
     !found.files.some(path => path.startsWith(".github")),
     "Hidden folders don't"
   );
+  ok(
+    !found.files.includes("assets/huge.png"),
+    "Files too big for a mod are left out instead of failing the install"
+  );
 
   const modId = await gZenModsManager.installGitHubMod(found, {
     scriptsApproved: true,
@@ -171,6 +175,39 @@ add_task(async function test_a_folder_of_a_branch() {
     '"sub"',
     "Its styles apply"
   );
+
+  await gZenModsManager.uninstallMod(modId);
+});
+
+add_task(async function test_page_styles_from_github_cant_reach_the_web() {
+  const found = await gZenModsManager.fetchGitHubMod("zen-tests/sample/pages");
+
+  is(found.contentStylePath, "userContent.css", "The mod styles pages");
+
+  const modId = await gZenModsManager.installGitHubMod(found);
+  const mod = (await gZenModsManager.getMods())[modId];
+
+  ok(
+    !mod.contentStylePath && mod.pageStylesBlocked,
+    "Page styles that load from the web, through an import too, are turned off"
+  );
+  is(
+    gZenModsManager.getModError(modId)?.type,
+    "page-styles-blocked",
+    "And the mod says why"
+  );
+  await waitForRootValue(
+    window,
+    "--zen-test-pages-chrome",
+    '"chrome"',
+    "Its styles for Zen, which may load fonts from the web, still apply"
+  );
+
+  const pageSheet = await IOUtils.readUTF8(
+    PathUtils.join(PathUtils.profileDir, "chrome", "zen-themes-content.css")
+  );
+
+  ok(!pageSheet.includes(modId), "Pages don't get its styles");
 
   await gZenModsManager.uninstallMod(modId);
 });

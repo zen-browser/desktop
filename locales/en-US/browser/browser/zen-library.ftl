@@ -231,6 +231,7 @@ library-mods-byline = { $author } · { $version }
 library-mods-error-missing-files = Files missing, reinstall it
 library-mods-error-update-failed = Last update failed
 library-mods-error-script-failed = A script failed
+library-mods-error-page-styles-blocked = Its page styles load from the web, so they’re off
 library-mods-toggle =
     .aria-label = Turn on mod
 library-mods-configure-button =
@@ -309,8 +310,13 @@ library-mods-github-prompt-title = Install this mod from GitHub?
 #   $name (String) - The name of the mod
 #   $repo (String) - The GitHub repository, like owner/repo
 #   $scripts (String) - "yes" when the mod comes with scripts, "no" otherwise
+#   $pages (String) - "yes" when the mod also styles websites, "no" otherwise
 library-mods-github-prompt-message =
     “{ $name }” comes from github.com/{ $repo }. { -brand-short-name } doesn’t review mods from GitHub, so only install the ones you trust.
+    { $pages ->
+        [yes] It also changes how websites look.
+       *[no] { "" }
+    }
     { $scripts ->
         [yes] It comes with scripts, which can do anything { -brand-short-name } can, like reading the pages you visit.
        *[no] { "" }

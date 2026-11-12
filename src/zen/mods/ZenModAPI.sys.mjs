@@ -265,10 +265,12 @@ export class ZenModAPI {
       }
 
       case "glance": {
+        // Glances start from a tab, and the events come from it.
         return this.#listenToPair(
           ["GlanceOpen", { open: true }],
           ["GlanceClose", { open: false }],
-          guarded
+          guarded,
+          { withTab: true }
         );
       }
     }
@@ -358,12 +360,19 @@ export class ZenModAPI {
     }
   }
 
-  #listenToPair([firstType, firstDetail], [secondType, secondDetail], guarded) {
+  #listenToPair(
+    [firstType, firstDetail],
+    [secondType, secondDetail],
+    guarded,
+    { withTab = false } = {}
+  ) {
+    const detailOf = (detail, event) =>
+      withTab ? { ...detail, tab: event.target } : { ...detail };
     const stopFirst = this.listen(this.#window, firstType, event =>
-      guarded({ ...firstDetail, tab: event.target })
+      guarded(detailOf(firstDetail, event))
     );
     const stopSecond = this.listen(this.#window, secondType, event =>
-      guarded({ ...secondDetail, tab: event.target })
+      guarded(detailOf(secondDetail, event))
     );
 
     return this.#track(() => {

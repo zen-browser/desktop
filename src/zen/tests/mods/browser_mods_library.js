@@ -822,6 +822,15 @@ add_task(async function test_browse_the_store() {
   ok(await gZenModsManager.isModInstalled(MOD_A), "And installs it");
   ok(!section.hasAttribute("configuring"), "Without opening its details");
 
+  storeRow(MOD_A).click();
+  await section.updateComplete;
+  ok(section.storeDetail, "A mod's details open");
+  ok(section.onEscape(), "Escape closes them");
+  await TestUtils.waitForCondition(
+    () => !section.storeDetail && !section.hasAttribute("configuring"),
+    "All the way, so the filter panel shows filters again"
+  );
+
   storeRow(MOD_B).click();
   await section.updateComplete;
 

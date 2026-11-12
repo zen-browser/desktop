@@ -5,6 +5,10 @@
 
 const SCRIPTS_PREF = "zen.mods.scripts.enabled";
 
+registerCleanupFunction(() => {
+  delete window.zenTestInits;
+});
+
 /**
  * A script that marks the window's root, through a helper it imports, and
  * takes the mark away on uninit unless told not to.
@@ -14,6 +18,7 @@ function markerScript({ withUninit = true, throws = false } = {}) {
     import { marker } from "./lib/marker.mjs";
 
     export function init(win) {
+      win.zenTestInits = (win.zenTestInits ?? 0) + 1;
       ${throws ? 'throw new Error("This mod fails on purpose");' : ""}
       win.document.documentElement.setAttribute("zen-test-script", marker);
     }
@@ -211,6 +216,7 @@ add_task(async function test_failing_scripts_stay_contained() {
 
 add_task(async function test_scripts_without_uninit_need_a_restart() {
   await SpecialPowers.pushPrefEnv({ set: [[SCRIPTS_PREF, true]] });
+  delete window.zenTestInits;
 
   const folder = await makeLocalMod({
     script: markerScript({ withUninit: false }),
@@ -220,11 +226,25 @@ add_task(async function test_scripts_without_uninit_need_a_restart() {
   });
 
   await waitForMarker("m1", "The script runs");
+  is(window.zenTestInits, 1, "It started once");
   await gZenModsManager.setModEnabled(modId, false);
 
   await TestUtils.waitForCondition(
     () => gZenModsManager.getScriptsState(modId) === "needs-restart",
     "A script that can't be undone asks for a restart"
+  );
+
+  await gZenModsManager.setModEnabled(modId, true);
+
+  is(
+    window.zenTestInits,
+    1,
+    "Turning it back on doesn't start it again over what's still running"
+  );
+  is(
+    gZenModsManager.getScriptsState(modId),
+    "running",
+    "And it reads as running again"
   );
 
   await gZenModsManager.uninstallMod(modId);
@@ -453,6 +473,7 @@ add_task(async function test_mod_api() {
         zen.observePref("${testPref}", name => (state.pref = name));
         zen.addStyle(':root { --zen-test-api: "styled"; }');
         zen.on("compact-mode", ({ enabled }) => (state.compact = enabled));
+        zen.on("split-view", detail => (state.split = detail));
         zen.on("workspace-change", () => {
           throw new Error("A callback that fails on purpose");
         });
@@ -514,6 +535,13 @@ add_task(async function test_mod_api() {
     new CustomEvent("ZenCompactMode:Toggled", { detail: true })
   );
   is(state.compact, true, "And to Zen, through stable events");
+
+  window.dispatchEvent(new CustomEvent("ZenViewSplitter:SplitViewActivated"));
+  Assert.deepEqual(
+    state.split,
+    { active: true },
+    "Which carry only what they say"
+  );
 
   gURLBar.focus();
   EventUtils.synthesizeKey("j", {

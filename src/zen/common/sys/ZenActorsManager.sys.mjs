@@ -11,7 +11,20 @@ import { ActorManagerParent } from "resource://gre/modules/ActorManagerParent.sy
  * Detailed documentation of these options is in dom/docs/ipc/jsactors.rst,
  * available at https://firefox-source-docs.mozilla.org/dom/ipc/jsactors.html
  */
-let JSPROCESSACTORS = {};
+let JSPROCESSACTORS = {
+  // Every process, the parent too, reloads the mods' styles for pages.
+  ZenModsContent: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenModsContentParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenModsContentChild.sys.mjs",
+    },
+    includeParent: true,
+    // Its child only reloads a stylesheet when the parent says so.
+    safeForUntrustedWebProcess: true,
+  },
+};
 
 /**
  * Fission-compatible JSWindowActor implementations.

@@ -203,40 +203,23 @@ add_task(async function test_a_link_to_its_theme_json() {
   );
 });
 
-add_task(async function test_page_styles_from_github_cant_reach_the_web() {
+add_task(async function test_mods_that_load_from_the_web_arent_installed() {
   const found = await gZenModsManager.fetchGitHubMod("zen-tests/sample/pages");
 
-  is(found.contentStylePath, "userContent.css", "The mod styles pages");
-
-  const modId = await gZenModsManager.installGitHubMod(found);
-  const mod = (await gZenModsManager.getMods())[modId];
-
+  await Assert.rejects(
+    gZenModsManager.installGitHubMod(found),
+    error => error.name === "RemoteStylesError",
+    "A mod whose styles load a font from the web isn't installed"
+  );
   ok(
-    !mod.contentStylePath && mod.pageStylesBlocked,
-    "Page styles that load from the web, through an import too, are turned off"
+    !Object.values(await gZenModsManager.getMods()).some(
+      mod => mod.folder === "pages"
+    ),
+    "Nothing of it stays"
   );
-  is(
-    gZenModsManager.getModError(modId)?.type,
-    "page-styles-blocked",
-    "And the mod says why"
-  );
-  await waitForRootValue(
-    window,
-    "--zen-test-pages-chrome",
-    '"chrome"',
-    "Its styles for Zen, which may load fonts from the web, still apply"
-  );
-
-  const pageSheet = await IOUtils.readUTF8(
-    PathUtils.join(PathUtils.profileDir, "chrome", "zen-themes-content.css")
-  );
-
-  ok(!pageSheet.includes(modId), "Pages don't get its styles");
-
-  await gZenModsManager.uninstallMod(modId);
 });
 
-add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
+add_task(async function test_every_way_styles_reach_the_web_is_caught() {
   const cases = {
     "escaped-url": true,
     "escaped-string": true,
@@ -252,6 +235,10 @@ add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
     charset: true,
     "remote-image-scheme": true,
     "data-import": true,
+    // Its styles for Zen, a font included.
+    "chrome-font": true,
+    // @namespace and @-moz-document only say where rules apply.
+    matching: false,
     clean: false,
   };
 
@@ -263,15 +250,19 @@ add_task(async function test_every_way_page_styles_reach_the_web_is_caught() {
     const found = await gZenModsManager.fetchGitHubMod(
       `zen-tests/sample/remote/${name}`
     );
+
+    if (isBlocked) {
+      await Assert.rejects(
+        gZenModsManager.installGitHubMod(found),
+        error => error.name === "RemoteStylesError",
+        `"${name}" loads from the web, so it isn't installed`
+      );
+      continue;
+    }
+
     const modId = await gZenModsManager.installGitHubMod(found);
-    const mod = (await gZenModsManager.getMods())[modId];
 
-    is(
-      Boolean(mod.pageStylesBlocked),
-      isBlocked,
-      `Page styles of "${name}" are ${isBlocked ? "turned off" : "kept"}`
-    );
-
+    ok(modId, `"${name}" loads nothing from the web, so it's installed`);
     await gZenModsManager.uninstallMod(modId);
   }
 

@@ -53,7 +53,6 @@ const ERROR_L10N_IDS = {
   "missing-files": "library-mods-error-missing-files",
   "update-failed": "library-mods-error-update-failed",
   "script-failed": "library-mods-error-script-failed",
-  "page-styles-blocked": "library-mods-error-page-styles-blocked",
 };
 
 const SCRIPTS_L10N_IDS = {
@@ -293,6 +292,20 @@ async function installFromFolder() {
  * review those, so the user agrees to the mod, and to its scripts if it has
  * any, before anything is installed.
  */
+/**
+ * @param {string} modName
+ * @param {*} error - Why it couldn't be installed
+ */
+function showInstallFailed(modName, error) {
+  window.gZenUIManager.showToast("library-mods-install-failed", {
+    l10nArgs: { name: modName },
+    descriptionId:
+      error?.name === "RemoteStylesError"
+        ? "library-mods-install-remote-description"
+        : undefined,
+  });
+}
+
 async function installFromGitHub() {
   const [title, text] = await document.l10n.formatValues([
     { id: "library-mods-github-title" },
@@ -350,9 +363,7 @@ async function installFromGitHub() {
     });
   } catch (error) {
     console.error(`[ZenLibraryMods]: Could not install ${found.repo}:`, error);
-    window.gZenUIManager.showToast("library-mods-install-failed", {
-      l10nArgs: { name: found.name },
-    });
+    showInstallFailed(found.name, error);
     return;
   }
 
@@ -822,9 +833,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
       });
     } catch (error) {
       console.error(`[ZenLibraryMods]: Could not install ${entry.id}:`, error);
-      window.gZenUIManager.showToast("library-mods-install-failed", {
-        l10nArgs: { name: entry.name },
-      });
+      showInstallFailed(entry.name, error);
     } finally {
       this.#installing.delete(entry.id);
       this.requestUpdate();

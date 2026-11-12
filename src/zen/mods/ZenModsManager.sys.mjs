@@ -57,7 +57,6 @@ const MANAGER_FIELDS = [
   "folder",
   "sha",
   "pendingUpdate",
-  "pageStylesBlocked",
   "enabled",
   "order",
 ];
@@ -103,6 +102,8 @@ const URL_FUNCTIONS = new Set([
 const LOCAL_PROTOCOLS = new Set(["data:", "chrome:", "resource:", "moz-icon:"]);
 // Values only known once the page applies them.
 const DEFERRED_FUNCTIONS = new Set(["var", "env", "attr"]);
+// At-rules whose URLs say where they apply, not what they load.
+const MATCHING_AT_RULES = new Set(["namespace", "-moz-document", "document"]);
 const CHARSET_RE = /^@charset "([^"]*)";/;
 const CLOSING_TOKENS = new Set([
   "CloseParenthesis",
@@ -455,16 +456,21 @@ function cssUrls(text, win) {
   const blocks = [];
   const urls = [];
   let isImport = false;
+  let isMatching = false;
 
   for (let token = parser.nextToken(); token; token = parser.nextToken()) {
     switch (token.tokenType) {
       case "AtKeyword": {
-        isImport = token.value.toLowerCase() === "import";
+        const name = token.value.toLowerCase();
+
+        isImport = name === "import";
+        isMatching = MATCHING_AT_RULES.has(name);
         break;
       }
 
       case "Semicolon": {
         isImport = false;
+        isMatching = false;
         break;
       }
 
@@ -473,6 +479,7 @@ function cssUrls(text, win) {
 
         // A URL that comes from elsewhere can't be checked here.
         if (
+          !isMatching &&
           DEFERRED_FUNCTIONS.has(name) &&
           blocks.some(block => URL_FUNCTIONS.has(block))
         ) {
@@ -487,22 +494,30 @@ function cssUrls(text, win) {
       case "SquareBracketBlock":
       case "CurlyBracketBlock": {
         isImport = false;
+        isMatching &&= token.tokenType !== "CurlyBracketBlock";
         blocks.push("");
         break;
       }
 
       case "UnquotedUrl": {
-        urls.push({ url: token.value, isImport });
+        if (!isMatching) {
+          urls.push({ url: token.value, isImport });
+        }
         break;
       }
 
       case "BadUrl": {
-        urls.push({ url: null, isImport });
+        if (!isMatching) {
+          urls.push({ url: null, isImport });
+        }
         break;
       }
 
       case "QuotedString": {
-        if (isImport || blocks.some(name => URL_FUNCTIONS.has(name))) {
+        if (
+          !isMatching &&
+          (isImport || blocks.some(name => URL_FUNCTIONS.has(name)))
+        ) {
           urls.push({ url: token.value, isImport });
         }
         break;
@@ -521,7 +536,7 @@ function cssUrls(text, win) {
 
 /**
  * @param {string} folder - A mod's folder
- * @param {string} entry - Its stylesheet for pages
+ * @param {string} entry - One of its stylesheets
  * @returns {Promise<boolean>} Whether that sheet, or one it imports, loads
  * anything from the web. A sheet that can't be read or checked counts as
  * one that does; one the mod lacks loads nothing.
@@ -612,6 +627,30 @@ async function hasRemoteStyles(folder, entry) {
 }
 
 /**
+ * What a mod from the store or GitHub may not do: load styles, fonts or
+ * images from the web. Those can change after the mod is reviewed, and with
+ * selectors on what's on screen, tell their server about it.
+ */
+export class RemoteStylesError extends Error {
+  name = "RemoteStylesError";
+}
+
+/**
+ * @param {string} folder - A mod's folder
+ * @param {string} name - The mod's name
+ * @param {(string|null)[]} entries - Its stylesheets, if it has them
+ */
+async function assertLocalStyles(folder, name, entries) {
+  for (const entry of entries) {
+    if (entry && (await hasRemoteStyles(folder, entry))) {
+      throw new RemoteStylesError(
+        `[ZenMods]: ${entry} of ${name} loads from the web; mods may only use their own files.`
+      );
+    }
+  }
+}
+
+/**
  * @param {string[]} patterns - URLs where `*` matches anything, or "main"
  * for the browser window
  * @returns {RegExp|null}
@@ -675,7 +714,7 @@ class nsZenModsManager {
    * Why a mod doesn't apply as it should, until it's fixed. Kept in memory:
    * the next session finds out again.
    *
-   * @type {Map<string, {type: "missing-files"|"update-failed"|"script-failed"|"page-styles-blocked", message?: string}>}
+   * @type {Map<string, {type: "missing-files"|"update-failed"|"script-failed", message?: string}>}
    */
   #errors = new Map();
 
@@ -1270,18 +1309,10 @@ class nsZenModsManager {
         mod.scriptsHash = await this.#hashScripts(modId, staging);
       }
 
-      // Page styles from GitHub may not reach the web: with selectors on
-      // what pages hold, that would send it out.
-      if (
-        mod.contentStylePath &&
-        (await hasRemoteStyles(staging, mod.contentStylePath))
-      ) {
-        console.warn(
-          `[ZenMods]: The page styles of ${mod.name} load from the web, turning them off.`
-        );
-        mod.contentStylePath = null;
-        mod.pageStylesBlocked = true;
-      }
+      await assertLocalStyles(staging, mod.name, [
+        mod.stylePath,
+        mod.contentStylePath,
+      ]);
     } catch (error) {
       await IOUtils.remove(staging, { recursive: true, ignoreAbsent: true });
 
@@ -2542,6 +2573,8 @@ class nsZenModsManager {
           );
         }
       }
+
+      await assertLocalStyles(staging, mod.name, ["chrome.css"]);
     } catch (error) {
       await IOUtils.remove(staging, { recursive: true, ignoreAbsent: true });
 
@@ -2787,21 +2820,12 @@ class nsZenModsManager {
         pageContent += `@import url("zen-themes/${encodeURIComponent(mod.id)}/${encodePath(mod.contentStylePath)}");\n`;
       }
 
-      if (mod.pageStylesBlocked) {
-        this.#errors.set(mod.id, { type: "page-styles-blocked" });
-      } else if (this.#errors.get(mod.id)?.type === "page-styles-blocked") {
-        this.#errors.delete(mod.id);
-      }
-
       if (!hasStyles && !mod.contentStylePath && !declaredScripts(mod).length) {
         console.warn(
           `[ZenMods]: ${mod.name} (${mod.id}) has no styles, skipping.`
         );
 
-        // Page styles that were turned off left nothing to apply, and say why.
-        if (!mod.pageStylesBlocked) {
-          this.#errors.set(mod.id, { type: "missing-files" });
-        }
+        this.#errors.set(mod.id, { type: "missing-files" });
         continue;
       }
 

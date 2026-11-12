@@ -112,3 +112,33 @@ add_task(async function test_no_mods_means_no_store_requests() {
     "Without mods the store is not asked"
   );
 });
+
+add_task(async function test_store_mods_cant_load_from_the_web() {
+  await useStore("store-remote");
+  await Assert.rejects(
+    installFromStore(MOD_A),
+    error => error.name === "RemoteStylesError",
+    "A store mod whose styles load from the web isn't installed"
+  );
+  ok(!(await gZenModsManager.isModInstalled(MOD_A)), "Nothing of it stays");
+
+  await useStore("store");
+  await installFromStore(MOD_A);
+  await useStore("store-remote");
+
+  const updates = await gZenModsManager.checkForUpdates();
+
+  Assert.deepEqual(updates, [], "Nor is an update that does");
+  is(
+    (await gZenModsManager.getMods())[MOD_A].version,
+    "1.0.0",
+    "The installed version stays"
+  );
+  is(
+    gZenModsManager.getModError(MOD_A)?.type,
+    "update-failed",
+    "And the mod says why"
+  );
+
+  await gZenModsManager.uninstallMod(MOD_A);
+});

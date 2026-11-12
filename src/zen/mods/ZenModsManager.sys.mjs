@@ -65,6 +65,9 @@ const MANAGER_FIELDS = [
 const LOCAL_ID_PREFIX = "local-";
 const GITHUB_ID_PREFIX = "github-";
 const GITHUB_URL_RE = /^(?:https?:\/\/)?(?:www\.)?github\.com\//i;
+const GITHUB_RAW_URL_RE = /^(?:https?:\/\/)?raw\.githubusercontent\.com\//i;
+const URL_QUERY_RE = /[?#].*$/s;
+const REF_PREFIXES = new Set(["heads", "tags"]);
 const GITHUB_NAME_RE = /^[A-Za-z0-9_.-]{1,100}$/;
 const TRAILING_SLASHES_RE = /\/+$/;
 const DOT_GIT_RE = /\.git$/;
@@ -243,14 +246,19 @@ function encodePath(path) {
  * people need them.
  *
  * @param {*} input - "owner/repo", "owner/repo/folder" or a github.com URL,
- * with "/tree/<branch>/<folder>" for a branch other than the default one
+ * with "/tree/<branch>/<folder>" for a branch other than the default one. A
+ * link to the mod's `theme.json`, on github.com or raw.githubusercontent.com,
+ * stands for its folder.
  * @returns {{repo: string, ref: string|null, folder: string}} The
  * repository as "owner/repo", the branch and the folder of the mod
  */
 function parseGitHubSource(input) {
-  const text = String(input ?? "")
+  const link = String(input ?? "")
     .trim()
-    .replace(GITHUB_URL_RE, "")
+    .replace(URL_QUERY_RE, "");
+  const isRawLink = GITHUB_RAW_URL_RE.test(link);
+  const text = link
+    .replace(isRawLink ? GITHUB_RAW_URL_RE : GITHUB_URL_RE, "")
     .replace(TRAILING_SLASHES_RE, "");
   const [owner = "", repoName = "", ...rest] = text.split("/");
   const repo = repoName.replace(DOT_GIT_RE, "");
@@ -259,13 +267,28 @@ function parseGitHubSource(input) {
 
   let ref = null;
   let folder = rest;
+  let isFileLink = isRawLink;
 
-  if (rest[0] === "tree" && rest.length > 1) {
+  if (isRawLink) {
+    // GitHub's own raw links spell the branch as refs/heads/<branch>.
+    const start = rest[0] === "refs" && REF_PREFIXES.has(rest[1]) ? 2 : 0;
+
+    ref = rest[start] ?? "";
+    folder = rest.slice(start + 1);
+  } else if ((rest[0] === "tree" || rest[0] === "blob") && rest.length > 1) {
+    isFileLink = rest[0] === "blob";
     ref = rest[1];
     folder = rest.slice(2);
   }
 
+  const isModFile = !isFileLink || folder.at(-1) === "theme.json";
+
+  if (isFileLink) {
+    folder = folder.slice(0, -1);
+  }
+
   const isValid =
+    isModFile &&
     isName(owner) &&
     isName(repo) &&
     (ref === null || isName(ref)) &&

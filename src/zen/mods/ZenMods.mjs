@@ -10,12 +10,15 @@ const { gZenModsManager, ZEN_MODS_UPDATE_TOPIC } = ChromeUtils.importESModule(
 
 const DOT_RE = /\./g;
 
+const APPLIED_TYPES = new Set(["string", "color", "number", "dropdown"]);
+
 /**
  * Applies the enabled mods to this window. `ZenModsManager` builds the
  * stylesheet for every window; what's left here needs this document:
- * `string` preferences become custom properties on the root, `dropdown`
- * preferences become attributes of a hidden element that older mods select
- * with `:has()`, and mod scripts start and stop for this window.
+ * `string`, `color` and `number` preferences become custom properties on the
+ * root, `dropdown` preferences become attributes of a hidden element that
+ * older mods select with `:has()`, and mod scripts start and stop for this
+ * window.
  *
  * @augments nsZenPreloadedFeature
  */
@@ -82,7 +85,7 @@ class nsZenMods extends nsZenPreloadedFeature {
 
     for (const { sanitizedName, preferences } of gZenModsManager.appliedMods) {
       for (const { property, type } of preferences) {
-        if (type !== "string" && type !== "dropdown") {
+        if (!APPLIED_TYPES.has(type)) {
           continue;
         }
 
@@ -114,7 +117,9 @@ class nsZenMods extends nsZenPreloadedFeature {
     const value = Services.prefs.getStringPref(property, "");
 
     switch (type) {
-      case "string": {
+      case "string":
+      case "color":
+      case "number": {
         const customProperty = `--${sanitizedProperty}`;
 
         this.#customProperties.add(customProperty);

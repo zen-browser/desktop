@@ -1329,6 +1329,8 @@ zen-library-history-section {
 
   & .zen-library-routing-reference {
     margin-top: 0;
+    /* Numbers too: toolkit aligns them right in chrome. */
+    text-align: start;
   }
 
   & moz-toggle {
@@ -1339,6 +1341,67 @@ zen-library-history-section {
 .zen-library-mod-preference-label {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+/* Preferences that come and go grow and shrink into place. */
+.zen-library-mod-preference-slot {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 0.2s ease,
+    opacity 0.2s ease;
+
+  & > div {
+    min-height: 0;
+    overflow: clip;
+    /* Room for focus rings. */
+    overflow-clip-margin: 4px;
+  }
+
+  &[collapsed] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+.zen-library-mod-preference[separator] {
+  margin-top: var(--zen-space-8);
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  font-weight: var(--font-weight-semibold);
+
+  .zen-library-mod-preference-slot:first-child & {
+    margin-top: 0;
+    border-top: none;
+  }
+}
+
+.zen-library-mod-preference-text {
+  margin: 0;
+  padding-block: var(--zen-space-6);
+  opacity: var(--zen-opacity-60);
+  overflow-wrap: anywhere;
+}
+
+.zen-library-mod-color {
+  flex: none;
+  width: var(--size-item-large);
+  height: var(--icon-size-medium);
+  padding: 0;
+  border: none;
+  border-radius: var(--zen-border-radius-6);
+  background: none;
+  cursor: pointer;
+
+  &::-moz-color-swatch {
+    border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    border-radius: var(--zen-border-radius-6);
+  }
+}
+
+/* Stays in sight at the bottom without moving what's under the cursor. */
+.zen-library-mod-restart {
+  position: sticky;
+  bottom: 0;
 }
 
 zen-library-mods-section[configuring] {

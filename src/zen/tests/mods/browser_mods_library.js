@@ -437,3 +437,192 @@ add_task(async function test_adding_a_folder_with_scripts_asks_first() {
   await closeLibrary();
   await gZenModsManager.uninstallMod(mod.id);
 });
+
+add_task(async function test_preferences_v2() {
+  const prefix = "zen.test.mods.v2";
+  const mode = `${prefix}.mode`;
+  const folder = await IOUtils.createUniqueDirectory(
+    PathUtils.tempDir,
+    "zen-prefs-mod"
+  );
+
+  await IOUtils.writeJSON(PathUtils.join(folder, "theme.json"), {
+    name: "Preferences Mod",
+    version: "1.0.0",
+  });
+  await IOUtils.writeUTF8(PathUtils.join(folder, "chrome.css"), "");
+  await IOUtils.writeJSON(PathUtils.join(folder, "preferences.json"), [
+    { type: "separator", label: "**Look**" },
+    { type: "text", label: "Pick *how* it ~looks~, \\*really\\*" },
+    {
+      type: "color",
+      property: `${prefix}.accent`,
+      label: "Accent",
+      defaultValue: "#ff0000",
+    },
+    {
+      type: "number",
+      property: `${prefix}.radius`,
+      label: "Radius",
+      defaultValue: 4,
+    },
+    {
+      type: "separator",
+      property: `${prefix}.extras`,
+      label: "Extras",
+      defaultValue: false,
+    },
+    {
+      type: "string",
+      property: `${prefix}.extra-text`,
+      label: "Extra text",
+      operator: "AND",
+      conditions: [
+        { if: { property: `${prefix}.extras`, value: true } },
+        {
+          conditions: [
+            { if: { property: mode, value: "wide" } },
+            { if: { property: mode, value: "narrow" } },
+          ],
+        },
+      ],
+    },
+    {
+      type: "checkbox",
+      property: `${prefix}.not-narrow`,
+      label: "Not narrow",
+      conditions: [{ not: { property: mode, value: "narrow" } }],
+    },
+    {
+      type: "checkbox",
+      property: `${prefix}.heavy`,
+      label: "Heavy",
+      restart: true,
+    },
+  ]);
+  registerCleanupFunction(() => {
+    Services.prefs.clearUserPref(mode);
+    return IOUtils.remove(folder, { recursive: true, ignoreAbsent: true });
+  });
+
+  const modId = await gZenModsManager.installLocalMod(folder);
+
+  is(
+    Services.prefs.getBoolPref(`${prefix}.extras`),
+    false,
+    "A separator with a property is a toggle, off by default"
+  );
+  await waitForRootValue(
+    window,
+    "--zen-test-mods-v2-accent",
+    "#ff0000",
+    "A color applies as a custom property"
+  );
+  is(rootValue(window, "--zen-test-mods-v2-radius"), "4", "So does a number");
+
+  const section = await openModsSection();
+
+  await waitForRows(section, [modId], "The mod is listed");
+  rowFor(section, modId).click();
+  await section.updateComplete;
+
+  const panel = section.querySelector(".zen-library-mod-preferences");
+
+  await TestUtils.waitForCondition(
+    () => window.getComputedStyle(panel).opacity === "1",
+    "The panel finished fading in"
+  );
+
+  const slots = [...panel.querySelectorAll(".zen-library-mod-preference-slot")];
+  const slotFor = label =>
+    slots.find(slot => slot.textContent.trim().startsWith(label));
+  const isShown = label => !slotFor(label).hasAttribute("collapsed");
+  const settle = async () => {
+    section.requestUpdate();
+    await section.updateComplete;
+  };
+  const flip = async label => {
+    const toggle = slotFor(label).querySelector("moz-toggle");
+    const toggled = BrowserTestUtils.waitForEvent(toggle, "toggle");
+
+    toggle.click();
+    await toggled;
+    await section.updateComplete;
+  };
+
+  ok(slotFor("Look"), "Formatting markers are taken out of labels");
+  ok(
+    slotFor("Pick how it looks, *really*"),
+    "And escaped ones stay as they are"
+  );
+  ok(isShown("Not narrow"), "A not condition holds on a preference never set");
+  ok(!isShown("Extra text"), "AND needs every condition");
+
+  await flip("Extras");
+
+  ok(
+    Services.prefs.getBoolPref(`${prefix}.extras`),
+    "The separator's toggle changes its preference"
+  );
+  ok(!isShown("Extra text"), "Still hidden while the nested group fails");
+
+  Services.prefs.setStringPref(mode, "narrow");
+  await settle();
+
+  ok(isShown("Extra text"), "Any condition of a nested group is enough");
+  ok(!isShown("Not narrow"), "A not condition hides on its value");
+  ok(
+    slotFor("Not narrow").inert,
+    "A hidden preference can't be reached with the keyboard"
+  );
+
+  Services.prefs.setStringPref(mode, "wide");
+  await settle();
+
+  ok(isShown("Extra text"), "The other value of the group holds too");
+  ok(isShown("Not narrow"), "And the not condition holds again");
+
+  const color = slotFor("Accent").querySelector("input");
+  const number = slotFor("Radius").querySelector("input");
+
+  color.value = "#00ff00";
+  color.dispatchEvent(new Event("input", { bubbles: true }));
+  number.value = "12";
+  number.dispatchEvent(new Event("input", { bubbles: true }));
+
+  await waitForRootValue(
+    window,
+    "--zen-test-mods-v2-accent",
+    "#00ff00",
+    "Picking a color applies it"
+  );
+  await waitForRootValue(
+    window,
+    "--zen-test-mods-v2-radius",
+    "12",
+    "Typing a number applies it"
+  );
+
+  const restart = panel.querySelector(".zen-library-mod-restart");
+
+  ok(restart.hasAttribute("collapsed"), "Nothing asks for a restart yet");
+
+  await flip("Heavy");
+
+  ok(
+    !restart.hasAttribute("collapsed"),
+    "Changing a preference that needs a restart asks for one"
+  );
+  ok(
+    restart.querySelector("moz-message-bar moz-button"),
+    "With a button to restart"
+  );
+
+  await closeLibrary();
+  await gZenModsManager.uninstallMod(modId);
+
+  ok(
+    !Services.prefs.prefHasUserValue(`${prefix}.accent`),
+    "Removing the mod clears its preferences"
+  );
+});

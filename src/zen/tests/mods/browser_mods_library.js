@@ -678,3 +678,93 @@ add_task(async function test_local_mods_reload_on_save() {
 
   await gZenModsManager.uninstallMod(modId);
 });
+
+add_task(async function test_install_from_github() {
+  const setHead = sha => fetch(`${MODS_ROOT}github_api.sjs?head=${sha}`);
+  const answerTextPrompt = async value => {
+    const [prompt] = await TestUtils.topicObserved("common-dialog-loaded");
+
+    is(prompt.Dialog.args.promptType, "prompt", "The repository is asked for");
+
+    await PromptTestUtils.handlePrompt(prompt.Dialog, {
+      loginInput: value,
+      buttonNumClick: 0,
+    });
+  };
+  const installFromGitHub = customElements
+    .get("zen-library-mods-section")
+    .tabMenu.find(
+      item => item.l10nId === "library-mods-install-github"
+    ).command;
+  const installed = async () =>
+    Object.values(await gZenModsManager.getMods()).find(
+      mod => mod.repo === "zen-tests/sample"
+    );
+
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["zen.mods.github.api-url", `${MODS_ROOT}github_api.sjs?`],
+      ["zen.mods.github.raw-url", `${MODS_ROOT}github/`],
+    ],
+  });
+  await setHead("a".repeat(40));
+  registerCleanupFunction(() => setHead("a".repeat(40)));
+
+  let answered = (async () => {
+    await answerTextPrompt("zen-tests/sample");
+    await handleNextConfirm(1);
+  })();
+
+  await Promise.all([installFromGitHub(), answered]);
+  ok(!(await installed()), "Declining installs nothing");
+
+  answered = (async () => {
+    await answerTextPrompt("https://github.com/zen-tests/sample");
+    await handleNextConfirm(0);
+  })();
+  await Promise.all([installFromGitHub(), answered]);
+
+  let mod = await installed();
+
+  ok(mod, "Accepting installs the mod");
+  is(
+    mod.approvedScriptsHash,
+    mod.scriptsHash,
+    "The prompt said it has scripts, so they're allowed"
+  );
+
+  const section = await openModsSection();
+
+  await waitForRows(section, [mod.id], "The mod is listed");
+  ok(
+    rowFor(section, mod.id).querySelector(
+      '[data-l10n-id="library-mods-badge-github"]'
+    ),
+    "It's marked as unverified"
+  );
+
+  await setHead("c".repeat(40));
+  await gZenModsManager.checkForUpdates();
+  await TestUtils.waitForCondition(
+    () => rowFor(section, mod.id)?.querySelector("[update]"),
+    "An update that changes the scripts shows it waits"
+  );
+
+  const menu = await openRowMenu(rowFor(section, mod.id));
+
+  answered = handleNextConfirm(0);
+  await chooseFromMenu(menu, "review-update");
+  await answered;
+  await TestUtils.waitForCondition(
+    async () => (await installed()).sha === "c".repeat(40),
+    "Reviewing the update installs it"
+  );
+  await TestUtils.waitForCondition(
+    () => !rowFor(section, mod.id)?.querySelector("[update]"),
+    "And nothing waits anymore"
+  );
+
+  mod = await installed();
+  await closeLibrary();
+  await gZenModsManager.uninstallMod(mod.id);
+});

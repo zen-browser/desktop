@@ -4,6 +4,8 @@
 
 [DEFAULT]
 support-files = [
+  "github/**",
+  "github_api.sjs",
   "head.js",
   "redirect.sjs",
   "store/**",
@@ -12,6 +14,8 @@ support-files = [
   "store-v2/**",
   "store_page.html",
 ]
+
+["browser_mods_github.js"]
 
 ["browser_mods_install.js"]
 

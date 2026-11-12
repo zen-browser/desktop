@@ -226,6 +226,8 @@ library-mods-menu-reinstall =
     .label = Reinstall
 library-mods-menu-remove =
     .label = Remove
+library-mods-menu-review-update =
+    .label = Review update…
 library-mods-menu-approve-scripts =
     .label = Allow scripts…
 library-mods-menu-reload =
@@ -234,6 +236,12 @@ library-mods-menu-folder =
     .label = Show folder
 library-mods-badge-local = Local
     .title = This mod lives in a folder of yours
+# Variables:
+#   $repo (String) - The GitHub repository, like owner/repo
+library-mods-badge-github = Unverified
+    .title = Installed from github.com/{ $repo }. { -brand-short-name } doesn’t review mods from GitHub.
+library-mods-badge-update = Update
+    .title = Its update changes its scripts and waits for you. Review it from the mod’s menu.
 library-mods-scripts-running = JS
     .title = This mod runs scripts
 library-mods-scripts-off = JS
@@ -270,6 +278,40 @@ library-mods-scripts-prompt-message =
        *[off] They stay off until zen.mods.scripts.enabled is turned on in about:config.
     }
 library-mods-scripts-prompt-accept = Allow scripts
+
+library-mods-github-title = Install from GitHub
+library-mods-github-text = The repository, like owner/repo, or its address on github.com. Add the folder if the mod is in one.
+library-mods-github-not-found = Couldn’t find a mod there
+library-mods-github-not-found-description = It needs a public repository with a theme.json, a chrome.css or a userChrome.css.
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-github-failed = Couldn’t install { $name }
+
+library-mods-github-prompt-title = Install this mod from GitHub?
+# Variables:
+#   $name (String) - The name of the mod
+#   $repo (String) - The GitHub repository, like owner/repo
+#   $scripts (String) - "yes" when the mod comes with scripts, "no" otherwise
+library-mods-github-prompt-message =
+    “{ $name }” comes from github.com/{ $repo }. { -brand-short-name } doesn’t review mods from GitHub, so only install the ones you trust.
+    { $scripts ->
+        [yes] It comes with scripts, which can do anything { -brand-short-name } can, like reading the pages you visit.
+       *[no] { "" }
+    }
+library-mods-github-prompt-accept = Install
+
+library-mods-update-prompt-title = Install this update?
+# Variables:
+#   $name (String) - The name of the mod
+#   $version (String) - The version the update brings
+library-mods-update-prompt-message = The update of “{ $name }” to { $version } changes its scripts. Scripts can do anything { -brand-short-name } can, so only install it if you trust its author.
+library-mods-update-prompt-accept = Install update
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-updated = Updated { $name }
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-update-failed = Couldn’t update { $name }
 
 library-mods-install-folder-title = Choose the mod’s folder
 library-mods-install-folder-invalid = That folder isn’t a mod
@@ -343,6 +385,8 @@ library-mods-enable-all =
     .label = Turn on mods
 library-mods-install-folder =
     .label = Add mod from folder…
+library-mods-install-github =
+    .label = Install from GitHub…
 library-mods-import =
     .label = Import…
 library-mods-export =

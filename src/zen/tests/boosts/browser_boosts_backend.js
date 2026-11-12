@@ -96,6 +96,40 @@ add_task(async function test_boost_follows_edits() {
   });
 });
 
+add_task(async function test_slider_values_stored_as_strings() {
+  await BrowserTestUtils.withNewTab(PAGE, async browser => {
+    const bc = browser.browsingContext;
+    const original = { ...gBoost.boostEntry.boostData };
+    const values = { contrast: 0.9, brightness: 0.8, saturation: 0.7 };
+
+    updateBoost(values);
+    const expected = bc.zenBoostsData;
+    updateBoost({ contrast: 0, brightness: 0, saturation: 0 });
+    Assert.notEqual(
+      bc.zenBoostsData,
+      expected,
+      "The sliders should change the accent"
+    );
+
+    updateBoost({
+      contrast: String(values.contrast),
+      brightness: String(values.brightness),
+      saturation: String(values.saturation),
+    });
+    Assert.equal(
+      bc.zenBoostsData,
+      expected,
+      "String slider values should be read like numbers"
+    );
+
+    updateBoost({
+      contrast: original.contrast,
+      brightness: original.brightness,
+      saturation: original.saturation,
+    });
+  });
+});
+
 add_task(async function test_boost_survives_same_site_navigation() {
   await BrowserTestUtils.withNewTab(PAGE, async browser => {
     await TestUtils.waitForCondition(

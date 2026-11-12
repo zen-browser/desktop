@@ -64,20 +64,43 @@
       }
     }
 
-    & > :not([hidden]),
-    & .pointerlockfswarning-domain {
+    /* The texts start over from nothing, so no property is left for a mod
+     * to hide them with, then take what Firefox gives them. */
+    & > :is(.pointerlockfswarning-domain-text, .pointerlockfswarning-generic-text):not([hidden]),
+    & .pointerlockfswarning-domain:not([hidden]) {
+      all: initial !important;
+      direction: inherit !important;
+      unicode-bidi: normal !important;
+      font: inherit !important;
+      color: inherit !important;
+      color-scheme: inherit !important;
+      pointer-events: inherit !important;
+      cursor: inherit !important;
+      overflow-wrap: break-word !important;
+    }
+
+    & > :is(.pointerlockfswarning-domain-text, .pointerlockfswarning-generic-text):not([hidden]) {
+      display: block !important;
+      /* Firefox's own values, in fullscreen-and-pointerlock.css. */
+      /* stylelint-disable stylelint-plugin-mozilla/use-design-tokens */
+      margin: 0 16px !important;
+      min-width: 1px !important;
+      /* stylelint-enable stylelint-plugin-mozilla/use-design-tokens */
+    }
+
+    & > .pointerlockfswarning-domain-text:not([hidden]) + .pointerlockfswarning-generic-text {
+      display: none !important;
+    }
+
+    & .pointerlockfswarning-domain:not([hidden]) {
+      display: inline !important;
+      font-weight: var(--font-weight-bold) !important;
+    }
+
+    /* The exit button keeps its own look; it just can't be made away with. */
+    & > #fullscreen-exit-button:not([hidden]) {
       visibility: visible !important;
       opacity: 1 !important;
-      font-family: inherit !important;
-      font-size: inherit !important;
-      color: inherit !important;
-      -webkit-text-fill-color: inherit !important;
-      text-indent: 0 !important;
-      letter-spacing: normal !important;
-      word-spacing: normal !important;
-      line-height: normal !important;
-      font-size-adjust: none !important;
-      -webkit-text-stroke: 0 !important;
       transform: none !important;
       scale: none !important;
       rotate: none !important;
@@ -94,18 +117,6 @@
       overflow: visible !important;
       max-width: none !important;
       max-height: none !important;
-    }
-
-    & > :is(.pointerlockfswarning-domain-text, .pointerlockfswarning-generic-text) {
-      /* Firefox's own value, in fullscreen-and-pointerlock.css. */
-      /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens */
-      margin: 0 16px !important;
-      padding: 0 !important;
-    }
-
-    & .pointerlockfswarning-domain {
-      margin: 0 !important;
-      padding: 0 !important;
     }
 
     /* Nothing laid over it. The identity icon is Firefox's own, so a mod
@@ -140,16 +151,6 @@
     &[data-identity="unknownIdentity"]::before {
       background-image: url("chrome://global/skin/icons/security-broken.svg") !important;
       stroke: var(--icon-color-critical) !important;
-    }
-
-    /* Only the text Firefox shows: the domain's, or the generic one. */
-    & > .pointerlockfswarning-domain-text:not([hidden]),
-    & > .pointerlockfswarning-domain-text[hidden] + .pointerlockfswarning-generic-text {
-      display: block !important;
-    }
-
-    & .pointerlockfswarning-domain {
-      display: inline !important;
     }
   }
 }

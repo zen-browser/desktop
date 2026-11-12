@@ -2,15 +2,31 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: zen.mods.updated-value-observer
-  value: false
-
 - name: zen.mods.auto-update-days
   value: 20 # In days
 
 - name: zen.mods.auto-update
   value: "@cond"
   condition: "defined(MOZILLA_OFFICIAL)"
+
+# Mod files are only downloaded from these prefixes.
+- name: zen.mods.store-url
+  value: "https://zen-browser.github.io/theme-store/"
+  locked: true
+  condition: "defined(MOZILLA_OFFICIAL)"
+
+- name: zen.mods.store-url
+  value: "https://zen-browser.github.io/theme-store/"
+  condition: "!defined(MOZILLA_OFFICIAL)"
+
+- name: zen.mods.store-assets-url
+  value: "https://raw.githubusercontent.com/zen-browser/theme-store/"
+  locked: true
+  condition: "defined(MOZILLA_OFFICIAL)"
+
+- name: zen.mods.store-assets-url
+  value: "https://raw.githubusercontent.com/zen-browser/theme-store/"
+  condition: "!defined(MOZILLA_OFFICIAL)"
 
 # === Mark: Site Injection ===
 

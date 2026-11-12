@@ -2,67 +2,78 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  gZenModsManager: "resource:///modules/zen/mods/ZenModsManager.sys.mjs",
+});
+
 export class ZenModsMarketplaceParent extends JSWindowActorParent {
-  constructor() {
-    super();
-  }
-
-  get modsManager() {
-    return this.browsingContext.topChromeWindow.gZenMods;
-  }
-
   async receiveMessage(message) {
     switch (message.name) {
       case "ZenModsMarketplace:InstallMod": {
-        const modId = message.data.modId;
-        const mod = await this.modsManager.requestMod(modId);
+        const { modId } = message.data;
 
-        console.warn(`[ZenModsMarketplaceParent]: Installing mod ${mod.id}`);
+        try {
+          const mod = await lazy.gZenModsManager.fetchStoreMod(modId);
 
-        mod.enabled = true;
+          console.warn(`[ZenModsMarketplaceParent]: Installing mod ${mod.id}`);
 
-        const mods = await this.modsManager.getMods();
-        mods[mod.id] = mod;
+          await lazy.gZenModsManager.installMod(mod);
+        } catch (error) {
+          console.error(
+            `[ZenModsMarketplaceParent]: Could not install mod ${modId}:`,
+            error
+          );
+        }
 
-        await this.modsManager.updateMods(mods);
-        await this.updateChildProcesses(mod.id);
-
+        this.#notifyModChanged(modId);
         break;
       }
+
       case "ZenModsMarketplace:UninstallMod": {
-        const modId = message.data.modId;
+        const { modId } = message.data;
+
         console.warn(`[ZenModsMarketplaceParent]: Uninstalling mod ${modId}`);
 
-        const mods = await this.modsManager.getMods();
+        await lazy.gZenModsManager.uninstallMod(modId);
 
-        delete mods[modId];
-
-        await this.modsManager.removeMod(modId);
-        await this.modsManager.updateMods(mods);
-
-        await this.updateChildProcesses(modId);
-
+        this.#notifyModChanged(modId);
         break;
       }
+
       case "ZenModsMarketplace:CheckForUpdates": {
-        const updates = await this.modsManager.checkForModsUpdates();
-        this.sendAsyncMessage("ZenModsMarketplace:CheckForUpdatesFinished", {
+        const updates = await lazy.gZenModsManager.checkForUpdates();
+
+        this.#sendToPage("ZenModsMarketplace:CheckForUpdatesFinished", {
           updates,
         });
         break;
       }
 
       case "ZenModsMarketplace:IsModInstalled": {
-        const themeId = message.data.themeId;
-        const themes = await this.modsManager.getMods();
-
-        return Boolean(themes?.[themeId]);
+        return lazy.gZenModsManager.isModInstalled(message.data.themeId);
       }
     }
+
     return undefined;
   }
 
-  async updateChildProcesses(modId) {
-    this.sendAsyncMessage("ZenModsMarketplace:ModChanged", { modId });
+  #notifyModChanged(modId) {
+    this.#sendToPage("ZenModsMarketplace:ModChanged", { modId });
+  }
+
+  /**
+   * Downloads take a while; the page may be gone by the time they finish.
+   *
+   * @param {string} name
+   * @param {object} data
+   */
+  #sendToPage(name, data) {
+    if (!this.manager || this.manager.isClosed) {
+      return;
+    }
+
+    this.sendAsyncMessage(name, data);
   }
 }

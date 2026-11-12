@@ -33,11 +33,11 @@ var gZenMarketplaceManager = {
 
     this.__hasInitializedEvents = true;
 
-    Services.prefs.addObserver(gZenMods.updatePref, this);
+    Services.obs.addObserver(this, "zen-mods-update");
     window.addEventListener(
       "unload",
       () => {
-        Services.prefs.removeObserver(gZenMods.updatePref, this);
+        Services.obs.removeObserver(this, "zen-mods-update");
       },
       { once: true }
     );
@@ -159,27 +159,21 @@ var gZenMarketplaceManager = {
     return this._modsList;
   },
 
-  _triggerBuildUpdateWithoutRebuild() {
-    this._doNotRebuildModsList = true;
-    gZenMods.triggerModsUpdate();
-  },
-
   async removeMod(modId) {
     await gZenMods.removeMod(modId);
-
-    gZenMods.triggerModsUpdate();
   },
 
   async disableMod(modId) {
+    // The toggle already shows the change; skip the list rebuild it triggers.
+    this._doNotRebuildModsList = true;
     await gZenMods.disableMod(modId);
-
-    this._triggerBuildUpdateWithoutRebuild();
+    this._doNotRebuildModsList = false;
   },
 
   async enableMod(modId) {
+    this._doNotRebuildModsList = true;
     await gZenMods.enableMod(modId);
-
-    this._triggerBuildUpdateWithoutRebuild();
+    this._doNotRebuildModsList = false;
   },
 
   async _importThemes() {
@@ -556,24 +550,11 @@ var gZenMarketplaceManager = {
               menulist.addEventListener("command", () => {
                 const value = menulist.selectedItem.value;
 
-                let element = browser.document.getElementById(sanitizedName);
-
-                if (!element) {
-                  element = browser.document.createElement("div");
-
-                  element.style.display = "none";
-                  element.setAttribute("id", sanitizedName);
-
-                  browser.document.body.appendChild(element);
-                }
-
-                element.setAttribute(property?.replaceAll(/\./g, "-"), value);
-
+                // Every window watches this pref and updates its mods element.
                 Services.prefs.setStringPref(
                   property,
                   value === "none" ? "" : value
                 );
-                this._triggerBuildUpdateWithoutRebuild();
               });
 
               const nameLabel = document.createXULElement("label");
@@ -662,20 +643,8 @@ var gZenMarketplaceManager = {
               input.addEventListener(
                 "change",
                 gZenMods.debounce(event => {
-                  const value = event.target.value;
-
-                  Services.prefs.setStringPref(property, value);
-                  this._triggerBuildUpdateWithoutRebuild();
-
-                  if (value === "") {
-                    browser.document
-                      .querySelector(":root")
-                      .style.removeProperty(`--${sanitizedProperty}`);
-                  } else {
-                    browser.document
-                      .querySelector(":root")
-                      .style.setProperty(`--${sanitizedProperty}`, value);
-                  }
+                  // Every window watches this pref and updates its property.
+                  Services.prefs.setStringPref(property, event.target.value);
                 }, 500)
               );
 

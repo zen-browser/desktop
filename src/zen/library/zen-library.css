@@ -1249,6 +1249,42 @@ zen-library-history-section {
   font-weight: var(--font-weight-bold);
 }
 
+.zen-library-mod-title {
+  display: flex;
+  align-items: center;
+  gap: var(--zen-space-6);
+  min-width: 0;
+
+  & .zen-library-row-title {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.zen-library-mod-badge {
+  flex: none;
+  padding: 1px var(--zen-space-6);
+  border-radius: var(--zen-border-radius-6);
+  background: var(--zen-library-pill-bg);
+  font-size: var(--zen-font-size-11);
+  font-weight: var(--font-weight-semibold);
+
+  &[scripts="running"] {
+    background: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
+  }
+
+  &[scripts="off"],
+  &[scripts="needs-approval"] {
+    opacity: var(--zen-opacity-60);
+  }
+
+  &[scripts="needs-restart"] {
+    color: var(--text-color-error);
+  }
+}
+
 .zen-library-mod-error {
   color: var(--text-color-error);
   opacity: 1;

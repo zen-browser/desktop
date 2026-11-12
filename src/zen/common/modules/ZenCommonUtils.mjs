@@ -147,11 +147,15 @@ window.gZenCommonActions = {
   },
 
   copyCurrentURLToClipboard() {
-    const [selectedURLs, ClipboardHelper, isMultiple] = this.getCurrentURL();
+    const [selectedURLs, , isMultiple] = this.getCurrentURL();
+    lazy.BrowserUtils.copyLinks(
+      selectedURLs.map(({ displaySpec, title }) => ({
+        url: displaySpec,
+        title,
+      }))
+    );
+
     if (isMultiple) {
-      ClipboardHelper.copyString(
-        selectedURLs.map(selectedURL => selectedURL.displaySpec).join("\n")
-      );
       gZenUIManager.showToast("zen-copy-multi-urls-confirmation", {
         l10nArgs: { count: selectedURLs.length },
         timeout: 3000,
@@ -160,7 +164,6 @@ window.gZenCommonActions = {
     }
 
     const [{ uri: currentUrl, displaySpec }] = selectedURLs;
-    ClipboardHelper.copyString(displaySpec);
 
     let button;
     /* eslint-disable mozilla/valid-services */

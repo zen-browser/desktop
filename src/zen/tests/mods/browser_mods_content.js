@@ -146,6 +146,16 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
         .pointerlockfswarning * {
           display: none !important;
           text-indent: -9999px !important;
+          transform: scale(0) !important;
+          clip-path: inset(50%) !important;
+        }
+        .pointerlockfswarning::after {
+          content: "" !important;
+          position: absolute !important;
+          inset: 0 !important;
+        }
+        .pointerlockfswarning[data-identity="unknownIdentity"]::before {
+          background-image: url("chrome://global/skin/icons/security.svg") !important;
         }
       `,
     },
@@ -202,6 +212,22 @@ add_task(async function test_mods_cant_hide_the_fullscreen_warning() {
 
   is(text.display, "block", "Its text shows");
   is(text.textIndent, "0px", "In place");
+  is(text.transform, "none", "Unshrunk");
+  is(text.clipPath, "none", "Uncut");
+  is(
+    window.getComputedStyle(warning, "::after").content,
+    "none",
+    "With nothing laid over it"
+  );
+
+  warning.setAttribute("data-identity", "unknownIdentity");
+  ok(
+    window
+      .getComputedStyle(warning, "::before")
+      .backgroundImage.includes("security-broken.svg"),
+    "And a broken connection never looks secure"
+  );
+  warning.removeAttribute("data-identity");
   is(
     window.getComputedStyle(
       warning.querySelector(".pointerlockfswarning-domain")

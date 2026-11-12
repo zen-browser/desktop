@@ -462,6 +462,54 @@ add_task(async function test_userchrome_scripts() {
   delete window.zenTestUcModuleApi;
 });
 
+add_task(async function test_document_scripts_get_zen_after_a_reload() {
+  await SpecialPowers.pushPrefEnv({ set: [[SCRIPTS_PREF, true]] });
+
+  const folder = await IOUtils.createUniqueDirectory(
+    PathUtils.tempDir,
+    "zen-uc-pages"
+  );
+
+  registerCleanupFunction(() =>
+    IOUtils.remove(folder, { recursive: true, ignoreAbsent: true })
+  );
+  await IOUtils.writeUTF8(
+    PathUtils.join(folder, "settings.uc.js"),
+    "window.zenTestSettingsMod = zen.mod.id;"
+  );
+  await IOUtils.writeJSON(PathUtils.join(folder, "theme.json"), {
+    name: "Settings Mod",
+    version: "1.0.0",
+    scripts: { "settings.uc.js": { include: ["about:preferences*"] } },
+  });
+
+  const modId = await gZenModsManager.installLocalMod(folder, {
+    scriptsApproved: true,
+  });
+  const tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "about:preferences"
+  );
+  const settingsMod = () => tab.linkedBrowser.contentWindow?.zenTestSettingsMod;
+
+  await TestUtils.waitForCondition(
+    () => settingsMod() === modId,
+    "A script in a page gets zen"
+  );
+
+  const reloaded = BrowserTestUtils.browserLoaded(tab.linkedBrowser);
+
+  tab.linkedBrowser.reload();
+  await reloaded;
+  await TestUtils.waitForCondition(
+    () => settingsMod() === modId,
+    "And again once the page reloads"
+  );
+
+  BrowserTestUtils.removeTab(tab);
+  await gZenModsManager.uninstallMod(modId);
+});
+
 add_task(async function test_mod_shortcuts_in_about_keyboard() {
   const { CustomKeys } = ChromeUtils.importESModule(
     "moz-src:///browser/components/customkeys/CustomKeys.sys.mjs"

@@ -78,21 +78,29 @@ auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   return gZenModsCache;
 }
 
-nsresult ZenStyleSheetCache::RebuildModsStylesheets(
-    const nsACString& aContents) {
-  // Re-parse the mods stylesheet. By doing so, we read
-  // Once we have the data as a nsACString, we call ReparseSheet from the
-  // StyleSheet class to re-parse the stylesheet.
-  auto sheet = GetModsSheet();
-  if (!sheet) {
+nsresult ZenStyleSheetCache::ReloadModsSheet() {
+  nsCOMPtr<nsIFile> chromeFile;
+  GET_MODS_FILE(chromeFile, NS_ERROR_FAILURE);
+
+  RefPtr<StyleSheet> previous = mModsSheet.forget();
+
+  LoadSheetFile(chromeFile, StyleOrigin::User);
+
+  if (!mModsSheet) {
+    mModsSheet = std::move(previous);
     return NS_ERROR_FAILURE;
   }
-  ErrorResult aRv;
-  sheet->ReparseSheet(aContents, aRv);
-  if (auto sss = nsStyleSheetService::GetInstance()) {
-    sss->ZenMarkStylesAsChanged();
+
+  // No document asked for the sheet yet; they'll get the new one.
+  if (!previous) {
+    return NS_OK;
   }
-  return aRv.StealNSResult();
+
+  if (auto* sss = nsStyleSheetService::GetInstance()) {
+    sss->ZenReplaceModsSheet(*previous, *mModsSheet);
+  }
+
+  return NS_OK;
 }
 
 mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache;

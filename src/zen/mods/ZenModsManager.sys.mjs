@@ -23,7 +23,6 @@ const MILESTONE_PREF = "zen.mods.milestone";
 const STORE_MOD_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 const WHITESPACE_RE = /\s/g;
 const NON_NAME_RE = /[^A-Za-z_-]+/g;
-const COMMENT_END_RE = /\*\//g;
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const DOWNLOAD_ATTEMPTS = 3;
@@ -144,7 +143,9 @@ class nsZenModsManager {
       this.#enqueue(() => this.#rebuild());
     });
 
-    await this.#enqueue(() => this.#rebuild());
+    // The sheet was loaded from disk at startup; only an outdated file needs
+    // applying again.
+    await this.#enqueue(() => this.#rebuild({ reload: false }));
   }
 
   /** @returns {Promise<Record<string, object>>} A copy of the installed mods */
@@ -698,7 +699,16 @@ class nsZenModsManager {
     });
   }
 
-  async #rebuild() {
+  /**
+   * Writes `zen-themes.css` as one `@import` per enabled mod, so each mod is
+   * its own sheet: a mod with broken CSS can't swallow the ones after it,
+   * and errors point at the mod's own file.
+   *
+   * @param {object} [options]
+   * @param {boolean} [options.reload] - Apply the sheet even if the file
+   * didn't change, because a mod's own file may have.
+   */
+  async #rebuild({ reload = true } = {}) {
     const mods = this.modsEnabled
       ? Object.values(this.#mods).filter(mod => mod.enabled !== false)
       : [];
@@ -707,23 +717,16 @@ class nsZenModsManager {
     let content = STYLESHEET_HEADER;
 
     for (const mod of mods) {
-      let style;
+      const folder = this.getModFolder(mod.id);
 
-      try {
-        style = await IOUtils.readUTF8(
-          PathUtils.join(this.getModFolder(mod.id), "chrome.css")
-        );
-      } catch (error) {
+      if (!(await IOUtils.exists(PathUtils.join(folder, "chrome.css")))) {
         console.warn(
-          `[ZenMods]: Could not read the styles of ${mod.name} (${mod.id}), skipping.`,
-          error
+          `[ZenMods]: ${mod.name} (${mod.id}) has no styles, skipping.`
         );
         continue;
       }
 
-      const name = String(mod.name).replaceAll(COMMENT_END_RE, "* /");
-
-      content += `\n/* Name: ${name} */\n${style}\n`;
+      content += `@import url("zen-themes/${encodeURIComponent(mod.id)}/chrome.css");\n`;
 
       applied.push({
         id: mod.id,
@@ -736,7 +739,7 @@ class nsZenModsManager {
     this.#setDefaults(applied);
     this.#appliedMods = applied;
 
-    await this.#writeStylesheet(content);
+    await this.#writeStylesheet(content, reload);
 
     Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
   }
@@ -776,7 +779,11 @@ class nsZenModsManager {
     }
   }
 
-  async #writeStylesheet(content) {
+  /**
+   * @param {string} content
+   * @param {boolean} reload - Apply it even if the file is the same
+   */
+  async #writeStylesheet(content, reload) {
     let current = null;
 
     try {
@@ -787,18 +794,18 @@ class nsZenModsManager {
       }
     }
 
-    if (current === content) {
+    if (current !== content) {
+      await IOUtils.writeUTF8(this.#styleSheetPath, content, {
+        tmpPath: `${this.#styleSheetPath}.tmp`,
+      });
+    } else if (!reload) {
       return;
     }
 
-    await IOUtils.writeUTF8(this.#styleSheetPath, content, {
-      tmpPath: `${this.#styleSheetPath}.tmp`,
-    });
-
     try {
-      lazy.modsBackend.rebuildModsStyles(content);
+      lazy.modsBackend.reloadModsStyles();
     } catch (error) {
-      console.warn("[ZenMods]: Error rebuilding the mods styles:", error);
+      console.warn("[ZenMods]: Error reloading the mods styles:", error);
     }
   }
 }

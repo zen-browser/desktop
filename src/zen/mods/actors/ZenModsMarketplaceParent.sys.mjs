@@ -84,19 +84,20 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
       prompt.BUTTON_POS_0 * prompt.BUTTON_TITLE_IS_STRING +
       prompt.BUTTON_POS_1 * prompt.BUTTON_TITLE_CANCEL;
 
-    return (
-      prompt.confirmEx(
-        window,
-        title,
-        message,
-        flags,
-        accept,
-        null,
-        null,
-        null,
-        {}
-      ) === 0
+    const result = await prompt.asyncConfirmEx(
+      window.browsingContext,
+      prompt.MODAL_TYPE_INTERNAL_WINDOW,
+      title,
+      message,
+      flags,
+      accept,
+      null,
+      null,
+      null,
+      false
     );
+
+    return result.getProperty("buttonNumClicked") === 0;
   }
 
   #notifyModChanged(modId) {

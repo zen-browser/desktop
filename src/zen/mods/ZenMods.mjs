@@ -13,9 +13,9 @@ const DOT_RE = /\./g;
 /**
  * Applies the enabled mods to this window. `ZenModsManager` builds the
  * stylesheet for every window; what's left here needs this document:
- * `string` preferences become custom properties on the root, and `dropdown`
+ * `string` preferences become custom properties on the root, `dropdown`
  * preferences become attributes of a hidden element that older mods select
- * with `:has()`.
+ * with `:has()`, and mod scripts start and stop for this window.
  *
  * @augments nsZenPreloadedFeature
  */
@@ -36,6 +36,7 @@ class nsZenMods extends nsZenPreloadedFeature {
       () => {
         Services.obs.removeObserver(this, ZEN_MODS_UPDATE_TOPIC);
         this.#unwatchPrefs();
+        gZenModsManager.forgetWindow(window);
       },
       { once: true }
     );
@@ -104,6 +105,8 @@ class nsZenMods extends nsZenPreloadedFeature {
         document.getElementById(id)?.remove();
       }
     }
+
+    gZenModsManager.syncScripts(window);
   }
 
   #applyPreference(property, { type, sanitizedName }) {

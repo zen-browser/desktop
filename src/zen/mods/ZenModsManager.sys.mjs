@@ -10,9 +10,16 @@ ChromeUtils.defineLazyGetter(lazy, "modsBackend", () =>
   Cc["@mozilla.org/zen/mods-backend;1"].getService(Ci.nsIZenModsBackend)
 );
 
+ChromeUtils.defineLazyGetter(lazy, "resProtocol", () =>
+  Services.io
+    .getProtocolHandler("resource")
+    .QueryInterface(Ci.nsIResProtocolHandler)
+);
+
 export const ZEN_MODS_UPDATE_TOPIC = "zen-mods-update";
 
 const DISABLE_ALL_PREF = "zen.themes.disable-all";
+const SCRIPTS_PREF = "zen.mods.scripts.enabled";
 const STORE_URL_PREF = "zen.mods.store-url";
 const STORE_ASSETS_URL_PREF = "zen.mods.store-assets-url";
 const AUTO_UPDATE_PREF = "zen.mods.auto-update";
@@ -23,6 +30,11 @@ const MILESTONE_PREF = "zen.mods.milestone";
 const STORE_MOD_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 const WHITESPACE_RE = /\s/g;
 const NON_NAME_RE = /[^A-Za-z_-]+/g;
+
+const LOCAL_ID_PREFIX = "local-";
+const SCRIPT_HOST_PREFIX = "zen-mod-";
+const SCRIPT_FILE_RE = /\.m?js$/;
+const MAX_SCRIPT_FILES = 200;
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const DOWNLOAD_ATTEMPTS = 3;
@@ -60,6 +72,36 @@ function isNotFound(error) {
 }
 
 /**
+ * Splits a script path from `theme.json` into the folders and file it goes
+ * through, as long as it stays inside the mod's folder.
+ *
+ * @param {*} script - A path like "src/main.mjs"
+ * @returns {string[]|null} Its parts, or null if it's not a valid path
+ */
+function scriptParts(script) {
+  if (typeof script !== "string" || !script.endsWith(".mjs")) {
+    return null;
+  }
+
+  const parts = script.split("/");
+  const isValid = parts.every(
+    part => part && part !== "." && part !== ".." && !/[\\:]/.test(part)
+  );
+
+  return isValid ? parts : null;
+}
+
+/**
+ * @param {object} mod - An entry of the registry
+ * @returns {string[]} The scripts the mod may run: only local mods run any
+ */
+function declaredScripts(mod) {
+  return mod?.source === "local" && Array.isArray(mod.scripts)
+    ? mod.scripts
+    : [];
+}
+
+/**
  * Owns the installed Zen Mods: the registry in `zen-themes.json`, the files
  * in `chrome/zen-themes/<id>/`, the generated `chrome/zen-themes.css` and the
  * updates from the store. One instance serves every window, so a change is
@@ -92,9 +134,28 @@ class nsZenModsManager {
    * Why a mod doesn't apply as it should, until it's fixed. Kept in memory:
    * the next session finds out again.
    *
-   * @type {Map<string, {type: "missing-files"|"update-failed", message?: string}>}
+   * @type {Map<string, {type: "missing-files"|"update-failed"|"script-failed", message?: string}>}
    */
   #errors = new Map();
+
+  /**
+   * The scripts that run right now: each version of a mod's scripts is
+   * imported from a resource host of its own, so a changed file, or a file
+   * it imports, is never served from the module registry.
+   *
+   * @type {Map<string, {hash: string, host: string, modules: object[]}>}
+   */
+  #scripts = new Map();
+
+  /**
+   * What each window started, so it can undo it even after the mod is gone.
+   *
+   * @type {WeakMap<Window, Map<string, {hash: string, modules: object[]}>>}
+   */
+  #windowScripts = new WeakMap();
+
+  /** @type {Set<string>} Mods turned off whose scripts can't be undone */
+  #needsRestart = new Set();
 
   get modsRootPath() {
     return PathUtils.join(PathUtils.profileDir, "chrome", "zen-themes");
@@ -116,6 +177,14 @@ class nsZenModsManager {
     );
   }
 
+  /**
+   * Whether mod scripts may run. They have every power the browser has, so
+   * they stay off until the user turns them on in about:config.
+   */
+  get scriptsEnabled() {
+    return Services.prefs.getBoolPref(SCRIPTS_PREF, false) && this.modsEnabled;
+  }
+
   /** @returns {object[]} The mods that apply right now */
   get appliedMods() {
     return this.#appliedMods;
@@ -123,10 +192,40 @@ class nsZenModsManager {
 
   /**
    * @param {string} modId
-   * @returns {string} The folder that holds the mod's files
+   * @returns {string} The folder that holds the mod's files: its own folder
+   * for a local mod, one in the profile for a store mod
    */
   getModFolder(modId) {
+    const mod = this.#mods[modId];
+
+    if (mod?.source === "local") {
+      return mod.path;
+    }
+
     return PathUtils.join(this.modsRootPath, modId);
+  }
+
+  /**
+   * @param {string} modId
+   * @returns {"none"|"needs-approval"|"off"|"running"|"needs-restart"} What
+   * the mod's scripts are doing
+   */
+  getScriptsState(modId) {
+    const mod = this.#mods[modId];
+
+    if (this.#needsRestart.has(modId)) {
+      return "needs-restart";
+    }
+
+    if (!declaredScripts(mod).length) {
+      return "none";
+    }
+
+    if (!mod.scriptsApproved) {
+      return "needs-approval";
+    }
+
+    return this.#scripts.has(modId) ? "running" : "off";
   }
 
   /**
@@ -147,9 +246,11 @@ class nsZenModsManager {
 
     this.#mods = await this.#readRegistry();
 
-    Services.prefs.addObserver(DISABLE_ALL_PREF, () => {
-      this.#enqueue(() => this.#rebuild());
-    });
+    for (const pref of [DISABLE_ALL_PREF, SCRIPTS_PREF]) {
+      Services.prefs.addObserver(pref, () => {
+        this.#enqueue(() => this.#rebuild());
+      });
+    }
 
     // The sheet was loaded from disk at startup; only an outdated file needs
     // applying again.
@@ -232,6 +333,377 @@ class nsZenModsManager {
    */
   async reinstallMod(modId) {
     await this.installMod(await this.fetchStoreMod(modId));
+  }
+
+  /**
+   * Reads and checks the `theme.json` of a mod in a folder of the user's.
+   * Nothing is installed.
+   *
+   * @param {string} path - The mod's folder
+   * @returns {Promise<object>} What the mod declares
+   */
+  async readLocalMod(path) {
+    const manifest = await IOUtils.readJSON(PathUtils.join(path, "theme.json"));
+
+    if (!manifest || typeof manifest !== "object") {
+      throw new Error("[ZenMods]: theme.json is not an object.");
+    }
+
+    for (const key of ["name", "version"]) {
+      if (typeof manifest[key] !== "string" || !manifest[key]) {
+        throw new Error(`[ZenMods]: theme.json has no valid "${key}".`);
+      }
+    }
+
+    const scripts = manifest.scripts ?? [];
+
+    if (!Array.isArray(scripts)) {
+      throw new Error('[ZenMods]: "scripts" in theme.json must be a list.');
+    }
+
+    for (const script of scripts) {
+      const parts = scriptParts(script);
+
+      if (!parts) {
+        throw new Error(`[ZenMods]: Invalid script path: ${script}`);
+      }
+
+      if (!(await IOUtils.exists(PathUtils.join(path, ...parts)))) {
+        throw new Error(`[ZenMods]: Script ${script} is missing.`);
+      }
+    }
+
+    const hasStyles = await IOUtils.exists(PathUtils.join(path, "chrome.css"));
+
+    if (!hasStyles && !scripts.length) {
+      throw new Error("[ZenMods]: The mod has neither chrome.css nor scripts.");
+    }
+
+    const text = key =>
+      typeof manifest[key] === "string" ? manifest[key] : "";
+
+    return {
+      name: manifest.name,
+      version: manifest.version,
+      author: text("author"),
+      description: text("description"),
+      homepage: text("homepage"),
+      scripts,
+      preferences: await IOUtils.exists(
+        PathUtils.join(path, "preferences.json")
+      ),
+    };
+  }
+
+  /**
+   * Adds a mod that lives in a folder of the user's. The folder isn't copied:
+   * editing it and reloading the mod is how mods are made. Installing the
+   * same folder again refreshes it.
+   *
+   * @param {string} path - The mod's folder
+   * @param {object} [options]
+   * @param {boolean} [options.scriptsApproved] - The user agreed to run the
+   * mod's scripts
+   * @returns {Promise<string>} The mod's id
+   */
+  async installLocalMod(path, { scriptsApproved = false } = {}) {
+    await this.init();
+
+    const manifest = await this.readLocalMod(path);
+    const existing = Object.values(this.#mods).find(
+      mod => mod.source === "local" && mod.path === path
+    );
+    const modId =
+      existing?.id ??
+      `${LOCAL_ID_PREFIX}${Services.uuid.generateUUID().toString().slice(1, -1)}`;
+
+    await this.#mutate(mods => {
+      mods[modId] = {
+        ...manifest,
+        id: modId,
+        source: "local",
+        path,
+        enabled: existing?.enabled ?? true,
+        order: existing?.order,
+        scriptsApproved: scriptsApproved || Boolean(existing?.scriptsApproved),
+      };
+      this.#errors.delete(modId);
+    });
+
+    return modId;
+  }
+
+  /**
+   * Reads a local mod's folder again: its `theme.json`, styles and scripts.
+   *
+   * @param {string} modId
+   * @returns {Promise<void>}
+   */
+  async reloadLocalMod(modId) {
+    await this.init();
+
+    const mod = this.#mods[modId];
+
+    if (mod?.source !== "local") {
+      throw new Error(`[ZenMods]: ${modId} is not a local mod.`);
+    }
+
+    await this.installLocalMod(mod.path);
+  }
+
+  /**
+   * Lets a local mod's scripts run once scripts are allowed.
+   *
+   * @param {string} modId
+   * @returns {Promise<void>}
+   */
+  async approveScripts(modId) {
+    await this.init();
+
+    await this.#mutate(mods => {
+      if (mods[modId]?.source !== "local") {
+        throw new Error(`[ZenMods]: ${modId} is not a local mod.`);
+      }
+
+      mods[modId].scriptsApproved = true;
+    });
+  }
+
+  /**
+   * Starts in a window the scripts that should run and stops the ones that
+   * shouldn't anymore. Windows call it when they open and on every change.
+   *
+   * @param {Window} win
+   */
+  syncScripts(win) {
+    let started = this.#windowScripts.get(win);
+    let changed = false;
+
+    if (!started) {
+      started = new Map();
+      this.#windowScripts.set(win, started);
+    }
+
+    for (const [modId, previous] of started) {
+      if (this.#scripts.get(modId)?.hash === previous.hash) {
+        continue;
+      }
+
+      if (!this.#runHook(modId, previous.modules, "uninit", win)) {
+        this.#needsRestart.add(modId);
+        changed = true;
+      }
+
+      started.delete(modId);
+    }
+
+    for (const [modId, { hash, modules }] of this.#scripts) {
+      if (started.has(modId)) {
+        continue;
+      }
+
+      changed ||= !this.#runHook(modId, modules, "init", win);
+      started.set(modId, { hash, modules });
+    }
+
+    if (changed) {
+      // Not from inside the observers that called us.
+      Promise.resolve().then(() =>
+        Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC)
+      );
+    }
+  }
+
+  /**
+   * Stops the scripts a closing window started.
+   *
+   * @param {Window} win
+   */
+  forgetWindow(win) {
+    for (const [modId, { modules }] of this.#windowScripts.get(win) ?? []) {
+      this.#runHook(modId, modules, "uninit", win);
+    }
+
+    this.#windowScripts.delete(win);
+  }
+
+  /**
+   * Calls `init` or `uninit` of a mod's modules for a window. A script that
+   * throws can't break the window or the other mods.
+   *
+   * @param {string} modId
+   * @param {object[]} modules
+   * @param {"init"|"uninit"} hook
+   * @param {Window} win
+   * @returns {boolean} Whether every module had the hook and it went well
+   */
+  #runHook(modId, modules, hook, win) {
+    let complete = true;
+
+    for (const module of modules) {
+      if (typeof module[hook] !== "function") {
+        // Without init a module just has nothing to do per window.
+        complete = complete && hook === "init";
+        continue;
+      }
+
+      try {
+        module[hook](win);
+      } catch (error) {
+        console.error(`[ZenMods]: ${hook} of ${modId} failed:`, error);
+
+        complete = false;
+        this.#errors.set(modId, {
+          type: "script-failed",
+          message: String(error?.message ?? error),
+        });
+      }
+    }
+
+    return complete;
+  }
+
+  /**
+   * Imports the scripts of every enabled mod whose scripts the user approved,
+   * while scripts are allowed, and forgets the ones that shouldn't run
+   * anymore. Only local mods run scripts: the store doesn't review them yet.
+   */
+  async #loadScripts() {
+    const wanted = this.scriptsEnabled
+      ? this.#orderedMods().filter(
+          mod =>
+            mod.enabled !== false &&
+            mod.scriptsApproved &&
+            declaredScripts(mod).length
+        )
+      : [];
+    const wantedIds = new Set(wanted.map(mod => mod.id));
+
+    for (const [modId, { host }] of this.#scripts) {
+      if (!wantedIds.has(modId)) {
+        lazy.resProtocol.setSubstitution(host, null);
+        this.#scripts.delete(modId);
+      }
+    }
+
+    for (const mod of wanted) {
+      const folder = this.getModFolder(mod.id);
+      const loaded = this.#scripts.get(mod.id);
+      let host = null;
+
+      try {
+        const hash = await this.#hashScripts(mod.id, folder);
+
+        if (loaded?.hash === hash) {
+          continue;
+        }
+
+        const directory = Cc["@mozilla.org/file/local;1"].createInstance(
+          Ci.nsIFile
+        );
+
+        directory.initWithPath(folder);
+        host = `${SCRIPT_HOST_PREFIX}${hash.slice(0, 16)}`;
+        lazy.resProtocol.setSubstitution(
+          host,
+          Services.io.newFileURI(directory)
+        );
+
+        const modules = declaredScripts(mod).map(script =>
+          ChromeUtils.importESModule(
+            `resource://${host}/${scriptParts(script).map(encodeURIComponent).join("/")}`
+          )
+        );
+
+        if (loaded) {
+          lazy.resProtocol.setSubstitution(loaded.host, null);
+        }
+
+        this.#scripts.set(mod.id, { hash, host, modules });
+        this.#needsRestart.delete(mod.id);
+
+        if (this.#errors.get(mod.id)?.type === "script-failed") {
+          this.#errors.delete(mod.id);
+        }
+      } catch (error) {
+        console.error(
+          `[ZenMods]: Could not load the scripts of ${mod.name} (${mod.id}):`,
+          error
+        );
+
+        // A version that loaded before keeps running.
+        if (host && host !== loaded?.host) {
+          lazy.resProtocol.setSubstitution(host, null);
+        }
+
+        this.#errors.set(mod.id, {
+          type: "script-failed",
+          message: String(error?.message ?? error),
+        });
+      }
+    }
+  }
+
+  /**
+   * Hashes every script file in a mod's folder, the ones its scripts import
+   * included, so any change gives the scripts a new resource host.
+   *
+   * @param {string} modId
+   * @param {string} folder
+   * @returns {Promise<string>} A hex SHA-256
+   */
+  async #hashScripts(modId, folder) {
+    const files = [];
+    const visit = async directory => {
+      for (const child of await IOUtils.getChildren(directory)) {
+        const name = PathUtils.filename(child);
+
+        if (name.startsWith(".") || name === "node_modules") {
+          continue;
+        }
+
+        if ((await IOUtils.stat(child)).type === "directory") {
+          await visit(child);
+        } else if (SCRIPT_FILE_RE.test(name)) {
+          files.push(child);
+        }
+
+        if (files.length > MAX_SCRIPT_FILES) {
+          throw new Error(
+            `[ZenMods]: More than ${MAX_SCRIPT_FILES} script files in ${folder}.`
+          );
+        }
+      }
+    };
+
+    await visit(folder);
+    files.sort();
+
+    const encoder = new TextEncoder();
+    const chunks = [encoder.encode(modId)];
+
+    for (const file of files) {
+      chunks.push(
+        encoder.encode(`\0${file.slice(folder.length)}\0`),
+        await IOUtils.read(file)
+      );
+    }
+
+    const bytes = new Uint8Array(
+      chunks.reduce((total, chunk) => total + chunk.length, 0)
+    );
+    let offset = 0;
+
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.length;
+    }
+
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+
+    return Array.from(new Uint8Array(digest), byte =>
+      byte.toString(16).padStart(2, "0")
+    ).join("");
   }
 
   /**
@@ -345,14 +817,16 @@ class nsZenModsManager {
 
     const preferences = await this.getModPreferences(mod);
 
+    const folder = this.getModFolder(modId);
+
     await this.#mutate(async mods => {
       delete mods[modId];
       this.#errors.delete(modId);
 
-      await IOUtils.remove(this.getModFolder(modId), {
-        recursive: true,
-        ignoreAbsent: true,
-      });
+      // A local mod's folder is the user's.
+      if (mod.source !== "local") {
+        await IOUtils.remove(folder, { recursive: true, ignoreAbsent: true });
+      }
     });
 
     const stillUsed = new Set();
@@ -802,9 +1276,10 @@ class nsZenModsManager {
     let content = STYLESHEET_HEADER;
 
     for (const mod of mods) {
-      const folder = this.getModFolder(mod.id);
+      const stylePath = PathUtils.join(this.getModFolder(mod.id), "chrome.css");
+      const hasStyles = await IOUtils.exists(stylePath);
 
-      if (!(await IOUtils.exists(PathUtils.join(folder, "chrome.css")))) {
+      if (!hasStyles && !declaredScripts(mod).length) {
         console.warn(
           `[ZenMods]: ${mod.name} (${mod.id}) has no styles, skipping.`
         );
@@ -817,7 +1292,16 @@ class nsZenModsManager {
         this.#errors.delete(mod.id);
       }
 
-      content += `@import url("zen-themes/${encodeURIComponent(mod.id)}/chrome.css");\n`;
+      if (hasStyles) {
+        // Store mods live next to the sheet; local ones wherever the user
+        // keeps them.
+        const url =
+          mod.source === "local"
+            ? PathUtils.toFileURI(stylePath)
+            : `zen-themes/${encodeURIComponent(mod.id)}/chrome.css`;
+
+        content += `@import url("${url}");\n`;
+      }
 
       applied.push({
         id: mod.id,
@@ -831,6 +1315,7 @@ class nsZenModsManager {
     this.#appliedMods = applied;
 
     await this.#writeStylesheet(content, reload);
+    await this.#loadScripts();
 
     Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
   }

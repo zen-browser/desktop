@@ -9,6 +9,10 @@
   value: "@cond"
   condition: "defined(MOZILLA_OFFICIAL)"
 
+# Mod scripts run with every power the browser has; only local mods have them.
+- name: zen.mods.scripts.enabled
+  value: false
+
 # Mod files are only downloaded from these prefixes.
 - name: zen.mods.store-url
   value: "https://zen-browser.github.io/theme-store/"

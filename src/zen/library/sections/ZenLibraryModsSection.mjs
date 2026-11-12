@@ -34,6 +34,14 @@ const STATE_FILTERS = [
 const ERROR_L10N_IDS = {
   "missing-files": "library-mods-error-missing-files",
   "update-failed": "library-mods-error-update-failed",
+  "script-failed": "library-mods-error-script-failed",
+};
+
+const SCRIPTS_L10N_IDS = {
+  running: "library-mods-scripts-running",
+  off: "library-mods-scripts-off",
+  "needs-approval": "library-mods-scripts-needs-approval",
+  "needs-restart": "library-mods-scripts-needs-restart",
 };
 
 /**
@@ -97,6 +105,74 @@ async function pickJSONFile(mode, titleId) {
   const picked = [Ci.nsIFilePicker.returnOK, Ci.nsIFilePicker.returnReplace];
 
   return picked.includes(result) ? picker.file : null;
+}
+
+/**
+ * Mod scripts have every power the browser has: the user agrees to each
+ * mod's scripts before they can run.
+ *
+ * @param {string} modName
+ * @returns {Promise<boolean>} Whether the user allowed them
+ */
+function confirmScripts(modName) {
+  return confirmAction(
+    [
+      "library-mods-scripts-prompt-title",
+      "library-mods-scripts-prompt-message",
+      "library-mods-scripts-prompt-accept",
+    ],
+    {
+      name: modName,
+      state: lazy.gZenModsManager.scriptsEnabled ? "on" : "off",
+    }
+  );
+}
+
+/**
+ * Adds a mod from a folder of the user's, the way mods are made: the folder
+ * stays where it is and reloading the mod reads it again.
+ */
+async function installFromFolder() {
+  const picker = Cc["@mozilla.org/filepicker;1"].createInstance(
+    Ci.nsIFilePicker
+  );
+  const [title] = await document.l10n.formatValues([
+    { id: "library-mods-install-folder-title" },
+  ]);
+
+  picker.init(window.browsingContext, title, Ci.nsIFilePicker.modeGetFolder);
+
+  const result = await new Promise(resolve => picker.open(resolve));
+
+  if (result !== Ci.nsIFilePicker.returnOK || !picker.file) {
+    return;
+  }
+
+  const path = picker.file.path;
+  let manifest;
+
+  try {
+    manifest = await lazy.gZenModsManager.readLocalMod(path);
+  } catch (error) {
+    console.warn(`[ZenLibraryMods]: ${path} is not a mod:`, error);
+    window.gZenUIManager.showToast("library-mods-install-folder-invalid", {
+      descriptionId: "library-mods-install-folder-invalid-description",
+    });
+    return;
+  }
+
+  const hasScripts = Boolean(manifest.scripts.length);
+
+  if (hasScripts && !(await confirmScripts(manifest.name))) {
+    return;
+  }
+
+  await lazy.gZenModsManager.installLocalMod(path, {
+    scriptsApproved: hasScripts,
+  });
+  window.gZenUIManager.showToast("library-mods-installed", {
+    l10nArgs: { name: manifest.name },
+  });
 }
 
 async function checkForUpdates() {
@@ -267,10 +343,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
         command: toggleAllMods,
       },
       {
-        l10nId: "library-mods-import",
-        command: importMods,
+        l10nId: "library-mods-install-folder",
+        command: installFromFolder,
         separatorBefore: true,
       },
+      { l10nId: "library-mods-import", command: importMods },
       { l10nId: "library-mods-export", command: exportMods },
       {
         l10nId: "library-mods-browse-store",
@@ -367,6 +444,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
       mods.map(async mod => ({
         ...mod,
         error: manager.getModError(mod.id),
+        scriptsState: manager.getScriptsState(mod.id),
         preferences: (await manager.getModPreferences(mod)).filter(
           ({ type, property }) => {
             if (PREFERENCE_TYPES.has(type)) {
@@ -493,7 +571,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     const agreed = await confirmAction(
       [
         "library-mods-remove-prompt-title",
-        "library-mods-remove-prompt-message",
+        mod.source === "local"
+          ? "library-mods-remove-local-prompt-message"
+          : "library-mods-remove-prompt-message",
         "library-mods-remove-prompt-accept",
       ],
       { name: mod.name }
@@ -515,6 +595,40 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
       window.gZenUIManager.showToast("library-mods-reinstall-failed", {
         l10nArgs: { name: mod.name },
       });
+    }
+  }
+
+  async #reloadLocal(mod) {
+    try {
+      await lazy.gZenModsManager.reloadLocalMod(mod.id);
+      window.gZenUIManager.showToast("library-mods-reloaded", {
+        l10nArgs: { name: mod.name },
+      });
+    } catch (error) {
+      console.error(`[ZenLibraryMods]: Could not reload ${mod.id}:`, error);
+      window.gZenUIManager.showToast("library-mods-reload-failed", {
+        l10nArgs: { name: mod.name },
+      });
+    }
+  }
+
+  #showFolder(mod) {
+    const folder = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+
+    try {
+      folder.initWithPath(mod.path);
+      folder.reveal();
+    } catch (error) {
+      console.warn(
+        `[ZenLibraryMods]: Could not show the folder of ${mod.id}:`,
+        error
+      );
+    }
+  }
+
+  async #approveScripts(mod) {
+    if (await confirmScripts(mod.name)) {
+      await lazy.gZenModsManager.approveScripts(mod.id);
     }
   }
 
@@ -543,6 +657,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
       <menupopup class="zen-library-mods-menu">
         <menuitem data-action="configure" data-l10n-id="library-mods-menu-configure"/>
         <menuitem data-action="homepage" data-l10n-id="library-mods-menu-homepage"/>
+        <menuitem data-action="approve-scripts" data-l10n-id="library-mods-menu-approve-scripts"/>
+        <menuitem data-action="reload" data-l10n-id="library-mods-menu-reload"/>
+        <menuitem data-action="folder" data-l10n-id="library-mods-menu-folder"/>
         <menuitem data-action="reinstall" data-l10n-id="library-mods-menu-reinstall"/>
         <menuseparator/>
         <menuitem data-action="remove" data-l10n-id="library-mods-menu-remove"/>
@@ -564,6 +681,21 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
         case "homepage": {
           this.#openHomepage(mod);
+          break;
+        }
+
+        case "approve-scripts": {
+          this.#approveScripts(mod);
+          break;
+        }
+
+        case "reload": {
+          this.#reloadLocal(mod);
+          break;
+        }
+
+        case "folder": {
+          this.#showFolder(mod);
           break;
         }
 
@@ -595,9 +727,21 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
     const menu = this.#menu;
 
-    menu.querySelector("[data-action='configure']").hidden =
-      !mod.preferences.length;
-    menu.querySelector("[data-action='homepage']").hidden = !mod.homepage;
+    const isLocal = mod.source === "local";
+    const hidden = {
+      configure: !mod.preferences.length,
+      homepage: !mod.homepage,
+      "approve-scripts": mod.scriptsState !== "needs-approval",
+      reload: !isLocal,
+      folder: !isLocal,
+      // Only the store has a copy to download again.
+      reinstall: isLocal,
+    };
+
+    for (const [action, isHidden] of Object.entries(hidden)) {
+      menu.querySelector(`[data-action='${action}']`).hidden = isHidden;
+    }
+
     menu.hidden = false;
     this.#menuRow?.removeAttribute("menu-open");
     this.#menuMod = mod;
@@ -933,7 +1077,26 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
       >
         <div class="zen-library-mod-icon">${initial.toLocaleUpperCase()}</div>
         <div class="zen-library-row-text">
-          <span class="zen-library-row-title">${mod.name}</span>
+          <span class="zen-library-mod-title">
+            <span class="zen-library-row-title">${mod.name}</span>
+            ${
+              mod.source === "local"
+                ? html`<span
+                    class="zen-library-mod-badge"
+                    data-l10n-id="library-mods-badge-local"
+                  ></span>`
+                : nothing
+            }
+            ${
+              mod.scriptsState === "none"
+                ? nothing
+                : html`<span
+                    class="zen-library-mod-badge"
+                    scripts=${mod.scriptsState}
+                    data-l10n-id=${SCRIPTS_L10N_IDS[mod.scriptsState]}
+                  ></span>`
+            }
+          </span>
           ${
             mod.error
               ? html`<span

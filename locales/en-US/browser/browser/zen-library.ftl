@@ -213,6 +213,7 @@ library-mods-enable-all-button = Turn on
 library-mods-byline = { $author } · { $version }
 library-mods-error-missing-files = Files missing, reinstall it
 library-mods-error-update-failed = Last update failed
+library-mods-error-script-failed = A script failed
 library-mods-toggle =
     .aria-label = Turn on mod
 library-mods-configure-button =
@@ -225,6 +226,22 @@ library-mods-menu-reinstall =
     .label = Reinstall
 library-mods-menu-remove =
     .label = Remove
+library-mods-menu-approve-scripts =
+    .label = Allow scripts…
+library-mods-menu-reload =
+    .label = Reload from folder
+library-mods-menu-folder =
+    .label = Show folder
+library-mods-badge-local = Local
+    .title = This mod lives in a folder of yours
+library-mods-scripts-running = JS
+    .title = This mod runs scripts
+library-mods-scripts-off = JS
+    .title = Scripts are off. Turn on zen.mods.scripts.enabled in about:config to run them.
+library-mods-scripts-needs-approval = JS
+    .title = Its scripts need your permission. Allow them from the mod’s menu.
+library-mods-scripts-needs-restart = Restart
+    .title = Restart { -brand-short-name } to finish turning its scripts off
 library-mods-preference-none = None
 library-mods-preference-none-item =
     .label = None
@@ -234,6 +251,34 @@ library-mods-remove-prompt-title = Remove this mod?
 #   $name (String) - The name of the mod
 library-mods-remove-prompt-message = “{ $name }” and its preferences will be removed.
 library-mods-remove-prompt-accept = Remove
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-remove-local-prompt-message = “{ $name }” will be removed from { -brand-short-name }. Its folder stays where it is.
+
+library-mods-scripts-prompt-title = Allow this mod to run scripts?
+# Variables:
+#   $name (String) - The name of the mod
+#   $state (String) - "on" when scripts are allowed in about:config, "off" otherwise
+library-mods-scripts-prompt-message =
+    “{ $name }” comes with scripts. Scripts can do anything { -brand-short-name } can, like reading the pages you visit, so only allow scripts you trust.
+    { $state ->
+        [on] { "" }
+       *[off] They stay off until zen.mods.scripts.enabled is turned on in about:config.
+    }
+library-mods-scripts-prompt-accept = Allow scripts
+
+library-mods-install-folder-title = Choose the mod’s folder
+library-mods-install-folder-invalid = That folder isn’t a mod
+library-mods-install-folder-invalid-description = It needs a theme.json with a name and a version, and a chrome.css or scripts.
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-installed = Added { $name }
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-reloaded = Reloaded { $name }
+# Variables:
+#   $name (String) - The name of the mod
+library-mods-reload-failed = Couldn’t reload { $name }
 
 library-mods-import-title = Import mods
 library-mods-export-title = Export mods
@@ -292,6 +337,8 @@ library-mods-disable-all =
     .label = Turn off all mods
 library-mods-enable-all =
     .label = Turn on mods
+library-mods-install-folder =
+    .label = Add mod from folder…
 library-mods-import =
     .label = Import…
 library-mods-export =

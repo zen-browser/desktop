@@ -301,6 +301,16 @@ add_task(async function test_search_and_problem_filter() {
   );
   is(rootValue(window, "--zen-test-mod-a"), '"v1"', "The mod applies again");
 
+  // Filters stay between visits; leave the section as it was.
+  section.querySelector(".zen-library-filter-button").click();
+  await section.updateComplete;
+  section
+    .querySelector('[data-l10n-id="library-mods-filter-error"]')
+    .closest(".zen-library-filter-chip")
+    .click();
+  section.querySelector(".zen-library-filter-done").click();
+  await waitForRows(section, [MOD_A, MOD_B], "Without the filter both show");
+
   await closeLibrary();
   await gZenModsManager.uninstallMod(MOD_A);
   await gZenModsManager.uninstallMod(MOD_B);
@@ -326,10 +336,9 @@ add_task(async function test_import_lists_mods_before_installing() {
   MockFilePicker.init(window.browsingContext);
   MockFilePicker.setFiles([file]);
   MockFilePicker.returnValue = MockFilePicker.returnOK;
-  registerCleanupFunction(async () => {
-    MockFilePicker.cleanup();
-    await IOUtils.remove(file.path, { ignoreAbsent: true });
-  });
+  registerCleanupFunction(() =>
+    IOUtils.remove(file.path, { ignoreAbsent: true })
+  );
 
   const importMods = customElements
     .get("zen-library-mods-section")
@@ -353,6 +362,78 @@ add_task(async function test_import_lists_mods_before_installing() {
   is(mods[MOD_B].enabled, false, "A mod exported turned off stays off");
   ok(!mods["not-in-the-store"], "Ids the store doesn't know are skipped");
 
+  MockFilePicker.cleanup();
   await gZenModsManager.uninstallMod(MOD_A);
   await gZenModsManager.uninstallMod(MOD_B);
+});
+
+add_task(async function test_adding_a_folder_with_scripts_asks_first() {
+  const folder = await IOUtils.createUniqueDirectory(
+    PathUtils.tempDir,
+    "zen-folder-mod"
+  );
+
+  await IOUtils.writeJSON(PathUtils.join(folder, "theme.json"), {
+    name: "Folder Mod",
+    version: "1.0.0",
+    scripts: ["main.mjs"],
+  });
+  await IOUtils.writeUTF8(
+    PathUtils.join(folder, "main.mjs"),
+    "export function init() {}"
+  );
+  registerCleanupFunction(() =>
+    IOUtils.remove(folder, { recursive: true, ignoreAbsent: true })
+  );
+
+  const directory = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+  const { MockFilePicker } = SpecialPowers;
+
+  directory.initWithPath(folder);
+  MockFilePicker.init(window.browsingContext);
+  MockFilePicker.setFiles([directory]);
+  MockFilePicker.returnValue = MockFilePicker.returnOK;
+
+  const addFromFolder = customElements
+    .get("zen-library-mods-section")
+    .tabMenu.find(
+      item => item.l10nId === "library-mods-install-folder"
+    ).command;
+  const installed = async () =>
+    Object.values(await gZenModsManager.getMods()).find(
+      mod => mod.path === folder
+    );
+
+  let answered = handleNextConfirm(1);
+
+  await Promise.all([addFromFolder(), answered]);
+
+  ok(!(await installed()), "Declining the scripts adds nothing");
+
+  answered = handleNextConfirm(0);
+  await Promise.all([addFromFolder(), answered]);
+
+  const mod = await installed();
+
+  ok(mod?.scriptsApproved, "Accepting adds the mod with its scripts allowed");
+
+  const section = await openModsSection();
+
+  await waitForRows(section, [mod.id], "The local mod is listed");
+
+  const row = rowFor(section, mod.id);
+
+  ok(
+    row.querySelector('[data-l10n-id="library-mods-badge-local"]'),
+    "It's marked as local"
+  );
+  is(
+    row.querySelector("[scripts]")?.getAttribute("scripts"),
+    "off",
+    "Its scripts show as off while scripts are off"
+  );
+
+  MockFilePicker.cleanup();
+  await closeLibrary();
+  await gZenModsManager.uninstallMod(mod.id);
 });

@@ -12,6 +12,10 @@
 #  define ZEN_MODS_FILENAME u"zen-themes.css"_ns
 #endif
 
+#ifndef ZEN_MODS_CONTENT_FILENAME
+#  define ZEN_MODS_CONTENT_FILENAME u"zen-themes-content.css"_ns
+#endif
+
 namespace zen {
 
 class ZenStyleSheetCache final : public nsISupports {
@@ -37,6 +41,23 @@ class ZenStyleSheetCache final : public nsISupports {
    */
   nsresult ReloadModsSheet();
 
+  /**
+   * @brief Get the mods' stylesheet for pages, chrome/zen-themes-content.css.
+   * Every process loads it through resource://zen-mods/, which the parent
+   * maps to the profile's chrome folder: content processes may read that
+   * folder, nothing else of the profile.
+   * @returns The sheet, or null if it can't be loaded yet.
+   */
+  auto GetModsContentSheet() -> StyleSheet*;
+
+  /**
+   * @brief Reload the mods' stylesheet for pages in this process and put it
+   * in every content document, where the old one was or before
+   * userContent.css.
+   * @returns NS_OK on success, or an error code if the file can't be loaded.
+   */
+  nsresult ReloadModsContentSheet();
+
   static auto Singleton() -> ZenStyleSheetCache*;
 
  private:
@@ -49,9 +70,18 @@ class ZenStyleSheetCache final : public nsISupports {
    */
   auto LoadSheetFile(nsIFile* aFile, mozilla::StyleOrigin aOrigin) -> void;
 
+  /**
+   * @brief Map resource://zen-mods/ to the profile's chrome folder, once, so
+   * content processes can load the mods' stylesheet for pages.
+   */
+  static auto RegisterModsSubstitution(nsIFile* aChromeDir) -> void;
+
+  auto LoadContentSheet() -> void;
+
   static mozilla::StaticRefPtr<ZenStyleSheetCache> gZenModsCache;
 
   RefPtr<StyleSheet> mModsSheet;
+  RefPtr<StyleSheet> mModsContentSheet;
 };
 
 }  // namespace zen

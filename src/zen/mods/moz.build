@@ -9,6 +9,8 @@ EXTRA_JS_MODULES.zen.mods += [
 ]
 
 FINAL_TARGET_FILES.actors += [
+    "actors/ZenModsContentChild.sys.mjs",
+    "actors/ZenModsContentParent.sys.mjs",
     "actors/ZenModsMarketplaceChild.sys.mjs",
     "actors/ZenModsMarketplaceParent.sys.mjs",
 ]

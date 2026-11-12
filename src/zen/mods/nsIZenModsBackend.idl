@@ -23,4 +23,11 @@ interface nsIZenModsBackend : nsISupports {
    * @returns void
    */
   void reloadModsStyles();
+
+  /**
+   * @brief Reload chrome/zen-themes-content.css in this process and apply
+   * it to every content document in it. The parent asks every process to.
+   * @returns void
+   */
+  void reloadModsContentStyles();
 };

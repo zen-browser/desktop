@@ -63,7 +63,7 @@ zen-library {
     flex-direction: row-reverse;
 
     & toolbarbutton:first-child {
-      rotate:180deg;
+      rotate: 180deg;
     }
   }
 }
@@ -75,7 +75,7 @@ zen-library[open] {
   -moz-window-dragging: drag;
 
   &:not([transitioning]) {
-    transition: width 0.3s cubic-bezier(.36,.06,0,.94);
+    transition: width 0.3s cubic-bezier(0.36, 0.06, 0, 0.94);
   }
 }
 
@@ -87,8 +87,7 @@ zen-library[transitioning] #zen-library-content {
   pointer-events: none;
 }
 
-zen-library:is([transitioning], [sizing])
-  :is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
+zen-library:is([transitioning], [sizing]) :is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
   scrollbar-width: none;
   overflow-x: hidden;
 }
@@ -317,13 +316,8 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
   border: 3px solid transparent;
   border-radius: var(--zen-border-radius-round);
   background:
-    conic-gradient(
-        var(--zen-accent-button-background) var(--zen-library-download-progress, 0%),
-        currentColor 0
-      )
-      border-box,
-    color-mix(in srgb, var(--zen-primary-color), var(--zen-library-download-badge-mix-color) 80%)
-      padding-box;
+    conic-gradient(var(--zen-accent-button-background) var(--zen-library-download-progress, 0%), currentColor 0) border-box,
+    color-mix(in srgb, var(--zen-primary-color), var(--zen-library-download-badge-mix-color) 80%) padding-box;
   box-shadow: var(--zen-box-shadow-glow);
   pointer-events: none;
 }
@@ -594,6 +588,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
 .zen-library-filter-button,
 .zen-library-filter-done,
 .zen-library-filter-chip,
+.zen-library-mods-panel-back,
 .zen-library-routing-form-buttons button {
   border: none;
   color: inherit;
@@ -880,7 +875,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   & h3 {
     margin: 0 0 var(--zen-space-6);
     /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
-  font-size: 0.93em;
+    font-size: 0.93em;
     font-weight: var(--font-weight-semibold);
     opacity: var(--zen-opacity-85);
   }
@@ -1461,9 +1456,49 @@ zen-library-mods-section[configuring] {
   }
 
   & .zen-library-mod-preferences {
+    box-sizing: border-box;
     max-height: var(--zen-library-mods-panel-height, 60vh);
+    /* Rows bring their own 8px, for the 16px the filters keep. */
+    padding-top: var(--zen-space-8);
     overflow-y: auto;
     scrollbar-width: thin;
+  }
+
+  & .zen-library-store-detail {
+    padding-top: var(--zen-space-16);
+  }
+}
+
+.zen-library-mods-panel-header {
+  justify-content: flex-start;
+
+  & h2 {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.zen-library-mods-panel-back {
+  display: grid;
+  place-items: center;
+  width: var(--zen-size-36);
+  height: var(--zen-size-36);
+  padding: 0;
+  border-radius: var(--zen-library-radius);
+  background: var(--zen-library-pill-bg);
+
+  & img {
+    width: var(--size-item-small);
+    height: var(--size-item-small);
+    -moz-context-properties: fill;
+    fill: currentColor;
+  }
+
+  &:dir(rtl) img {
+    scale: -1 1;
   }
 }
 
@@ -1589,11 +1624,7 @@ zen-library-mods-section[configuring] {
   --zen-toolbox-min-width: fit-content;
   --tab-min-width: var(--zen-library-space-width);
   --zen-toolbox-padding: var(--zen-min-toolbox-padding);
-  --zen-library-scroll-border: color-mix(
-    in srgb,
-    var(--toolbox-textcolor) 15%,
-    transparent
-  );
+  --zen-library-scroll-border: color-mix(in srgb, var(--toolbox-textcolor) 15%, transparent);
   border-block: 1px solid transparent;
   transition:
     border-top-color 0.15s ease,

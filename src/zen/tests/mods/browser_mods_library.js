@@ -240,7 +240,7 @@ add_task(async function test_preferences_apply_right_away() {
   picker.activateItem(picker.querySelector('[data-value="wide"]'));
   await hidden;
 
-  section.querySelector(".zen-library-filter-done").click();
+  section.querySelector(".zen-library-mods-panel-back").click();
   await section.updateComplete;
 
   ok(
@@ -868,7 +868,7 @@ add_task(async function test_browse_the_store() {
     "Removing from the details removes it"
   );
 
-  section.querySelector(".zen-library-filter-done").click();
+  section.querySelector(".zen-library-mods-panel-back").click();
   section
     .querySelector('.zen-library-mods-views [data-view="installed"]')
     .click();

@@ -1436,14 +1436,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
 
     return html`
-      <div class="zen-library-filter-header" ?inert=${!this.filtersOpen}>
-        <h2>${mod.name}</h2>
-        <button
-          class="zen-library-filter-done"
-          data-l10n-id="library-filter-done"
-          @click=${() => this.#closePanel()}
-        ></button>
-      </div>
+      ${this.#renderPanelHeader(mod.name)}
       <div class="zen-library-filter-panel">
         <div
           class="zen-library-filter-panel-inner zen-library-mod-preferences"
@@ -1865,6 +1858,29 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   }
 
   /**
+   * The panels a row opens go back to the list, the way a page does.
+   *
+   * @param {string} title
+   */
+  #renderPanelHeader(title) {
+    return html`
+      <div
+        class="zen-library-filter-header zen-library-mods-panel-header"
+        ?inert=${!this.filtersOpen}
+      >
+        <button
+          class="zen-library-mods-panel-back"
+          data-l10n-id="library-mods-panel-back"
+          @click=${() => this.#closePanel()}
+        >
+          <img src="chrome://browser/skin/zen-icons/back.svg" alt="" />
+        </button>
+        <h2>${title}</h2>
+      </div>
+    `;
+  }
+
+  /**
    * @param {object} entry - A store entry
    */
   #renderStoreDetail(entry) {
@@ -1872,14 +1888,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     const hasImage = lazy.gZenModsManager.isStoreUrl(entry.image);
 
     return html`
-      <div class="zen-library-filter-header" ?inert=${!this.filtersOpen}>
-        <h2>${entry.name}</h2>
-        <button
-          class="zen-library-filter-done"
-          data-l10n-id="library-filter-done"
-          @click=${() => this.#closePanel()}
-        ></button>
-      </div>
+      ${this.#renderPanelHeader(entry.name)}
       <div class="zen-library-filter-panel">
         <div
           class="zen-library-filter-panel-inner zen-library-mod-preferences zen-library-store-detail"

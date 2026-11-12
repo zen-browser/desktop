@@ -215,6 +215,8 @@ library-mods-store-retry = Try again
 library-mods-store-installed = Installed
 library-mods-store-install = Install
 library-mods-store-remove = Remove
+library-mods-panel-back =
+    .title = Back
 library-mods-store-homepage = Homepage
 # Variables:
 #   $date (String) - When the mod was last updated, as the store writes it, like 2025-01-26

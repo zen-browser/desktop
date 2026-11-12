@@ -166,6 +166,7 @@ zen-theme-disable-all-enabled =
 zen-theme-disable-all-disabled =
     .title = Enable all mods
 zen-mods-settings-description = Mods change how { -brand-short-name } looks. Install, configure and order them in the Library.
+zen-mods-settings-disclaimer = Mods are made by their authors, not by { -brand-short-name }. You install and run them at your own risk, so only install mods whose code you’ve reviewed.
 zen-mods-manage-in-library =
     .label = Manage mods in the Library
 pane-zen-marketplace-title = Zen Mods

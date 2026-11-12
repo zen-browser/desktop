@@ -1255,6 +1255,13 @@ zen-library-history-section {
   }
 }
 
+.zen-library-mods-disclaimer {
+  margin: 0 var(--zen-space-8) var(--zen-space-12);
+  font-size: var(--zen-font-size-12);
+  opacity: var(--zen-opacity-60);
+  text-wrap: pretty;
+}
+
 .zen-library-mods-view-tabs {
   flex: 1;
   display: grid;

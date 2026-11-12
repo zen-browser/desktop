@@ -10,9 +10,12 @@ support-files = [
   "store-broken/**",
   "store-untrusted/**",
   "store-v2/**",
+  "store_page.html",
 ]
 
 ["browser_mods_install.js"]
+
+["browser_mods_marketplace.js"]
 
 ["browser_mods_untrusted.js"]
 

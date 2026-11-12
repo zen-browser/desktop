@@ -9,6 +9,14 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenModsMarketplaceParent extends JSWindowActorParent {
+  /**
+   * The mods page in about:preferences asks on the user's behalf; anything
+   * else is a web page and only gets to request.
+   */
+  get #fromSettings() {
+    return this.manager.documentPrincipal.isSystemPrincipal;
+  }
+
   async receiveMessage(message) {
     switch (message.name) {
       case "ZenModsMarketplace:InstallMod": {
@@ -17,9 +25,13 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
         try {
           const mod = await lazy.gZenModsManager.fetchStoreMod(modId);
 
-          console.warn(`[ZenModsMarketplaceParent]: Installing mod ${mod.id}`);
+          if (this.#fromSettings || (await this.#confirmInstall(mod))) {
+            console.warn(
+              `[ZenModsMarketplaceParent]: Installing mod ${mod.id}`
+            );
 
-          await lazy.gZenModsManager.installMod(mod);
+            await lazy.gZenModsManager.installMod(mod);
+          }
         } catch (error) {
           console.error(
             `[ZenModsMarketplaceParent]: Could not install mod ${modId}:`,
@@ -57,6 +69,40 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
     }
 
     return undefined;
+  }
+
+  /**
+   * @param {object} mod - What the store published about the mod
+   * @returns {Promise<boolean>} Whether the user agreed to install it
+   */
+  async #confirmInstall(mod) {
+    const window = this.browsingContext.topChromeWindow;
+    const { prompt } = Services;
+    const [title, message, accept] = await window.document.l10n.formatValues([
+      { id: "zen-mods-install-prompt-title" },
+      {
+        id: "zen-mods-install-prompt-message",
+        args: { name: mod.name, author: mod.author ?? "" },
+      },
+      { id: "zen-mods-install-prompt-accept" },
+    ]);
+    const flags =
+      prompt.BUTTON_POS_0 * prompt.BUTTON_TITLE_IS_STRING +
+      prompt.BUTTON_POS_1 * prompt.BUTTON_TITLE_CANCEL;
+
+    return (
+      prompt.confirmEx(
+        window,
+        title,
+        message,
+        flags,
+        accept,
+        null,
+        null,
+        null,
+        {}
+      ) === 0
+    );
   }
 
   #notifyModChanged(modId) {

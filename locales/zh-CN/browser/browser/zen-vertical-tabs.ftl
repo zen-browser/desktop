@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = 两者都隐藏
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = 移动到文件夹…
+    .label = 移动到文件夹……
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = 新建文件夹
@@ -31,7 +31,7 @@ zen-scroll-to-selected-tab =
 sidebar-zen-expand = 
     .label = 展开侧边栏
 sidebar-zen-create-new = 
-    .label = 新建…
+    .label = 新建……
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

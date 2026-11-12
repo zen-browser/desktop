@@ -1245,14 +1245,28 @@ zen-library-history-section {
 }
 
 .zen-library-mods-views {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: var(--zen-space-6);
   /* In line with the search box above, whose padding is wider. */
   margin: 0 var(--zen-space-4) var(--zen-space-8);
 
   & .zen-library-filter-chip {
     justify-content: center;
+  }
+}
+
+.zen-library-mods-view-tabs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--zen-space-6);
+}
+
+.zen-library-mods-add {
+  padding-inline: var(--zen-space-9);
+
+  &[menu-open] {
+    background: var(--zen-library-pill-hover-bg);
   }
 }
 

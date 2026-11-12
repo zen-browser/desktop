@@ -573,6 +573,7 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
   #menuMod = null;
   #menuRow = null;
   #picker = null;
+  #addMenu = null;
   #pickerOnPick = null;
   #pickerAnchor = null;
   #panelTimer = null;
@@ -603,13 +604,14 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     this.#flushPreferences();
     this.#cancelPanelTimer();
 
-    for (const popup of [this.#menu, this.#picker]) {
+    for (const popup of [this.#menu, this.#picker, this.#addMenu]) {
       popup?.hidePopup();
       popup?.remove();
     }
 
     this.#menu = null;
     this.#picker = null;
+    this.#addMenu = null;
   }
 
   get searchPlaceholderL10nId() {
@@ -1726,22 +1728,60 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
   #renderViews() {
     return html`
-      <div class="zen-library-mods-views" role="tablist">
-        ${["installed", "store"].map(
-          view => html`
-            <button
-              class="zen-library-filter-chip"
-              role="tab"
-              aria-selected=${this.view === view}
-              ?active=${this.view === view}
-              data-view=${view}
-              data-l10n-id=${`library-mods-view-${view}`}
-              @click=${() => this.#showView(view)}
-            ></button>
-          `
-        )}
+      <div class="zen-library-mods-views">
+        <div class="zen-library-mods-view-tabs" role="tablist">
+          ${["installed", "store"].map(
+            view => html`
+              <button
+                class="zen-library-filter-chip"
+                role="tab"
+                aria-selected=${this.view === view}
+                ?active=${this.view === view}
+                data-view=${view}
+                data-l10n-id=${`library-mods-view-${view}`}
+                @click=${() => this.#showView(view)}
+              ></button>
+            `
+          )}
+        </div>
+        <button
+          class="zen-library-filter-chip zen-library-mods-add"
+          aria-haspopup="menu"
+          data-l10n-id="library-mods-add-button"
+          @click=${event => this.#openAddMenu(event.currentTarget)}
+        >
+          <img src="chrome://browser/skin/zen-icons/plus.svg" alt="" />
+        </button>
       </div>
     `;
+  }
+
+  /**
+   * Where mods come from besides the store, which has a view of its own.
+   *
+   * @param {Element} anchor - The add button
+   */
+  #openAddMenu(anchor) {
+    if (!this.#addMenu) {
+      const menu = window.MozXULElement.parseXULToFragment(`
+        <menupopup class="zen-library-mods-add-menu">
+          <menuitem data-l10n-id="library-mods-install-github"/>
+          <menuitem data-l10n-id="library-mods-install-folder"/>
+        </menupopup>
+      `).firstElementChild;
+      const [github, folder] = menu.children;
+
+      github.addEventListener("command", installFromGitHub);
+      folder.addEventListener("command", installFromFolder);
+      menu.addEventListener("popuphidden", () => {
+        menu.anchorNode?.removeAttribute("menu-open");
+      });
+      document.getElementById("mainPopupSet").appendChild(menu);
+      this.#addMenu = menu;
+    }
+
+    anchor.setAttribute("menu-open", "true");
+    this.#addMenu.openPopup(anchor, "after_end", 0, 0, false, false);
   }
 
   /**

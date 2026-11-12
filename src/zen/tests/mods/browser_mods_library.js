@@ -728,22 +728,35 @@ add_task(async function test_install_from_github() {
   await Promise.all([installFromGitHub(), answered]);
   ok(!(await installed()), "Declining installs nothing");
 
+  const section = await openModsSection();
+
+  section.querySelector(".zen-library-mods-add").click();
+
+  const addMenu = await TestUtils.waitForCondition(() => {
+    const menu = document.querySelector(".zen-library-mods-add-menu");
+
+    return menu?.state === "open" && menu;
+  }, "The add button opens a menu");
+
   answered = (async () => {
     await answerTextPrompt("https://github.com/zen-tests/sample");
     await handleNextConfirm(0);
   })();
-  await Promise.all([installFromGitHub(), answered]);
+  addMenu.activateItem(
+    addMenu.querySelector('[data-l10n-id="library-mods-install-github"]')
+  );
+  await answered;
 
-  let mod = await installed();
+  let mod = await TestUtils.waitForCondition(
+    installed,
+    "Accepting installs the mod"
+  );
 
-  ok(mod, "Accepting installs the mod");
   is(
     mod.approvedScriptsHash,
     mod.scriptsHash,
     "The prompt said it has scripts, so they're allowed"
   );
-
-  const section = await openModsSection();
 
   await waitForRows(section, [mod.id], "The mod is listed");
   ok(

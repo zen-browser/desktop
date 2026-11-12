@@ -620,16 +620,12 @@ add_task(async function test_mod_api() {
           command: () => state.shortcuts++,
         });
 
-        try {
-          zen.shortcut({
-            id: "taken",
-            key: "t",
-            modifiers: ["accel"],
-            command() {},
-          });
-        } catch (error) {
-          state.taken = error.message;
-        }
+        zen.shortcut({
+          id: "taken",
+          key: "t",
+          modifiers: ["accel"],
+          command() {},
+        });
 
         zen.onCleanup(() => (state.cleanedUp = true));
 
@@ -686,9 +682,11 @@ add_task(async function test_mod_api() {
     shiftKey: true,
   });
   is(state.shortcuts, 1, "Its shortcut runs its command");
+  const takenKey = document.getElementById(`zen-mod-${modId}-taken`);
+
   ok(
-    state.taken?.includes("is taken"),
-    "A shortcut Zen or Firefox already uses is refused"
+    takenKey && !takenKey.hasAttribute("key"),
+    "A shortcut whose keys Zen or Firefox uses is added without them"
   );
 
   await gZenWorkspaces.changeWorkspace(otherSpace);

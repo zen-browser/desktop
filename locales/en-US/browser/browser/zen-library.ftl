@@ -233,7 +233,6 @@ library-mods-byline = { $author } · { $version }
 library-mods-error-missing-files = Files missing, reinstall it
 library-mods-error-update-failed = Last update failed
 library-mods-error-script-failed = A script failed
-library-mods-error-page-styles-blocked = Its page styles load from the web, so they’re off
 library-mods-toggle =
     .aria-label = Turn on mod
 library-mods-configure-button =
@@ -307,6 +306,7 @@ library-mods-github-not-found-description = It needs a public repository with a 
 # Variables:
 #   $name (String) - The name of the mod
 library-mods-install-failed = Couldn’t install { $name }
+library-mods-install-remote-description = It loads styles, fonts or images from the web. Mods may only use their own files.
 
 library-mods-github-prompt-title = Install this mod from GitHub?
 # Variables:

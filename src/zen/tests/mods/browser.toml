@@ -10,6 +10,7 @@ support-files = [
   "redirect.sjs",
   "store/**",
   "store-broken/**",
+  "store-remote/**",
   "store-untrusted/**",
   "store-v2/**",
   "store_page.html",

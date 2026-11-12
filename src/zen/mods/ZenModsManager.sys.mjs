@@ -34,6 +34,26 @@ const NON_NAME_RE = /[^A-Za-z_-]+/g;
 // Preferences that only show text; a separator with a property is a toggle.
 const LABEL_TYPES = new Set(["text", "separator"]);
 
+// Where a mod's files live and whether its scripts may run is the
+// manager's to say, never the store's.
+const MANAGER_FIELDS = [
+  "source",
+  "path",
+  "scripts",
+  "scriptsApproved",
+  "scriptsHash",
+  "approvedScriptsHash",
+  "stylePath",
+  "preferencesPath",
+  "repo",
+  "ref",
+  "folder",
+  "sha",
+  "pendingUpdate",
+  "enabled",
+  "order",
+];
+
 const LOCAL_ID_PREFIX = "local-";
 const SCRIPT_HOST_PREFIX = "zen-mod-";
 const SCRIPT_FILE_RE = /\.m?js$/;
@@ -76,6 +96,20 @@ function sanitizeModName(name) {
   return `theme-${String(name ?? "")
     .replaceAll(WHITESPACE_RE, "-")
     .replaceAll(NON_NAME_RE, "")}`;
+}
+
+/**
+ * @param {object} mod - A validated store entry
+ * @returns {object} What the registry keeps of it
+ */
+function storeEntry(mod) {
+  const entry = { ...mod };
+
+  for (const key of MANAGER_FIELDS) {
+    delete entry[key];
+  }
+
+  return entry;
 }
 
 /**
@@ -1217,7 +1251,7 @@ class nsZenModsManager {
 
     const staging = await this.#stage(mod);
 
-    await this.#commit([{ mod, staging }]);
+    await this.#commit([{ mod: storeEntry(mod), staging }]);
   }
 
   /**
@@ -1388,7 +1422,10 @@ class nsZenModsManager {
           `[ZenMods]: Updating ${mod.name} (${mod.id}) from ${mod.version} to ${latest.version}.`
         );
 
-        staged.push({ mod: latest, staging: await this.#stage(latest) });
+        staged.push({
+          mod: storeEntry(latest),
+          staging: await this.#stage(latest),
+        });
       } catch (error) {
         console.error(
           `[ZenMods]: Could not update ${mod.name} (${mod.id}), keeping the installed version:`,

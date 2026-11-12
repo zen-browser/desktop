@@ -235,16 +235,30 @@ add_task(async function test_store_mods_never_run_scripts() {
   await SpecialPowers.pushPrefEnv({ set: [[SCRIPTS_PREF, true]] });
   await useStore("store");
 
+  const folder = await makeLocalMod();
   const mod = await gZenModsManager.fetchStoreMod(MOD_B);
 
-  mod.scripts = ["main.mjs"];
+  // A store entry that claims to be a local mod with its scripts allowed.
+  Object.assign(mod, {
+    scripts: ["main.mjs"],
+    source: "local",
+    path: folder,
+    scriptsApproved: true,
+  });
   await gZenModsManager.installMod(mod);
 
+  const installed = (await gZenModsManager.getMods())[MOD_B];
+
+  ok(
+    !installed.source && !installed.path && !installed.scriptsApproved,
+    "The registry takes none of the fields the manager owns from the store"
+  );
   is(
     gZenModsManager.getScriptsState(MOD_B),
     "none",
     "Scripts in a store entry are ignored"
   );
+  is(marker(), null, "Nothing runs");
   await Assert.rejects(
     gZenModsManager.approveScripts(MOD_B),
     /not a local mod/,

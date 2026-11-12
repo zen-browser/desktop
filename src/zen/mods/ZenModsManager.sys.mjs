@@ -38,6 +38,16 @@ const LOCAL_ID_PREFIX = "local-";
 const SCRIPT_HOST_PREFIX = "zen-mod-";
 const SCRIPT_FILE_RE = /\.m?js$/;
 const MAX_SCRIPT_FILES = 200;
+const SCRIPT_SOURCES = new Set(["local"]);
+const STYLE_FILES = ["chrome.css", "userChrome.css"];
+const MAIN_WINDOW_URL = "chrome://browser/content/browser.xhtml";
+const DEFAULT_LOAD_ORDER = 10;
+const SCRIPT_KINDS = [
+  [".uc.mjs", "uc.mjs"],
+  [".uc.js", "uc.js"],
+  [".sys.mjs", "module"],
+];
+const REGEXP_SPECIAL_RE = /[.+?^${}()|[\]\\]/g;
 const MAX_LOCAL_FILES = 1000;
 const LOCAL_POLL_MS = 1000;
 
@@ -118,18 +128,18 @@ async function listModFiles(folder, match, limit) {
 }
 
 /**
- * Splits a script path from `theme.json` into the folders and file it goes
- * through, as long as it stays inside the mod's folder.
+ * Splits a path from `theme.json` into the folders and file it goes through,
+ * as long as it stays inside the mod's folder.
  *
- * @param {*} script - A path like "src/main.mjs"
+ * @param {*} path - A path like "src/main.mjs"
  * @returns {string[]|null} Its parts, or null if it's not a valid path
  */
-function scriptParts(script) {
-  if (typeof script !== "string" || !script.endsWith(".mjs")) {
+function pathParts(path) {
+  if (typeof path !== "string" || !path) {
     return null;
   }
 
-  const parts = script.split("/");
+  const parts = path.split("/");
   const isValid = parts.every(
     part => part && part !== "." && part !== ".." && !/[\\:]/.test(part)
   );
@@ -138,13 +148,166 @@ function scriptParts(script) {
 }
 
 /**
+ * @param {*} value
+ * @returns {string[]|null} The strings in a list, or null if it's no list
+ */
+function stringList(value) {
+  return Array.isArray(value)
+    ? value.filter(item => typeof item === "string")
+    : null;
+}
+
+/**
+ * Turns the `scripts` of a `theme.json` into one list. A list of paths is
+ * Zen's own format: ES modules that export `init(window)` and
+ * `uninit(window)`. A map of paths is the userChrome.js format other mod
+ * managers use, where folders nest as keys ending in "/": `.uc.js` and
+ * `.uc.mjs` files run in each document their `include` patterns match, and
+ * `.sys.mjs` files run once.
+ *
+ * @param {*} scripts
+ * @returns {{path: string, kind: "module"|"uc.js"|"uc.mjs", include?: string[], exclude?: string[], loadOrder?: number}[]}
+ */
+function normalizeScripts(scripts) {
+  if (scripts === undefined || scripts === null) {
+    return [];
+  }
+
+  if (Array.isArray(scripts)) {
+    return scripts.map(path => {
+      if (!pathParts(path) || !path.endsWith(".mjs")) {
+        throw new Error(`[ZenMods]: Invalid script path: ${path}`);
+      }
+
+      return { path, kind: "module" };
+    });
+  }
+
+  if (typeof scripts !== "object") {
+    throw new Error(
+      '[ZenMods]: "scripts" in theme.json must be a list or a map.'
+    );
+  }
+
+  const normalized = [];
+  const visit = (entries, prefix) => {
+    for (const [key, options] of Object.entries(entries)) {
+      const path = `${prefix}${key}`;
+
+      if (key.endsWith("/") && options && typeof options === "object") {
+        visit(options, path);
+        continue;
+      }
+
+      const kind = SCRIPT_KINDS.find(([extension]) =>
+        path.endsWith(extension)
+      )?.[1];
+
+      if (!kind || !pathParts(path)) {
+        console.warn(`[ZenMods]: Unsupported script ${path}, skipping.`);
+        continue;
+      }
+
+      normalized.push({
+        path,
+        kind,
+        include: stringList(options?.include) ?? ["main"],
+        exclude: stringList(options?.exclude) ?? [],
+        loadOrder: Number.isInteger(options?.loadOrder)
+          ? options.loadOrder
+          : DEFAULT_LOAD_ORDER,
+      });
+    }
+  };
+
+  visit(scripts, "");
+
+  return normalized;
+}
+
+/**
+ * Reads what a `theme.json` declares, in Zen's format or in the one other
+ * mod managers use, where `style` is `{chrome, content}` and `scripts` is a
+ * map.
+ *
+ * @param {*} manifest
+ * @returns {object}
+ */
+function parseManifest(manifest) {
+  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) {
+    throw new Error("[ZenMods]: theme.json is not an object.");
+  }
+
+  const text = key => (typeof manifest[key] === "string" ? manifest[key] : "");
+  const style =
+    manifest.style && typeof manifest.style === "object"
+      ? manifest.style.chrome
+      : manifest.style;
+
+  if (manifest.style?.content) {
+    console.warn(
+      "[ZenMods]: Styles for web pages (userContent) aren't supported, skipping."
+    );
+  }
+
+  return {
+    name: text("name"),
+    version: text("version"),
+    author: text("author"),
+    description: text("description"),
+    homepage: text("homepage"),
+    stylePath: pathParts(style) ? style : null,
+    preferencesPath: pathParts(manifest.preferences)
+      ? manifest.preferences
+      : "preferences.json",
+    scripts: normalizeScripts(manifest.scripts),
+  };
+}
+
+/**
+ * @param {string|null} declared - The style a `theme.json` names, if any
+ * @param {(path: string) => Promise<boolean>} exists
+ * @returns {Promise<string|null>} The mod's style file, if it has one
+ */
+async function findStyle(declared, exists) {
+  for (const candidate of declared ? [declared] : STYLE_FILES) {
+    if (await exists(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * @param {string[]} patterns - URLs where `*` matches anything, or "main"
+ * for the browser window
+ * @returns {RegExp|null}
+ */
+function urlPatterns(patterns) {
+  const sources = patterns.map(pattern =>
+    (pattern === "main" ? MAIN_WINDOW_URL : pattern)
+      .replace(REGEXP_SPECIAL_RE, "\\$&")
+      .replaceAll("*", ".*")
+  );
+
+  return sources.length ? new RegExp(`^(?:${sources.join("|")})$`) : null;
+}
+
+/**
  * @param {object} mod - An entry of the registry
- * @returns {string[]} The scripts the mod may run: only local mods run any
+ * @returns {object[]} The scripts the mod may run, as `normalizeScripts`
+ * lists them. Only mods from outside the store run any.
  */
 function declaredScripts(mod) {
-  return mod?.source === "local" && Array.isArray(mod.scripts)
-    ? mod.scripts
-    : [];
+  if (!SCRIPT_SOURCES.has(mod?.source) || !Array.isArray(mod.scripts)) {
+    return [];
+  }
+
+  // Mods added before scripts had options list plain paths.
+  return mod.scripts.map(script =>
+    typeof script === "string" ? { path: script, kind: "module" } : script
+  );
 }
 
 /**
@@ -203,6 +366,19 @@ class nsZenModsManager {
   /** @type {Set<string>} Mods turned off whose scripts can't be undone */
   #needsRestart = new Set();
 
+  /**
+   * The resource hosts whose `.uc.js` or `.uc.mjs` scripts ran in some
+   * document: nothing takes those back but a restart.
+   *
+   * @type {Map<string, Set<string>>}
+   */
+  #ranHosts = new Map();
+
+  /** @type {WeakMap<Document, Set<string>>} The scripts each document ran */
+  #documentScripts = new WeakMap();
+
+  #isWatchingDocuments = false;
+
   /** @type {Set<object>} Who asked to reload local mods when they change */
   #localWatchers = new Set();
 
@@ -257,14 +433,32 @@ class nsZenModsManager {
   }
 
   /**
+   * @param {object} mod - An entry of the registry
+   * @returns {string|null} The mod's style file, if it has one. Store mods
+   * always keep it in `chrome.css`.
+   */
+  #styleFile(mod) {
+    const relative = mod.stylePath === undefined ? "chrome.css" : mod.stylePath;
+
+    return (
+      relative &&
+      PathUtils.join(this.getModFolder(mod.id), ...pathParts(relative))
+    );
+  }
+
+  /**
    * @param {string} modId
    * @returns {"none"|"needs-approval"|"off"|"running"|"needs-restart"} What
    * the mod's scripts are doing
    */
   getScriptsState(modId) {
     const mod = this.#mods[modId];
+    const host = this.#scripts.get(modId)?.host;
+    const ranOutdated = [...(this.#ranHosts.get(modId) ?? [])].some(
+      ranHost => ranHost !== host
+    );
 
-    if (this.#needsRestart.has(modId)) {
+    if (this.#needsRestart.has(modId) || ranOutdated) {
       return "needs-restart";
     }
 
@@ -394,56 +588,33 @@ class nsZenModsManager {
    * @returns {Promise<object>} What the mod declares
    */
   async readLocalMod(path) {
-    const manifest = await IOUtils.readJSON(PathUtils.join(path, "theme.json"));
-
-    if (!manifest || typeof manifest !== "object") {
-      throw new Error("[ZenMods]: theme.json is not an object.");
-    }
+    const manifest = parseManifest(
+      await IOUtils.readJSON(PathUtils.join(path, "theme.json"))
+    );
+    const exists = relative =>
+      IOUtils.exists(PathUtils.join(path, ...pathParts(relative)));
 
     for (const key of ["name", "version"]) {
-      if (typeof manifest[key] !== "string" || !manifest[key]) {
+      if (!manifest[key]) {
         throw new Error(`[ZenMods]: theme.json has no valid "${key}".`);
       }
     }
 
-    const scripts = manifest.scripts ?? [];
-
-    if (!Array.isArray(scripts)) {
-      throw new Error('[ZenMods]: "scripts" in theme.json must be a list.');
-    }
-
-    for (const script of scripts) {
-      const parts = scriptParts(script);
-
-      if (!parts) {
-        throw new Error(`[ZenMods]: Invalid script path: ${script}`);
-      }
-
-      if (!(await IOUtils.exists(PathUtils.join(path, ...parts)))) {
+    for (const { path: script } of manifest.scripts) {
+      if (!(await exists(script))) {
         throw new Error(`[ZenMods]: Script ${script} is missing.`);
       }
     }
 
-    const hasStyles = await IOUtils.exists(PathUtils.join(path, "chrome.css"));
+    manifest.stylePath = await findStyle(manifest.stylePath, exists);
 
-    if (!hasStyles && !scripts.length) {
-      throw new Error("[ZenMods]: The mod has neither chrome.css nor scripts.");
+    if (!manifest.stylePath && !manifest.scripts.length) {
+      throw new Error("[ZenMods]: The mod has neither styles nor scripts.");
     }
 
-    const text = key =>
-      typeof manifest[key] === "string" ? manifest[key] : "";
+    manifest.preferences = await exists(manifest.preferencesPath);
 
-    return {
-      name: manifest.name,
-      version: manifest.version,
-      author: text("author"),
-      description: text("description"),
-      homepage: text("homepage"),
-      scripts,
-      preferences: await IOUtils.exists(
-        PathUtils.join(path, "preferences.json")
-      ),
-    };
+    return manifest;
   }
 
   /**
@@ -697,9 +868,9 @@ class nsZenModsManager {
       : [];
     const wantedIds = new Set(wanted.map(mod => mod.id));
 
-    for (const [modId, { host }] of this.#scripts) {
+    for (const [modId, loaded] of this.#scripts) {
       if (!wantedIds.has(modId)) {
-        lazy.resProtocol.setSubstitution(host, null);
+        this.#forgetScripts(modId, loaded);
         this.#scripts.delete(modId);
       }
     }
@@ -727,21 +898,34 @@ class nsZenModsManager {
           Services.io.newFileURI(directory)
         );
 
-        const modules = declaredScripts(mod).map(script =>
-          ChromeUtils.importESModule(
-            `resource://${host}/${scriptParts(script).map(encodeURIComponent).join("/")}`
-          )
-        );
+        const scripts = declaredScripts(mod).map(script => ({
+          ...script,
+          url: `resource://${host}/${pathParts(script.path).map(encodeURIComponent).join("/")}`,
+        }));
+        const modules = scripts
+          .filter(({ kind }) => kind === "module")
+          .map(({ url }) => ChromeUtils.importESModule(url));
+        const documentScripts = scripts
+          .filter(({ kind }) => kind !== "module")
+          .map(script => ({
+            ...script,
+            include: urlPatterns(script.include),
+            exclude: urlPatterns(script.exclude),
+          }));
 
         if (loaded) {
-          lazy.resProtocol.setSubstitution(loaded.host, null);
+          this.#forgetScripts(mod.id, loaded);
         }
 
-        this.#scripts.set(mod.id, { hash, host, modules });
+        this.#scripts.set(mod.id, { hash, host, modules, documentScripts });
         this.#needsRestart.delete(mod.id);
 
         if (this.#errors.get(mod.id)?.type === "script-failed") {
           this.#errors.delete(mod.id);
+        }
+
+        if (documentScripts.length) {
+          this.#runInOpenDocuments();
         }
       } catch (error) {
         console.error(
@@ -759,6 +943,135 @@ class nsZenModsManager {
           message: String(error?.message ?? error),
         });
       }
+    }
+  }
+
+  /**
+   * Stops a mod's scripts from reaching more documents. The resource host
+   * stays while code that ran from it may still import its files.
+   *
+   * @param {string} modId
+   * @param {{host: string}} loaded
+   */
+  #forgetScripts(modId, { host }) {
+    if (!this.#ranHosts.get(modId)?.has(host)) {
+      lazy.resProtocol.setSubstitution(host, null);
+    }
+  }
+
+  /**
+   * @param {string} url - A document's URL
+   * @returns {{modId: string, host: string, script: object}[]} The `.uc.js`
+   * and `.uc.mjs` scripts meant for it, in the order they load
+   */
+  #documentScriptsFor(url) {
+    const matching = [];
+
+    for (const [modId, { host, documentScripts }] of this.#scripts) {
+      for (const script of documentScripts) {
+        if (script.include?.test(url) && !script.exclude?.test(url)) {
+          matching.push({ modId, host, script });
+        }
+      }
+    }
+
+    return matching.sort(
+      (first, second) => first.script.loadOrder - second.script.loadOrder
+    );
+  }
+
+  /**
+   * Runs `.uc.js` and `.uc.mjs` scripts the way userChrome.js loaders do:
+   * once a document they're meant for is parsed, classic scripts in its
+   * global and modules in its own module map. A script that throws can't
+   * stop the others.
+   *
+   * @param {Document} doc
+   */
+  #runDocumentScripts(doc) {
+    let ran = this.#documentScripts.get(doc);
+    let failed = false;
+
+    if (!ran) {
+      ran = new Set();
+      this.#documentScripts.set(doc, ran);
+    }
+
+    for (const { modId, host, script } of this.#documentScriptsFor(doc.URL)) {
+      if (ran.has(script.url)) {
+        continue;
+      }
+
+      ran.add(script.url);
+
+      if (!this.#ranHosts.has(modId)) {
+        this.#ranHosts.set(modId, new Set());
+      }
+
+      this.#ranHosts.get(modId).add(host);
+
+      try {
+        if (script.kind === "uc.js") {
+          Services.scriptloader.loadSubScriptWithOptions(script.url, {
+            target: doc.documentGlobal,
+            ignoreCache: true,
+          });
+        } else {
+          doc.documentGlobal.ChromeUtils.importESModule(script.url, {
+            global: "current",
+          });
+        }
+      } catch (error) {
+        console.error(
+          `[ZenMods]: ${script.path} of ${modId} failed in ${doc.URL}:`,
+          error
+        );
+
+        failed = true;
+        this.#errors.set(modId, {
+          type: "script-failed",
+          message: String(error?.message ?? error),
+        });
+      }
+    }
+
+    if (failed) {
+      Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
+    }
+  }
+
+  /**
+   * Runs document scripts in the documents already open, and in every one
+   * parsed from now on.
+   */
+  #runInOpenDocuments() {
+    const runWhenParsed = doc => {
+      if (doc.readyState === "loading") {
+        doc.addEventListener(
+          "DOMContentLoaded",
+          () => this.#runDocumentScripts(doc),
+          { once: true }
+        );
+      } else {
+        this.#runDocumentScripts(doc);
+      }
+    };
+
+    if (!this.#isWatchingDocuments) {
+      this.#isWatchingDocuments = true;
+      Services.obs.addObserver(doc => {
+        if (
+          doc.nodePrincipal?.isSystemPrincipal &&
+          doc.URL !== "about:blank" &&
+          this.#documentScriptsFor(doc.URL).length
+        ) {
+          runWhenParsed(doc);
+        }
+      }, "document-element-inserted");
+    }
+
+    for (const win of Services.wm.getEnumerator(null)) {
+      runWhenParsed(win.document);
     }
   }
 
@@ -815,7 +1128,10 @@ class nsZenModsManager {
 
     try {
       preferences = await IOUtils.readJSON(
-        PathUtils.join(this.getModFolder(mod.id), "preferences.json")
+        PathUtils.join(
+          this.getModFolder(mod.id),
+          ...pathParts(mod.preferencesPath ?? "preferences.json")
+        )
       );
     } catch (error) {
       if (!isNotFound(error)) {
@@ -1381,8 +1697,8 @@ class nsZenModsManager {
     let content = STYLESHEET_HEADER;
 
     for (const mod of mods) {
-      const stylePath = PathUtils.join(this.getModFolder(mod.id), "chrome.css");
-      const hasStyles = await IOUtils.exists(stylePath);
+      const stylePath = this.#styleFile(mod);
+      const hasStyles = Boolean(stylePath) && (await IOUtils.exists(stylePath));
 
       if (!hasStyles && !declaredScripts(mod).length) {
         console.warn(
@@ -1403,7 +1719,12 @@ class nsZenModsManager {
         const url =
           mod.source === "local"
             ? PathUtils.toFileURI(stylePath)
-            : `zen-themes/${encodeURIComponent(mod.id)}/chrome.css`;
+            : `zen-themes/${[
+                mod.id,
+                ...pathParts(mod.stylePath ?? "chrome.css"),
+              ]
+                .map(encodeURIComponent)
+                .join("/")}`;
 
         content += `@import url("${url}");\n`;
       }

@@ -462,6 +462,77 @@ add_task(async function test_userchrome_scripts() {
   delete window.zenTestUcModuleApi;
 });
 
+add_task(async function test_mod_shortcuts_in_about_keyboard() {
+  const { CustomKeys } = ChromeUtils.importESModule(
+    "moz-src:///browser/components/customkeys/CustomKeys.sys.mjs"
+  );
+  const { CustomKeysParent } = ChromeUtils.importESModule(
+    "moz-src:///browser/components/customkeys/CustomKeysParent.sys.mjs"
+  );
+  const { ZenKeyboardShortcuts } = ChromeUtils.importESModule(
+    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs"
+  );
+  const actor = { browsingContext: { topChromeWindow: window } };
+
+  actor.getKeyData = id =>
+    CustomKeysParent.prototype.getKeyData.call(actor, id);
+  await SpecialPowers.pushPrefEnv({ set: [[SCRIPTS_PREF, true]] });
+
+  const folder = await makeLocalMod({
+    script: `
+      export function init(win, zen) {
+        zen.shortcut({
+          id: "count",
+          key: "j",
+          modifiers: ["accel", "alt", "shift"],
+          label: "Count",
+          command: () => (win.zenTestCount = (win.zenTestCount ?? 0) + 1),
+        });
+      }
+
+      export function uninit() {}
+    `,
+  });
+  const modId = await gZenModsManager.installLocalMod(folder, {
+    scriptsApproved: true,
+  });
+  const keyId = `zen-mod-${modId}-count`;
+
+  await TestUtils.waitForCondition(
+    () => document.getElementById(keyId),
+    "The mod adds its shortcut"
+  );
+
+  const keys = await ZenKeyboardShortcuts.addKeys(actor, {});
+
+  is(
+    Object.values(keys).find(category => category[keyId])?.[keyId].title,
+    "Local Mod: Count",
+    "about:keyboard lists it under the mod's name"
+  );
+
+  CustomKeys.changeKey(keyId, { modifiers: "accel,alt,shift", key: "K" });
+  registerCleanupFunction(() => CustomKeys.resetKey(keyId));
+  await gZenModsManager.setModEnabled(modId, false);
+  await gZenModsManager.setModEnabled(modId, true);
+  await TestUtils.waitForCondition(
+    () => document.getElementById(keyId)?.getAttribute("key") === "K",
+    "The keys the user chose stay when the mod starts again"
+  );
+
+  gURLBar.focus();
+  EventUtils.synthesizeKey("k", {
+    accelKey: true,
+    altKey: true,
+    shiftKey: true,
+  });
+  is(window.zenTestCount, 1, "And run it");
+
+  CustomKeys.resetKey(keyId);
+  await gZenModsManager.uninstallMod(modId);
+  delete window.zenTestCount;
+});
+
 add_task(async function test_mod_api() {
   await SpecialPowers.pushPrefEnv({ set: [[SCRIPTS_PREF, true]] });
 

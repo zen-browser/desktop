@@ -200,6 +200,7 @@ zenCKSOption-group-zen-workspace = Spaces
 zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Split View
 zenCKSOption-group-zen-layout = Layout
+zenCKSOption-group-zen-mods = Mods
 
 zen-text-action-copy-url-shortcut = Copy current URL
 zen-text-action-copy-url-markdown-shortcut = Copy current URL as Markdown

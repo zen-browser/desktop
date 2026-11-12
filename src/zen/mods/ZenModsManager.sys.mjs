@@ -549,14 +549,20 @@ async function hasRemoteStyles(folder, entry) {
       const target =
         url === null ? null : URL.parse(url, `${SHEET_BASE}${relative}`);
 
-      if (!target || !LOCAL_PROTOCOLS.has(target.protocol)) {
+      const isInMod =
+        target?.protocol === "resource:" && target.host === "zen-mod";
+
+      // Imports bring more CSS: only the mod's own, which is checked too. A
+      // data: sheet, say, would come in unchecked.
+      if (!target || (isImport && !isInMod)) {
         return true;
       }
 
-      const isInMod =
-        target.protocol === "resource:" && target.host === "zen-mod";
+      if (!LOCAL_PROTOCOLS.has(target.protocol)) {
+        return true;
+      }
 
-      if (isImport && isInMod) {
+      if (isImport) {
         try {
           queue.push(decodeURIComponent(target.pathname.slice(1)));
         } catch {

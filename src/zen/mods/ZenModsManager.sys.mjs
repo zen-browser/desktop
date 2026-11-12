@@ -96,7 +96,11 @@ const URL_FUNCTIONS = new Set([
   "cross-fade",
   "-moz-image-rect",
 ]);
-const NETWORK_PROTOCOLS = new Set(["http:", "https:", "ftp:", "ws:", "wss:"]);
+// What a page sheet may load: nothing that can fetch on its behalf.
+const LOCAL_PROTOCOLS = new Set(["data:", "chrome:", "resource:", "moz-icon:"]);
+// Values only known once the page applies them.
+const DEFERRED_FUNCTIONS = new Set(["var", "env", "attr"]);
+const CHARSET_RE = /^@charset "([^"]*)";/;
 const CLOSING_TOKENS = new Set([
   "CloseParenthesis",
   "CloseSquareBracket",
@@ -418,8 +422,8 @@ async function findStyle(declared, exists) {
  *
  * @param {string} text
  * @param {Window} win - Where the lexer lives
- * @returns {{url: string|null, isImport: boolean}[]} A null url is one the
- * lexer couldn't read
+ * @returns {{url: string|null, isImport: boolean}[]} A null url is one that
+ * can't be known here: unreadable, or given by var(), env() or attr()
  */
 function cssUrls(text, win) {
   const parser = new win.InspectorCSSParser(text);
@@ -440,7 +444,17 @@ function cssUrls(text, win) {
       }
 
       case "Function": {
-        blocks.push(token.value.toLowerCase());
+        const name = token.value.toLowerCase();
+
+        // A URL that comes from elsewhere can't be checked here.
+        if (
+          DEFERRED_FUNCTIONS.has(name) &&
+          blocks.some(block => URL_FUNCTIONS.has(block))
+        ) {
+          urls.push({ url: null, isImport });
+        }
+
+        blocks.push(name);
         break;
       }
 
@@ -517,11 +531,25 @@ async function hasRemoteStyles(folder, entry) {
       return true;
     }
 
+    // Gecko reads a sheet that names another encoding with it, where a
+    // string may end somewhere else than it does here.
+    const charset = text.match(CHARSET_RE)?.[1];
+
+    if (charset) {
+      try {
+        if (new TextDecoder(charset).encoding !== "utf-8") {
+          return true;
+        }
+      } catch {
+        // Gecko ignores labels it doesn't know, like this does.
+      }
+    }
+
     for (const { url, isImport } of cssUrls(text, win)) {
       const target =
         url === null ? null : URL.parse(url, `${SHEET_BASE}${relative}`);
 
-      if (!target || NETWORK_PROTOCOLS.has(target.protocol)) {
+      if (!target || !LOCAL_PROTOCOLS.has(target.protocol)) {
         return true;
       }
 

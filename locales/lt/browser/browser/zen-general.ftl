@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Pasirinktinė spalva
 zen-copy-current-url-confirmation = Nukopijuotas dabartinis URL.
 zen-copy-current-url-as-markdown-confirmation = Nukopijuotas dabartinis URL kaip ženklinimas.
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Copied { $count } URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Copied { $count } URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Atšaukti
 zen-general-confirm = 

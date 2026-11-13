@@ -10,6 +10,8 @@ support-files = [
 
 ["browser_basic_workspaces.js"]
 
+["browser_bookmark_sidebar_drop.js"]
+
 ["browser_bookmark_workspace_storage.js"]
 
 ["browser_close_all_unpinned_tabs_warning.js"]

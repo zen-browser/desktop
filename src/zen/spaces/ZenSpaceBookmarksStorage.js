@@ -192,20 +192,135 @@ window.ZenWorkspaceBookmarksStorage = {
   async getBookmarkGuidsByWorkspace() {
     await this.promiseInitialized;
     const db = await this.lazy.PlacesUtils.promiseDBConnection();
+    // Oldest assignment first, so the order in a Space is the order of pinning.
     const rows = await db.execute(`
-      SELECT workspace_uuid, GROUP_CONCAT(bookmark_guid) as bookmark_guids
+      SELECT workspace_uuid, bookmark_guid
       FROM zen_bookmarks_workspaces
-      GROUP BY workspace_uuid
+      ORDER BY created_at, id
     `);
 
     const result = {};
     for (const row of rows) {
       const workspaceUuid = row.getResultByName("workspace_uuid");
-      const bookmarkGuids = row.getResultByName("bookmark_guids");
-      result[workspaceUuid] = bookmarkGuids ? bookmarkGuids.split(",") : [];
+      (result[workspaceUuid] ??= []).push(row.getResultByName("bookmark_guid"));
     }
 
     return result;
+  },
+
+  /**
+   * Assign bookmarks to a workspace. Bookmarks that are already assigned are
+   * left alone and do not count as a change.
+   *
+   * @param {string[]} bookmarkGuids - The bookmarks to assign.
+   * @param {string} workspaceUuid - The target workspace.
+   * @returns {Promise<string[]>} The GUIDs that were newly assigned.
+   */
+  async addBookmarksToWorkspace(bookmarkGuids, workspaceUuid) {
+    await this.promiseInitialized;
+    const added = [];
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      "ZenWorkspaceBookmarksStorage.addBookmarksToWorkspace",
+      async db => {
+        await db.executeTransaction(async () => {
+          const now = Date.now();
+          for (const guid of new Set(bookmarkGuids)) {
+            // Skip GUIDs that are not bookmarks (any more), the foreign key
+            // would reject them and abort the whole transaction.
+            const exists = await db.execute(
+              `SELECT 1 FROM moz_bookmarks WHERE guid = :guid AND type = :type`,
+              { guid, type: this.lazy.PlacesUtils.bookmarks.TYPE_BOOKMARK }
+            );
+            if (!exists.length) {
+              continue;
+            }
+            const assigned = await db.execute(
+              `SELECT 1 FROM zen_bookmarks_workspaces
+               WHERE bookmark_guid = :guid AND workspace_uuid = :uuid`,
+              { guid, uuid: workspaceUuid }
+            );
+            if (assigned.length) {
+              continue;
+            }
+            await db.execute(
+              `INSERT INTO zen_bookmarks_workspaces
+                 (bookmark_guid, workspace_uuid, created_at, updated_at)
+               VALUES (:guid, :uuid, :now, :now)`,
+              { guid, uuid: workspaceUuid, now }
+            );
+            await this._recordChange(db, guid, workspaceUuid, "added");
+            added.push(guid);
+          }
+        });
+      }
+    );
+    if (added.length) {
+      this._notifyUpdated(added, workspaceUuid);
+    }
+    return added;
+  },
+
+  /**
+   * Remove the assignment of a bookmark to a workspace. The bookmark itself
+   * is not touched.
+   *
+   * @param {string} bookmarkGuid - The bookmark to unassign.
+   * @param {string} workspaceUuid - The workspace to remove it from.
+   * @returns {Promise<boolean>} Whether an assignment was removed.
+   */
+  async removeBookmarkFromWorkspace(bookmarkGuid, workspaceUuid) {
+    await this.promiseInitialized;
+    let removed = false;
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      "ZenWorkspaceBookmarksStorage.removeBookmarkFromWorkspace",
+      async db => {
+        await db.executeTransaction(async () => {
+          const assigned = await db.execute(
+            `SELECT 1 FROM zen_bookmarks_workspaces
+             WHERE bookmark_guid = :guid AND workspace_uuid = :uuid`,
+            { guid: bookmarkGuid, uuid: workspaceUuid }
+          );
+          if (!assigned.length) {
+            return;
+          }
+          await db.execute(
+            `DELETE FROM zen_bookmarks_workspaces
+             WHERE bookmark_guid = :guid AND workspace_uuid = :uuid`,
+            { guid: bookmarkGuid, uuid: workspaceUuid }
+          );
+          await this._recordChange(db, bookmarkGuid, workspaceUuid, "removed");
+          removed = true;
+        });
+      }
+    );
+    if (removed) {
+      this._notifyUpdated([bookmarkGuid], workspaceUuid);
+    }
+    return removed;
+  },
+
+  async _recordChange(db, bookmarkGuid, workspaceUuid, changeType) {
+    await db.execute(
+      `INSERT OR REPLACE INTO zen_bookmarks_workspaces_changes
+         (bookmark_guid, workspace_uuid, change_type, timestamp)
+       VALUES (:guid, :uuid, :type, :timestamp)`,
+      {
+        guid: bookmarkGuid,
+        uuid: workspaceUuid,
+        type: changeType,
+        timestamp: Math.floor(Date.now() / 1000),
+      }
+    );
+    await this.updateLastChangeTimestamp(db);
+  },
+
+  _notifyUpdated(bookmarkGuids, workspaceUuid) {
+    // Same topic the Edit Bookmark dialog uses; every window listens to it.
+    Services.obs.notifyObservers(
+      null,
+      "workspace-bookmarks-updated",
+      JSON.stringify({ bookmarkGuids, workspaces: [workspaceUuid] })
+    );
   },
 
   /**

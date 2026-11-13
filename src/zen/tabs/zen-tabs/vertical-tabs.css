@@ -541,7 +541,7 @@ zen-library {
   .tab-label {
     transform: translateY(-6px);
   }
-  
+
   .zen-tab-sublabel {
     opacity: var(--zen-opacity-60);
     transform: translateY(-6px);
@@ -693,11 +693,11 @@ zen-library {
           .tab-label {
             transform: translateY(-6px);
           }
-          
+
           .zen-tab-sublabel {
             opacity: var(--zen-opacity-60);
             transform: translateY(-6px);
-          } 
+          }
         }
 
         & ~ .tab-icon-stack .tab-icon-image {
@@ -1238,6 +1238,33 @@ zen-library {
 
 .zen-workspace-bookmarks-section[hidden] {
   display: none;
+}
+
+.zen-workspace-bookmarks-drop-hint {
+  margin: 0 0 4px;
+  padding: 10px 8px;
+  text-align: center;
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  border: 1px dashed color-mix(in srgb, currentColor 35%, transparent);
+  border-radius: var(--zen-element-separation, 6px);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.zen-workspace-bookmarks-section[drop-ready],
+.zen-workspace-bookmarks-section[drop-over],
+.zen-workspace-bookmarks-drop-hint[drop-over] {
+  border-radius: var(--zen-element-separation, 6px);
+  outline: 1px dashed color-mix(in srgb, currentColor 35%, transparent);
+  outline-offset: 2px;
+}
+
+.zen-workspace-bookmarks-section[drop-over],
+.zen-workspace-bookmarks-drop-hint[drop-over] {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  outline-style: solid;
 }
 
 .zen-workspace-bookmark-item {

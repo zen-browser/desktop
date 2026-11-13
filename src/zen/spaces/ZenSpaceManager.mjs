@@ -185,6 +185,43 @@ class nsZenWorkspaces {
         }
       };
       const onBookmarksPrefChanged = () => this.refreshSpaceBookmarks();
+      // Drags from the Library window or the Bookmarks sidebar start in another
+      // document, so the only reliable signal is the drag entering this window.
+      const setBookmarkDropReady = ready => {
+        for (const element of document.querySelectorAll("zen-workspace")) {
+          element.setBookmarkDropReady(ready);
+        }
+      };
+      let hideTimer = null;
+      const cancelHide = () => {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      };
+      const onWindowDragEnter = event => {
+        if (event.dataTransfer?.types.includes(PlacesUtils.TYPE_X_MOZ_PLACE)) {
+          cancelHide();
+          setBookmarkDropReady(true);
+        }
+      };
+      const onWindowDragLeave = event => {
+        if (!event.relatedTarget && !hideTimer) {
+          // Moving between elements can report no related target; only hide
+          // once no further drag event arrives.
+          hideTimer = setTimeout(() => {
+            hideTimer = null;
+            setBookmarkDropReady(false);
+          }, 150);
+        }
+      };
+      const onWindowDragEnd = () => {
+        cancelHide();
+        setBookmarkDropReady(false);
+      };
+      window.addEventListener("dragenter", onWindowDragEnter, true);
+      window.addEventListener("dragover", cancelHide, true);
+      window.addEventListener("dragleave", onWindowDragLeave, true);
+      window.addEventListener("drop", onWindowDragEnd, true);
+      window.addEventListener("dragend", onWindowDragEnd, true);
       PlacesUtils.observers.addListener(
         ["bookmark-removed", "bookmark-title-changed", "bookmark-url-changed"],
         onBookmarkChanged
@@ -216,13 +253,22 @@ class nsZenWorkspaces {
           "contextual-identity-deleted"
         );
         PlacesUtils.observers.removeListener(
-          ["bookmark-removed", "bookmark-title-changed", "bookmark-url-changed"],
+          [
+            "bookmark-removed",
+            "bookmark-title-changed",
+            "bookmark-url-changed",
+          ],
           onBookmarkChanged
         );
         Services.prefs.removeObserver(
           "zen.spaces.bookmarks-in-sidebar",
           onBookmarksPrefChanged
         );
+        window.removeEventListener("dragenter", onWindowDragEnter, true);
+        window.removeEventListener("dragover", cancelHide, true);
+        window.removeEventListener("dragleave", onWindowDragLeave, true);
+        window.removeEventListener("drop", onWindowDragEnd, true);
+        window.removeEventListener("dragend", onWindowDragEnd, true);
       });
     }
   }
@@ -1330,7 +1376,51 @@ class nsZenWorkspaces {
     }, 100);
   }
 
+  #spaceBookmarkContext = null;
+
+  #setupSpaceBookmarkContextMenu() {
+    const popup = document.getElementById("zenSpaceBookmarkContext");
+    popup.addEventListener("popupshowing", event => {
+      const item = event.target.triggerNode?.closest(
+        ".zen-workspace-bookmark-item"
+      );
+      if (!item) {
+        event.preventDefault();
+        return;
+      }
+      this.#spaceBookmarkContext = {
+        guid: item.getAttribute("data-guid"),
+        url: item.getAttribute("tooltiptext"),
+        workspaceId: item.closest("zen-workspace")?.id,
+      };
+    });
+    popup.addEventListener("popuphidden", () => {
+      // The command event can arrive after the popup is hidden.
+      setTimeout(() => {
+        this.#spaceBookmarkContext = null;
+      }, 0);
+    });
+    popup.addEventListener("command", event => {
+      const context = this.#spaceBookmarkContext;
+      if (!context) {
+        return;
+      }
+      switch (event.target.id) {
+        case "context_zenSpaceBookmarkOpenTab":
+          window.openTrustedLinkIn(context.url, "tab");
+          break;
+        case "context_zenSpaceBookmarkRemove":
+          ZenWorkspaceBookmarksStorage.removeBookmarkFromWorkspace(
+            context.guid,
+            context.workspaceId
+          ).catch(e => console.error("Failed to unpin bookmark:", e));
+          break;
+      }
+    });
+  }
+
   addPopupListeners() {
+    this.#setupSpaceBookmarkContextMenu();
     const workspaceActions = document.getElementById("zenWorkspaceMoreActions");
     workspaceActions.addEventListener(
       "popupshowing",

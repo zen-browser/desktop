@@ -49,6 +49,24 @@ zen-workspaces-panel-context-edit =
     .label = Edit Space
     .accesskey = E
 
+zen-space-bookmarks-drop-hint = Drop bookmarks here to pin them to this Space
+
+zen-space-bookmarks-drop-confirm-title = Pin bookmarks
+
+zen-space-bookmarks-drop-confirm =
+    { $count ->
+        [one] Pin { $count } bookmark to this Space?
+       *[other] Pin { $count } bookmarks to this Space?
+    }
+
+zen-space-bookmark-open-in-new-tab =
+    .label = Open in New Tab
+    .accesskey = T
+
+zen-space-bookmark-remove =
+    .label = Remove from Space
+    .accesskey = R
+
 zen-bookmark-edit-panel-workspace-selector =
     .value = Spaces
     .accesskey = W

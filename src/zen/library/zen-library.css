@@ -1274,6 +1274,11 @@ zen-library-history-section {
     border-radius: var(--zen-border-radius-14);
     box-shadow: var(--zen-library-space-shadow);
     transition: box-shadow 0.2s ease;
+
+    &::before,
+    &::after {
+      border-radius: inherit;
+    }
   }
 
   &[dragging] {

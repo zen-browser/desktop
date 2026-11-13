@@ -134,6 +134,22 @@
       right: calc(var(--zen-compact-float) / -2);
     }
 
+    /* On Windows, the toolbox is forced open while the empty tab is selected
+     * (see the [zen-has-empty-tab] rule below). With the sidebar on the right it would
+     * cover the native caption buttons, so keep it below them and keep the
+     * buttons on top. See gh-15967. */
+    @media (-moz-platform: windows) {
+      & #navigator-toolbox[zen-has-empty-tab]:not([animate='true']) {
+        margin-top: 30px !important;
+        max-height: calc(100% - 30px - var(--zen-element-separation) - 4px) !important;
+      }
+
+      & .titlebar-buttonbox-container {
+        position: relative;
+        z-index: 10;
+      }
+    }
+
     & .browserSidebarContainer:not([is-zen-split='true']) {
       margin-left: 0 !important;
       margin-right: 0 !important;

@@ -5,6 +5,8 @@
 
 const TITLE_ID = "zen-live-folder-rss-invalid-url-title";
 const DESCRIPTION_ID = "zen-live-folder-rss-invalid-url-description";
+const ZOOM_TOAST_ID = "zen-zoom-changed-toast";
+const TEST_PAGE_URL = "https://example.com/";
 
 function toastContainer() {
   return document.getElementById("zen-toast-container");
@@ -14,10 +16,25 @@ function toasts() {
   return [...toastContainer().querySelectorAll(".zen-toast")];
 }
 
+function zoomToasts() {
+  return toasts().filter(
+    toast =>
+      toast.querySelector("label")?.getAttribute("data-l10n-id") ===
+      ZOOM_TOAST_ID
+  );
+}
+
 function waitForToastsGone() {
   return TestUtils.waitForCondition(
     () => !toasts().length && toastContainer().hasAttribute("hidden"),
     "All toasts are removed and the container is hidden again"
+  );
+}
+
+function waitForLayout(singleToolbar) {
+  return TestUtils.waitForCondition(
+    () => gZenVerticalTabsManager._hasSetSingleToolbar === singleToolbar,
+    `The ${singleToolbar ? "single" : "double"} toolbar layout is active`
   );
 }
 
@@ -69,6 +86,33 @@ add_task(async function test_same_message_reuses_toast() {
   await waitForToastsGone();
 });
 
+add_task(async function test_same_message_updates_l10n_args() {
+  const SHORTCUT_ID = "zen-sidebar-drag-collapsed-toast";
+  await gZenUIManager.showToast(SHORTCUT_ID, {
+    timeout: 200,
+    l10nArgs: { shortcut: "Ctrl+B" },
+  });
+  const [toast] = toasts();
+  const label = toast.querySelector("label");
+  is(
+    JSON.parse(label.getAttribute("data-l10n-args")).shortcut,
+    "Ctrl+B",
+    "The first set of arguments is applied"
+  );
+
+  await gZenUIManager.showToast(SHORTCUT_ID, {
+    timeout: 200,
+    l10nArgs: { shortcut: "Ctrl+Shift+B" },
+  });
+  is(toasts().length, 1, "The toast is reused");
+  is(
+    JSON.parse(label.getAttribute("data-l10n-args")).shortcut,
+    "Ctrl+Shift+B",
+    "The reused toast updates its arguments"
+  );
+  await waitForToastsGone();
+});
+
 add_task(async function test_button() {
   let clicks = 0;
   await gZenUIManager.showToast(TITLE_ID, {
@@ -109,3 +153,64 @@ add_task(async function test_hover_pauses_auto_hide() {
   toast.dispatchEvent(new MouseEvent("mouseout"));
   await waitForToastsGone();
 });
+
+add_task(async function test_zoom_change_shows_toast_in_single_toolbar() {
+  await waitForLayout(true);
+
+  await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
+    FullZoom.enlarge();
+    await TestUtils.waitForCondition(
+      () => zoomToasts().length === 1,
+      "A zoom toast is shown"
+    );
+
+    const label = zoomToasts()[0].querySelector("label");
+    is(
+      JSON.parse(label.getAttribute("data-l10n-args")).percentage,
+      Number(gBrowser.selectedBrowser.fullZoom.toFixed(2)),
+      "The toast shows the new zoom level"
+    );
+  });
+
+  await waitForToastsGone();
+});
+
+add_task(async function test_zoom_change_does_not_show_toast_on_blank_page() {
+  await waitForLayout(true);
+
+  await BrowserTestUtils.withNewTab("about:blank", async () => {
+    const zoomChanged = new Promise(resolve =>
+      window.addEventListener("FullZoomChange", resolve, { once: true })
+    );
+    FullZoom.enlarge();
+    await zoomChanged;
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
+    await new Promise(resolve => setTimeout(resolve, 500));
+    is(zoomToasts().length, 0, "No zoom toast is shown on about:blank");
+
+    await FullZoom.reset();
+  });
+
+  await waitForToastsGone();
+});
+
+add_task(
+  async function test_zoom_change_does_not_show_toast_in_double_toolbar() {
+    await SpecialPowers.pushPrefEnv({
+      set: [["zen.view.use-single-toolbar", false]],
+    });
+    await waitForLayout(false);
+    await waitForToastsGone();
+
+    await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
+      FullZoom.enlarge();
+      // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
+      await new Promise(resolve => setTimeout(resolve, 500));
+      is(zoomToasts().length, 0, "No zoom toast is shown");
+
+      await FullZoom.reset();
+    });
+
+    await SpecialPowers.popPrefEnv();
+  }
+);

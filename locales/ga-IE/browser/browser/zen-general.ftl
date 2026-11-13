@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
 zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
 zen-copy-current-url-as-markdown-confirmation = Cóipeáladh an URL reatha mar Markdown!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Copied { $count } URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Copied { $count } URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Cealaigh
 zen-general-confirm = 

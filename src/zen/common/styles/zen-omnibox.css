@@ -313,11 +313,13 @@
   }
 }
 
-:root[zen-single-toolbar="true"] {
-  #urlbar-zoom-button {
+@media -moz-pref("zen.urlbar.single-toolbar-show-zoom-button", false) {
+  :root[zen-single-toolbar="true"] #urlbar-zoom-button {
     display: none !important;
   }
+}
 
+:root[zen-single-toolbar="true"] {
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
   }

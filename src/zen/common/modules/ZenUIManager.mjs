@@ -309,10 +309,19 @@ class nsZenUIManager {
 
   #onFullZoomChange(event) {
     const browser = event.originalTarget;
-    const showToast =
-      document.documentElement.getAttribute("zen-single-toolbar") === "true" ||
-      (gZenCompactModeManager.preference &&
+    const isSingleToolbar =
+      document.documentElement.getAttribute("zen-single-toolbar") === "true";
+    const zoomButtonHidden =
+      isSingleToolbar &&
+      !Services.prefs.getBoolPref(
+        "zen.urlbar.single-toolbar-show-zoom-button",
+        false
+      );
+    const urlbarHidden =
+      gZenCompactModeManager.preference &&
+      (isSingleToolbar ||
         Services.prefs.getBoolPref("zen.view.compact.hide-toolbar", false));
+    const showToast = zoomButtonHidden || urlbarHidden;
     const isBlankPage =
       browser.currentURI.spec === "about:blank" &&
       (!browser.contentPrincipal || browser.contentPrincipal.isNullPrincipal);

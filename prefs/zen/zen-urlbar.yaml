@@ -37,6 +37,9 @@
 - name: zen.urlbar.single-toolbar-show-copy-url
   value: true
 
+- name: zen.urlbar.single-toolbar-show-zoom-button
+  value: false
+
 - name: zen.urlbar.show-pip-button
   value: false
 

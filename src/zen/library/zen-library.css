@@ -343,6 +343,13 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
   background-image: url("chrome://browser/skin/zen-icons/library/library-sprite.svg");
 }
 
+/* It's only a fill, with no outline to set it off, so it takes the
+ * outline's color whether the tab is active or not. */
+.zen-library-tab[data-section="mods"] .zen-library-tab-icon-image,
+[data-section="mods"] .empty-state-icon-image {
+  fill: var(--zen-library-tab-icon-stroke);
+}
+
 .zen-library-media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));

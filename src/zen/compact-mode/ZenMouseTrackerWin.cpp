@@ -6,6 +6,9 @@
 #include "ZenMouseTrackerInternal.h"
 
 #include <windows.h>
+#include <dwmapi.h>
+
+#include "nsIWidget.h"
 
 namespace zen {
 
@@ -46,6 +49,34 @@ void ZenNativeMouseMonitor::Stop() {
     ::UnhookWindowsHookEx(sMouseHook);
     sMouseHook = nullptr;
   }
+}
+
+bool ZenNativeMouseMonitor::IsCoveredByForeignBorder(nsIWidget* aWidget,
+                                                     int32_t aX, int32_t aY) {
+  const POINT point{aX, aY};
+  HWND owner = ::GetAncestor(::WindowFromPoint(point), GA_ROOT);
+  HWND ours = ::GetAncestor(
+      static_cast<HWND>(aWidget->GetNativeData(NS_NATIVE_WINDOW)), GA_ROOT);
+  if (!owner || owner == ours) {
+    return false;
+  }
+  // The visible frame; the window rect also spans the invisible borders
+  RECT frame;
+  if (FAILED(::DwmGetWindowAttribute(owner, DWMWA_EXTENDED_FRAME_BOUNDS, &frame,
+                                     sizeof(frame)))) {
+    return false;
+  }
+  return !::PtInRect(&frame, point);
+}
+
+bool ZenNativeMouseMonitor::GetCursorPosition(int32_t* aX, int32_t* aY) {
+  POINT point;
+  if (!::GetCursorPos(&point)) {
+    return false;
+  }
+  *aX = point.x;
+  *aY = point.y;
+  return true;
 }
 
 }  // namespace zen

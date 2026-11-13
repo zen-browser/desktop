@@ -50,6 +50,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
   150
 );
 
+// Distance (in CSS pixels) from a window edge within which the pointer is
+// watched for reaching that edge's strip
+const EDGE_APPROACH_BAND = 50;
+
 XPCOMUtils.defineLazyServiceGetter(
   lazy,
   "zenMouseTracker",
@@ -105,6 +109,11 @@ window.gZenCompactModeManager = {
       outsideMouseTrackerExitObserver,
       "zen-mouse-tracker:exited"
     );
+    const edgeReachedObserver = this._onEdgeReached.bind(this);
+    Services.obs.addObserver(
+      edgeReachedObserver,
+      "zen-mouse-tracker:edge-reached"
+    );
 
     window.addEventListener(
       "unload",
@@ -113,6 +122,10 @@ window.gZenCompactModeManager = {
         Services.obs.removeObserver(
           outsideMouseTrackerExitObserver,
           "zen-mouse-tracker:exited"
+        );
+        Services.obs.removeObserver(
+          edgeReachedObserver,
+          "zen-mouse-tracker:edge-reached"
         );
         Services.prefs.removeObserver(
           "zen.tabs.vertical.right-side",
@@ -620,10 +633,12 @@ window.gZenCompactModeManager = {
         keepHoverDuration: Services.prefs.getIntPref(
           "zen.view.compact.sidebar-keep-hover.duration"
         ),
+        canHide: this.canHideSidebar,
       },
       {
         element: document.getElementById("zen-appcontent-navbar-wrapper"),
         screenEdge: "top",
+        canHide: this.canHideToolbar,
       },
       {
         element: gZenVerticalTabsManager.actualWindowButtons,
@@ -888,33 +903,16 @@ window.gZenCompactModeManager = {
           ) {
             continue;
           }
-          window.cancelAnimationFrame(this._removeHoverFrames[target.id]);
-
-          if (!this._trackMouseOutsideWindow(entry.screenEdge, target)) {
-            // We can't track the mouse position outside of the window on
-            // this platform, fall back to hiding after a fixed duration
-            this.flashElement(
-              target,
-              this.hideAfterHoverDuration,
-              "has-hover" + target.id,
-              "zen-has-hover"
-            );
-          }
-          document.addEventListener(
-            "mousemove",
-            () => {
-              if (target.matches(":hover")) {
-                return;
-              }
-              // Closing the element also stops the outside mouse tracking
-              this._setElementExpandAttribute(target, false);
-              this.clearFlashTimeout("has-hover" + target.id);
-            },
-            { once: true }
-          );
+          this._expandFromEdge(entry);
         }
       }, this.HOVER_HACK_DELAY);
     });
+
+    if (AppConstants.platform == "win") {
+      document.addEventListener("mousemove", event =>
+        this._watchEdgeApproach(event)
+      );
+    }
 
     gURLBar.addEventListener("mouseleave", () => {
       setTimeout(() => {
@@ -948,6 +946,114 @@ window.gZenCompactModeManager = {
       return bBox.top - error < y && y < bBox.bottom + error;
     }
     return bBox.left - error < x && x < bBox.right + error;
+  },
+
+  _expandFromEdge({ element: target, screenEdge }) {
+    window.cancelAnimationFrame(this._removeHoverFrames[target.id]);
+
+    if (!this._trackMouseOutsideWindow(screenEdge, target)) {
+      // We can't track the mouse position outside of the window on
+      // this platform, fall back to hiding after a fixed duration
+      this.flashElement(
+        target,
+        this.hideAfterHoverDuration,
+        "has-hover" + target.id,
+        "zen-has-hover"
+      );
+    }
+    document.addEventListener(
+      "mousemove",
+      () => {
+        if (target.matches(":hover")) {
+          return;
+        }
+        // Closing the element also stops the outside mouse tracking
+        this._setElementExpandAttribute(target, false);
+        this.clearFlashTimeout("has-hover" + target.id);
+      },
+      { once: true }
+    );
+  },
+
+  // Another window's invisible border can cover an edge strip, so the
+  // strip never gets hovered; the tracker reports when the pointer gets there
+  _watchEdgeApproach(event) {
+    const { clientX: x, clientY: y } = event;
+    const distances = { left: x, right: window.innerWidth - x, top: y };
+    let nearest = null;
+    let nearestDistance = EDGE_APPROACH_BAND;
+    let nearestStrip = 0;
+    if (
+      this.preference &&
+      lazy.COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER &&
+      !this._outsideTrackedElement &&
+      Math.min(...Object.values(distances)) < EDGE_APPROACH_BAND
+    ) {
+      for (const entry of this.hoverableElements) {
+        const distance = distances[entry.screenEdge];
+        if (
+          !entry.canHide ||
+          !(distance < nearestDistance) ||
+          entry.element.hasAttribute("zen-has-hover")
+        ) {
+          continue;
+        }
+        const rect = window.windowUtils.getBoundsWithoutFlushing(entry.element);
+        const strip = {
+          left: rect.right,
+          right: window.innerWidth - rect.left,
+          top: rect.bottom,
+        }[entry.screenEdge];
+        const inSpan =
+          entry.screenEdge === "top"
+            ? rect.left < x && x < rect.right
+            : rect.top < y && y < rect.bottom;
+        // A strip as wide as the band means the element is shown
+        if (strip < EDGE_APPROACH_BAND && inSpan) {
+          nearest = entry;
+          nearestDistance = distance;
+          nearestStrip = Math.max(strip, 0);
+        }
+      }
+    }
+
+    if (!nearest) {
+      if (this._edgeApproach && !this._outsideTrackedElement) {
+        lazy.zenMouseTracker.unregisterWindow(window);
+      }
+      this._edgeApproach = null;
+      return;
+    }
+    try {
+      lazy.zenMouseTracker.watchEdgeApproach(
+        window,
+        nearest.screenEdge,
+        nearestStrip,
+        EDGE_APPROACH_BAND
+      );
+      this._edgeApproach = nearest;
+    } catch (e) {
+      this.log("Can't watch the edge approach:", e);
+      this._edgeApproach = null;
+    }
+  },
+
+  _onEdgeReached(subject) {
+    if (subject !== window) {
+      return;
+    }
+    const armed = this._edgeApproach;
+    this._edgeApproach = null;
+    const entry =
+      armed && this.hoverableElements.find(e => e.element === armed.element);
+    if (
+      !this.preference ||
+      !entry?.canHide ||
+      entry.element.hasAttribute("zen-has-hover")
+    ) {
+      return;
+    }
+    this._expandFromEdge(entry);
   },
 
   _trackMouseOutsideWindow(screenEdge, target) {

@@ -244,12 +244,13 @@ export function assertAllowedUrl(url, allowed) {
 
 /**
  * @param {string} url
- * @param {(string|RegExp)[]} allowed - URL prefixes, or patterns, it may
- * come from
- * @param {Record<string, string>} [headers]
+ * @param {object} options
+ * @param {(string|RegExp)[]} options.allowed - URL prefixes, or patterns, it
+ * may come from; without them nothing downloads
+ * @param {Record<string, string>} [options.headers]
  * @returns {Promise<Uint8Array>}
  */
-export async function download(url, allowed, headers = {}) {
+export async function download(url, { allowed = [], headers = {} } = {}) {
   assertAllowedUrl(url, allowed);
 
   let lastError;

@@ -81,8 +81,8 @@ function stringTags(mod) {
 }
 
 /**
- * Labels written for Sine's formatting (`*`, `**`, `~`) read as plain text:
- * the markers go, and an escaped `\*` stays as `*`.
+ * Labels written with the marks other mod managers format (`*`, `**`, `~`)
+ * read as plain text: the marks go, and an escaped `\*` stays as `*`.
  *
  * @param {*} label
  * @returns {string}
@@ -103,10 +103,11 @@ function plainLabel(label) {
  * @param {object} group - A preference, or a nested group of conditions
  * @param {(property: string, value: *) => boolean} holds - Whether a
  * preference has a value
+ * @param {string} where - The preference and its mod, for warnings
  * @param {number} [depth]
  * @returns {boolean}
  */
-function meetsConditions(group, holds, depth = 0) {
+function meetsConditions(group, holds, where, depth = 0) {
   const { conditions, operator } = group;
 
   if (!Array.isArray(conditions) || !conditions.length) {
@@ -115,7 +116,7 @@ function meetsConditions(group, holds, depth = 0) {
 
   if (depth >= MAX_CONDITION_DEPTH) {
     console.warn(
-      "[ZenLibraryMods]: Conditions nested too deep, hiding the preference."
+      `[ZenLibraryMods]: Conditions of ${where} nest deeper than ${MAX_CONDITION_DEPTH} levels, hiding it.`
     );
 
     return false;
@@ -123,13 +124,16 @@ function meetsConditions(group, holds, depth = 0) {
 
   const meets = condition => {
     if (Array.isArray(condition?.conditions)) {
-      return meetsConditions(condition, holds, depth + 1);
+      return meetsConditions(condition, holds, where, depth + 1);
     }
 
     const test = condition?.if ?? condition?.not;
 
     if (typeof test?.property !== "string") {
-      console.warn("[ZenLibraryMods]: Invalid condition, it never holds.");
+      console.warn(
+        `[ZenLibraryMods]: A condition of ${where} has no property, it never holds:`,
+        condition
+      );
 
       return false;
     }
@@ -275,8 +279,12 @@ async function installFromFolder() {
 
   const hasScripts = Boolean(manifest.scripts.length);
 
-  if (hasScripts && !(await confirmScripts(manifest.name))) {
-    return;
+  if (hasScripts) {
+    const agreed = await confirmScripts(manifest.name);
+
+    if (!agreed) {
+      return;
+    }
   }
 
   await lazy.gZenModsManager.installLocalMod(path, {
@@ -707,27 +715,31 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     const manager = lazy.gZenModsManager;
     const mods = await manager.getOrderedMods();
     const withDetails = await Promise.all(
-      mods.map(async mod => ({
-        ...mod,
-        error: manager.getModError(mod.id),
-        scriptsState: manager.getScriptsState(mod.id),
-        preferences: (await manager.getModPreferences(mod))
-          .filter(({ type, property }) => {
-            if (PREFERENCE_TYPES.has(type)) {
-              return true;
-            }
+      mods.map(async mod => {
+        const preferences = await manager.getModPreferences(mod);
 
-            console.warn(
-              `[ZenLibraryMods]: Unknown preference type "${type}" for ${property} of ${mod.name}, skipping.`
-            );
+        return {
+          ...mod,
+          error: manager.getModError(mod.id),
+          scriptsState: manager.getScriptsState(mod.id),
+          preferences: preferences
+            .filter(({ type, property }) => {
+              if (PREFERENCE_TYPES.has(type)) {
+                return true;
+              }
 
-            return false;
-          })
-          .map(preference => ({
-            ...preference,
-            label: plainLabel(preference.label),
-          })),
-      }))
+              console.warn(
+                `[ZenLibraryMods]: Unknown preference type "${type}" for ${property} of ${mod.name}, skipping.`
+              );
+
+              return false;
+            })
+            .map(preference => ({
+              ...preference,
+              label: plainLabel(preference.label),
+            })),
+        };
+      })
     );
 
     if (load !== this.#loads) {
@@ -1545,8 +1557,10 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
             (preference, index) => preference.property ?? index,
             preference =>
               this.#renderSlot(
-                meetsConditions(preference, (property, value) =>
-                  this.#holds(property, value)
+                meetsConditions(
+                  preference,
+                  (property, value) => this.#holds(property, value),
+                  `${preference.property ?? preference.label} of ${mod.name}`
                 ),
                 this.#renderPreference(preference)
               )

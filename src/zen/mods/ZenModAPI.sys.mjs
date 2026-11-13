@@ -90,6 +90,7 @@ export class ZenModAPI {
    * it are set up, for whatever needs tabs, spaces or the toolbars ready
    */
   get ready() {
+    // Mods get nothing back: what Zen's promises resolve with isn't API.
     this.#ready ??= Promise.all([
       this.#window.delayedStartupPromise,
       this.#window.gZenWorkspaces?.promiseInitialized,

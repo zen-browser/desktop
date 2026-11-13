@@ -100,6 +100,12 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
     return result.getProperty("buttonNumClicked") === 0;
   }
 
+  /**
+   * Tells the store page an install or removal is done, so the mod's button
+   * shows its state.
+   *
+   * @param {string} modId
+   */
   #notifyModChanged(modId) {
     this.#sendToPage("ZenModsMarketplace:ModChanged", { modId });
   }

@@ -15,7 +15,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 8;
+  MIGRATION_VERSION = 9;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -215,6 +215,11 @@ class nsZenUIMigration {
       Services.prefs.clearUserPref("gfx.blacklist.video-overlay.failureid");
       this.shouldRestart = true;
     }
+  }
+
+  _migrateV9() {
+    // Zen Mods no longer tell windows about changes through this pref.
+    Services.prefs.clearUserPref("zen.mods.updated-value-observer");
   }
 }
 

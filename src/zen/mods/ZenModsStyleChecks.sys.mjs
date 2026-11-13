@@ -258,10 +258,13 @@ async function hasRemoteStyles(folder, entry) {
   for (const path of documents) {
     const parts = pathParts(path);
 
-    if (
-      !parts ||
-      (await documentLoads(PathUtils.join(folder, ...parts), win))
-    ) {
+    if (!parts) {
+      return true;
+    }
+
+    const mayLoad = await documentLoads(PathUtils.join(folder, ...parts), win);
+
+    if (mayLoad) {
       return true;
     }
   }
@@ -362,7 +365,13 @@ export class RemoteStylesError extends Error {
  */
 export async function assertLocalStyles(folder, name, entries) {
   for (const entry of entries) {
-    if (entry && (await hasRemoteStyles(folder, entry))) {
+    if (!entry) {
+      continue;
+    }
+
+    const isRemote = await hasRemoteStyles(folder, entry);
+
+    if (isRemote) {
       throw new RemoteStylesError(
         `[ZenMods]: ${entry} of ${name} loads from the web; mods may only use their own files.`
       );

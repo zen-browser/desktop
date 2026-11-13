@@ -1183,8 +1183,9 @@ class nsZenModsManager {
 
         const isNewer =
           Services.vc.compare(latest.version, mod.version ?? "0.0.0") > 0;
+        const hasFiles = await IOUtils.exists(this.#styleFile(mod));
 
-        if (!isNewer && (await IOUtils.exists(this.#styleFile(mod)))) {
+        if (!isNewer && hasFiles) {
           continue;
         }
 

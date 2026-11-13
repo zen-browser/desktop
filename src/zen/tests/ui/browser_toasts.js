@@ -214,3 +214,82 @@ add_task(
     await SpecialPowers.popPrefEnv();
   }
 );
+
+add_task(
+  async function test_zoom_change_does_not_show_toast_in_single_toolbar_when_zoom_button_kept() {
+    await SpecialPowers.pushPrefEnv({
+      set: [["zen.urlbar.single-toolbar-show-zoom-button", true]],
+    });
+    await waitForLayout(true);
+    await waitForToastsGone();
+
+    await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
+      FullZoom.enlarge();
+      await TestUtils.waitForCondition(
+        () =>
+          !document
+            .getElementById("urlbar-zoom-button")
+            .hasAttribute("hidden") &&
+          getComputedStyle(document.getElementById("urlbar-zoom-button"))
+            .display !== "none",
+        "The zoom button is visible in the URL bar"
+      );
+      // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
+      await new Promise(resolve => setTimeout(resolve, 500));
+      is(
+        zoomToasts().length,
+        0,
+        "No zoom toast is shown while the URL bar is visible"
+      );
+
+      await FullZoom.reset();
+    });
+
+    await SpecialPowers.popPrefEnv();
+  }
+);
+
+add_task(
+  async function test_zoom_change_shows_toast_in_single_toolbar_compact_with_zoom_button_kept() {
+    await SpecialPowers.pushPrefEnv({
+      set: [
+        ["zen.urlbar.single-toolbar-show-zoom-button", true],
+        ["zen.view.compact.hide-toolbar", false],
+        ["zen.view.compact.animate-sidebar", false],
+        [
+          "zen.view.compact.enable-at-startup",
+          Services.prefs.getBoolPref(
+            "zen.view.compact.enable-at-startup",
+            false
+          ),
+        ],
+      ],
+    });
+    await waitForLayout(true);
+
+    gZenCompactModeManager.preference = true;
+    await TestUtils.waitForCondition(
+      () => gZenCompactModeManager.preference,
+      "Compact mode is enabled"
+    );
+
+    await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
+      FullZoom.enlarge();
+      await TestUtils.waitForCondition(
+        () => zoomToasts().length === 1,
+        "A zoom toast is shown because the URL bar is hidden in compact mode"
+      );
+
+      await FullZoom.reset();
+    });
+
+    gZenCompactModeManager.preference = false;
+    await TestUtils.waitForCondition(
+      () => !gZenCompactModeManager.preference,
+      "Compact mode is disabled again"
+    );
+
+    await waitForToastsGone();
+    await SpecialPowers.popPrefEnv();
+  }
+);

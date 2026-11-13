@@ -280,10 +280,14 @@ class nsZenModsManager {
    * mod's
    */
   #areScriptsApproved(mod) {
-    return mod.source === "github"
-      ? Boolean(mod.approvedScriptsHash) &&
-          mod.approvedScriptsHash === mod.scriptsHash
-      : Boolean(mod.scriptsApproved);
+    if (mod.source === "github") {
+      return (
+        Boolean(mod.approvedScriptsHash) &&
+        mod.approvedScriptsHash === mod.scriptsHash
+      );
+    }
+
+    return Boolean(mod.scriptsApproved);
   }
 
   /**
@@ -302,9 +306,6 @@ class nsZenModsManager {
    * Reads the installed mods and applies them: what `init` waits for.
    */
   async #load() {
-    // The old way to tell windows about changes; profiles still carry it.
-    Services.prefs.clearUserPref("zen.mods.updated-value-observer");
-
     this.#mods = await this.#readRegistry();
 
     for (const pref of [DISABLE_ALL_PREF, SCRIPTS_PREF]) {
@@ -412,13 +413,15 @@ class nsZenModsManager {
     const mod = this.#mods[modId];
 
     if (mod?.source === "github") {
-      await this.installGitHubMod(
-        await readGitHubCommit(gitHubSourceOf(mod), mod.sha)
-      );
+      const installed = await readGitHubCommit(gitHubSourceOf(mod), mod.sha);
+
+      await this.installGitHubMod(installed);
       return;
     }
 
-    await this.installMod(await this.fetchStoreMod(modId));
+    const storeMod = await this.fetchStoreMod(modId);
+
+    await this.installMod(storeMod);
   }
 
   /**
@@ -430,8 +433,9 @@ class nsZenModsManager {
    */
   async fetchGitHubMod(input) {
     const source = parseGitHubSource(input);
+    const sha = await resolveGitHubCommit(source);
 
-    return readGitHubCommit(source, await resolveGitHubCommit(source));
+    return readGitHubCommit(source, sha);
   }
 
   /**
@@ -483,10 +487,12 @@ class nsZenModsManager {
       throw new Error(`[ZenMods]: ${modId} has no update waiting.`);
     }
 
-    await this.installGitHubMod(
-      await readGitHubCommit(gitHubSourceOf(mod), mod.pendingUpdate.sha),
-      { scriptsApproved: true }
+    const update = await readGitHubCommit(
+      gitHubSourceOf(mod),
+      mod.pendingUpdate.sha
     );
+
+    await this.installGitHubMod(update, { scriptsApproved: true });
   }
 
   /**
@@ -1224,11 +1230,8 @@ class nsZenModsManager {
       return;
     }
 
-    const update = await stageGitHub(
-      this.modsRootPath,
-      mod.id,
-      await readGitHubCommit(source, sha)
-    );
+    const found = await readGitHubCommit(source, sha);
+    const update = await stageGitHub(this.modsRootPath, mod.id, found);
     const { scriptsHash } = update.mod;
 
     if (

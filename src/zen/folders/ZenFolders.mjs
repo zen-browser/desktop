@@ -325,6 +325,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (groupIsCollapsiblePins(group)) {
       return;
     }
+    this.#syncTabSpaceWithGroup(tab, group);
     group.pinned = tab.pinned;
     const isActiveFolder = group?.activeGroups?.length > 0;
 
@@ -453,6 +454,31 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateUnload(group, tab, true);
+  }
+
+  /**
+   * A tab added to a group that lives in another space (for example, by an
+   * extension calling tabs.group while the user is in a different space) is
+   * moved into that space's container but keeps its old zen-workspace-id.
+   * Selecting it then switches to the old space, where the tab isn't shown,
+   * so the click seems to do nothing. Keep the tab in the group's space.
+   *
+   * @param {MozTabbrowserTab} tab - The tab that was just grouped.
+   * @param {MozTabbrowserTabGroup} group - The group it was added to.
+   */
+  #syncTabSpaceWithGroup(tab, group) {
+    if (!group || tab.hasAttribute("zen-essential")) {
+      return;
+    }
+    const groupSpace =
+      group.getAttribute("zen-workspace-id") ||
+      group.parentElement
+        ?.closest("[zen-workspace-id]")
+        ?.getAttribute("zen-workspace-id");
+    if (groupSpace && tab.getAttribute("zen-workspace-id") !== groupSpace) {
+      tab.setAttribute("zen-workspace-id", groupSpace);
+      gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
+    }
   }
 
   on_TabGroupCreate(event) {

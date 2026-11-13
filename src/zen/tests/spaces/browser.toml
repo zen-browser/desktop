@@ -44,6 +44,8 @@ support-files = [
 
 ["browser_select_tab_switches_space.js"]
 
+["browser_tab_grouped_into_other_space.js"]
+
 ["browser_theme_algorithm.js"]
 
 ["browser_unload_all_other_spaces.js"]

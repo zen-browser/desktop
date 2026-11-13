@@ -312,6 +312,10 @@
 }
 
 :root[zen-single-toolbar="true"] {
+  #urlbar-zoom-button {
+    display: none !important;
+  }
+
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
   }

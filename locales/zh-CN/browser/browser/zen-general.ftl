@@ -45,6 +45,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
 zen-copy-current-url-confirmation = 网址已复制到剪贴板！
 zen-copy-current-url-as-markdown-confirmation = 已将当前网址复制为 Markdown 格式！
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Copied { $count } URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Copied { $count } URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 

@@ -5,7 +5,11 @@
 
 EXTRA_JS_MODULES.zen.mods += [
     "ZenModAPI.sys.mjs",
+    "ZenModsFiles.sys.mjs",
+    "ZenModsGitHub.sys.mjs",
     "ZenModsManager.sys.mjs",
+    "ZenModsScripts.sys.mjs",
+    "ZenModsStyleChecks.sys.mjs",
 ]
 
 FINAL_TARGET_FILES.actors += [

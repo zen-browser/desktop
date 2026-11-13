@@ -3,21 +3,32 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { setTimeout } from "resource://gre/modules/Timer.sys.mjs";
+import {
+  assertAllowedUrl,
+  download,
+  encodePath,
+  findStyle,
+  listModFiles,
+  parseManifest,
+  pathParts,
+} from "resource:///modules/zen/mods/ZenModsFiles.sys.mjs";
+import {
+  gitHubSourceOf,
+  parseGitHubSource,
+  readGitHubCommit,
+  resolveGitHubCommit,
+  stageGitHub,
+} from "resource:///modules/zen/mods/ZenModsGitHub.sys.mjs";
+import {
+  declaredScripts,
+  ZenModsScripts,
+} from "resource:///modules/zen/mods/ZenModsScripts.sys.mjs";
+import { assertLocalStyles } from "resource:///modules/zen/mods/ZenModsStyleChecks.sys.mjs";
 
 const lazy = {};
 
 ChromeUtils.defineLazyGetter(lazy, "modsBackend", () =>
   Cc["@mozilla.org/zen/mods-backend;1"].getService(Ci.nsIZenModsBackend)
-);
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  ZenModAPI: "resource:///modules/zen/mods/ZenModAPI.sys.mjs",
-});
-
-ChromeUtils.defineLazyGetter(lazy, "resProtocol", () =>
-  Services.io
-    .getProtocolHandler("resource")
-    .QueryInterface(Ci.nsIResProtocolHandler)
 );
 
 export const ZEN_MODS_UPDATE_TOPIC = "zen-mods-update";
@@ -30,8 +41,6 @@ const AUTO_UPDATE_PREF = "zen.mods.auto-update";
 const AUTO_UPDATE_DAYS_PREF = "zen.mods.auto-update-days";
 const LAST_UPDATE_PREF = "zen.mods.last-update";
 const MILESTONE_PREF = "zen.mods.milestone";
-const GITHUB_API_URL_PREF = "zen.mods.github.api-url";
-const GITHUB_RAW_URL_PREF = "zen.mods.github.raw-url";
 
 const STORE_MOD_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 const WHITESPACE_RE = /\s/g;
@@ -63,79 +72,9 @@ const MANAGER_FIELDS = [
 
 const LOCAL_ID_PREFIX = "local-";
 const GITHUB_ID_PREFIX = "github-";
-const GITHUB_URL_RE = /^(?:https?:\/\/)?(?:www\.)?github\.com\//i;
-const GITHUB_RAW_URL_RE = /^(?:https?:\/\/)?raw\.githubusercontent\.com\//i;
-const URL_QUERY_RE = /[?#].*$/s;
-const REF_PREFIXES = new Set(["heads", "tags"]);
-const GITHUB_NAME_RE = /^[A-Za-z0-9_.-]{1,100}$/;
-const TRAILING_SLASHES_RE = /\/+$/;
-const DOT_GIT_RE = /\.git$/;
-const COMMIT_SHA_RE = /^[0-9a-f]{40}$/;
-const MAX_REMOTE_FILES = 1000;
-const MAX_REMOTE_BYTES = 20 * 1024 * 1024;
-const PARALLEL_DOWNLOADS = 6;
-const SCRIPT_HOST_PREFIX = "zen-mod-";
-const SCRIPT_FILE_RE = /\.m?js$/;
-const MAX_SCRIPT_FILES = 200;
-const SCRIPT_SOURCES = new Set(["local", "github"]);
-const STYLE_FILES = ["chrome.css", "userChrome.css"];
-const MAIN_WINDOW_URL = "chrome://browser/content/browser.xhtml";
-const DEFAULT_LOAD_ORDER = 10;
-const SCRIPT_KINDS = [
-  [".uc.mjs", "uc.mjs"],
-  [".uc.js", "uc.js"],
-  [".sys.mjs", "module"],
-];
-const REGEXP_SPECIAL_RE = /[.+?^${}()|[\]\\]/g;
-const REGEXP_ESCAPE_RE = /[.*+?^${}()|[\]\\]/g;
-// Functions whose strings are URLs the style system loads.
-const URL_FUNCTIONS = new Set([
-  "url",
-  "src",
-  "image",
-  "image-set",
-  "-webkit-image-set",
-  "cross-fade",
-  "-moz-image-rect",
-]);
-// What a page sheet may load: nothing that can fetch on its behalf.
-const LOCAL_PROTOCOLS = new Set(["data:", "chrome:", "resource:", "moz-icon:"]);
-// Values only known once the page applies them.
-const DEFERRED_FUNCTIONS = new Set(["var", "env", "attr"]);
-// At-rules whose URLs say where they apply, not what they load.
-const MATCHING_AT_RULES = new Set(["namespace", "-moz-document", "document"]);
-const CHARSET_RE = /^@charset "([^"]*)";/;
-// Files a sheet may point at that Gecko never reads as a document.
-const PLAIN_FILE_RE = /\.(?:png|jpe?g|gif|webp|avif|ico|bmp|woff2?|ttf|otf)$/i;
-const DTD_RE = /<!ENTITY|<!DOCTYPE[^>]*\b(?:SYSTEM|PUBLIC)\b/i;
-const XML_ENCODING_RE = /^\s*<\?xml\b[^>]*\bencoding\s*=\s*["']([^"']*)["']/;
-const SVG_NS = "http://www.w3.org/2000/svg";
-// What could reach past an SVG document: HTML with its own links, or
-// animations that change a link once it's checked.
-const SVG_UNSAFE_ELEMENTS = new Set([
-  "script",
-  "foreignObject",
-  "set",
-  "animate",
-  "animateMotion",
-  "animateTransform",
-  "discard",
-]);
-const CLOSING_TOKENS = new Set([
-  "CloseParenthesis",
-  "CloseSquareBracket",
-  "CloseCurlyBracket",
-]);
-// Stands in for where a mod's page sheet loads from, to resolve its URLs. Its
-// folder is the mod's: past it lie the profile's own sheets.
-const SHEET_ROOT = "/mod/";
-const SHEET_BASE = `resource://zen-mod${SHEET_ROOT}`;
 const MAX_LOCAL_FILES = 1000;
 const LOCAL_POLL_MS = 1000;
 
-const MAX_FILE_BYTES = 2 * 1024 * 1024;
-const DOWNLOAD_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 500;
 const SECONDS_PER_DAY = 60 * 60 * 24;
 
 const OS_NAMES = { WINNT: "windows", Darwin: "macos", Linux: "linux" };
@@ -187,623 +126,6 @@ function isNotFound(error) {
 }
 
 /**
- * Lists the files in a mod's folder, the hidden ones and `node_modules`
- * aside, sorted by path.
- *
- * @param {string} folder
- * @param {RegExp|null} match - Only the files whose name matches
- * @param {number} limit - More files than this is an error
- * @returns {Promise<{path: string, info: object}[]>} Each file and its
- * `IOUtils.stat`
- */
-async function listModFiles(folder, match, limit) {
-  const files = [];
-  const visit = async directory => {
-    for (const child of await IOUtils.getChildren(directory)) {
-      const name = PathUtils.filename(child);
-
-      if (name.startsWith(".") || name === "node_modules") {
-        continue;
-      }
-
-      const info = await IOUtils.stat(child);
-
-      if (info.type === "directory") {
-        await visit(child);
-      } else if (!match || match.test(name)) {
-        files.push({ path: child, info });
-      }
-
-      if (files.length > limit) {
-        throw new Error(`[ZenMods]: More than ${limit} files in ${folder}.`);
-      }
-    }
-  };
-
-  await visit(folder);
-
-  return files.sort((first, second) =>
-    first.path < second.path ? -1 : Number(first.path > second.path)
-  );
-}
-
-/**
- * Splits a path from `theme.json` into the folders and file it goes through,
- * as long as it stays inside the mod's folder.
- *
- * @param {*} path - A path like "src/main.mjs"
- * @returns {string[]|null} Its parts, or null if it's not a valid path
- */
-function pathParts(path) {
-  if (typeof path !== "string" || !path) {
-    return null;
-  }
-
-  const parts = path.split("/");
-  const isValid = parts.every(
-    part => part && part !== "." && part !== ".." && !/[\\:]/.test(part)
-  );
-
-  return isValid ? parts : null;
-}
-
-/**
- * @param {string} path - A valid relative path
- * @returns {string} The path, each part encoded for a URL
- */
-function encodePath(path) {
-  return pathParts(path).map(encodeURIComponent).join("/");
-}
-
-/**
- * Reads where a mod lives on GitHub from what the user typed.
- *
- * shortcut: in a /tree/ URL the branch is one segment, so branches with "/"
- * in their name read as branch and folder; parse the full ref with the API if
- * people need them.
- *
- * @param {*} input - "owner/repo", "owner/repo/folder" or a github.com URL,
- * with "/tree/<branch>/<folder>" for a branch other than the default one. A
- * link to the mod's `theme.json`, on github.com or raw.githubusercontent.com,
- * stands for its folder.
- * @returns {{repo: string, ref: string|null, folder: string}} The
- * repository as "owner/repo", the branch and the folder of the mod
- */
-function parseGitHubSource(input) {
-  const link = String(input ?? "")
-    .trim()
-    .replace(URL_QUERY_RE, "");
-  const isRawLink = GITHUB_RAW_URL_RE.test(link);
-  const text = link
-    .replace(isRawLink ? GITHUB_RAW_URL_RE : GITHUB_URL_RE, "")
-    .replace(TRAILING_SLASHES_RE, "");
-  const [owner = "", repoName = "", ...rest] = text.split("/");
-  const repo = repoName.replace(DOT_GIT_RE, "");
-  const isName = name =>
-    GITHUB_NAME_RE.test(name) && name !== "." && name !== "..";
-
-  let ref = null;
-  let folder = rest;
-  let isFileLink = isRawLink;
-
-  if (isRawLink) {
-    // GitHub's own raw links spell the branch as refs/heads/<branch>.
-    const start = rest[0] === "refs" && REF_PREFIXES.has(rest[1]) ? 2 : 0;
-
-    ref = rest[start] ?? "";
-    folder = rest.slice(start + 1);
-  } else if ((rest[0] === "tree" || rest[0] === "blob") && rest.length > 1) {
-    isFileLink = rest[0] === "blob";
-    ref = rest[1];
-    folder = rest.slice(2);
-  }
-
-  const isModFile = !isFileLink || folder.at(-1) === "theme.json";
-
-  if (isFileLink) {
-    folder = folder.slice(0, -1);
-  }
-
-  const isValid =
-    isModFile &&
-    isName(owner) &&
-    isName(repo) &&
-    (ref === null || isName(ref)) &&
-    (!folder.length || pathParts(folder.join("/")));
-
-  if (!isValid) {
-    throw new Error(`[ZenMods]: Not a GitHub repository: ${input}`);
-  }
-
-  return { repo: `${owner}/${repo}`, ref, folder: folder.join("/") };
-}
-
-/**
- * @param {object} mod - A mod of the registry installed from GitHub
- * @returns {{repo: string, ref: string|null, folder: string}}
- */
-function gitHubSourceOf(mod) {
-  return parseGitHubSource(
-    [mod.repo, mod.ref && `tree/${mod.ref}`, mod.folder]
-      .filter(Boolean)
-      .join("/")
-  );
-}
-
-/**
- * @param {*} value
- * @returns {string[]|null} The strings in a list, or null if it's no list
- */
-function stringList(value) {
-  return Array.isArray(value)
-    ? value.filter(item => typeof item === "string")
-    : null;
-}
-
-/**
- * Turns the `scripts` of a `theme.json` into one list. A list of paths is
- * Zen's own format: ES modules that export `init(window)` and
- * `uninit(window)`. A map of paths is the userChrome.js format other mod
- * managers use, where folders nest as keys ending in "/": `.uc.js` and
- * `.uc.mjs` files run in each document their `include` patterns match, and
- * `.sys.mjs` files run once.
- *
- * @param {*} scripts
- * @returns {{path: string, kind: "module"|"uc.js"|"uc.mjs", include?: string[], exclude?: string[], loadOrder?: number}[]}
- */
-function normalizeScripts(scripts) {
-  if (scripts === undefined || scripts === null) {
-    return [];
-  }
-
-  if (Array.isArray(scripts)) {
-    return scripts.map(path => {
-      if (!pathParts(path) || !path.endsWith(".mjs")) {
-        throw new Error(`[ZenMods]: Invalid script path: ${path}`);
-      }
-
-      return { path, kind: "module" };
-    });
-  }
-
-  if (typeof scripts !== "object") {
-    throw new Error(
-      '[ZenMods]: "scripts" in theme.json must be a list or a map.'
-    );
-  }
-
-  const normalized = [];
-  const visit = (entries, prefix) => {
-    for (const [key, options] of Object.entries(entries)) {
-      const path = `${prefix}${key}`;
-
-      if (key.endsWith("/") && options && typeof options === "object") {
-        visit(options, path);
-        continue;
-      }
-
-      const kind = SCRIPT_KINDS.find(([extension]) =>
-        path.endsWith(extension)
-      )?.[1];
-
-      if (!kind || !pathParts(path)) {
-        console.warn(`[ZenMods]: Unsupported script ${path}, skipping.`);
-        continue;
-      }
-
-      normalized.push({
-        path,
-        kind,
-        include: stringList(options?.include) ?? ["main"],
-        exclude: stringList(options?.exclude) ?? [],
-        loadOrder: Number.isInteger(options?.loadOrder)
-          ? options.loadOrder
-          : DEFAULT_LOAD_ORDER,
-      });
-    }
-  };
-
-  visit(scripts, "");
-
-  return normalized;
-}
-
-/**
- * Reads what a `theme.json` declares, in Zen's format or in the one other
- * mod managers use, where `style` is `{chrome, content}` and `scripts` is a
- * map.
- *
- * @param {*} manifest
- * @returns {object}
- */
-function parseManifest(manifest) {
-  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) {
-    throw new Error("[ZenMods]: theme.json is not an object.");
-  }
-
-  const text = key => (typeof manifest[key] === "string" ? manifest[key] : "");
-  const isStyleObject =
-    Boolean(manifest.style) && typeof manifest.style === "object";
-  const style = isStyleObject ? manifest.style.chrome : manifest.style;
-  const contentStyle = isStyleObject ? manifest.style.content : null;
-
-  return {
-    name: text("name"),
-    version: text("version"),
-    author: text("author"),
-    description: text("description"),
-    homepage: text("homepage"),
-    stylePath: pathParts(style) ? style : null,
-    contentStylePath: pathParts(contentStyle) ? contentStyle : null,
-    preferencesPath: pathParts(manifest.preferences)
-      ? manifest.preferences
-      : "preferences.json",
-    scripts: normalizeScripts(manifest.scripts),
-  };
-}
-
-/**
- * @param {string|null} declared - The style a `theme.json` names, if any
- * @param {(path: string) => Promise<boolean>} exists
- * @returns {Promise<string|null>} The mod's style file, if it has one
- */
-async function findStyle(declared, exists) {
-  for (const candidate of declared ? [declared] : STYLE_FILES) {
-    if (await exists(candidate)) {
-      return candidate;
-    }
-  }
-
-  return null;
-}
-
-/**
- * Lists the URLs a stylesheet loads, the way Gecko's own lexer reads them,
- * escapes and all: unquoted `url()`s, and the strings in `url()`,
- * `image-set()` and the like, and in `@import`.
- *
- * @param {string} text
- * @param {Window} win - Where the lexer lives
- * @returns {{url: string|null, isImport: boolean}[]} A null url is one that
- * can't be known here: unreadable, or given by var(), env() or attr()
- */
-function cssUrls(text, win) {
-  const parser = new win.InspectorCSSParser(text);
-  const blocks = [];
-  const urls = [];
-  let isImport = false;
-  let isMatching = false;
-
-  for (let token = parser.nextToken(); token; token = parser.nextToken()) {
-    switch (token.tokenType) {
-      case "AtKeyword": {
-        const name = token.value.toLowerCase();
-
-        isImport = name === "import";
-        isMatching = MATCHING_AT_RULES.has(name);
-        break;
-      }
-
-      case "Semicolon": {
-        isImport = false;
-        isMatching = false;
-        break;
-      }
-
-      case "Function": {
-        const name = token.value.toLowerCase();
-
-        // A URL that comes from elsewhere can't be checked here.
-        if (
-          !isMatching &&
-          DEFERRED_FUNCTIONS.has(name) &&
-          blocks.some(block => URL_FUNCTIONS.has(block))
-        ) {
-          urls.push({ url: null, isImport });
-        }
-
-        blocks.push(name);
-        break;
-      }
-
-      case "ParenthesisBlock":
-      case "SquareBracketBlock":
-      case "CurlyBracketBlock": {
-        isImport = false;
-        isMatching &&= token.tokenType !== "CurlyBracketBlock";
-        blocks.push("");
-        break;
-      }
-
-      case "UnquotedUrl": {
-        if (!isMatching) {
-          urls.push({ url: token.value, isImport });
-        }
-        break;
-      }
-
-      case "BadUrl": {
-        if (!isMatching) {
-          urls.push({ url: null, isImport });
-        }
-        break;
-      }
-
-      case "QuotedString": {
-        if (
-          !isMatching &&
-          (isImport || blocks.some(name => URL_FUNCTIONS.has(name)))
-        ) {
-          urls.push({ url: token.value, isImport });
-        }
-        break;
-      }
-
-      default: {
-        if (CLOSING_TOKENS.has(token.tokenType)) {
-          blocks.pop();
-        }
-      }
-    }
-  }
-
-  return urls;
-}
-
-/**
- * @param {string} folder - A mod's folder
- * @param {string} entry - One of its stylesheets
- * @returns {Promise<boolean>} Whether that sheet, or one it imports, loads
- * anything that isn't the mod's own. A sheet that can't be read or checked
- * counts as one that does; one the mod lacks loads nothing.
- */
-async function hasRemoteStyles(folder, entry) {
-  const win =
-    Services.wm.getMostRecentWindow("navigator:browser") ??
-    Services.appShell.hiddenDOMWindow;
-  const queue = [entry];
-  const seen = new Set();
-  const documents = new Set();
-
-  while (queue.length) {
-    const relative = queue.shift();
-
-    if (seen.has(relative)) {
-      continue;
-    }
-
-    seen.add(relative);
-
-    const parts = pathParts(relative);
-
-    if (!parts || seen.size > MAX_REMOTE_FILES) {
-      return true;
-    }
-
-    let text;
-
-    try {
-      const path = PathUtils.join(folder, ...parts);
-
-      // Gecko resolves the import the same way, and finds nothing either.
-      if (!(await IOUtils.exists(path))) {
-        continue;
-      }
-
-      text = await IOUtils.readUTF8(path);
-    } catch {
-      return true;
-    }
-
-    // Gecko reads a sheet that names another encoding with it, where a
-    // string may end somewhere else than it does here.
-    const charset = text.match(CHARSET_RE)?.[1];
-
-    if (charset) {
-      try {
-        if (new TextDecoder(charset).encoding !== "utf-8") {
-          return true;
-        }
-      } catch {
-        // Gecko ignores labels it doesn't know, like this does.
-      }
-    }
-
-    for (const { url, isImport } of cssUrls(text, win)) {
-      // Zen's own sheets load from file:, which reads a backslash as a
-      // slash; the stand-in here doesn't.
-      if (url === null || url.includes("\\")) {
-        return true;
-      }
-
-      const target = URL.parse(url, `${SHEET_BASE}${relative}`);
-
-      if (!target) {
-        return true;
-      }
-
-      if (URL.canParse(url)) {
-        // Imports bring more CSS: only the mod's own, which is checked too.
-        // A data: sheet, say, would come in unchecked.
-        if (isImport || !LOCAL_PROTOCOLS.has(target.protocol)) {
-          return true;
-        }
-
-        continue;
-      }
-
-      // A relative URL may only reach the mod's own files. Past them lie
-      // every mod's sheets, the disk, and through "//" the network.
-      if (
-        target.host !== "zen-mod" ||
-        !target.pathname.startsWith(SHEET_ROOT)
-      ) {
-        return true;
-      }
-
-      let path;
-
-      try {
-        path = decodeURIComponent(target.pathname.slice(SHEET_ROOT.length));
-      } catch {
-        return true;
-      }
-
-      if (isImport) {
-        queue.push(path);
-      } else if (!PLAIN_FILE_RE.test(path)) {
-        documents.add(path);
-      }
-    }
-  }
-
-  for (const path of documents) {
-    const parts = pathParts(path);
-
-    if (
-      !parts ||
-      (await documentLoads(PathUtils.join(folder, ...parts), win))
-    ) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * An SVG or other document a sheet points at, as a filter, a mask and the
- * like, loads its own stylesheets: in Zen's windows those reach the web.
- * Only references within the document itself pass.
- *
- * @param {string} path - A file of the mod
- * @param {Window} win - Where the parsers live
- * @returns {Promise<boolean>} Whether it may load anything
- */
-async function documentLoads(path, win) {
-  let text;
-
-  try {
-    if (!(await IOUtils.exists(path))) {
-      return false;
-    }
-
-    text = await IOUtils.readUTF8(path);
-  } catch {
-    return true;
-  }
-
-  // Gecko reads a document that names another encoding with it, where a
-  // string may end somewhere else than it does here.
-  const encoding = text.match(XML_ENCODING_RE)?.[1];
-
-  if (encoding) {
-    try {
-      if (new TextDecoder(encoding).encoding !== "utf-8") {
-        return true;
-      }
-    } catch {
-      // Gecko doesn't load a document in an encoding it doesn't know.
-    }
-  }
-
-  const doc = new win.DOMParser().parseFromString(text, "image/svg+xml");
-  const isOwn = value => value.trim().startsWith("#");
-  const cssLoads = css =>
-    cssUrls(css, win).some(
-      ({ url, isImport }) => isImport || !isOwn(url ?? "")
-    );
-
-  if (
-    DTD_RE.test(text) ||
-    doc.documentElement.localName === "parsererror" ||
-    [...doc.childNodes].some(
-      node => node.nodeType === node.PROCESSING_INSTRUCTION_NODE
-    )
-  ) {
-    return true;
-  }
-
-  for (const element of doc.getElementsByTagName("*")) {
-    if (
-      element.namespaceURI !== SVG_NS ||
-      SVG_UNSAFE_ELEMENTS.has(element.localName) ||
-      (element.localName === "style" && cssLoads(element.textContent))
-    ) {
-      return true;
-    }
-
-    for (const { localName, value } of element.attributes) {
-      const isLink = localName === "href" || localName === "src";
-
-      if (
-        (isLink && !isOwn(value)) ||
-        (value.includes("(") && cssLoads(value))
-      ) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-/**
- * What a mod from the store or GitHub may not do: load styles, fonts or
- * images from the web. Those can change after the mod is reviewed, and with
- * selectors on what's on screen, tell their server about it.
- */
-export class RemoteStylesError extends Error {
-  name = "RemoteStylesError";
-}
-
-/**
- * @param {string} folder - A mod's folder
- * @param {string} name - The mod's name
- * @param {(string|null)[]} entries - Its stylesheets, if it has them
- */
-async function assertLocalStyles(folder, name, entries) {
-  for (const entry of entries) {
-    if (entry && (await hasRemoteStyles(folder, entry))) {
-      throw new RemoteStylesError(
-        `[ZenMods]: ${entry} of ${name} loads from the web; mods may only use their own files.`
-      );
-    }
-  }
-}
-
-/**
- * @param {string[]} patterns - URLs where `*` matches anything, or "main"
- * for the browser window
- * @returns {RegExp|null}
- */
-function urlPatterns(patterns) {
-  const sources = patterns.map(pattern =>
-    (pattern === "main" ? MAIN_WINDOW_URL : pattern)
-      .replace(REGEXP_SPECIAL_RE, "\\$&")
-      .replaceAll("*", ".*")
-  );
-
-  return sources.length ? new RegExp(`^(?:${sources.join("|")})$`) : null;
-}
-
-/**
- * @param {object} mod - An entry of the registry
- * @returns {object[]} The scripts the mod may run, as `normalizeScripts`
- * lists them. Only mods from outside the store run any.
- */
-function declaredScripts(mod) {
-  if (!SCRIPT_SOURCES.has(mod?.source) || !Array.isArray(mod.scripts)) {
-    return [];
-  }
-
-  // Mods added before scripts had options list plain paths.
-  return mod.scripts.map(script =>
-    typeof script === "string" ? { path: script, kind: "module" } : script
-  );
-}
-
-/**
  * Owns the installed Zen Mods: the registry in `zen-themes.json`, the files
  * in `chrome/zen-themes/<id>/`, the generated `chrome/zen-themes.css` and the
  * updates from the store. One instance serves every window, so a change is
@@ -840,42 +162,14 @@ class nsZenModsManager {
    */
   #errors = new Map();
 
-  /**
-   * The scripts that run right now: each version of a mod's scripts is
-   * imported from a resource host of its own, so a changed file, or a file
-   * it imports, is never served from the module registry.
-   *
-   * @type {Map<string, {hash: string, host: string, modules: object[]}>}
-   */
-  #scripts = new Map();
-
-  /**
-   * What each window started, so it can undo it even after the mod is gone.
-   *
-   * @type {WeakMap<Window, Map<string, {hash: string, modules: object[], api: object}>>}
-   */
-  #windowScripts = new WeakMap();
-
-  /**
-   * The resource hosts whose scripts ran somewhere they couldn't be undone:
-   * `.uc.js` and `.uc.mjs` in a document, or a module without `uninit` in a
-   * window that stopped it. Nothing takes those back but a restart.
-   *
-   * @type {Map<string, Set<string>>}
-   */
-  #ranHosts = new Map();
-
-  /** @type {WeakMap<Document, Set<string>>} The scripts each document ran */
-  #documentScripts = new WeakMap();
-
-  /**
-   * The `zen` each mod's document scripts got in each document.
-   *
-   * @type {WeakMap<Document, Map<string, object>>}
-   */
-  #documentAPIs = new WeakMap();
-
-  #isWatchingDocuments = false;
+  /** Runs the mods' scripts in windows and documents. */
+  #scripts = new ZenModsScripts({
+    errors: this.#errors,
+    getMod: modId => this.#mods[modId],
+    getModFolder: modId => this.getModFolder(modId),
+    notifyChanged: () =>
+      Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC),
+  });
 
   /** @type {Set<object>} Who asked to reload local mods when they change */
   #localWatchers = new Set();
@@ -963,12 +257,8 @@ class nsZenModsManager {
    */
   getScriptsState(modId) {
     const mod = this.#mods[modId];
-    const host = this.#scripts.get(modId)?.host;
-    const ranOutdated = [...(this.#ranHosts.get(modId) ?? [])].some(
-      ranHost => ranHost !== host
-    );
 
-    if (ranOutdated) {
+    if (this.#scripts.needsRestart(modId)) {
       return "needs-restart";
     }
 
@@ -980,7 +270,7 @@ class nsZenModsManager {
       return "needs-approval";
     }
 
-    return this.#scripts.has(modId) ? "running" : "off";
+    return this.#scripts.isRunning(modId) ? "running" : "off";
   }
 
   /**
@@ -1123,7 +413,7 @@ class nsZenModsManager {
 
     if (mod?.source === "github") {
       await this.installGitHubMod(
-        await this.#readGitHubCommit(gitHubSourceOf(mod), mod.sha)
+        await readGitHubCommit(gitHubSourceOf(mod), mod.sha)
       );
       return;
     }
@@ -1141,10 +431,7 @@ class nsZenModsManager {
   async fetchGitHubMod(input) {
     const source = parseGitHubSource(input);
 
-    return this.#readGitHubCommit(
-      source,
-      await this.#resolveGitHubCommit(source)
-    );
+    return readGitHubCommit(source, await resolveGitHubCommit(source));
   }
 
   /**
@@ -1169,7 +456,7 @@ class nsZenModsManager {
     const modId =
       existing?.id ??
       `${GITHUB_ID_PREFIX}${Services.uuid.generateUUID().toString().slice(1, -1)}`;
-    const staged = await this.#stageGitHub(modId, found);
+    const staged = await stageGitHub(this.modsRootPath, modId, found);
 
     staged.mod.approvedScriptsHash = scriptsApproved
       ? staged.mod.scriptsHash
@@ -1197,258 +484,9 @@ class nsZenModsManager {
     }
 
     await this.installGitHubMod(
-      await this.#readGitHubCommit(gitHubSourceOf(mod), mod.pendingUpdate.sha),
+      await readGitHubCommit(gitHubSourceOf(mod), mod.pendingUpdate.sha),
       { scriptsApproved: true }
     );
-  }
-
-  /**
-   * @param {string} repo - "owner/repo"
-   * @returns {string}
-   */
-  #gitHubApiUrl(repo) {
-    return `${Services.prefs.getStringPref(GITHUB_API_URL_PREF)}repos/${repo}/`;
-  }
-
-  /**
-   * @param {string} repo - "owner/repo"
-   * @returns {string[]} Where its API answers may come from: a renamed or
-   * moved repository redirects to its numeric id
-   */
-  #gitHubApiPrefixes(repo) {
-    return [
-      this.#gitHubApiUrl(repo),
-      `${Services.prefs.getStringPref(GITHUB_API_URL_PREF)}repositories/`,
-    ];
-  }
-
-  /**
-   * @param {string} repo - "owner/repo"
-   * @param {string} folder
-   * @param {string} sha
-   * @returns {string} Where the mod's files are, at that commit
-   */
-  #gitHubRawUrl(repo, folder, sha) {
-    const path = folder ? `${encodePath(folder)}/` : "";
-
-    return `${Services.prefs.getStringPref(GITHUB_RAW_URL_PREF)}${repo}/${sha}/${path}`;
-  }
-
-  /**
-   * @param {string} repo - "owner/repo"
-   * @param {string} folder
-   * @param {string} sha
-   * @returns {(string|RegExp)[]} Where the mod's files may come from: a
-   * renamed repository redirects, and the commit pins what comes back
-   */
-  #gitHubRawPrefixes(repo, folder, sha) {
-    const root = Services.prefs.getStringPref(GITHUB_RAW_URL_PREF);
-    const path = folder ? `${encodePath(folder)}/` : "";
-
-    return [
-      this.#gitHubRawUrl(repo, folder, sha),
-      new RegExp(
-        `^${root.replace(REGEXP_ESCAPE_RE, "\\$&")}[^/]+/[^/]+/${sha}/${path.replace(REGEXP_ESCAPE_RE, "\\$&")}`
-      ),
-    ];
-  }
-
-  /**
-   * @param {{repo: string, ref: string|null}} source
-   * @returns {Promise<string>} The commit the branch points to now
-   */
-  async #resolveGitHubCommit({ repo, ref }) {
-    const api = this.#gitHubApiUrl(repo);
-    const response = await this.#download(
-      `${api}commits/${encodeURIComponent(ref ?? "HEAD")}`,
-      this.#gitHubApiPrefixes(repo),
-      { Accept: "application/vnd.github.sha" }
-    );
-    const sha = new TextDecoder().decode(response).trim();
-
-    if (!COMMIT_SHA_RE.test(sha)) {
-      throw new Error(`[ZenMods]: GitHub returned no commit for ${repo}.`);
-    }
-
-    return sha;
-  }
-
-  /**
-   * Reads the mod in a commit: which files it has and what its `theme.json`
-   * declares. One without `theme.json` is named after its folder or
-   * repository.
-   *
-   * @param {{repo: string, ref: string|null, folder: string}} source
-   * @param {string} sha
-   * @returns {Promise<object>}
-   */
-  async #readGitHubCommit({ repo, ref, folder }, sha) {
-    if (!COMMIT_SHA_RE.test(sha)) {
-      throw new Error(`[ZenMods]: Invalid commit: ${sha}`);
-    }
-
-    const api = this.#gitHubApiUrl(repo);
-    const tree = JSON.parse(
-      new TextDecoder().decode(
-        await this.#download(
-          `${api}git/trees/${sha}?recursive=1`,
-          this.#gitHubApiPrefixes(repo)
-        )
-      )
-    );
-
-    if (!Array.isArray(tree?.tree) || tree.truncated) {
-      throw new Error(`[ZenMods]: Could not list the files of ${repo}.`);
-    }
-
-    const prefix = folder ? `${folder}/` : "";
-    const files = tree.tree
-      .filter(
-        entry =>
-          entry?.type === "blob" &&
-          typeof entry.path === "string" &&
-          entry.path.startsWith(prefix)
-      )
-      .map(entry => ({
-        path: entry.path.slice(prefix.length),
-        size: Number(entry.size) || 0,
-      }))
-      .filter(({ path, size }) => {
-        if (size > MAX_FILE_BYTES) {
-          console.warn(
-            `[ZenMods]: ${path} of ${repo} is larger than ${MAX_FILE_BYTES} bytes, skipping.`
-          );
-
-          return false;
-        }
-
-        return pathParts(path)?.every(
-          part => !part.startsWith(".") && part !== "node_modules"
-        );
-      });
-    const totalBytes = files.reduce((total, { size }) => total + size, 0);
-
-    if (files.length > MAX_REMOTE_FILES || totalBytes > MAX_REMOTE_BYTES) {
-      throw new Error(`[ZenMods]: ${repo} is too big for a mod.`);
-    }
-
-    const paths = new Set(files.map(({ path }) => path));
-    const raw = this.#gitHubRawUrl(repo, folder, sha);
-    const manifest = parseManifest(
-      paths.has("theme.json")
-        ? JSON.parse(
-            new TextDecoder().decode(
-              await this.#download(
-                `${raw}theme.json`,
-                this.#gitHubRawPrefixes(repo, folder, sha)
-              )
-            )
-          )
-        : {}
-    );
-
-    for (const { path } of manifest.scripts) {
-      if (!paths.has(path)) {
-        throw new Error(`[ZenMods]: Script ${path} is missing.`);
-      }
-    }
-
-    manifest.stylePath = await findStyle(manifest.stylePath, path =>
-      paths.has(path)
-    );
-
-    if (manifest.contentStylePath && !paths.has(manifest.contentStylePath)) {
-      console.warn(
-        `[ZenMods]: ${manifest.contentStylePath} is missing in ${repo}, skipping the mod's page styles.`
-      );
-      manifest.contentStylePath = null;
-    }
-
-    if (
-      !manifest.stylePath &&
-      !manifest.contentStylePath &&
-      !manifest.scripts.length
-    ) {
-      throw new Error(`[ZenMods]: ${repo} has neither styles nor scripts.`);
-    }
-
-    const [owner, repoName] = repo.split("/");
-
-    return {
-      ...manifest,
-      name: manifest.name || folder.split("/").at(-1) || repoName,
-      version: manifest.version || sha.slice(0, 7),
-      author: manifest.author || owner,
-      homepage: manifest.homepage || `https://github.com/${repo}`,
-      preferences: paths.has(manifest.preferencesPath),
-      source: "github",
-      repo,
-      ref,
-      folder,
-      sha,
-      files: [...paths],
-    };
-  }
-
-  /**
-   * Downloads a GitHub mod's files, as they are in its commit, into a fresh
-   * folder next to the installed ones.
-   *
-   * @param {string} modId
-   * @param {object} found - What `#readGitHubCommit` returned
-   * @returns {Promise<{mod: object, staging: string}>} The registry entry,
-   * with the hash of its scripts, and the folder with the files
-   */
-  async #stageGitHub(modId, found) {
-    const { repo, folder, sha, files } = found;
-    await IOUtils.makeDirectory(this.modsRootPath, { ignoreExisting: true });
-
-    const staging = await IOUtils.createUniqueDirectory(
-      this.modsRootPath,
-      ".github.staging"
-    );
-    const raw = this.#gitHubRawUrl(repo, folder, sha);
-    const downloadFile = async path => {
-      const target = PathUtils.join(staging, ...pathParts(path));
-
-      await IOUtils.makeDirectory(PathUtils.parent(target), {
-        ignoreExisting: true,
-      });
-      await IOUtils.write(
-        target,
-        await this.#download(
-          `${raw}${encodePath(path)}`,
-          this.#gitHubRawPrefixes(repo, folder, sha)
-        )
-      );
-    };
-
-    const mod = { ...found, id: modId, scriptsHash: null };
-
-    delete mod.files;
-
-    try {
-      for (let start = 0; start < files.length; start += PARALLEL_DOWNLOADS) {
-        await Promise.all(
-          files.slice(start, start + PARALLEL_DOWNLOADS).map(downloadFile)
-        );
-      }
-
-      if (mod.scripts.length) {
-        mod.scriptsHash = await this.#hashScripts(modId, staging);
-      }
-
-      await assertLocalStyles(staging, mod.name, [
-        mod.stylePath,
-        mod.contentStylePath,
-      ]);
-    } catch (error) {
-      await IOUtils.remove(staging, { recursive: true, ignoreAbsent: true });
-
-      throw error;
-    }
-
-    return { mod, staging };
   }
 
   /**
@@ -1724,64 +762,7 @@ class nsZenModsManager {
    * @param {Window} win
    */
   syncScripts(win) {
-    let started = this.#windowScripts.get(win);
-    let changed = false;
-
-    if (!started) {
-      started = new Map();
-      this.#windowScripts.set(win, started);
-    }
-
-    for (const [modId, previous] of started) {
-      if (
-        previous.isStuck ||
-        this.#scripts.get(modId)?.hash === previous.hash
-      ) {
-        continue;
-      }
-
-      // A mod stops whole or not at all: stopping the modules that can
-      // would leave it half running, and starting it again would start
-      // twice the ones that can't.
-      const canStop = previous.modules.every(
-        module => typeof module.uninit === "function"
-      );
-
-      if (canStop && this.#runHook(modId, previous.modules, "uninit", win)) {
-        previous.api.dispose();
-        started.delete(modId);
-        continue;
-      }
-
-      // What it did stays in this window, so it isn't started here again,
-      // not even a newer version, until a restart.
-      previous.isStuck = true;
-      this.#markRan(modId, previous.host);
-      changed = true;
-    }
-
-    for (const [modId, { hash, host, modules }] of this.#scripts) {
-      if (started.has(modId) || !modules.length) {
-        continue;
-      }
-
-      const mod = this.#mods[modId];
-      const api = new lazy.ZenModAPI(
-        win,
-        { id: modId, name: mod.name, version: mod.version },
-        error => this.#reportScriptError(modId, error)
-      );
-
-      changed ||= !this.#runHook(modId, modules, "init", win, api);
-      started.set(modId, { hash, host, modules, api, isStuck: false });
-    }
-
-    if (changed) {
-      // Not from inside the observers that called us.
-      Promise.resolve().then(() =>
-        Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC)
-      );
-    }
+    this.#scripts.sync(win);
   }
 
   /**
@@ -1790,401 +771,27 @@ class nsZenModsManager {
    * @param {Window} win
    */
   forgetWindow(win) {
-    for (const [modId, { modules, api }] of this.#windowScripts.get(win) ??
-      []) {
-      this.#runHook(modId, modules, "uninit", win);
-      api.dispose();
-    }
-
-    this.#windowScripts.delete(win);
+    this.#scripts.forgetWindow(win);
   }
 
   /**
-   * Calls `init` or `uninit` of a mod's modules for a window. A script that
-   * throws can't break the window or the other mods.
+   * Runs the scripts of every enabled mod whose scripts the user approved,
+   * while scripts are allowed. Store mods don't run scripts: the store
+   * doesn't review them.
    *
-   * @param {string} modId
-   * @param {object[]} modules
-   * @param {"init"|"uninit"} hook
-   * @param {Window} win
-   * @param {object} [api] - What `init` gets from Zen for this window
-   * @returns {boolean} Whether every module had the hook and it went well
+   * @returns {Promise<void>}
    */
-  #runHook(modId, modules, hook, win, api) {
-    let complete = true;
-
-    for (const module of modules) {
-      if (typeof module[hook] !== "function") {
-        // Without init a module just has nothing to do per window.
-        complete = complete && hook === "init";
-        continue;
-      }
-
-      try {
-        const result = module[hook](win, api);
-
-        // An async init reports its failure when it comes.
-        if (typeof result?.catch === "function") {
-          result.catch(error => this.#reportScriptError(modId, error));
-        }
-      } catch (error) {
-        console.error(`[ZenMods]: ${hook} of ${modId} failed:`, error);
-
-        complete = false;
-        this.#errors.set(modId, {
-          type: "script-failed",
-          message: String(error?.message ?? error),
-        });
-      }
-    }
-
-    return complete;
-  }
-
-  /**
-   * Marks a mod whose script failed after it started, and tells the UI.
-   *
-   * @param {string} modId
-   * @param {*} error
-   */
-  #reportScriptError(modId, error) {
-    console.error(`[ZenMods]: A script of ${modId} failed:`, error);
-
-    this.#errors.set(modId, {
-      type: "script-failed",
-      message: String(error?.message ?? error),
-    });
-    Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
-  }
-
-  /**
-   * Imports the scripts of every enabled mod whose scripts the user approved,
-   * while scripts are allowed, and forgets the ones that shouldn't run
-   * anymore. Store mods don't run scripts: the store doesn't review them.
-   */
-  async #loadScripts() {
-    const wanted = this.scriptsEnabled
-      ? this.#orderedMods().filter(
-          mod =>
-            mod.enabled !== false &&
-            this.#areScriptsApproved(mod) &&
-            declaredScripts(mod).length
-        )
-      : [];
-    const wantedIds = new Set(wanted.map(mod => mod.id));
-
-    for (const [modId, loaded] of this.#scripts) {
-      if (!wantedIds.has(modId)) {
-        this.#forgetScripts(modId, loaded);
-        this.#scripts.delete(modId);
-      }
-    }
-
-    for (const mod of wanted) {
-      const folder = this.getModFolder(mod.id);
-      const loaded = this.#scripts.get(mod.id);
-      let host = null;
-
-      try {
-        const hash = await this.#hashScripts(mod.id, folder);
-
-        if (loaded?.hash === hash) {
-          continue;
-        }
-
-        if (mod.source === "github" && hash !== mod.approvedScriptsHash) {
-          throw new Error("The scripts changed since they were allowed.");
-        }
-
-        const directory = Cc["@mozilla.org/file/local;1"].createInstance(
-          Ci.nsIFile
-        );
-
-        directory.initWithPath(folder);
-        host = `${SCRIPT_HOST_PREFIX}${hash.slice(0, 16)}`;
-        lazy.resProtocol.setSubstitution(
-          host,
-          Services.io.newFileURI(directory)
-        );
-
-        const scripts = declaredScripts(mod).map(script => ({
-          ...script,
-          url: `resource://${host}/${encodePath(script.path)}`,
-        }));
-        const modules = scripts
-          .filter(({ kind }) => kind === "module")
-          .map(({ url }) => ChromeUtils.importESModule(url));
-        const documentScripts = scripts
-          .filter(({ kind }) => kind !== "module")
-          .map(script => ({
-            ...script,
-            include: urlPatterns(script.include),
-            exclude: urlPatterns(script.exclude),
-          }));
-
-        if (loaded) {
-          this.#forgetScripts(mod.id, loaded);
-        }
-
-        this.#scripts.set(mod.id, { hash, host, modules, documentScripts });
-
-        if (this.#errors.get(mod.id)?.type === "script-failed") {
-          this.#errors.delete(mod.id);
-        }
-
-        if (documentScripts.length) {
-          this.#runInOpenDocuments();
-        }
-      } catch (error) {
-        console.error(
-          `[ZenMods]: Could not load the scripts of ${mod.name} (${mod.id}):`,
-          error
-        );
-
-        // A version that loaded before keeps running.
-        if (host && host !== loaded?.host) {
-          lazy.resProtocol.setSubstitution(host, null);
-        }
-
-        this.#errors.set(mod.id, {
-          type: "script-failed",
-          message: String(error?.message ?? error),
-        });
-      }
-    }
-  }
-
-  /**
-   * @param {string} modId
-   * @param {string} host - A resource host of the mod's scripts whose code
-   * keeps running until a restart
-   */
-  #markRan(modId, host) {
-    if (!this.#ranHosts.has(modId)) {
-      this.#ranHosts.set(modId, new Set());
-    }
-
-    this.#ranHosts.get(modId).add(host);
-  }
-
-  /**
-   * Stops a mod's scripts from reaching more documents. The resource host
-   * stays while code that ran from it may still import its files.
-   *
-   * @param {string} modId
-   * @param {{host: string}} loaded
-   */
-  #forgetScripts(modId, { host }) {
-    if (!this.#ranHosts.get(modId)?.has(host)) {
-      lazy.resProtocol.setSubstitution(host, null);
-    }
-  }
-
-  /**
-   * @param {string} url - A document's URL
-   * @returns {{modId: string, host: string, script: object}[]} The `.uc.js`
-   * and `.uc.mjs` scripts meant for it, in the order they load
-   */
-  #documentScriptsFor(url) {
-    const matching = [];
-
-    for (const [modId, { host, documentScripts }] of this.#scripts) {
-      for (const script of documentScripts) {
-        if (script.include?.test(url) && !script.exclude?.test(url)) {
-          matching.push({ modId, host, script });
-        }
-      }
-    }
-
-    return matching.sort(
-      (first, second) => first.script.loadOrder - second.script.loadOrder
+  #loadScripts() {
+    return this.#scripts.load(
+      this.scriptsEnabled
+        ? this.#orderedMods().filter(
+            mod =>
+              mod.enabled !== false &&
+              this.#areScriptsApproved(mod) &&
+              declaredScripts(mod).length
+          )
+        : []
     );
-  }
-
-  /**
-   * Runs `.uc.js` and `.uc.mjs` scripts the way userChrome.js loaders do:
-   * once a document they're meant for is parsed, classic scripts in its
-   * global and modules in its own module map. A script that throws can't
-   * stop the others.
-   *
-   * @param {Document} doc
-   */
-  #runDocumentScripts(doc) {
-    let ran = this.#documentScripts.get(doc);
-    let failed = false;
-
-    if (!ran) {
-      ran = new Set();
-      this.#documentScripts.set(doc, ran);
-    }
-
-    this.#exposeAPI(doc);
-
-    for (const { modId, host, script } of this.#documentScriptsFor(doc.URL)) {
-      if (ran.has(script.url)) {
-        continue;
-      }
-
-      ran.add(script.url);
-
-      this.#markRan(modId, host);
-
-      try {
-        if (script.kind === "uc.js") {
-          Services.scriptloader.loadSubScriptWithOptions(script.url, {
-            target: doc.documentGlobal,
-            ignoreCache: true,
-          });
-        } else {
-          doc.documentGlobal.ChromeUtils.importESModule(script.url, {
-            global: "current",
-          });
-        }
-      } catch (error) {
-        console.error(
-          `[ZenMods]: ${script.path} of ${modId} failed in ${doc.URL}:`,
-          error
-        );
-
-        failed = true;
-        this.#errors.set(modId, {
-          type: "script-failed",
-          message: String(error?.message ?? error),
-        });
-      }
-    }
-
-    if (failed) {
-      Services.obs.notifyObservers(null, ZEN_MODS_UPDATE_TOPIC);
-    }
-  }
-
-  /**
-   * Gives `.uc.js` and `.uc.mjs` scripts what modules get in `init`: they
-   * run in the window's own global, where nothing can be passed to them, so
-   * the global `zen` hands each one its mod's, told apart by the file of the
-   * script that reads it. Anyone else reads undefined. A frame that
-   * navigates gets a new global, so it's per document.
-   *
-   * @param {Document} doc
-   */
-  #exposeAPI(doc) {
-    if (this.#documentAPIs.has(doc)) {
-      return;
-    }
-
-    const win = doc.documentGlobal;
-    const apis = new Map();
-
-    this.#documentAPIs.set(doc, apis);
-    win.addEventListener(
-      "unload",
-      () => {
-        for (const api of apis.values()) {
-          api.dispose();
-        }
-      },
-      { once: true }
-    );
-    Object.defineProperty(win, "zen", {
-      configurable: true,
-      get: () => {
-        const file = Components.stack.caller?.filename?.split(" ")[0];
-        const host = file && URL.parse(file)?.host;
-        const modId = [...this.#ranHosts].find(([, hosts]) =>
-          hosts.has(host)
-        )?.[0];
-
-        if (!modId) {
-          return undefined;
-        }
-
-        if (!apis.has(modId)) {
-          const { name = "", version = "" } = this.#mods[modId] ?? {};
-
-          apis.set(
-            modId,
-            new lazy.ZenModAPI(win, { id: modId, name, version }, error =>
-              this.#reportScriptError(modId, error)
-            )
-          );
-        }
-
-        return apis.get(modId);
-      },
-    });
-  }
-
-  /**
-   * Runs document scripts in the documents already open, and in every one
-   * parsed from now on.
-   */
-  #runInOpenDocuments() {
-    const runWhenParsed = doc => {
-      if (doc.readyState === "loading") {
-        doc.addEventListener(
-          "DOMContentLoaded",
-          () => this.#runDocumentScripts(doc),
-          { once: true }
-        );
-      } else {
-        this.#runDocumentScripts(doc);
-      }
-    };
-
-    if (!this.#isWatchingDocuments) {
-      this.#isWatchingDocuments = true;
-      Services.obs.addObserver(doc => {
-        if (
-          doc.nodePrincipal?.isSystemPrincipal &&
-          doc.URL !== "about:blank" &&
-          this.#documentScriptsFor(doc.URL).length
-        ) {
-          runWhenParsed(doc);
-        }
-      }, "document-element-inserted");
-    }
-
-    for (const win of Services.wm.getEnumerator(null)) {
-      runWhenParsed(win.document);
-    }
-  }
-
-  /**
-   * Hashes every script file in a mod's folder, the ones its scripts import
-   * included, so any change gives the scripts a new resource host.
-   *
-   * @param {string} modId
-   * @param {string} folder
-   * @returns {Promise<string>} A hex SHA-256
-   */
-  async #hashScripts(modId, folder) {
-    const files = await listModFiles(folder, SCRIPT_FILE_RE, MAX_SCRIPT_FILES);
-    const encoder = new TextEncoder();
-    const chunks = [encoder.encode(modId)];
-
-    for (const { path } of files) {
-      chunks.push(
-        encoder.encode(`\0${path.slice(folder.length)}\0`),
-        await IOUtils.read(path)
-      );
-    }
-
-    const bytes = new Uint8Array(
-      chunks.reduce((total, chunk) => total + chunk.length, 0)
-    );
-    let offset = 0;
-
-    for (const chunk of chunks) {
-      bytes.set(chunk, offset);
-      offset += chunk.length;
-    }
-
-    const digest = await crypto.subtle.digest("SHA-256", bytes);
-
-    return Array.from(new Uint8Array(digest), byte =>
-      byte.toString(16).padStart(2, "0")
-    ).join("");
   }
 
   /**
@@ -2299,7 +906,7 @@ class nsZenModsManager {
    */
   isStoreUrl(url) {
     try {
-      this.#assertAllowedUrl(String(url), this.#storeUrls());
+      assertAllowedUrl(String(url), this.#storeUrls());
 
       return true;
     } catch {
@@ -2609,7 +1216,7 @@ class nsZenModsManager {
    */
   async #stageGitHubUpdate(mod, staged, pending) {
     const source = gitHubSourceOf(mod);
-    const sha = await this.#resolveGitHubCommit(source);
+    const sha = await resolveGitHubCommit(source);
     const stylePath = this.#styleFile(mod);
     const hasFiles = !stylePath || (await IOUtils.exists(stylePath));
 
@@ -2617,9 +1224,10 @@ class nsZenModsManager {
       return;
     }
 
-    const update = await this.#stageGitHub(
+    const update = await stageGitHub(
+      this.modsRootPath,
       mod.id,
-      await this.#readGitHubCommit(source, sha)
+      await readGitHubCommit(source, sha)
     );
     const { scriptsHash } = update.mod;
 
@@ -2783,79 +1391,11 @@ class nsZenModsManager {
   }
 
   /**
-   * Mod files only come over HTTPS from where they're expected, also after
-   * redirects.
-   *
-   * @param {string} url
-   * @param {(string|RegExp)[]} allowed - URL prefixes, or patterns
-   */
-  #assertAllowedUrl(url, allowed) {
-    const parsed = URL.parse(url);
-
-    if (parsed?.protocol !== "https:") {
-      throw new Error(`[ZenMods]: Refusing a non-HTTPS mod URL: ${url}`);
-    }
-
-    const isAllowed = allowed.some(prefix =>
-      prefix instanceof RegExp
-        ? prefix.test(parsed.href)
-        : parsed.href.startsWith(prefix)
-    );
-
-    if (!isAllowed) {
-      throw new Error(`[ZenMods]: Refusing a mod URL from elsewhere: ${url}`);
-    }
-  }
-
-  /**
-   * @param {string} url
-   * @param {(string|RegExp)[]} [allowed] - URL prefixes, or patterns, it may
-   * come from; the store by default
-   * @param {Record<string, string>} [headers]
+   * @param {string} url - A file from the store
    * @returns {Promise<Uint8Array>}
    */
-  async #download(url, allowed = this.#storeUrls(), headers = {}) {
-    this.#assertAllowedUrl(url, allowed);
-
-    let lastError;
-
-    for (let attempt = 1; attempt <= DOWNLOAD_ATTEMPTS; attempt++) {
-      try {
-        const response = await fetch(url, { headers });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status} for ${url}`);
-        }
-
-        this.#assertAllowedUrl(response.url, allowed);
-
-        if (Number(response.headers.get("content-length")) > MAX_FILE_BYTES) {
-          throw new Error(`${url} is larger than ${MAX_FILE_BYTES} bytes`);
-        }
-
-        const buffer = await response.arrayBuffer();
-
-        if (buffer.byteLength > MAX_FILE_BYTES) {
-          throw new Error(`${url} is larger than ${MAX_FILE_BYTES} bytes`);
-        }
-
-        return new Uint8Array(buffer);
-      } catch (error) {
-        lastError = error;
-
-        if (attempt < DOWNLOAD_ATTEMPTS) {
-          console.warn(
-            `[ZenMods]: Download failed (attempt ${attempt} of ${DOWNLOAD_ATTEMPTS}), retrying in ${RETRY_DELAY_MS}ms.`,
-            url,
-            error
-          );
-
-          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
-        }
-      }
-    }
-
-    throw lastError;
+  #download(url) {
+    return download(url, this.#storeUrls());
   }
 
   /**

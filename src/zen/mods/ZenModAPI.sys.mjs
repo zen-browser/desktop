@@ -343,6 +343,7 @@ export class ZenModAPI {
     commandElement.id = `${elementId}-command`;
     commandElement.addEventListener("command", this.#guard(command));
     keyElement.id = elementId;
+
     if (!taken) {
       keyElement.setAttribute(
         hasKey ? "key" : "keycode",

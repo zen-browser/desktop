@@ -74,6 +74,10 @@ class nsZenMods extends nsZenPreloadedFeature {
     }
   }
 
+  /**
+   * Applies the preferences of the enabled mods, drops what mods no
+   * longer set, and starts or stops their scripts in this window.
+   */
   #apply() {
     const root = document.documentElement;
     const previousProperties = this.#customProperties;
@@ -112,6 +116,11 @@ class nsZenMods extends nsZenPreloadedFeature {
     gZenModsManager.syncScripts(window);
   }
 
+  /**
+   * @param {string} property - The preference's name
+   * @param {{type: string, sanitizedName: string}} watched - Its type, and
+   * the sanitized name of its mod
+   */
   #applyPreference(property, { type, sanitizedName }) {
     const sanitizedProperty = property.replaceAll(DOT_RE, "-");
     const value = Services.prefs.getStringPref(property, "");
@@ -155,6 +164,9 @@ class nsZenMods extends nsZenPreloadedFeature {
     }
   }
 
+  /**
+   * Stops watching the preferences of the mods applied last.
+   */
   #unwatchPrefs() {
     for (const property of this.#watchedPrefs.keys()) {
       Services.prefs.removeObserver(property, this);

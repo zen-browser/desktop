@@ -882,18 +882,22 @@ class nsZenModsManager {
 
   #isPollingLocalMods = false;
 
+  /** @returns {string} The folder that holds downloaded mods */
   get modsRootPath() {
     return PathUtils.join(PathUtils.profileDir, "chrome", "zen-themes");
   }
 
+  /** @returns {string} The file that lists the installed mods */
   get modsDataFile() {
     return PathUtils.join(PathUtils.profileDir, "zen-themes.json");
   }
 
+  /** @returns {string} The stylesheet built for Zen's windows */
   get #styleSheetPath() {
     return PathUtils.join(PathUtils.profileDir, "chrome", "zen-themes.css");
   }
 
+  /** @returns {string} The stylesheet built for web pages */
   get #contentStyleSheetPath() {
     return PathUtils.join(
       PathUtils.profileDir,
@@ -1004,6 +1008,9 @@ class nsZenModsManager {
     return this.#ready;
   }
 
+  /**
+   * Reads the installed mods and applies them: what `init` waits for.
+   */
   async #load() {
     // The old way to tell windows about changes; profiles still carry it.
     Services.prefs.clearUserPref("zen.mods.updated-value-observer");
@@ -1627,6 +1634,10 @@ class nsZenModsManager {
     return () => this.#localWatchers.delete(watcher);
   }
 
+  /**
+   * Reloads a local mod when its files change, for as long as anyone
+   * watches them.
+   */
   async #pollLocalMods() {
     const signatures = new Map();
 
@@ -2457,6 +2468,10 @@ class nsZenModsManager {
     ChromeUtils.idleDispatch(() => this.checkForUpdates(), { timeout: 1000 });
   }
 
+  /**
+   * @returns {Promise<object[]|null>} The updated mods, or null if the
+   * store could not be reached
+   */
   async #runUpdateCheck() {
     await this.init();
 
@@ -2731,6 +2746,13 @@ class nsZenModsManager {
     });
   }
 
+  /**
+   * Moves a staged folder to where the mod's folder is, and puts the old
+   * one back if that fails.
+   *
+   * @param {string} staging
+   * @param {string} folder
+   */
   async #replaceFolder(staging, folder) {
     const previous = `${staging}.previous`;
     const hadFolder = await IOUtils.exists(folder);
@@ -2836,6 +2858,12 @@ class nsZenModsManager {
     throw lastError;
   }
 
+  /**
+   * A data file that isn't a list of mods is replaced by an empty one, and
+   * the user is told.
+   *
+   * @returns {Promise<Record<string, object>>} The installed mods
+   */
   async #readRegistry() {
     let data;
 
@@ -2875,6 +2903,9 @@ class nsZenModsManager {
     return mods;
   }
 
+  /**
+   * @param {Record<string, object>} mods - Every installed mod, by id
+   */
   async #writeRegistry(mods) {
     await IOUtils.writeJSON(this.modsDataFile, mods, {
       tmpPath: `${this.modsDataFile}.tmp`,

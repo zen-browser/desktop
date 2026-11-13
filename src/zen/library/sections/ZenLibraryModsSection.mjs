@@ -288,11 +288,9 @@ async function installFromFolder() {
 }
 
 /**
- * Installs a mod from a GitHub repository the user names. Zen doesn't
- * review those, so the user agrees to the mod, and to its scripts if it has
- * any, before anything is installed.
- */
-/**
+ * Tells the user a mod couldn't be installed, and that it was because it
+ * loads files from elsewhere when that's why.
+ *
  * @param {string} modName
  * @param {*} error - Why it couldn't be installed
  */
@@ -306,6 +304,11 @@ function showInstallFailed(modName, error) {
   });
 }
 
+/**
+ * Installs a mod from a GitHub repository the user names. Zen doesn't
+ * review those, so the user agrees to the mod, and to its scripts if it has
+ * any, before anything is installed.
+ */
 async function installFromGitHub() {
   const [title, text] = await document.l10n.formatValues([
     { id: "library-mods-github-title" },
@@ -372,6 +375,9 @@ async function installFromGitHub() {
   });
 }
 
+/**
+ * Checks every mod for updates now and tells the user what came of it.
+ */
 async function checkForUpdates() {
   const updates = await lazy.gZenModsManager.checkForUpdates();
 
@@ -386,6 +392,9 @@ async function checkForUpdates() {
   }
 }
 
+/**
+ * Turns every mod off, or back on.
+ */
 function toggleAllMods() {
   Services.prefs.setBoolPref(
     DISABLE_ALL_PREF,
@@ -393,10 +402,17 @@ function toggleAllMods() {
   );
 }
 
+/**
+ * Opens the store's page in a new tab.
+ */
 function browseStore() {
   window.openTrustedLinkIn(STORE_PAGE, "tab");
 }
 
+/**
+ * Saves the list of installed mods to a file the user picks, to import
+ * them elsewhere.
+ */
 async function exportMods() {
   const file = await pickJSONFile(
     Ci.nsIFilePicker.modeSave,
@@ -760,10 +776,12 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     });
   }
 
+  /** @returns {object|null} The mod whose preferences the panel shows */
   get #configuringMod() {
     return this.mods.find(mod => mod.id === this.configuring) ?? null;
   }
 
+  /** @returns {object|null} The store mod the panel shows */
   get #storeDetailMod() {
     return Array.isArray(this.storeMods)
       ? (this.storeMods.find(mod => mod.id === this.storeDetail) ?? null)
@@ -822,6 +840,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
   }
 
+  /**
+   * Installs a mod from the store; its button waits until it's done.
+   *
+   * @param {object} entry - The mod as the store lists it
+   */
   async #installFromStore(entry) {
     this.#installing.add(entry.id);
     this.requestUpdate();
@@ -842,10 +865,19 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
   // Actions
 
+  /**
+   * @param {object} mod - The mod to turn on or off
+   */
   async #toggle(mod) {
     await lazy.gZenModsManager.setModEnabled(mod.id, !isEnabled(mod));
   }
 
+  /**
+   * A click opens the mod's preferences, or turns it on or off if it has
+   * none.
+   *
+   * @param {object} mod
+   */
   #onRowClick(mod) {
     if (mod.preferences.length) {
       this.#configure(mod);
@@ -896,6 +928,12 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     await lazy.gZenModsManager.setModsOrder(mods.map(mod => mod.id));
   }
 
+  /**
+   * Removes a mod once the user agrees. A local mod's folder stays where
+   * it is.
+   *
+   * @param {object} mod
+   */
   async #remove(mod) {
     const agreed = await confirmAction(
       [
@@ -913,6 +951,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
   }
 
+  /**
+   * Downloads the mod's files again.
+   *
+   * @param {object} mod
+   */
   async #reinstall(mod) {
     try {
       await lazy.gZenModsManager.reinstallMod(mod.id);
@@ -927,6 +970,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
   }
 
+  /**
+   * Reads a local mod's folder again.
+   *
+   * @param {object} mod
+   */
   async #reloadLocal(mod) {
     try {
       await lazy.gZenModsManager.reloadLocalMod(mod.id);
@@ -941,6 +989,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
   }
 
+  /**
+   * Shows a local mod's folder in the system's file manager.
+   *
+   * @param {object} mod
+   */
   #showFolder(mod) {
     const folder = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 
@@ -987,6 +1040,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
   }
 
+  /**
+   * Lets the mod's scripts run once the user agrees.
+   *
+   * @param {object} mod
+   */
   async #approveScripts(mod) {
     if (await confirmScripts(mod.name)) {
       await lazy.gZenModsManager.approveScripts(mod.id);
@@ -1013,6 +1071,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
 
   // Context menu
 
+  /**
+   * @returns {Element} The context menu every mod row shares
+   */
   #buildMenu() {
     const menu = window.MozXULElement.parseXULToFragment(`
       <menupopup class="zen-library-mods-menu">
@@ -1089,6 +1150,13 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     return menu;
   }
 
+  /**
+   * Opens the context menu with only the actions that apply to the mod.
+   *
+   * @param {object} mod
+   * @param {Element} row - The mod's row, marked while the menu is open
+   * @param {MouseEvent} event - The right click
+   */
   #openMenu(mod, row, event) {
     this.#menu ??= this.#buildMenu();
 
@@ -1133,6 +1201,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     this.filtersOpen = true;
   }
 
+  /**
+   * Shows a store mod's details where the filters show.
+   *
+   * @param {object} entry - The mod as the store lists it
+   */
   #openStoreDetail(entry) {
     this.#cancelPanelTimer();
     this.configuring = null;
@@ -1140,6 +1213,10 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     this.filtersOpen = true;
   }
 
+  /**
+   * Closes the preferences or store panel and saves what the user typed;
+   * what it shows stays until it has faded out.
+   */
   #closePanel() {
     this.#flushPreferences();
     this.filtersOpen = false;
@@ -1153,6 +1230,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }, PANEL_FADE_MS);
   }
 
+  /**
+   * Keeps a panel that's closing from clearing the one opening next.
+   */
   #cancelPanelTimer() {
     if (this.#panelTimer) {
       clearTimeout(this.#panelTimer);
@@ -1296,6 +1376,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     return String(value) === String(expected);
   }
 
+  /**
+   * Saves the text preferences still waiting for the user to stop typing.
+   */
   #flushPreferences() {
     for (const [property, { timer, value }] of this.#pendingPreferences) {
       clearTimeout(timer);
@@ -1346,6 +1429,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     }
   }
 
+  /**
+   * @returns {Element} The menu every `dropdown` preference shares
+   */
   #buildPicker() {
     const menu = window.MozXULElement.parseXULToFragment(`
       <menupopup class="zen-library-mods-picker"/>
@@ -1504,6 +1590,11 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     `;
   }
 
+  /**
+   * The control for one preference, by its type.
+   *
+   * @param {object} preference
+   */
   #renderPreference(preference) {
     const { property, label, type } = preference;
 
@@ -1612,6 +1703,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     return nothing;
   }
 
+  /**
+   * @param {object} mod - An installed mod
+   */
   #renderMod(mod) {
     const enabled = isEnabled(mod);
     const initial = [...String(mod.name ?? "").trim()][0] ?? "?";
@@ -1719,6 +1813,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     `;
   }
 
+  /**
+   * While every mod is off, a notice with a button to turn them back on.
+   */
   #renderAllDisabledNotice() {
     if (!Services.prefs.getBoolPref(DISABLE_ALL_PREF, false)) {
       return nothing;
@@ -1736,6 +1833,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     `;
   }
 
+  /**
+   * The tabs for installed mods and the store, and the add button.
+   */
   #renderViews() {
     return html`
       <div class="zen-library-mods-views">
@@ -1840,6 +1940,9 @@ export class ZenLibraryModsSection extends ZenLibrarySearchSection {
     ></button>`;
   }
 
+  /**
+   * The store's mods, or why they aren't there yet.
+   */
   #renderStoreItems() {
     if (this.storeMods === "loading" || this.storeMods === null) {
       return html`<div

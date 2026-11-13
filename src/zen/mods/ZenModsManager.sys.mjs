@@ -1860,7 +1860,7 @@ class nsZenModsManager {
   /**
    * Imports the scripts of every enabled mod whose scripts the user approved,
    * while scripts are allowed, and forgets the ones that shouldn't run
-   * anymore. Only local mods run scripts: the store doesn't review them yet.
+   * anymore. Store mods don't run scripts: the store doesn't review them.
    */
   async #loadScripts() {
     const wanted = this.scriptsEnabled

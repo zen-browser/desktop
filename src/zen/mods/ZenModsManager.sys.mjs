@@ -523,14 +523,15 @@ class nsZenModsManager {
 
     manifest.stylePath = await findStyle(manifest.stylePath, exists);
 
-    if (
-      manifest.contentStylePath &&
-      !(await exists(manifest.contentStylePath))
-    ) {
-      console.warn(
-        `[ZenMods]: ${manifest.contentStylePath} is missing, skipping the mod's page styles.`
-      );
-      manifest.contentStylePath = null;
+    if (manifest.contentStylePath) {
+      const hasContentStyle = await exists(manifest.contentStylePath);
+
+      if (!hasContentStyle) {
+        console.warn(
+          `[ZenMods]: ${manifest.contentStylePath} is missing, skipping the mod's page styles.`
+        );
+        manifest.contentStylePath = null;
+      }
     }
 
     if (
@@ -876,9 +877,8 @@ class nsZenModsManager {
    */
   async fetchStoreIndex() {
     const url = `${Services.prefs.getStringPref(STORE_URL_PREF)}themes.json`;
-    const index = JSON.parse(
-      new TextDecoder().decode(await this.#download(url))
-    );
+    const bytes = await this.#download(url);
+    const index = JSON.parse(new TextDecoder().decode(bytes));
 
     if (!index || typeof index !== "object") {
       throw new Error("[ZenMods]: The mods store index is invalid.");
@@ -933,7 +933,8 @@ class nsZenModsManager {
     }
 
     const url = `${Services.prefs.getStringPref(STORE_URL_PREF)}themes/${modId}/theme.json`;
-    const mod = JSON.parse(new TextDecoder().decode(await this.#download(url)));
+    const bytes = await this.#download(url);
+    const mod = JSON.parse(new TextDecoder().decode(bytes));
 
     this.#validateStoreMod(mod, modId);
 
@@ -1158,7 +1159,9 @@ class nsZenModsManager {
     try {
       const url = `${Services.prefs.getStringPref(STORE_URL_PREF)}themes.json`;
 
-      index = JSON.parse(new TextDecoder().decode(await this.#download(url)));
+      const bytes = await this.#download(url);
+
+      index = JSON.parse(new TextDecoder().decode(bytes));
     } catch (error) {
       console.error("[ZenMods]: Could not fetch the mods store:", error);
 
@@ -1309,10 +1312,9 @@ class nsZenModsManager {
         }
 
         try {
-          await IOUtils.write(
-            PathUtils.join(staging, name),
-            await this.#download(url)
-          );
+          const bytes = await this.#download(url);
+
+          await IOUtils.write(PathUtils.join(staging, name), bytes);
         } catch (error) {
           if (required) {
             throw error;
@@ -1399,7 +1401,7 @@ class nsZenModsManager {
    * @returns {Promise<Uint8Array>}
    */
   #download(url) {
-    return download(url, this.#storeUrls());
+    return download(url, { allowed: this.#storeUrls() });
   }
 
   /**

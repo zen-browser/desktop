@@ -167,8 +167,10 @@ export async function resolveGitHubCommit({ repo, ref }) {
   const api = gitHubApiUrl(repo);
   const response = await download(
     `${api}commits/${encodeURIComponent(ref ?? "HEAD")}`,
-    gitHubApiPrefixes(repo),
-    { Accept: "application/vnd.github.sha" }
+    {
+      allowed: gitHubApiPrefixes(repo),
+      headers: { Accept: "application/vnd.github.sha" },
+    }
   );
   const sha = new TextDecoder().decode(response).trim();
 
@@ -194,14 +196,10 @@ export async function readGitHubCommit({ repo, ref, folder }, sha) {
   }
 
   const api = gitHubApiUrl(repo);
-  const tree = JSON.parse(
-    new TextDecoder().decode(
-      await download(
-        `${api}git/trees/${sha}?recursive=1`,
-        gitHubApiPrefixes(repo)
-      )
-    )
-  );
+  const treeBytes = await download(`${api}git/trees/${sha}?recursive=1`, {
+    allowed: gitHubApiPrefixes(repo),
+  });
+  const tree = JSON.parse(new TextDecoder().decode(treeBytes));
 
   if (!Array.isArray(tree?.tree) || tree.truncated) {
     throw new Error(`[ZenMods]: Could not list the files of ${repo}.`);
@@ -240,18 +238,17 @@ export async function readGitHubCommit({ repo, ref, folder }, sha) {
 
   const paths = new Set(files.map(({ path }) => path));
   const raw = gitHubRawUrl(repo, folder, sha);
-  const manifest = parseManifest(
-    paths.has("theme.json")
-      ? JSON.parse(
-          new TextDecoder().decode(
-            await download(
-              `${raw}theme.json`,
-              gitHubRawPrefixes(repo, folder, sha)
-            )
-          )
-        )
-      : {}
-  );
+  let declared = {};
+
+  if (paths.has("theme.json")) {
+    const bytes = await download(`${raw}theme.json`, {
+      allowed: gitHubRawPrefixes(repo, folder, sha),
+    });
+
+    declared = JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  const manifest = parseManifest(declared);
 
   for (const { path } of manifest.scripts) {
     if (!paths.has(path)) {
@@ -308,6 +305,7 @@ export async function readGitHubCommit({ repo, ref, folder }, sha) {
  */
 export async function stageGitHub(root, modId, found) {
   const { repo, folder, sha, files } = found;
+
   await IOUtils.makeDirectory(root, { ignoreExisting: true });
 
   const staging = await IOUtils.createUniqueDirectory(root, ".github.staging");
@@ -315,16 +313,14 @@ export async function stageGitHub(root, modId, found) {
   const downloadFile = async path => {
     const target = PathUtils.join(staging, ...pathParts(path));
 
+    const bytes = await download(`${raw}${encodePath(path)}`, {
+      allowed: gitHubRawPrefixes(repo, folder, sha),
+    });
+
     await IOUtils.makeDirectory(PathUtils.parent(target), {
       ignoreExisting: true,
     });
-    await IOUtils.write(
-      target,
-      await download(
-        `${raw}${encodePath(path)}`,
-        gitHubRawPrefixes(repo, folder, sha)
-      )
-    );
+    await IOUtils.write(target, bytes);
   };
 
   const mod = { ...found, id: modId, scriptsHash: null };

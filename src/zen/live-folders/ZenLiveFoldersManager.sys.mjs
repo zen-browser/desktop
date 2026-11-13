@@ -398,6 +398,19 @@ class nsZenLiveFoldersManager {
     });
   }
 
+  clearDismissedItems(id) {
+    const prefix = `${id}:`;
+
+    // Remove the dismissed items associated with the folder from the set
+    this.dismissedItems = new Set(
+      Array.from(this.dismissedItems).filter(
+        itemId => !itemId.startsWith(prefix)
+      )
+    );
+
+    this.saveState();
+  }
+
   deleteFolder(id, deleteFolder = true) {
     const liveFolder = this.liveFolders.get(id);
     if (!liveFolder) {
@@ -407,14 +420,7 @@ class nsZenLiveFoldersManager {
     liveFolder.stop();
     this.liveFolders.delete(id);
 
-    const prefix = `${id}:`;
-
-    // Remove the dismissed items associated with the folder from the set
-    this.dismissedItems = new Set(
-      Array.from(this.dismissedItems).filter(
-        itemId => !itemId.startsWith(prefix)
-      )
-    );
+    this.clearDismissedItems(id);
 
     if (deleteFolder) {
       const folder = this.getFolderForLiveFolder(liveFolder);
@@ -466,6 +472,12 @@ class nsZenLiveFoldersManager {
       }
 
       existingItemIds.add(itemId);
+    }
+
+    // Strip live-folder item id from outdated tabs so their closure is not
+    // recorded as a user dismissal in #onTabDismiss.
+    for (const tab of outdatedTabs) {
+      tab.removeAttribute("zen-live-folder-item-id");
     }
 
     this.window.gBrowser.removeTabs(outdatedTabs, {

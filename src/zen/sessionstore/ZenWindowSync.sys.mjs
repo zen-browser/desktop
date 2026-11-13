@@ -644,6 +644,69 @@ class nsZenWindowSync {
   }
 
   /**
+   * Finds the item in aWindow that aTargetItem should be placed after, so it
+   * matches the position of aOriginalItem.
+   *
+   * Sync events are replayed asynchronously, after a whole batch of items has
+   * already moved in the source window (e.g. "Move to Space" on several tabs).
+   * The original's previous sibling may therefore be an item whose copy in
+   * aWindow hasn't been moved yet and still lives in another space, section
+   * or folder. Anchoring on it would drop the target into the wrong place, so
+   * we skip siblings whose copy is missing or isn't in the same place as the
+   * original sibling.
+   *
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aOriginalItem - The original item to match.
+   * @param {Window} aWindow - The window containing the target item.
+   * @returns {MozTabbrowserTab|MozTabbrowserTabGroup|null} The anchor item, or
+   *   null if the target should be the first item in its container.
+   */
+  #findSyncedAnchor(aOriginalItem, aWindow) {
+    const { gBrowser } = aWindow;
+    let sibling = aOriginalItem.previousElementSibling;
+    while (sibling) {
+      if (sibling.classList.contains("space-fake-collapsible-start")) {
+        // Skip space fake elements.
+        sibling = sibling.previousElementSibling;
+        continue;
+      }
+      if (!gBrowser.isTabGroup(sibling) && !gBrowser.isTab(sibling)) {
+        return null;
+      }
+      if (
+        !sibling.hasAttribute("id") ||
+        sibling.hasAttribute("zen-empty-tab")
+      ) {
+        return null;
+      }
+      const peer = this.getItemFromWindow(aWindow, sibling.id);
+      if (peer && this.#isInSamePlace(peer, sibling)) {
+        return peer;
+      }
+      sibling = sibling.previousElementSibling;
+    }
+    return null;
+  }
+
+  /**
+   * Checks whether aPeer sits in the same space, section (essentials, pinned
+   * or normal) and folder in its window as aItem does in its own window.
+   *
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aPeer - The copy to check.
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aItem - The item it copies.
+   * @returns {boolean} True if both items are in the same place.
+   */
+  #isInSamePlace(aPeer, aItem) {
+    return (
+      aPeer.closest("zen-workspace")?.id ===
+        aItem.closest("zen-workspace")?.id &&
+      aPeer.hasAttribute("zen-essential") ===
+        aItem.hasAttribute("zen-essential") &&
+      !!aPeer.pinned === !!aItem.pinned &&
+      aPeer.group?.id === aItem.group?.id
+    );
+  }
+
+  /**
    * Moves the target item to match the position of the original item.
    *
    * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aOriginalItem - The original item to match.
@@ -677,20 +740,8 @@ class nsZenWindowSync {
       }
     }
 
-    let originalSibling = aOriginalItem.previousElementSibling;
-    if (originalSibling?.classList.contains("space-fake-collapsible-start")) {
-      // Skip space fake elements.
-      originalSibling = originalSibling.previousElementSibling;
-    }
-    let isFirstTab = true;
-    if (
-      gBrowser.isTabGroup(originalSibling) ||
-      gBrowser.isTab(originalSibling)
-    ) {
-      isFirstTab =
-        !originalSibling.hasAttribute("id") ||
-        originalSibling.hasAttribute("zen-empty-tab");
-    }
+    const relativeTab = this.#findSyncedAnchor(aOriginalItem, aWindow);
+    const isFirstTab = !relativeTab;
 
     gBrowser.zenHandleTabMove(aTargetItem, () => {
       if (isFirstTab) {
@@ -727,7 +778,6 @@ class nsZenWindowSync {
         }
         return;
       }
-      const relativeTab = this.getItemFromWindow(aWindow, originalSibling.id);
       if (relativeTab) {
         try {
           gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(

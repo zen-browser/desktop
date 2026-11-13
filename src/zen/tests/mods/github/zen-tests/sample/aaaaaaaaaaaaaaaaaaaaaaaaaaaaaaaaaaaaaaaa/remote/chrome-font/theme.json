@@ -1,1 +1,5 @@
-{"name": "chrome-font", "version": "1.0.0", "style": {"chrome": "userChrome.css"}}
+{
+  "name": "chrome-font",
+  "version": "1.0.0",
+  "style": { "chrome": "userChrome.css" }
+}

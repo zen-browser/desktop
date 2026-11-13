@@ -1,1 +1,5 @@
-{"name": "escaped-url", "version": "1.0.0", "style": {"content": "userContent.css"}}
+{
+  "name": "escaped-url",
+  "version": "1.0.0",
+  "style": { "content": "userContent.css" }
+}

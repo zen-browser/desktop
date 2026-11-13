@@ -1,1 +1,5 @@
-{"name": "svg-encoding", "version": "1.0.0", "style": {"chrome": "userChrome.css"}}
+{
+  "name": "svg-encoding",
+  "version": "1.0.0",
+  "style": { "chrome": "userChrome.css" }
+}

@@ -506,6 +506,8 @@ class nsZenUIManager {
     return this.#urlbar.handleNewTab(...args);
   }
 
+  switchUrlbarToCurrentTab() {
+    return this.#urlbar.switchToCurrentTab();
   /**
    * The clipboard text a new tab would be opened with, shaped the same way
    * BrowserCommands.openTab shapes it, or an empty string when there is

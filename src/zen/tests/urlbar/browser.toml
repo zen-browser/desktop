@@ -13,6 +13,8 @@ support-files = [
 
 ["browser_issue_7385.js"]
 
+["browser_issue_15993.js"]
+
 ["browser_sidebar_provider.js"]
 
 ["browser_top_sites_shortcuts.js"]

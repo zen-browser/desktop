@@ -19,6 +19,8 @@ support-files = [
 
 ["browser_share_import.js"]
 
+["browser_share_scheme_guard.js"]
+
 ["browser_share_serialize.js"]
 
 ["browser_share_split_link.js"]

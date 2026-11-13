@@ -1,5 +1,5 @@
 diff --git a/browser/components/migration/content/migration-wizard.mjs b/browser/components/migration/content/migration-wizard.mjs
-index f6ada525e6f4fdb0a5ab311d0d47f8bb87d00ccc..b88780ceef6c6df9959f0a7ae95969ed9d12d8ed 100644
+index cadf7a21603f37d16bc2d48f8d83f85fc7292f0a..28a633d601364ff60538484e280c6d5dddd26c8b 100644
 --- a/browser/components/migration/content/migration-wizard.mjs
 +++ b/browser/components/migration/content/migration-wizard.mjs
 @@ -108,6 +108,9 @@ export class MigrationWizard extends HTMLElement {
@@ -49,14 +49,21 @@ index f6ada525e6f4fdb0a5ab311d0d47f8bb87d00ccc..b88780ceef6c6df9959f0a7ae95969ed
      );
    }
  
-@@ -720,10 +734,17 @@ export class MigrationWizard extends HTMLElement {
+@@ -492,6 +506,7 @@ export class MigrationWizard extends HTMLElement {
+     if (document.createXULElement) {
+       let panel = document.createXULElement("panel");
++      panel.setAttribute("nonnative", "true");
+       panel.appendChild(this.#browserProfileSelectorList);
+       this.#shadowRoot.appendChild(panel);
+     } else {
+       this.#shadowRoot.appendChild(this.#browserProfileSelectorList);
+@@ -724,9 +739,14 @@ export class MigrationWizard extends HTMLElement {
      }
  
      if (state.migratorKey) {
 -      let panelItem = this.#browserProfileSelectorList.querySelector(
 -        `panel-item[key="${state.migratorKey}"]`
 -      );
--      this.#onBrowserProfileSelectionChanged(panelItem);
 +      let panelItems = [
 +        ...this.#browserProfileSelectorList.querySelectorAll(
 +          `panel-item[key="${state.migratorKey}"]`
@@ -65,13 +72,10 @@ index f6ada525e6f4fdb0a5ab311d0d47f8bb87d00ccc..b88780ceef6c6df9959f0a7ae95969ed
 +      let panelItem =
 +        panelItems.find(item => item.profile?.id == state.profileId) ||
 +        panelItems[0];
-+      if (panelItem) {
-+        this.#onBrowserProfileSelectionChanged(panelItem);
-+      }
-     }
- 
-     let fileImportErrorMessageEl = selectionPage.querySelector(
-@@ -1287,6 +1308,8 @@ export class MigrationWizard extends HTMLElement {
+       if (panelItem) {
+         this.#onBrowserProfileSelectionChanged(panelItem);
+       }
+@@ -1293,6 +1313,8 @@ export class MigrationWizard extends HTMLElement {
          "migration-list-autofill-label",
        [MigrationWizardConstants.DISPLAYED_RESOURCE_TYPES.PAYMENT_METHODS]:
          "migration-list-payment-methods-label",

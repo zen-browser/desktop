@@ -1,0 +1,5 @@
+{
+  "font-size": {
+    "--zen-branding-title-font-size": { "value": "6rem" }
+  }
+}

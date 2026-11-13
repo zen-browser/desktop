@@ -3,6 +3,7 @@ subsuite = "integration"
 tags = "local os_integration"
 
 ["test_automatic_startup_window_features_mismatch.py"]
+skip-if = [ "true" ] # Bug 2084381
 
 ["test_automatic_with_taskbar_tab_window_features_mismatch.py"]
 

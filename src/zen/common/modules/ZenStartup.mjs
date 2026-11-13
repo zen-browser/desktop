@@ -14,6 +14,7 @@ import checkForZenUpdates, {
 class ZenStartup {
   #watermarkIgnoreElements = ["zen-toast-container", "zen-browser-background"];
   #hasInitializedLayout = false;
+  #observingDelayedStartup = false;
   #initialized = Promise.withResolvers();
 
   isReady = false;
@@ -80,14 +81,28 @@ class ZenStartup {
       this.delayedStartupFinished();
     } else {
       Services.obs.addObserver(this, "browser-delayed-startup-finished");
+      this.#observingDelayedStartup = true;
+      window.addEventListener(
+        "unload",
+        () => this.#stopObservingDelayedStartup(),
+        { once: true }
+      );
     }
+  }
+
+  #stopObservingDelayedStartup() {
+    if (!this.#observingDelayedStartup) {
+      return;
+    }
+    this.#observingDelayedStartup = false;
+    Services.obs.removeObserver(this, "browser-delayed-startup-finished");
   }
 
   observe(aSubject, aTopic) {
     // This nsIObserver method allows us to defer initialization until after
     // this window has finished painting and starting up.
     if (aTopic == "browser-delayed-startup-finished" && aSubject == window) {
-      Services.obs.removeObserver(this, "browser-delayed-startup-finished");
+      this.#stopObservingDelayedStartup();
       this.delayedStartupFinished();
     }
   }

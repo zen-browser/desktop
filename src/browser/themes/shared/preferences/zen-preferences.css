@@ -39,34 +39,34 @@ html|dialog {
 }
 
 .navigation {
-  padding: 4%;
+  padding: var(--zen-preferences-navigation-padding);
   background: var(--zen-colors-tertiary);
 }
 
 groupbox button {
-  border-radius: calc(5px * var(--zen-squircle-value)) !important;
+  border-radius: calc(var(--zen-border-radius-5) * var(--zen-squircle-value)) !important;
 }
 
 groupbox button,
 groupbox menulist {
-  background-color: light-dark(#f1f1f1, #363636);
+  background-color: var(--zen-preferences-button-background);
   color: light-dark(black, white);
 }
 
 groupbox h2 {
-  opacity: 0.7;
-  font-size: 15px;
+  opacity: var(--zen-opacity-70);
+  font-size: var(--zen-font-size-15);
 }
 
 #categories > .category {
   margin-left: 0 !important;
-  min-height: 40px !important;
+  min-height: var(--zen-size-40) !important;
   position: relative;
-  padding-inline: 20px !important;
+  padding-inline: var(--zen-space-20) !important;
 }
 
 .textbox-search-sign {
-  margin-right: 15px;
+  margin-right: var(--zen-space-15);
 }
 
 .sidebar-footer-list {
@@ -74,15 +74,15 @@ groupbox h2 {
 }
 
 .category-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
+  width: var(--icon-size-medium);
+  height: var(--icon-size-medium);
+  margin-right: var(--zen-space-5);
 }
 
 /* Look and feel */
 
 #webAppearanceSettings {
-  margin-bottom: 15px;
+  margin-bottom: var(--zen-space-15);
 }
 
 #category-zen-looks > .category-icon {
@@ -90,14 +90,14 @@ groupbox h2 {
 }
 
 #zenLooksAndFeelGroup > html|div:last-of-type {
-  margin-top: 15px;
+  margin-top: var(--zen-space-15);
 }
 
 .zen-compact-mode-styles-browser-wrapper {
   width: 55%;
-  height: 60px;
+  height: var(--zen-size-60);
   display: flex;
-  border-radius: 10px;
+  border-radius: var(--zen-border-radius-10);
   border: 1px solid var(--zen-colors-border);
   background: var(--zen-colors-tertiary);
   position: relative;
@@ -109,20 +109,20 @@ groupbox h2 {
 
   box-shadow: var(--zen-compact-mode-styles-shadow);
 
-  padding: 7px;
+  padding: var(--zen-space-7);
 
   &[top] div {
     width: 100%;
     background: var(--zen-primary-color);
-    border-radius: 5px;
-    height: 18px;
+    border-radius: var(--zen-border-radius-5);
+    height: var(--zen-size-18);
     box-shadow: var(--zen-compact-mode-styles-shadow);
   }
 
   &[left] div {
-    width: 18px;
+    width: var(--zen-size-18);
     background: var(--zen-primary-color);
-    border-radius: 5px;
+    border-radius: var(--zen-border-radius-5);
     height: 100%;
     box-shadow: var(--zen-compact-mode-styles-shadow);
   }
@@ -131,7 +131,7 @@ groupbox h2 {
     width: 100%;
     height: 100%;
     background: var(--zen-colors-secondary);
-    border-radius: 5px;
+    border-radius: var(--zen-border-radius-5);
     box-shadow: var(--zen-compact-mode-styles-shadow);
   }
 }
@@ -163,22 +163,22 @@ groupbox h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 15px;
+  padding: var(--zen-space-15);
   background: var(--zen-colors-tertiary);
-  border-radius: 10px;
-  margin-bottom: 10px;
+  border-radius: var(--zen-border-radius-10);
+  margin-bottom: var(--zen-space-10);
 }
 
 #zen-theme-builder-color-picker {
-  width: 180px;
-  height: 180px;
-  border-radius: 10px;
-  margin-right: 10px;
+  width: var(--zen-preferences-color-picker-size);
+  height: var(--zen-preferences-color-picker-size);
+  border-radius: var(--zen-border-radius-10);
+  margin-right: var(--zen-space-10);
   position: relative;
 }
 
 #zen-theme-builder-color-picker-canvas {
-  border-radius: 10px;
+  border-radius: var(--zen-border-radius-10);
   width: 100%;
   height: 100%;
 }
@@ -187,13 +187,13 @@ groupbox h2 {
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(100% - 20px);
-  height: calc(100% - 20px);
-  border-radius: 10px;
-  margin: 10px;
-  background: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
+  width: calc(100% - var(--icon-size-medium));
+  height: calc(100% - var(--icon-size-medium));
+  border-radius: var(--zen-border-radius-10);
+  margin: var(--zen-space-10);
+  background: var(--zen-preferences-color-picker-deck-background);
   backdrop-filter: blur(15px);
-  border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  border: 2px solid var(--zen-color-contrast-10);
 }
 
 #zen-theme-builder-color-picker-thumb {
@@ -201,9 +201,9 @@ groupbox h2 {
   top: 0;
   left: 0;
   border: 4px solid light-dark(white, black);
-  width: 20px;
-  height: 20px;
-  border-radius: 50px;
+  width: var(--icon-size-medium);
+  height: var(--icon-size-medium);
+  border-radius: var(--border-radius-circle);
   background: var(--zen-primary-color);
   transform: translate(-50%, -50%);
 }
@@ -216,7 +216,7 @@ groupbox h2 {
 
 .zenThemeMarketplaceItem {
   border: 1px solid var(--zen-colors-border);
-  border-radius: 5px;
+  border-radius: var(--zen-border-radius-5);
   padding: var(--space-medium);
   position: relative;
   overflow-x: hidden;
@@ -227,7 +227,7 @@ groupbox h2 {
 }
 
 .zenThemeMarketplaceItemHomepageButton {
-  width: 30px;
+  width: var(--zen-size-30);
   min-width: 0;
   position: relative;
   cursor: pointer;
@@ -238,8 +238,8 @@ groupbox h2 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 18px;
-    height: 18px;
+    width: var(--zen-size-18);
+    height: var(--zen-size-18);
     background-image: url("chrome://browser/skin/home.svg");
     background-repeat: no-repeat;
     background-size: cover;
@@ -249,7 +249,7 @@ groupbox h2 {
 }
 
 .zenThemeMarketplaceItemConfigureButton {
-  width: 30px;
+  width: var(--zen-size-30);
   min-width: 0;
   position: relative;
   cursor: pointer;
@@ -260,8 +260,8 @@ groupbox h2 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 15px;
-    height: 15px;
+    width: var(--zen-size-15);
+    height: var(--zen-size-15);
     background-image: url("chrome://global/skin/icons/settings.svg");
     background-repeat: no-repeat;
     background-size: cover;
@@ -269,15 +269,15 @@ groupbox h2 {
 }
 
 .zenThemeMarketplaceItemPreferenceCheckbox {
-  margin-right: 10px;
+  margin-right: var(--zen-space-10);
 }
 
 .zenThemeMarketplaceItemPreference:first-of-type {
-  margin-top: 10px;
+  margin-top: var(--zen-space-10);
 }
 
 .zenThemeMarketplaceItemPreference:not(:last-of-type) {
-  margin-bottom: 10px;
+  margin-bottom: var(--zen-space-10);
 }
 
 .zenThemeMarketplaceItemPreferenceData > * {
@@ -310,8 +310,9 @@ groupbox h2 {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
+/* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector -- the list is filled dynamically and only gets a margin when it has items */
 #zenThemeMarketplaceList:has(> *) {
-  margin: 15px 0;
+  margin: var(--zen-space-15) 0;
 }
 
 .zenThemeMarketplaceItemUninstallButton,
@@ -328,8 +329,8 @@ groupbox h2 {
 .zenThemeMarketplaceItemPreferenceDialog {
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  min-width: 650px;
+  padding: var(--zen-space-10);
+  min-width: var(--zen-preferences-theme-dialog-min-width);
 }
 
 .zenThemeMarketplaceItemPreferenceDialogTopBar {
@@ -363,31 +364,31 @@ groupbox h2 {
   align-items: center;
 
   & moz-toggle {
-    margin-left: 10px;
+    margin-left: var(--zen-space-10);
   }
 }
 
 #zenLayoutList {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 10px;
+  gap: var(--zen-space-20);
+  margin-bottom: var(--zen-space-10);
 
   & > [layout] {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    font-weight: 600;
+    gap: var(--zen-space-3);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
 
     &[disabled="true"] {
-      opacity: 0.7;
+      opacity: var(--zen-opacity-70);
       cursor: not-allowed;
     }
 
     & img {
-      width: 250px;
-      border-radius: 10px;
+      width: var(--zen-preferences-layout-preview-width);
+      border-radius: var(--zen-border-radius-10);
       border: 4px solid transparent;
     }
 
@@ -415,6 +416,7 @@ groupbox h2 {
 #setting-control-sidebarChatbotFieldset,
 #setting-control-supportFirefox,
 .mission-message,
+html|setting-group[groupid="dataCollection"],
 html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid="browserTheme"]) {
   display: none !important;
 }

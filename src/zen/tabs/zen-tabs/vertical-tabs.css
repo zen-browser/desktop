@@ -30,7 +30,6 @@
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar="true"] {
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-platform: macos) and (not -moz-pref("zen.view.mac.show-three-dot-menu")) {
     &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
       position: absolute;
@@ -53,7 +52,6 @@
    Vertical Tabs Mode Specific Styles (`zen.tabs.vertical` pref)
    ========================================================================== */
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.tabs.vertical") {
   :root:not([zen-window-buttons-reversed="true"]) {
     & .titlebar-buttonbox-container {
@@ -134,7 +132,7 @@ zen-library {
    Pinned Tabs Separator
    ========================================================================== */
 .pinned-tabs-container-separator {
-  height: 22px;
+  height: var(--zen-size-22);
   border: none;
   width: 100%;
 
@@ -151,7 +149,7 @@ zen-library {
   align-items: center;
 
   @media (-moz-platform: macos) {
-    padding: 0 5px;
+    padding: 0 var(--zen-space-5);
   }
 
   --zen-pinned-separator-color: light-dark(
@@ -164,10 +162,10 @@ zen-library {
     background: var(--zen-pinned-separator-color);
     padding: 0;
     margin-block: auto;
-    margin-inline: 4px 0;
+    margin-inline: var(--zen-space-4) 0;
 
     :root:not([zen-sidebar-expanded="true"]) & {
-      margin-inline-end: 4px;
+      margin-inline-end: var(--zen-space-4);
     }
 
     &::before {
@@ -191,11 +189,11 @@ zen-library {
 
   & toolbarbutton {
     appearance: none;
-    font-size: 10px;
-    font-weight: 500;
-    gap: 2px;
+    font-size: var(--zen-font-size-10);
+    font-weight: var(--zen-font-weight-medium);
+    gap: var(--zen-space-2);
     pointer-events: none;
-    padding-inline-start: 8px;
+    padding-inline-start: var(--zen-space-8);
     background: linear-gradient(
         var(--zen-pinned-separator-color),
         var(--zen-pinned-separator-color)
@@ -214,7 +212,7 @@ zen-library {
 
       & .toolbarbutton-icon,
       & .toolbarbutton-text {
-        opacity: 0.5;
+        opacity: var(--zen-opacity-50);
       }
     }
 
@@ -232,7 +230,7 @@ zen-library {
     }
 
     & .toolbarbutton-icon {
-      width: 10px;
+      width: var(--zen-size-10);
       transition:
         transform 0.15s ease-in-out,
         opacity 0.15s;
@@ -316,11 +314,11 @@ zen-library {
   --focus-outline-color: transparent;
 
   @media (-moz-platform: windows) {
-    font-size: 14px;
+    font-size: var(--zen-font-size-14);
   }
 
   @media (-moz-platform: macos) {
-    font-size: 1.25rem;
+    font-size: var(--zen-tabs-macos-font-size);
   }
 
   --tab-inner-inline-margin: 0;
@@ -376,7 +374,7 @@ zen-library {
     & .tab-icon-image {
       -moz-context-properties: fill, stroke, fill-opacity;
       fill-opacity: 0.5;
-      border-radius: 4px;
+      border-radius: var(--zen-border-radius-4);
 
       &:not([src]),
       &:-moz-broken {
@@ -395,14 +393,14 @@ zen-library {
 
       & .tab-context-line {
         margin: 0 0 !important;
-        width: 3px !important;
+        width: var(--zen-size-3) !important;
       }
     }
 
     /* --- Glance Tab Styles (Nested .tabbrowser-tab) --- */
     & .tabbrowser-tab {
       pointer-events: none;
-      margin: 0 0 0 4px !important;
+      margin: 0 0 0 var(--zen-space-4) !important;
       --toolbarbutton-padding-inner: 0;
       --border-radius-medium: 8px;
       width: var(--size-item-medium);
@@ -419,7 +417,7 @@ zen-library {
       }
 
       & .tab-content {
-        padding: 0 5px;
+        padding: 0 var(--zen-space-5);
       }
 
       & label,
@@ -432,8 +430,8 @@ zen-library {
       /* Style glance tab icon */
       & .tab-icon-image {
         --toolbarbutton-padding-inner: 0 !important;
-        width: 14px;
-        height: 14px;
+        width: var(--zen-size-14);
+        height: var(--zen-size-14);
       }
 
       & .tab-audio-button {
@@ -463,8 +461,8 @@ zen-library {
       pointer-events: none;
 
       & .tab-background {
-        background: light-dark(rgb(249, 249, 249), rgb(63, 63, 63)) !important;
-        border: 2px solid light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
+        background: var(--zen-tabs-essential-glance-tab-background) !important;
+        border: 2px solid var(--zen-color-contrast-40);
       }
     }
   }
@@ -473,14 +471,14 @@ zen-library {
 @media (-moz-platform: macos) {
   #zen-sidebar-foot-buttons,
   #zen-library-footer {
-    --zen-toolbar-button-size: 20px;
+    --zen-toolbar-button-size: 18px;
   }
 }
 
 #zen-sidebar-foot-buttons {
   position: relative;
   background: transparent;
-  gap: 4px;
+  gap: var(--zen-space-4);
   align-items: center;
 
   & > toolbarbutton:not(#zen-workspaces-button) {
@@ -535,6 +533,8 @@ zen-library {
   position: absolute;
   line-height: 1.2;
   bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .tabbrowser-tab[zen-show-sublabel] {
@@ -543,7 +543,7 @@ zen-library {
   }
   
   .zen-tab-sublabel {
-    opacity: 0.6;
+    opacity: var(--zen-opacity-60);
     transform: translateY(-6px);
   }
 }
@@ -564,8 +564,8 @@ zen-library {
   }
 
   & .tab-audio-button {
-    margin-inline-start: -4px;
-    margin-inline-end: 2px;
+    margin-inline-start: calc(-1 * var(--zen-space-4));
+    margin-inline-end: var(--zen-space-2);
     margin-top: -1px;
   }
 
@@ -578,7 +578,7 @@ zen-library {
 
     :root[zen-single-toolbar="true"]:not([zen-has-empty-tab="true"]) & {
       & #urlbar:not([breakout-extend]) .urlbar-input-container {
-        padding-inline: 4px;
+        padding-inline: var(--zen-space-4);
       }
     }
   }
@@ -630,7 +630,7 @@ zen-library {
         height: var(--size-item-small);
         width: var(--size-item-small);
         padding: 0 !important;
-        margin-inline: 2px;
+        margin-inline: var(--zen-space-2);
       }
 
       &:is([open], [checked]) {
@@ -675,7 +675,7 @@ zen-library {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        left: 8px;
+        left: var(--zen-space-8);
         margin: 0 !important;
         pointer-events: none;
 
@@ -695,7 +695,7 @@ zen-library {
           }
           
           .zen-tab-sublabel {
-            opacity: 0.6;
+            opacity: var(--zen-opacity-60);
             transform: translateY(-6px);
           } 
         }
@@ -758,7 +758,7 @@ zen-library {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.4;
+    opacity: var(--zen-opacity-40);
 
     & .zen-workspaces-actions {
       position: absolute;
@@ -789,6 +789,17 @@ zen-library {
     background: transparent !important;
   }
 
+  & .tabbrowser-tab > .tab-stack > .tab-content > .tab-close-button {
+    --zen-tab-button-line-length: 8px;
+
+    &::before,
+    &::after {
+      @starting-style {
+        width: var(--zen-size-6);
+      }
+    }
+  }
+
   :root[customizing] & #zen-sidebar-foot-buttons {
     min-width: unset !important;
   }
@@ -803,7 +814,7 @@ zen-library {
 
       &.toolbarbutton-badge-stack {
         justify-content: center;
-        padding: 8px;
+        padding: var(--zen-space-8);
         width: var(--tab-collapsed-background-width);
       }
 
@@ -973,15 +984,18 @@ zen-library {
     top: 50%;
     left: 50%;
     width: var(--zen-tab-button-line-length);
-    height: 1.5px;
-    border-radius: 1px;
+    height: var(--zen-size-1-5);
+    border-radius: var(--zen-border-radius-1);
     background: currentColor;
     translate: -50% -50%;
     rotate: var(--zen-tab-button-line-rotation);
-    transition:
-      rotate 0.12s ease,
-      width 0.12s ease;
     will-change: transform;
+
+    @media not (prefers-reduced-motion: reduce) {
+      transition:
+        rotate 0.12s ease,
+        width 0.12s ease;
+    }
   }
 
   &::after {
@@ -1003,17 +1017,17 @@ zen-library {
   .tabbrowser-tab > .tab-stack > .tab-content > .tab-close-button::before,
   .tabbrowser-tab > .tab-stack > .tab-content > .tab-close-button::after {
     rotate: 0deg;
-    width: 12px;
+    width: var(--size-item-xsmall);
   }
 
   .tabbrowser-tab > .tab-stack > .tab-content > .tab-reset-button::before {
     rotate: 45deg;
-    width: 15px;
+    width: var(--zen-size-15);
   }
 
   .tabbrowser-tab > .tab-stack > .tab-content > .tab-reset-button::after {
     rotate: -45deg;
-    width: 15px;
+    width: var(--zen-size-15);
   }
 }
 
@@ -1022,7 +1036,7 @@ zen-library {
   position: relative;
   height: calc(100% - var(--tab-margin-block) * 2);
   margin-left: calc(-1 * var(--tab-padding-inline) + var(--tab-margin-block));
-  margin-right: 8px;
+  margin-right: var(--zen-space-8);
   padding: 0 calc(var(--toolbarbutton-padding-inner) - 2px) 0 calc(var(--toolbarbutton-padding-inner) / 3 + var(--tab-padding-inline) - 2px);
   border-radius: 0;
   border-top-left-radius: var(--border-radius-medium);
@@ -1036,19 +1050,19 @@ zen-library {
     width: var(--size-item-small);
     height: var(--size-item-small);
     pointer-events: none;
-    border-radius: 4px;
+    border-radius: var(--zen-border-radius-4);
   }
 
   &::after {
     content: "";
     display: block;
-    width: 2.5px;
+    width: var(--zen-size-2-5);
     height: var(--size-item-small);
-    background: light-dark(rgba(66, 61, 61, 0.3), rgba(255, 255, 255, 0.3));
+    background: var(--zen-tabs-reset-pin-separator-background);
     position: absolute;
     right: 0;
     top: 50%;
-    border-radius: 2px;
+    border-radius: var(--zen-border-radius-2);
     transform: rotate(15deg) translateY(-50%);
   }
 
@@ -1141,7 +1155,6 @@ zen-library {
   -moz-user-focus: ignore !important;
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.tabs.show-newtab-vertical") {
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
@@ -1181,8 +1194,8 @@ zen-library {
 
     & .zen-tab-sublabel {
       display: block !important;
-      inset-inline-start: 36px;
-      width: calc(100% - 38px) !important;
+      inset-inline-start: var(--zen-space-36);
+      width: calc(100% - var(--zen-size-38)) !important;
       text-align: start;
       white-space: nowrap;
       overflow: hidden;
@@ -1195,7 +1208,7 @@ zen-library {
       }
 
       & .zen-tab-sublabel {
-        opacity: 0.6;
+        opacity: var(--zen-opacity-60);
         transform: translateY(-6px);
       }
     }
@@ -1206,7 +1219,6 @@ zen-library {
       --zen-colors-border: var(--zen-colors-tertiary);
     }
 
-    /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.view.show-newtab-button-top") {
       order: -1;
     }
@@ -1229,8 +1241,8 @@ zen-library {
 
 .zen-essentials-container {
   overflow: hidden;
-  min-height: 2px;
-  gap: 4px;
+  min-height: var(--zen-size-2);
+  gap: var(--zen-space-4);
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
@@ -1255,8 +1267,8 @@ zen-library {
   position: absolute;
 
   :root[zen-single-toolbar="true"] &:not(:empty) {
-    padding-top: 6px;
-    padding-bottom: 2px;
+    padding-top: var(--zen-space-6);
+    padding-bottom: var(--zen-space-2);
   }
 
   &[hidden="true"] {
@@ -1290,6 +1302,19 @@ zen-library {
     justify-content: center;
   }
 
+  @media -moz-pref("zen.theme.essentials-unread-dot") {
+    &[zen-title-unread] > .tab-stack > .tab-content {
+      background-image: radial-gradient(
+        circle,
+        var(--tab-attention-dot-color) 0 2px,
+        transparent 2.5px
+      );
+      background-position: center bottom 5px;
+      background-repeat: no-repeat;
+      background-size: 5px 5px;
+    }
+  }
+
   & .tab-label-container,
   & .tab-close-button {
     display: none !important;
@@ -1301,10 +1326,10 @@ zen-library {
   }
 
   &:hover .tab-background {
-    background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-background-color-selected));
+    --zen-essential-tab-hover-bg: light-dark(rgba(0, 0, 0, 0.1), var(--tab-background-color-selected));
+    background: var(--zen-essential-tab-hover-bg);
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media -moz-pref("zen.theme.essentials-favicon-bg") {
     &[visuallyselected] > .tab-stack > .tab-background {
       &::after {
@@ -1319,7 +1344,6 @@ zen-library {
         background-position: center;
         fill: currentColor;
         -moz-context-properties: fill, fill-opacity;
-        /* stylelint-disable-next-line property-no-unknown */
         corner-shape: superellipse(var(--zen-squircle-value));
       }
 
@@ -1345,7 +1369,6 @@ zen-library {
         z-index: 0;
         content: "";
         transition: background 0.1s ease-in-out;
-        /* stylelint-disable-next-line property-no-unknown */
         corner-shape: superellipse(var(--zen-squircle-value));
       }
     }
@@ -1355,7 +1378,8 @@ zen-library {
     }
 
     &[drag-image][visuallyselected] > .tab-stack > .tab-background::before {
-      border-radius: calc((var(--border-radius-medium) - var(--zen-essential-bg-margin)) / var(--zen-squircle-value));
+      --zen-essential-drag-image-bg-radius: calc((var(--border-radius-medium) - var(--zen-essential-bg-margin)) / var(--zen-squircle-value));
+      border-radius: var(--zen-essential-drag-image-bg-radius);
     }
   }
 }
@@ -1370,7 +1394,7 @@ zen-library {
   z-index: 1000;
   background: var(--zen-drag-indicator-bg);
   pointer-events: none;
-  border-radius: 5px;
+  border-radius: var(--zen-border-radius-5);
 
   &::before {
     content: "";
@@ -1378,7 +1402,7 @@ zen-library {
     height: calc(2 * var(--zen-drag-indicator-height));
     width: calc(2 * var(--zen-drag-indicator-height));
     border: var(--zen-drag-indicator-height) solid var(--zen-drag-indicator-bg);
-    border-radius: 50%;
+    border-radius: var(--zen-border-radius-round);
     background: transparent;
   }
 
@@ -1457,10 +1481,9 @@ zen-library {
 
 #tabs-newtab-button:not([in-urlbar="true"]),
 .zen-current-workspace-indicator-name {
-  color: color-mix(in srgb, currentColor 70%, transparent);
+  color: var(--zen-tabs-dimmed-text-color);
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media (-moz-pref("zen.theme.hide-tab-throbber")) {
   .tab-throbber {
     display: none !important;

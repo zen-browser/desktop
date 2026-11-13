@@ -448,7 +448,7 @@ add_task(async function test_onItemUntagged() {
 
     await verifyTrackedItems([fx1.guid, fx2.guid]);
     Assert.equal(tracker.score, SCORE_INCREMENT_XLARGE * 4);
-    Assert.equal(PlacesUtils.bookmarks.totalSyncChanges, totalSyncChanges + 5);
+    Assert.equal(PlacesUtils.bookmarks.totalSyncChanges, totalSyncChanges + 4);
   } finally {
     _("Clean up.");
     await cleanup();
@@ -493,7 +493,7 @@ add_task(async function test_async_onItemUntagged() {
 
     await verifyTrackedItems([fxBmk1.guid, fxBmk2.guid]);
     Assert.equal(tracker.score, SCORE_INCREMENT_XLARGE * 4);
-    Assert.equal(PlacesUtils.bookmarks.totalSyncChanges, totalSyncChanges + 5);
+    Assert.equal(PlacesUtils.bookmarks.totalSyncChanges, totalSyncChanges + 4);
   } finally {
     _("Clean up.");
     await cleanup();

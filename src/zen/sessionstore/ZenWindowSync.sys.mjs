@@ -660,6 +660,23 @@ class nsZenWindowSync {
     { isEssential, isPinned }
   ) {
     const { gBrowser, gZenWorkspaces } = aWindow;
+
+    const selected = gBrowser.selectedTab;
+    const movedSelection = gBrowser.isTabGroup(aTargetItem)
+      ? aTargetItem.tabs.includes(selected)
+      : aTargetItem === selected;
+    if (
+      movedSelection &&
+      !isEssential &&
+      aTargetItem.getAttribute("zen-workspace-id") !==
+        gZenWorkspaces.activeWorkspace
+    ) {
+      const emptyTab = gZenWorkspaces._emptyTab;
+      if (emptyTab?.isConnected && !emptyTab.closing) {
+        gBrowser.selectedTab = emptyTab;
+      }
+    }
+
     let originalSibling = aOriginalItem.previousElementSibling;
     if (originalSibling?.classList.contains("space-fake-collapsible-start")) {
       // Skip space fake elements.
@@ -1676,7 +1693,11 @@ class nsZenWindowSync {
       }
 
       const newGroup = isFolder
-        ? win.gZenFolders.createFolder([], {})
+        ? win.gZenFolders.createFolder([], {
+            label: tabGroup.label,
+            workspaceId: tabGroup.getAttribute("zen-workspace-id"),
+            isLiveFolder: tabGroup.isLiveFolder,
+          })
         : win.gBrowser.addTabGroup([]);
       newGroup.id = tabGroup.id;
       newGroup.alreadySynced = true;

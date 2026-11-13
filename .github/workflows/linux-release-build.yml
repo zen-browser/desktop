@@ -59,7 +59,7 @@ jobs:
           tool-cache: false
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -68,6 +68,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main

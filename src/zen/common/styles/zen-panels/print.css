@@ -5,5 +5,5 @@
  */
 
 .printSettingsBrowser {
-  min-width: 350px;
+  min-width: var(--zen-print-settings-min-width);
 }

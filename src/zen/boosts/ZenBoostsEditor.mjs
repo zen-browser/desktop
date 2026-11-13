@@ -69,12 +69,21 @@ export class nsZenBoostEditor {
    * @returns {ZenBoostsParent} Boost JSActor parent
    */
   get zenBoostsParent() {
-    const linkedBrowser =
-      this.editorWindow.browser ??
-      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+      this.linkedBrowser.browsingContext.currentWindowGlobal.getActor(
+        "ZenBoosts"
+      );
     return actor;
+  }
+
+  /**
+   * @returns {MozBrowser} The browser showing the boosted page
+   */
+  get linkedBrowser() {
+    return (
+      this.editorWindow.browser ??
+      this.openerWindow.gBrowser.selectedTab.linkedBrowser
+    );
   }
 
   /**
@@ -799,7 +808,8 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
-      this.zenBoostsParent.updateBoostSizeOverride(
+      gZenBoostsManager.updateBoostSizeOverride(
+        this.linkedBrowser,
         this.currentBoostData.sizeOverride,
         /* disable: */ true
       );

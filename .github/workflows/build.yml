@@ -77,7 +77,7 @@ jobs:
       buildids: ${{ steps.get.outputs.bid }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -131,7 +131,7 @@ jobs:
       build_time: ${{ steps.data.outputs.buildtime }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -140,6 +140,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         run: |
@@ -186,7 +187,7 @@ jobs:
     needs: [build-data]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -195,6 +196,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         run: |
@@ -228,7 +230,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -237,6 +239,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Setup Git
         run: |
@@ -285,7 +288,7 @@ jobs:
       windows-cs-hit: ${{ steps.probe.outputs.windows-cs }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Decide whether a cached profile may be reused
         id: gate
@@ -557,7 +560,7 @@ jobs:
     needs: [linux, build-data]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -566,6 +569,7 @@ jobs:
         uses: useblacksmith/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         run: |
@@ -649,7 +653,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -658,7 +662,7 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Checkout updates repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: zen-browser/updates-server
           path: updates-server
@@ -828,7 +832,7 @@ jobs:
 
     steps:
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: zen-browser/release-utils
           token: ${{ secrets.DEPLOY_KEY }}
@@ -852,7 +856,7 @@ jobs:
           commit_user_email: zen-browser-auto@users.noreply.github.com
 
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: zen-browser/flatpak
           token: ${{ secrets.DEPLOY_KEY }}
@@ -887,7 +891,7 @@ jobs:
 
     steps:
       - name: Checkout Flatpak repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: flathub/app.zen_browser.zen
           token: ${{ secrets.DEPLOY_KEY }}
@@ -903,7 +907,7 @@ jobs:
           name: zen.linux-aarch64.tar.xz
 
       - name: Update repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: zen-browser
           token: ${{ secrets.DEPLOY_KEY }}

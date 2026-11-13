@@ -39,9 +39,11 @@ body,
   --zen-grain-texture: url(chrome://browser/content/zen-images/grain-bg.png);
   --zen-grain-tile: 155px;
   --zen-grain-alpha: 0.7;
+  --zen-grain-rendering: pixelated;
   --zen-grain-texture-old: url(chrome://browser/content/zen-images/grain-bg.png);
   --zen-grain-tile-old: 155px;
   --zen-grain-alpha-old: 0.7;
+  --zen-grain-rendering-old: pixelated;
 
   &[zen-grain-texture="none"] {
     --zen-grain-texture: none;
@@ -58,12 +60,18 @@ body,
     --zen-grain-texture: url(chrome://browser/content/zen-images/denim-bg.png);
     --zen-grain-tile: 100px;
     --zen-grain-alpha: 0.85;
+    --zen-grain-rendering: auto;
   }
 
   &[zen-grain-texture="tweed"] {
-    --zen-grain-texture: url(chrome://browser/content/zen-images/tweed-bg.png);
+    --zen-grain-texture: image-set(
+      url(chrome://browser/content/zen-images/tweed-bg-1x.png) 1x,
+      url(chrome://browser/content/zen-images/tweed-bg-1.5x.png) 1.5x,
+      url(chrome://browser/content/zen-images/tweed-bg.png) 2x
+    );
     --zen-grain-tile: 100px;
-    --zen-grain-alpha: 1;
+    --zen-grain-alpha: 0.85;
+    --zen-grain-rendering: auto;
   }
 
   &[zen-grain-texture-old="none"] {
@@ -81,13 +89,44 @@ body,
     --zen-grain-texture-old: url(chrome://browser/content/zen-images/denim-bg.png);
     --zen-grain-tile-old: 100px;
     --zen-grain-alpha-old: 0.85;
+    --zen-grain-rendering-old: auto;
   }
 
   &[zen-grain-texture-old="tweed"] {
-    --zen-grain-texture-old: url(chrome://browser/content/zen-images/tweed-bg.png);
+    --zen-grain-texture-old: image-set(
+      url(chrome://browser/content/zen-images/tweed-bg-1x.png) 1x,
+      url(chrome://browser/content/zen-images/tweed-bg-1.5x.png) 1.5x,
+      url(chrome://browser/content/zen-images/tweed-bg.png) 2x
+    );
     --zen-grain-tile-old: 100px;
-    --zen-grain-alpha-old: 1;
+    --zen-grain-alpha-old: 0.85;
+    --zen-grain-rendering-old: auto;
   }
+}
+
+.zen-browser-generic-background,
+.zen-library-space {
+  --zen-gradient-width: 100vw;
+  --zen-gradient-height: 100vh;
+  --zen-gradient-tilt: 1;
+  --zen-gradient-phi: atan2(var(--zen-gradient-height), var(--zen-gradient-width));
+  --zen-gradient-tan: tan(var(--zen-gradient-phi));
+  --zen-gradient-dx: min(
+    var(--zen-gradient-width),
+    var(--zen-gradient-width) / (var(--zen-gradient-tan) * var(--zen-gradient-tilt))
+  );
+  --zen-gradient-dy: min(
+    var(--zen-gradient-height),
+    var(--zen-gradient-height) * var(--zen-gradient-tan) * var(--zen-gradient-tilt)
+  );
+  --zen-gradient-slope: atan2(var(--zen-gradient-dy), var(--zen-gradient-dx));
+  --zen-gradient-base-angle: calc(90deg + var(--zen-gradient-slope));
+  --zen-gradient-sin: sin(var(--zen-gradient-slope));
+  --zen-gradient-cos: cos(var(--zen-gradient-slope));
+  --zen-gradient-x0: calc((var(--zen-gradient-width) - var(--zen-gradient-dx)) / 2);
+  --zen-gradient-y0: calc((var(--zen-gradient-height) - var(--zen-gradient-dy)) / 2);
+  --zen-gradient-base-start: calc(var(--zen-gradient-x0) * var(--zen-gradient-cos) + var(--zen-gradient-y0) * var(--zen-gradient-sin));
+  --zen-gradient-base-span: calc(var(--zen-gradient-dx) * var(--zen-gradient-cos) + var(--zen-gradient-dy) * var(--zen-gradient-sin));
 }
 
 .zen-browser-generic-background {
@@ -99,19 +138,6 @@ body,
 
   isolation: isolate;
   contain: size style;
-
-  --zen-gradient-phi: atan2(100vh, 100vw);
-  --zen-gradient-tan: tan(var(--zen-gradient-phi));
-  --zen-gradient-slope: atan(var(--zen-gradient-tan) * var(--zen-gradient-tan));
-  --zen-gradient-base-angle: calc(90deg + var(--zen-gradient-slope));
-  --zen-gradient-sin: sin(var(--zen-gradient-slope));
-  --zen-gradient-cos: cos(var(--zen-gradient-slope));
-  --zen-gradient-dx: min(100vw, 100vw / var(--zen-gradient-tan));
-  --zen-gradient-dy: min(100vh, 100vh * var(--zen-gradient-tan));
-  --zen-gradient-x0: calc((100vw - var(--zen-gradient-dx)) / 2);
-  --zen-gradient-y0: calc((100vh - var(--zen-gradient-dy)) / 2);
-  --zen-gradient-base-start: calc(var(--zen-gradient-x0) * var(--zen-gradient-cos) + var(--zen-gradient-y0) * var(--zen-gradient-sin));
-  --zen-gradient-base-span: calc(var(--zen-gradient-dx) * var(--zen-gradient-cos) + var(--zen-gradient-dy) * var(--zen-gradient-sin));
 
   &::after,
   &::before {
@@ -168,6 +194,7 @@ body,
     &::after {
       background-image: var(--zen-grain-texture);
       background-size: var(--zen-grain-tile) var(--zen-grain-tile);
+      image-rendering: var(--zen-grain-rendering);
       opacity: calc(
         var(--zen-grainy-background-opacity, 0) * var(--zen-grain-alpha) * var(--zen-background-opacity, 1)
       );
@@ -176,6 +203,7 @@ body,
     &::before {
       background-image: var(--zen-grain-texture-old);
       background-size: var(--zen-grain-tile-old) var(--zen-grain-tile-old);
+      image-rendering: var(--zen-grain-rendering-old);
       opacity: calc(
         var(--zen-grainy-background-opacity-old, 0) * var(--zen-grain-alpha-old) *
           (1 - var(--zen-background-opacity, 1))
@@ -221,7 +249,6 @@ body,
   /* See bug #8814, don't add overflow here as it causes issues
    * with firefox's rendering of the tab bar */
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-pref("zen.view.grey-out-inactive-windows")) {
     &:-moz-window-inactive {
       background: InactiveCaption;
@@ -232,7 +259,6 @@ body,
     z-index: var(--zen-main-app-child-z-index, 1);
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-windows-accent-color-in-titlebar) and ((-moz-windows-mica) or -moz-pref("browser.theme.windows.accent-color-in-tabs.enabled")) {
     background: ActiveCaption;
     color: CaptionText;
@@ -269,6 +295,12 @@ body,
   gap: var(--zen-element-separation);
 }
 
+@media -moz-pref("zen.view.experimental-no-window-controls") {
+  .titlebar-buttonbox-container {
+    display: none !important;
+  }
+}
+
 @media not (-moz-platform: macos) {
   .titlebar-buttonbox-container {
     height: 100%;
@@ -277,15 +309,14 @@ body,
 
 @media (-moz-platform: macos) {
   .titlebar-buttonbox-container {
-    margin-inline-end: 8px;
-    padding: 3px 0;
+    margin-inline-end: var(--zen-space-8);
+    padding: var(--zen-space-3) 0;
 
     & > .titlebar-buttonbox {
       margin-inline-start: var(--zen-toolbox-padding);
     }
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media -moz-pref("zen.widget.mac.mono-window-controls") {
     :root:not([window-modal-open="true"]) .titlebar-buttonbox-container {
       color: var(--toolbox-textcolor);
@@ -316,7 +347,8 @@ body,
 
 @media (-moz-platform: macos) {
   :root[zen-window-buttons-reversed="true"][zen-right-side="true"] .titlebar-buttonbox-container {
-    margin-inline-start: max(calc(var(--zen-element-separation) - 3px), 4px);
+    --zen-window-buttons-reversed-margin-start: max(calc(var(--zen-element-separation) - 3px), 4px);
+    margin-inline-start: var(--zen-window-buttons-reversed-margin-start);
     margin-block: auto;
   }
 }
@@ -345,11 +377,11 @@ body,
 
 .zen-split-view-splitter[orient="horizontal"] {
   &::before {
-    height: 2px;
-    width: 50px;
+    height: var(--zen-size-2);
+    width: var(--zen-size-50);
     /* stylelint-disable-next-line stylelint-plugin-mozilla/use-paired-color-tokens */
     background: var(--button-background-color-primary);
-    border-radius: 2px;
+    border-radius: var(--zen-border-radius-2);
     content: "";
     position: absolute;
     top: 40%;
@@ -375,14 +407,14 @@ body,
 
 :root[customizing] #zen-sidebar-top-buttons-customization-target {
   border: 1px dashed;
-  border-radius: 2px;
-  margin: 10px 2px 0 0;
+  border-radius: var(--zen-border-radius-2);
+  margin: var(--zen-space-10) var(--zen-space-2) 0 0;
 }
 
 #zen-sidebar-splitter {
   transition: opacity 0.2s ease-in-out;
   opacity: 0;
-  border-radius: 4px;
+  border-radius: var(--zen-border-radius-4);
   background: var(--zen-accent-button-background);
   height: calc(100% - var(--zen-element-separation) * 2);
   top: var(--zen-element-separation);
@@ -395,7 +427,7 @@ body,
 
   &:is(:hover, [zen-resizing="true"]) {
     transition-delay: 0.2s;
-    opacity: 0.8;
+    opacity: var(--zen-opacity-80);
   }
 }
 

@@ -7,6 +7,8 @@ import { nsZenToastManager } from "resource:///modules/zen/ZenToasts.mjs";
 import { nsZenUrlbarController } from "resource:///modules/zen/urlbar/ZenUrlbarController.mjs";
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 
+const SPRING_SETTLE_DISTANCE = 0.01;
+
 // Minimum height the floating URL bar is vertically centered against.
 const FLOATING_URLBAR_MIN_HEIGHT = 333;
 const FLOATING_URLBAR_MAX_WIDTH = 750;
@@ -123,7 +125,10 @@ class nsZenUIManager {
   async elementAnimate(element, rawKeyframes, ...args) {
     rawKeyframes = { ...rawKeyframes };
     if (
-      (rawKeyframes.y || rawKeyframes.x || rawKeyframes.scale) &&
+      (rawKeyframes.y ||
+        rawKeyframes.x ||
+        rawKeyframes.scaleX ||
+        rawKeyframes.scaleY) &&
       !rawKeyframes.transform
     ) {
       const yValues = rawKeyframes.y || [];
@@ -170,6 +175,112 @@ class nsZenUIManager {
       const animation = element.animate(keyframes, ...args);
       animation.onfinish = () => resolve();
     });
+  }
+
+  /**
+   * Runs a spring through Element.animate by sampling it into evenly spaced
+   * keyframes.
+   *
+   * @param {Element} element
+   * @param {object} keyframes - Property to [from, to] pairs. `x`, `y`,
+   *   `scaleX` and `scaleY` are folded into `transform` like elementAnimate.
+   * @param {object} options
+   * @param {number} options.duration - Milliseconds until the spring visibly
+   *   reaches its target, like Motion's visualDuration. It keeps settling for
+   *   a short tail after that, so the animation runs somewhat longer.
+   * @param {number} [options.bounce] - 0 for no overshoot, up to 1.
+   * @param {number} [options.delay] - Milliseconds before the spring starts.
+   * @param {string} [options.fill] - Passed through to Element.animate.
+   */
+  animateSpring(
+    element,
+    keyframes,
+    { duration, bounce = 0, delay = 0, fill = "none" }
+  ) {
+    const { progress, duration: settleDuration } = this.springProgress(
+      duration,
+      bounce
+    );
+    const sampled = {};
+    for (const [property, [from, to]] of Object.entries(keyframes)) {
+      const clamp = property === "opacity";
+      sampled[property] = progress.map(p => {
+        const value = from + (to - from) * p;
+        return clamp ? Math.min(1, Math.max(0, value)) : value;
+      });
+    }
+    return this.elementAnimate(element, sampled, {
+      duration: settleDuration,
+      delay,
+      fill,
+      easing: "linear",
+    });
+  }
+
+  /**
+   * The visual duration to give a spring so that it has fully settled after
+   * `duration` milliseconds, for motion that has to end on time.
+   *
+   * @param {number} duration - Milliseconds until the spring is still.
+   * @param {number} [bounce] - 0 for no overshoot, up to 1.
+   * @returns {number} Milliseconds to pass as the spring's duration.
+   */
+  springVisualDuration(duration, bounce = 0) {
+    const settleRatio = this.springProgress(1000, bounce).duration / 1000;
+    return duration / settleRatio;
+  }
+
+  /**
+   * Samples the position of a unit spring released from rest.
+   *
+   * @param {number} duration - Milliseconds until the spring visibly
+   *   reaches its target.
+   * @param {number} bounce - 0 for no overshoot, up to 1.
+   * @returns {{progress: number[], duration: number}} Progress values from
+   *   0 to 1 (overshooting when underdamped) at a fixed 120Hz spacing, and
+   *   the milliseconds they span.
+   */
+  springProgress(duration, bounce) {
+    const dampingRatio = Math.min(1, Math.max(0.05, 1 - bounce));
+    const settled = SPRING_SETTLE_DISTANCE;
+    const omega = (2 * Math.PI) / ((duration / 1000) * 1.2);
+    let seconds;
+    if (dampingRatio < 1) {
+      seconds =
+        -Math.log((settled * Math.sqrt(1 - dampingRatio ** 2)) / dampingRatio) /
+        (dampingRatio * omega);
+    } else {
+      let low = 0;
+      let high = 100;
+      for (let i = 0; i < 60; i++) {
+        const mid = (low + high) / 2;
+        if (Math.exp(-mid) * (1 + mid) > settled) {
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+      seconds = (low + high) / 2 / omega;
+    }
+    const samples = Math.max(12, Math.ceil(seconds * 120));
+    const progress = [];
+    for (let i = 0; i <= samples; i++) {
+      const t = (i / samples) * seconds;
+      const decay = Math.exp(-dampingRatio * omega * t);
+      if (dampingRatio < 1) {
+        const omegaD = omega * Math.sqrt(1 - dampingRatio ** 2);
+        progress.push(
+          1 -
+            decay *
+              (Math.cos(omegaD * t) +
+                ((dampingRatio * omega) / omegaD) * Math.sin(omegaD * t))
+        );
+      } else {
+        progress.push(1 - decay * (1 + omega * t));
+      }
+    }
+    progress[samples] = 1;
+    return { progress, duration: seconds * 1000 };
   }
 
   /**

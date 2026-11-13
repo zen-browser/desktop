@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 category browser-before-ui-startup resource:///modules/ZenActorsManager.sys.mjs gZenActorsManager.init
+category browser-before-ui-startup resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs gZenBoostsManager.init
 
 category browser-window-delayed-startup resource:///modules/zen/ui/ZenProgressBar.sys.mjs ZenProgressBar.create
 

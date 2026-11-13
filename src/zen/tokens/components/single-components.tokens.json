@@ -1,0 +1,31 @@
+{
+  "background-color": {
+    "--zen-loading-progress-bar-color": { "external": true }
+  },
+  "size": {
+    "--zen-emojis-picker-pages-max-height": { "value": "230px" },
+    "--zen-site-data-addons-max-height": { "value": "420px" },
+    "--zen-notification-stack-max-width": { "value": "30rem" },
+    "--zen-loading-progress-bar-height": { "value": "0.4rem" },
+    "--zen-loading-progress-bar-width": { "value": "5rem" },
+    "--zen-swipe-add-space-container-width": { "value": "100px" },
+    "--zen-swipe-add-space-background-width": { "value": "200px" }
+  },
+  "border-color": {
+    "--zen-statuspanel-border-color": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.15)",
+        "dark": "rgba(255, 255, 255, 0.15)"
+      }
+    },
+    "--zen-site-data-header-button-border-color": {
+      "value": { "light": "var(--color-black-alpha-40)", "dark": "#101010" }
+    }
+  },
+  "box-shadow": {
+    "--zen-site-data-header-button-shadow": {
+      "value": "0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 light-dark(transparent, rgba(255, 255, 255, 0.15))"
+    },
+    "--zen-swipe-add-space-badge-shadow": { "value": "0 1px 8px #0003" }
+  }
+}

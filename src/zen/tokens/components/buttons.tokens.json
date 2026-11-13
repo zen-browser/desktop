@@ -1,0 +1,23 @@
+{
+  "text-color": {
+    "--zen-button-accept-shortcut-color": {
+      "value": {
+        "light": "var(--color-white-alpha-80)",
+        "dark": "var(--color-black-alpha-60)"
+      }
+    },
+    "--zen-button-cancel-shortcut-color": {
+      "value": {
+        "light": "var(--color-black-alpha-70)",
+        "dark": "var(--color-white-alpha-60)"
+      }
+    },
+    "--zen-big-accent-button-active-color": { "external": true },
+    "--zen-big-accent-button-primary-active-color": {
+      "value": "var(--color-white-alpha-80)"
+    }
+  },
+  "font-size": {
+    "--zen-big-accent-button-font-size": { "value": "1.2rem" }
+  }
+}

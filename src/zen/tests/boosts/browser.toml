@@ -17,6 +17,8 @@ support-files = [
 
 ["browser_boosts_animation.js"]
 
+["browser_boosts_backend.js"]
+
 ["browser_boosts_background.js"]
 
 ["browser_boosts_border.js"]

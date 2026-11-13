@@ -20,7 +20,6 @@
   background: -moz-Dialog;
   color: var(--zen-about-text-color);
   font: message-box;
-  font-size: 11px;
   /* The root bounds are what size the window. */
   min-width: var(--zen-about-width);
   max-width: var(--zen-about-width);
@@ -34,37 +33,37 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 18px 24px 10px;
-  gap: 2px;
+  padding: var(--zen-space-18) var(--zen-space-24) var(--zen-space-10);
+  gap: var(--zen-space-2);
 }
 
 #zen-about-logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 8px;
+  width: var(--zen-size-80);
+  height: var(--zen-size-80);
+  margin-bottom: var(--zen-space-8);
   pointer-events: none;
   user-select: none;
 }
 
 #zen-about-name {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 4px;
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
+  font-size: 1.25em;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--zen-space-4);
 }
 
 .zen-about-muted {
   margin: 0;
-  font-size: 10px;
   color: var(--zen-about-muted-color);
 }
 
 #zen-about-version {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 8px;
-  border-radius: 6px;
+  gap: var(--zen-space-6);
+  padding: var(--zen-space-2) var(--zen-space-8);
+  border-radius: var(--zen-border-radius-6);
 
   &:hover {
     background: var(--zen-about-button-background);
@@ -76,8 +75,9 @@
 }
 
 #zen-about-copied {
-  font-size: 9px;
-  font-weight: 500;
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
+  font-size: 0.9em;
+  font-weight: var(--zen-font-weight-medium);
   color: AccentColor;
 
   &[hidden] {
@@ -87,13 +87,13 @@
 
 #zen-about-update {
   width: 100%;
-  min-height: 44px;
-  margin-top: 8px;
+  min-height: var(--zen-size-44);
+  margin-top: var(--zen-space-8);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--zen-space-6);
 
   &[hidden] {
     display: none;
@@ -103,13 +103,12 @@
 #zen-about-update-status {
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: 18px;
+  gap: var(--zen-space-6);
+  min-height: var(--zen-size-18);
 }
 
 #zen-about-update-text {
   margin: 0;
-  font-size: 10px;
 
   &[hidden] {
     display: none;
@@ -118,8 +117,8 @@
 
 #zen-about-update-icon {
   display: none;
-  width: 16px;
-  height: 16px;
+  width: var(--size-item-small);
+  height: var(--size-item-small);
   -moz-context-properties: fill;
   fill: currentColor;
 
@@ -160,14 +159,13 @@
   appearance: none;
   margin: 0;
   user-select: none;
-  padding: 3px 10px;
+  padding: var(--zen-space-3) var(--zen-space-10);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--zen-border-radius-6);
   background: var(--zen-about-button-background);
   color: inherit;
   font: inherit;
-  font-size: 10px;
-  font-weight: 500;
+  font-weight: var(--zen-font-weight-medium);
   transition:
     background 0.1s,
     transform 0.1s;
@@ -194,7 +192,7 @@
     color: var(--zen-about-primary-color);
 
     &:hover {
-      opacity: 0.9;
+      opacity: var(--zen-opacity-90);
     }
   }
 
@@ -204,7 +202,7 @@
 }
 
 #zen-about-content a {
-  color: -moz-nativehyperlinktext;
+  color: var(--zen-about-link-color);
   text-decoration: underline;
   cursor: pointer;
 
@@ -214,7 +212,7 @@
 
   &:focus-visible {
     outline: var(--focus-outline);
-    border-radius: 2px;
+    border-radius: var(--zen-border-radius-2);
   }
 }
 
@@ -223,15 +221,14 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 6px;
+  gap: var(--zen-space-6);
   margin: 0;
-  font-size: 10px;
 
   /* Inline-block keeps the link underline off the separator. */
   & a + a::before {
     content: "·";
     display: inline-block;
-    margin-inline-end: 6px;
+    margin-inline-end: var(--zen-space-6);
     color: var(--zen-about-muted-color);
   }
 }
@@ -239,14 +236,14 @@
 #zen-about-footer {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 10px;
+  gap: var(--zen-space-18);
+  margin-top: var(--zen-space-10);
 }
 
 #zen-about-link-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--zen-space-4);
 }
 
 #zen-about-community {

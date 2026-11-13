@@ -162,12 +162,12 @@ export class ZapOverlay {
    * currently matches, to the chrome bar. Focus entries are not listed.
    */
   async updateZapList() {
-    const boost = await this.zenBoostsChild.getWebsiteBoost();
-    if (!this.#initialized || !boost) {
+    const selectors = await this.zenBoostsChild.getZapSelectors();
+    if (!this.#initialized || !selectors) {
       return;
     }
 
-    const { zapSelectors = [] } = boost.boostEntry.boostData;
+    const { zapSelectors } = selectors;
     const entries = zapSelectors.map(selector => {
       let count = 0;
       try {

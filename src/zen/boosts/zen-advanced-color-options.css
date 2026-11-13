@@ -12,31 +12,31 @@
   }
 
   & input {
-    width: 185px;
+    width: var(--zen-boosts-color-slider-width);
     appearance: none !important;
-    height: 4px;
+    height: var(--zen-size-4);
 
-    background-color: #b5b5b9;
-    border-radius: 2px;
+    background-color: var(--zen-boosts-color-slider-track-background);
+    border-radius: var(--zen-border-radius-2);
 
-    margin-top: 10px;
+    margin-top: var(--zen-space-10);
   }
 
   &::part(content) {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: var(--zen-space-24);
   }
 }
 
 #zen-boost-advanced-color-options-panel input::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  background-color: #e6e5ea;
-  border: solid 1px #d1d0d5;
-  border-radius: 100%;
+  width: var(--zen-size-18);
+  height: var(--zen-size-18);
+  background-color: var(--zen-boosts-color-slider-thumb-background);
+  border: solid 1px var(--zen-boosts-color-slider-thumb-border-color);
+  border-radius: var(--zen-border-radius-round);
 }
 
 #zen-boost-advanced-color-options-panel input::-moz-range-thumb:active {
-  background-color: #cbcad0;
+  background-color: var(--zen-boosts-color-slider-thumb-active-background);
 }

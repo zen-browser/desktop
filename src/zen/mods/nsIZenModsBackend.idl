@@ -16,9 +16,18 @@
 [scriptable, uuid(a0ee4792-b186-4497-936d-53a8989fe836)]
 interface nsIZenModsBackend : nsISupports {
   /**
-   * @brief Unregister and register the mods stylesheet.
-   * This is called when we need to recalculate the mods stylesheets.
+   * @brief Reload chrome/zen-themes.css from disk and apply it.
+   * The sheet and its @import rules load synchronously, so every mod file
+   * is read again, and the new sheet replaces the old one in every chrome
+   * document.
    * @returns void
    */
-  void rebuildModsStyles(in ACString aContents);
+  void reloadModsStyles();
+
+  /**
+   * @brief Reload chrome/zen-themes-content.css in this process and apply
+   * it to every content document in it. The parent asks every process to.
+   * @returns void
+   */
+  void reloadModsContentStyles();
 };

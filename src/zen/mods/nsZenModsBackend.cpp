@@ -7,7 +7,10 @@
 #include "nsIXULRuntime.h"
 #include "nsStyleSheetService.h"
 
+#include "mozilla/GlobalStyleSheetCache.h"
 #include "mozilla/PresShell.h"
+#include "mozilla/PresShellInlines.h"
+#include "mozilla/StyleSheet.h"
 #include "mozilla/dom/ContentParent.h"
 
 #include "nsIURI.h"
@@ -41,22 +44,97 @@ auto nsZenModsBackend::CheckEnabled() -> void {
              !mozilla::Preferences::GetBool("zen.themes.disable-all", false);
 }
 
-auto nsZenModsBackend::RebuildModsStyles(const nsACString& aContents)
-    -> nsresult {
-  // Notify that the mods stylesheets have been rebuilt.
-  return GetZenStyleSheetCache()->RebuildModsStylesheets(aContents);
+auto nsZenModsBackend::ReloadModsStyles() -> nsresult {
+  return GetZenStyleSheetCache()->ReloadModsSheet();
+}
+
+auto nsZenModsBackend::ReloadModsContentStyles() -> nsresult {
+  return GetZenStyleSheetCache()->ReloadModsContentSheet();
 }
 
 }  // namespace zen
 
-auto nsStyleSheetService::ZenMarkStylesAsChanged() -> void {
-  for (auto& presShell : mPresShells) {
-    if (presShell) {
-      if (auto doc = presShell->GetDocument();
-          doc && doc->IsInChromeDocShell()) {
-        // Notify the document that styles have changed.
-        doc->ApplicableStylesChanged();
+auto nsStyleSheetService::ZenReplaceModsSheet(mozilla::StyleSheet& aOld,
+                                              mozilla::StyleSheet& aNew)
+    -> void {
+  // A document fills its style set when it gets a pres shell, so every
+  // document that has the old sheet is reachable from here.
+  for (const RefPtr<mozilla::PresShell>& presShell : mPresShells.Clone()) {
+    if (!presShell) {
+      continue;
+    }
+
+    RefPtr<mozilla::dom::Document> doc = presShell->GetDocument();
+
+    if (!doc || !doc->IsInChromeDocShell()) {
+      continue;
+    }
+
+    mozilla::ServoStyleSet* styleSet = presShell->StyleSet();
+    bool hasOldSheet = false;
+
+    for (size_t i = 0, count = styleSet->SheetCount(mozilla::StyleOrigin::User);
+         i < count; ++i) {
+      if (styleSet->SheetAt(mozilla::StyleOrigin::User, i) == &aOld) {
+        hasOldSheet = true;
+        break;
       }
     }
+
+    if (!hasOldSheet) {
+      continue;
+    }
+
+    // Same position as before, so userChrome.css still comes after the mods.
+    styleSet->InsertStyleSheetBefore(aNew, aOld);
+    styleSet->RemoveStyleSheet(aOld);
+    doc->ApplicableStylesChanged();
+  }
+}
+
+auto nsStyleSheetService::ZenReplaceModsContentSheet(mozilla::StyleSheet* aOld,
+                                                     mozilla::StyleSheet& aNew)
+    -> void {
+  mozilla::StyleSheet* userContent =
+      mozilla::GlobalStyleSheetCache::Singleton()->GetUserContentSheet();
+
+  for (const RefPtr<mozilla::PresShell>& presShell : mPresShells.Clone()) {
+    if (!presShell) {
+      continue;
+    }
+
+    RefPtr<mozilla::dom::Document> doc = presShell->GetDocument();
+
+    // Like Document::FillStyleSetUserAndUASheets: privileged pages, like
+    // about:preferences, never get the mods' styles.
+    if (!doc || doc->IsInChromeDocShell() ||
+        doc->NodePrincipal()->IsSystemPrincipal()) {
+      continue;
+    }
+
+    mozilla::ServoStyleSet* styleSet = presShell->StyleSet();
+    bool hasOldSheet = false;
+    bool hasUserContent = false;
+
+    for (size_t i = 0, count = styleSet->SheetCount(mozilla::StyleOrigin::User);
+         i < count; ++i) {
+      mozilla::StyleSheet* sheet =
+          styleSet->SheetAt(mozilla::StyleOrigin::User, i);
+      hasOldSheet = hasOldSheet || (aOld && sheet == aOld);
+      hasUserContent = hasUserContent || (userContent && sheet == userContent);
+    }
+
+    // Where it was, or where a new document puts it: before userContent.css,
+    // so the user's own styles still win.
+    if (hasOldSheet) {
+      styleSet->InsertStyleSheetBefore(aNew, *aOld);
+      styleSet->RemoveStyleSheet(*aOld);
+    } else if (hasUserContent) {
+      styleSet->InsertStyleSheetBefore(aNew, *userContent);
+    } else {
+      styleSet->AppendStyleSheet(aNew);
+    }
+
+    doc->ApplicableStylesChanged();
   }
 }

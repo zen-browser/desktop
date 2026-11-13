@@ -1,0 +1,41 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "github/**",
+  "github_api.sjs",
+  "head.js",
+  "redirect.sjs",
+  "store/**",
+  "store-broken/**",
+  "store-remote/**",
+  "store-untrusted/**",
+  "store-v2/**",
+  "store_page.html",
+]
+
+["browser_mods_content.js"]
+
+["browser_mods_github.js"]
+
+["browser_mods_install.js"]
+
+["browser_mods_library.js"]
+
+["browser_mods_marketplace.js"]
+
+["browser_mods_order.js"]
+
+["browser_mods_scripts.js"]
+
+["browser_mods_settings.js"]
+
+["browser_mods_stylesheet.js"]
+
+["browser_mods_untrusted.js"]
+
+["browser_mods_update.js"]
+
+["browser_mods_windows.js"]

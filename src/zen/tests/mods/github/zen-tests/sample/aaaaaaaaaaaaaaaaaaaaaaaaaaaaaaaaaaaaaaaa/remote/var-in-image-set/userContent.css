@@ -1,0 +1,2 @@
+:root { --u: "https://example.org/leak"; }
+input { background-image: image-set(var(--u) 1x); }

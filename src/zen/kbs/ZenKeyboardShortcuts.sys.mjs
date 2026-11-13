@@ -31,6 +31,9 @@ const LEGACY_DEVTOOLS_GROUP = "devTools";
 /**
  * Zen's own shortcuts, grouped the way about:keyboard shows them.
  */
+// The shortcuts mods add through the mod API, named by the mods.
+const MODS_CATEGORY_L10N_ID = "zenCKSOption-group-zen-mods";
+
 const ZEN_KEY_CATEGORIES = [
   {
     l10nId: "zenCKSOption-group-zen-compact-mode",
@@ -233,6 +236,7 @@ class nsZenKeyboardShortcuts {
         l10nIds.add(l10nId);
       }
     }
+    l10nIds.add(MODS_CATEGORY_L10N_ID);
     const ids = [...l10nIds];
     const values = await lazy.l10n.formatValues(ids.map(id => ({ id })));
     const text = Object.fromEntries(ids.map((id, i) => [id, values[i] ?? id]));
@@ -254,6 +258,20 @@ class nsZenKeyboardShortcuts {
       if (Object.keys(entries).length) {
         Object.assign((keys[label] ??= {}), entries);
       }
+    }
+
+    const modEntries = {};
+    for (const keyEl of document.querySelectorAll(
+      "key[data-zen-mod-shortcut]"
+    )) {
+      const data = actor.getKeyData(keyEl.id);
+      if (data) {
+        data.title = keyEl.getAttribute("data-zen-mod-shortcut");
+        modEntries[keyEl.id] = data;
+      }
+    }
+    if (Object.keys(modEntries).length) {
+      keys[text[MODS_CATEGORY_L10N_ID]] = modEntries;
     }
     return keys;
   }

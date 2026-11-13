@@ -26,6 +26,8 @@ ChromeUtils.defineESModuleGetters(
       "moz-src:///zen/library/sections/ZenLibraryBoostsSection.mjs",
     ZenLibraryMediaSection:
       "moz-src:///zen/library/sections/ZenLibraryMediaSection.mjs",
+    ZenLibraryModsSection:
+      "moz-src:///zen/library/sections/ZenLibraryModsSection.mjs",
     ZenLibrarySpacesSection:
       "moz-src:///zen/library/sections/ZenLibrarySpacesSection.mjs",
     ZenLibrarySpaceRoutingSection:
@@ -105,6 +107,7 @@ export class ZenLibrary extends MozLitElement {
       media: lazy.ZenLibraryMediaSection,
       downloads: lazy.ZenLibraryDownloadsSection,
       boosts: lazy.ZenLibraryBoostsSection,
+      mods: lazy.ZenLibraryModsSection,
       ...(!window.gZenWorkspaces.privateWindowOrDisabled
         ? {
             spaces: lazy.ZenLibrarySpacesSection,

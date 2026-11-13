@@ -1,0 +1,35 @@
+{
+  "zen-test-mod-a": {
+    "id": "zen-test-mod-a",
+    "name": "Test Mod A",
+    "description": "A mod for tests.",
+    "author": "zen-tests",
+    "version": "1.0.0",
+    "style": "https://example.com/browser/zen/tests/mods/store/a/chrome.css",
+    "readme": "https://example.com/browser/zen/tests/mods/store/readme.md",
+    "preferences": "https://example.com/browser/zen/tests/mods/store/a/preferences.json",
+    "image": "https://example.com/browser/zen/tests/mods/store/a/image.svg",
+    "tags": ["dark"],
+    "updatedAt": "2025-02-01"
+  },
+  "zen-test-mod-b": {
+    "id": "zen-test-mod-b",
+    "name": "Test Mod B",
+    "description": "A mod for tests.",
+    "author": "zen-tests",
+    "version": "1.0.0",
+    "style": "https://example.com/browser/zen/tests/mods/store/b/chrome.css",
+    "readme": "https://example.com/browser/zen/tests/mods/store/readme.md",
+    "image": "https://example.org/tracker.png",
+    "updatedAt": "2025-01-01"
+  },
+  "zen-test-mod-broken": {
+    "id": "zen-test-mod-broken",
+    "name": "Test Mod Broken",
+    "description": "A mod for tests.",
+    "author": "zen-tests",
+    "version": "1.0.0",
+    "style": "https://example.com/browser/zen/tests/mods/store/broken/unclosed-block.txt",
+    "readme": "https://example.com/browser/zen/tests/mods/store/readme.md"
+  }
+}

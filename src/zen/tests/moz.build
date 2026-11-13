@@ -15,6 +15,7 @@ BROWSER_CHROME_MANIFESTS += [
     "live-folders/browser.toml",
     "media/browser.toml",
     "migration/browser.toml",
+    "mods/browser.toml",
     "performance/browser.toml",
     "pinned/browser.toml",
     "popover/browser.toml",

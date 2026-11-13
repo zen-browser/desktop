@@ -26,7 +26,7 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
     }
   }
 
-  // This function will be called from about:preferences
+  // The store page can ask to check the installed mods for updates.
   checkForModUpdates(event) {
     event.preventDefault();
 
@@ -132,7 +132,19 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
     );
   }
 
+  /** Pages only get to change mods from a click or a key press. */
+  get #userAsked() {
+    return this.document.hasValidTransientUserGestureActivation;
+  }
+
   async handleModUninstallEvent(event) {
+    if (!this.#userAsked) {
+      console.warn(
+        "[ZenModsMarketplace]: Ignoring a mod removal without a user gesture."
+      );
+      return;
+    }
+
     const button = event.target;
     button.disabled = true;
 
@@ -142,6 +154,13 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
   }
 
   async handleModInstallationEvent(event) {
+    if (!this.#userAsked) {
+      console.warn(
+        "[ZenModsMarketplace]: Ignoring a mod install without a user gesture."
+      );
+      return;
+    }
+
     // Object can be an event or a theme id
     let modId;
 

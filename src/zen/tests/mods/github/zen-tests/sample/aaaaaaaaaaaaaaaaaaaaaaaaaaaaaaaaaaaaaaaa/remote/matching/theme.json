@@ -1,0 +1,5 @@
+{
+  "name": "matching",
+  "version": "1.0.0",
+  "style": { "chrome": "userChrome.css", "content": "userContent.css" }
+}

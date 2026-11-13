@@ -39,6 +39,13 @@ tab-context-zen-edit-icon =
 
 zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
 
+zen-mods-install-prompt-title = Install this mod?
+# Variables:
+#   $name (String) - The name of the mod
+#   $author (String) - Who published the mod
+zen-mods-install-prompt-message = “{ $name }” by { $author } will change how { -brand-short-name } looks. Mods can hide or imitate parts of the browser. You install it at your own risk, so only do it once you’ve reviewed its code.
+zen-mods-install-prompt-accept = Install
+
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
     Try opening a new tab to see the new URL bar in action!

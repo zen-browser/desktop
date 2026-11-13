@@ -38,7 +38,15 @@ const SCHEMES = [
   "//",
   "",
 ];
-const MATCH_TYPES = ["contains", "equal-to", "regex", "bogus-type", ""];
+const MATCH_TYPES = [
+  "contains",
+  "domain-contains",
+  "path-contains",
+  "equal-to",
+  "regex",
+  "bogus-type",
+  "",
+];
 
 function randInt(rng, n) {
   return Math.floor(rng() * n);

@@ -7,6 +7,90 @@ import { nsZenFolder } from "chrome://browser/content/zen-components/ZenFolder.m
 // Enough clipboard text to fill the preview, which crops what does not fit.
 const MAX_CLIPBOARD_PREVIEW = 200;
 
+// Ask before pinning this many bookmarks at once (e.g. a big folder).
+const BOOKMARK_DROP_CONFIRM_THRESHOLD = 50;
+
+/**
+ * The Places nodes of a drag that can be pinned: bookmarks and folders of this
+ * profile. History entries (no GUID), queries and separators are left out.
+ *
+ * @param {DataTransfer} dt
+ * @returns {object[]} The unwrapped Places nodes.
+ */
+function getDraggedPlacesNodes(dt) {
+  const nodes = [];
+  if (!dt.types.includes(PlacesUtils.TYPE_X_MOZ_PLACE)) {
+    return nodes;
+  }
+  for (let i = 0; i < dt.mozItemCount; i++) {
+    try {
+      const data = dt.mozGetDataAt(PlacesUtils.TYPE_X_MOZ_PLACE, i);
+      nodes.push(
+        ...PlacesUtils.unwrapNodes(data, PlacesUtils.TYPE_X_MOZ_PLACE)
+          .validNodes
+      );
+    } catch (e) {
+      // Not a Places payload we understand.
+    }
+  }
+  return nodes.filter(node => {
+    if (node.instanceId !== PlacesUtils.instanceId) {
+      return false;
+    }
+    if (node.type === PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+      return !!node.itemGuid;
+    }
+    if (node.type !== PlacesUtils.TYPE_X_MOZ_PLACE) {
+      return false;
+    }
+    // Folder shortcuts in Places use a query URI and carry the concrete
+    // folder GUID separately. Arbitrary place: queries have no concreteGuid.
+    return node.uri?.startsWith("place:")
+      ? !!node.concreteGuid
+      : !!node.itemGuid && !!node.uri;
+  });
+}
+
+/**
+ * Resolves dragged Places nodes to bookmark GUIDs, flattening folders.
+ *
+ * @param {object[]} nodes - Nodes from getDraggedPlacesNodes.
+ * @returns {Promise<string[]>}
+ */
+async function resolveBookmarkGuids(nodes) {
+  const guids = new Set();
+  const collect = item => {
+    if (item.type === PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+      item.children?.forEach(collect);
+    } else if (
+      item.type === PlacesUtils.TYPE_X_MOZ_PLACE &&
+      item.uri &&
+      !item.uri.startsWith("place:")
+    ) {
+      guids.add(item.guid);
+    }
+  };
+  for (const node of nodes) {
+    let folderGuid = node.concreteGuid;
+    if (!folderGuid && node.type === PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+      folderGuid = node.itemGuid;
+    }
+    if (folderGuid) {
+      const folder = await PlacesUtils.bookmarks.fetch(folderGuid);
+      if (folder?.type !== PlacesUtils.bookmarks.TYPE_FOLDER) {
+        continue;
+      }
+      const tree = await PlacesUtils.promiseBookmarksTree(folderGuid);
+      if (tree) {
+        collect(tree);
+      }
+    } else {
+      guids.add(node.itemGuid);
+    }
+  }
+  return [...guids];
+}
+
 // A helper class to manage collapsible pinned tabs in a workspace.
 
 class nsZenCollapsiblePins extends nsZenFolder {
@@ -59,6 +143,7 @@ export class nsZenWorkspace extends MozXULElement {
   #watchedTabWasVisible = false;
   #scrollToTabShown = false;
   #scrollToTabSeq = 0;
+  #bookmarksRefreshSeq = 0;
 
   static get markup() {
     return `
@@ -81,6 +166,10 @@ export class nsZenWorkspace extends MozXULElement {
                              class="zen-workspace-close-unpinned-tabs-button" />
             </hbox>
           </vbox>
+          <vbox class="zen-workspace-bookmarks-section" hidden="true" />
+          <description class="zen-workspace-bookmarks-drop-hint"
+                       data-l10n-id="zen-space-bookmarks-drop-hint"
+                       hidden="true" />
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
             <!-- Let it as an ID to mantain compatibility with firefox's tabbrowser -->
             <hbox id="tabbrowser-arrowscrollbox-periphery">
@@ -105,6 +194,175 @@ export class nsZenWorkspace extends MozXULElement {
           <image class="zen-workspace-scroll-to-tab-arrow" />
         </hbox>
       `;
+  }
+
+  /**
+   * Renders the bookmarks assigned to this Space below the pinned-tabs divider.
+   * Gated by zen.spaces.bookmarks-in-sidebar.
+   */
+  async refreshBookmarks() {
+    const container = this.bookmarksContainer;
+    if (!container) {
+      return;
+    }
+    const seq = ++this.#bookmarksRefreshSeq;
+    const enabled = Services.prefs.getBoolPref(
+      "zen.spaces.bookmarks-in-sidebar",
+      false
+    );
+    const cache = gZenWorkspaces._workspaceBookmarksCache;
+    // The cache is dropped while it reloads; that reload triggers another refresh.
+    if (enabled && !cache) {
+      return;
+    }
+    const guids = enabled ? (cache.bookmarks?.[this.id] ?? []) : [];
+
+    const infos = await Promise.all(
+      guids.map(guid => PlacesUtils.bookmarks.fetch(guid).catch(() => null))
+    );
+    // A newer refresh started while we were awaiting; let it win.
+    if (seq !== this.#bookmarksRefreshSeq) {
+      return;
+    }
+    const entries = infos.filter(
+      info => info?.url && info.type === PlacesUtils.bookmarks.TYPE_BOOKMARK
+    );
+
+    container.replaceChildren(
+      ...entries.map(info => this.#createBookmarkItem(info))
+    );
+    container.hidden = !entries.length;
+    // A drag may be in progress; the hint depends on whether there are items.
+    this.setBookmarkDropReady(container.hasAttribute("drop-ready"));
+  }
+
+  get #bookmarksEnabled() {
+    return Services.prefs.getBoolPref("zen.spaces.bookmarks-in-sidebar", false);
+  }
+
+  /**
+   * Shows or hides the drop affordance while a bookmark is being dragged
+   * somewhere over the window. The hint only replaces the section when the
+   * section has nothing to show yet.
+   *
+   * @param {boolean} ready
+   */
+  setBookmarkDropReady(ready) {
+    const active = ready && this.#bookmarksEnabled;
+    this.bookmarksContainer.toggleAttribute("drop-ready", active);
+    this.bookmarksDropHint.hidden = !(
+      active && !this.bookmarksContainer.childElementCount
+    );
+    if (!active) {
+      this.bookmarksContainer.removeAttribute("drop-over");
+      this.bookmarksDropHint.removeAttribute("drop-over");
+    }
+  }
+
+  #setupBookmarkDrop() {
+    for (const target of [this.bookmarksContainer, this.bookmarksDropHint]) {
+      target.addEventListener("dragenter", event =>
+        this.#onBookmarkDrag(event)
+      );
+      target.addEventListener("dragover", event => this.#onBookmarkDrag(event));
+      target.addEventListener("dragleave", event => {
+        if (!target.contains(event.relatedTarget)) {
+          target.removeAttribute("drop-over");
+        }
+      });
+      target.addEventListener("drop", event => this.#onBookmarkDrop(event));
+    }
+  }
+
+  #onBookmarkDrag(event) {
+    const dt = event.dataTransfer;
+    // Anything else, such as tabs, keeps its regular handling.
+    if (
+      !this.#bookmarksEnabled ||
+      !dt.types.includes(PlacesUtils.TYPE_X_MOZ_PLACE)
+    ) {
+      return;
+    }
+    // Keep the tab strip from turning a dropped bookmark into a new tab.
+    event.stopPropagation();
+    if (!getDraggedPlacesNodes(dt).length) {
+      dt.dropEffect = "none";
+      return;
+    }
+    event.preventDefault();
+    // Pinning must never move the bookmark out of its folder.
+    dt.dropEffect = "copy";
+    event.currentTarget.setAttribute("drop-over", "true");
+  }
+
+  async #onBookmarkDrop(event) {
+    const dt = event.dataTransfer;
+    if (
+      !this.#bookmarksEnabled ||
+      !dt.types.includes(PlacesUtils.TYPE_X_MOZ_PLACE)
+    ) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    // The drag data is only readable while the event is dispatched.
+    const nodes = getDraggedPlacesNodes(dt);
+    this.setBookmarkDropReady(false);
+    if (!nodes.length || gZenWorkspaces.privateWindowOrDisabled) {
+      return;
+    }
+    try {
+      const guids = await resolveBookmarkGuids(nodes);
+      if (guids.length > BOOKMARK_DROP_CONFIRM_THRESHOLD) {
+        const [title, message] = await document.l10n.formatValues([
+          "zen-space-bookmarks-drop-confirm-title",
+          {
+            id: "zen-space-bookmarks-drop-confirm",
+            args: { count: guids.length },
+          },
+        ]);
+        if (!Services.prompt.confirm(window, title, message)) {
+          return;
+        }
+      }
+      await ZenWorkspaceBookmarksStorage.addBookmarksToWorkspace(
+        guids,
+        this.id
+      );
+    } catch (e) {
+      console.error("Failed to pin bookmarks to the Space:", e);
+    }
+  }
+
+  #createBookmarkItem(info) {
+    const url = info.url.href;
+    const item = document.createXULElement("toolbarbutton");
+    item.className = "toolbarbutton-1 zen-workspace-bookmark-item";
+    item.setAttribute("label", info.title || url);
+    item.setAttribute("tooltiptext", url);
+    item.setAttribute("image", `page-icon:${url}`);
+    item.setAttribute("context", "zenSpaceBookmarkContext");
+    item.setAttribute("data-guid", info.guid);
+    const node = {
+      uri: url,
+      title: info.title,
+      type: Ci.nsINavHistoryResultNode.RESULT_TYPE_URI,
+      bookmarkGuid: info.guid,
+    };
+    item.addEventListener("click", event => {
+      if (event.button !== 0) {
+        return;
+      }
+      PlacesUIUtils.openNodeWithEvent(node, event);
+    });
+    item.addEventListener("auxclick", event => {
+      if (event.button === 1) {
+        event.preventDefault();
+        event.stopPropagation();
+        PlacesUIUtils.openNodeWithEvent(node, event);
+      }
+    });
+    return item;
   }
 
   static get moveTabToButtonMarkup() {
@@ -160,6 +418,13 @@ export class nsZenWorkspace extends MozXULElement {
     this.pinnedTabsContainer = this.querySelector(
       ".zen-workspace-pinned-tabs-section"
     );
+    this.bookmarksContainer = this.querySelector(
+      ".zen-workspace-bookmarks-section"
+    );
+    this.bookmarksDropHint = this.querySelector(
+      ".zen-workspace-bookmarks-drop-hint"
+    );
+    this.#setupBookmarkDrop();
     this.pinnedTabsContainer.separatorElement =
       this.pinnedTabsContainer.querySelector(
         ".pinned-tabs-container-separator"

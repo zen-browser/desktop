@@ -168,3 +168,93 @@ add_task(async function test_recreate_tables_after_places_recovery() {
     }
   });
 });
+
+add_task(async function test_add_and_remove_bookmarks_in_space() {
+  await gZenWorkspaces.promiseInitialized;
+  await ZenWorkspaceBookmarksStorage.promiseInitialized;
+  const space = gZenWorkspaces.getActiveWorkspace();
+  const bookmarks = [];
+  for (const title of ["First", "Second"]) {
+    bookmarks.push(
+      await PlacesUtils.bookmarks.insert({
+        parentGuid: PlacesUtils.bookmarks.unfiledGuid,
+        title,
+        url: `https://example.com/${title}`,
+      })
+    );
+  }
+  const [first, second] = bookmarks;
+  registerCleanupFunction(async () => {
+    for (const bookmark of bookmarks) {
+      await PlacesUtils.bookmarks.remove(bookmark);
+    }
+  });
+  let notifications = 0;
+  const observer = () => notifications++;
+  Services.obs.addObserver(observer, "workspace-bookmarks-updated");
+  registerCleanupFunction(() =>
+    Services.obs.removeObserver(observer, "workspace-bookmarks-updated")
+  );
+
+  const added = await ZenWorkspaceBookmarksStorage.addBookmarksToWorkspace(
+    [first.guid, second.guid, first.guid, "missing-guid"],
+    space.uuid
+  );
+  Assert.deepEqual(
+    added,
+    [first.guid, second.guid],
+    "Duplicates and unknown GUIDs are not assigned"
+  );
+  Assert.equal(notifications, 1, "Every window is notified once");
+  Assert.deepEqual(
+    (await ZenWorkspaceBookmarksStorage.getBookmarkGuidsByWorkspace())[
+      space.uuid
+    ].filter(guid => bookmarks.some(bookmark => bookmark.guid === guid)),
+    [first.guid, second.guid],
+    "Bookmarks keep the order they were pinned in"
+  );
+  const changes = await ZenWorkspaceBookmarksStorage.getChangedIDs();
+  Assert.equal(
+    changes[`${first.guid}:${space.uuid}`]?.type,
+    "added",
+    "The assignment is recorded for sync"
+  );
+
+  Assert.deepEqual(
+    await ZenWorkspaceBookmarksStorage.addBookmarksToWorkspace(
+      [first.guid],
+      space.uuid
+    ),
+    [],
+    "Assigning again is a no-op"
+  );
+  Assert.equal(notifications, 1, "A no-op does not notify");
+
+  ok(
+    await ZenWorkspaceBookmarksStorage.removeBookmarkFromWorkspace(
+      first.guid,
+      space.uuid
+    ),
+    "The assignment is removed"
+  );
+  Assert.equal(
+    (await ZenWorkspaceBookmarksStorage.getChangedIDs())[
+      `${first.guid}:${space.uuid}`
+    ]?.type,
+    "removed",
+    "The removal is recorded for sync"
+  );
+  ok(
+    !(await ZenWorkspaceBookmarksStorage.removeBookmarkFromWorkspace(
+      first.guid,
+      space.uuid
+    )),
+    "Removing twice does nothing"
+  );
+  Assert.deepEqual(
+    await ZenWorkspaceBookmarksStorage.getBookmarkWorkspaces(second.guid),
+    [space.uuid],
+    "Other assignments stay"
+  );
+  ok(await PlacesUtils.bookmarks.fetch(first.guid), "The bookmark is kept");
+});

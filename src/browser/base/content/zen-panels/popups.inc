@@ -38,6 +38,12 @@
   <menuitem id="context_zenSpaceRoutingSettings" data-l10n-id="zen-space-routing-settings" command="cmd_zenOpenSpaceRoutingSettings"/>
 </menupopup>
 
+<menupopup id="zenSpaceBookmarkContext">
+  <menuitem id="context_zenSpaceBookmarkOpenTab" data-l10n-id="zen-space-bookmark-open-in-new-tab"/>
+  <menuseparator/>
+  <menuitem id="context_zenSpaceBookmarkRemove" data-l10n-id="zen-space-bookmark-remove"/>
+</menupopup>
+
 <menupopup id="zenFolderActions">
   <menu id="context_zenLiveFolderOptions"
     data-l10n-id="zen-live-folder-options"

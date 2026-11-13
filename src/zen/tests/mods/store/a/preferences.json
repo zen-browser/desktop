@@ -1,6 +1,16 @@
 [
-  { "property": "zen.test.mods.a.checkbox", "label": "Checkbox", "type": "checkbox", "defaultValue": true },
-  { "property": "zen.test.mods.a.color", "label": "Color", "type": "string", "defaultValue": "red" },
+  {
+    "property": "zen.test.mods.a.checkbox",
+    "label": "Checkbox",
+    "type": "checkbox",
+    "defaultValue": true
+  },
+  {
+    "property": "zen.test.mods.a.color",
+    "label": "Color",
+    "type": "string",
+    "defaultValue": "red"
+  },
   {
     "property": "zen.test.mods.a.mode",
     "label": "Mode",

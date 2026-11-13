@@ -1,1 +1,5 @@
-{"name": "imported-no-space", "version": "1.0.0", "style": {"content": "userContent.css"}}
+{
+  "name": "imported-no-space",
+  "version": "1.0.0",
+  "style": { "content": "userContent.css" }
+}

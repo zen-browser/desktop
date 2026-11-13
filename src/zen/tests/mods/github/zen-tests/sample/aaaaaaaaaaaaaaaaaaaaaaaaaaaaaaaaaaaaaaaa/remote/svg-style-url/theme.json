@@ -1,1 +1,5 @@
-{"name": "svg-style-url", "version": "1.0.0", "style": {"chrome": "userChrome.css"}}
+{
+  "name": "svg-style-url",
+  "version": "1.0.0",
+  "style": { "chrome": "userChrome.css" }
+}

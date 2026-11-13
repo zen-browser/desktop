@@ -1,1 +1,9 @@
-{ "id": "zen-test-mod-b", "name": "Test Mod B", "description": "A mod for tests.", "author": "zen-tests", "version": "1.0.0", "style": "https://example.com/browser/zen/tests/mods/store/b/chrome.css", "readme": "https://example.com/browser/zen/tests/mods/store/readme.md" }
+{
+  "id": "zen-test-mod-b",
+  "name": "Test Mod B",
+  "description": "A mod for tests.",
+  "author": "zen-tests",
+  "version": "1.0.0",
+  "style": "https://example.com/browser/zen/tests/mods/store/b/chrome.css",
+  "readme": "https://example.com/browser/zen/tests/mods/store/readme.md"
+}

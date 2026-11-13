@@ -1,1 +1,38 @@
-{"zen-test-bad-http": { "id": "zen-test-bad-http", "name": "Bad HTTP", "description": "A mod for tests.", "author": "zen-tests", "version": "1.0.0", "style": "http://example.com/browser/zen/tests/mods/store/b/chrome.css", "readme": "https://example.com/browser/zen/tests/mods/store/readme.md" }, "zen-test-bad-host": { "id": "zen-test-bad-host", "name": "Bad Host", "description": "A mod for tests.", "author": "zen-tests", "version": "1.0.0", "style": "https://example.org/browser/zen/tests/mods/store/b/chrome.css", "readme": "https://example.com/browser/zen/tests/mods/store/readme.md" }, "zen-test-bad-redirect": { "id": "zen-test-bad-redirect", "name": "Bad Redirect", "description": "A mod for tests.", "author": "zen-tests", "version": "1.0.0", "style": "https://example.com/browser/zen/tests/mods/redirect.sjs", "readme": "https://example.com/browser/zen/tests/mods/store/readme.md" }, "zen-test-wrong-id": { "id": "zen-test-mod-b", "name": "Wrong Id", "description": "A mod for tests.", "author": "zen-tests", "version": "1.0.0", "style": "https://example.com/browser/zen/tests/mods/store/b/chrome.css", "readme": "https://example.com/browser/zen/tests/mods/store/readme.md" }}
+{
+  "zen-test-bad-http": {
+    "id": "zen-test-bad-http",
+    "name": "Bad HTTP",
+    "description": "A mod for tests.",
+    "author": "zen-tests",
+    "version": "1.0.0",
+    "style": "http://example.com/browser/zen/tests/mods/store/b/chrome.css",
+    "readme": "https://example.com/browser/zen/tests/mods/store/readme.md"
+  },
+  "zen-test-bad-host": {
+    "id": "zen-test-bad-host",
+    "name": "Bad Host",
+    "description": "A mod for tests.",
+    "author": "zen-tests",
+    "version": "1.0.0",
+    "style": "https://example.org/browser/zen/tests/mods/store/b/chrome.css",
+    "readme": "https://example.com/browser/zen/tests/mods/store/readme.md"
+  },
+  "zen-test-bad-redirect": {
+    "id": "zen-test-bad-redirect",
+    "name": "Bad Redirect",
+    "description": "A mod for tests.",
+    "author": "zen-tests",
+    "version": "1.0.0",
+    "style": "https://example.com/browser/zen/tests/mods/redirect.sjs",
+    "readme": "https://example.com/browser/zen/tests/mods/store/readme.md"
+  },
+  "zen-test-wrong-id": {
+    "id": "zen-test-mod-b",
+    "name": "Wrong Id",
+    "description": "A mod for tests.",
+    "author": "zen-tests",
+    "version": "1.0.0",
+    "style": "https://example.com/browser/zen/tests/mods/store/b/chrome.css",
+    "readme": "https://example.com/browser/zen/tests/mods/store/readme.md"
+  }
+}

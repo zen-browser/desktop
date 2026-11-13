@@ -33,14 +33,22 @@ function getDraggedPlacesNodes(dt) {
       // Not a Places payload we understand.
     }
   }
-  return nodes.filter(
-    node =>
-      node.itemGuid &&
-      (!node.instanceId || node.instanceId === PlacesUtils.instanceId) &&
-      !node.uri?.startsWith("place:") &&
-      (node.type === PlacesUtils.TYPE_X_MOZ_PLACE ||
-        node.type === PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER)
-  );
+  return nodes.filter(node => {
+    if (node.instanceId !== PlacesUtils.instanceId) {
+      return false;
+    }
+    if (node.type === PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+      return !!node.itemGuid;
+    }
+    if (node.type !== PlacesUtils.TYPE_X_MOZ_PLACE) {
+      return false;
+    }
+    // Folder shortcuts in Places use a query URI and carry the concrete
+    // folder GUID separately. Arbitrary place: queries have no concreteGuid.
+    return node.uri?.startsWith("place:")
+      ? !!node.concreteGuid
+      : !!node.itemGuid && !!node.uri;
+  });
 }
 
 /**
@@ -63,8 +71,16 @@ async function resolveBookmarkGuids(nodes) {
     }
   };
   for (const node of nodes) {
-    if (node.type === PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
-      const tree = await PlacesUtils.promiseBookmarksTree(node.itemGuid);
+    let folderGuid = node.concreteGuid;
+    if (!folderGuid && node.type === PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+      folderGuid = node.itemGuid;
+    }
+    if (folderGuid) {
+      const folder = await PlacesUtils.bookmarks.fetch(folderGuid);
+      if (folder?.type !== PlacesUtils.bookmarks.TYPE_FOLDER) {
+        continue;
+      }
+      const tree = await PlacesUtils.promiseBookmarksTree(folderGuid);
       if (tree) {
         collect(tree);
       }
@@ -327,13 +343,23 @@ export class nsZenWorkspace extends MozXULElement {
     item.setAttribute("image", `page-icon:${url}`);
     item.setAttribute("context", "zenSpaceBookmarkContext");
     item.setAttribute("data-guid", info.guid);
+    const node = {
+      uri: url,
+      title: info.title,
+      type: Ci.nsINavHistoryResultNode.RESULT_TYPE_URI,
+      bookmarkGuid: info.guid,
+    };
     item.addEventListener("click", event => {
-      const where = event.ctrlKey || event.metaKey ? "tab" : "current";
-      window.openTrustedLinkIn(url, where);
+      if (event.button !== 0) {
+        return;
+      }
+      PlacesUIUtils.openNodeWithEvent(node, event);
     });
     item.addEventListener("auxclick", event => {
       if (event.button === 1) {
-        window.openTrustedLinkIn(url, "tab");
+        event.preventDefault();
+        event.stopPropagation();
+        PlacesUIUtils.openNodeWithEvent(node, event);
       }
     });
     return item;

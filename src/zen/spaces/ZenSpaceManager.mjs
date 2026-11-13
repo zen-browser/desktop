@@ -175,14 +175,27 @@ class nsZenWorkspaces {
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
-      const onBookmarkChanged = () => {
+      let bookmarkRefreshTimer = null;
+      const onBookmarkChanged = events => {
         const enabled = Services.prefs.getBoolPref(
           "zen.spaces.bookmarks-in-sidebar",
           false
         );
-        if (enabled) {
-          this.refreshSpaceBookmarks();
+        if (!enabled) {
+          return;
         }
+        const bookmarks = this._workspaceBookmarksCache?.bookmarks;
+        if (bookmarks) {
+          const assignedGuids = new Set(Object.values(bookmarks).flat());
+          if (!events.some(event => assignedGuids.has(event.guid))) {
+            return;
+          }
+        }
+        clearTimeout(bookmarkRefreshTimer);
+        bookmarkRefreshTimer = setTimeout(() => {
+          bookmarkRefreshTimer = null;
+          this.refreshSpaceBookmarks();
+        }, 50);
       };
       const onBookmarksPrefChanged = () => this.refreshSpaceBookmarks();
       // Drags from the Library window or the Bookmarks sidebar start in another
@@ -264,6 +277,7 @@ class nsZenWorkspaces {
           "zen.spaces.bookmarks-in-sidebar",
           onBookmarksPrefChanged
         );
+        clearTimeout(bookmarkRefreshTimer);
         window.removeEventListener("dragenter", onWindowDragEnter, true);
         window.removeEventListener("dragover", cancelHide, true);
         window.removeEventListener("dragleave", onWindowDragLeave, true);

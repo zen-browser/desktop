@@ -601,7 +601,7 @@ add_task(async function test_mod_api() {
 
         state.version = zen.version;
         state.mod = zen.mod.name;
-        const box = zen.add(win.document.createXULElement("box"));
+        const box = zen.removeOnCleanup(win.document.createXULElement("box"));
 
         box.id = "zen-test-api-box";
         win.document.documentElement.append(box);

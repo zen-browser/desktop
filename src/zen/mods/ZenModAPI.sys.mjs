@@ -178,12 +178,13 @@ export class ZenModAPI {
   }
 
   /**
-   * Removes a node the mod adds when the mod stops.
+   * Removes a node the mod puts in the window when the mod stops.
    *
    * @param {Node} node
-   * @returns {Node} The node, to insert it in the same line
+   * @returns {Node} The node, to insert it where it's created:
+   * `toolbar.append(zen.removeOnCleanup(button))`
    */
-  add(node) {
+  removeOnCleanup(node) {
     if (this.#isDisposed) {
       // The caller inserts it right after this; take it out after that.
       Promise.resolve().then(() => node.remove());
@@ -258,21 +259,36 @@ export class ZenModAPI {
       }
 
       case "split-view": {
-        return this.#listenToPair(
-          ["ZenViewSplitter:SplitViewActivated", { active: true }],
-          ["ZenViewSplitter:SplitViewDeactivated", { active: false }],
-          guarded
+        const stopActivated = this.listen(
+          win,
+          "ZenViewSplitter:SplitViewActivated",
+          () => guarded({ active: true })
         );
+        const stopDeactivated = this.listen(
+          win,
+          "ZenViewSplitter:SplitViewDeactivated",
+          () => guarded({ active: false })
+        );
+
+        return () => {
+          stopActivated();
+          stopDeactivated();
+        };
       }
 
       case "glance": {
         // Glances start from a tab, and the events come from it.
-        return this.#listenToPair(
-          ["GlanceOpen", { open: true }],
-          ["GlanceClose", { open: false }],
-          guarded,
-          { withTab: true }
+        const stopOpen = this.listen(win, "GlanceOpen", event =>
+          guarded({ open: true, tab: event.target })
         );
+        const stopClose = this.listen(win, "GlanceClose", event =>
+          guarded({ open: false, tab: event.target })
+        );
+
+        return () => {
+          stopOpen();
+          stopClose();
+        };
       }
     }
 
@@ -375,27 +391,6 @@ export class ZenModAPI {
     for (const cleanup of [...this.#cleanups].reverse()) {
       cleanup();
     }
-  }
-
-  #listenToPair(
-    [firstType, firstDetail],
-    [secondType, secondDetail],
-    guarded,
-    { withTab = false } = {}
-  ) {
-    const detailOf = (detail, event) =>
-      withTab ? { ...detail, tab: event.target } : { ...detail };
-    const stopFirst = this.listen(this.#window, firstType, event =>
-      guarded(detailOf(firstDetail, event))
-    );
-    const stopSecond = this.listen(this.#window, secondType, event =>
-      guarded(detailOf(secondDetail, event))
-    );
-
-    return this.#track(() => {
-      stopFirst();
-      stopSecond();
-    });
   }
 
   /**

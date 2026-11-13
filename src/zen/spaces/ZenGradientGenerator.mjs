@@ -1925,10 +1925,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return;
       }
 
-      if (theme === null) {
-        browser.gZenThemePicker.invalidateGradientCache(uuid);
-      }
-
       // Only rebuild for the workspace the window shows, or the one its
       // picker is editing without showing it.
       const windowWorkspace = browser.gZenWorkspaces.getActiveWorkspace();
@@ -2111,13 +2107,20 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      const gradient = browser.gZenThemePicker.getGradient(
-        workspaceTheme.gradientColors
-      );
-      const gradientToolbar = browser.gZenThemePicker.getGradient(
-        workspaceTheme.gradientColors,
-        true
-      );
+      const cached = theme
+        ? null
+        : browser.gZenThemePicker.getGradientForWorkspace(
+            appliesToWindow ? windowWorkspace : workspace
+          );
+      const gradient =
+        cached?.gradient ??
+        browser.gZenThemePicker.getGradient(workspaceTheme.gradientColors);
+      const gradientToolbar =
+        cached?.toolbarGradient ??
+        browser.gZenThemePicker.getGradient(
+          workspaceTheme.gradientColors,
+          true
+        );
       if (appliesToWindow) {
         browser.gZenThemePicker.updateNoise(
           workspaceTheme.texture,
@@ -2455,10 +2458,24 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
   }
 
+  #gradientSignature(theme) {
+    const colors = theme.gradientColors ?? [];
+    return JSON.stringify([
+      theme,
+      this.isDarkMode,
+      colors.length ? null : this.getNativeAccentColor(),
+    ]);
+  }
+
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {
     const uuid = workspace.uuid;
+    const signature = this.#gradientSignature(workspace.theme ?? {});
     let cachedData = this.#gradientsCache[uuid];
-    if (cachedData && !(getGradient && !cachedData.gradient)) {
+    if (
+      cachedData &&
+      cachedData.signature === signature &&
+      !(getGradient && !cachedData.gradient)
+    ) {
       return cachedData;
     }
     const previousOpacity = this.currentOpacity;
@@ -2492,6 +2509,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       "--zen-primary-color": primaryColor,
     };
     this.#gradientsCache[uuid] = {
+      signature,
       gradient,
       toolbarGradient,
       grain: theme.texture ?? 0,

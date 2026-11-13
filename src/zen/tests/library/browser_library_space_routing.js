@@ -90,6 +90,16 @@ add_task(async function test_new_route_form_adds_a_route() {
   save.click();
   await section.updateComplete;
 
+  Assert.ok(
+    !section
+      .querySelector(".zen-library-routing-reference")
+      .hasAttribute("invalid"),
+    "A successfully saved route stays valid while the form closes"
+  );
+  Assert.ok(
+    !section.querySelector("#routing-duplicate-warning"),
+    "Saving a new route does not show a duplicate warning during dismissal"
+  );
   const routes = gZenSpaceRoutingManager.getAllRoutes();
   Assert.equal(routes.length, 1, "the route was kept");
   Assert.equal(routes[0].reference, "zen-browser.app", "with its link");
@@ -293,5 +303,192 @@ add_task(async function test_closing_the_library_puts_the_form_away() {
     "what was being written was not kept"
   );
 
+  await closeLibrary();
+});
+
+add_task(async function test_duplicates_hidden_by_search() {
+  clearRoutes();
+  const route = gZenSpaceRoutingManager.createNewRoute();
+  route.reference = "example.com";
+  gZenSpaceRoutingManager.updateRoute(route);
+  const section = await openRoutingSection();
+  section.searchQuery = "hidden";
+  await section.updateComplete;
+  Assert.equal(
+    section.querySelectorAll(".zen-library-row").length,
+    0,
+    "Search hides the original"
+  );
+  section.querySelector(".zen-library-filter-button").click();
+  await section.updateComplete;
+  const input = await fillReference(section, " EXAMPLE.COM ");
+  Assert.ok(
+    section.querySelector(".zen-library-routing-save").disabled,
+    "Hidden duplicate cannot be saved"
+  );
+  Assert.equal(
+    section.querySelector("#routing-duplicate-warning").dataset.l10nId,
+    "library-space-routing-duplicate",
+    "Same destination is explained"
+  );
+  section.draft = { ...section.draft, openIn: "another-space" };
+  await section.updateComplete;
+  Assert.equal(
+    section.querySelector("#routing-duplicate-warning").dataset.l10nId,
+    "library-space-routing-conflict",
+    "Different destination is explained"
+  );
+  input.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+  );
+  Assert.equal(
+    gZenSpaceRoutingManager.getAllRoutes().length,
+    1,
+    "Enter cannot bypass validation"
+  );
+  section
+    .querySelector('[data-l10n-id="library-space-routing-edit-existing"]')
+    .click();
+  await section.updateComplete;
+  Assert.equal(section.draft.id, route.id, "Hidden original opens for editing");
+  Assert.ok(
+    !section.querySelector(".zen-library-routing-save").disabled,
+    "Original can be saved unchanged"
+  );
+  clearRoutes();
+  await closeLibrary();
+});
+
+add_task(async function test_tab_menu_duplicate_opens_warning() {
+  clearRoutes();
+  const route = gZenSpaceRoutingManager.createNewRoute();
+  route.reference = "example.com";
+  route.openIn = "another-space";
+  gZenSpaceRoutingManager.updateRoute(route);
+  const section = await openRoutingSection();
+  section.searchQuery = "hidden";
+  await section.updateComplete;
+
+  await gZenSpaceRoutingManager.addRouteForSelected(
+    [{ linkedBrowser: { currentURI: { host: "example.com" } } }],
+    window
+  );
+  await section.updateComplete;
+  Assert.ok(Library.isLibraryOpen, "An already open library stays open");
+  Assert.equal(
+    gZenSpaceRoutingManager.getAllRoutes().length,
+    1,
+    "The rejected tab-menu route leaves no draft in storage"
+  );
+  Assert.equal(
+    section.querySelector("#routing-duplicate-warning").dataset.l10nId,
+    "library-space-routing-conflict",
+    "The rejected destination is explained"
+  );
+  section
+    .querySelector('[data-l10n-id="library-space-routing-edit-existing"]')
+    .click();
+  await section.updateComplete;
+  Assert.equal(
+    section.draft.id,
+    route.id,
+    "The hidden existing route can be edited"
+  );
+
+  await closeLibrary();
+  await gZenSpaceRoutingManager.addRouteForSelected(
+    [{ linkedBrowser: { currentURI: { host: "example.com" } } }],
+    window
+  );
+  const reopened = document.querySelector("zen-library-space-routing-section");
+  await reopened.updateComplete;
+  Assert.ok(
+    reopened.querySelector("#routing-duplicate-warning"),
+    "A closed library opens with the duplicate warning"
+  );
+  await gZenSpaceRoutingManager.addRouteForSelected(
+    [{ linkedBrowser: { currentURI: { host: "unique.example" } } }],
+    window
+  );
+  await reopened.updateComplete;
+  Assert.equal(
+    gZenSpaceRoutingManager.getAllRoutes().length,
+    2,
+    "A unique tab-menu rule is saved"
+  );
+  Assert.equal(
+    reopened.draft.reference,
+    "unique.example",
+    "The newly saved rule is available for editing"
+  );
+  Assert.ok(
+    !reopened.querySelector(".zen-library-routing-save").disabled,
+    "The new rule does not conflict with itself"
+  );
+  clearRoutes();
+  await closeLibrary();
+});
+
+add_task(async function test_legacy_duplicate_can_be_saved_unchanged() {
+  clearRoutes();
+  // Seed a configuration that predates duplicate validation.
+  const manager = gZenSpaceRoutingManager;
+  const originalLookup = manager.getDuplicateRoute;
+  let first;
+  let second;
+  try {
+    manager.getDuplicateRoute = () => null;
+    first = manager.createNewRoute();
+    first.reference = "legacy.example";
+    manager.updateRoute(first);
+    second = manager.createNewRoute();
+    second.reference = first.reference;
+    second.openIn = "another-space";
+    manager.updateRoute(second);
+  } finally {
+    manager.getDuplicateRoute = originalLookup;
+  }
+  manager.saveRoutes();
+  Assert.equal(
+    manager.getAllRoutes().length,
+    2,
+    "Saving preserves legacy duplicates"
+  );
+  const copy = manager.getDuplicateRoute(first);
+  copy.reference = "mutated";
+  Assert.equal(
+    manager.getRoute(second.id).reference,
+    "legacy.example",
+    "Duplicate lookup returns a copy"
+  );
+
+  const section = await openRoutingSection();
+  section.showDraft(first);
+  await section.updateComplete;
+  Assert.ok(
+    section.querySelector("#routing-duplicate-warning"),
+    "The existing conflict is still explained"
+  );
+  Assert.ok(
+    !section.querySelector(".zen-library-routing-save").disabled,
+    "An unchanged legacy route can be saved"
+  );
+  section.querySelector(".zen-library-routing-save").click();
+  await section.updateComplete;
+  Assert.equal(
+    manager.getAllRoutes().length,
+    2,
+    "Neither legacy route was removed"
+  );
+
+  Assert.ok(
+    !manager.updateRoute({ ...first, openIn: "changed-space" }),
+    "A destination change cannot perpetuate the conflict"
+  );
+  Assert.ok(
+    manager.updateRoute({ ...first, reference: "unique.example" }),
+    "Changing the condition can resolve the conflict"
+  );
+  clearRoutes();
   await closeLibrary();
 });

@@ -193,3 +193,8 @@ library-boosts-delete-button =
     .title = Delete boost
 library-boosts-menu-edit =
     .label = Edit Boost
+
+library-space-routing-duplicate = This condition already has a rule for the selected destination.
+library-space-routing-conflict = This condition already routes to a different destination. Edit the existing rule to change where it opens.
+library-space-routing-edit-existing = Edit existing rule
+library-space-routing-existing-duplicate = Another rule has this condition. Only the first matching rule takes effect.

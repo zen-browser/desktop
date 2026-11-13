@@ -236,6 +236,16 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
    * @param {object} route - The route a row stands for
    */
   #editRoute(route) {
+    this.showDraft(route);
+  }
+
+  /**
+   * Shows a route supplied by the tab menu or an existing row.
+   *
+   * @param {object} route - The route to edit
+   */
+  showDraft(route) {
+    this.#load();
     this.#cancelDraftTimer();
     this.draft = { ...route };
     this.filtersOpen = true;
@@ -273,13 +283,45 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
     }, PANEL_FADE_MS);
   }
 
+  get #draftDuplicate() {
+    return this.draft
+      ? lazy.gZenSpaceRoutingManager.getDuplicateRoute({
+          ...this.draft,
+          reference: this.draft.reference.trim(),
+        })
+      : null;
+  }
+
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    if (this.filtersOpen && changedProperties.has("draft")) {
+      const inner = this.querySelector(".zen-library-filter-panel-inner");
+      this.style.setProperty(
+        "--zen-library-filter-height",
+        `${inner.scrollHeight + 8}px`
+      );
+    }
+  }
+
+  async #revealRoute(route) {
+    this.#editRoute(route);
+    await this.updateComplete;
+    this.querySelector(".zen-library-routing-reference")?.focus();
+  }
+
   /**
    * @returns {boolean} Whether the form holds something worth keeping: a
    *   reference, and one that reads as a pattern when it is meant to be one
    */
   get #draftIsValid() {
     const reference = this.draft?.reference.trim();
-    if (!reference) {
+    if (
+      !reference ||
+      !lazy.gZenSpaceRoutingManager.canSaveRoute({
+        ...this.draft,
+        reference,
+      })
+    ) {
       return false;
     }
     if (this.draft.matchType !== "regex") {
@@ -300,8 +342,17 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
     const manager = lazy.gZenSpaceRoutingManager;
     const id = this.draft.id ?? manager.createNewRoute().id;
     const route = { ...this.draft, id, reference: this.draft.reference.trim() };
-    manager.updateRoute(route);
+    if (!manager.updateRoute(route)) {
+      if (!this.draft.id) {
+        manager.removeRoute(id);
+      }
+      this.requestUpdate();
+      return;
+    }
     manager.saveRoutes();
+    // The form remains rendered during dismissal. Keep its saved identity so
+    // duplicate validation excludes the rule we just created.
+    this.draft = route;
     this.#closeForm();
     this.#load();
   }
@@ -367,6 +418,7 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
    * @returns {object} What lit should draw
    */
   #renderForm(draft) {
+    const duplicate = this.#draftDuplicate;
     return html`
       <div class="zen-library-routing-form">
         <div class="zen-library-filter-group">
@@ -394,6 +446,8 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
                 ? "zen-browser\\.app"
                 : "zen-browser.app"
             }
+            aria-invalid=${!!draft.reference.trim() && !this.#draftIsValid}
+            aria-describedby=${duplicate ? "routing-duplicate-warning" : nothing}
             ?invalid=${!!draft.reference.trim() && !this.#draftIsValid}
             @input=${event => {
               this.draft = { ...draft, reference: event.target.value };
@@ -410,6 +464,26 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
           ${this.#renderSpacePicker(draft.openIn, value => {
             this.draft = { ...draft, openIn: value };
           })}
+        </div>
+        <div role="status">
+          ${when(
+            duplicate,
+            () => html`
+              <p
+                id="routing-duplicate-warning"
+                data-l10n-id=${
+                  duplicate.openIn === draft.openIn
+                    ? "library-space-routing-duplicate"
+                    : "library-space-routing-conflict"
+                }
+              ></p>
+              <button
+                class="zen-library-filter-chip"
+                data-l10n-id="library-space-routing-edit-existing"
+                @click=${() => this.#revealRoute(duplicate)}
+              ></button>
+            `
+          )}
         </div>
         <div class="zen-library-routing-form-buttons">
           <button
@@ -538,6 +612,14 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
                   ></span>`
             }
           </div>
+          ${when(
+            lazy.gZenSpaceRoutingManager.getDuplicateRoute(route),
+            () => html`
+              <span
+                data-l10n-id="library-space-routing-existing-duplicate"
+              ></span>
+            `
+          )}
         </div>
         <div class="zen-library-row-actions">
           <toolbarbutton

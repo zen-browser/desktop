@@ -734,7 +734,17 @@ var gZenWorkspacesSettings = {
       },
     };
 
+    let toggleZenAutoCloseThreshold = {
+      observe() {
+        const enabled = Services.prefs.getBoolPref("zen.tabs.auto-close.enabled", false);
+        document.getElementById("zenTabsAutoCloseAfterBox").disabled = !enabled;
+        document.getElementById("zenTabsAutoCloseAfterLabel").disabled = !enabled;
+        document.getElementById("zenTabsAutoCloseAfter").disabled = !enabled;
+      },
+    };
+
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
+    toggleZenAutoCloseThreshold.observe();
 
     Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
@@ -744,6 +754,7 @@ var gZenWorkspacesSettings = {
       toggleZenCycleByAttrWarning
     );
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
+    Services.prefs.addObserver("zen.tabs.auto-close.enabled", toggleZenAutoCloseThreshold);
     window.addEventListener("unload", () => {
       Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
       Services.prefs.removeObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
@@ -758,6 +769,10 @@ var gZenWorkspacesSettings = {
       Services.prefs.removeObserver(
         "browser.ctrlTab.sortByRecentlyUsed",
         toggleZenCycleByAttrWarning
+      );
+      Services.prefs.removeObserver(
+        "zen.tabs.auto-close.enabled",
+        toggleZenAutoCloseThreshold
       );
     });
   },
@@ -863,6 +878,16 @@ Preferences.addAll([
     id: "zen.tabs.select-recently-used-on-close",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.tabs.auto-close.enabled",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.tabs.auto-close.after-hours",
+    type: "int",
+    default: 168,
   },
   {
     id: "zen.window-sync.sync-only-pinned-tabs",

@@ -21,6 +21,8 @@ tags = [
 
 ["browser_scroll_to_selected_tab.js"]
 
+["browser_tabs_auto_close.js"]
+
 ["browser_tabs_close_recently.js"]
 
 ["browser_tabs_cycle_by_attribute.js"]

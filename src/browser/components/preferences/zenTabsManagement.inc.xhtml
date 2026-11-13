@@ -42,6 +42,25 @@
             hidden="true"/>
       <checkbox data-l10n-id="zen-tabs-select-recently-used-on-close"
             preference="zen.tabs.select-recently-used-on-close"/>
+      <checkbox id="zenTabsAutoCloseEnabled"
+            data-l10n-id="zen-tabs-auto-close-enabled"
+            preference="zen.tabs.auto-close.enabled"/>
+      <hbox id="zenTabsAutoCloseAfterBox" class="indent" align="center">
+            <label id="zenTabsAutoCloseAfterLabel"
+                  control="zenTabsAutoCloseAfter"
+                  data-l10n-id="zen-tabs-auto-close-after-label"/>
+            <menulist id="zenTabsAutoCloseAfter" preference="zen.tabs.auto-close.after-hours">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-after-12-hours" value="12"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-after-1-day" value="24"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-after-7-days" value="168"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-after-30-days" value="720"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+      <description id="zenTabsAutoCloseDescription"
+            class="description-deemphasized"
+            data-l10n-id="zen-tabs-auto-close-description"/>
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"

@@ -100,11 +100,43 @@ zen-settings-normal-tabs-sync =
 zen-settings-workspaces-sync-unpinned-tabs =
     .label = Sync only pinned tabs in workspaces
 
-zen-tabs-cycle-by-attribute =
-  .label = Ctrl+Tab cycles within Essential or Workspace tabs only
-zen-tabs-cycle-ignore-pending-tabs =
-  .label = Ignore Pending tabs when cycling with Ctrl+Tab
-zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
+pane-zen-tab-switcher-title = Tab Switcher
+zen-tab-switcher-header = Switching between tabs
+
+# Variables:
+#   $shortcut (String) - The shortcut that cycles through tabs, like "Ctrl+Tab", or "none" when it has no shortcut.
+zen-tab-switcher-description =
+    { $shortcut ->
+        [none] Choose which tabs the tab switcher cycles through. <a data-l10n-name="keyboard-shortcuts">Set a shortcut</a>
+       *[other] Choose which tabs <kbd>{ $shortcut }</kbd> cycles through. <a data-l10n-name="keyboard-shortcuts">Change shortcut</a>
+    }
+# Variables:
+#   $shortcut (String) - The shortcut that cycles through tabs, like "Ctrl+Tab", or "none" when it has no shortcut.
+zen-tab-switcher-recently-used-order =
+    .label =
+        { $shortcut ->
+            [none] Cycle through tabs in recently used order
+           *[other] Cycle through tabs in recently used order with { $shortcut }
+        }
+zen-tab-switcher-cross-space =
+    .label = Cycle through tabs in all spaces, not just the current one
+# Variables:
+#   $shortcut (String) - The shortcut that cycles through tabs, like "Ctrl+Tab", or "none" when it has no shortcut.
+zen-tab-switcher-ignore-pending-tabs =
+    .label =
+        { $shortcut ->
+            [none] Ignore pending tabs when cycling through tabs
+           *[other] Ignore pending tabs when cycling with { $shortcut }
+        }
+# Variables:
+#   $shortcut (String) - The shortcut that cycles through tabs, like "Ctrl+Tab", or "none" when it has no shortcut.
+zen-tab-switcher-cycle-by-attribute =
+    .label =
+        { $shortcut ->
+            [none] Stay within Essential or Workspace tabs when cycling through tabs
+           *[other] Stay within Essential or Workspace tabs when cycling with { $shortcut }
+        }
+zen-tab-switcher-cycle-by-attribute-warning = This has no effect while cycling in recently used order.
 
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
@@ -223,6 +255,7 @@ zenCKSOption-group-zen-compact-mode = Compact Mode
 zenCKSOption-group-zen-workspace = Workspaces
 zenCKSOption-group-zen-other = Other Zen Features
 zenCKSOption-group-zen-split-view = Split View
+zenCKSOption-group-zen-tabs = Tabs
 
 zen-text-action-copy-url-shortcut = Copy current URL
 zen-text-action-copy-url-markdown-shortcut = Copy current URL as Markdown
@@ -252,3 +285,6 @@ zen-split-view-shortcut-unsplit = Close Split View
 zen-new-empty-split-view-shortcut = New Empty Split View
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-duplicate-tab-shortcut = Duplicate Tab
+zen-tab-switcher-shortcut-cycle = Tab Switcher
+zen-tab-switcher-shortcut-next = Next Tab
+zen-tab-switcher-shortcut-previous = Previous Tab

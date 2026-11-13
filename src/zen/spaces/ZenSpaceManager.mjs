@@ -2315,6 +2315,52 @@ class nsZenWorkspaces {
     }
   }
 
+  #crossfadeBackgrounds(duration) {
+    const elements = [
+      lazy.browserBackgroundElement,
+      lazy.toolbarBackgroundElement,
+    ];
+    // Start from what is on screen, a swipe can leave the backgrounds midway.
+    const shown = parseFloat(getComputedStyle(elements[0], "::after").opacity);
+    const from = shown >= 1 || !shown ? 0 : 1 - shown;
+    // Same curve as the springs the tabs slide with.
+    const { ease, duration: ms } = gZenUIManager.motion.spring.applyToOptions({
+      bounce: 0,
+      duration: duration * 1000,
+    });
+    const steps = Array.from({ length: 33 }, (_, i) => ease(i / 32));
+    const options = { duration: ms, easing: `linear(${steps.join(", ")})` };
+    const grainNew =
+      "var(--zen-grainy-background-opacity, 0) * var(--zen-grain-alpha)";
+    const grainOld =
+      "var(--zen-grainy-background-opacity-old, 0) * var(--zen-grain-alpha-old)";
+    const fades = [];
+    const fade = (target, pseudoElement, opacity) => {
+      if (target) {
+        fades.push(target.animate({ opacity }, { ...options, pseudoElement }));
+      }
+    };
+    for (const element of elements) {
+      element.style.setProperty("--zen-background-opacity", 1);
+      fade(element, "::after", [from, 1]);
+      fade(element, "::before", [1 - from, 0]);
+      const grain = element.querySelector(".zen-browser-grain");
+      fade(grain, "::after", [
+        `calc(${grainNew} * ${from})`,
+        `calc(${grainNew})`,
+      ]);
+      fade(grain, "::before", [`calc(${grainOld} * ${1 - from})`, 0]);
+    }
+    return {
+      complete: () => fades.forEach(animation => animation.finish()),
+      then: (resolve, reject) =>
+        Promise.all(fades.map(animation => animation.finished)).then(
+          resolve,
+          reject
+        ),
+    };
+  }
+
   /* eslint-disable complexity */
   async #animateTabs(
     newWorkspace,
@@ -2367,47 +2413,7 @@ class nsZenWorkspaces {
     }
     this.#setAnimatingBackground(true);
     if (shouldAnimate && previousWorkspace) {
-      let previousBackgroundOpacity =
-        lazy.browserBackgroundElement.style.getPropertyValue(
-          "--zen-background-opacity"
-        );
-      try {
-        // Prevent NaN from being set
-        if (previousBackgroundOpacity) {
-          previousBackgroundOpacity = parseFloat(previousBackgroundOpacity);
-        }
-      } catch {
-        previousBackgroundOpacity = 1;
-      }
-      if (previousBackgroundOpacity == 1 || !previousBackgroundOpacity) {
-        previousBackgroundOpacity = 0;
-      } else {
-        previousBackgroundOpacity = 1 - previousBackgroundOpacity;
-      }
-      gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
-      let elements = [
-        lazy.browserBackgroundElement,
-        lazy.toolbarBackgroundElement,
-      ];
-      elements.forEach(element => {
-        element.style.setProperty(
-          "--zen-background-opacity",
-          previousBackgroundOpacity
-        );
-      });
-      animations.push(
-        gZenUIManager.motion.animate(
-          elements,
-          {
-            "--zen-background-opacity": [previousBackgroundOpacity, 1],
-          },
-          {
-            type: "spring",
-            bounce: 0,
-            duration: kGlobalAnimationDuration,
-          }
-        )
-      );
+      animations.push(this.#crossfadeBackgrounds(kGlobalAnimationDuration));
     }
     for (const element of document.querySelectorAll("zen-workspace")) {
       if (element.classList.contains("zen-essentials-container")) {

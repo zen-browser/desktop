@@ -957,6 +957,7 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #teardown() {
+    Services.prefs.removeObserver(HIDDEN_TABS_PREF, this.#tabsObserver);
     this.#cleanup();
     this.#cancelIdleCleanup();
     this.#contentMounted = false;

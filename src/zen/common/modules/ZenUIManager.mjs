@@ -309,8 +309,7 @@ class nsZenUIManager {
 
   #onFullZoomChange(event) {
     const browser = event.originalTarget;
-    const isSingleToolbar =
-      document.documentElement.getAttribute("zen-single-toolbar") === "true";
+    const isSingleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
     const zoomButtonHidden =
       isSingleToolbar &&
       !Services.prefs.getBoolPref(

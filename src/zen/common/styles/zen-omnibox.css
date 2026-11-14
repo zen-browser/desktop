@@ -313,12 +313,6 @@
   }
 }
 
-@media -moz-pref("zen.urlbar.single-toolbar-show-zoom-button", false) {
-  :root[zen-single-toolbar="true"] #urlbar-zoom-button {
-    display: none !important;
-  }
-}
-
 :root[zen-single-toolbar="true"] {
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
@@ -748,6 +742,12 @@
 
 @media not -moz-pref("zen.urlbar.show-contextual-id") {
   #userContext-icons {
+    display: none !important;
+  }
+}
+
+@media not -moz-pref("zen.urlbar.single-toolbar-show-zoom-button") {
+  :root[zen-single-toolbar="true"] #urlbar-zoom-button {
     display: none !important;
   }
 }

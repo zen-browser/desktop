@@ -26,7 +26,7 @@ tab-context-zen-edit-pinned-page =
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 現在のURLに置き換えられます
+    .label = 現在のURLに置き換える
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
     .label = 編集…
@@ -49,28 +49,24 @@ zen-copy-current-url-confirmation = URLをクリップボードにコピーし�
 zen-copy-current-url-as-markdown-confirmation = URLをMarkdownとしてコピーしました！
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] URLをコピーしました！
+       *[other] { $count }個のURLをコピーしました!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
-    { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
-    }
+zen-copy-multi-urls-as-markdown-confirmation = { $count }個の URL を Markdown でコピーしました！
 zen-general-cancel-label = 
     .label = キャンセル
 zen-general-confirm = 
     .label = 確定
 zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換えられました！
 zen-pinned-tab-url-edited = ピン留めされたタブのURLを更新しました！
-zen-pinned-tab-url-invalid = このURLは有効が見えません。
-zen-pinned-tab-edit-url-title = ピン留めされたURLを編集
+zen-pinned-tab-url-invalid = 無効なURLです。
+zen-pinned-tab-edit-url-title = ピン留めされたタブのURLを編集
 zen-pinned-tab-edit-url-label = このピン留めされたタブのURLを入力してください：
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
 zen-split-view-limit-toast = 分割ビューにこれ以上パネルを追加できません！
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-sidebar-drag-collapsed-toast = サイドバーを非表示にしました！ <span>{ $shortcut }</span> で元に戻せます。
 zen-toggle-compact-mode-button = 
     .label = コンパクトモード
     .tooltiptext = コンパクトモードの切り替え
@@ -114,7 +110,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = このページをシェアする
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Boostを作成
 zen-site-data-header-reader-mode = 
     .tooltiptext = リーダーモードにする
 zen-site-data-header-screenshot = 

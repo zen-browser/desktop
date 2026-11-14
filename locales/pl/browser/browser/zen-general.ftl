@@ -47,6 +47,18 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Niestandardowy kolor
 zen-copy-current-url-confirmation = Skopiowano bieżący URL!
 zen-copy-current-url-as-markdown-confirmation = Skopiowano bieżący adres URL jako Markdown!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Skopiowano { $count } adres URL!
+        [few] Skopiowano { $count } adresy URL!
+       *[other] Skopiowano { $count } adresów URL!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Skopiowano { $count } adres URL jako Markdown!
+        [few] Skopiowano { $count } adresy URL jako Markdown!
+       *[other] Skopiowano { $count } adresów URL jako Markdown!
+    }
 zen-general-cancel-label = 
     .label = Anuluj
 zen-general-confirm = 

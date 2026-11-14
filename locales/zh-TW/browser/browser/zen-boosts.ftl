@@ -78,7 +78,7 @@ zen-boost-css-inspector =
 zen-boost-color-contrast = 對比
 zen-boost-color-brightness = 亮度
 zen-boost-color-original-saturation = 飽和度
-zen-add-zap-helper = 選擇要 <b>泯除</b>的元素
+zen-add-zap-helper = 選擇要<b>泯除</b>的元素
 zen-remove-zap-helper = ← 按此回復泯除元素
 zen-select-this = 加入此元素的選擇器
 zen-select-related = 加入關連元素的選擇器
@@ -87,7 +87,7 @@ zen-zap-this = 泯除此項
 zen-zap-related = 泯除關連元素
 zen-zap-cancel = 取消
 zen-zap-done = 完成
-zen-boost-focus = 焦點專注
+zen-boost-focus = 專注
 zen-unzap-tooltip =
     { $elementCount ->
         [0] 沒有被泯除的元素

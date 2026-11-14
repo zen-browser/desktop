@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Власний колір
 zen-copy-current-url-confirmation = Скопійовано поточну URL-адресу!
 zen-copy-current-url-as-markdown-confirmation = Скопійовано поточну URL-адресу як Markdown!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Copied { $count } URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Copied { $count } URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Скасувати
 zen-general-confirm = 
@@ -60,7 +70,7 @@ zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
 zen-split-view-limit-toast = Неможливо додати більше панелей до розділеного перегляду!
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-sidebar-drag-collapsed-toast = Бічна панель прихована! Щоб знову показати бічну панель, скористайтеся посиланням <span>{ $shortcut }</span>.
 zen-toggle-compact-mode-button = 
     .label = Компактний режим
     .tooltiptext = Увімк. / Вимк. компактний режим
@@ -104,7 +114,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Поділитися цією сторінкою
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Створити підсилення
 zen-site-data-header-reader-mode = 
     .tooltiptext = Увійти у режим читання
 zen-site-data-header-screenshot = 

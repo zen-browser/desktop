@@ -23,13 +23,45 @@ zen-glance-trigger-label = 觸發方式
 zen-glance-enabled = 
     .label = 啟用 Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + 左鍵
+           *[other] Ctrl + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + 左鍵
+           *[other] Ctrl + 左鍵
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + 左鍵
+           *[other] Alt + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + 左鍵
+           *[other] Alt + 左鍵
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + 左鍵
+           *[other] Shift + 左鍵
+        }
+    .aria-label = Shift + 左鍵
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + 左鍵
+           *[other] Meta (Command) + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + 左鍵
+           *[other] Meta (Command) + 左鍵
+        }
 zen-look-and-feel-compact-view-header = 在緊湊模式下顯示
 zen-look-and-feel-compact-view-description = 只顯示你需要用的工具欄！
 zen-look-and-feel-compact-view-enabled = 

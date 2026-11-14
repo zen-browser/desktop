@@ -23,13 +23,45 @@ zen-glance-trigger-label = Método de activación
 zen-glance-enabled = 
     .label = Habilitar Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Clic
+           *[other] Ctrl + Clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Clic
+           *[other] Ctrl + Clic
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Clic
+           *[other] Alt + Clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Clic
+           *[other] Alt + Clic
+        }
 zen-glance-trigger-shift-click = 
-    .label = Mayús + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Clic
+           *[other] Shift + Clic
+        }
+    .aria-label = Shift + Clic
 zen-glance-trigger-meta-click = 
-    .label = Meta (Comando) + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Clic
+           *[other] Meta (Command) + Clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Clic
+           *[other] Meta (Command) + Clic
+        }
 zen-look-and-feel-compact-view-header = Mostrar en vista compacta
 zen-look-and-feel-compact-view-description = ¡Muestre solo las barras de herramientas que usa!
 zen-look-and-feel-compact-view-enabled = 

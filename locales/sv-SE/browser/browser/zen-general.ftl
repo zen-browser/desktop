@@ -32,9 +32,9 @@ tab-context-zen-edit-pinned-url =
     .label = Redigera…
     .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Ändra etikett...
+    .label = Ändra etikett…
 tab-context-zen-edit-icon = 
-    .label = Ändra ikon...
+    .label = Ändra ikon…
 zen-themes-corrupted = Din { -brand-short-name } modds-fil är skadad. De har återställts till standardtemat.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Anpassad färg
 zen-copy-current-url-confirmation = Kopierade nuvarande URL!
 zen-copy-current-url-as-markdown-confirmation = Kopierade nuvarande webbadress som Markdown!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Kopierad { $count } URL!
+       *[other] Kopierade { $count } URL: er!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Kopierad { $count } URL som Markdown!
+       *[other] Kopierade { $count } URL: er som Markdown!
+    }
 zen-general-cancel-label = 
     .label = Avbryt
 zen-general-confirm = 

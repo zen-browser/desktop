@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Lliw Cyfaddas
 zen-copy-current-url-confirmation = Wedi copïo'r URL cyfredol!
 zen-copy-current-url-as-markdown-confirmation = Wedi copïo'r URL cyfredol fel Markdown!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Copied { $count } URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Copied { $count } URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Na
 zen-general-confirm = 

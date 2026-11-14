@@ -23,13 +23,45 @@ zen-glance-trigger-label = Metoda wywołania
 zen-glance-enabled = 
     .label = Włącz szybki podgląd
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + kliknięcie
+           *[other] Ctrl + kliknięcie
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + kliknięcie
+           *[other] Ctrl + kliknięcie
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + kliknięcie
+           *[other] Alt + kliknięcie
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + kliknięcie
+           *[other] Alt + kliknięcie
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + kliknięcie
+           *[other] Shift + kliknięcie
+        }
+    .aria-label = Shift + kliknięcie
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] Control + kliknięcie
+           *[other] Meta (Command) + kliknięcie
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + kliknięcie
+           *[other] Meta (Command) + kliknięcie
+        }
 zen-look-and-feel-compact-view-header = Pokaż w widoku kompaktowym
 zen-look-and-feel-compact-view-description = Pokaż tylko paski narzędzi, których używasz!
 zen-look-and-feel-compact-view-enabled = 

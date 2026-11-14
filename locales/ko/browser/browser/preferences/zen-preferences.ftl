@@ -23,13 +23,45 @@ zen-glance-trigger-label = 트리거 방식
 zen-glance-enabled = 
     .label = 글랜스 활성화
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + 클릭
+           *[other] Ctrl + 클릭
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + 클릭
+           *[other] Ctrl + 클릭
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + 클릭
+           *[other] Alt + 클릭
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + 클릭
+           *[other] Alt + 클릭
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + 클릭
+           *[other] Shift + 클릭
+        }
+    .aria-label = Shift + 클릭
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + 클릭
+           *[other] Meta (Command) + 클릭
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + 클릭
+           *[other] Meta (Command) + 클릭
+        }
 zen-look-and-feel-compact-view-header = 사이드바 축소 모드로 보기
 zen-look-and-feel-compact-view-description = 사용하는 툴바만 보세요!
 zen-look-and-feel-compact-view-enabled = 

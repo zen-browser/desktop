@@ -3,67 +3,67 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Opções de Pasta Ativa
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Última pesquisa: { $time }
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Atualizar
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Criado por mim
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Atribuído a mim
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Meus pedidos de revisão
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Incluir pull requests em rascunho
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = Feeds RSS
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Intervalo de procura
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 minuto
+           *[other] { $mins } minutos
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 hora
+           *[other] { $hours } horas
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Intervalo de tempo
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] Última hora
+           *[other] Últimas { $hours } horas
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = De sempre
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] Último dia
+           *[other] Últimos { $days } dias
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Limite de itens
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = URL do feed
+zen-live-folder-rss-prompt-feed-url = Por favor, introduza o endereço do feed
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } itens
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Falha ao atualizar
+    .tooltiptext = Falha ao atualizar. Tente novamente.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Sem sessão iniciada no GitHub
+    .tooltiptext = Voltar a entrar no GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
+    .label = O filtro não está definido
+    .tooltiptext = Nenhum filtro definido, nada será obtido.
 zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
 zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
 zen-live-folder-github-option-repo-filter = 

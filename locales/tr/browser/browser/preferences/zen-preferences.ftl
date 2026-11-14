@@ -23,13 +23,45 @@ zen-glance-trigger-label = Tetikleme yöntemi
 zen-glance-enabled = 
     .label = Gözden geçirmeyi aktifleştir
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + tıklama
+           *[other] Ctrl + tıklama
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Kontrol + tıklama
+           *[other] Ctrl + tıklama
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + tıklama
+           *[other] Alt + tıklama
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + tıklama
+           *[other] Alt + tıklama
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + tıklama
+           *[other] Shift + tıklama
+        }
+    .aria-label = Shift + tıklama
 zen-glance-trigger-meta-click = 
-    .label = Meta (komut) + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + tıklama
+           *[other] Meta (Command) + tıklama
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + tıklama
+           *[other] Meta (Command) + tıklama
+        }
 zen-look-and-feel-compact-view-header = Kompakt görünümde göster
 zen-look-and-feel-compact-view-description = Sadece kullandığın araç çubuklarını göster!
 zen-look-and-feel-compact-view-enabled = 

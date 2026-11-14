@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = 搜索 { $folder-name }…
+    .placeholder = 搜索 { $folder-name }……
 zen-folders-panel-rename-folder = 
     .label = 重命名文件夹
 zen-folders-panel-unpack-folder = 
@@ -15,7 +15,7 @@ zen-folders-panel-delete-folder =
 zen-folders-panel-convert-folder-to-space = 
     .label = 将文件夹转换为工作区
 zen-folders-panel-change-folder-space = 
-    .label = 更改工作区…
+    .label = 更改工作区……
 zen-folders-unload-all-tooltip = 
     .tooltiptext = 卸载此文件夹中的活动标签页
 zen-folders-unload-folder = 

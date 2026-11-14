@@ -23,13 +23,45 @@ zen-glance-trigger-label = Mètode d'activació
 zen-glance-enabled = 
     .label = Habilita el cop d'ull
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + clic
+           *[other] Ctrl + clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + clic
+           *[other] Ctrl + clic
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + clic
+           *[other] Alt + clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Opció + clic
+           *[other] Alt + clic
+        }
 zen-glance-trigger-shift-click = 
-    .label = Bloc. maj. + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + clic
+           *[other] Majúscules + clic
+        }
+    .aria-label = Majúscules + clic
 zen-glance-trigger-meta-click = 
-    .label = Meta (Comandament) + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + clic
+           *[other] Meta (Comandament) + clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Comandament + clic
+           *[other] Meta (Comandament) + clic
+        }
 zen-look-and-feel-compact-view-header = Mostra en vista compacta
 zen-look-and-feel-compact-view-description = Mostreu només les barres d'eines que feu servir
 zen-look-and-feel-compact-view-enabled = 

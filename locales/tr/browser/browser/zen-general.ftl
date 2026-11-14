@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Özel renk
 zen-copy-current-url-confirmation = Geçerli URL kopyalandı!
 zen-copy-current-url-as-markdown-confirmation = Geçerli URL Markdown olarak kopyalandı!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] { $count } URL kopyalandı!
+       *[other] { $count } URL kopyalandı!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] { $count } URL Markdown olarak kopyalandı!
+       *[other] { $count } URL Markdown olarak kopyalandı!
+    }
 zen-general-cancel-label = 
     .label = İptal
 zen-general-confirm = 

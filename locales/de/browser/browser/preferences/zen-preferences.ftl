@@ -23,13 +23,45 @@ zen-glance-trigger-label = Auslösemethode
 zen-glance-enabled = 
     .label = Schnellansicht aktivieren
 zen-glance-trigger-ctrl-click = 
-    .label = Strg + Klick
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Klick
+           *[other] Strg + Klick
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Klick
+           *[other] Strg + Klick
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Klick
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Klick
+           *[other] Alt + Klick
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Klick
+           *[other] Alt + Klick
+        }
 zen-glance-trigger-shift-click = 
-    .label = Umschalt + Klick
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Klick
+           *[other] Shift + Klick
+        }
+    .aria-label = Shift + Klick
 zen-glance-trigger-meta-click = 
-    .label = Meta (Befehlstaste) + Klick
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Klick
+           *[other] Meta-Taste (Windows/Super) + Klick
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] ⌘ + Klick
+           *[other] Meta-Taste (Windows/Super) + Klick
+        }
 zen-look-and-feel-compact-view-header = In der Kompaktansicht anzeigen
 zen-look-and-feel-compact-view-description = Zeige nur die Symbolleisten an, die du verwendest!
 zen-look-and-feel-compact-view-enabled = 
@@ -54,8 +86,8 @@ zen-settings-workspaces-sync =
     .label = Seitenleiste zwischen Geräten synchronisieren
     .description = Halte deine Arbeitsbereiche, angehefteten Tabs und Ordner über dein Mozilla-Konto auf allen Geräten synchron.
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = Nicht angeheftete Tabs einbeziehen
+    .description = Synchronisiere auch die normalen Tabs jedes Arbeitsbereichs, nicht nur deine angehefteten Tabs und Ordner.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Nur angeheftete Tabs in Arbeitsbereichen synchronisieren
 zen-tabs-cycle-by-attribute = 
@@ -182,7 +214,7 @@ zen-workspace-shortcut-switch-9 = Zu Arbeitsbereich 9 wechseln
 zen-workspace-shortcut-switch-10 = Zu Arbeitsbereich 10 wechseln
 zen-workspace-shortcut-create = Neuen Arbeitsbereich erstellen
 zen-sidebar-shortcut-toggle = Seitenleisten-Breite umschalten
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = Bibliothek umschalten
 zen-pinned-tab-shortcut-reset = Angehefteten Tab zurücksetzen
 zen-split-view-shortcut-grid = Raster-Layout für geteilte Ansicht umschalten
 zen-split-view-shortcut-vertical = Vertikales Layout für geteilte Ansicht umschalten

@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Dölj båda
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Flytta till mapp...
+    .label = Flytta till mapp
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Ny mapp
@@ -31,7 +31,7 @@ zen-scroll-to-selected-tab =
 sidebar-zen-expand = 
     .label = Expandera sidofält
 sidebar-zen-create-new = 
-    .label = Skapa ny...
+    .label = Skapa ny
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

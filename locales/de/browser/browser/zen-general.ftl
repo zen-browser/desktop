@@ -29,12 +29,12 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Mit aktueller URL ersetzen
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Bearbeiten...
+    .label = Bearbeiten…
     .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Titel ändern...
+    .label = Titel ändern…
 tab-context-zen-edit-icon = 
-    .label = Symbol ändern...
+    .label = Symbol ändern…
 zen-themes-corrupted = Deine { -brand-short-name }-Mods-Datei ist beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Eigene Farbe
 zen-copy-current-url-confirmation = URL kopiert!
 zen-copy-current-url-as-markdown-confirmation = URL als Markdown kopiert!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Copied { $count } URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Copied { $count } URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Abbrechen
 zen-general-confirm = 
@@ -60,7 +70,7 @@ zen-tabs-renamed = Tab umbenannt!
 zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
 zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
 zen-split-view-limit-toast = Diese Split View kann keine weiteren Panels aufnehmen!
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-sidebar-drag-collapsed-toast = Seitenleiste ausgeblendet! Mit <span>{ $shortcut }</span> holst du sie zurück.
 zen-toggle-compact-mode-button = 
     .label = Kompakter Modus
     .tooltiptext = Kompakten Modus umschalten
@@ -104,7 +114,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Diese Seite teilen
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Boost erstellen
 zen-site-data-header-reader-mode = 
     .tooltiptext = Lesemodus aktivieren
 zen-site-data-header-screenshot = 

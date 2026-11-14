@@ -47,6 +47,16 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Neurrirako kolorea
 zen-copy-current-url-confirmation = Oraingo esteka kopiatu da!
 zen-copy-current-url-as-markdown-confirmation = Oraingo esteka kopiatu da Markdown gisa!
+zen-copy-multi-urls-confirmation =
+    { $count ->
+        [one] Copied { $count } URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-multi-urls-as-markdown-confirmation =
+    { $count ->
+        [one] Copied { $count } URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Ezeztatu
 zen-general-confirm = 

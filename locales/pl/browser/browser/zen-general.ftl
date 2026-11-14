@@ -49,13 +49,15 @@ zen-copy-current-url-confirmation = Skopiowano bieżący URL!
 zen-copy-current-url-as-markdown-confirmation = Skopiowano bieżący adres URL jako Markdown!
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] Skopiowano { $count } adres URL!
+        [few] Skopiowano { $count } adresy URL!
+       *[other] Skopiowano { $count } adresów URL!
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] Skopiowano { $count } adres URL jako Markdown!
+        [few] Skopiowano { $count } adresy URL jako Markdown!
+       *[other] Skopiowano { $count } adresów URL jako Markdown!
     }
 zen-general-cancel-label = 
     .label = Anuluj

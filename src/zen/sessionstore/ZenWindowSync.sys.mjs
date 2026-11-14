@@ -1015,29 +1015,28 @@ class nsZenWindowSync {
    * @param {object} aOtherTab - The tab in the other window.
    * @param {Function|undefined} callback - The callback function to execute after styling.
    */
-  #styleSwapedBrowsers(aOurTab, aOtherTab, callback = undefined) {
+  async #styleSwapedBrowsers(aOurTab, aOtherTab, callback = undefined) {
     const ourBrowser = aOurTab.linkedBrowser;
     const otherBrowser = aOtherTab.linkedBrowser;
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async resolve => {
-      if (callback) {
-        const mySrc = await this.#captureBrowserToURL(aOtherTab);
+    if (callback) {
+      // The placeholder is only cosmetic, so swap without one if the page
+      // can't be captured (e.g. it crashed or is switching processes).
+      const mySrc = await this.#captureBrowserToURL(aOtherTab).catch(e => {
+        console.error(e);
+        return "";
+      });
 
-        await this.#createPseudoImageForBrowser(otherBrowser, mySrc);
-        callback();
-        lazy.setTimeout(() => {
-          otherBrowser.setAttribute("zen-pseudo-hidden", "true");
-          ourBrowser.removeAttribute("zen-pseudo-hidden");
-          this.#maybeRemovePseudoImageForBrowser(ourBrowser);
-          ourBrowser.focus();
-          resolve();
-        });
-        return;
-      }
+      await this.#createPseudoImageForBrowser(otherBrowser, mySrc);
+      callback();
+      await new Promise(resolve => lazy.setTimeout(resolve));
+      otherBrowser.setAttribute("zen-pseudo-hidden", "true");
       ourBrowser.removeAttribute("zen-pseudo-hidden");
       this.#maybeRemovePseudoImageForBrowser(ourBrowser);
-      resolve();
-    });
+      ourBrowser.focus();
+      return;
+    }
+    ourBrowser.removeAttribute("zen-pseudo-hidden");
+    this.#maybeRemovePseudoImageForBrowser(ourBrowser);
   }
 
   /**

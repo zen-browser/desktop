@@ -18,6 +18,8 @@ support-files = [
 
 ["browser_split_view_empty.js"]
 
+["browser_split_view_tab_unloader.js"]
+
 ["browser_split_view_with_folders.js"]
 
 ["browser_split_view_with_glance.js"]

@@ -47,13 +47,13 @@ zen-copy-current-url-confirmation = 網址已複製到剪貼簿！
 zen-copy-current-url-as-markdown-confirmation = 已以Markdown格式複製當前網址！
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] 已複製 { $count } 條網址！
+       *[other] 已複製 { $count } 條網址！
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] 已以Markdown格式複製 { $count } 條網址！
+       *[other] 已以Markdown格式複製 { $count } 條網址！
     }
 zen-general-cancel-label = 
     .label = 取消

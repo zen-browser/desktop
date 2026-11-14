@@ -745,3 +745,9 @@
     display: none !important;
   }
 }
+
+@media not -moz-pref("zen.urlbar.single-toolbar-show-zoom-button") {
+  :root[zen-single-toolbar="true"] #urlbar-zoom-button {
+    display: none !important;
+  }
+}

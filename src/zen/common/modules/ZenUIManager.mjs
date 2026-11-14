@@ -59,6 +59,7 @@ class nsZenUIManager {
     document.addEventListener("popuphidden", this);
     document.addEventListener("mousedown", this, true);
     window.addEventListener("TabClose", this);
+    window.addEventListener("FullZoomChange", this);
 
     gZenWorkspaces.promiseInitialized.finally(() => {
       this._hasLoadedDOM = true;
@@ -94,6 +95,9 @@ class nsZenUIManager {
         break;
       case "TabClose":
         this.onTabClose(event);
+        break;
+      case "FullZoomChange":
+        this.#onFullZoomChange(event);
         break;
     }
   }
@@ -301,6 +305,39 @@ class nsZenUIManager {
    */
   showToast(messageId, options = {}) {
     return this.#toasts.show(messageId, options);
+  }
+
+  #onFullZoomChange(event) {
+    const browser = event.originalTarget;
+    const isSingleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
+    const zoomButtonHidden =
+      isSingleToolbar &&
+      !Services.prefs.getBoolPref(
+        "zen.urlbar.single-toolbar-show-zoom-button",
+        false
+      );
+    const urlbarHidden =
+      gZenCompactModeManager.preference &&
+      (isSingleToolbar ||
+        Services.prefs.getBoolPref("zen.view.compact.hide-toolbar", false));
+    const showToast = zoomButtonHidden || urlbarHidden;
+    const isBlankPage =
+      browser.currentURI.spec === "about:blank" &&
+      (!browser.contentPrincipal || browser.contentPrincipal.isNullPrincipal);
+    const isPdfViewer =
+      browser.contentPrincipal?.spec === "resource://pdf.js/web/viewer.html";
+    if (
+      browser !== gBrowser.selectedBrowser ||
+      !showToast ||
+      isBlankPage ||
+      isPdfViewer
+    ) {
+      return;
+    }
+
+    this.showToast("zen-zoom-changed-toast", {
+      l10nArgs: { percentage: Number(browser.fullZoom.toFixed(2)) },
+    });
   }
 
   /**

@@ -49,13 +49,13 @@ zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
 zen-copy-current-url-as-markdown-confirmation = Cóipeáladh an URL reatha mar Markdown!
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] Cóipeáladh { $count } URL!
+       *[other] Cóipeáladh { $count } URLs!
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] Cóipeáladh { $count } URL mar Markdown!
+       *[other] Cóipeáladh { $count } URLs mar Markdown!
     }
 zen-general-cancel-label = 
     .label = Cealaigh

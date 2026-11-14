@@ -316,7 +316,7 @@ groupbox h2 {
 
 .zenThemeMarketplaceItemUninstallButton,
 #zenThemeMarketplaceImport {
-  margin-left: auto;
+  margin-inline-start: auto;
   cursor: pointer;
 }
 

@@ -4,6 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* Generated from src/zen/tokens/*.tokens.json, see src/zen/tokens/README.md */
+%include zen-tokens.css
+
 :host(:is(.anonymous-content-host, notification-message)),
 :root {
   /* Default values */
@@ -13,8 +16,6 @@
   --zen-background-opacity: 1;
 
   /* Branding */
-  --zen-branding-dark: #101010;
-  --zen-branding-paper: #e2e2e2;
 
   --zen-branding-bg: light-dark(var(--zen-branding-paper), var(--zen-branding-dark));
   --zen-branding-bg-reverse: light-dark(var(--zen-branding-dark), var(--zen-branding-paper));
@@ -55,7 +56,6 @@
     color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-branding-bg) 99%)
   );
 
-  --zen-dialog-background: light-dark(#fafbff, #1c1c1c);
   --zen-urlbar-background: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 3%, #f4f4f4 97%),
     color-mix(in srgb, var(--zen-primary-color) 4%, rgb(24, 24, 24) 96%)
@@ -138,14 +138,12 @@
     var(--zen-branding-bg)
   );
 
-  --zen-button-padding: 0.6rem 1.2rem;
 
   --zen-toolbar-element-bg: light-dark(
     color-mix(in oklch, var(--toolbox-textcolor) 8%, transparent),
     color-mix(in oklch, var(--toolbox-textcolor) 15%, transparent)
   );
 
-  --zen-toolbar-element-bg-hover: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.1));
 
   /* Toolbar */
   --tab-selected-color-scheme: inherit !important;
@@ -156,7 +154,6 @@
     --zen-toolbar-height: 42px;
   }
 
-  --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-padding-outer: 4px;
   --zen-toolbar-height-with-bookmarks: var(--zen-toolbar-height);
   &[zen-has-bookmarks] {
@@ -192,7 +189,6 @@
 
   /* Other colors */
   --urlbar-box-active-bgcolor: var(--toolbarbutton-background-color-hover) !important;
-  --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
   --urlbar-box-hover-bgcolor: var(--toolbarbutton-background-color-hover) !important;
   --input-background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)) !important;
   --toolbar-field-focus-background-color: light-dark(
@@ -261,7 +257,6 @@
 
   --panel-separator-color: color-mix(in srgb, currentColor 15%, transparent) !important;
 
-  --zen-big-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   --zen-active-tab-scale: 0.98;
   @media (-moz-platform: macos) {
     --zen-active-tab-scale: 0.985;
@@ -276,8 +271,6 @@
     var(--zen-primary-color) 5%,
     light-dark(white, black)
   );
-  --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
-  --zen-sidebar-notification-outline: 1px solid light-dark(transparent, rgba(255, 255, 255, 0.1));
 
   --zen-sidebar-themed-icon-fill: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
 
@@ -307,7 +300,7 @@
 }
 
 #main-window[windowtype="navigator:browser"]:not([popup-window]) {
-  min-height: 495px !important;
+  min-height: var(--zen-browser-window-min-height) !important;
 
   @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and
         -moz-pref('zen.widget.linux.transparency')) {

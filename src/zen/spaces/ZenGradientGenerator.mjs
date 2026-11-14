@@ -49,8 +49,13 @@ function linearToSrgb(c) {
   return Math.min(255, Math.max(0, toGamma(c) * 255));
 }
 
-function rgbToOklab([r, g, b]) {
-  const [lr, lg, lb] = [r, g, b].map(srgbToLinear);
+function rgbToOklab(color) {
+  const r = color[0];
+  const g = color[1];
+  const b = color[2];
+  const lr = srgbToLinear(r);
+  const lg = srgbToLinear(g);
+  const lb = srgbToLinear(b);
   const l = Math.cbrt(
     0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb
   );
@@ -67,15 +72,17 @@ function rgbToOklab([r, g, b]) {
   ];
 }
 
-function oklabToRgb([L, a, b]) {
-  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
-  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
-  const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
-  return [
-    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-  ].map(linearToSrgb);
+function oklabToRgb(color) {
+  const labL = color[0];
+  const labA = color[1];
+  const labB = color[2];
+  const l = (labL + 0.3963377774 * labA + 0.2158037573 * labB) ** 3;
+  const m = (labL - 0.1055613458 * labA - 0.0638541728 * labB) ** 3;
+  const s = (labL - 0.0894841775 * labA - 1.291485548 * labB) ** 3;
+  const lr = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+  const lg = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+  const lb = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s;
+  return [linearToSrgb(lr), linearToSrgb(lg), linearToSrgb(lb)];
 }
 
 function parseSinePath(pathStr) {
@@ -1918,10 +1925,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return;
       }
 
-      if (theme === null) {
-        browser.gZenThemePicker.invalidateGradientCache(uuid);
-      }
-
       // Only rebuild for the workspace the window shows, or the one its
       // picker is editing without showing it.
       const windowWorkspace = browser.gZenWorkspaces.getActiveWorkspace();
@@ -1974,15 +1977,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         );
         [backgroundElement, toolbarElement].forEach(element => {
           browser.gZenThemePicker.keepGrainAsOld(element);
-          element.style.setProperty(
-            "--zen-background-opacity",
-            browser.gZenThemePicker.previousBackgroundOpacity ?? 1
-          );
+          element.style.setProperty("--zen-background-opacity", 1);
         });
-        if (browser.gZenThemePicker.previousBackgroundResolve) {
-          browser.gZenThemePicker.previousBackgroundResolve();
-        }
-        delete browser.gZenThemePicker.previousBackgroundOpacity;
       }
 
       browser.gZenThemePicker.resetCustomColorList();
@@ -2111,13 +2107,20 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      const gradient = browser.gZenThemePicker.getGradient(
-        workspaceTheme.gradientColors
-      );
-      const gradientToolbar = browser.gZenThemePicker.getGradient(
-        workspaceTheme.gradientColors,
-        true
-      );
+      const cached = theme
+        ? null
+        : browser.gZenThemePicker.getGradientForWorkspace(
+            appliesToWindow ? windowWorkspace : workspace
+          );
+      const gradient =
+        cached?.gradient ??
+        browser.gZenThemePicker.getGradient(workspaceTheme.gradientColors);
+      const gradientToolbar =
+        cached?.toolbarGradient ??
+        browser.gZenThemePicker.getGradient(
+          workspaceTheme.gradientColors,
+          true
+        );
       if (appliesToWindow) {
         browser.gZenThemePicker.updateNoise(
           workspaceTheme.texture,
@@ -2455,10 +2458,24 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
   }
 
+  #gradientSignature(theme) {
+    const colors = theme.gradientColors ?? [];
+    return JSON.stringify([
+      theme,
+      this.isDarkMode,
+      colors.length ? null : this.getNativeAccentColor(),
+    ]);
+  }
+
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {
     const uuid = workspace.uuid;
+    const signature = this.#gradientSignature(workspace.theme ?? {});
     let cachedData = this.#gradientsCache[uuid];
-    if (cachedData && !(getGradient && !cachedData.gradient)) {
+    if (
+      cachedData &&
+      cachedData.signature === signature &&
+      !(getGradient && !cachedData.gradient)
+    ) {
       return cachedData;
     }
     const previousOpacity = this.currentOpacity;
@@ -2492,6 +2509,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       "--zen-primary-color": primaryColor,
     };
     this.#gradientsCache[uuid] = {
+      signature,
       gradient,
       toolbarGradient,
       grain: theme.texture ?? 0,

@@ -42,6 +42,7 @@ jobs:
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'

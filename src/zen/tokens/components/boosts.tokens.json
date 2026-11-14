@@ -1,0 +1,114 @@
+{
+  "background-color": {
+    "--zen-boosts-active-button-background": { "external": true },
+    "--zen-boosts-active-button-hover-background": { "external": true },
+    "--zen-boosts-back-button-hover-background": { "external": true },
+    "--zen-boosts-button-background": { "external": true },
+    "--zen-boosts-color-picker-background": { "external": true },
+    "--zen-boosts-font-wrapper-background": { "external": true },
+    "--zen-boosts-footer-background": { "external": true },
+    "--zen-boosts-magic-theme-active-background": { "external": true },
+    "--zen-boosts-magic-theme-background": { "external": true },
+    "--zen-boosts-mica-background": { "external": true },
+    "--zen-boosts-primary-background": { "external": true },
+    "--zen-boosts-secondary-background": { "external": true },
+    "--zen-boosts-selector-background": { "external": true },
+    "--zen-boosts-selector-preview-background": { "external": true },
+    "--zen-boosts-name-hover-background": { "value": "#aaaaaa22" },
+    "--zen-boosts-font-button-hover-background": { "value": "#9a9a9a30" },
+    "--zen-boosts-font-button-active-background": { "value": "#5454572f" },
+    "--zen-boosts-font-button-active-hover-background": {
+      "value": "#5b5b5c28"
+    },
+    "--zen-boosts-import-shadow-background": { "value": "#00000040" },
+    "--zen-boosts-color-slider-track-background": { "value": "#b5b5b9" },
+    "--zen-boosts-color-slider-thumb-background": { "value": "#e2e2e2" },
+    "--zen-boosts-color-slider-thumb-active-background": { "value": "#cccccc" },
+    "--zen-boosts-zap-bar-background": { "value": "#1c1c1c" },
+    "--zen-boosts-share-card-background": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.03)",
+        "dark": "rgba(255, 255, 255, 0.03)"
+      }
+    },
+    "--zen-boosts-share-success-background": {
+      "value": { "light": "var(--color-white-alpha-80)", "dark": "#1c1c1ce6" }
+    },
+    "--zen-boosts-share-footer-background": { "external": true },
+    "--zen-boosts-share-header-background": { "external": true },
+    "--zen-boosts-share-favicon-background": { "external": true },
+    "--zen-boosts-share-info-button-hover-background": { "external": true },
+    "--zen-boosts-share-info-button-active-background": { "external": true },
+    "--zen-boosts-share-pane-buttons-hover-background": { "external": true },
+    "--zen-boosts-share-pane-background": { "external": true },
+    "--zen-boosts-share-surface-background": { "external": true },
+    "--zen-boosts-share-surface-muted-background": { "external": true },
+    "--zen-boosts-share-separator-background": { "external": true }
+  },
+  "text-color": {
+    "--zen-boosts-active-button-color": { "external": true },
+    "--zen-boosts-secondary-color": { "external": true },
+    "--zen-boosts-selector-button-color": { "external": true },
+    "--zen-boosts-selector-preview-color": { "external": true },
+    "--zen-boosts-font-button-color": {
+      "value": "var(--color-black-alpha-60)"
+    },
+    "--zen-boosts-mode-button-color": { "value": "#e2e2e2" },
+    "--zen-boosts-zap-bar-color": { "value": "#d1d1d1" },
+    "--zen-boosts-zap-bar-button-color": { "value": "#1c1c1c" },
+    "--zen-boosts-share-info-button-color": {
+      "value": { "light": "#595b86", "dark": "#b3b3c4" }
+    },
+    "--zen-boosts-share-success-color": {
+      "value": { "light": "#4f5c3a", "dark": "#b9c9a0" }
+    },
+    "--zen-boosts-share-header-color": { "external": true },
+    "--zen-boosts-share-surface-color": { "external": true }
+  },
+  "border-color": {
+    "--zen-boosts-primary-border-color": { "external": true },
+    "--zen-boosts-selector-outline-color": { "external": true },
+    "--zen-boosts-font-separator-color": { "value": "#9a9a9a" },
+    "--zen-boosts-color-picker-circle-outline-color": { "value": "#9a9a9a88" },
+    "--zen-boosts-color-slider-thumb-border-color": { "value": "#d1d1d1" },
+    "--zen-boosts-zap-bar-border-color": { "value": "#292929" },
+    "--zen-boosts-zap-bar-focus-outline-color": { "value": "#e2e2e2" },
+    "--zen-boosts-share-header-border-color": { "external": true },
+    "--zen-boosts-share-favicon-border-color": { "external": true },
+    "--zen-boosts-share-favicon-outline-color": { "external": true },
+    "--zen-boosts-share-pane-outline-color": { "external": true },
+    "--zen-boosts-share-signature-outline-color": { "external": true }
+  },
+  "icon-color": {
+    "--zen-boosts-share-ink": { "external": true },
+    "--zen-boosts-share-success-heart-stroke": {
+      "value": "rgba(130, 147, 100, 0.67)"
+    }
+  },
+  "box-shadow": {
+    "--zen-boosts-magic-theme-shadow": { "value": "0 2px 4px #00000010" },
+    "--zen-boosts-font-wrapper-shadow": {
+      "value": "0 0 6px rgba(0, 0, 0, .1)"
+    },
+    "--zen-boosts-color-picker-shadow": { "value": "0 4px 12px #00000021" },
+    "--zen-boosts-color-picker-dot-shadow": { "value": "0 2px 4px #00000022" },
+    "--zen-boosts-share-pane-shadow": { "external": true }
+  },
+  "size": {
+    "--zen-boosts-editor-width": { "value": "184px" },
+    "--zen-boosts-code-editor-width": { "value": "452px" },
+    "--zen-boosts-source-editor-max-size": { "value": "1000px" },
+    "--zen-boosts-code-bars-height": { "value": "100px" },
+    "--zen-boosts-name-max-width": { "value": "100px" },
+    "--zen-boosts-font-select-width": { "value": "120px" },
+    "--zen-boosts-color-slider-width": { "value": "185px" },
+    "--zen-boosts-share-width": { "external": true },
+    "--zen-boosts-share-name-width": { "value": "236px" },
+    "--zen-boosts-share-info-panel-max-width": { "value": "365px" },
+    "--zen-boosts-share-content-height": { "value": "240px" },
+    "--zen-boosts-share-success-heart-size": { "value": "100px" }
+  },
+  "space": {
+    "--zen-boosts-share-header-gap": { "value": "2pt" }
+  }
+}

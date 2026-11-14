@@ -13,7 +13,7 @@
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
-  margin-left: 10px;
+  margin-left: var(--zen-space-10);
   display: none;
   overflow: hidden;
   white-space: nowrap;
@@ -24,7 +24,6 @@
   display: none !important;
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.theme.disable-lightweight") {
   #customization-lwtheme-link {
     display: none !important;
@@ -43,7 +42,7 @@
 
 /* Bookmarks */
 #PersonalToolbar:not([collapsed]) {
-  min-height: 30px;
+  min-height: var(--zen-size-30);
 }
 
 #firefox-view-button,
@@ -59,15 +58,15 @@
   --panel-padding: 0px;
 
   #PanelUI-zen-emojis-picker-header {
-    gap: 10px;
+    gap: var(--zen-space-10);
     align-items: center;
-    padding: 0 10px;
-    padding-bottom: 6px;
+    padding: 0 var(--zen-space-10);
+    padding-bottom: var(--zen-space-6);
   }
 
   #PanelUI-zen-emojis-picker-pages {
     overflow: hidden;
-    max-height: 230px;
+    max-height: var(--zen-emojis-picker-pages-max-height);
 
     & > * {
       min-width: 100%;
@@ -100,12 +99,12 @@
   }
 
   #PanelUI-zen-emojis-picker-search {
-    padding: 4px;
+    padding: var(--zen-space-4);
     width: 100%;
   }
 
   #PanelUI-zen-picker-header {
-    padding: 6px 16px;
+    padding: var(--zen-space-6) var(--zen-space-16);
     justify-content: space-between;
 
     & > toolbarbutton:first-of-type {
@@ -113,21 +112,21 @@
     }
 
     & #PanelUI-zen-emojis-buttons-wrapper {
-      gap: 4px;
+      gap: var(--zen-space-4);
 
       & toolbarbutton {
         appearance: none;
         font-size: small;
-        padding: 0 6px;
-        border-radius: 4px;
-        font-weight: 600;
+        padding: 0 var(--zen-space-6);
+        border-radius: var(--zen-border-radius-4);
+        font-weight: var(--font-weight-semibold);
 
         &:hover {
-          background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+          background-color: var(--zen-color-contrast-10);
         }
 
         &.selected {
-          background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+          background-color: var(--zen-color-contrast-10);
         }
       }
     }
@@ -139,15 +138,15 @@
     overflow-x: hidden;
     width: 100%;
 
-    padding: 10px;
-    padding-top: 5px;
+    padding: var(--zen-space-10);
+    padding-top: var(--zen-space-5);
 
-    gap: 5px;
+    gap: var(--zen-space-5);
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
 
     .zen-emojis-picker-emoji {
-      font-size: 14px;
+      font-size: var(--zen-font-size-14);
       padding: 0 !important;
       & image {
         display: none;
@@ -155,13 +154,13 @@
     }
 
     .zen-emojis-picker-svg {
-      padding: 4px !important;
+      padding: var(--zen-space-4) !important;
       & label {
         display: none;
       }
 
       & .toolbarbutton-icon {
-        width: 22px;
+        width: var(--zen-size-22);
       }
     }
   }
@@ -169,14 +168,14 @@
   .zen-emojis-picker-emoji,
   .zen-emojis-picker-svg,
   #PanelUI-zen-emojis-picker-none {
-    width: 22px;
-    height: 22px;
+    width: var(--zen-size-22);
+    height: var(--zen-size-22);
     appearance: none;
     transition: opacity 0.08s ease-in-out;
 
     &:hover {
-      background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-      border-radius: 4px;
+      background-color: var(--zen-color-contrast-10);
+      border-radius: var(--zen-border-radius-4);
       cursor: pointer;
     }
   }
@@ -243,7 +242,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 2px; /* thickness of border */
+  padding: var(--zen-space-2); /* thickness of border */
 
   background: radial-gradient(ellipse 100% 50% at center var(--background-top), rgba(255, 255, 255, 0.5) 80%, transparent);
 
@@ -261,19 +260,18 @@
 
 /* Status panel */
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media (-moz-pref("zen.theme.styled-status-panel")) {
   #statuspanel {
-    padding: 6px;
+    padding: var(--zen-space-6);
 
     & > #statuspanel-label {
       color-scheme: var(--toolbar-color-scheme);
-      border-radius: 16px !important;
-      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(225, 225, 225, 0.15)) !important;
-      padding: 4px 8px 5px 8px !important;
-      font-weight: 600 !important;
+      border-radius: var(--zen-border-radius-16) !important;
+      border: 1px solid var(--zen-statuspanel-border-color) !important;
+      padding: var(--zen-space-4) var(--zen-space-8) var(--zen-space-5) var(--zen-space-8) !important;
+      font-weight: var(--font-weight-semibold) !important;
       background: color-mix(in srgb, var(--zen-primary-color), light-dark(white, black) 70%) !important;
-      color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
+      color: var(--zen-color-contrast-80) !important;
     }
   }
 }
@@ -301,7 +299,7 @@
 #zen-site-data-addons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--zen-space-8);
   overflow: visible;
   flex-direction: row;
 
@@ -312,7 +310,7 @@
 
   &[overflowing="true"] {
     overflow-x: auto;
-    max-height: 420px;
+    max-height: var(--zen-site-data-addons-max-height);
     mask-image: linear-gradient(to top, transparent, black 5%);
   }
 
@@ -336,12 +334,12 @@
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: 44px;
+      width: var(--zen-size-44);
       height: var(--size-item-large);
       margin: 0;
       justify-content: center;
       align-items: center;
-      border-radius: 6px;
+      border-radius: var(--zen-border-radius-6);
 
       transition:
         background-color 0.1s ease-in-out,
@@ -349,7 +347,7 @@
 
       & toolbarbutton {
         background: transparent !important;
-        border-radius: 6px;
+        border-radius: var(--zen-border-radius-6);
       }
 
       & .toolbarbutton-badge-stack {
@@ -369,33 +367,33 @@
 }
 
 .zen-site-data-section {
-  gap: 2px;
-  padding: 9px;
-  padding-bottom: 8px;
+  gap: var(--zen-space-2);
+  padding: var(--zen-space-9);
+  padding-bottom: var(--zen-space-8);
 }
 
 .zen-site-data-section-header {
-  font-weight: 500;
-  font-size: 13px;
+  font-weight: var(--zen-font-weight-medium);
+  font-size: var(--zen-font-size-13);
 
   & label {
     margin: 0;
   }
 
   & > label:nth-child(2) {
-    font-weight: 500;
+    font-weight: var(--zen-font-weight-medium);
     font-size: smaller;
     transition: opacity 0.15s ease-in-out;
     opacity: 0;
-    border-radius: 6px;
-    padding: 2px 6px;
+    border-radius: var(--zen-border-radius-6);
+    padding: var(--zen-space-2) var(--zen-space-6);
 
     &:hover {
       background-color: color-mix(in srgb, currentColor 10%, transparent);
     }
 
     .zen-site-data-section:hover & {
-      opacity: 0.5;
+      opacity: var(--zen-opacity-50);
     }
   }
 }
@@ -411,14 +409,14 @@
     0.2s transform ease;
   opacity: 0;
 
-  width: 30px;
-  height: 26px;
-  min-width: 30px;
+  width: var(--zen-size-30);
+  height: var(--zen-size-26);
+  min-width: var(--zen-size-30);
   appearance: none;
   background: transparent;
   border: none;
 
-  border-radius: 8px;
+  border-radius: var(--zen-border-radius-8);
   transform: scale(1);
 
   -moz-context-properties: fill;
@@ -429,9 +427,9 @@
   }
 
   & image {
-    opacity: 0.6;
-    height: 14px;
-    width: calc(100% - 2px);
+    opacity: var(--zen-opacity-60);
+    height: var(--zen-size-14);
+    width: calc(100% - var(--zen-size-2));
   }
 }
 
@@ -445,7 +443,7 @@
 
 .permission-popup-permission-item,
 .permission-popup-boost-item {
-  gap: 8px;
+  gap: var(--zen-space-8);
   overflow: hidden;
   align-items: center;
 }
@@ -458,8 +456,8 @@
 .permission-popup-permission-label,
 .permission-popup-boost-label {
   margin: 0;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--zen-font-size-12);
+  font-weight: var(--zen-font-weight-medium);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -469,9 +467,9 @@
 .permission-popup-permission-icon,
 .permission-popup-boost-icon {
   fill: var(--button-primary-color);
-  padding: 8px;
-  width: 34px;
-  height: 34px;
+  padding: var(--zen-space-8);
+  width: var(--zen-size-34);
+  height: var(--zen-size-34);
   overflow: visible;
   position: relative;
   appearance: none;
@@ -489,11 +487,11 @@
     content: "";
     position: absolute;
     inset: 1px;
-    border-radius: 99px;
+    border-radius: var(--border-radius-circle);
     width: var(--size-item-large);
     height: var(--size-item-large);
     background: var(--zen-sidebar-themed-icon-fill);
-    opacity: 0.6;
+    opacity: var(--zen-opacity-60);
     transition:
       transform 0.12s ease-in-out,
       opacity 0.12s ease-in-out;
@@ -520,9 +518,9 @@
 
 .zen-permission-popup-permission-state-label,
 .zen-permission-popup-boost-state-label {
-  opacity: 0.6;
-  font-size: 10px;
-  font-weight: 400;
+  opacity: var(--zen-opacity-60);
+  font-size: var(--zen-font-size-10);
+  font-weight: normal;
   margin: 0;
 }
 
@@ -533,10 +531,10 @@
 
 #zen-site-data-footer {
   border-top: 1px solid color-mix(in srgb, currentColor 5%, transparent);
-  padding-top: 8px;
-  margin: 2px 8px 8px 8px;
+  padding-top: var(--zen-space-8);
+  margin: var(--zen-space-2) var(--zen-space-8) var(--zen-space-8) var(--zen-space-8);
 
-  gap: 8px;
+  gap: var(--zen-space-8);
 
   & toolbarbutton {
     margin: 0;
@@ -547,14 +545,12 @@
   }
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.theme.hide-unified-extensions-button") {
   #unified-extensions-button:not([showing]) {
     display: none !important;
   }
 }
 
-/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.theme.hide-unified-extensions-button") {
   #zen-site-data-section-addons {
     display: none;
@@ -562,10 +558,10 @@
 }
 
 #zen-site-data-header {
-  gap: 8px;
+  gap: var(--zen-space-8);
   align-items: center;
-  padding: 10px 9px;
-  padding-bottom: 8px;
+  padding: var(--zen-space-10) var(--zen-space-9);
+  padding-bottom: var(--zen-space-8);
 
   :root[zen-single-toolbar="true"]:not([zen-right-side="true"]) & {
     flex-direction: row-reverse;
@@ -576,13 +572,13 @@
     appearance: none;
     -moz-context-properties: fill;
     fill: currentColor;
-    color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
+    color: var(--zen-color-contrast-80);
     width: var(--size-item-xlarge);
     height: var(--size-item-large);
     position: relative;
 
     &[disabled] {
-      opacity: 0.5;
+      opacity: var(--zen-opacity-50);
       pointer-events: none;
     }
 
@@ -591,7 +587,7 @@
     }
 
     & image {
-      width: 18px;
+      width: var(--zen-size-18);
       pointer-events: none;
       z-index: 1;
     }
@@ -606,17 +602,14 @@
       @media (-moz-platform: macos) {
         background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 
-        box-shadow:
-          0 2px 4px rgba(0, 0, 0, 0.1),
-          inset 0 1px 0 light-dark(transparent, rgba(255, 255, 255, 0.15));
-        border-radius: 6px;
+        box-shadow: var(--zen-site-data-header-button-shadow);
+        border-radius: var(--zen-border-radius-6);
         corner-shape: superellipse(var(--zen-squircle-value));
-        --base-border-color: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.1));
-        border: 0.5px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
+        border: 0.5px solid var(--zen-site-data-header-button-border-color);
       }
 
       @media not (-moz-platform: macos) {
-        border-radius: 4px;
+        border-radius: var(--zen-border-radius-4);
         background-color: color-mix(in srgb, currentcolor 6%, transparent);
       }
 
@@ -654,7 +647,7 @@
 
 #zen-site-data-settings-list toolbarseparator,
 #zen-site-data-boost-list toolbarseparator {
-  margin: 6px 0;
+  margin: var(--zen-space-6) 0;
 }
 
 #unified-extensions-messages-container:empty {
@@ -714,7 +707,7 @@
   }
 
   #multi-stage-message-welcome-text {
-    gap: 4px;
+    gap: var(--zen-space-4);
   }
 }
 
@@ -740,7 +733,7 @@
     }
 
     width: fit-content;
-    max-width: 30rem !important;
+    max-width: var(--zen-notification-stack-max-width) !important;
     z-index: 9999;
 
     & notification-message {
@@ -765,16 +758,16 @@
 
   /* Minimum -2px, but if its larger, elemenet separation / -2 will be used as top offset, to avoid overlapping with the notification stack */
   :root:is([zen-no-padding="true"], [inDOMFullscreen="true"], :not([zen-single-toolbar="true"])) & {
-    top: 4px;
+    top: var(--zen-space-4);
   }
 
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
   background: var(--zen-loading-progress-bar-color);
-  height: .4rem;
-  width: 5rem;
+  height: var(--zen-loading-progress-bar-height);
+  width: var(--zen-loading-progress-bar-width);
   z-index: 9;
-  border-radius: 100px;
+  border-radius: var(--border-radius-circle);
   transition: opacity .3s ease-in-out,
               background-color .3s ease-in-out,
               transform .3s ease-in-out;
@@ -788,7 +781,7 @@
   &[long-load="true"] {
     opacity: 1;
     animation: zen-progress-bar-settle .3s ease-out forwards;
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    background: var(--zen-color-contrast-10);
 
     &::before {
       content: "";
@@ -805,7 +798,6 @@
     }
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media not -moz-pref("zen.view.enable-loading-indicator") {
     display: none;
   }
@@ -844,7 +836,7 @@
 .zen-swipe-add-space-container {
   position: absolute;
   height: 100%;
-  width: 100px;
+  width: var(--zen-swipe-add-space-container-width);
   right: 0;
   translate: 100px 0;
 
@@ -853,7 +845,7 @@
     inset: auto;
     translate: none;
     flex: 0 0 auto;
-    width: 50px;
+    width: var(--zen-size-50);
     height: auto;
     align-self: stretch;
     display: flex;
@@ -863,10 +855,10 @@
 }
 
 .zen-swipe-add-space-background {
-  right: -50px;
+  right: calc(-1 * var(--zen-space-50));
   height: 100%;
   position: absolute;
-  width: 200px;
+  width: var(--zen-swipe-add-space-background-width);
 
   --bg: color-mix(in srgb, var(--zen-accent-button-color), transparent 30%);
 
@@ -878,7 +870,7 @@
   z-index: -1;
 
   :root[zen-right-side="true"] & {
-    left: -50px;
+    left: calc(-1 * var(--zen-space-50));
     right: unset;
     
     background: radial-gradient(circle at left, 
@@ -890,13 +882,14 @@
 
 @property --zen-swipe-add-space-thickness {
   syntax: '<length>';
+  /* stylelint-disable-next-line length-zero-no-unit -- @property initial-value needs a unit to be a valid <length> */
   initial-value: 0px;
   inherits: true;
 }
 
 .zen-swipe-add-space-progress-badge {
   position: absolute;
-  width: 30px;
+  width: var(--zen-size-30);
   aspect-ratio: 1;
 
   --zen-swipe-add-space-thickness: 2.4px;
@@ -906,14 +899,14 @@
   --progress: var(--toolbox-textcolor);
   --background: color-mix(in srgb, var(--zen-primary-color), white 15%);
   
-  right: 10px;
+  right: var(--zen-space-10);
   top: 50%;
   translate: 0 -50%;
  
-  border-radius: 100%;
+  border-radius: var(--zen-border-radius-round);
 
   background: var(--background);
-  box-shadow: 0px 1px 8px #0003;
+  box-shadow: var(--zen-swipe-add-space-badge-shadow);
   
   & .zen-swipe-add-space-icon {
     position: absolute;
@@ -944,7 +937,7 @@
 
   :root[zen-right-side="true"] & {
     right: unset;
-    left: 10px;
+    left: var(--zen-space-10);
   }
 
   .space-section & {

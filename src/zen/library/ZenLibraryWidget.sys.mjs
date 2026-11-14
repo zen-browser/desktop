@@ -167,12 +167,16 @@ class ZenLibraryDownloadStack {
   }
 
   /**
-   * Points the button's badge at the newest entry's badge, where it flies
+   * Points the button's badge at its matching entry's badge, where it flies
    * to as the list opens, from wherever it is right now.
    */
   #aimBadge() {
-    const entry = this.#entries.at(-1);
-    if (entry.hidden) {
+    const entry = this.#entries.find(
+      candidate => candidate.download === this.#badgeDownload
+    );
+    if (!entry || entry.hidden) {
+      this.#badge.style.removeProperty("--zen-library-badge-to-x");
+      this.#badge.style.removeProperty("--zen-library-badge-to-y");
       return;
     }
     const target = entry.querySelector(".zen-library-download-badge");
@@ -354,10 +358,12 @@ class ZenLibraryDownloadStack {
   #updateList() {
     const shown = this.#downloads.slice(-ENTRIES);
     const unused = ENTRIES - shown.length;
+    const badgeDownload = this.#badgeDownload;
     this.#entries.forEach((entry, i) => {
       const download = shown[i - unused];
       entry.hidden = !download;
       entry.download = download ?? null;
+      entry.toggleAttribute("badge-target", entry.download === badgeDownload);
       if (!download) {
         return;
       }
@@ -424,10 +430,17 @@ class ZenLibraryDownloadStack {
     } 100`;
   }
 
+  get #badgeDownload() {
+    return (
+      this.#downloads.findLast(download => this.#isPending(download)) ??
+      this.#downloads.at(-1)
+    );
+  }
+
   #updateBadgeShowing() {
     this.#footButtons.toggleAttribute(
       "zen-library-badge",
-      this.#isPending(this.#downloads.at(-1)) || this.#recentNewDownload
+      this.#isPending(this.#badgeDownload) || this.#recentNewDownload
     );
   }
 
@@ -475,15 +488,15 @@ class ZenLibraryDownloadStack {
     if (this.#inBatch) {
       return;
     }
-    const newest = this.#downloads.at(-1);
+    const download = this.#badgeDownload;
     this.#updateList();
-    this.#updateBadge(this.#badge, newest);
+    this.#updateBadge(this.#badge, download);
     this.#updateBadgeShowing();
     this.#applyDownloadState();
   }
 
   /**
-   * Keeps the newest download's state on the library while it is open, for
+   * Keeps the badge download's state on the library while it is open, for
    * its downloads tab to show.
    *
    * @param {Element} library
@@ -503,14 +516,14 @@ class ZenLibraryDownloadStack {
     if (!this.#library) {
       return;
     }
-    const newest = this.#downloads.at(-1);
+    const download = this.#badgeDownload;
     this.#library.toggleAttribute(
       "zen-library-downloading",
-      this.#isPending(newest)
+      this.#isPending(download)
     );
     this.#library.style.setProperty(
       "--zen-library-download-progress",
-      `${newest?.hasProgress ? Math.round(newest.progress) : 0}%`
+      `${download?.hasProgress ? Math.round(download.progress) : 0}%`
     );
   }
 

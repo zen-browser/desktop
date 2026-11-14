@@ -39,18 +39,18 @@
 }
 
 #zenBoostWindow[editor="boost"] {
-  min-width: 184px;
-  max-width: 184px;
+  min-width: var(--zen-boosts-editor-width);
+  max-width: var(--zen-boosts-editor-width);
 }
 
 #zenBoostWindow[editor="code"] {
-  min-width: 452px;
-  max-width: 452px;
+  min-width: var(--zen-boosts-code-editor-width);
+  max-width: var(--zen-boosts-code-editor-width);
 }
 
 .source-editor-frame {
-  max-width: 1000px;
-  max-height: 1000px;
+  max-width: var(--zen-boosts-source-editor-max-size);
+  max-height: var(--zen-boosts-source-editor-max-size);
   width: 100%;
   height: 100%;
   border: none;
@@ -61,7 +61,7 @@
   z-index: 10;
 
   width: 100%;
-  height: 40px;
+  height: var(--zen-size-40);
   background-color: var(--zen-boosts-secondary-background);
   @media (-moz-windows-mica) {
     background-color: var(--zen-boosts-mica-background);
@@ -76,14 +76,14 @@
   background-repeat: no-repeat;
   background-position: calc(100% - 2px) calc(50% + 2px);
   background-size: 12px 12px;
-  padding: 4px 18px 4px 2px;
-  margin-left: 4px;
-  border-radius: 8px;
+  padding: var(--zen-space-4) var(--zen-space-18) var(--zen-space-4) var(--zen-space-2);
+  margin-left: var(--zen-space-4);
+  border-radius: var(--zen-border-radius-8);
 
   -moz-context-properties: fill;
   fill: var(--zen-boosts-primary-color);
 
-  opacity: 0.75;
+  opacity: var(--zen-opacity-75);
   background-color: transparent;
 
   transition:
@@ -94,8 +94,8 @@
 }
 
 #zen-boost-name-container:hover {
-  opacity: 0.8;
-  background-color: #aaaaaa22;
+  opacity: var(--zen-opacity-80);
+  background-color: var(--zen-boosts-name-hover-background);
 }
 
 #zen-boost-code-bottom-bar {
@@ -103,7 +103,7 @@
   z-index: 10;
 
   width: 100%;
-  height: 60px;
+  height: var(--zen-size-60);
   background-color: var(--zen-boosts-secondary-background);
   @media (-moz-windows-mica) {
     background-color: var(--zen-boosts-mica-background);
@@ -114,8 +114,8 @@
 
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: var(--zen-space-10);
+  padding: var(--zen-space-10);
 }
 
 #zen-boost-code-editor-root {
@@ -124,7 +124,7 @@
 
 #zen-boost-code-editor {
   width: 100%;
-  height: calc(100% - 100px);
+  height: calc(100% - var(--zen-boosts-code-bars-height));
 
   margin-top: 0;
   margin-bottom: 0;
@@ -147,7 +147,7 @@ body {
   margin: 0;
 
   & button {
-    border-radius: 8px;
+    border-radius: var(--zen-border-radius-8);
 
     padding: 0 !important;
     min-width: fit-content !important;
@@ -162,7 +162,7 @@ body {
     }
 
     &:hover {
-      opacity: 0.8;
+      opacity: var(--zen-opacity-80);
     }
   }
 
@@ -171,7 +171,7 @@ body {
   }
 
   &[disabled] {
-    opacity: 0.5;
+    opacity: var(--zen-opacity-50);
     cursor: not-allowed;
   }
 }
@@ -181,7 +181,7 @@ body {
 }
 
 #zen-boost-editor-view {
-  gap: 10px;
+  gap: var(--zen-space-10);
 }
 
 #zen-boost-code-top-bar {
@@ -191,9 +191,9 @@ body {
 #zen-boost-head-wrapper {
   -moz-window-dragging: drag; /* Allow dragging the window with the custom titlebar */
 
-  height: 40px;
-  min-height: 40px;
-  max-height: 40px;
+  height: var(--zen-size-40);
+  min-height: var(--zen-size-40);
+  max-height: var(--zen-size-40);
   align-items: center;
   background-color: var(--zen-boosts-secondary-background);
   border: solid 1px transparent;
@@ -212,16 +212,16 @@ body {
   }
 
   & button {
-    height: 24px !important;
-    width: 24px !important;
+    height: var(--size-item-medium) !important;
+    width: var(--size-item-medium) !important;
     aspect-ratio: 1/1 !important;
     background-color: transparent;
-    opacity: 0.45;
+    opacity: var(--zen-opacity-45);
 
     transition: 0.25s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
 
     &:hover {
-      opacity: 0.6;
+      opacity: var(--zen-opacity-60);
     }
   }
 
@@ -240,10 +240,11 @@ body {
 #zen-boost-name-text {
   width: 100%;
   justify-content: center;
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
   font-size: 100%;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 
-  max-width: 100px;
+  max-width: var(--zen-boosts-name-max-width);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -261,7 +262,7 @@ body {
   gap: 0;
   width: 100%;
 
-  padding: 2px;
+  padding: var(--zen-space-2);
 
   & button {
     color: var(--zen-boosts-primary-color) !important;
@@ -272,9 +273,9 @@ body {
 }
 
 #zen-boost-filter-wrapper {
-  padding: 16px;
-  gap: 14px;
-  padding-top: 6px;
+  padding: var(--zen-space-16);
+  gap: var(--zen-space-14);
+  padding-top: var(--zen-space-6);
 
   background-color: var(--zen-boosts-primary-background);
 
@@ -287,11 +288,11 @@ body {
 #zen-boost-footer-wrapper {
   -moz-window-dragging: drag;
 
-  height: 70px;
-  min-height: 70px;
-  max-height: 70px;
+  height: var(--zen-size-70);
+  min-height: var(--zen-size-70);
+  max-height: var(--zen-size-70);
   align-items: center;
-  padding: 16px;
+  padding: var(--zen-space-16);
   box-sizing: border-box;
 
   background-color: var(--zen-boosts-footer-background);
@@ -312,29 +313,29 @@ body {
   margin: auto;
   text-indent: 6px;
   vertical-align: middle;
-  font-size: 10pt;
+  font-size: var(--zen-font-size-10pt);
 
   list-style-position: right;
 
   & p {
     width: 75%;
     margin: auto;
-    font-weight: 500;
+    font-weight: var(--zen-font-weight-medium);
   }
 }
 
 #zen-boost-back {
-  width: 60px !important;
-  margin: 5px;
-  left: 5px;
+  width: var(--zen-size-60) !important;
+  margin: var(--zen-space-5);
+  left: var(--zen-space-5);
 
   display: flex;
   flex-direction: row-reverse;
 
   & hbox {
     scale: 0.75;
-    margin-right: -7px;
-    margin-top: 2px;
+    margin-right: calc(-1 * var(--zen-space-7));
+    margin-top: var(--zen-space-2);
   }
 }
 
@@ -343,8 +344,8 @@ body {
   width: auto !important;
   aspect-ratio: 1/1 !important;
 
-  margin: 5px;
-  left: 5px;
+  margin: var(--zen-space-5);
+  left: var(--zen-space-5);
 }
 
 #zen-boost-zap,
@@ -352,13 +353,13 @@ body {
   & #zen-boost-zap-value,
   & #zen-boost-focus-value {
     text-align: right;
-    right: 8px;
+    right: var(--zen-space-8);
     margin: auto;
     position: relative;
   }
 
   & hbox {
-    margin-right: 8px;
+    margin-right: var(--zen-space-8);
   }
 }
 
@@ -381,11 +382,11 @@ body {
 }
 
 .mod-button {
-  height: 38px !important;
+  height: var(--zen-size-38) !important;
 
-  border-radius: 6px;
+  border-radius: var(--zen-border-radius-6);
   @media (-moz-platform: macos) {
-    border-radius: 12px;
+    border-radius: var(--zen-border-radius-12);
   }
 
   background-color: var(--zen-boosts-button-background);
@@ -396,20 +397,20 @@ body {
     0.4s filter cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
   &:hover {
-    opacity: 0.85;
+    opacity: var(--zen-opacity-85);
   }
 
   &:active {
     transform: none !important;
 
-    opacity: 0.9;
+    opacity: var(--zen-opacity-90);
     filter: brightness(0.9);
   }
 }
 
 #zen-boost-case:not([case-mode="none"]) {
   background-color: var(--zen-boosts-button-background);
-  font-weight: 600 !important;
+  font-weight: var(--font-weight-semibold) !important;
 }
 
 #zen-boost-case[case-mode="uppercase"] {
@@ -429,8 +430,8 @@ body {
 }
 
 #zen-boost-name {
-  height: 26px;
-  font-size: 8pt;
+  height: var(--zen-size-26);
+  font-size: var(--zen-font-size-8pt);
   text-indent: 2px;
   vertical-align: middle;
   color: var(--zen-boosts-primary-color);
@@ -440,18 +441,18 @@ body {
 
 #zen-boost-close {
   margin-left: 0;
-  margin-right: 6px;
+  margin-right: var(--zen-space-6);
   @media (-moz-platform: macos) {
-    margin-left: 6px;
+    margin-left: var(--zen-space-6);
     margin-right: 0;
   }
 }
 
 #zen-boost-shuffle {
   margin-right: 0;
-  margin-left: 4px;
+  margin-left: var(--zen-space-4);
   @media (-moz-platform: macos) {
-    margin-right: 10px;
+    margin-right: var(--zen-space-10);
     margin-left: 0;
   }
 }
@@ -470,27 +471,27 @@ body {
 }
 
 .zen-boost-button-active-transparent {
-  opacity: 0.35;
+  opacity: var(--zen-opacity-35);
 }
 
 .zen-boost-button-active-transparent:hover {
-  opacity: 0.5 !important;
+  opacity: var(--zen-opacity-50) !important;
 }
 
 #zen-boost-magic-theme {
-  width: 18px;
-  height: 24px !important;
-  margin-top: 12px;
+  width: var(--zen-size-18);
+  height: var(--size-item-medium) !important;
+  margin-top: var(--zen-space-12);
 
   z-index: 4;
-  box-shadow: 0 2px 4px #00000010;
+  box-shadow: var(--zen-boosts-magic-theme-shadow);
 
   position: relative;
   margin-left: auto;
   margin-right: auto;
 
   & image {
-    width: 12px;
+    width: var(--size-item-xsmall);
   }
 
   &:not(.zen-boost-button-active) {
@@ -501,7 +502,7 @@ body {
 
 .footer {
   background-color: var(--zen-boosts-secondary-background);
-  padding: 20px;
+  padding: var(--zen-space-20);
 }
 
 #zen-boost-toolbar-wrapper,
@@ -510,7 +511,7 @@ body {
   margin: auto;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: var(--zen-space-8);
 
   & .small {
     margin: 0;
@@ -531,23 +532,23 @@ body {
 }
 
 #zen-boost-font-select {
-  width: 120px;
-  height: 20px !important;
+  width: var(--zen-boosts-font-select-width);
+  height: var(--icon-size-medium) !important;
 
   transition: 0.2s opacity ease-in-out;
 
   color: var(--zen-boosts-secondary-color);
   background: none;
 
-  font-size: 9pt;
+  font-size: var(--zen-font-size-12);
 
   padding: 0;
   text-indent: 2px;
 
-  margin-left: 8px;
-  margin-right: 3px;
-  margin-top: 8px;
-  opacity: 0.75;
+  margin-left: var(--zen-space-8);
+  margin-right: var(--zen-space-3);
+  margin-top: var(--zen-space-8);
+  opacity: var(--zen-opacity-75);
 
   &:hover {
     opacity: 1;
@@ -572,25 +573,25 @@ body {
   justify-content: space-between;
 
   & button {
-    border-radius: 6px;
+    border-radius: var(--zen-border-radius-6);
     min-width: fit-content;
-    height: 20px !important;
+    height: var(--icon-size-medium) !important;
 
-    margin-left: 8px;
-    margin-right: 8px;
-    margin-top: 8px;
+    margin-left: var(--zen-space-8);
+    margin-right: var(--zen-space-8);
+    margin-top: var(--zen-space-8);
     background-color: transparent;
   }
 }
 
 #zen-boost-font-wrapper {
-  box-shadow: 0 0 6px rgba(0, 0, 0, .1);
+  box-shadow: var(--zen-boosts-font-wrapper-shadow);
   background-color: var(--zen-boosts-font-wrapper-background);
 
-  border-radius: 10px;
+  border-radius: var(--zen-border-radius-10);
 
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding-top: var(--zen-space-4);
+  padding-bottom: var(--zen-space-4);
 
   display: flex;
   flex-direction: column;
@@ -600,30 +601,30 @@ body {
     height: 1px;
     width: auto;
 
-    margin-right: 6px;
-    margin-left: 6px;
-    margin-top: 2px;
+    margin-right: var(--zen-space-6);
+    margin-left: var(--zen-space-6);
+    margin-top: var(--zen-space-2);
 
-    opacity: 0.15;
+    opacity: var(--zen-opacity-15);
 
-    border-top: solid 1px #9a9a9a;
+    border-top: solid 1px var(--zen-boosts-font-separator-color);
   }
 
   & button {
     filter: none;
-    color: rgba(0, 0, 0, 0.6);
-    border-radius: 50px;
-    font-size: 12px;
-    padding: 2px;
+    color: var(--zen-boosts-font-button-color);
+    border-radius: var(--border-radius-circle);
+    font-size: var(--zen-font-size-12);
+    padding: var(--zen-space-2);
     align-items: center;
     justify-content: center;
     display: flex;
-    height: 26px;
-    width: 26px;
+    height: var(--zen-size-26);
+    width: var(--zen-size-26);
     aspect-ratio: 1;
 
     &:hover {
-      background-color: #9a9a9a30;
+      background-color: var(--zen-boosts-font-button-hover-background);
     }
   }
 }
@@ -641,22 +642,22 @@ body {
 }
 
 .mod-button[mode="orange"] {
-  color: #e3e9e4;
+  color: var(--zen-boosts-mode-button-color);
   --mod-button-c1: light-dark(#ffbb5d, #c37a3f);
   --mod-button-c2: light-dark(#ffa01d, #9f5a2a);
 }
 .mod-button[mode="orange-red"] {
-  color: #e3e9e4;
+  color: var(--zen-boosts-mode-button-color);
   --mod-button-c1: light-dark(#ff8758, #bd6048);
   --mod-button-c2: light-dark(#ff5b1b, #9b422b);
 }
 .mod-button[mode="red"] {
-  color: #e3e9e4;
+  color: var(--zen-boosts-mode-button-color);
   --mod-button-c1: light-dark(#ff595f, #b94a50);
   --mod-button-c2: light-dark(#ff121b, #95272e);
 }
 .mod-button[mode="blue"] {
-  color: #e3e9e4;
+  color: var(--zen-boosts-mode-button-color);
   --mod-button-c1: light-dark(#6650fc, #5d56ca);
   --mod-button-c2: light-dark(#4125ff, #453aa9);
 }
@@ -679,16 +680,16 @@ body {
 }
 
 #zen-boost-code-editor-root button {
-  opacity: 0.6;
+  opacity: var(--zen-opacity-60);
 }
 
 .toggleable-button[enabled="true"] {
   filter: invert();
-  opacity: 0.9;
+  opacity: var(--zen-opacity-90);
 
   &:active {
     filter: invert();
-    opacity: 0.8;
+    opacity: var(--zen-opacity-80);
   }
 }
 
@@ -696,8 +697,8 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 8px;
-  margin: 8px;
+  border-radius: var(--zen-border-radius-8);
+  margin: var(--zen-space-8);
 
   z-index: 2;
 
@@ -744,11 +745,11 @@ body {
 .zen-boost-color-picker-gradient {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px #00000021;
+  border-radius: var(--zen-border-radius-16);
+  box-shadow: var(--zen-boosts-color-picker-shadow);
   width: 100%;
   aspect-ratio: 1 /1;
-  margin: 10px 0 4px 0;
+  margin: var(--zen-space-10) 0 var(--zen-space-4) 0;
 
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
@@ -768,8 +769,8 @@ body {
     left: 50%;
     top: 50%;
 
-    outline: solid 1px #9a9a9a88;
-    border-radius: 100%;
+    outline: solid 1px var(--zen-boosts-color-picker-circle-outline-color);
+    border-radius: var(--zen-border-radius-round);
   }
 
   & .zen-boost-color-picker-arc-svg {
@@ -778,30 +779,30 @@ body {
   }
 
   & .zen-boost-color-picker-dot {
-    box-shadow: 0 2px 4px #00000022;
+    box-shadow: var(--zen-boosts-color-picker-dot-shadow);
     position: absolute;
     z-index: 5;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    width: var(--size-item-medium);
+    height: var(--size-item-medium);
+    border-radius: var(--zen-border-radius-round);
     background: var(--zen-theme-picker-dot-color);
 
     /* Move away until initialized */
-    left: -100px;
-    top: -100px;
+    left: calc(-1 * var(--zen-space-100));
+    top: calc(-1 * var(--zen-space-100));
 
     @media (-prefers-color-scheme: dark) {
-      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--zen-box-shadow-ring);
     }
     cursor: pointer;
-    border: 3px solid #ffffff;
+    border: 3px solid white;
     transform: translate(-50%, -50%);
     transform-origin: top left;
     pointer-events: all;
 
     &:first-of-type {
-      width: 32px;
-      height: 32px;
+      width: var(--size-item-large);
+      height: var(--size-item-large);
       border-width: 3px;
       transition: transform 0.2s;
       z-index: 4;
@@ -818,16 +819,16 @@ body {
 
 #zen-boost-editor-root:hover {
   & .zen-boost-color-picker-circle, .zen-boost-color-picker-arc-svg {
-    opacity: 0.4;
+    opacity: var(--zen-opacity-40);
   }
 }
 
 .zen-boost-font-button-active {
-  background-color: #5454572f !important;
+  background-color: var(--zen-boosts-font-button-active-background) !important;
 }
 
 .zen-boost-font-button-active:hover {
-  background-color: #5b5b5c28 !important;
+  background-color: var(--zen-boosts-font-button-active-hover-background) !important;
 }
 
 /** Import animation */
@@ -854,7 +855,7 @@ body {
 #import-animation-shadow {
   position: fixed;
   mix-blend-mode: multiply;
-  background: #00000040;
+  background: var(--zen-boosts-import-shadow-background);
   left: 0;
   right: 0;
   top: 0;
@@ -879,7 +880,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 4px; /* thickness of border */
+  padding: var(--zen-space-4); /* thickness of border */
   z-index: 1000;
 
   background: radial-gradient(ellipse 100% 50% at center var(--background-top), rgba(255, 255, 255, 0.9) 80%, transparent);

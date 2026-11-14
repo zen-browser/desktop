@@ -256,6 +256,76 @@ add_task(async function test_can_be_turned_off() {
   }
 });
 
+// Revealing a tab from a collapsed folder puts it in the strip out of view for
+// a moment before _handleTabSelect scrolls to it. The pill is for a tab the
+// strip has scrolled away from, so it must not blink during that gap.
+add_task(async function test_no_blink_when_revealing_a_tab_from_a_folder() {
+  const folderTab = openedTabs[0];
+  const folder = await gZenFolders.createFolder([folderTab], {
+    renameFolder: false,
+    label: "folded",
+  });
+  folder.collapsed = true;
+  Assert.ok(!folderTab.visible, "The folder's tab is tucked away");
+
+  // Park the strip at the far end, so the revealed tab starts out of view.
+  gBrowser.selectedTab = gBrowser.visibleTabs.at(-1);
+  await TestUtils.waitForCondition(
+    () => selectedIsVisible() && pill.hidden,
+    "the strip settles away from the folder"
+  );
+
+  let blinks = 0;
+  const watcher = new MutationObserver(() => {
+    if (!pill.hidden) {
+      blinks++;
+    }
+  });
+  watcher.observe(pill, {
+    attributes: true,
+    attributeFilter: ["hidden"],
+  });
+
+  try {
+    gBrowser.selectedTab = folderTab;
+    await TestUtils.waitForCondition(
+      () => folderTab.visible && selectedIsVisible(),
+      "the folder opens and the strip scrolls to its tab"
+    );
+    /* eslint-disable-next-line mozilla/no-arbitrary-setTimeout */
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    Assert.equal(blinks, 0, "The pill never showed while the tab was revealed");
+    Assert.ok(pill.hidden, "and it is still hidden afterwards");
+  } finally {
+    watcher.disconnect();
+  }
+
+  // The pill still works for this tab once it has been in view.
+  scrollbox.ensureElementIsVisible(gBrowser.visibleTabs.at(-1), true);
+  await TestUtils.waitForCondition(
+    () => !pill.hidden,
+    "Scrolling away from it afterwards still offers the pill"
+  );
+
+  gBrowser.selectedTab = openedTabs.at(-1);
+  await TestUtils.waitForCondition(() => pill.hidden, "the pill goes away");
+
+  openedTabs = openedTabs.filter(t => t !== folderTab);
+  const folderGone = BrowserTestUtils.waitForEvent(folder, "TabGroupRemoved");
+  folder.delete();
+  await folderGone;
+  await TestUtils.waitForCondition(
+    () => !folder.isConnected,
+    "the folder is gone"
+  );
+  // folder.delete() takes its own tabs, including its empty-tab placeholder,
+  // with it. The space has a placeholder of its own that must be left alone.
+  if (folderTab.isConnected) {
+    BrowserTestUtils.removeTab(folderTab);
+  }
+});
+
 add_task(async function test_hidden_when_the_strip_does_not_overflow() {
   for (const tab of openedTabs) {
     if (tab.isConnected) {

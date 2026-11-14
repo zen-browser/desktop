@@ -5,7 +5,7 @@
  */
 
 #zen-media-controls-toolbar {
-  --progress-height: 4px;
+  --zen-media-progress-height: 4px;
   --button-spacing: 2px;
   --zen-media-stack-peek: 8px;
   --zen-media-stack-gap: 6px;
@@ -18,53 +18,53 @@
   container-type: inline-size;
 
   .toolbarbutton-1 {
-    border-radius: 5px;
+    border-radius: var(--zen-border-radius-5);
   }
 
   .zen-media-buttons-hbox {
     align-items: start;
-    margin-top: -4px;
+    margin-top: calc(-1 * var(--zen-space-4));
     --toolbarbutton-padding-outer: 2px;
   }
 
   .media-device-buttons {
-    gap: 2px;
+    gap: var(--zen-space-2);
   }
 
   image.toolbarbutton-icon {
-    padding: 5px;
-    width: 26px;
-    height: 26px;
+    padding: var(--zen-space-5);
+    width: var(--zen-size-26);
+    height: var(--zen-size-26);
   }
 
   .zen-media-progress-bar {
     appearance: none;
     width: 100%;
-    height: var(--progress-height);
-    margin: 0 8px;
-    border-radius: 2px;
-    background-color: rgba(255, 255, 255, 0.2);
+    height: var(--zen-media-progress-height);
+    margin: 0 var(--zen-space-8);
+    border-radius: var(--zen-border-radius-2);
+    background-color: var(--zen-media-progress-bar-background);
     cursor: pointer;
     transition: height 0.15s ease-out;
 
     &::-moz-range-track {
       background: var(--zen-toolbar-element-bg);
-      border-radius: 999px;
-      height: var(--progress-height);
+      border-radius: var(--border-radius-circle);
+      height: var(--zen-media-progress-height);
     }
 
     &::-moz-range-progress {
       background: color-mix(in srgb, var(--zen-primary-color) 70%, light-dark(black, white) 30%);
-      border-radius: 999px;
-      height: var(--progress-height);
+      border-radius: var(--border-radius-circle);
+      height: var(--zen-media-progress-height);
     }
 
     &::-moz-range-thumb {
       background: color-mix(in srgb, var(--zen-primary-color) 70%, light-dark(black, white) 30%);
       border: none;
-      width: calc(var(--progress-height) * 2);
-      height: calc(var(--progress-height) * 2);
-      border-radius: 50%;
+      width: calc(var(--zen-media-progress-height) * 2);
+      height: calc(var(--zen-media-progress-height) * 2);
+      border-radius: var(--zen-border-radius-round);
       cursor: pointer;
       transform: scale(0);
       transition: transform 0.15s ease-out;
@@ -77,8 +77,8 @@
 
   &:hover {
     .show-on-hover {
-      max-height: 50px;
-      padding: 5px;
+      max-height: var(--zen-size-50);
+      padding: var(--zen-space-5);
       margin-bottom: 0;
       opacity: 1;
       transform: translateY(0) !important;
@@ -113,7 +113,7 @@
     max-height: 0;
     opacity: 0;
     transform: translateY(1rem);
-    padding: 0 6px;
+    padding: 0 var(--zen-space-6);
     pointer-events: none;
     transition:
       max-height 0.3s var(--zen-media-stack-easing),
@@ -126,8 +126,8 @@
   .zen-media-duration {
     margin: 0 0 0 1px;
     font-size: x-small;
-    opacity: 0.7;
-    font-weight: 500;
+    opacity: var(--zen-opacity-70);
+    font-weight: var(--zen-font-weight-medium);
     font-variant-numeric: tabular-nums;
   }
 }
@@ -137,7 +137,7 @@
   flex-shrink: 0;
   order: var(--zen-media-card-index, 0);
   width: 100%;
-  padding: 4px 6px;
+  padding: var(--zen-space-4) var(--zen-space-6);
   border-radius: var(--border-radius-medium);
   @media (-moz-platform: macos) {
     border-radius: calc(var(--border-radius-medium) - 2px);
@@ -209,7 +209,7 @@
 
   &:not([can-pip]) {
     .zen-media-info-vbox {
-      width: calc(100% - 26px);
+      width: calc(100% - var(--zen-size-26));
       flex-shrink: 0;
     }
 
@@ -293,7 +293,7 @@
 }
 
 .zen-media-artist {
-  opacity: 0.7;
+  opacity: var(--zen-opacity-70);
   font-size: smaller;
 
   &:empty {
@@ -303,6 +303,7 @@
 
 .zen-media-title {
   height: var(--size-item-small);
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- math is a font-size keyword, not a length */
   font-size: math;
 }
 
@@ -329,16 +330,16 @@
     width: 0.6em;
     background: linear-gradient(to right, var(--zen-sidebar-notification-bg) 0%, transparent 100%);
     pointer-events: none;
-    top: 6px;
+    top: var(--zen-space-6);
     left: 0;
-    height: calc(100% - 6px);
+    height: calc(100% - var(--zen-size-6));
     z-index: 1;
   }
 
   & label {
     min-height: var(--size-item-small);
     margin-left: 0;
-    font-weight: 500;
+    font-weight: var(--zen-font-weight-medium);
     position: relative; /* For the animation */
   }
 }
@@ -365,7 +366,7 @@
   max-width: 100%;
   --toolbarbutton-padding-outer: 0;
   container: media-controls / inline-size;
-  gap: 0.7rem;
+  gap: calc(0.7 * var(--space-large));
 }
 
 .zen-media-playback-buttons {

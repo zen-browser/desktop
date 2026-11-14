@@ -5,14 +5,14 @@
  */
 #zenEditBookmarkPanelFaviconContainer {
   border: 1px solid var(--input-border-color);
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
+  width: var(--zen-bookmark-panel-favicon-container-size);
+  height: var(--zen-bookmark-panel-favicon-container-size);
+  border-radius: var(--zen-border-radius-10);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 16px;
-  background: light-dark(#fff, rgba(255, 255, 255, 0.1));
+  margin: var(--zen-space-16);
+  background: var(--zen-bookmark-panel-favicon-container-background);
 }
 
 #editBookmarkPanel::part(content) {
@@ -28,7 +28,7 @@
 #editBookmarkPanel .panel-header {
   min-height: 0;
   padding-bottom: 0;
-  padding-top: 16px;
+  padding-top: var(--zen-space-16);
 }
 
 #editBMPanel_namePicker {
@@ -37,7 +37,7 @@
 
 label.editBMPanel_folderRow,
 label.editBMPanel_nameRow {
-  min-width: 60px;
+  min-width: var(--zen-size-60);
 }
 
 hbox.editBMPanel_folderRow {
@@ -45,7 +45,7 @@ hbox.editBMPanel_folderRow {
 }
 
 .zenEditBMPanel_fieldContainer:not(:first-child) {
-  margin-top: 10px;
+  margin-top: var(--zen-space-10);
 }
 
 .zenEditBMPanel_fieldContainer {
@@ -57,15 +57,15 @@ hbox.editBMPanel_folderRow {
 }
 
 :host(:not([native])) #label-box {
-  font-weight: 500;
+  font-weight: var(--zen-font-weight-medium);
 }
 
 #editBMPanel_folderMenuList::part(icon) {
-  margin-right: 10px;
+  margin-right: var(--zen-space-10);
 }
 
 #editBMPanel_workspaceSummary .workspace-trigger {
-  margin-inline-end: 16px;
+  margin-inline-end: var(--zen-space-16);
 }
 
 /* Bookmarks in toolbar */

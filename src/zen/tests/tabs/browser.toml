@@ -7,11 +7,15 @@ support-files = [
   "head.js",
 ]
 
+["browser_copy_selected_urls.js"]
+
 ["browser_drag_drop_vertical.js"]
 tags = [
   "drag-drop",
   "vertical-tabs"
 ]
+
+["browser_essential_unread_dot.js"]
 
 ["browser_issue_14534.js"]
 

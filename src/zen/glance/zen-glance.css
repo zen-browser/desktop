@@ -13,10 +13,10 @@
   will-change: transform, opacity;
   contain: layout style;
 
-  top: 15px;
-  padding: 12px;
-  gap: 12px;
-  max-width: 56px;
+  top: var(--zen-space-15);
+  padding: var(--zen-space-12);
+  gap: var(--zen-space-12);
+  max-width: var(--zen-size-56);
 
   :root:not([zen-right-side="true"]) & {
     left: 100%;
@@ -29,19 +29,19 @@
   & toolbarbutton {
     width: var(--size-item-large);
     height: var(--size-item-large);
-    background: color-mix(in srgb, light-dark(rgb(24, 24, 24), rgb(231, 231, 231)) 96%, var(--zen-primary-color));
+    background: color-mix(in srgb, var(--zen-glance-button-background-base) 96%, var(--zen-primary-color));
     transition:
       background 0.05s ease,
       scale 0.05s ease;
-    border-radius: 999px;
+    border-radius: var(--border-radius-circle);
     appearance: none;
-    box-shadow: 0 0 12px 1px rgba(0, 0, 0, 0.07);
-    padding: 8px;
+    box-shadow: var(--zen-glance-button-shadow);
+    padding: var(--zen-space-8);
     opacity: 1 !important;
     color: var(--zen-primary-color) !important;
 
     &:hover {
-      background: light-dark(rgb(41, 41, 41), rgb(204, 204, 204));
+      background: var(--zen-glance-button-hover-background);
       scale: 1.02;
     }
 
@@ -60,7 +60,7 @@
     &[disabled="true"] {
       scale: 1 !important;
       & image {
-        opacity: 0.5;
+        opacity: var(--zen-opacity-50);
       }
     }
   }
@@ -78,12 +78,12 @@
     }
 
     &[waitconfirmation] {
-      background: rgb(220, 53, 69);
+      background: var(--zen-glance-close-button-background);
       color: white;
       fill: white;
       & label {
-        max-width: 4rem;
-        margin-left: 8px;
+        max-width: var(--zen-glance-close-confirm-label-max-width);
+        margin-left: var(--zen-space-8);
         color: white;
       }
 
@@ -106,7 +106,6 @@
 .browserSidebarContainer.zen-glance-background,
 :is(.browserSidebarContainer.zen-glance-overlay, #zen-glance-detached)
   .browserContainer:not([fade-out="true"]) {
-  /* stylelint-disable-next-line property-no-unknown */
   corner-shape: round;
   border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
 }
@@ -146,13 +145,12 @@
     & .browserStack {
       overflow: hidden;
       box-shadow: var(--zen-big-shadow);
-      /* stylelint-disable-next-line property-no-unknown */
-      corner-shape: round;
+          corner-shape: round;
       border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
     }
 
     & browser {
-      background: light-dark(rgb(255, 255, 255), rgb(17, 17, 17)) !important;
+      background: var(--zen-glance-browser-background) !important;
       width: 100%;
       height: 100%;
     }

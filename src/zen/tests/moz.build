@@ -18,6 +18,7 @@ BROWSER_CHROME_MANIFESTS += [
     "performance/browser.toml",
     "pinned/browser.toml",
     "popover/browser.toml",
+    "security/browser.toml",
     "share/browser.toml",
     "site_control/browser.toml",
     "space_routing/browser.toml",

@@ -1,0 +1,40 @@
+{
+  "background-color": {
+    "--zen-selected-bg": { "external": true },
+    "--zen-urlbar-background-base": { "external": true },
+    "--zen-urlbar-background-transparent": { "external": true },
+    "--zen-urlbar-label-tint-color": {
+      "value": {
+        "light": "var(--color-black-alpha-50)",
+        "dark": "var(--color-white-alpha-20)"
+      }
+    },
+    "--zen-urlbar-selected-favicon-background": {
+      "value": "var(--color-white-alpha-90)"
+    }
+  },
+  "versatile-color": {
+    "--zen-selected-color": { "external": true }
+  },
+  "box-shadow": {
+    "--zen-urlbar-floating-shadow": {
+      "value": "0 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6))"
+    },
+    "--zen-urlbar-shortcut-shadow": { "value": "0 0 0 1px rgba(0, 0, 0, 0.1)" }
+  },
+  "border-color": {
+    "--zen-urlbar-floating-outline-color": {
+      "value": { "light": "var(--color-black-alpha-20)", "dark": "#4a4a4a" }
+    }
+  },
+  "size": {
+    "--zen-urlbar-single-toolbar-open-width": { "value": "min(90%, 40rem)" },
+    "--zen-urlbar-floating-min-width": { "value": "min(90%, 62rem)" },
+    "--zen-urlbar-results-max-height": { "value": "244px" }
+  },
+  "text-color": {
+    "--zen-urlbar-view-url-color": {
+      "value": { "light": "#4a4a4a", "dark": "#aaaaaa" }
+    }
+  }
+}

@@ -1454,7 +1454,10 @@ class nsZenWorkspaces {
     }
   }
 
-  saveWorkspace(workspaceData, { insertAfterId = null } = {}) {
+  saveWorkspace(
+    workspaceData,
+    { insertAfterId = null, insertBeforeId = null } = {}
+  ) {
     if (this.privateWindowOrDisabled) {
       return;
     }
@@ -1462,11 +1465,16 @@ class nsZenWorkspaces {
     const index = workspacesData.findIndex(
       ws => ws.uuid === workspaceData.uuid
     );
+    const insertBeforeIndex = insertBeforeId
+      ? workspacesData.findIndex(ws => ws.uuid === insertBeforeId)
+      : -1;
     const insertAfterIndex = insertAfterId
       ? workspacesData.findIndex(ws => ws.uuid === insertAfterId)
       : -1;
     if (index !== -1) {
       workspacesData[index] = workspaceData;
+    } else if (insertBeforeIndex !== -1) {
+      workspacesData.splice(insertBeforeIndex, 0, workspaceData);
     } else if (insertAfterIndex !== -1) {
       workspacesData.splice(insertAfterIndex + 1, 0, workspaceData);
     } else {
@@ -1526,8 +1534,7 @@ class nsZenWorkspaces {
   get shouldShowContainers() {
     return (
       !this.isPrivateWindow &&
-      Services.prefs.getBoolPref("privacy.userContext.ui.enabled") &&
-      !!ContextualIdentityService.getPublicIdentities().length
+      Services.prefs.getBoolPref("privacy.userContext.ui.enabled")
     );
   }
 
@@ -1650,7 +1657,12 @@ class nsZenWorkspaces {
     const previousWorkspace = this.getActiveWorkspace();
     document.documentElement.setAttribute("zen-creating-workspace", "true");
     await this.createAndSaveWorkspace("Space", undefined, false, 0, {
-      insertAfterId: previousWorkspace?.uuid,
+      insertAfterId: !gZenVerticalTabsManager._prefsRightSide
+        ? previousWorkspace?.uuid
+        : null,
+      insertBeforeId: gZenVerticalTabsManager._prefsRightSide
+        ? previousWorkspace?.uuid
+        : null,
       beforeChangeCallback: async workspace => {
         createForm = document.createXULElement("zen-workspace-creation");
         createForm.setAttribute("workspace-id", workspace.uuid);
@@ -1951,9 +1963,7 @@ class nsZenWorkspaces {
     if (!this.workspaceEnabled) {
       return workspace;
     }
-    this.#currentSpaceSwitchContext.animations.forEach(animation => {
-      animation.complete();
-    });
+    this.finishSwitchAnimations();
     await this.#currentSpaceSwitchContext.promise;
     let { resolve, promise } = Promise.withResolvers();
     this.#currentSpaceSwitchContext = {
@@ -1971,6 +1981,12 @@ class nsZenWorkspaces {
     this.#inChangingWorkspace = false;
     resolve();
     return workspace;
+  }
+
+  finishSwitchAnimations() {
+    this.#currentSpaceSwitchContext.animations.forEach(animation => {
+      animation.complete();
+    });
   }
 
   _cancelSwipeAnimation() {
@@ -2299,6 +2315,52 @@ class nsZenWorkspaces {
     }
   }
 
+  #crossfadeBackgrounds(duration) {
+    const elements = [
+      lazy.browserBackgroundElement,
+      lazy.toolbarBackgroundElement,
+    ];
+    // Start from what is on screen, a swipe can leave the backgrounds midway.
+    const shown = parseFloat(getComputedStyle(elements[0], "::after").opacity);
+    const from = shown >= 1 || !shown ? 0 : 1 - shown;
+    // Same curve as the springs the tabs slide with.
+    const { ease, duration: ms } = gZenUIManager.motion.spring.applyToOptions({
+      bounce: 0,
+      duration: duration * 1000,
+    });
+    const steps = Array.from({ length: 33 }, (_, i) => ease(i / 32));
+    const options = { duration: ms, easing: `linear(${steps.join(", ")})` };
+    const grainNew =
+      "var(--zen-grainy-background-opacity, 0) * var(--zen-grain-alpha)";
+    const grainOld =
+      "var(--zen-grainy-background-opacity-old, 0) * var(--zen-grain-alpha-old)";
+    const fades = [];
+    const fade = (target, pseudoElement, opacity) => {
+      if (target) {
+        fades.push(target.animate({ opacity }, { ...options, pseudoElement }));
+      }
+    };
+    for (const element of elements) {
+      element.style.setProperty("--zen-background-opacity", 1);
+      fade(element, "::after", [from, 1]);
+      fade(element, "::before", [1 - from, 0]);
+      const grain = element.querySelector(".zen-browser-grain");
+      fade(grain, "::after", [
+        `calc(${grainNew} * ${from})`,
+        `calc(${grainNew})`,
+      ]);
+      fade(grain, "::before", [`calc(${grainOld} * ${1 - from})`, 0]);
+    }
+    return {
+      complete: () => fades.forEach(animation => animation.finish()),
+      then: (resolve, reject) =>
+        Promise.all(fades.map(animation => animation.finished)).then(
+          resolve,
+          reject
+        ),
+    };
+  }
+
   /* eslint-disable complexity */
   async #animateTabs(
     newWorkspace,
@@ -2351,47 +2413,7 @@ class nsZenWorkspaces {
     }
     this.#setAnimatingBackground(true);
     if (shouldAnimate && previousWorkspace) {
-      let previousBackgroundOpacity =
-        lazy.browserBackgroundElement.style.getPropertyValue(
-          "--zen-background-opacity"
-        );
-      try {
-        // Prevent NaN from being set
-        if (previousBackgroundOpacity) {
-          previousBackgroundOpacity = parseFloat(previousBackgroundOpacity);
-        }
-      } catch {
-        previousBackgroundOpacity = 1;
-      }
-      if (previousBackgroundOpacity == 1 || !previousBackgroundOpacity) {
-        previousBackgroundOpacity = 0;
-      } else {
-        previousBackgroundOpacity = 1 - previousBackgroundOpacity;
-      }
-      gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
-      let elements = [
-        lazy.browserBackgroundElement,
-        lazy.toolbarBackgroundElement,
-      ];
-      elements.forEach(element => {
-        element.style.setProperty(
-          "--zen-background-opacity",
-          previousBackgroundOpacity
-        );
-      });
-      animations.push(
-        gZenUIManager.motion.animate(
-          elements,
-          {
-            "--zen-background-opacity": [previousBackgroundOpacity, 1],
-          },
-          {
-            type: "spring",
-            bounce: 0,
-            duration: kGlobalAnimationDuration,
-          }
-        )
-      );
+      animations.push(this.#crossfadeBackgrounds(kGlobalAnimationDuration));
     }
     for (const element of document.querySelectorAll("zen-workspace")) {
       if (element.classList.contains("zen-essentials-container")) {
@@ -2709,7 +2731,10 @@ class nsZenWorkspaces {
         onInit,
       }
     );
-    this._organizeWorkspaceStripLocations(workspace, true);
+    // A swipe that took over from this switch is dragging the strip now.
+    if (!this._swipeManager?.isGestureActive) {
+      this._organizeWorkspaceStripLocations(workspace, true);
+    }
     gZenUIManager.tabsWrapper.style.scrollbarWidth = "";
 
     // Notify listeners
@@ -2876,9 +2901,11 @@ class nsZenWorkspaces {
     icon = undefined,
     dontChange = false,
     containerTabId = 0,
-    // beforeChangeCallback runs before changing workspace, insertAfterId places
-    // the new space right after an existing one instead of at the end.
-    { beforeChangeCallback = null, insertAfterId = null } = {}
+    {
+      beforeChangeCallback = null,
+      insertAfterId = null,
+      insertBeforeId = null,
+    } = {}
   ) {
     if (!this.workspaceEnabled) {
       return null;
@@ -2899,7 +2926,7 @@ class nsZenWorkspaces {
       this.#createWorkspaceTabsSection(workspaceData, extraTabs);
       this._organizeWorkspaceStripLocations(workspaceData);
     }
-    this.saveWorkspace(workspaceData, { insertAfterId });
+    this.saveWorkspace(workspaceData, { insertAfterId, insertBeforeId });
     if (!dontChange) {
       if (beforeChangeCallback) {
         try {
@@ -3072,7 +3099,9 @@ class nsZenWorkspaces {
         const essentialContainer = this.getEssentialsSection(
           workspaceObject.containerTabId
         );
-        const essentialNumChildren = essentialContainer.children.length;
+        const essentialNumChildren = [...essentialContainer.children].filter(
+          child => !child.hasAttribute("zen-drag-placeholder")
+        ).length;
         let essentialHackType = 0;
         if (essentialNumChildren === 6 || essentialNumChildren === 9) {
           essentialHackType = 1;

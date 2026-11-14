@@ -6,6 +6,7 @@ UNIFIED_SOURCES += [
     "TestZenBoostsAccentCache.cpp",
     "TestZenBoostsColorFilter.cpp",
     "TestZenBoostsResolveStyleColor.cpp",
+    "TestZenBoostsStyle.cpp",
 ]
 
 FINAL_LIBRARY = "xul-gtest"

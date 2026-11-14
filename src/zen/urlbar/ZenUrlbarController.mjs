@@ -240,7 +240,11 @@ export class nsZenUrlbarController {
           });
         }
 
-        gURLBar.handleRevert();
+        // After a pick, the selected tab may still be loading the picked URL.
+        // Reverting would drop it until the load commits (gh-16510).
+        if (!onElementPicked || !gURLBar.zenHasPendingLoad) {
+          gURLBar.handleRevert();
+        }
       }
 
       if (isFocusedBefore) {

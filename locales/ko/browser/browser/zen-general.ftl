@@ -49,13 +49,13 @@ zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
 zen-copy-current-url-as-markdown-confirmation = 현재 URL을 마크다운으로 복사했습니다!
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] { $count }개의 URL을 복사했습니다!
+       *[other] { $count }개의 URL을 복사했습니다!
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] { $count }개의 URL을 마크다운 형식으로 복사했습니다!
+       *[other] { $count }개의 URL을 마크다운 형식으로 복사했습니다!
     }
 zen-general-cancel-label = 
     .label = 취소

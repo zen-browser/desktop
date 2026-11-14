@@ -49,13 +49,13 @@ zen-copy-current-url-confirmation = Geçerli URL kopyalandı!
 zen-copy-current-url-as-markdown-confirmation = Geçerli URL Markdown olarak kopyalandı!
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] { $count } URL kopyalandı!
+       *[other] { $count } URL kopyalandı!
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] { $count } URL Markdown olarak kopyalandı!
+       *[other] { $count } URL Markdown olarak kopyalandı!
     }
 zen-general-cancel-label = 
     .label = İptal

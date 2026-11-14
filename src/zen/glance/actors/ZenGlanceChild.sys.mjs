@@ -36,10 +36,10 @@ export class ZenGlanceChild extends JSWindowActorChild {
     super();
   }
 
-  async handleEvent(event) {
+  handleEvent(event) {
     const handler = this[`on_${event.type}`];
     if (typeof handler === "function") {
-      await handler.call(this, event);
+      handler.call(this, event);
     }
   }
 
@@ -65,12 +65,14 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // is a parent of the original target, use the anchor element,
     // otherwise use the original target.
     let rect = node.getBoundingClientRect();
-    const originalTargetRect = originalTarget.getBoundingClientRect();
-    if (
-      originalTargetRect.width * originalTargetRect.height >
-      rect.width * rect.height
-    ) {
-      rect = originalTargetRect;
+    if (node !== originalTarget) {
+      const originalTargetRect = originalTarget.getBoundingClientRect();
+      if (
+        originalTargetRect.width * originalTargetRect.height >
+        rect.width * rect.height
+      ) {
+        rect = originalTargetRect;
+      }
     }
     // Change the rect to make sure we take into account zoom.
     const zoom = this.browsingContext.fullZoom;
@@ -120,16 +122,36 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_mousedown(event) {
-    const { node } = this.#getTargetFromEvent(event);
-    // We record the link data anyway, even if the glance may be invoked
-    // or not. We have some cases where glance would open, for example,
-    // when clicking on a link with a different domain where glance would open.
-    // The problem is that at that stage we don't know the rect or even what
-    // element has been clicked, so we send the data here.
-    this.#sendClickDataToParent(node, event.target);
+    // The glance animates out of the clicked element, which can only be
+    // measured now. Measuring flushes layout and messages the parent, so
+    // skip it for presses no glance can follow.
+    if (this.#canLeadToGlance(event)) {
+      const { node } = this.#getTargetFromEvent(event);
+      this.#sendClickDataToParent(node, event.target);
+    }
 
     this.#mouseDownX = event.clientX;
     this.#mouseDownY = event.clientY;
+  }
+
+  /**
+   * Whether a glance can follow this mousedown. In pinned tabs any element can
+   * open one, since links to other domains open in a glance (even through
+   * window.open()). Elsewhere it takes a click with a modifier key or the
+   * context menu, which opens on Ctrl+click on macOS.
+   *
+   * @param {MouseEvent} event
+   * @returns {boolean}
+   */
+  #canLeadToGlance(event) {
+    return (
+      this.browsingContext.isAppTab ||
+      event.button === 2 ||
+      event.ctrlKey ||
+      event.altKey ||
+      event.shiftKey ||
+      event.metaKey
+    );
   }
 
   on_click(event) {
@@ -147,10 +169,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
       }
     }
 
-    const { node, href, principal } = this.#getTargetFromEvent(event);
     if (
       event.button !== 0 ||
-      !node ||
       event.defaultPrevented ||
       this.#ensureOnlyKeyModifiers(event)
     ) {
@@ -166,7 +186,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
     } else if (activationMethod === "meta" && !event.metaKey) {
       return;
     }
-    if (this.#checkSecurity(href, principal)) {
+    const { node, href, principal } = this.#getTargetFromEvent(event);
+    if (!node || this.#checkSecurity(href, principal)) {
       return;
     }
     event.preventDefault();

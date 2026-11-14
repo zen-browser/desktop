@@ -49,13 +49,13 @@ zen-copy-current-url-confirmation = L'URL actual s'ha copiat.
 zen-copy-current-url-as-markdown-confirmation = L'URL actual s'ha copiat com a Markdown!
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] S'ha copiat { $count } URL!
+       *[other] S'han copiat { $count } URLs!
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] S'ha copiat { $count } URL en format Markdown!
+       *[other] S'han copiat { $count } URLs en format Markdown!
     }
 zen-general-cancel-label = 
     .label = Cancel·la

@@ -1589,11 +1589,13 @@ class nsZenWorkspaces {
       const workspaceElement = this.workspaceElement(workspace.uuid);
       if (workspaceElement) {
         if (previousElement === null) {
-          arrowScrollbox.moveBefore(
-            workspaceElement,
-            arrowScrollbox.firstChild
-          );
-          hasChanged = true;
+          if (arrowScrollbox.firstChild !== workspaceElement) {
+            arrowScrollbox.moveBefore(
+              workspaceElement,
+              arrowScrollbox.firstChild
+            );
+            hasChanged = true;
+          }
         } else if (previousElement.nextSibling !== workspaceElement) {
           arrowScrollbox.moveBefore(
             workspaceElement,

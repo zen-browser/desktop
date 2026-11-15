@@ -18,7 +18,7 @@ index 58d33bd..75edea3 100644
 +                  data-l10n-id="zen-bookmark-edit-panel-show-more"/>
            <button id="editBookmarkPanelDoneButton"
                    class="footer-button"
-                   data-l10n-id="bookmark-panel-save-button"
+                   data-l10n-id="bookmark-panel-save-button2"
 @@ -879,6 +883,8 @@
  
  #include popup-notifications.inc.xhtml

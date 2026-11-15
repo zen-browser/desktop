@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Vastgezette URL bewerken
 zen-pinned-tab-edit-url-label = Voer de URL in waar dit vastgezette tabblad naar moet verwijzen:
 zen-tabs-renamed = Tabblad is succesvol hernoemd!
 zen-background-tab-opened-toast = Nieuw achtergrondtabblad geopend!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Werkruimte succesvol is hernoemd!
 zen-split-view-limit-toast = Kan geen panelen meer toevoegen aan de gesplitste weergave!
 zen-sidebar-drag-collapsed-toast = Zijbalk verborgen! Gebruik <span>{ $shortcut }</span> om de zijbalk terug te halen.

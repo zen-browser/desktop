@@ -49,13 +49,13 @@ zen-copy-current-url-confirmation = URL kopiert!
 zen-copy-current-url-as-markdown-confirmation = URL als Markdown kopiert!
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] { $count } URL kopiert!
+       *[other] { $count } URLs kopiert!
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] { $count } URL als Markdown kopiert!
+       *[other] { $count } URLs als Markdown kopiert!
     }
 zen-general-cancel-label = 
     .label = Abbrechen
@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Angeheftete URL bearbeiten
 zen-pinned-tab-edit-url-label = Gib die URL an, auf die der angeheftete Tab verweisen soll:
 zen-tabs-renamed = Tab umbenannt!
 zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
 zen-split-view-limit-toast = Diese Split View kann keine weiteren Panels aufnehmen!
 zen-sidebar-drag-collapsed-toast = Seitenleiste ausgeblendet! Mit <span>{ $shortcut }</span> holst du sie zurück.

@@ -14,6 +14,8 @@ support-files = [
 
 ["browser_apply_skew.js"]
 
+["browser_builtin_containers.js"]
+
 ["browser_folder_delete.js"]
 
 ["browser_normal_tabs_apply.js"]

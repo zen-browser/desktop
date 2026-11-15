@@ -22,7 +22,7 @@
 
   .urlbar-background {
     border-radius: var(--border-radius-small);
-    margin: 2px;
+    margin: var(--space-xxsmall);
   }
 
   #nav-bar {
@@ -80,6 +80,7 @@
   height: var(--zen-size-22);
   padding: 0 var(--zen-space-9);
   border-radius: var(--zen-border-radius-12);
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
   font-size: 0.85em;
   font-weight: var(--zen-font-weight-medium);
   -moz-context-properties: fill, fill-opacity;
@@ -272,9 +273,5 @@
   #urlbar > .urlbar-background {
     margin: 0 !important;
     border-radius: 0 !important;
-  }
-
-  #urlbar-container:has(#urlbar[open][zen-floating-urlbar="true"]) {
-    background: transparent !important;
   }
 }

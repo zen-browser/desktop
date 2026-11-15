@@ -98,7 +98,7 @@
                        aria-checked="false"
                        aria-labelledby="zen-site-data-developer-mode-label"
                        hidden="hidden">
-            <html:span class="zen-site-data-developer-icon" aria-hidden="true">
+            <html:span class="permission-popup-permission-icon zen-site-data-developer-icon" aria-hidden="true">
               <html:img src="chrome://browser/skin/zen-icons/hammer.svg" alt="" />
             </html:span>
             <html:span class="zen-site-data-developer-labels">

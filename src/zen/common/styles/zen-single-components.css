@@ -464,10 +464,6 @@
     display: none;
   }
 
-  &:hover:not(:disabled) {
-    background: var(--button-background-color-ghost-hover);
-  }
-
   &:focus-visible {
     outline: 2px solid var(--focus-outline-color);
     outline-offset: -2px;
@@ -476,23 +472,13 @@
   .zen-site-data-developer-icon {
     display: grid;
     place-items: center;
+    box-sizing: border-box;
     flex: none;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: color-mix(in srgb, currentColor 12%, transparent);
-  }
-
-  &[aria-checked="true"] .zen-site-data-developer-icon {
-    background: var(--zen-sidebar-themed-icon-fill);
-    color: var(--button-primary-color);
   }
 
   img {
-    -moz-context-properties: fill;
-    fill: currentColor;
-    width: 18px;
-    height: 18px;
+    width: 100%;
+    height: 100%;
   }
 
   .zen-site-data-developer-labels {
@@ -532,7 +518,7 @@
     display: none;
   }
 
-  & image {
+  & :is(image, img) {
     -moz-context-properties: fill;
     z-index: 1;
   }
@@ -564,7 +550,7 @@
     transform: scale(0.95);
   }
 
-  .permission-popup-permission-item[state="allow"] &::before,
+  .permission-popup-permission-item:is([state="allow"], [aria-checked="true"]) &::before,
   .permission-popup-boost-item[state="enabled"] &::before {
     opacity: 1;
   }

@@ -205,7 +205,10 @@ export class ZenDeveloperMode extends ZenUIComponent {
         .getService(Ci.nsIClipboardHelper)
         .copyString(getTab().linkedBrowser.currentURI.spec);
     });
-    toolbar.append(copy);
+    const divider = this.document.createElementNS(HTML_NS, "span");
+    divider.className = "zen-developer-action-divider";
+    divider.setAttribute("aria-hidden", "true");
+    toolbar.append(copy, divider);
     for (const [toolId, name, icon] of [
       ["webconsole", "console", "tool-webconsole.svg"],
       ["netmonitor", "network", "tool-network.svg"],

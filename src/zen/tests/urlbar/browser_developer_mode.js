@@ -521,6 +521,23 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
         name + " preserves native subtitle localization ownership",
       );
       const nav = document.getElementById("nav-bar");
+      const stripedBar = single ? paneToolbar : nav;
+      Assert.ok(
+        getComputedStyle(stripedBar).backgroundImage.startsWith(
+          "repeating-linear-gradient(",
+        ),
+        name + " renders the developer toolbar stripes",
+      );
+      const divider = (single ? paneToolbar : nativeTools).querySelector(
+        ".zen-developer-action-divider",
+      );
+      Assert.ok(
+        divider?.getBoundingClientRect().width === 1 &&
+          divider.previousElementSibling?.getAttribute("data-l10n-id") ===
+            "zen-developer-mode-copy" &&
+          divider.nextElementSibling?.dataset.tool === "webconsole",
+        name + " separates Copy URL from the developer tools",
+      );
       const navParent = nav.parentNode;
       const localGap =
         browser.getBoundingClientRect().top -

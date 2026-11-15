@@ -33,13 +33,7 @@
   box-sizing: border-box;
   padding: 3px 8px;
   color: var(--toolbar-color);
-  background:
-    repeating-linear-gradient(
-      135deg,
-      transparent 0 9px,
-      color-mix(in srgb, currentColor 3%, transparent) 9px 18px
-    ),
-    var(--toolbar-bgcolor);
+  background-color: var(--toolbar-bgcolor, transparent);
   border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 }
 
@@ -121,9 +115,22 @@
   display: flex;
 }
 
+.zen-developer-toolbar,
 :root[zen-developer-top-toolbar-active] #nav-bar {
-  background: repeating-linear-gradient(135deg, transparent 0 9px,
-    color-mix(in srgb, currentColor 3%, transparent) 9px 18px);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 9px,
+    color-mix(in srgb, currentColor 3%, transparent) 9px 18px
+  );
+}
+
+.zen-developer-action-divider {
+  inline-size: 1px;
+  block-size: 18px;
+  flex: none;
+  margin-inline: 2px;
+  background-color: color-mix(in srgb, currentColor 24%, transparent);
+  pointer-events: none;
 }
 
 .zen-developer-tab-sublabel {

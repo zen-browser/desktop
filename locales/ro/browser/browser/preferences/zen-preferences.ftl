@@ -55,12 +55,12 @@ zen-glance-trigger-meta-click =
     .label =
         { PLATFORM() ->
             [macos] ⌘ + Click
-           *[other] Meta (Command) + Click
+           *[other] Meta (Comandă) + Click
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Command + Click
-           *[other] Meta (Command) + Click
+            [macos] Comandă + Click
+           *[other] Meta (Comandă) + Click
         }
 zen-look-and-feel-compact-view-header = Afișează în Vizualizarea Compactă
 zen-look-and-feel-compact-view-description = Afișează doar Bara de Unelte pe care o folosești!
@@ -86,8 +86,8 @@ zen-settings-workspaces-sync =
     .label = Sincronizează-ți bara laterală pe toate dispozitivele
     .description = Păstrează-ți spațiile de lucru, filele și folderele fixate sincronizate pe toate dispozitivele prin contul tău Mozilla.
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = Include filele nefixate
+    .description = Sincronizează filele obișnuite ale fiecărui spațiu, nu doar filele și folderele fixate.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Sincronizează doar Filele Fixate din Spațiile de Lucru
 zen-tabs-cycle-by-attribute = 
@@ -214,7 +214,7 @@ zen-workspace-shortcut-switch-9 = Mergi la Spațiul de Lucru 9
 zen-workspace-shortcut-switch-10 = Mergi la Spațiul de Lucru 10
 zen-workspace-shortcut-create = Creează un Spațiu de Lucru Nou
 zen-sidebar-shortcut-toggle = Comută Lățimea Barei Laterale
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = Comutare bibliotecă
 zen-pinned-tab-shortcut-reset = Resetează Fila Fixată la URL-ul Fixat
 zen-split-view-shortcut-grid = Comută Vizualizarea Împărțită tip Grilă
 zen-split-view-shortcut-vertical = Comută Vizualizarea Împărțită Verticală

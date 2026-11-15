@@ -64,6 +64,7 @@ zen-pinned-tab-edit-url-title = ピン留めされたタブのURLを編集
 zen-pinned-tab-edit-url-label = このピン留めされたタブのURLを入力してください：
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
 zen-split-view-limit-toast = 分割ビューにこれ以上パネルを追加できません！
 zen-sidebar-drag-collapsed-toast = サイドバーを非表示にしました！ <span>{ $shortcut }</span> で元に戻せます。

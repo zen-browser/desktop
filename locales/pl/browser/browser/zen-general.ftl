@@ -70,6 +70,7 @@ zen-pinned-tab-edit-url-title = Edytuj przypięty adres URL
 zen-pinned-tab-edit-url-label = Wprowadź adres URL, do którego ma prowadzić ta przypięta karta:
 zen-tabs-renamed = Nazwa karty została pomyślnie zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
+zen-zoom-changed-toast = Powiększenie: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
 zen-split-view-limit-toast = Nie można dodać kolejnych paneli do widoku podzielonego!
 zen-sidebar-drag-collapsed-toast = Pasek boczny ukryty! Użyj <span>{ $shortcut }</span>, aby przywrócić pasek boczny.

@@ -66,6 +66,7 @@ zen-pinned-tab-edit-url-title = 修改釘選分頁的網址
 zen-pinned-tab-edit-url-label = 輸入要指定給此釘選分頁的網址：
 zen-tabs-renamed = 成功重新命名分頁！
 zen-background-tab-opened-toast = 新分頁已在背景開啟！
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = 成功重新命名工作區！
 zen-split-view-limit-toast = 無法加入更多分頁至分割畫面！
 zen-sidebar-drag-collapsed-toast = 側邊欄已隱藏！可使用<span>{$shortcut}</span>將它再次顯示。

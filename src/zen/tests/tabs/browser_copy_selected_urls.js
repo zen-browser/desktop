@@ -98,3 +98,44 @@ add_task(async function test_copy_url_of_loading_tab() {
   gBrowser.selectedTab = previousTab;
   BrowserTestUtils.removeTab(tab);
 });
+
+add_task(async function test_copy_url_right_after_typing_in_new_tab() {
+  const start = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "https://example.org/"
+  );
+  gZenUIManager.handleNewTab(false, false, "tab", true);
+  await TestUtils.waitForCondition(
+    () => gURLBar.focused && gURLBar.hasAttribute("zen-newtab"),
+    "The new tab URL bar is open"
+  );
+  EventUtils.sendString("example.com");
+  EventUtils.synthesizeKey("KEY_Enter");
+
+  const copied = new Set();
+  await TestUtils.waitForCondition(() => {
+    if (gBrowser.selectedTab == start) {
+      return false;
+    }
+    copied.add(gZenCommonActions.getCurrentURLs()[0][0].uri.host);
+    return gBrowser.selectedBrowser.currentURI.spec == "https://example.com/";
+  }, "The page loads in a new tab");
+  Assert.deepEqual(
+    [...copied],
+    ["example.com"],
+    "The new tab only ever gives the address it was opened for"
+  );
+  is(
+    gBrowser.selectedBrowser.userTypedValue,
+    null,
+    "The address stops counting as typed once the page shows"
+  );
+  is(
+    gURLBar.untrimmedValue,
+    "https://example.com/",
+    "And the URL bar shows the page"
+  );
+
+  BrowserTestUtils.removeTab(gBrowser.selectedTab);
+  BrowserTestUtils.removeTab(start);
+});

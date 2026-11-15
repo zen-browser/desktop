@@ -589,6 +589,10 @@ class nsZenUIManager {
     return this.#urlbar.isOwner(closeSeq);
   }
 
+  revertUrlbar() {
+    this.#urlbar.revert();
+  }
+
   onUrlbarOpen() {
     this.#urlbar.onUrlbarOpen();
   }

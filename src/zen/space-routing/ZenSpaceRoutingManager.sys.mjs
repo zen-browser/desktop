@@ -438,29 +438,17 @@ class nsZenSpaceRoutingManager {
 
   /**
    * @returns {Promise<Window>} A regular window that has finished starting
-   *   up, waiting for one to if there is none yet
+   *   up. At launch the one the caller just opened is not a top window yet,
+   *   only a pending one.
    */
-  #regularWindowReady() {
-    const topWindow = lazy.BrowserWindowTracker.getTopWindow({
-      private: false,
-    });
-    if (topWindow?.gZenStartup) {
-      return topWindow.gZenStartup.promiseInitialized.then(() => topWindow);
-    }
-    return new Promise(resolve => {
-      const topic = "browser-delayed-startup-finished";
-      const observer = win => {
-        if (
-          lazy.ZenLittleWindow.isLittleWindow(win) ||
-          lazy.PrivateBrowsingUtils.isWindowPrivate(win)
-        ) {
-          return;
-        }
-        Services.obs.removeObserver(observer, topic);
-        win.gZenStartup.promiseInitialized.then(() => resolve(win));
-      };
-      Services.obs.addObserver(observer, topic);
-    });
+  async #regularWindowReady() {
+    const options = { private: false };
+    const win =
+      lazy.BrowserWindowTracker.getTopWindow(options) ??
+      (await lazy.BrowserWindowTracker.getPendingWindow(options));
+    await win.delayedStartupPromise;
+    await win.gZenStartup.promiseInitialized;
+    return win;
   }
 
   /**

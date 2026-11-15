@@ -5,3 +5,19 @@
 EXTRA_JS_MODULES.zen.kbs += [
     "ZenKeyboardShortcuts.sys.mjs",
 ]
+
+EXPORTS.mozilla += [
+    "ZenGlobalShortcuts.h",
+]
+
+SOURCES += [
+    "ZenGlobalShortcuts.cpp",
+]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
+    DIRS += ["windows"]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
+    DIRS += ["cocoa"]
+
+FINAL_LIBRARY = "xul"

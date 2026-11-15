@@ -194,7 +194,8 @@ class nsZenLittleWindowService {
 
   /**
    * Opens a regular window for the tabs of a little window when there is
-   * none.
+   * none. It is synced whatever kind of window the user prefers new ones to
+   * be, as only a synced window has the spaces.
    *
    * @returns {Promise<Window>}
    */

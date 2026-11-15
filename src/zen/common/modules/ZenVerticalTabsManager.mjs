@@ -13,10 +13,6 @@ window.gZenVerticalTabsManager = {
     this._multiWindowFeature = new nsZenMultiWindowFeature();
     this._initWaitPromise();
 
-    ChromeUtils.defineLazyGetter(this, "hidesTabsToolbar", () => {
-      return document.documentElement.hasAttribute("popup-window");
-    });
-
     this.initializePreferences(this._onPrefChange.bind(this));
     this._toolbarOriginalParent =
       document.getElementById("nav-bar").parentElement;
@@ -416,8 +412,7 @@ window.gZenVerticalTabsManager = {
         ((this._prefsUseSingleToolbar && isVerticalTabs && isSidebarExpanded) ||
           !isVerticalTabs) &&
         !forCustomizableMode &&
-        !this.hidesTabsToolbar &&
-        !isLittleWindow;
+        !this.hidesTabsToolbar;
       const titlebar = document.getElementById("titlebar");
 
       gBrowser.tabContainer.setAttribute(
@@ -754,6 +749,14 @@ window.gZenVerticalTabsManager = {
 
 ChromeUtils.defineLazyGetter(gZenVerticalTabsManager, "isLittleWindow", () =>
   document.documentElement.hasAttribute("zen-little-window")
+);
+
+ChromeUtils.defineLazyGetter(
+  gZenVerticalTabsManager,
+  "hidesTabsToolbar",
+  () =>
+    document.documentElement.hasAttribute("popup-window") ||
+    gZenVerticalTabsManager.isLittleWindow
 );
 
 ChromeUtils.defineLazyGetter(

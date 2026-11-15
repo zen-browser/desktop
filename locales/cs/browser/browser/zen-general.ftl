@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Upravit připnutou adresu URL
 zen-pinned-tab-edit-url-label = Zadejte URL, na kterou by měl tento připnutý panel odkazovat:
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
 zen-background-tab-opened-toast = Nový panel na pozadí byl otevřen!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
 zen-split-view-limit-toast = Do rozděleného zobrazení nelze přidat více panelů!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Sabitlenmiş sekme adresini düzenle
 zen-pinned-tab-edit-url-label = Bu sabitlenmiş sekmenin yönlendirileceği adresi girin:
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
 zen-split-view-limit-toast = Bölünmüş görünüme daha fazla panel eklenemiyor!
 zen-sidebar-drag-collapsed-toast = Kenar çubuğu gizlendi! Kenar çubuğunu yeniden açmak için <span>{ $shortcut }</span> tuşunu kullanın.

@@ -24,6 +24,13 @@
     "path": "firefox/no_liquid_glass_icon.patch"
   },
   {
+    // The BrowserUtils half of D336362, which adds getExposableURI. The rest of
+    // that revision needs D336260 and Firefox 161's tabgroup-menu.mjs. Drop
+    // this once the engine is on 161 or later.
+    "type": "local",
+    "path": "firefox/get_exposable_uri.patch"
+  },
+  {
     "type": "patch",
     "url": "https://codeberg.org/librewolf/source/raw/branch/main/patches/firefox-in-ua.patch",
     "dest": "librewolf",

@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Редактировать прикреплен�
 zen-pinned-tab-edit-url-label = Введите URL на который должна вести эта вкладка:
 zen-tabs-renamed = Вкладка успешно переименована!
 zen-background-tab-opened-toast = Открыта новая фоновая вкладка!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Пространство успешно переименовано!
 zen-split-view-limit-toast = Невозможно добавить больше панелей в раздельный вид!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

@@ -59,6 +59,14 @@ zen-bookmark-edit-panel-workspace-expander =
 zen-bookmark-edit-panel-workspace-expander-hide =
     .tooltiptext = Hide
 
+zen-bookmark-edit-panel-show-more =
+    .label = Show more
+    .accesskey = H
+
+zen-bookmark-edit-panel-show-less =
+    .label = Show less
+    .accesskey = H
+
 zen-panel-ui-gradient-generator-algo-complementary =
     .label = Complementary
 zen-panel-ui-gradient-generator-algo-splitComplementary =

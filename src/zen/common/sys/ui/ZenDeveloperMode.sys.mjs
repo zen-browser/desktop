@@ -9,9 +9,16 @@ const ENABLED_PREF = "zen.developer-mode.enabled";
 const MODE_ATTRIBUTE = "zen-developer-mode";
 const TOP_TOOLBAR_ATTRIBUTE = "zen-developer-top-toolbar";
 const ACTIVE_TOOLBAR_ATTRIBUTE = "zen-developer-top-toolbar-active";
+const COMPACT_TOOLBAR_ATTRIBUTE = "zen-developer-top-toolbar-compact";
+// Leave room for navigation, the editable URL, and the full action strip.
+const MIN_INLINE_TOOLBAR_WIDTH = 540;
 
 const SITE_PREF = "zen.developer-mode.site-override";
 const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  PanelMultiView:
+    "moz-src:///browser/components/customizableui/PanelMultiView.sys.mjs",
+});
 ChromeUtils.defineLazyGetter(lazy, "contentPrefs", () =>
   Cc["@mozilla.org/content-pref/service;1"].getService(
     Ci.nsIContentPrefService2,
@@ -146,6 +153,9 @@ export class ZenDeveloperMode extends ZenUIComponent {
   #bars = new Map();
   #command = Promise.resolve();
   #nativeTools = null;
+  #menuTools = null;
+  #navBar;
+  #toolbarObserver;
 
   init() {
     for (const type of [
@@ -158,6 +168,11 @@ export class ZenDeveloperMode extends ZenUIComponent {
       this.addEventListener(type);
     }
     this.addEventListener("TabClose");
+    this.#navBar = this.document.getElementById("nav-bar");
+    this.#toolbarObserver = new this.window.ResizeObserver(() => {
+      this.#syncToolbarOverflow();
+    });
+    this.#toolbarObserver.observe(this.#navBar);
     this.listenBrowserTabsProgress();
     Services.prefs.addObserver(ENABLED_PREF, this);
     lazy.contentPrefs.addObserverForName(SITE_PREF, this);
@@ -177,7 +192,9 @@ export class ZenDeveloperMode extends ZenUIComponent {
     for (const tab of this.window.gBrowser.tabs) {
       this.#removeToolbar(tab);
     }
+    this.#toolbarObserver.disconnect();
     this.#nativeTools?.remove();
+    this.#menuTools?.remove();
   }
 
   observe() {
@@ -359,23 +376,23 @@ export class ZenDeveloperMode extends ZenUIComponent {
     return { toolbar, input };
   }
 
-  #appendButtons(toolbar, getTab) {
+  #appendButtons(toolbar, getTab, inMenu = false) {
+    const event = inMenu ? "command" : "click";
     const copy = this.#createButton(
       "copy",
       "chrome://browser/skin/zen-icons/link.svg",
+      inMenu,
     );
-    copy.addEventListener("click", () => {
+    copy.addEventListener(event, () => {
       this.window.gBrowser.selectedTab = getTab();
       this.document.getElementById("cmd_zenCopyCurrentURL").doCommand();
     });
-    const divider = this.document.createElementNS(HTML_NS, "span");
-    divider.className = "zen-developer-action-divider";
-    divider.setAttribute("aria-hidden", "true");
     const screenshot = this.#createButton(
       "screenshot",
       "chrome://browser/skin/zen-icons/screenshot.svg",
+      inMenu,
     );
-    screenshot.addEventListener("click", () => {
+    screenshot.addEventListener(event, () => {
       this.window.gBrowser.selectedTab = getTab();
       Services.obs.notifyObservers(
         this.window,
@@ -384,7 +401,14 @@ export class ZenDeveloperMode extends ZenUIComponent {
       );
     });
 
-    toolbar.append(copy, divider, screenshot, divider.cloneNode(false));
+    if (inMenu) {
+      toolbar.append(copy, screenshot);
+    } else {
+      const divider = this.document.createElementNS(HTML_NS, "span");
+      divider.className = "zen-developer-action-divider";
+      divider.setAttribute("aria-hidden", "true");
+      toolbar.append(copy, divider, screenshot, divider.cloneNode(false));
+    }
     for (const [toolId, name, icon] of [
       ["webconsole", "console", "tool-webconsole.svg"],
       ["netmonitor", "network", "tool-network.svg"],
@@ -393,9 +417,10 @@ export class ZenDeveloperMode extends ZenUIComponent {
       const button = this.#createButton(
         name,
         "chrome://devtools/skin/images/" + icon,
+        inMenu,
       );
       button.dataset.tool = toolId;
-      button.addEventListener("click", () => {
+      button.addEventListener(event, () => {
         const tab = getTab();
         this.#command = this.#command
           .then(() => this.#toggleTool(tab, toolId))
@@ -429,8 +454,39 @@ export class ZenDeveloperMode extends ZenUIComponent {
     if (active) {
       this.#ensureNativeTools();
     }
+    this.#syncToolbarOverflow();
     if (changed && !gURLBar.focused) {
       gURLBar.setURI();
+    }
+  }
+
+  #syncToolbarOverflow() {
+    if (!this.#ready || this.#closed) {
+      return;
+    }
+    const root = this.document.documentElement;
+    // The toolbar width is independent of its contents. Measuring the URL
+    // field here would oscillate as moving the tools changes its width.
+    const compact =
+      root.hasAttribute(ACTIVE_TOOLBAR_ATTRIBUTE) &&
+      this.#navBar.clientWidth < MIN_INLINE_TOOLBAR_WIDTH;
+    if (compact && !this.#menuTools) {
+      const view = lazy.PanelMultiView.getViewNode(
+        this.document,
+        "appMenu-mainView",
+      );
+      const group = this.document.createXULElement("vbox");
+      group.id = "zen-developer-menu-tools";
+      group.setAttribute("role", "group");
+      this.document.l10n.setAttributes(group, "zen-developer-mode-toolbar");
+      this.#appendButtons(group, () => this.window.gBrowser.selectedTab, true);
+      group.append(this.document.createXULElement("toolbarseparator"));
+      view.querySelector("#appMenu-new-tab-button2").before(group);
+      this.#menuTools = group;
+    }
+    root.toggleAttribute(COMPACT_TOOLBAR_ATTRIBUTE, compact);
+    if (this.#menuTools) {
+      this.#menuTools.hidden = !compact;
     }
   }
 
@@ -438,6 +494,9 @@ export class ZenDeveloperMode extends ZenUIComponent {
     if (!this.#nativeTools?.isConnected) {
       const group = this.document.createElementNS(HTML_NS, "div");
       group.id = "zen-developer-nav-tools";
+      // This is an ephemeral group, not a customizable overflow widget.
+      group.setAttribute("overflows", "false");
+      group.setAttribute("skipintoolbarset", "true");
       group.setAttribute("role", "group");
       this.document.l10n.setAttributes(group, "zen-developer-mode-toolbar");
       this.#appendButtons(group, () => this.window.gBrowser.selectedTab);
@@ -454,7 +513,17 @@ export class ZenDeveloperMode extends ZenUIComponent {
     }
   }
 
-  #createButton(name, icon) {
+  #createButton(name, icon, inMenu) {
+    if (inMenu) {
+      const button = this.document.createXULElement("toolbarbutton");
+      button.className = "subviewbutton subviewbutton-iconic";
+      button.setAttribute("image", icon);
+      button.dataset.action = name;
+      this.document.l10n.setAttributes(button, "zen-developer-mode-" + name);
+      button.addEventListener("command", () => this.window.PanelUI.hide());
+      return button;
+    }
+
     const button = this.document.createElementNS(HTML_NS, "button");
     button.className = "zen-developer-button";
     button.type = "button";

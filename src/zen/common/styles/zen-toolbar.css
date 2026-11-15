@@ -90,7 +90,8 @@
 
 @media -moz-pref("screenshots.browser.component.enabled", false) {
   .zen-developer-button[data-action="screenshot"],
-  .zen-developer-button[data-action="screenshot"] + .zen-developer-action-divider {
+  .zen-developer-button[data-action="screenshot"] + .zen-developer-action-divider,
+  #zen-developer-menu-tools > [data-action="screenshot"] {
     display: none;
   }
 }
@@ -118,7 +119,7 @@
   padding-inline: 4px;
 }
 
-:root[zen-developer-top-toolbar-active] #zen-developer-nav-tools {
+:root[zen-developer-top-toolbar-active]:not([zen-developer-top-toolbar-compact]) #zen-developer-nav-tools {
   display: flex;
 }
 

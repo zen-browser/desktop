@@ -120,12 +120,14 @@
 #nav-bar-overflow-button {
   list-style-image: url("chevron.svg") !important;
 
-  /* On macos, we don't display the app menu, meaning
-   * we can re-use the menu icon for the overflow button.
-   * Which is more intuitive for users and looks better.
-   */
+  /* On macOS the sidebar overflow uses an ellipsis. */
   @media (-moz-platform: macos) {
     list-style-image: url("menu.svg") !important;
+
+    /* The top toolbar has a separate app menu with the ellipsis icon. */
+    #nav-bar > & {
+      list-style-image: url("chevron.svg") !important;
+    }
   }
 }
 

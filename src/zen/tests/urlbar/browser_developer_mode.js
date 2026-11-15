@@ -684,6 +684,8 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       "resource://devtools/shared/loader/Loader.sys.mjs",
     );
     const { gDevTools } = require("devtools/client/framework/devtools");
+    const originalWidth = window.outerWidth;
+    const height = window.outerHeight;
     try {
       await BrowserTestUtils.browserLoaded(ordinaryTab.linkedBrowser);
       const activated = BrowserTestUtils.waitForEvent(
@@ -733,7 +735,64 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
         !gDevTools.getToolboxForTab(localTab),
         "Mixed-split top-row repeat closes its own toolbox",
       );
+      const target = document.getElementById("nav-bar-customization-target");
+      const overflowButton = document.getElementById("nav-bar-overflow-button");
+      const compact = () =>
+        root.hasAttribute("zen-developer-top-toolbar-compact");
+      window.resizeTo(660, height);
+      await TestUtils.waitForCondition(
+        compact,
+        "Narrowing the top row puts its actions in the app menu",
+      );
+      Assert.ok(
+        !BrowserTestUtils.isVisible(tools),
+        "The compact top bar hides the inline actions",
+      );
+      Assert.equal(
+        tools.parentNode,
+        target,
+        "Firefox's customizable overflow keeps the non-customizable group in place",
+      );
+
+      const appMenu = PanelUI.panel;
+      const shown = BrowserTestUtils.waitForPopupEvent(appMenu, "shown");
+      PanelUI.show();
+      await shown;
+      const menuTools = document.getElementById("zen-developer-menu-tools");
+      const copy = menuTools.querySelector('[data-action="copy"]');
+      await TestUtils.waitForCondition(() => copy.getAttribute("label"));
+      Assert.ok(
+        BrowserTestUtils.isVisible(menuTools),
+        "The app menu shows labeled developer actions",
+      );
+      const hidden = BrowserTestUtils.waitForPopupEvent(appMenu, "hidden");
+      await SimpleTest.promiseClipboardChange(localURL, () => copy.doCommand());
+      await hidden;
+
+      gBrowser.selectedTab = ordinaryTab;
+      await TestUtils.waitForCondition(() => !compact() && menuTools.hidden);
+      Assert.ok(
+        !BrowserTestUtils.isVisible(overflowButton),
+        "The ordinary pane has no empty overflow button",
+      );
+      gBrowser.selectedTab = localTab;
+      await TestUtils.waitForCondition(compact);
+      Assert.ok(
+        !menuTools.hidden,
+        "Selecting the local pane restores its app menu actions",
+      );
+
+      window.resizeTo(originalWidth, height);
+      await TestUtils.waitForCondition(
+        () => !compact() && BrowserTestUtils.isVisible(tools),
+      );
+      Assert.ok(
+        menuTools.hidden,
+        "Growing the window restores the inline actions",
+      );
     } finally {
+      window.resizeTo(originalWidth, height);
+      PanelUI.hide();
       await gDevTools.getToolboxForTab(localTab)?.destroy();
       await BrowserTestUtils.removeTab(ordinaryTab);
     }

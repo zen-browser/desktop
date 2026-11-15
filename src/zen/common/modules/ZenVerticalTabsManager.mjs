@@ -412,7 +412,8 @@ window.gZenVerticalTabsManager = {
         ((this._prefsUseSingleToolbar && isVerticalTabs && isSidebarExpanded) ||
           !isVerticalTabs) &&
         !forCustomizableMode &&
-        !this.hidesTabsToolbar;
+        !this.hidesTabsToolbar &&
+        !isLittleWindow;
       const titlebar = document.getElementById("titlebar");
 
       gBrowser.tabContainer.setAttribute(

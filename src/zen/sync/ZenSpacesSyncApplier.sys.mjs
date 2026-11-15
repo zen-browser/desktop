@@ -48,9 +48,7 @@ class nsZenSpacesSyncApplier {
   }
 
   /**
-   * Maps a record's container guid to the local userContextId. A guid with
-   * no local mapping (its container record hasn't applied here yet) throws,
-   * failing the record so it redelivers once the container exists .
+   * Maps a record's container guid to the local userContextId.
    *
    * @param {?string} containerGuid
    * @returns {number}
@@ -59,7 +57,7 @@ class nsZenSpacesSyncApplier {
     if (!containerGuid) {
       return 0;
     }
-    const mapped = ZenSpacesSyncModel.contextIdForGuid(containerGuid);
+    const mapped = ZenSpacesSyncModel.ensureBuiltinContainer(containerGuid);
     if (mapped === null) {
       throw new Error(`unknown container guid ${containerGuid}`);
     }

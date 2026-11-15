@@ -66,6 +66,7 @@ zen-pinned-tab-edit-url-title = Edit Pinned URL
 zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = שם הלשונית השתנה בהצלחה!
 zen-background-tab-opened-toast = לשונית נפתחה ברקע!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = שם מרחב העבודה השתנה בהצלחה!
 zen-split-view-limit-toast = אי אפשר להוסיף עוד לוחיות לתצוגה המפוצלת!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

@@ -51,16 +51,14 @@ pictureinpicture-minimize-btn =
 
 zen-panel-ui-gradient-generator-custom-color = Custom Color
 
-zen-copy-current-url-confirmation = Copied current URL!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
+        [1] Copied current URL!
        *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
+        [1] Copied current URL as Markdown!
        *[other] Copied { $count } URLs as Markdown!
     }
 

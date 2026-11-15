@@ -20,6 +20,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "littleWindowEnabled",
+  "zen.little-window.enabled",
+  false
+);
+
 ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
   return new Localization(["browser/zen-command-palette.ftl"], true);
 });
@@ -119,6 +126,12 @@ const globalActionsTemplate = [
     l10nId: "zen-action-new-blank-window",
     command: "cmd_zenNewNavigatorUnsynced",
     icon: "chrome://browser/skin/zen-icons/window.svg",
+  },
+  {
+    l10nId: "zen-action-new-little-window",
+    command: "cmd_zenNewLittleWindow",
+    icon: "chrome://browser/skin/zen-icons/window.svg",
+    isAvailable: () => lazy.littleWindowEnabled,
   },
   {
     l10nId: "zen-action-pin-tab",

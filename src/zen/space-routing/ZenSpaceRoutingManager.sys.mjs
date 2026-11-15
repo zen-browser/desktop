@@ -9,10 +9,16 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  ZenLittleWindow:
+    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
 });
+
+const MOST_RECENT_SPACE_ROUTE = "most-recent-space";
+const LITTLE_WINDOW_ROUTE = "little-window";
 
 class nsZenSpaceRoutingManager {
   #file = null;
+  #loaded = null;
   #saveFilename = "zen-space-routing.jsonlz4";
 
   static SKIP_TYPE = {
@@ -22,7 +28,7 @@ class nsZenSpaceRoutingManager {
   };
 
   constructor() {
-    this.#readFromDisk();
+    this.#loaded = this.#readFromDisk();
   }
 
   /**
@@ -181,7 +187,7 @@ class nsZenSpaceRoutingManager {
     }
 
     const targetRoute = this.routeUri(uriString, { fromExternal: true });
-    return targetRoute === "most-recent-space" ? null : targetRoute;
+    return this.#isSpaceRoute(targetRoute) ? targetRoute : null;
   }
 
   /**
@@ -271,7 +277,7 @@ class nsZenSpaceRoutingManager {
 
     // No specific destination, or the tab is already where the rule points.
     if (
-      targetRoute === "most-recent-space" ||
+      !this.#isSpaceRoute(targetRoute) ||
       targetRoute === currentWorkspaceId
     ) {
       return null;
@@ -294,7 +300,7 @@ class nsZenSpaceRoutingManager {
     try {
       const targetRoute = this.routeUri(uri?.spec, { fromExternal: true });
       if (
-        targetRoute === "most-recent-space" ||
+        !this.#isSpaceRoute(targetRoute) ||
         this.#isDisplayingWorkspace(defaultWindow, targetRoute)
       ) {
         return defaultWindow;
@@ -324,6 +330,146 @@ class nsZenSpaceRoutingManager {
     }
 
     return defaultWindow;
+  }
+
+  /**
+   * @param {nsIURI} uri - A URI another application asked to have opened
+   * @returns {boolean} Whether it belongs in a little window rather than in
+   *   a space. Always false until the routes have been read.
+   */
+  shouldOpenExternalUriInLittleWindow(uri) {
+    return (
+      !!uri &&
+      lazy.ZenLittleWindow.enabled &&
+      !!this.#file?.dataReady &&
+      this.routeUri(uri.spec, { fromExternal: true }) === LITTLE_WINDOW_ROUTE
+    );
+  }
+
+  /**
+   * Opens an externally opened URI in a little window, when that is where
+   * links from other applications are set to go.
+   *
+   * @param {nsIURI} uri - The URI about to be opened
+   * @param {Window} defaultWindow - The window Firefox picked
+   * @param {nsIPrincipal} triggeringPrincipal - The principal to load it with
+   * @returns {boolean} Whether a little window took the URI
+   */
+  openExternalUriInLittleWindow(uri, defaultWindow, triggeringPrincipal) {
+    try {
+      if (
+        lazy.PrivateBrowsingUtils.isWindowPrivate(defaultWindow) ||
+        !this.shouldOpenExternalUriInLittleWindow(uri)
+      ) {
+        return false;
+      }
+      return !!lazy.ZenLittleWindow.open({
+        openerWindow: defaultWindow,
+        url: uri.spec,
+        triggeringPrincipal,
+      });
+    } catch (err) {
+      console.error(
+        "[ZenSpaceRouting]: Error opening an external URI in a little window:",
+        err
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Takes an externally opened URI off the hands of the window Firefox
+   * picked for it, when it may belong in a little window.
+   *
+   * @param {nsIURI} uri - The URI about to be opened
+   * @param {Window} defaultWindow - The window Firefox picked
+   * @param {nsIPrincipal} triggeringPrincipal - The principal to load it with
+   * @returns {boolean} Whether the URI was taken
+   */
+  handleExternalUri(uri, defaultWindow, triggeringPrincipal) {
+    if (
+      !lazy.ZenLittleWindow.enabled ||
+      lazy.PrivateBrowsingUtils.isWindowPrivate(defaultWindow)
+    ) {
+      return false;
+    }
+    if (this.#file?.dataReady && defaultWindow.gZenStartup?.isReady) {
+      return this.openExternalUriInLittleWindow(
+        uri,
+        defaultWindow,
+        triggeringPrincipal
+      );
+    }
+    this.openExternalUrisAfterStartup([
+      { uri, principal: triggeringPrincipal },
+    ]);
+    return true;
+  }
+
+  get takesExternalUrisWithoutWindow() {
+    return lazy.ZenLittleWindow.enabled;
+  }
+
+  async openExternalUrisAfterStartup(entries) {
+    try {
+      const [win] = await Promise.all([
+        this.#regularWindowReady(),
+        this.#loaded,
+      ]);
+      for (const { uri, principal } of entries) {
+        if (this.openExternalUriInLittleWindow(uri, win, principal)) {
+          continue;
+        }
+        this.getWindowForExternalUri(uri, win).browserDOMWindow.openURI(
+          uri,
+          null,
+          Ci.nsIBrowserDOMWindow.OPEN_DEFAULTWINDOW,
+          Ci.nsIBrowserDOMWindow.OPEN_EXTERNAL,
+          principal
+        );
+      }
+    } catch (err) {
+      console.error(
+        "[ZenSpaceRouting]: Error opening external URIs after startup:",
+        err
+      );
+    }
+  }
+
+  /**
+   * @returns {Promise<Window>} A regular window that has finished starting
+   *   up, waiting for one to if there is none yet
+   */
+  #regularWindowReady() {
+    const topWindow = lazy.BrowserWindowTracker.getTopWindow({
+      private: false,
+    });
+    if (topWindow?.gZenStartup) {
+      return topWindow.gZenStartup.promiseInitialized.then(() => topWindow);
+    }
+    return new Promise(resolve => {
+      const topic = "browser-delayed-startup-finished";
+      const observer = win => {
+        if (
+          lazy.ZenLittleWindow.isLittleWindow(win) ||
+          lazy.PrivateBrowsingUtils.isWindowPrivate(win)
+        ) {
+          return;
+        }
+        Services.obs.removeObserver(observer, topic);
+        win.gZenStartup.promiseInitialized.then(() => resolve(win));
+      };
+      Services.obs.addObserver(observer, topic);
+    });
+  }
+
+  /**
+   * @param {string} route - What routeUri() gave
+   * @returns {boolean} Whether the route names a space, rather than leaving
+   *   the choice of one to wherever the URI ends up
+   */
+  #isSpaceRoute(route) {
+    return route !== MOST_RECENT_SPACE_ROUTE && route !== LITTLE_WINDOW_ROUTE;
   }
 
   /**
@@ -631,7 +777,13 @@ class nsZenSpaceRoutingManager {
    * @returns {string} Returns the default route type for external links
    */
   getDefaultExternalRoute() {
-    return this.#file?.data?.defaultRouteExternal ?? "most-recent-space";
+    const route = this.#file?.data?.defaultRouteExternal;
+    if (!lazy.ZenLittleWindow.enabled) {
+      return !route || route === LITTLE_WINDOW_ROUTE
+        ? MOST_RECENT_SPACE_ROUTE
+        : route;
+    }
+    return route ?? LITTLE_WINDOW_ROUTE;
   }
 
   /**
@@ -713,7 +865,7 @@ class nsZenSpaceRoutingManager {
           data.routes = [];
         }
         if (typeof data.defaultRouteExternal !== "string") {
-          data.defaultRouteExternal = "most-recent-space";
+          delete data.defaultRouteExternal;
         }
         return data;
       },

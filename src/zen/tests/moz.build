@@ -12,6 +12,7 @@ BROWSER_CHROME_MANIFESTS += [
     "glance/browser.toml",
     "kbs/browser.toml",
     "library/browser.toml",
+    "little_window/browser.toml",
     "live-folders/browser.toml",
     "media/browser.toml",
     "migration/browser.toml",

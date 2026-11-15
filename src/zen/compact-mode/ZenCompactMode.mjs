@@ -160,7 +160,10 @@ window.gZenCompactModeManager = {
   },
 
   get shouldBeCompact() {
-    return !document.documentElement.hasAttribute("popup-window");
+    return (
+      !document.documentElement.hasAttribute("popup-window") &&
+      !gZenVerticalTabsManager.isLittleWindow
+    );
   },
 
   set preference(value) {

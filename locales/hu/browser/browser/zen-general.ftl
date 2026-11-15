@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Rögzített URL módosítása
 zen-pinned-tab-edit-url-label = Írja be azt az URL-címet, amelyre ennek a rögzített lapnak mutatnia kell:
 zen-tabs-renamed = A lap sikeresen át lett nevezve!
 zen-background-tab-opened-toast = Új lap megnyitva!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = A munkakörnyezet sikeresen át lett nevezve!
 zen-split-view-limit-toast = Nem lehet további paneleket hozzáadni az osztott nézethez!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

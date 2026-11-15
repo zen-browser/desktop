@@ -865,7 +865,15 @@ class nsZenBoostsManager {
         : typeof value === typeof template &&
           (value !== null) === (template !== null);
     for (const [key, template] of Object.entries(result)) {
-      const value = data?.[key];
+      let value = data?.[key];
+      // The editor stores slider values as strings.
+      if (
+        typeof template === "number" &&
+        typeof value === "string" &&
+        value.trim()
+      ) {
+        value = Number(value);
+      }
       if (!sameShape(value, template)) {
         continue;
       }
@@ -889,6 +897,11 @@ class nsZenBoostsManager {
       }
     }
     result.customCSS = this.sanitizeSharedCSS(result.customCSS);
+    for (const key of ["zapSelectors", "focusSelectors"]) {
+      result[key] = result[key].filter(selector =>
+        this.isSafeSharedSelector(selector)
+      );
+    }
     result.fontFamily = /^[\w\s,'"-]*$/.test(result.fontFamily)
       ? result.fontFamily
       : "";
@@ -904,10 +917,30 @@ class nsZenBoostsManager {
     return result;
   }
 
+  /**
+   * Removes everything that could make a page load a resource from CSS that
+   * came from somebody else. Backslashes go first, since the CSS parser reads
+   * `u\72l()` as `url()`.
+   *
+   * @param {string} css
+   * @returns {string}
+   */
   sanitizeSharedCSS(css) {
     return String(css || "")
-      .replace(/@import\b[^;{]*;?/gi, "")
-      .replace(/\b(?:url|image-set|image)\s*\([^)]*\)/gi, "none");
+      .replace(/\\/g, "")
+      .replace(/@import\b[^;{]*;?/gi, " ")
+      .replace(/\b(?:url|src|image-set|image)\s*\([^)]*\)?/gi, "none");
+  }
+
+  /**
+   * Whether a selector that came from somebody else can go in front of a rule
+   * block without adding rules of its own.
+   *
+   * @param {string} selector
+   * @returns {boolean}
+   */
+  isSafeSharedSelector(selector) {
+    return !!selector.trim() && !/[{}]/.test(selector);
   }
 
   /**
@@ -995,7 +1028,8 @@ class nsZenBoostsManager {
         if (result === nsIFilePicker.returnOK && fp.file) {
           try {
             const fileContent = await IOUtils.readUTF8(fp.file.path);
-            resolve(JSON.parse(fileContent));
+            const data = JSON.parse(fileContent);
+            resolve(this.boostDataFromShared(data, data?.boostName));
           } catch (e) {
             console.error("Import failed:", e);
             resolve(null);

@@ -1107,7 +1107,8 @@ class nsZenWorkspaces {
       if (
         window.closed ||
         !window.docShell ||
-        document.documentElement.hasAttribute("zen-welcome-stage")
+        document.documentElement.hasAttribute("zen-welcome-stage") ||
+        document.documentElement.hasAttribute("zen-little-window-urlbar-only")
       ) {
         return;
       }

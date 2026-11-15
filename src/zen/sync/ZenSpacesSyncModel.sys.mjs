@@ -55,11 +55,14 @@ export const RECORD_KINDS = Object.freeze({
 
 export const LAYOUT_RECORD_ID = "layout";
 
-// Firefox ships four built-in containers with fixed userContextIds. They
-// exist on every device, so they map to well-known guids instead of the
-// per-profile generated ones.
 const BUILTIN_CONTAINER_MAX = 4;
 const BUILTIN_GUID_PREFIX = "builtin-";
+const BUILTIN_CONTAINERS = Object.freeze({
+  1: { l10nId: "user-context-personal2", icon: "fingerprint", color: "blue" },
+  2: { l10nId: "user-context-work2", icon: "briefcase", color: "orange" },
+  3: { l10nId: "user-context-banking2", icon: "dollar", color: "green" },
+  4: { l10nId: "user-context-shopping2", icon: "cart", color: "pink" },
+});
 
 const STORE_FILE_NAME = "zen-spaces-sync.json";
 const STORE_VERSION = 1;
@@ -189,6 +192,7 @@ class nsZenSpacesSyncModel {
           data.version = STORE_VERSION;
           data.uploaded ||= {};
           data.containers ||= {};
+          data.synthesizedContainers ||= {};
           // The container map used to be keyed by guid. It is keyed by
           // userContextId now so that registering a guid replaces any
           // previous one for the same container. Flip old stores over
@@ -227,12 +231,12 @@ class nsZenSpacesSyncModel {
       }
       return null;
     }
-    if (id <= BUILTIN_CONTAINER_MAX) {
-      return `${BUILTIN_GUID_PREFIX}${id}`;
-    }
     const existing = data.containers[id];
     if (existing) {
       return existing;
+    }
+    if (id <= BUILTIN_CONTAINER_MAX) {
+      return `${BUILTIN_GUID_PREFIX}${id}`;
     }
     if (!create) {
       return null;
@@ -241,6 +245,16 @@ class nsZenSpacesSyncModel {
     data.containers[id] = guid;
     this.#file.saveSoon();
     return guid;
+  }
+
+  #builtinIdForGuid(guid) {
+    if (typeof guid !== "string" || !guid.startsWith(BUILTIN_GUID_PREFIX)) {
+      return null;
+    }
+    const id = Number(guid.slice(BUILTIN_GUID_PREFIX.length));
+    return Number.isSafeInteger(id) && id > 0 && id <= BUILTIN_CONTAINER_MAX
+      ? id
+      : null;
   }
 
   contextIdForGuid(guid) {
@@ -259,16 +273,50 @@ class nsZenSpacesSyncModel {
         return null;
       }
     }
-    if (guid.startsWith(BUILTIN_GUID_PREFIX)) {
-      const id = Number(guid.slice(BUILTIN_GUID_PREFIX.length));
-      return Number.isSafeInteger(id) &&
-        id > 0 &&
-        id <= BUILTIN_CONTAINER_MAX &&
-        lazy.ContextualIdentityService.getPublicIdentityFromId(id)
-        ? id
-        : null;
+    const builtinId = this.#builtinIdForGuid(guid);
+    if (
+      builtinId !== null &&
+      !(builtinId in data.containers) &&
+      lazy.ContextualIdentityService.getPublicIdentityFromId(builtinId)
+    ) {
+      return builtinId;
     }
     return null;
+  }
+
+  /**
+   * Resolves a container guid to its local userContextId, creating the matching
+   * built-in container (`builtin-1`..`builtin-4`) on demand when this profile
+   * doesn't have Firefox's default containers.
+   *
+   * @param {string} guid
+   * @returns {?number}
+   */
+  ensureBuiltinContainer(guid) {
+    const existing = this.contextIdForGuid(guid);
+    if (existing !== null) {
+      return existing;
+    }
+    const builtinId = this.#builtinIdForGuid(guid);
+    if (builtinId === null) {
+      return null;
+    }
+    const preset = BUILTIN_CONTAINERS[builtinId];
+    const name = lazy.ContextualIdentityService.formatContextLabel(
+      preset.l10nId
+    );
+    const identity = lazy.ContextualIdentityService.create(
+      name,
+      preset.icon,
+      preset.color
+    );
+    this.registerContainerGuid(guid, identity.userContextId);
+    this.#data().synthesizedContainers[guid] = name;
+    this.#file.saveSoon();
+    syncLog(
+      `created missing built-in container ${guid} -> ${identity.userContextId}`
+    );
+    return identity.userContextId;
   }
 
   /**
@@ -284,12 +332,20 @@ class nsZenSpacesSyncModel {
 
   forgetContainerGuid(guid) {
     const data = this.#data();
+    let changed = false;
+    if (guid in data.synthesizedContainers) {
+      delete data.synthesizedContainers[guid];
+      changed = true;
+    }
     for (const [id, mapped] of Object.entries(data.containers)) {
       if (mapped === guid) {
         delete data.containers[id];
-        this.#file.saveSoon();
-        return;
+        changed = true;
+        break;
       }
+    }
+    if (changed) {
+      this.#file.saveSoon();
     }
   }
 
@@ -590,6 +646,7 @@ class nsZenSpacesSyncModel {
   }
 
   #projectContainers(map) {
+    const synthesized = this.#data().synthesizedContainers;
     for (const identity of lazy.ContextualIdentityService.getPublicIdentities()) {
       if (!identity.name) {
         continue;
@@ -598,6 +655,9 @@ class nsZenSpacesSyncModel {
         create: true,
       });
       if (!guid) {
+        continue;
+      }
+      if (synthesized[guid] === identity.name) {
         continue;
       }
       map.set(guid, {

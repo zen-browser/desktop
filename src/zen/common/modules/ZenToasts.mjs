@@ -115,6 +115,11 @@ export class nsZenToastManager {
       if (child._messageId !== messageId) {
         continue;
       }
+      document.l10n.setAttributes(
+        child.querySelector("label"),
+        messageId,
+        options.l10nArgs
+      );
       child.removeAttribute("button");
       if (options.button) {
         child.querySelector("button")?.remove();

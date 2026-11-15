@@ -16,6 +16,7 @@ zen-action-settings = Settings
 zen-action-open-private-window = Open Private Window
 zen-action-open-new-window = Open New Window
 zen-action-new-blank-window = New Blank Window
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Pin Tab
 zen-action-unpin-tab = Unpin Tab
 zen-action-open-space-routing = Open Space Routing

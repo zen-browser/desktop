@@ -265,7 +265,7 @@ export class ZenLibrary extends MozLitElement {
       );
       lazy.toastContainer.style.setProperty(
         "transform",
-        `translateX(${-(value * webOffset)}px)`
+        `translateY(var(--zen-element-separation)) translateX(${-(value * webOffset)}px)`
       );
 
       const toolboxProgress = Math.min(1, value * 3);

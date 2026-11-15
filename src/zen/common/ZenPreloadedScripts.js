@@ -30,6 +30,23 @@
     "resource:///modules/zen/share/ZenShareManager.mjs",
   ];
 
+
+  let extraOptions = window.arguments?.[1];
+  if (
+    extraOptions instanceof Ci.nsIPropertyBag2 &&
+    extraOptions.hasKey("zen-little-window")
+  ) {
+    let root = document.documentElement;
+    root.setAttribute("zen-little-window", "true");
+    if (extraOptions.hasKey("zen-little-window-urlbar-only")) {
+      root.setAttribute("zen-little-window-urlbar-only", "true");
+    }
+    root.removeAttribute("persist");
+    scripts.push(
+      "resource:///modules/zen/littlewindow/ZenLittleWindowChrome.mjs"
+    );
+  }
+
   for (let script of scripts) {
     ChromeUtils.importESModule(script, { global: "current" });
   }

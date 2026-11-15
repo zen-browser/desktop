@@ -14,6 +14,8 @@
   );
 
   ChromeUtils.defineESModuleGetters(lazy, {
+    ZenLittleWindow:
+      "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
     ZenLiveFoldersManager:
       "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   });
@@ -116,6 +118,15 @@
     cmd_zenOpenZenThemePicker: event => gZenThemePicker.openThemePicker(event),
     cmd_zenNewNavigatorUnsynced: () =>
       OpenBrowserWindow({ zenSyncedWindow: false }),
+    cmd_zenNewLittleWindow: () =>
+      lazy.ZenLittleWindow.open({ openerWindow: window }),
+    cmd_zenExpand: () => {
+      if (window.gZenLittleWindow) {
+        window.gZenLittleWindow.openInSpace();
+      } else {
+        gZenGlanceManager.fullyOpenGlance();
+      }
+    },
     cmd_zenToggleLibrary: () => lazy.ZenLibrary.toggle(),
   };
 

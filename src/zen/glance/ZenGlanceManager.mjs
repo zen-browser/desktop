@@ -250,7 +250,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#detached
           ? this.closeDetachedGlance()
           : this.closeGlance({ onTabClose: true }),
-      cmd_zenGlanceExpand: () => this.fullyOpenGlance(),
       cmd_zenGlanceSplit: () => this.splitGlance(),
     };
 
@@ -544,6 +543,15 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Tab} ownerTab - The tab that owns this glance
    */
   openGlance(data, existingTab = null, ownerTab = null) {
+    if (gZenVerticalTabsManager.isLittleWindow) {
+      if (!existingTab && this.#isGlanceLoadAllowed(data)) {
+        window.openLinkIn(data.url, "tab", {
+          triggeringPrincipal: data.triggeringPrincipal,
+        });
+      }
+      return Promise.resolve(null);
+    }
+
     if (this.#currentBrowser) {
       return Promise.resolve(this.#currentTab);
     }

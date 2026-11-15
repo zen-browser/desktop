@@ -335,6 +335,10 @@
         "value": "128px",
         "type": "sizing"
       },
+      "zen-little-window-intro-width": {
+        "value": "300px",
+        "type": "sizing"
+      },
       "zen-bookmark-panel-favicon-container-size": {
         "value": "100px",
         "type": "sizing"
@@ -1223,6 +1227,10 @@
         "value": "#0000000d",
         "type": "color"
       },
+      "zen-little-window-container-background": {
+        "value": "#ffffff",
+        "type": "color"
+      },
       "zen-bookmark-panel-favicon-container-background": {
         "value": "#ffffff",
         "type": "color"
@@ -1457,6 +1465,10 @@
       },
       "zen-library-media-preview-stage-background": {
         "value": "#0000004d",
+        "type": "color"
+      },
+      "zen-little-window-container-background": {
+        "value": "#ffffff1f",
         "type": "color"
       },
       "zen-bookmark-panel-favicon-container-background": {

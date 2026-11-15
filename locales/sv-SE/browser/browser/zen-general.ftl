@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Redigera fäst URL
 zen-pinned-tab-edit-url-label = Ange den URL som den fästa fliken ska peka till:
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
 zen-split-view-limit-toast = Kan inte lägga till fler paneler till delad vy!
 zen-sidebar-drag-collapsed-toast = Sidofältet dolt! Använd <span>{$shortcut }</span> för att få tillbaka sidofältet.

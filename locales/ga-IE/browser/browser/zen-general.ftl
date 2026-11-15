@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Cuir URL bioráin in Eagar
 zen-pinned-tab-edit-url-label = Cuir isteach an URL ar cheart don chluaisín bioráilte seo a bheith ag pointeáil chuige:
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
 zen-split-view-limit-toast = Ní féidir níos mó painéil a chur leis an radharc scoilte!
 zen-sidebar-drag-collapsed-toast = An barra taoibh i bhfolach! Bain úsáid as <span>{ $shortcut }</span> chun an barra taoibh a thabhairt ar ais.

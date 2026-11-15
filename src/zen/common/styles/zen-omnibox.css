@@ -9,6 +9,19 @@
   padding-block: 0 !important;
 }
 
+/* The top toolbar always needs room for navigation and the app menu,
+ * even when an expanded sidebar leaves very little horizontal space. */
+:root:not([zen-single-toolbar], [customizing], [mini-window], [popup-window]) #nav-bar {
+  > :is(#PanelUI-button, #nav-bar-overflow-button) {
+    flex-shrink: 0;
+  }
+
+  #nav-bar-customization-target > #urlbar-container {
+    flex-shrink: 1;
+    min-inline-size: min(140px, 40%);
+  }
+}
+
 :root[zen-single-toolbar="true"] {
   & #urlbar:not([breakout-extend]) {
     padding: 1px;

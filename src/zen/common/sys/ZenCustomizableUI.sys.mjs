@@ -340,9 +340,6 @@ export const ZenCustomizableUI = new (class {
         wrapper.prepend(elem);
       }
     }
-    window.document
-      .getElementById("stop-reload-button")
-      .removeAttribute("overflows");
   }
 
   #dispatchResizeEvent(window) {

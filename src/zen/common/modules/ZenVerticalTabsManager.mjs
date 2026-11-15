@@ -498,6 +498,11 @@ window.gZenVerticalTabsManager = {
       let doNotChangeWindowButtons =
         !isCompactMode && isRightSide && this.isWindowsStyledButtons;
       const navBar = document.getElementById("nav-bar");
+      // The sidebar toolbar can overflow Reload, but it is part of the
+      // fixed navigation controls in the top toolbar.
+      document
+        .getElementById("stop-reload-button")
+        ?.setAttribute("overflows", isSingleToolbar ? "true" : "false");
 
       if (isSingleToolbar) {
         this._navbarParent = navBar.parentElement;

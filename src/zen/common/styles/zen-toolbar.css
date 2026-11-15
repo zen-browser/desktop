@@ -88,6 +88,12 @@
   outline-offset: -2px;
 }
 
+@media -moz-pref("screenshots.browser.component.enabled", false) {
+  .zen-developer-button[data-action="screenshot"] {
+    display: none;
+  }
+}
+
 .tabbrowser-tab[zen-developer-mode][visuallyselected] .tab-background {
   outline: 2px dashed light-dark(#a66a00, #f2c94c);
   outline-offset: -2px;

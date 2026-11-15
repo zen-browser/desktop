@@ -198,17 +198,29 @@ export class ZenDeveloperMode extends ZenUIComponent {
   #appendButtons(toolbar, getTab) {
     const copy = this.#createButton(
       "copy",
-      "chrome://global/skin/icons/edit-copy.svg",
+      "chrome://browser/skin/zen-icons/link.svg",
     );
     copy.addEventListener("click", () => {
-      Cc["@mozilla.org/widget/clipboardhelper;1"]
-        .getService(Ci.nsIClipboardHelper)
-        .copyString(getTab().linkedBrowser.currentURI.spec);
+      this.window.gBrowser.selectedTab = getTab();
+      this.document.getElementById("cmd_zenCopyCurrentURL").doCommand();
     });
     const divider = this.document.createElementNS(HTML_NS, "span");
     divider.className = "zen-developer-action-divider";
     divider.setAttribute("aria-hidden", "true");
-    toolbar.append(copy, divider);
+    const screenshot = this.#createButton(
+      "screenshot",
+      "chrome://browser/skin/zen-icons/screenshot.svg",
+    );
+    screenshot.addEventListener("click", () => {
+      this.window.gBrowser.selectedTab = getTab();
+      Services.obs.notifyObservers(
+        this.window,
+        "menuitem-screenshot",
+        "ToolbarButton",
+      );
+    });
+
+    toolbar.append(copy, divider, screenshot);
     for (const [toolId, name, icon] of [
       ["webconsole", "console", "tool-webconsole.svg"],
       ["netmonitor", "network", "tool-network.svg"],

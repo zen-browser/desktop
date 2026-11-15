@@ -400,6 +400,61 @@ add_task(async function test_split_controls_target_their_own_page() {
         "Other pane's toolbox stays closed",
       );
       await gDevTools.getToolboxForTab(secondTab).destroy();
+
+      gBrowser.selectedTab = firstTab;
+      await SimpleTest.promiseClipboardChange(secondURL, () => {
+        secondBar.querySelector('[data-action="copy"]').click();
+      });
+      const toastLabel = await TestUtils.waitForCondition(() =>
+        document.querySelector(
+          '#zen-toast-container [data-l10n-id="zen-copy-current-url-confirmation"]',
+        ),
+      );
+      if (Services.zen.canShare()) {
+        Assert.ok(
+          toastLabel
+            .closest(".zen-toast")
+            .querySelector("#zen-copy-current-url-button"),
+          "Copy confirmation includes the native Share button when available",
+        );
+      }
+
+      gBrowser.selectedTab = firstTab;
+      const screenshot = secondBar.querySelector('[data-action="screenshot"]');
+      const { ScreenshotsUtils, UIPhases } = ChromeUtils.importESModule(
+        "moz-src:///browser/components/screenshots/ScreenshotsUtils.sys.mjs",
+      );
+      screenshot.click();
+      const secondBrowser = secondTab.linkedBrowser;
+      await TestUtils.waitForCondition(
+        () => ScreenshotsUtils.getUIPhase(secondBrowser) === UIPhases.INITIAL,
+        "Native screenshot panel opens in the owning pane",
+      );
+      Assert.equal(
+        ScreenshotsUtils.getUIPhase(firstBrowser),
+        UIPhases.CLOSED,
+        "The other pane's screenshot panel stays closed",
+      );
+      await SimpleTest.promiseFocus(window);
+      EventUtils.synthesizeKey("KEY_Escape");
+      await TestUtils.waitForCondition(
+        () => ScreenshotsUtils.getUIPhase(secondBrowser) === UIPhases.CLOSED,
+        "Escape closes the native screenshot panel",
+      );
+
+      await SpecialPowers.pushPrefEnv({
+        set: [["screenshots.browser.component.enabled", false]],
+      });
+      await TestUtils.waitForCondition(
+        () => BrowserTestUtils.isHidden(screenshot),
+        "The toolbar hides the button when Firefox Screenshots is disabled",
+      );
+      await SpecialPowers.popPrefEnv();
+      await TestUtils.waitForCondition(
+        () => BrowserTestUtils.isVisible(screenshot),
+        "The toolbar restores the button when Firefox Screenshots is enabled",
+      );
+
       gBrowser.selectedTab = firstTab;
       const input = secondBar.querySelector("input");
       input.focus();
@@ -535,8 +590,10 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
         divider?.getBoundingClientRect().width === 1 &&
           divider.previousElementSibling?.getAttribute("data-l10n-id") ===
             "zen-developer-mode-copy" &&
-          divider.nextElementSibling?.dataset.tool === "webconsole",
-        name + " separates Copy URL from the developer tools",
+          divider.nextElementSibling?.dataset.action === "screenshot" &&
+          divider.nextElementSibling?.nextElementSibling?.dataset.tool ===
+            "webconsole",
+        name + " places the screenshot button between the Copy URL divider and Console",
       );
       const navParent = nav.parentNode;
       const localGap =

@@ -66,6 +66,7 @@ zen-pinned-tab-edit-url-title = Breyta festri vefslóð
 zen-pinned-tab-edit-url-label = Sláðu inn slóðina sem þessi festi flipi ætti að vísa á:
 zen-tabs-renamed = Tókst að endurnefna flipann!
 zen-background-tab-opened-toast = Nýr bakgrunnsflipi opnaður!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Tókst að endurnefna vinnusvæðið!
 zen-split-view-limit-toast = Get ekki bætt fleiri spjöldum á klofið yfirlit!
 zen-sidebar-drag-collapsed-toast = Hliðarstika falin! Notaðu <span>{ $shortcut }</span> til að birta hana aftur.

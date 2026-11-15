@@ -287,7 +287,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
       return;
     }
     this.#isConfirmed = true;
-    gZenWorkspaces.removeChangeListeners(this.handleZenWorkspacesChangeBind);
 
     const workspace = gZenWorkspaces.getActiveWorkspace();
     workspace.name = this.inputName.value.trim();

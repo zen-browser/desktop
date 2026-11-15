@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Редагувати закріплену URL-а
 zen-pinned-tab-edit-url-label = Введіть URL-адресу, на яку має посилатися ця закріплена вкладка:
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
 zen-split-view-limit-toast = Неможливо додати більше панелей до розділеного перегляду!
 zen-sidebar-drag-collapsed-toast = Бічна панель прихована! Щоб знову показати бічну панель, скористайтеся посиланням <span>{ $shortcut }</span>.

@@ -3,6 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
+import {
+  cachedDeveloperMode,
+  canUseDeveloperMode,
+  developerModeHost,
+  readDeveloperMode,
+  setDeveloperMode,
+} from "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs";
 
 const ADDONS_BUTTONS_HIDDEN = Services.prefs.getBoolPref(
   "zen.theme.hide-unified-extensions-button",
@@ -21,6 +28,10 @@ export class nsZenSiteDataPanel {
     install: "extension",
     "site-protection": "shield",
   };
+
+  #developerModeButton;
+  #developerModeTarget = null;
+  #developerModeRequest = 0;
 
   constructor(window) {
     this.window = window;
@@ -66,6 +77,12 @@ export class nsZenSiteDataPanel {
       .getElementById("nav-bar")
       .setAttribute("addon-webext-overflowbutton", "zen-site-data-icon-button");
 
+    this.#developerModeButton = this.document.getElementById(
+      "zen-site-data-developer-mode"
+    );
+    this.#developerModeButton.addEventListener("click", () =>
+      this.#toggleDeveloperMode()
+    );
     this.#initCopyUrlButton();
     this.#initEventListeners();
     this.#initBrowserListeners();
@@ -233,6 +250,7 @@ export class nsZenSiteDataPanel {
   #preparePanel() {
     this.#resetSiteOptionsList();
     this.#setSiteBoost();
+    this.refreshDeveloperMode();
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
@@ -436,11 +454,78 @@ export class nsZenSiteDataPanel {
     return uri.scheme.startsWith("http");
   }
 
+  async refreshDeveloperMode() {
+    const button = this.#developerModeButton;
+    const { selectedBrowser: browser } = this.window.gBrowser;
+    const uri = browser.currentURI;
+    const host = developerModeHost(uri);
+    const request = ++this.#developerModeRequest;
+    this.#developerModeTarget = null;
+    button.hidden = !canUseDeveloperMode(uri);
+    if (button.hidden) {
+      return;
+    }
+
+    try {
+      let active = cachedDeveloperMode(uri, browser.loadContext);
+      if (active === null) {
+        button.disabled = true;
+        active = await readDeveloperMode(uri, browser.loadContext);
+      }
+      if (
+        request !== this.#developerModeRequest ||
+        browser !== this.window.gBrowser.selectedBrowser ||
+        host !== developerModeHost(browser.currentURI) ||
+        !canUseDeveloperMode(browser.currentURI)
+      ) {
+        return;
+      }
+      this.#developerModeTarget = { browser, host, active };
+      button.setAttribute("aria-checked", active);
+      this.document.l10n.setAttributes(
+        button.querySelector(".zen-permission-popup-permission-state-label"),
+        active
+          ? "zen-site-data-developer-mode-on"
+          : "zen-site-data-developer-mode-off"
+      );
+      button.disabled = false;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async #toggleDeveloperMode() {
+    const button = this.#developerModeButton;
+    const target = this.#developerModeTarget;
+    if (!target || button.hasAttribute("aria-busy")) {
+      return;
+    }
+    const { browser, host, active } = target;
+    const uri = browser.currentURI;
+    if (
+      browser !== this.window.gBrowser.selectedBrowser ||
+      host !== developerModeHost(uri)
+    ) {
+      await this.refreshDeveloperMode();
+      return;
+    }
+
+    button.setAttribute("aria-busy", "true");
+    try {
+      await setDeveloperMode(uri, browser.loadContext, !active);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      button.removeAttribute("aria-busy");
+      await this.refreshDeveloperMode();
+    }
+  }
+
   #resetSiteOptionsList() {
     const settingsList = this.document.getElementById(
       "zen-site-data-settings-list"
     );
-    settingsList.innerHTML = "";
+    settingsList.replaceChildren(this.#developerModeButton);
     const boostList = this.document.getElementById("zen-site-data-boost-list");
     boostList.innerHTML = "";
   }
@@ -616,7 +701,9 @@ export class nsZenSiteDataPanel {
       list.appendChild(this.#createPermissionItem(id, permission));
     }
 
-    section.hidden = !list.childElementCount;
+    list.appendChild(this.#developerModeButton);
+    section.hidden =
+      list.childElementCount === 1 && this.#developerModeButton.hidden;
   }
 
   #getPermissionStateLabelId(permission) {

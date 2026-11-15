@@ -145,6 +145,9 @@ zen-urlbar-copy-url-button =
   .tooltiptext = Copy URL
 
 zen-site-data-setting-site-protection = Tracking Protection
+zen-site-data-developer-mode = Developer Mode
+zen-site-data-developer-mode-on = On
+zen-site-data-developer-mode-off = Off
 
 # Section: Feature callouts
 

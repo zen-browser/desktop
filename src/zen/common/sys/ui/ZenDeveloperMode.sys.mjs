@@ -10,25 +10,137 @@ const MODE_ATTRIBUTE = "zen-developer-mode";
 const TOP_TOOLBAR_ATTRIBUTE = "zen-developer-top-toolbar";
 const ACTIVE_TOOLBAR_ATTRIBUTE = "zen-developer-top-toolbar-active";
 
+const SITE_PREF = "zen.developer-mode.site-override";
+const lazy = {};
+ChromeUtils.defineLazyGetter(lazy, "contentPrefs", () =>
+  Cc["@mozilla.org/content-pref/service;1"].getService(
+    Ci.nsIContentPrefService2,
+  ),
+);
+
+export function developerModeHost(uri) {
+  if (!uri?.schemeIs("http") && !uri?.schemeIs("https")) {
+    return null;
+  }
+  return uri.asciiHost.toLowerCase().replace(/\.$/, "") || null;
+}
+
 export function isLocalDevelopmentURI(uri) {
-  try {
-    if (!uri.schemeIs("http") && !uri.schemeIs("https")) {
-      return false;
-    }
-    const host = uri.asciiHost.toLowerCase().replace(/\.$/, "");
-    return (
-      host === "localhost" ||
+  const host = developerModeHost(uri);
+  return Boolean(
+    host &&
+    (host === "localhost" ||
       host.endsWith(".localhost") ||
       host === "127.0.0.1" ||
       host === "::1" ||
-      host === "[::1]"
-    );
-  } catch {
+      host === "[::1]"),
+  );
+}
+
+export function canUseDeveloperMode(uri) {
+  return (
+    Services.prefs.getBoolPref(ENABLED_PREF, false) &&
+    Boolean(developerModeHost(uri))
+  );
+}
+
+function contentPrefOperation(operation) {
+  return new Promise((resolve, reject) => {
+    let result;
+    operation({
+      handleResult(pref) {
+        result = pref;
+      },
+      handleError(status) {
+        reject(
+          Components.Exception("Developer Mode site preference failed", status),
+        );
+      },
+      handleCompletion(reason) {
+        if (reason === Ci.nsIContentPrefCallback2.COMPLETE_OK) {
+          resolve(result);
+        } else {
+          reject(new Error("Developer Mode site preference did not complete"));
+        }
+      },
+    });
+  });
+}
+
+function readOverride(host, context) {
+  return (
+    lazy.contentPrefs.getCachedByDomainAndName(host, SITE_PREF, context) ??
+    contentPrefOperation((callback) =>
+      lazy.contentPrefs.getByDomainAndName(host, SITE_PREF, context, callback),
+    )
+  );
+}
+
+function effectiveMode(uri, pref) {
+  return pref?.value == null ? isLocalDevelopmentURI(uri) : pref.value === 1;
+}
+
+// null means Firefox has not loaded this hostname's preference yet.
+export function cachedDeveloperMode(uri, context) {
+  if (!canUseDeveloperMode(uri)) {
     return false;
+  }
+  const pref = lazy.contentPrefs.getCachedByDomainAndName(
+    developerModeHost(uri),
+    SITE_PREF,
+    context,
+  );
+  return pref ? effectiveMode(uri, pref) : null;
+}
+
+export async function readDeveloperMode(uri, context) {
+  if (!canUseDeveloperMode(uri)) {
+    return false;
+  }
+  return effectiveMode(
+    uri,
+    await readOverride(developerModeHost(uri), context),
+  );
+}
+
+export async function setDeveloperMode(uri, context, enabled) {
+  if (!context || !canUseDeveloperMode(uri)) {
+    return;
+  }
+
+  const host = developerModeHost(uri);
+  // In a private window, clearing the override restores the inherited choice.
+  const baseline = context.usePrivateBrowsing
+    ? effectiveMode(uri, await readOverride(host, Cu.createLoadContext()))
+    : isLocalDevelopmentURI(uri);
+  if (enabled === baseline) {
+    await contentPrefOperation((callback) =>
+      lazy.contentPrefs.removeByDomainAndName(
+        host,
+        SITE_PREF,
+        context,
+        callback,
+      ),
+    );
+  } else {
+    await contentPrefOperation((callback) =>
+      lazy.contentPrefs.set(
+        host,
+        SITE_PREF,
+        enabled ? 1 : 0,
+        context,
+        callback,
+      ),
+    );
   }
 }
 
 export class ZenDeveloperMode extends ZenUIComponent {
+  QueryInterface = ChromeUtils.generateQI([
+    "nsIObserver",
+    "nsIContentPrefObserver",
+  ]);
+
   #ready = false;
   #closed = false;
   #bars = new Map();
@@ -48,6 +160,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
     this.addEventListener("TabClose");
     this.listenBrowserTabsProgress();
     Services.prefs.addObserver(ENABLED_PREF, this);
+    lazy.contentPrefs.addObserverForName(SITE_PREF, this);
     this.window.gZenStartup.promiseInitialized.then(() => {
       if (!this.#closed) {
         this.#ready = true;
@@ -59,6 +172,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
   uninit() {
     this.#closed = true;
     Services.prefs.removeObserver(ENABLED_PREF, this);
+    lazy.contentPrefs.removeObserverForName(SITE_PREF, this);
     this.window.gBrowser.removeTabsProgressListener(this);
     for (const tab of this.window.gBrowser.tabs) {
       this.#removeToolbar(tab);
@@ -73,6 +187,29 @@ export class ZenDeveloperMode extends ZenUIComponent {
     this.#syncLayout();
     if (this.#ready && !this.#closed && !this.window.gURLBar.focused) {
       this.window.gURLBar.setURI();
+    }
+  }
+
+  onContentPrefSet(host) {
+    this.#refreshHost(host);
+  }
+
+  onContentPrefRemoved(host) {
+    this.#refreshHost(host);
+  }
+
+  #refreshHost(host) {
+    const { gBrowser, gURLBar } = this.window;
+    for (const tab of gBrowser.tabs) {
+      if (developerModeHost(tab.linkedBrowser?.currentURI) === host) {
+        this.#refreshTab(tab);
+      }
+    }
+    if (developerModeHost(gBrowser.currentURI) === host) {
+      this.#syncLayout();
+      if (!gURLBar.focused) {
+        gURLBar.setURI();
+      }
     }
   }
 
@@ -118,9 +255,36 @@ export class ZenDeveloperMode extends ZenUIComponent {
       return;
     }
     const browser = tab.linkedBrowser;
-    const active =
-      Services.prefs.getBoolPref(ENABLED_PREF, false) &&
-      isLocalDevelopmentURI(browser?.currentURI);
+    const uri = browser?.currentURI;
+    const active = cachedDeveloperMode(uri, browser?.loadContext);
+    if (active === null) {
+      this.#removeToolbar(tab);
+      const host = developerModeHost(uri);
+      readDeveloperMode(uri, browser.loadContext)
+        .then(() => {
+          if (
+            this.#closed ||
+            tab.closing ||
+            !tab.isConnected ||
+            browser !== tab.linkedBrowser ||
+            developerModeHost(browser.currentURI) !== host ||
+            cachedDeveloperMode(browser.currentURI, browser.loadContext) ===
+              null
+          ) {
+            return;
+          }
+          this.#refreshTab(tab);
+          const { gBrowser, gURLBar } = this.window;
+          if (tab === gBrowser.selectedTab) {
+            this.#syncLayout();
+            if (!gURLBar.focused) {
+              gURLBar.setURI();
+            }
+          }
+        })
+        .catch(console.error);
+      return;
+    }
     tab.toggleAttribute(MODE_ATTRIBUTE, active);
     if (!active) {
       this.#removeToolbar(tab);
@@ -258,6 +422,10 @@ export class ZenDeveloperMode extends ZenUIComponent {
       gBrowser.selectedTab.hasAttribute(MODE_ATTRIBUTE) &&
       !root.hasAttribute("customizing");
     root.toggleAttribute(ACTIVE_TOOLBAR_ATTRIBUTE, active);
+    const sitePanel = this.window.gZenSiteDataPanel;
+    if (sitePanel?.unifiedPanel.state === "open") {
+      sitePanel.refreshDeveloperMode();
+    }
     if (active) {
       this.#ensureNativeTools();
     }

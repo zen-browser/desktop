@@ -91,7 +91,24 @@
           <label data-l10n-id="zen-generic-more" id="zen-site-data-settings-more" />
         </hbox>
         <vbox id="zen-site-data-settings-list">
-          <!-- settings will be inserted here -->
+          <html:button id="zen-site-data-developer-mode"
+                       class="permission-popup-permission-item"
+                       type="button"
+                       role="switch"
+                       aria-checked="false"
+                       aria-labelledby="zen-site-data-developer-mode-label"
+                       hidden="hidden">
+            <html:span class="zen-site-data-developer-icon" aria-hidden="true">
+              <html:img src="chrome://browser/skin/zen-icons/hammer.svg" alt="" />
+            </html:span>
+            <html:span class="zen-site-data-developer-labels">
+              <html:span id="zen-site-data-developer-mode-label"
+                         class="permission-popup-permission-label"
+                         data-l10n-id="zen-site-data-developer-mode" />
+              <html:span class="zen-permission-popup-permission-state-label"
+                         aria-hidden="true" />
+            </html:span>
+          </html:button>
         </vbox>
       </vbox>
       <hbox id="zen-site-data-footer">

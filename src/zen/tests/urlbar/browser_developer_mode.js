@@ -592,7 +592,8 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
           afterCamera?.getBoundingClientRect().width === 1 &&
           beforeCamera.previousElementSibling?.dataset.action === "copy" &&
           beforeCamera.nextElementSibling?.dataset.action === "screenshot" &&
-          beforeCamera.nextElementSibling === afterCamera.previousElementSibling &&
+          beforeCamera.nextElementSibling ===
+            afterCamera.previousElementSibling &&
           afterCamera.nextElementSibling?.dataset.tool === "webconsole",
         name + " separates the camera from both Copy URL and Console",
       );
@@ -735,6 +736,171 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
     } finally {
       await gDevTools.getToolboxForTab(localTab)?.destroy();
       await BrowserTestUtils.removeTab(ordinaryTab);
+    }
+  });
+  await SpecialPowers.popPrefEnv();
+});
+
+add_task(async function test_site_controls_toggle_and_restore_defaults() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      [DEV_PREF, true],
+      ["zen.view.use-single-toolbar", true],
+    ],
+  });
+  const panel = gZenSiteDataPanel.unifiedPanel;
+  const button = document.getElementById("zen-site-data-developer-mode");
+  const { readDeveloperMode, setDeveloperMode } = ChromeUtils.importESModule(
+    "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs",
+  );
+
+  async function open() {
+    const shown = BrowserTestUtils.waitForPopupEvent(panel, "shown");
+    await gUnifiedExtensions.togglePanel(
+      null,
+      null,
+      panel,
+      gZenSiteDataPanel.unifiedPanelView,
+      gZenSiteDataPanel.anchor,
+    );
+    await shown;
+    await TestUtils.waitForCondition(() => !button.hidden && !button.disabled);
+  }
+
+  async function close() {
+    if (panel.state !== "closed") {
+      const hidden = BrowserTestUtils.waitForPopupEvent(panel, "hidden");
+      panel.hidePopup(true);
+      await hidden;
+    }
+  }
+
+  async function toggle(browser, enabled) {
+    EventUtils.synthesizeMouseAtCenter(button, {});
+    await TestUtils.waitForCondition(
+      () =>
+        button.getAttribute("aria-checked") === String(enabled) &&
+        !button.hasAttribute("aria-busy") &&
+        Boolean(toolbarFor(browser)) === enabled,
+      "The setting and the current tab reflect the new mode",
+    );
+  }
+
+  await BrowserTestUtils.withNewTab(localURL, async (browser) => {
+    const sameHostTab = BrowserTestUtils.addTab(
+      gBrowser,
+      localURL.replace("query=kept", "query=other-tab"),
+    );
+    const uri = browser.currentURI;
+    const context = browser.loadContext;
+    try {
+      await waitForToolbar(sameHostTab.linkedBrowser);
+      await open();
+      Assert.equal(
+        button.getAttribute("aria-checked"),
+        "true",
+        "Localhost defaults to On",
+      );
+      Assert.ok(
+        button.previousElementSibling.classList.contains(
+          "permission-popup-permission-item-site-protection",
+        ),
+        "The switch is directly below Tracking Protection",
+      );
+      await toggle(browser, false);
+      await TestUtils.waitForCondition(
+        () => !toolbarFor(sameHostTab.linkedBrowser),
+      );
+      const sameHostOtherPort = Services.io.newURI("http://localhost:3001/");
+      Assert.ok(
+        !(await readDeveloperMode(sameHostOtherPort, context)),
+        "Turning localhost off also applies to a different port",
+      );
+      const privateContext = Cu.createPrivateLoadContext();
+      Assert.ok(
+        !(await readDeveloperMode(uri, privateContext)),
+        "Private browsing starts with the profile's choice",
+      );
+      await setDeveloperMode(uri, privateContext, true);
+      Assert.ok(
+        await readDeveloperMode(uri, privateContext),
+        "Private sessions can override it",
+      );
+      Assert.ok(
+        !(await readDeveloperMode(uri, context)),
+        "The private choice does not change the profile",
+      );
+      await setDeveloperMode(uri, privateContext, false);
+      Assert.ok(
+        !(await readDeveloperMode(uri, privateContext)),
+        "Returning to the inherited value clears the private override",
+      );
+      await close();
+      await open();
+      Assert.equal(
+        button.getAttribute("aria-checked"),
+        "false",
+        "The same control remains reachable after turning off the toolbar",
+      );
+      await toggle(browser, true);
+      await waitForToolbar(sameHostTab.linkedBrowser);
+      const contentPrefs = Cc["@mozilla.org/content-pref/service;1"].getService(
+        Ci.nsIContentPrefService2,
+      );
+      const saved = await new Promise((resolve) => {
+        let value;
+        contentPrefs.getByDomainAndName(
+          "localhost",
+          "zen.developer-mode.site-override",
+          context,
+          {
+            handleResult(pref) {
+              value = pref.value;
+            },
+            handleCompletion() {
+              resolve(value);
+            },
+          },
+        );
+      });
+      Assert.equal(
+        saved,
+        undefined,
+        "Toggling back to the default removes the saved exception",
+      );
+    } finally {
+      await close();
+      await setDeveloperMode(uri, context, true);
+      await BrowserTestUtils.removeTab(sameHostTab);
+    }
+  });
+
+  await BrowserTestUtils.withNewTab("https://example.com/", async (browser) => {
+    const uri = browser.currentURI;
+    try {
+      await open();
+      Assert.equal(
+        button.getAttribute("aria-checked"),
+        "false",
+        "An ordinary host defaults to Off",
+      );
+      await toggle(browser, true);
+      Assert.equal(
+        gBrowser.selectedTab.querySelector(".zen-developer-tab-sublabel").value,
+        "example.com",
+        "An explicitly enabled host gets a hostname subtitle",
+      );
+      Assert.ok(
+        !(await readDeveloperMode(
+          Services.io.newURI("https://other.example.com/"),
+          browser.loadContext,
+        )),
+        "Explicit activation does not apply to subdomains",
+      );
+      await toggle(browser, false);
+    } finally {
+      await close();
+      await setDeveloperMode(uri, browser.loadContext, false);
     }
   });
   await SpecialPowers.popPrefEnv();

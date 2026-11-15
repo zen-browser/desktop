@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Editar URL Fixado
 zen-pinned-tab-edit-url-label = Digite o URL que este separador fixo deve apontar para:
 zen-tabs-renamed = Nome do separador alterado com sucesso!
 zen-background-tab-opened-toast = Novo separador aberto em segundo plano!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Nome do espaço de trabalho alterado com sucesso!
 zen-split-view-limit-toast = Não é possível adicionar mais painéis à vista dividida!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

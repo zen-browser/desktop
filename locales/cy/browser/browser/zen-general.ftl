@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Golygu URL wedi'u Pinio
 zen-pinned-tab-edit-url-label = Rhowch y URL dylai'r tab pinio hwn bwyntio at:
 zen-tabs-renamed = Mae'r tab wedi cael ei ailenwi'n llwyddiannus!
 zen-background-tab-opened-toast = Tab cefndir newydd wedi'i agor!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Mae'r Man Gwaith wedi cael ei ailenwi'n llwyddiannus!
 zen-split-view-limit-toast = Methu ychwanegu mwy o baneli at y golwg hollt!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

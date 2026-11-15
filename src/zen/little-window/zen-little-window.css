@@ -101,6 +101,11 @@
   }
 }
 
+#zen-little-window-container:focus-visible,
+#zen-little-window-open-button:focus-visible {
+  outline: var(--focus-outline);
+}
+
 #zen-little-window-open-in-space {
   flex-shrink: 0;
   height: calc(var(--urlbar-height) + 2px);

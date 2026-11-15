@@ -543,7 +543,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Tab} ownerTab - The tab that owns this glance
    */
   openGlance(data, existingTab = null, ownerTab = null) {
-    if (gZenVerticalTabsManager.isLittleWindow) {
+    if (gZenVerticalTabsManager.hidesTabsToolbar) {
       if (!existingTab && this.#isGlanceLoadAllowed(data)) {
         window.openLinkIn(data.url, "tab", {
           triggeringPrincipal: data.triggeringPrincipal,

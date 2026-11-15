@@ -101,7 +101,8 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
                      data-l10n-id="zen-little-window-intro-title"><html:i data-l10n-name="name"></html:i></html:span>
           <spacer flex="1" />
           <toolbarbutton id="zen-little-window-intro-close"
-                         class="close-icon" />
+                         class="close-icon"
+                         data-l10n-id="urlbar-search-mode-indicator-close" />
         </hbox>
         <description id="zen-little-window-intro-description" />
       </vbox>
@@ -143,6 +144,31 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     return lazy.ZenLittleWindow.openInSpace(window, aSpaceId).catch(
       console.error
     );
+  }
+
+  /**
+   * Runs a callback when a control that is not a native button is clicked
+   * or, while it has the focus the toolbar keyboard navigation gives it,
+   * Enter or Space is pressed.
+   *
+   * @param {Element} aElement
+   * @param {function(Event): void} aCallback
+   */
+  #onActivate(aElement, aCallback) {
+    aElement.addEventListener("click", event => {
+      if (event.button == 0) {
+        aCallback(event);
+      }
+    });
+    aElement.addEventListener("keypress", event => {
+      if (
+        event.target == aElement &&
+        (event.key == "Enter" || event.key == " ")
+      ) {
+        event.preventDefault();
+        aCallback(event);
+      }
+    });
   }
 
   // Mark: URL bar only
@@ -196,8 +222,17 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   onViewClose() {
+    if (!this.#urlbarOnly || this.#isNavigating) {
+      return;
+    }
+    this.#baseWindow.visibility = false;
     setTimeout(() => {
-      if (this.#urlbarOnly && !this.#isNavigating && !window.closed) {
+      if (window.closed) {
+        return;
+      }
+      if (this.#isNavigating) {
+        this.#baseWindow.visibility = true;
+      } else {
         window.close();
       }
     }, 0);
@@ -356,16 +391,14 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     const fragment = window.MozXULElement.parseXULToFragment(`
       <hbox id="zen-little-window-urlbar-close"
             class="urlbar-page-action"
-            role="button">
+            role="button"
+            data-l10n-id="urlbar-search-mode-indicator-close">
         <image class="urlbar-icon" />
       </hbox>
     `);
-    fragment
-      .querySelector("#zen-little-window-urlbar-close")
-      .addEventListener("click", event => {
-        if (event.button != 0) {
-          return;
-        }
+    this.#onActivate(
+      fragment.querySelector("#zen-little-window-urlbar-close"),
+      () => {
         if (this.#urlbarOnly) {
           window.close();
           return;
@@ -373,7 +406,8 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
         gURLBar.view.close();
         gURLBar.handleRevert();
         gBrowser.selectedBrowser.focus();
-      });
+      }
+    );
     document.querySelector("#urlbar .urlbar-input-container").append(fragment);
   }
 
@@ -400,11 +434,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     shortcut.hidden = !shortcut.value;
 
     const button = fragment.querySelector("#zen-little-window-open-button");
-    button.addEventListener("click", event => {
-      if (event.button == 0) {
-        this.openInSpace();
-      }
-    });
+    this.#onActivate(button, () => this.openInSpace());
 
     const popup = fragment.querySelector("#zen-little-window-spaces-popup");
     popup.addEventListener("popupshowing", () => this.#fillSpacesPopup(popup));
@@ -467,7 +497,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
 
   #buildContainerPill() {
     const fragment = window.MozXULElement.parseXULToFragment(`
-      <hbox id="zen-little-window-container" class="no-squircles" role="button" align="center">
+      <hbox id="zen-little-window-container" class="no-squircles" role="button" aria-haspopup="menu" align="center">
         <image id="zen-little-window-container-icon" />
         <label id="zen-little-window-container-label" />
         <menupopup id="zen-little-window-container-popup" />
@@ -477,8 +507,8 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       "#zen-little-window-container"
     );
     const popup = fragment.querySelector("#zen-little-window-container-popup");
-    this.#containerPill.addEventListener("click", event => {
-      if (event.button == 0 && event.target.closest("menupopup") != popup) {
+    this.#onActivate(this.#containerPill, event => {
+      if (event.target.closest("menupopup") != popup) {
         popup.openPopup(this.#containerPill, "after_start");
       }
     });

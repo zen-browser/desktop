@@ -769,12 +769,58 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       await SimpleTest.promiseClipboardChange(localURL, () => copy.doCommand());
       await hidden;
 
+      const navBar = document.getElementById("nav-bar");
+      const stopReload = document.getElementById("stop-reload-button");
+      const appMenuButton = document.getElementById("PanelUI-button");
+      const narrowWidth = navBar.clientWidth;
+      const checkNavigation = (pane) => {
+        const navBounds = navBar.getBoundingClientRect();
+        const urlBounds = gURLBar.getBoundingClientRect();
+        const menuBounds = appMenuButton.getBoundingClientRect();
+        Assert.equal(
+          stopReload.parentNode,
+          target,
+          pane + " keeps Reload in the navigation row",
+        );
+        Assert.ok(
+          BrowserTestUtils.isVisible(stopReload),
+          pane + " keeps Reload visible",
+        );
+        Assert.lessOrEqual(
+          urlBounds.right,
+          menuBounds.left + 1,
+          pane + " keeps the address field clear of the app menu",
+        );
+        Assert.lessOrEqual(
+          menuBounds.right,
+          navBounds.right + 1,
+          pane + " keeps the app menu inside the toolbar",
+        );
+      };
+      window.resizeTo(520, height);
+      await TestUtils.waitForCondition(
+        () => navBar.clientWidth < narrowWidth,
+        "The shared toolbar becomes narrower than the first compact layout",
+      );
+      checkNavigation("The narrow developer pane");
+
       gBrowser.selectedTab = ordinaryTab;
       await TestUtils.waitForCondition(() => !compact() && menuTools.hidden);
+      checkNavigation("The narrow ordinary pane");
       Assert.ok(
         !BrowserTestUtils.isVisible(overflowButton),
         "The ordinary pane has no empty overflow button",
       );
+      await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, false]] });
+      try {
+        checkNavigation("The top toolbar with Developer Mode disabled");
+        Assert.ok(
+          !BrowserTestUtils.isVisible(overflowButton),
+          "The chevron stays hidden when there are no overflowed widgets",
+        );
+      } finally {
+        await SpecialPowers.popPrefEnv();
+      }
       gBrowser.selectedTab = localTab;
       await TestUtils.waitForCondition(compact);
       Assert.ok(

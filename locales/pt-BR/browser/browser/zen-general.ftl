@@ -66,6 +66,7 @@ zen-pinned-tab-edit-url-title = Editar URL Fixada
 zen-pinned-tab-edit-url-label = Digite a URL que esta aba fixada deve apontar para:
 zen-tabs-renamed = A aba foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova aba em segundo plano aberta!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
 zen-split-view-limit-toast = Não é possível adicionar mais painéis à visualização dividida!
 zen-sidebar-drag-collapsed-toast = Barra lateral oculta! Use <span>{ $shortcut }</span> para trazer a barra lateral de volta.

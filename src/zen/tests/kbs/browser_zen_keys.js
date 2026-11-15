@@ -230,3 +230,89 @@ add_task(async function test_legacy_migration_keeps_customkeys_settings() {
     CustomKeys.resetAll();
   }
 });
+
+add_task(async function test_customized_copy_url_keys_copy() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["privacy.query_stripping.strip_on_share.enabled", true],
+      ["privacy.query_stripping.enabled", false],
+    ],
+  });
+  await Cc["@mozilla.org/query-stripping-list-service;1"]
+    .getService(Ci.nsIURLQueryStrippingListService)
+    .testWaitForInit();
+
+  const url = "https://example.com/?copy=tab#fragment";
+  const trackedURL =
+    "https://example.com/?utm_source=shortcut&copy=tab&utm_medium=share&utm_campaign=test#fragment";
+  const otherURL = "https://example.org/?copy=other";
+  const otherTrackedURL = "https://example.org/?copy=other&utm_medium=share";
+
+  registerCleanupFunction(() => {
+    document.getElementById("zen-toast-container").replaceChildren();
+  });
+
+  try {
+    CustomKeys.changeKey("zen-copy-url", {
+      modifiers: UNUSED_MODIFIERS,
+      key: UNUSED_KEY,
+    });
+    await BrowserTestUtils.withNewTab(trackedURL, async browser => {
+      await SimpleTest.promiseClipboardChange(url, () =>
+        EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS, window)
+      );
+      info("The customized key copies the current tab, without its trackers");
+
+      const first = gBrowser.getTabForBrowser(browser);
+      const other = await BrowserTestUtils.openNewForegroundTab(
+        gBrowser,
+        otherTrackedURL
+      );
+      try {
+        gBrowser.addToMultiSelectedTabs(first);
+        is(gBrowser.selectedTabs.length, 2, "Two tabs are selected");
+        await SimpleTest.promiseClipboardChange(
+          data => {
+            const lines = data.split("\n");
+            return (
+              lines.length == 2 &&
+              lines.includes(url) &&
+              lines.includes(otherURL)
+            );
+          },
+          () => EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS, window)
+        );
+        info("and every selected tab once more than one is selected");
+      } finally {
+        BrowserTestUtils.removeTab(other);
+      }
+
+      await BrowserTestUtils.withNewTab("about:robots", async () => {
+        await SimpleTest.promiseClipboardChange("about:robots", () =>
+          EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS, window)
+        );
+        info("An unshareable page is still copied on its own");
+      });
+    });
+  } finally {
+    CustomKeys.resetKey("zen-copy-url");
+  }
+
+  try {
+    CustomKeys.changeKey("zen-copy-url-markdown", {
+      modifiers: UNUSED_MODIFIERS,
+      key: UNUSED_KEY,
+    });
+    await BrowserTestUtils.withNewTab(trackedURL, async () => {
+      const title = gBrowser.selectedTab.label;
+      await SimpleTest.promiseClipboardChange(`[${title}](${url})`, () =>
+        EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS, window)
+      );
+      info("The customized Markdown key copies a link for the current tab");
+    });
+  } finally {
+    CustomKeys.resetKey("zen-copy-url-markdown");
+  }
+
+  await SpecialPowers.popPrefEnv();
+});

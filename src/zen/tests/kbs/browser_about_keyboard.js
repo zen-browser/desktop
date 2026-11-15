@@ -5,15 +5,21 @@
 
 add_task(async function test_zen_keys_are_listed() {
   const l10n = new Localization(["browser/preferences/zen-preferences.ftl"]);
-  const [compactModeTitle, toggleLabel, otherTitle] = await l10n.formatValues([
-    { id: "zenCKSOption-group-zen-compact-mode" },
-    { id: "zen-compact-mode-shortcut-toggle" },
-    { id: "zenCKSOption-group-zen-other" },
-  ]);
+  const [compactModeTitle, toggleLabel, otherTitle, copyURLLabel] =
+    await l10n.formatValues([
+      { id: "zenCKSOption-group-zen-compact-mode" },
+      { id: "zen-compact-mode-shortcut-toggle" },
+      { id: "zenCKSOption-group-zen-other" },
+      { id: "zen-text-action-copy-url-shortcut" },
+    ]);
   const expected = {
     compactModeTitle,
     toggleLabel,
     otherTitle,
+    copyURLLabel,
+    copyURLShortcut: ShortcutUtils.prettifyShortcut(
+      document.getElementById("zen-copy-url")
+    ),
     spacesTitle: document.getElementById("zen-spaces-menubar").label,
     toggleShortcut: ShortcutUtils.prettifyShortcut(
       document.getElementById("zen-compact-mode-toggle")
@@ -72,6 +78,24 @@ add_task(async function test_zen_keys_are_listed() {
       ok(
         doc.querySelector('.key[data-id="zen-new-unsynced-window"]'),
         "New blank window is listed from the File menu"
+      );
+
+      const copyURL = doc.querySelector('.key[data-id="zen-copy-url"]');
+      ok(copyURL, "Copy current URL is listed");
+      is(copyURL.dataset.label, args.copyURLLabel, "Label is localized");
+      is(
+        copyURL.closest("moz-card").wrappedJSObject.heading,
+        args.otherTitle,
+        "Copy current URL sits in the other category"
+      );
+      is(
+        copyURL.querySelector(".currentShortcut").wrappedJSObject.value,
+        args.copyURLShortcut,
+        "Its current shortcut is shown"
+      );
+      ok(
+        doc.querySelector('.key[data-id="zen-copy-url-markdown"]'),
+        "Copy current URL as Markdown is listed too"
       );
 
       ok(

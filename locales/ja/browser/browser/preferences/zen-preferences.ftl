@@ -25,42 +25,42 @@ zen-glance-enabled =
 zen-glance-trigger-ctrl-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌃ + Click
-           *[other] Ctrl + Click
+            [macos] ⌃ + クリック
+           *[other] Ctrl + クリック
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Control + Click
-           *[other] Ctrl + Click
+            [macos] Control + クリック
+           *[other] Ctrl + クリック
         }
 zen-glance-trigger-alt-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌥ + Click
-           *[other] Alt + Click
+            [macos] ⌥ + クリック
+           *[other] Alt + クリック
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Option + Click
-           *[other] Alt + Click
+            [macos] Option + クリック
+           *[other] Alt + クリック
         }
 zen-glance-trigger-shift-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⇧ + Click
-           *[other] Shift + Click
+            [macos] ⇧ + クリック
+           *[other] Shift + クリック
         }
-    .aria-label = Shift + Click
+    .aria-label = Shift + クリック
 zen-glance-trigger-meta-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌘ + Click
-           *[other] Meta (Command) + Click
+            [macos] ⌘ + クリック
+           *[other] Meta (Command) + クリック
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Command + Click
-           *[other] Meta (Command) + Click
+            [macos] Command + クリック
+           *[other] Meta (Command) + クリック
         }
 zen-look-and-feel-compact-view-header = コンパクト表示で表示します
 zen-look-and-feel-compact-view-description = 使用しているツールバーのみを表示します！
@@ -86,8 +86,8 @@ zen-settings-workspaces-sync =
     .label = サイドバーをデバイス間で同期する
     .description = Mozilla アカウントを介して、すべてのデバイスでワークスペース、ピン留めされたタブ、フォルダを同期させます
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = ピン留めされていないタブを含める
+    .description = ピン留めされたタブやフォルダだけでなく、各スペースの通常のタブも同期します。
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = ワークスペースにはピン留めされているタブのみを同期する
 zen-tabs-cycle-by-attribute = 
@@ -194,7 +194,7 @@ category-zen-marketplace =
     .tooltiptext = Zen Mods
 zenCKSOption-group-zen-compact-mode = コンパクトモード
 zenCKSOption-group-zen-workspace = ワークスペース
-zenCKSOption-group-zen-other = その他の禅の特徴
+zenCKSOption-group-zen-other = その他のZenの特徴
 zenCKSOption-group-zen-split-view = 分割ビュー
 zen-text-action-copy-url-shortcut = 現在のURLをコピー
 zen-text-action-copy-url-markdown-shortcut = 現在のURLをMarkdownとしてコピー
@@ -214,7 +214,7 @@ zen-workspace-shortcut-switch-9 = ワークスペース9に切り替える
 zen-workspace-shortcut-switch-10 = ワークスペース10に切り替える
 zen-workspace-shortcut-create = 新しいワークスペースを作成する
 zen-sidebar-shortcut-toggle = サイドバーの幅を切り替える
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = ライブラリの切り替え
 zen-pinned-tab-shortcut-reset = ピン留めされたタブをピン留めしたURLにリセット
 zen-split-view-shortcut-grid = 分割表示グリッドの切り替え
 zen-split-view-shortcut-vertical = 分割ビューを垂直に切り替える

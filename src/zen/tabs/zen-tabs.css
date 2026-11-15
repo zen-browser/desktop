@@ -56,8 +56,8 @@
   Very Special Occasions - Complex Layout Fixes
   ========================================================================== */
 
-/* Exclude these complex fixes if in compact mode */
-:root:not([zen-compact-mode='true']) {
+/* Exclude these complex fixes if in compact mode, the fullscreen sidebar behaves like it */
+:root:not([zen-compact-mode='true']):not([inDOMFullscreen='true'][zen-fullscreen-sidebar='true']) {
 
   /* --- Fix: Right Sidebar + Collapsed + Standard Window Buttons --- */
   &[zen-right-side='true']:not([zen-sidebar-expanded='true']):not([zen-window-buttons-reversed='true']) {

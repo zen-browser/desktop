@@ -37,6 +37,11 @@
 - name: zen.view.compact.show-background-tab-toast
   value: true
 
+# Show the sidebar when hovering the screen edge in DOM fullscreen (e.g. videos),
+# like in compact mode, even if compact mode is disabled
+- name: zen.view.compact.show-sidebar-in-fullscreen
+  value: false
+
 - name: zen.view.compact.debug
   value: false
 

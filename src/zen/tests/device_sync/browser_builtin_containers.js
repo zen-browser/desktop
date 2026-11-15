@@ -136,6 +136,7 @@ add_task(async function test_ApplyCreatesMissingBuiltinContainers() {
     }
     ZenSpacesSyncModel.forgetContainerGuid("builtin-1");
     ZenSpacesSyncModel.forgetContainerGuid("builtin-2");
+    ContextualIdentityService.resetDefault();
   }
 });
 
@@ -171,4 +172,51 @@ add_task(async function test_UnknownNonBuiltinContainerStillFails() {
     null,
     "Space with invalid builtin-5 should not be applied"
   );
+});
+
+add_task(async function test_StandInIsNotUploadedUntilRenamed() {
+  await gZenWorkspaces.promiseInitialized;
+
+  const projectedNames = async () => {
+    const projections = await collectProjections();
+    return new Map(
+      [...projections.entries()]
+        .filter(([, record]) => record.kind === "container")
+        .map(([guid, record]) => [guid, record.data.name])
+    );
+  };
+
+  if (ContextualIdentityService.getPublicIdentityFromId(2)) {
+    ContextualIdentityService.remove(2);
+  }
+  ZenSpacesSyncModel.forgetContainerGuid("builtin-2");
+
+  const contextId = ZenSpacesSyncModel.ensureBuiltinContainer("builtin-2");
+  try {
+    const identity =
+      ContextualIdentityService.getPublicIdentityFromId(contextId);
+    Assert.ok(identity, "The stand-in container should exist");
+    Assert.ok(
+      !(await projectedNames()).has("builtin-2"),
+      "A stand-in is not uploaded, so it cannot rename a real built-in elsewhere"
+    );
+
+    ContextualIdentityService.update(
+      contextId,
+      "My Work",
+      identity.icon,
+      identity.color
+    );
+    Assert.equal(
+      (await projectedNames()).get("builtin-2"),
+      "My Work",
+      "Once the user renames it, it syncs like any other container"
+    );
+  } finally {
+    if (ContextualIdentityService.getPublicIdentityFromId(contextId)) {
+      ContextualIdentityService.remove(contextId);
+    }
+    ZenSpacesSyncModel.forgetContainerGuid("builtin-2");
+    ContextualIdentityService.resetDefault();
+  }
 });

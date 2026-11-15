@@ -55,17 +55,13 @@ export const RECORD_KINDS = Object.freeze({
 
 export const LAYOUT_RECORD_ID = "layout";
 
-// Firefox ships four built-in containers with fixed userContextIds, which map
-// to well-known guids instead of per-profile generated ones. Fresh Zen profiles
-// skip creating default containers (zen.containers.create-default-identities),
-// so receivers create any missing built-in container on demand.
 const BUILTIN_CONTAINER_MAX = 4;
 const BUILTIN_GUID_PREFIX = "builtin-";
 const BUILTIN_CONTAINERS = Object.freeze({
-  1: { name: "Personal", icon: "fingerprint", color: "blue" },
-  2: { name: "Work", icon: "briefcase", color: "orange" },
-  3: { name: "Banking", icon: "dollar", color: "green" },
-  4: { name: "Shopping", icon: "cart", color: "pink" },
+  1: { l10nId: "user-context-personal2", icon: "fingerprint", color: "blue" },
+  2: { l10nId: "user-context-work2", icon: "briefcase", color: "orange" },
+  3: { l10nId: "user-context-banking2", icon: "dollar", color: "green" },
+  4: { l10nId: "user-context-shopping2", icon: "cart", color: "pink" },
 });
 
 const STORE_FILE_NAME = "zen-spaces-sync.json";
@@ -196,6 +192,7 @@ class nsZenSpacesSyncModel {
           data.version = STORE_VERSION;
           data.uploaded ||= {};
           data.containers ||= {};
+          data.synthesizedContainers ||= {};
           // The container map used to be keyed by guid. It is keyed by
           // userContextId now so that registering a guid replaces any
           // previous one for the same container. Flip old stores over
@@ -305,12 +302,17 @@ class nsZenSpacesSyncModel {
       return null;
     }
     const preset = BUILTIN_CONTAINERS[builtinId];
+    const name = lazy.ContextualIdentityService.formatContextLabel(
+      preset.l10nId
+    );
     const identity = lazy.ContextualIdentityService.create(
-      preset.name,
+      name,
       preset.icon,
       preset.color
     );
     this.registerContainerGuid(guid, identity.userContextId);
+    this.#data().synthesizedContainers[guid] = name;
+    this.#file.saveSoon();
     syncLog(
       `created missing built-in container ${guid} -> ${identity.userContextId}`
     );
@@ -330,12 +332,20 @@ class nsZenSpacesSyncModel {
 
   forgetContainerGuid(guid) {
     const data = this.#data();
+    let changed = false;
+    if (guid in data.synthesizedContainers) {
+      delete data.synthesizedContainers[guid];
+      changed = true;
+    }
     for (const [id, mapped] of Object.entries(data.containers)) {
       if (mapped === guid) {
         delete data.containers[id];
-        this.#file.saveSoon();
-        return;
+        changed = true;
+        break;
       }
+    }
+    if (changed) {
+      this.#file.saveSoon();
     }
   }
 
@@ -636,6 +646,7 @@ class nsZenSpacesSyncModel {
   }
 
   #projectContainers(map) {
+    const synthesized = this.#data().synthesizedContainers;
     for (const identity of lazy.ContextualIdentityService.getPublicIdentities()) {
       if (!identity.name) {
         continue;
@@ -644,6 +655,9 @@ class nsZenSpacesSyncModel {
         create: true,
       });
       if (!guid) {
+        continue;
+      }
+      if (synthesized[guid] === identity.name) {
         continue;
       }
       map.set(guid, {

@@ -48,10 +48,7 @@ class nsZenSpacesSyncApplier {
   }
 
   /**
-   * Maps a record's container guid to the local userContextId. Built-in guids
-   * (`builtin-1`..`builtin-4`) are created on demand when the profile lacks
-   * Firefox's default containers; any other guid with no local mapping throws
-   * so the record redelivers once its container record exists.
+   * Maps a record's container guid to the local userContextId.
    *
    * @param {?string} containerGuid
    * @returns {number}

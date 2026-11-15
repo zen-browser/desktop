@@ -55,11 +55,18 @@ export const RECORD_KINDS = Object.freeze({
 
 export const LAYOUT_RECORD_ID = "layout";
 
-// Firefox ships four built-in containers with fixed userContextIds. They
-// exist on every device, so they map to well-known guids instead of the
-// per-profile generated ones.
+// Firefox ships four built-in containers with fixed userContextIds, which map
+// to well-known guids instead of per-profile generated ones. Fresh Zen profiles
+// skip creating default containers (zen.containers.create-default-identities),
+// so receivers create any missing built-in container on demand.
 const BUILTIN_CONTAINER_MAX = 4;
 const BUILTIN_GUID_PREFIX = "builtin-";
+const BUILTIN_CONTAINERS = Object.freeze({
+  1: { name: "Personal", icon: "fingerprint", color: "blue" },
+  2: { name: "Work", icon: "briefcase", color: "orange" },
+  3: { name: "Banking", icon: "dollar", color: "green" },
+  4: { name: "Shopping", icon: "cart", color: "pink" },
+});
 
 const STORE_FILE_NAME = "zen-spaces-sync.json";
 const STORE_VERSION = 1;
@@ -227,12 +234,12 @@ class nsZenSpacesSyncModel {
       }
       return null;
     }
-    if (id <= BUILTIN_CONTAINER_MAX) {
-      return `${BUILTIN_GUID_PREFIX}${id}`;
-    }
     const existing = data.containers[id];
     if (existing) {
       return existing;
+    }
+    if (id <= BUILTIN_CONTAINER_MAX) {
+      return `${BUILTIN_GUID_PREFIX}${id}`;
     }
     if (!create) {
       return null;
@@ -241,6 +248,16 @@ class nsZenSpacesSyncModel {
     data.containers[id] = guid;
     this.#file.saveSoon();
     return guid;
+  }
+
+  #builtinIdForGuid(guid) {
+    if (typeof guid !== "string" || !guid.startsWith(BUILTIN_GUID_PREFIX)) {
+      return null;
+    }
+    const id = Number(guid.slice(BUILTIN_GUID_PREFIX.length));
+    return Number.isSafeInteger(id) && id > 0 && id <= BUILTIN_CONTAINER_MAX
+      ? id
+      : null;
   }
 
   contextIdForGuid(guid) {
@@ -259,16 +276,45 @@ class nsZenSpacesSyncModel {
         return null;
       }
     }
-    if (guid.startsWith(BUILTIN_GUID_PREFIX)) {
-      const id = Number(guid.slice(BUILTIN_GUID_PREFIX.length));
-      return Number.isSafeInteger(id) &&
-        id > 0 &&
-        id <= BUILTIN_CONTAINER_MAX &&
-        lazy.ContextualIdentityService.getPublicIdentityFromId(id)
-        ? id
-        : null;
+    const builtinId = this.#builtinIdForGuid(guid);
+    if (
+      builtinId !== null &&
+      !(builtinId in data.containers) &&
+      lazy.ContextualIdentityService.getPublicIdentityFromId(builtinId)
+    ) {
+      return builtinId;
     }
     return null;
+  }
+
+  /**
+   * Resolves a container guid to its local userContextId, creating the matching
+   * built-in container (`builtin-1`..`builtin-4`) on demand when this profile
+   * doesn't have Firefox's default containers.
+   *
+   * @param {string} guid
+   * @returns {?number}
+   */
+  ensureBuiltinContainer(guid) {
+    const existing = this.contextIdForGuid(guid);
+    if (existing !== null) {
+      return existing;
+    }
+    const builtinId = this.#builtinIdForGuid(guid);
+    if (builtinId === null) {
+      return null;
+    }
+    const preset = BUILTIN_CONTAINERS[builtinId];
+    const identity = lazy.ContextualIdentityService.create(
+      preset.name,
+      preset.icon,
+      preset.color
+    );
+    this.registerContainerGuid(guid, identity.userContextId);
+    syncLog(
+      `created missing built-in container ${guid} -> ${identity.userContextId}`
+    );
+    return identity.userContextId;
   }
 
   /**

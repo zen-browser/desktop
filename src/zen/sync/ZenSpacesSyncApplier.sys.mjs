@@ -48,9 +48,10 @@ class nsZenSpacesSyncApplier {
   }
 
   /**
-   * Maps a record's container guid to the local userContextId. A guid with
-   * no local mapping (its container record hasn't applied here yet) throws,
-   * failing the record so it redelivers once the container exists .
+   * Maps a record's container guid to the local userContextId. Built-in guids
+   * (`builtin-1`..`builtin-4`) are created on demand when the profile lacks
+   * Firefox's default containers; any other guid with no local mapping throws
+   * so the record redelivers once its container record exists.
    *
    * @param {?string} containerGuid
    * @returns {number}
@@ -59,7 +60,7 @@ class nsZenSpacesSyncApplier {
     if (!containerGuid) {
       return 0;
     }
-    const mapped = ZenSpacesSyncModel.contextIdForGuid(containerGuid);
+    const mapped = ZenSpacesSyncModel.ensureBuiltinContainer(containerGuid);
     if (mapped === null) {
       throw new Error(`unknown container guid ${containerGuid}`);
     }

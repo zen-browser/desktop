@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Edita l'URL fixada
 zen-pinned-tab-edit-url-label = Introduïu l'URL a la qual ha d'apuntar aquesta pestanya fixada:
 zen-tabs-renamed = S'ha canviat el nom de la pestanya correctament
 zen-background-tab-opened-toast = S'ha obert una nova pestanya de fons
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = S'ha canviat el nom de l'espai de treball correctament
 zen-split-view-limit-toast = No es poden afegir més panells a la vista dividida!
 zen-sidebar-drag-collapsed-toast = Barra lateral oculta! Utilitzeu <span>{ $shortcut }</span> per tornar-la a mostrar.

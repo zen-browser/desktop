@@ -1,11 +1,19 @@
 diff --git a/browser/components/places/content/editBookmark.js b/browser/components/places/content/editBookmark.js
-index d3180c5..6b9369b 100644
+index d3180c5..79af6b6 100644
 --- a/browser/components/places/content/editBookmark.js
 +++ b/browser/components/places/content/editBookmark.js
-@@ -389,6 +389,10 @@ var gEditItemOverlay = {
+@@ -389,6 +389,18 @@ var gEditItemOverlay = {
          this._keywordField.readOnly = this.readOnly;
        }
  
++      if (isBookmark && this._keywordField.hidden) {
++        await this._initKeywordField().catch(console.error);
++        if (instance != this._instance || this._paneInfo == null) {
++          return;
++        }
++        this._keywordField.readOnly = this.readOnly;
++      }
++
 +      if (showOrCollapse("workspaceRow", isBookmark, "workspace")) {
 +        await this._initWorkspaceDropdown(aInfo);
 +      }
@@ -13,7 +21,7 @@ index d3180c5..6b9369b 100644
        // Collapse the tag selector if the item does not accept tags.
        if (showOrCollapse("tagsRow", isBookmark || bulkTagging, "tags")) {
          this._initTagsField();
-@@ -702,6 +706,7 @@ var gEditItemOverlay = {
+@@ -702,6 +714,7 @@ var gEditItemOverlay = {
        if (this._paneInfo.isBookmark) {
          options.tags = this._element("tagsField").value;
          options.keyword = this._keyword;
@@ -21,7 +29,7 @@ index d3180c5..6b9369b 100644
        }
  
        if (this._paneInfo.bulkTagging) {
-@@ -1203,6 +1208,9 @@ var gEditItemOverlay = {
+@@ -1203,6 +1216,9 @@ var gEditItemOverlay = {
            case "editBMPanel_tagsSelectorExpander":
              this.toggleTagsSelector().catch(console.error);
              break;
@@ -31,7 +39,7 @@ index d3180c5..6b9369b 100644
          }
          break;
      }
-@@ -1281,6 +1289,96 @@ var gEditItemOverlay = {
+@@ -1281,6 +1297,116 @@ var gEditItemOverlay = {
    get bookmarkState() {
      return this._bookmarkState;
    },
@@ -83,6 +91,26 @@ index d3180c5..6b9369b 100644
 +      : "-";
 +  },
 +
++  _zenToggleMoreRows() {
++    let button = this._element("showMoreButton");
++    if (!button) {
++      return;
++    }
++    let reveal = this._element("locationField").hidden;
++    let cells = button
++      .closest("#editBookmarkPanel")
++      .querySelectorAll(".editBMPanel_locationRow, .editBMPanel_keywordRow");
++    for (let cell of cells) {
++      cell.hidden = !reveal;
++    }
++    document.l10n.setAttributes(
++      button,
++      reveal
++        ? "zen-bookmark-edit-panel-show-less"
++        : "zen-bookmark-edit-panel-show-more"
++    );
++  },
++
 +  async _initWorkspaceDropdown(aInfo) {
 +    if (document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
 +      return;
@@ -124,11 +152,11 @@ index d3180c5..6b9369b 100644
 +    // Handle read-only state
 +    this._workspaceDropdown.toggleAttribute("disabled", this.readOnly);
 +  },
-+  _selectedWorkspaces : [],
++  _selectedWorkspaces: [],
  };
  
  ChromeUtils.defineLazyGetter(gEditItemOverlay, "_folderTree", () => {
-@@ -1319,6 +1417,9 @@ for (let elt of [
+@@ -1319,6 +1445,9 @@ for (let elt of [
    "locationField",
    "keywordField",
    "tagsField",

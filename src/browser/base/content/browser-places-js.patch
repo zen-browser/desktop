@@ -1,26 +1,33 @@
 diff --git a/browser/base/content/browser-places.js b/browser/base/content/browser-places.js
-index 20220bd..0bc72b7 100644
+index 20220bd..59e3e02 100644
 --- a/browser/base/content/browser-places.js
 +++ b/browser/base/content/browser-places.js
-@@ -263,6 +263,8 @@ var StarUI = {
+@@ -75,6 +75,11 @@ var StarUI = {
+     element.addEventListener("input", this);
+     element.addEventListener("popuphidden", this);
+     element.addEventListener("popupshown", this);
++    element.addEventListener("command", event => {
++      if (event.target.id === "editBMPanel_showMoreButton") {
++        gEditItemOverlay._zenToggleMoreRows();
++      }
++    });
+     return (this.panel = element);
+   },
+ 
+@@ -263,6 +268,12 @@ var StarUI = {
        });
      }
  
 +    this._setIconAndPreviewImage();
 +
++    let showMoreButton = this._element("editBMPanel_showMoreButton");
++    showMoreButton.hidden = this._isNewBookmark;
++    document.l10n.setAttributes(showMoreButton, "zen-bookmark-edit-panel-show-more");
++
      let onPanelReady = fn => {
        let target = this.panel;
        if (target.parentNode) {
-@@ -280,7 +282,7 @@ var StarUI = {
-       );
-     };
- 
--    let hiddenRows = ["location", "keyword"];
-+    let hiddenRows = [];
- 
-     if (this.userHasTags === undefined) {
-       // Cache must be initialized
-@@ -314,6 +316,21 @@ var StarUI = {
+@@ -314,6 +325,21 @@ var StarUI = {
      }
    },
  
@@ -42,7 +49,7 @@ index 20220bd..0bc72b7 100644
    removeBookmarkButtonCommand: function SU_removeBookmarkButtonCommand() {
      this._removeBookmarksOnPopupHidden = true;
      this.panel.hidePopup();
-@@ -1925,6 +1942,7 @@ var BookmarkingUI = {
+@@ -1925,6 +1951,7 @@ var BookmarkingUI = {
        document.getElementById("context-bookmarkpage"),
        PanelMultiView.getViewNode(document, "panelMenuBookmarkThisPage"),
        document.getElementById("pageAction-panel-bookmark"),

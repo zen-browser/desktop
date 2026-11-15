@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index 58d33bd..33f9a59 100644
+index 58d33bd..75edea3 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
 @@ -283,6 +283,7 @@
@@ -10,7 +10,16 @@ index 58d33bd..33f9a59 100644
        </box>
        <toolbarseparator id="editBookmarkHeaderSeparator"></toolbarseparator>
        <vbox class="panel-subview-body">
-@@ -879,6 +882,8 @@
+@@ -297,5 +298,8 @@
+               data-l10n-id="bookmark-panel"
+               data-l10n-attrs="style">
++          <button id="editBMPanel_showMoreButton"
++                  class="footer-button"
++                  data-l10n-id="zen-bookmark-edit-panel-show-more"/>
+           <button id="editBookmarkPanelDoneButton"
+                   class="footer-button"
+                   data-l10n-id="bookmark-panel-save-button"
+@@ -879,6 +883,8 @@
  
  #include popup-notifications.inc.xhtml
  

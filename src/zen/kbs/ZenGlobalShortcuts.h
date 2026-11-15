@@ -89,8 +89,7 @@ class ZenGlobalShortcuts final {
    */
   static void PlatformShutdown();
 #else
-  static bool PlatformRegister(uint32_t, uint32_t, mozilla::Modifiers,
-                               void**) {
+  static bool PlatformRegister(uint32_t, uint32_t, mozilla::Modifiers, void**) {
     return false;
   }
   static void PlatformUnregister(uint32_t, void*) {}

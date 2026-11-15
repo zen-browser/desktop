@@ -89,9 +89,9 @@ bool ZenGlobalShortcuts::PlatformRegister(uint32_t aHotKeyId, uint32_t aKeyCode,
   }
   EventHotKeyID hotKeyId = {kHotKeySignature, aHotKeyId};
   EventHotKeyRef hotKey = nullptr;
-  OSStatus status = ::RegisterEventHotKey(
-      static_cast<UInt32>(virtualKeyCode), modifiers, hotKeyId,
-      ::GetEventDispatcherTarget(), 0, &hotKey);
+  OSStatus status =
+      ::RegisterEventHotKey(static_cast<UInt32>(virtualKeyCode), modifiers,
+                            hotKeyId, ::GetEventDispatcherTarget(), 0, &hotKey);
   if (status != noErr || !hotKey) {
     return false;
   }

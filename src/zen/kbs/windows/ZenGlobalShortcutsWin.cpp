@@ -41,9 +41,8 @@ static HWND EnsureMessageWindow() {
       ::GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
     return nullptr;
   }
-  sMessageWindow =
-      ::CreateWindowExW(0, kWindowClassName, L"", 0, 0, 0, 0, 0, HWND_MESSAGE,
-                        nullptr, instance, nullptr);
+  sMessageWindow = ::CreateWindowExW(0, kWindowClassName, L"", 0, 0, 0, 0, 0,
+                                     HWND_MESSAGE, nullptr, instance, nullptr);
   return sMessageWindow;
 }
 

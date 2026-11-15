@@ -101,10 +101,10 @@ bool ZenGlobalShortcuts::BindingOf(Element* aKey, uint32_t* aKeyCode,
   if (handler.mDetail <= 0) {
     return false;
   }
-  uint32_t keyCode =
-      handler.mMisc ? widget::WidgetUtils::ComputeKeyCodeFromChar(
-                          static_cast<uint32_t>(handler.mDetail))
-                    : static_cast<uint32_t>(handler.mDetail);
+  uint32_t keyCode = handler.mMisc
+                         ? widget::WidgetUtils::ComputeKeyCodeFromChar(
+                               static_cast<uint32_t>(handler.mDetail))
+                         : static_cast<uint32_t>(handler.mDetail);
   Modifiers modifiers = handler.GetModifiers();
   // A plain or shifted key would stop that key from being typed anywhere.
   if (!keyCode ||
@@ -142,8 +142,9 @@ void ZenGlobalShortcuts::AttachKeyset(Element* aKeyset) {
   bool isScheduled = !sPendingKeysets->IsEmpty();
   sPendingKeysets->AppendElement(do_GetWeakReference(aKeyset));
   if (!isScheduled) {
-    NS_DispatchToMainThread(NS_NewRunnableFunction(
-        "ZenGlobalShortcuts::ReadPendingKeysets", [] { ReadPendingKeysets(); }));
+    NS_DispatchToMainThread(
+        NS_NewRunnableFunction("ZenGlobalShortcuts::ReadPendingKeysets",
+                               [] { ReadPendingKeysets(); }));
   }
 }
 

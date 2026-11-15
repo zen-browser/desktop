@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Rediger festet nettadresse
 zen-pinned-tab-edit-url-label = Skriv inn nettadressen som denne festede fanen skal peke til:
 zen-tabs-renamed = Fanen har fått nytt navn!
 zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!
 zen-split-view-limit-toast = Kan ikke legge til flere paneler i delt visning!
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

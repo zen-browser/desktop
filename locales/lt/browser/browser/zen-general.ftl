@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Redaguoti prisegtą URL
 zen-pinned-tab-edit-url-label = Įveskite URL, į kurį turėtų nukreipti ši prisegta kortelė:
 zen-tabs-renamed = Kortelė sėkmingai pervadinta.
 zen-background-tab-opened-toast = Nauja fonos kortelė atverta.
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Darbo sritis sėkmingai pervadintas.
 zen-split-view-limit-toast = Negalima įtraukti daugiau skydelių į suskaidytą rodinį.
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.

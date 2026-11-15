@@ -49,13 +49,13 @@ zen-copy-current-url-confirmation = URL-ul curent a fost copiat!
 zen-copy-current-url-as-markdown-confirmation = URL-ul curent a fost copiat ca Markdown!
 zen-copy-multi-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
-       *[other] Copied { $count } URLs!
+        [one] Copiat un URL!
+       *[other] Copiat { $count } URL-uri!
     }
 zen-copy-multi-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [one] Copiat un URL ca Markdown!
+       *[other] Copiat { $count } URL-uri ca Markdown!
     }
 zen-general-cancel-label = 
     .label = Anulează
@@ -68,9 +68,10 @@ zen-pinned-tab-edit-url-title = Editare URL fixat
 zen-pinned-tab-edit-url-label = Introdu URL-ul pe care această filă trebuie să-l indice:
 zen-tabs-renamed = Fila a fost redenumită cu succes!
 zen-background-tab-opened-toast = Filă nouă de fundal deschisă!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Spațiul de Lucru a fost redenumit cu succes!
 zen-split-view-limit-toast = Nu se mai pot adăuga panouri noi la vizualizarea împărțită!
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-sidebar-drag-collapsed-toast = Bara laterală ascunsă! Folosește <span>{ $shortcut }</span> pentru a reintroduce bara laterală.
 zen-toggle-compact-mode-button = 
     .label = Modul Compact
     .tooltiptext = Comută Modul Compact
@@ -114,7 +115,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Distribuie Această Pagină
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Creează un Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Intră în Modul Cititor
 zen-site-data-header-screenshot = 

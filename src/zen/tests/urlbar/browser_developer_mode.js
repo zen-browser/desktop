@@ -445,14 +445,15 @@ add_task(async function test_split_controls_target_their_own_page() {
       await SpecialPowers.pushPrefEnv({
         set: [["screenshots.browser.component.enabled", false]],
       });
+      const screenshotDivider = screenshot.nextElementSibling;
       await TestUtils.waitForCondition(
-        () => BrowserTestUtils.isHidden(screenshot),
-        "The toolbar hides the button when Firefox Screenshots is disabled",
+        () => [screenshot, screenshotDivider].every(BrowserTestUtils.isHidden),
+        "The camera and its trailing divider hide when Screenshots is disabled",
       );
       await SpecialPowers.popPrefEnv();
       await TestUtils.waitForCondition(
-        () => BrowserTestUtils.isVisible(screenshot),
-        "The toolbar restores the button when Firefox Screenshots is enabled",
+        () => [screenshot, screenshotDivider].every(BrowserTestUtils.isVisible),
+        "The camera and its trailing divider return when Screenshots is enabled",
       );
 
       gBrowser.selectedTab = firstTab;
@@ -583,17 +584,17 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
         ),
         name + " renders the developer toolbar stripes",
       );
-      const divider = (single ? paneToolbar : nativeTools).querySelector(
-        ".zen-developer-action-divider",
-      );
+      const [beforeCamera, afterCamera] = (
+        single ? paneToolbar : nativeTools
+      ).querySelectorAll(".zen-developer-action-divider");
       Assert.ok(
-        divider?.getBoundingClientRect().width === 1 &&
-          divider.previousElementSibling?.getAttribute("data-l10n-id") ===
-            "zen-developer-mode-copy" &&
-          divider.nextElementSibling?.dataset.action === "screenshot" &&
-          divider.nextElementSibling?.nextElementSibling?.dataset.tool ===
-            "webconsole",
-        name + " places the screenshot button between the Copy URL divider and Console",
+        beforeCamera?.getBoundingClientRect().width === 1 &&
+          afterCamera?.getBoundingClientRect().width === 1 &&
+          beforeCamera.previousElementSibling?.dataset.action === "copy" &&
+          beforeCamera.nextElementSibling?.dataset.action === "screenshot" &&
+          beforeCamera.nextElementSibling === afterCamera.previousElementSibling &&
+          afterCamera.nextElementSibling?.dataset.tool === "webconsole",
+        name + " separates the camera from both Copy URL and Console",
       );
       const navParent = nav.parentNode;
       const localGap =

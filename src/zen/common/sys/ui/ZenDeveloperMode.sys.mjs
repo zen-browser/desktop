@@ -220,7 +220,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
       );
     });
 
-    toolbar.append(copy, divider, screenshot);
+    toolbar.append(copy, divider, screenshot, divider.cloneNode(false));
     for (const [toolId, name, icon] of [
       ["webconsole", "console", "tool-webconsole.svg"],
       ["netmonitor", "network", "tool-network.svg"],

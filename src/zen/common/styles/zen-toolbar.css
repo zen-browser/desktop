@@ -89,7 +89,8 @@
 }
 
 @media -moz-pref("screenshots.browser.component.enabled", false) {
-  .zen-developer-button[data-action="screenshot"] {
+  .zen-developer-button[data-action="screenshot"],
+  .zen-developer-button[data-action="screenshot"] + .zen-developer-action-divider {
     display: none;
   }
 }

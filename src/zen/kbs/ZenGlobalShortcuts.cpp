@@ -75,6 +75,11 @@ already_AddRefed<Element> LiveKey(const GlobalKey& aKey) {
   if (!key || !key->IsInComposedDoc()) {
     return nullptr;
   }
+  Document* doc = key->OwnerDoc();
+  nsPIDOMWindowOuter* window = doc->GetWindow();
+  if (!doc->GetDocShell() || !window || window->Closed()) {
+    return nullptr;
+  }
   return key.forget();
 }
 

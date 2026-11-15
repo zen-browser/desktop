@@ -222,8 +222,17 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   onViewClose() {
+    if (!this.#urlbarOnly || this.#isNavigating) {
+      return;
+    }
+    this.#baseWindow.visibility = false;
     setTimeout(() => {
-      if (this.#urlbarOnly && !this.#isNavigating && !window.closed) {
+      if (window.closed) {
+        return;
+      }
+      if (this.#isNavigating) {
+        this.#baseWindow.visibility = true;
+      } else {
         window.close();
       }
     }, 0);

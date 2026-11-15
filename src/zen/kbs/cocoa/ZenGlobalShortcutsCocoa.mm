@@ -47,8 +47,6 @@ static OSStatus HandleHotKey(EventHandlerCallRef aCallRef, EventRef aEvent,
   if (status != noErr || hotKeyId.signature != kHotKeySignature) {
     return eventNotHandledErr;
   }
-  // The shortcut may well have been pressed over another application.
-  [NSApp activateIgnoringOtherApps:YES];
   ZenGlobalShortcuts::OnHotKey(hotKeyId.id);
   return noErr;
 }

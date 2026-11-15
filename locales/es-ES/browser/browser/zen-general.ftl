@@ -68,6 +68,7 @@ zen-pinned-tab-edit-url-title = Editar URL fijada
 zen-pinned-tab-edit-url-label = Introduzca la URL a la que debe apuntar esta pestaña fijada:
 zen-tabs-renamed = ¡La pestaña se ha renombrado con éxito!
 zen-background-tab-opened-toast = ¡Nueva pestaña abierta en segundo plano!
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = ¡El espacio de trabajo ha sido renombrado con éxito!
 zen-split-view-limit-toast = ¡No se pueden añadir más paneles a la vista dividida!
 zen-sidebar-drag-collapsed-toast = ¡Barra lateral oculta! Use <span>{ $shortcut }</span> para volver a mostrar la barra lateral.

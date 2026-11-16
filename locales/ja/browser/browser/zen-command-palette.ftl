@@ -16,6 +16,7 @@ zen-action-settings = 設定
 zen-action-open-private-window = プライベートウィンドウを開く
 zen-action-open-new-window = 新しいウィンドウを開く
 zen-action-new-blank-window = 新しい空のウィンドウを開く
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = タブをピン留め
 zen-action-unpin-tab = タブのピン留めを解除
 zen-action-open-space-routing = スペースルーティングを開く

@@ -45,17 +45,15 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimitza
     .tooltip = Minimitza
 zen-panel-ui-gradient-generator-custom-color = Color personalitzat
-zen-copy-current-url-confirmation = L'URL actual s'ha copiat.
-zen-copy-current-url-as-markdown-confirmation = L'URL actual s'ha copiat com a Markdown!
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] S'ha copiat { $count } URL!
-       *[other] S'han copiat { $count } URLs!
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] S'ha copiat { $count } URL en format Markdown!
-       *[other] S'han copiat { $count } URLs en format Markdown!
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
     }
 zen-general-cancel-label = 
     .label = Cancel·la
@@ -152,3 +150,11 @@ zen-window-sync-migration-dialog-learn-more = Més informació
 zen-window-sync-migration-dialog-accept = D'acord
 zen-appmenu-new-blank-window = 
     .label = Nova finestra en blanc
+zen-appmenu-new-little-window = 
+    .label = Mini finestra nova
+zen-little-window-open-in-space = Obre al <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Obre al { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Trieu un espai
+zen-little-window-intro-title = S'ha obert al <i data-l10n-name="name">Mini Zen</i>
+zen-little-window-intro-description = Feu clic a «Obre al» per moure aquesta pàgina a una finestra completa, o a { $shortcut } per tancar-la

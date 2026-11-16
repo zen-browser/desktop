@@ -298,8 +298,7 @@
   --zen-bookmark-panel-favicon-container-background: light-dark(#ffffff, var(--color-white-alpha-10));
 
   /** components/panels: border-color **/
-  --zen-dialog-box-border-light-color: var(--color-black-alpha-20);
-  --zen-dialog-box-outline-color: light-dark(transparent, rgba(161, 161, 161, 0.5));
+  --zen-dialog-border-color: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
 
   /** components/panels: box-shadow **/
   --zen-dialog-box-shadow: 0 7px 8px rgba(0, 0, 0, 0.1);
@@ -330,6 +329,9 @@
   --zen-preferences-color-picker-size: 180px;
   --zen-preferences-theme-dialog-min-width: 650px;
   --zen-preferences-layout-preview-width: 250px;
+
+  /** components/settings: background-color **/
+  --zen-settings-background: light-dark(#f3f3f4, #1e1e1f);
 
   /** components/share: size **/
   --zen-share-card-width: 325px;

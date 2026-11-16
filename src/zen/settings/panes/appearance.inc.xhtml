@@ -1,0 +1,40 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-appearance" class="zen-settings-pane" role="tabpanel" data-pane="appearance" hidden="hidden">
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-layout-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-layout-row">
+                <html:span id="zen-settings-layout-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-layout"/>
+                <html:div id="zen-settings-layout" role="radiogroup" aria-labelledby="zen-settings-layout-label">
+                  <html:button class="zen-settings-layout-option" role="radio" data-layout="single">
+                    <html:img src="chrome://browser/content/zen-images/layouts/single-toolbar.png" alt=""/>
+                    <html:span data-l10n-id="zen-settings-window-layout-single"/>
+                  </html:button>
+                  <html:button class="zen-settings-layout-option" role="radio" data-layout="multiple">
+                    <html:img src="chrome://browser/content/zen-images/layouts/multiple-toolbar.png" alt=""/>
+                    <html:span data-l10n-id="zen-settings-window-layout-multiple"/>
+                  </html:button>
+                  <html:button class="zen-settings-layout-option" role="radio" data-layout="collapsed">
+                    <html:img src="chrome://browser/content/zen-images/layouts/collapsed.png" alt=""/>
+                    <html:span data-l10n-id="zen-settings-window-layout-collapsed"/>
+                  </html:button>
+                </html:div>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-right"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.vertical.right-side"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-newtab-button"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.show-newtab-vertical"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="zen.tabs.show-newtab-vertical">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-newtab-button-top"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.view.show-newtab-button-top"/>
+              </html:div>
+            </html:div>
+          </html:div>
+        </html:section>

@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Escuro
 zen-menubar-new-blank-window = 
     .label = Nova Janela em Branco
+zen-menubar-new-little-window = 
+    .label = Nova Mini Janela

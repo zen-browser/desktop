@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Σκοτεινό
 zen-menubar-new-blank-window = 
     .label = Νέο Κενό Παράθυρο
+zen-menubar-new-little-window = 
+    .label = New Little Window

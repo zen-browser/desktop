@@ -45,17 +45,15 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimera
     .tooltip = Minimera
 zen-panel-ui-gradient-generator-custom-color = Anpassad färg
-zen-copy-current-url-confirmation = Kopierade nuvarande URL!
-zen-copy-current-url-as-markdown-confirmation = Kopierade nuvarande webbadress som Markdown!
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] Kopierad { $count } URL!
-       *[other] Kopierade { $count } URL: er!
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] Kopierad { $count } URL som Markdown!
-       *[other] Kopierade { $count } URL: er som Markdown!
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
     }
 zen-general-cancel-label = 
     .label = Avbryt
@@ -152,3 +150,11 @@ zen-window-sync-migration-dialog-learn-more = Läs mer
 zen-window-sync-migration-dialog-accept = Jag förstår
 zen-appmenu-new-blank-window = 
     .label = Nytt blankt fönster
+zen-appmenu-new-little-window = 
+    .label = New Little Window
+zen-little-window-open-in-space = Öppna i <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Öppna i { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Choose a Space
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close

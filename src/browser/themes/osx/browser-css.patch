@@ -1,5 +1,5 @@
 diff --git a/browser/themes/osx/browser.css b/browser/themes/osx/browser.css
-index 5a86ecb4cf4b90a132a70d6c9c07afe911ee9621..530f666c4c389fb61ebe4acc9a233370ae98a150 100644
+index 5a86ecb4cf4b90a132a70d6c9c07afe911ee9621..fa866d11767ef6d6b94884569c510bd851a6e93b 100644
 --- a/browser/themes/osx/browser.css
 +++ b/browser/themes/osx/browser.css
 @@ -43,7 +43,7 @@
@@ -11,3 +11,14 @@ index 5a86ecb4cf4b90a132a70d6c9c07afe911ee9621..530f666c4c389fb61ebe4acc9a233370
  
      @media (-moz-mac-rtl) {
        /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens */
+@@ -157,10 +157,6 @@
+   }
+ }
+ 
+-.tabbrowser-tab:not(:hover) > .tab-stack > .tab-content .tab-icon-image:not([selected], [multiselected]) {
+-  opacity: var(--opacity-deemphasized);
+-}
+-
+ /*
+  * Force the overlay to create a new stacking context so it always appears on
+  * top of the icon.

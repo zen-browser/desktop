@@ -1,0 +1,24 @@
+diff --git a/dom/events/KeyEventHandler.h b/dom/events/KeyEventHandler.h
+index 8bf896fc948981171523849e2d0e4f8d25f7ac16..57da04e256f9b72e6900ced1db1c530aa4032a89 100644
+--- a/dom/events/KeyEventHandler.h
++++ b/dom/events/KeyEventHandler.h
+@@ -16,6 +16,10 @@
+ #include "nsIWeakReference.h"
+ #include "nsString.h"
+ 
++namespace zen {
++class ZenGlobalShortcuts;
++}  // namespace zen
++
+ namespace mozilla {
+ 
+ namespace layers {
+@@ -42,6 +46,8 @@ enum ReservedKey : uint8_t {
+ };
+ 
+ class KeyEventHandler final {
++  friend class zen::ZenGlobalShortcuts;
++
+  public:
+   // This constructor is used only by XUL key handlers (e.g., <key>)
+   explicit KeyEventHandler(dom::Element* aHandlerElement,

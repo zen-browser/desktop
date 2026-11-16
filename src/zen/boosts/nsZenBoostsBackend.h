@@ -69,16 +69,7 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend,
   nsresult Init();
 
   /**
-   * @brief Resolve a color to take into account Zen boosts. This is the single
-   * place style colors are filtered; it is reached for every style color via
-   * StyleAbsoluteColor::ToColor. Do not add a second StyleColor::ResolveColor
-   * filter on top of this or colors get filtered multiple times (which also
-   * makes resting colors disagree with composited transition endpoints).
-   *
-   * The boost state is derived from the frame the color is being resolved for:
-   * its document's top BrowsingContext carries the accent/inversion data. When
-   * @p aFrame is null, or belongs to anonymous content (devtools, screenshots,
-   * the boosts overlays themselves), the color is returned unfiltered.
+   * @brief Resolve a color to take into account Zen boosts.
    * @param aColor The color to resolve.
    * @param aFrame The frame the color is being resolved for, or null.
    * @return The resolved color with Zen boost filters applied, or the original

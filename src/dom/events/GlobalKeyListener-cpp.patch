@@ -1,0 +1,28 @@
+diff --git a/dom/events/GlobalKeyListener.cpp b/dom/events/GlobalKeyListener.cpp
+index f601a3421f458913aff51fc25c37400f75881814..abcf41c81382e433d877153900d92b7869a9a2c8 100644
+--- a/dom/events/GlobalKeyListener.cpp
++++ b/dom/events/GlobalKeyListener.cpp
+@@ -17,6 +17,7 @@
+ #include "mozilla/ShortcutKeys.h"
+ #include "mozilla/StaticPtr.h"
+ #include "mozilla/TextEvents.h"
++#include "mozilla/ZenGlobalShortcuts.h"
+ #include "mozilla/dom/Document.h"
+ #include "mozilla/dom/Element.h"
+ #include "mozilla/dom/Event.h"
+@@ -556,6 +557,7 @@ void XULKeySetGlobalKeyListener::AttachKeyHandler(
+ 
+   aElementTarget->SetProperty(nsGkAtoms::listener, handler.forget().take(),
+                               nsPropertyTable::SupportsDtorFunc, true);
++  zen::ZenGlobalShortcuts::AttachKeyset(aElementTarget);
+ }
+ 
+ //
+@@ -565,6 +567,7 @@ void XULKeySetGlobalKeyListener::AttachKeyHandler(
+ //
+ void XULKeySetGlobalKeyListener::DetachKeyHandler(
+     dom::Element* aElementTarget) {
++  zen::ZenGlobalShortcuts::DetachKeyset(aElementTarget);
+   // Only attach if we're really in a document
+   nsCOMPtr<dom::Document> doc = aElementTarget->GetUncomposedDoc();
+   if (!doc) {

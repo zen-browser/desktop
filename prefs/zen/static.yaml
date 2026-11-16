@@ -7,3 +7,9 @@
   value: true
   mirror: always
   type: static
+
+- name: zen.keyboard.global-shortcuts.enabled
+  cpptype: bool
+  value: true
+  mirror: always
+  type: static

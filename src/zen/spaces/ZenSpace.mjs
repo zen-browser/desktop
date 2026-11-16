@@ -67,7 +67,7 @@ export class nsZenWorkspace extends MozXULElement {
             <image class="zen-current-workspace-indicator-chevron" />
             <hbox class="zen-current-workspace-indicator-icon" />
           </stack>
-          <label class="zen-current-workspace-indicator-name" />
+          <label class="zen-current-workspace-indicator-name no-squircles" />
           <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions" />
         </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">

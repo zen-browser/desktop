@@ -53,13 +53,20 @@ add_task(function test_space_switch_commands() {
   sandbox.restore();
 });
 
+add_task(function test_expand_expands_a_glance() {
+  const expand = sandbox.stub(gZenGlanceManager, "fullyOpenGlance");
+  runCommand("cmd_zenExpand");
+  sinon.assert.calledOnce(expand);
+  sandbox.restore();
+});
+
 add_task(function test_glance_fallback() {
   const glance = sandbox.stub(gZenGlanceManager, "handleMainCommandSet");
-  runCommand("cmd_zenGlanceExpand");
+  runCommand("cmd_zenGlanceClose");
   sinon.assert.calledOnce(glance);
   is(
     glance.firstCall.args[0]?.target?.id,
-    "cmd_zenGlanceExpand",
+    "cmd_zenGlanceClose",
     "Glance commands fall through with the command event"
   );
   sandbox.restore();

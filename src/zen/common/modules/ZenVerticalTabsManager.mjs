@@ -13,20 +13,6 @@ window.gZenVerticalTabsManager = {
     this._multiWindowFeature = new nsZenMultiWindowFeature();
     this._initWaitPromise();
 
-    ChromeUtils.defineLazyGetter(this, "isWindowsStyledButtons", () => {
-      return !(
-        window.AppConstants.platform === "macosx" ||
-        window.matchMedia("(-moz-gtk-csd-reversed-placement)").matches ||
-        Services.prefs.getBoolPref(
-          "zen.view.experimental-force-window-controls-left"
-        )
-      );
-    });
-
-    ChromeUtils.defineLazyGetter(this, "hidesTabsToolbar", () => {
-      return document.documentElement.hasAttribute("popup-window");
-    });
-
     this.initializePreferences(this._onPrefChange.bind(this));
     this._toolbarOriginalParent =
       document.getElementById("nav-bar").parentElement;
@@ -412,16 +398,22 @@ window.gZenVerticalTabsManager = {
       }
 
       const topButtons = document.getElementById("zen-sidebar-top-buttons");
+      const isLittleWindow = this.isLittleWindow;
       const isCompactMode =
-        gZenCompactModeManager.preference && !forCustomizableMode;
+        gZenCompactModeManager.preference &&
+        !forCustomizableMode &&
+        !isLittleWindow;
       const isVerticalTabs = this._prefsVerticalTabs || forCustomizableMode;
-      const isSidebarExpanded = this._prefsSidebarExpanded || !isVerticalTabs;
-      const isRightSide = this._prefsRightSide && isVerticalTabs;
+      const isSidebarExpanded =
+        (this._prefsSidebarExpanded || !isVerticalTabs) && !isLittleWindow;
+      const isRightSide =
+        this._prefsRightSide && isVerticalTabs && !isLittleWindow;
       const isSingleToolbar =
         ((this._prefsUseSingleToolbar && isVerticalTabs && isSidebarExpanded) ||
           !isVerticalTabs) &&
         !forCustomizableMode &&
-        !this.hidesTabsToolbar;
+        !this.hidesTabsToolbar &&
+        !isLittleWindow;
       const titlebar = document.getElementById("titlebar");
 
       gBrowser.tabContainer.setAttribute(
@@ -755,6 +747,31 @@ window.gZenVerticalTabsManager = {
     }
   },
 };
+
+ChromeUtils.defineLazyGetter(gZenVerticalTabsManager, "isLittleWindow", () =>
+  document.documentElement.hasAttribute("zen-little-window")
+);
+
+ChromeUtils.defineLazyGetter(
+  gZenVerticalTabsManager,
+  "hidesTabsToolbar",
+  () =>
+    document.documentElement.hasAttribute("popup-window") ||
+    gZenVerticalTabsManager.isLittleWindow
+);
+
+ChromeUtils.defineLazyGetter(
+  gZenVerticalTabsManager,
+  "isWindowsStyledButtons",
+  () =>
+    !(
+      window.AppConstants.platform === "macosx" ||
+      window.matchMedia("(-moz-gtk-csd-reversed-placement)").matches ||
+      Services.prefs.getBoolPref(
+        "zen.view.experimental-force-window-controls-left"
+      )
+    )
+);
 
 XPCOMUtils.defineLazyPreferenceGetter(
   gZenVerticalTabsManager,

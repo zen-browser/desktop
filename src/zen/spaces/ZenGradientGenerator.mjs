@@ -27,6 +27,17 @@ const kTextures = ["none", "grain", "sand", "denim", "tweed"];
 const kDefaultTexture = "grain";
 const kGrainDefault = 10 / 16;
 
+const kBlankWindowColors = {
+  dark: [
+    [9, 9, 29],
+    [21, 9, 28],
+  ],
+  light: [
+    [233, 233, 247],
+    [196, 170, 222],
+  ],
+};
+
 function toLinear(c) {
   const a = Math.abs(c);
   return (
@@ -185,6 +196,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       !gZenWorkspaces.shouldHaveWorkspaces ||
       gZenWorkspaces.privateWindowOrDisabled
     ) {
+      if (
+        gZenWorkspaces.shouldHaveWorkspaces &&
+        !gZenWorkspaces.isPrivateWindow
+      ) {
+        this.#initBlankWindowTheme();
+      }
       return;
     }
     this.promiseInitialized = new Promise(resolve => {
@@ -265,6 +282,56 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.#nativeAccentColorCache = null;
     this.updateCurrentWorkspace();
     Services.obs.notifyObservers(null, "zen-theme-change");
+  }
+
+  #initBlankWindowTheme() {
+    const apply = () => this.#applyBlankWindowTheme();
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "windowSchemeType",
+      "zen.view.window.scheme",
+      2,
+      apply
+    );
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", apply);
+    apply();
+  }
+
+  #applyBlankWindowTheme() {
+    const palette = kBlankWindowColors[this.isDarkMode ? "dark" : "light"];
+    const colors = palette.map((c, index) => ({
+      c,
+      isCustom: false,
+      algorithm: "",
+      isPrimary: index === 0,
+      lightness: Math.round((Math.max(...palette[0]) / 255) * 100),
+      type: EXPLICIT_LIGHTNESS_TYPE,
+    }));
+    this.currentOpacity = lazy.MAX_OPACITY;
+    const dominantColor = this.getMostDominantColor(colors);
+    const isDarkMode = this.shouldBeDarkMode(dominantColor);
+    lazy.browserBackgroundElement.style.setProperty(
+      "--zen-main-browser-background",
+      this.getGradient(colors)
+    );
+    lazy.toolbarBackgroundElement.style.setProperty(
+      "--zen-main-browser-background-toolbar",
+      this.getGradient(colors, true)
+    );
+    const root = document.documentElement;
+    const styles = {
+      "--zen-primary-color": this.getAccentColorForUI(
+        dominantColor,
+        isDarkMode
+      ),
+      ...this.toolbarTextStyles(dominantColor, isDarkMode),
+      "--toolbar-color-scheme": isDarkMode ? "dark" : "light",
+    };
+    for (const [property, value] of Object.entries(styles)) {
+      root.style.setProperty(property, value, "important");
+    }
   }
 
   get isDarkMode() {

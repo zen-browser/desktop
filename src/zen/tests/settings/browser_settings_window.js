@@ -67,6 +67,40 @@ add_task(async function test_navigation() {
   await BrowserTestUtils.closeWindow(win);
 });
 
+add_task(async function test_about_link_opens_the_about_dialog() {
+  const win = await openSettingsWindow();
+  const aboutOpened = BrowserTestUtils.domWindowOpenedAndLoaded(
+    null,
+    w =>
+      w.document.documentElement.getAttribute("windowtype") == "Browser:About"
+  );
+  win.document
+    .querySelector('#zen-settings-links [data-action="open-about"]')
+    .click();
+  const about = await aboutOpened;
+  ok(!win.closed, "The settings window stays open");
+  await BrowserTestUtils.closeWindow(about);
+  await BrowserTestUtils.closeWindow(win);
+});
+
+add_task(async function test_images_cannot_be_dragged() {
+  setSyncState({
+    status: UIState.STATUS_SIGNED_IN,
+    email: "zen@example.com",
+    syncEnabled: true,
+  });
+  const win = await openSettingsWindow();
+  for (const img of win.document.querySelectorAll("#zen-settings-root img")) {
+    is(
+      win.getComputedStyle(img).pointerEvents,
+      "none",
+      `${img.id || img.getAttribute("src")} can't be grabbed`
+    );
+  }
+  UIState.get = originalUIStateGet;
+  await BrowserTestUtils.closeWindow(win);
+});
+
 add_task(async function test_firefox_settings_links_close_the_window() {
   for (const action of ["open-more-settings", "open-mods"]) {
     const win = await openSettingsWindow();

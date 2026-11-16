@@ -7,6 +7,7 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
   ShortcutUtils: "resource://gre/modules/ShortcutUtils.sys.mjs",
   ZenLittleWindow:
     "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
@@ -32,6 +33,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   #urlbarOnly = false;
   #urlbarOnlyObserver = null;
   #isWaitingToShow = false;
+  #shownHeight = 0;
   #isWatchingUrlbar = false;
   #isNavigating = false;
   #urlbarOnlyProgressListener = null;
@@ -74,6 +76,8 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       this.#initUrlbarOnly();
     }
 
+    this.#watchDownloads();
+
     // The space the page would go to can change while this window is in the
     // background.
     window.addEventListener("activate", () => this.#updateOpenLabel());
@@ -89,6 +93,115 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
         this.#maybeShowIntro();
       }
     });
+  }
+
+  async #watchDownloads() {
+    const list = await window.Downloads.getList(window.Downloads.ALL);
+    if (window.closed) {
+      return;
+    }
+    const cards = new Map();
+    let isListening = false;
+    const view = {
+      onDownloadAdded: download => {
+        if (isListening && this.#isOwnDownload(download)) {
+          cards.set(download, this.#showDownload(download));
+        }
+      },
+      onDownloadChanged: download => {
+        const card = cards.get(download);
+        if (card) {
+          this.#updateDownload(card, download);
+        }
+      },
+      onDownloadRemoved: download => {
+        cards.get(download)?.remove();
+        cards.delete(download);
+      },
+    };
+    window.addEventListener("unload", () => list.removeView(view), {
+      once: true,
+    });
+    await list.addView(view);
+    isListening = true;
+  }
+
+  #isOwnDownload(download) {
+    const context = BrowsingContext.get(download.source.browsingContextId);
+    return context?.topChromeWindow == window;
+  }
+
+  #showDownload(download) {
+    let container = document.getElementById("zen-little-window-downloads");
+    if (!container) {
+      container = document.createXULElement("hbox");
+      container.id = "zen-little-window-downloads";
+      document.getElementById("tabbrowser-tabbox").append(container);
+    }
+    const fileName = PathUtils.filename(download.target.path);
+    const card = window.MozXULElement.parseXULToFragment(`
+      <hbox class="zen-little-window-download" align="center" role="button" tabindex="0">
+        <hbox class="zen-little-window-download-progress" align="center" pack="center">
+          <image class="zen-little-window-download-icon" />
+        </hbox>
+        <vbox flex="1">
+          <label class="zen-little-window-download-name" crop="center" />
+          <label class="zen-little-window-download-status" crop="end" />
+          <label class="zen-little-window-download-source" crop="end" />
+        </vbox>
+        <toolbarbutton class="zen-little-window-download-close close-icon"
+                       data-l10n-id="urlbar-search-mode-indicator-close" />
+      </hbox>
+    `).firstElementChild;
+    card.querySelector("image").src = `moz-icon://${fileName}?size=32`;
+    card.querySelector(".zen-little-window-download-name").value = fileName;
+    const source = card.querySelector(".zen-little-window-download-source");
+    try {
+      document.l10n.setAttributes(source, "zen-little-window-download-source", {
+        host: Services.io.newURI(download.source.url).displayHost,
+      });
+    } catch {
+      source.hidden = true;
+    }
+    this.#updateDownload(card, download);
+    const closeButton = card.querySelector(".zen-little-window-download-close");
+    closeButton.addEventListener("command", () => {
+      if (!download.stopped) {
+        download
+          .cancel()
+          .then(() => download.removePartialData())
+          .catch(console.error);
+      }
+      card.remove();
+    });
+    this.#onActivate(card, event => {
+      if (!closeButton.contains(event.target) && download.succeeded) {
+        download.showContainingDirectory();
+      }
+    });
+    container.append(card);
+    return card;
+  }
+
+  #updateDownload(card, download) {
+    const isDownloading = !download.stopped;
+    card.toggleAttribute("done", download.succeeded);
+    card.toggleAttribute("downloading", isDownloading);
+    if (!isDownloading) {
+      return;
+    }
+    card.style.setProperty(
+      "--zen-little-window-download-progress",
+      `${download.hasProgress ? download.progress : 0}%`
+    );
+    const [statusText, secondsLeft] = lazy.DownloadUtils.getDownloadStatus(
+      download.currentBytes,
+      download.hasProgress ? download.totalBytes : -1,
+      download.speed,
+      card._secondsLeft
+    );
+    card._secondsLeft = secondsLeft;
+    card.querySelector(".zen-little-window-download-status").value = statusText;
   }
 
   #maybeShowIntro() {
@@ -278,6 +391,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       return;
     }
     const height = this.#fitToUrlbar() ?? window.outerHeight;
+    this.#shownHeight = height;
     const { availLeft, availTop, availWidth, availHeight } = window.screen;
     window.moveTo(
       Math.round(availLeft + (availWidth - window.outerWidth) / 2),
@@ -375,7 +489,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
         availLeft + availWidth - width
       );
       const y = clamp(
-        window.screenY,
+        window.screenY - Math.round((height - this.#shownHeight) / 2),
         availTop,
         availTop + availHeight - height
       );

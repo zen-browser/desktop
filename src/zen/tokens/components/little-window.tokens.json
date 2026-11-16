@@ -5,6 +5,7 @@
     }
   },
   "size": {
-    "--zen-little-window-intro-width": { "value": "300px" }
+    "--zen-little-window-intro-width": { "value": "300px" },
+    "--zen-little-window-download-width": { "value": "260px" }
   }
 }

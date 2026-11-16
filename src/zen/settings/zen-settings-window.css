@@ -24,7 +24,7 @@
   --zen-settings-layout-thumbnail-width: 84px;
   --zen-settings-art-key-size: 60px;
   --zen-settings-art-key-icon-size: 50cqi;
-  --zen-settings-art-key-border-width: 4px 4px 8px;
+  --zen-settings-art-key-edge-width: 4px 4px 8px;
   --zen-settings-drop-before-shadow: inset 0 2px 0 AccentColor;
   --zen-settings-drop-after-shadow: inset 0 -2px 0 AccentColor;
   --zen-settings-art-key-face: linear-gradient(#bcd0fb, #8fb0f2);
@@ -749,15 +749,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* The thicker bottom edge is the side of the key. */
-  border-style: solid;
-  border-color: var(--zen-settings-art-key-edge);
-  border-width: var(--zen-settings-art-key-border-width);
+  position: relative;
+  isolation: isolate;
+  padding: var(--zen-settings-art-key-edge-width);
   border-radius: var(--zen-border-radius-12);
-  background: var(--zen-settings-art-key-face);
+  background: var(--zen-settings-art-key-edge);
   color: var(--zen-settings-art-key-color);
   font-weight: var(--zen-font-weight-medium);
   overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: var(--zen-settings-art-key-edge-width);
+    z-index: -1;
+    border-radius: var(--zen-border-radius-8);
+    background: var(--zen-settings-art-key-face);
+  }
 
   & > span {
     /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the width of the key */
@@ -804,6 +812,10 @@
 /* A setting that refines the one above it. */
 .zen-settings-sub-row {
   padding-inline-start: var(--zen-space-28);
+}
+
+#zen-settings-root img {
+  pointer-events: none;
 }
 
 /* Dialogs */

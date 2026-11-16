@@ -106,3 +106,118 @@ add_task(async function test_little_window_disabled() {
   );
   await SpecialPowers.popPrefEnv();
 });
+
+add_task(async function test_little_window_shows_its_downloads() {
+  const win = await openLittleWindow({ url: TEST_URL });
+  const list = await Downloads.getList(Downloads.ALL);
+  const cards = () =>
+    win.document.querySelectorAll(".zen-little-window-download");
+
+  const elsewhere = await Downloads.createDownload({
+    source: {
+      url: "https://example.com/other.zip",
+      browsingContextId: gBrowser.selectedBrowser.browsingContext.id,
+    },
+    target: PathUtils.join(PathUtils.tempDir, "other.zip"),
+  });
+  await list.add(elsewhere);
+  ok(!cards().length, "A download from another window is not shown");
+
+  const download = await Downloads.createDownload({
+    source: {
+      url: "https://example.com/file.zip",
+      browsingContextId: win.gBrowser.selectedBrowser.browsingContext.id,
+    },
+    target: PathUtils.join(PathUtils.tempDir, "little-window.zip"),
+  });
+  await list.add(download);
+  await TestUtils.waitForCondition(
+    () => cards().length,
+    "A download from the little window gets a card"
+  );
+  const [card] = cards();
+  await win.document.l10n.translateFragment(card);
+  is(
+    card.querySelector(".zen-little-window-download-name").value,
+    "little-window.zip",
+    "With its file name"
+  );
+  is(
+    card.querySelector(".zen-little-window-download-source").value,
+    "From example.com",
+    "And where it is from"
+  );
+  const rect = card.getBoundingClientRect();
+  const box = win.document
+    .getElementById("tabbrowser-tabbox")
+    .getBoundingClientRect();
+  Assert.greater(rect.width, 0, "The card is shown");
+  Assert.less(rect.left - box.left, 20, "At the start of the window");
+  Assert.less(box.bottom - rect.bottom, 20, "And at its bottom");
+
+  const status = card.querySelector(".zen-little-window-download-status");
+  ok(!status.getBoundingClientRect().width, "Nothing to report until it runs");
+  download.stopped = false;
+  download.hasProgress = true;
+  download.progress = 40;
+  download.currentBytes = 400;
+  download.totalBytes = 1000;
+  download._notifyChange();
+  ok(card.hasAttribute("downloading"), "A running download is marked as one");
+  is(
+    card.style.getPropertyValue("--zen-little-window-download-progress"),
+    "40%",
+    "Its progress is drawn"
+  );
+  ok(status.value.includes("400"), `And written out: ${status.value}`);
+  Assert.greater(status.getBoundingClientRect().width, 0, "In view");
+  download.stopped = true;
+  download.succeeded = true;
+  download._notifyChange();
+  ok(card.hasAttribute("done"), "A finished download is marked as done");
+  ok(!status.getBoundingClientRect().width, "And says where it is from again");
+
+  const second = await Downloads.createDownload({
+    source: {
+      url: "https://example.com/second.zip",
+      browsingContextId: win.gBrowser.selectedBrowser.browsingContext.id,
+    },
+    target: PathUtils.join(PathUtils.tempDir, `${"long-name-".repeat(12)}.zip`),
+  });
+  await list.add(second);
+  await TestUtils.waitForCondition(() => cards().length == 2, "A second card");
+  const secondRect = cards()[1].getBoundingClientRect();
+  Assert.greaterOrEqual(secondRect.left, rect.right, "Sits next to the first");
+  is(secondRect.top, rect.top, "On the same row");
+  is(secondRect.width, rect.width, "A long name does not widen its card");
+  Assert.lessOrEqual(
+    cards()[1]
+      .querySelector(".zen-little-window-download-name")
+      .getBoundingClientRect().right,
+    secondRect.right,
+    "And stays inside it"
+  );
+  second.stopped = false;
+  let cancelled = false;
+  second.cancel = async () => {
+    cancelled = true;
+  };
+  second.removePartialData = async () => {};
+  cards()[1].querySelector(".zen-little-window-download-close").doCommand();
+  is(cards().length, 1, "The close button takes its card away");
+  ok(cancelled, "And cancels a download that is still running");
+
+  let cancelledFinished = false;
+  download.cancel = async () => {
+    cancelledFinished = true;
+  };
+  card.querySelector(".zen-little-window-download-close").doCommand();
+  ok(!cards().length, "A finished download is dismissed the same way");
+  ok(!cancelledFinished, "With nothing left to cancel");
+  ok((await list.getAll()).includes(download), "And it stays in the list");
+  await list.remove(second);
+
+  await list.remove(download);
+  await list.remove(elsewhere);
+  await BrowserTestUtils.closeWindow(win);
+});

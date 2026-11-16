@@ -286,6 +286,7 @@
 
   /** components/little-window: size **/
   --zen-little-window-intro-width: 300px;
+  --zen-little-window-download-width: 260px;
 
   /** components/media: background-color **/
   --zen-media-progress-bar-background: var(--color-white-alpha-20);

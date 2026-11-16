@@ -316,7 +316,7 @@ export class ZenSettingsShortcuts {
     }
     for (const text of keys) {
       const key = document.createElement("span");
-      key.className = "zen-settings-art-key";
+      key.className = "zen-settings-art-key zen-squircle-before";
       key.dataset.key = text;
       key.toggleAttribute("data-word", text.length > 1);
       const label = document.createElement("span");

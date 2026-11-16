@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = ダークモード
 zen-menubar-new-blank-window = 
     .label = 新しい空のウィンドウ
+zen-menubar-new-little-window = 
+    .label = New Little Window

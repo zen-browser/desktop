@@ -16,6 +16,7 @@ zen-action-settings = Ustawienia
 zen-action-open-private-window = Otwórz okno prywatne
 zen-action-open-new-window = Otwórz nowe okno
 zen-action-new-blank-window = Nowe puste okno
+zen-action-new-little-window = Nowe małe okno
 zen-action-pin-tab = Przypnij kartę
 zen-action-unpin-tab = Odepnij kartę
 zen-action-open-space-routing = Otwórz reguły przestrzeni

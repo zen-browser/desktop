@@ -21,7 +21,7 @@ add_task(async function test_little_window_chrome() {
     !root.hasAttribute("zen-single-toolbar"),
     "A little window keeps the toolbar on top"
   );
-  ok(!root.hasAttribute("persist"), "Its size is not persisted");
+  is(root.getAttribute("persist"), "none", "Its size is not persisted");
   Assert.less(
     win.outerWidth,
     window.outerWidth,

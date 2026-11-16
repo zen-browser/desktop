@@ -41,7 +41,7 @@
     if (extraOptions.hasKey("zen-little-window-urlbar-only")) {
       root.setAttribute("zen-little-window-urlbar-only", "true");
     }
-    root.removeAttribute("persist");
+    root.setAttribute("persist", "none");
     scripts.push(
       "resource:///modules/zen/littlewindow/ZenLittleWindowChrome.mjs"
     );

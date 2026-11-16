@@ -28,10 +28,31 @@ const LEGACY_VERSION_PREF = "zen.keyboard.shortcuts.version";
 // then.
 const LEGACY_DEVTOOLS_GROUP = "devTools";
 
+// The category about:keyboard lists Firefox's navigation shortcuts in.
+const FIREFOX_NAVIGATION_CATEGORY = "customkeys-category-navigation-2";
+
 /**
  * Zen's own shortcuts, grouped the way about:keyboard shows them.
  */
 const ZEN_KEY_CATEGORIES = [
+  {
+    l10nId: "zenCKSOption-group-zen-tabs",
+    // Shown right after Navigation, which these used to be part of.
+    after: FIREFOX_NAVIGATION_CATEGORY,
+    keys: [
+      ["zen-tab-switcher-cycle", "zen-tab-switcher-shortcut-cycle"],
+      ["zen-tab-switcher-next", "zen-tab-switcher-shortcut-next"],
+      ["zen-tab-switcher-previous", "zen-tab-switcher-shortcut-previous"],
+    ],
+    // Firefox's shortcuts that are moved here, keeping their titles.
+    firefoxKeys: {
+      category: FIREFOX_NAVIGATION_CATEGORY,
+      ids: [
+        ...Array.from({ length: 8 }, (_, i) => `key_selectTab${i + 1}`),
+        "key_selectLastTab",
+      ],
+    },
+  },
   {
     l10nId: "zenCKSOption-group-zen-compact-mode",
     keys: [
@@ -78,6 +99,103 @@ const ZEN_KEY_CATEGORIES = [
     ],
   },
 ];
+
+/**
+ * Firefox handles tab switching (Ctrl+Tab, Ctrl+Page Down, Ctrl+Page Up and
+ * their platform variants) in ShortcutUtils.getSystemActionForEvent instead
+ * of through <key> elements, so about:keyboard can't change them. Zen mirrors
+ * them with disabled <key> elements that only hold the binding. Until one is
+ * customized Firefox's built-in shortcuts apply; once it is, its binding
+ * replaces them.
+ */
+export const TAB_SWITCHER_KEYS = Object.freeze({
+  CYCLE_TABS: "zen-tab-switcher-cycle",
+  NEXT_TAB: "zen-tab-switcher-next",
+  PREVIOUS_TAB: "zen-tab-switcher-previous",
+});
+
+/**
+ * Read the binding of a <key> element into the modifier state a keyboard
+ * event needs to have to trigger it.
+ *
+ * @param {Element} keyEl
+ */
+function parseKeyElement(keyEl) {
+  const isMac = AppConstants.platform == "macosx";
+  const binding = {
+    key: keyEl.getAttribute("key")?.toUpperCase() ?? "",
+    keycode: keyEl.getAttribute("keycode")?.toUpperCase() ?? "",
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  };
+  for (const name of (keyEl.getAttribute("modifiers") ?? "").split(/[\s,]+/)) {
+    switch (name) {
+      case "accel":
+        binding[isMac ? "meta" : "ctrl"] = true;
+        break;
+      case "control":
+        binding.ctrl = true;
+        break;
+      case "alt":
+      case "shift":
+        binding[name] = true;
+        break;
+      case "meta":
+      case "os":
+        binding.meta = true;
+        break;
+    }
+  }
+  return binding;
+}
+
+/**
+ * Whether the key pressed in a keyboard event is the one of a binding,
+ * without looking at modifiers.
+ *
+ * @param {object} binding As returned by parseKeyElement.
+ * @param {KeyboardEvent} event
+ */
+function isBindingKey(binding, event) {
+  if (binding.keycode) {
+    return event.keyCode == event["DOM_" + binding.keycode];
+  }
+  if (!binding.key) {
+    return false;
+  }
+  if (event.key.toUpperCase() == binding.key) {
+    return true;
+  }
+  // With Alt on macOS, or Shift on a digit, event.key is the character the
+  // combination produces rather than the key itself.
+  const { keyCode } = event;
+  const isAlphanumeric =
+    (keyCode >= event.DOM_VK_A && keyCode <= event.DOM_VK_Z) ||
+    (keyCode >= event.DOM_VK_0 && keyCode <= event.DOM_VK_9);
+  return isAlphanumeric && String.fromCharCode(keyCode) == binding.key;
+}
+
+/**
+ * @param {object} binding As returned by parseKeyElement.
+ * @param {KeyboardEvent} event
+ * @param {object} [options]
+ * @param {boolean} [options.shiftReverses] Also match with Shift held when
+ *   the binding doesn't use it, since Shift reverses the direction of the
+ *   tab switcher.
+ */
+function bindingMatchesEvent(binding, event, { shiftReverses = false } = {}) {
+  // Like ShortcutUtils, ignore the Windows key on Windows.
+  const metaKey = event.metaKey && AppConstants.platform != "win";
+  return (
+    isBindingKey(binding, event) &&
+    event.ctrlKey == binding.ctrl &&
+    event.altKey == binding.alt &&
+    metaKey == binding.meta &&
+    (event.shiftKey == binding.shift || (shiftReverses && !binding.shift))
+  );
+}
 
 /**
  * Normalize a list of modifier names into the comma separated form that
@@ -218,6 +336,108 @@ class nsZenKeyboardShortcuts {
   }
 
   /**
+   * The tab switcher key with this id, if the user customized it.
+   *
+   * @param {Document} document The browser window's document.
+   * @param {string} id
+   * @returns {Element|null}
+   */
+  #customizedTabSwitcherKey(document, id) {
+    if (!lazy.CustomKeys.getDefaultKey(id)) {
+      return null;
+    }
+    return document.getElementById(id);
+  }
+
+  /**
+   * ShortcutUtils.getSystemActionForEvent, with the tab switching shortcuts
+   * the user customized in place of Firefox's built-in ones.
+   *
+   * @param {KeyboardEvent} event
+   * @param {Document} document The document the event is handled in.
+   * @returns {string|null} One of ShortcutUtils' action constants, or null.
+   */
+  getSystemActionForEvent(event, document) {
+    for (const [action, id] of Object.entries(TAB_SWITCHER_KEYS)) {
+      const keyEl = this.#customizedTabSwitcherKey(document, id);
+      if (
+        keyEl &&
+        bindingMatchesEvent(parseKeyElement(keyEl), event, {
+          shiftReverses: action == "CYCLE_TABS",
+        })
+      ) {
+        return lazy.ShortcutUtils[action];
+      }
+    }
+    const action = lazy.ShortcutUtils.getSystemActionForEvent(event);
+    const id = TAB_SWITCHER_KEYS[action];
+    if (id && this.#customizedTabSwitcherKey(document, id)) {
+      return null;
+    }
+    return action;
+  }
+
+  /**
+   * Whether a press of the cycle key goes backwards. Shift reverses the
+   * direction, unless the user's binding for cycling uses Shift itself.
+   *
+   * @param {KeyboardEvent} event
+   * @param {Document} document The document the event is handled in.
+   * @returns {boolean}
+   */
+  isTabSwitcherReverseEvent(event, document) {
+    if (!event.shiftKey) {
+      return false;
+    }
+    const keyEl = this.#customizedTabSwitcherKey(
+      document,
+      TAB_SWITCHER_KEYS.CYCLE_TABS
+    );
+    return !keyEl || !parseKeyElement(keyEl).shift;
+  }
+
+  /**
+   * Whether this keyup ends a round of cycling through tabs, i.e. the user
+   * let go of the modifier they hold down while pressing the cycle key. With
+   * the default Ctrl+Tab that's Control.
+   *
+   * @param {KeyboardEvent} event
+   * @param {Document} document The browser window's document.
+   * @returns {boolean}
+   */
+  isTabSwitcherReleaseEvent(event, document) {
+    const keyEl = this.#customizedTabSwitcherKey(
+      document,
+      TAB_SWITCHER_KEYS.CYCLE_TABS
+    );
+    if (!keyEl) {
+      return event.keyCode == event.DOM_VK_CONTROL;
+    }
+    const binding = parseKeyElement(keyEl);
+    const heldKeys = [];
+    if (binding.ctrl) {
+      heldKeys.push("Control");
+    }
+    if (binding.alt) {
+      heldKeys.push("Alt");
+    }
+    if (binding.meta) {
+      heldKeys.push("Meta", "OS");
+    }
+    // Shift normally reverses the direction, so only treat it as the held key
+    // when the binding has no other modifier.
+    if (!heldKeys.length && binding.shift) {
+      heldKeys.push("Shift");
+    }
+    // A shortcut without modifiers has nothing to hold down, so it switches
+    // as soon as the key itself is released.
+    if (!heldKeys.length) {
+      return isBindingKey(binding, event);
+    }
+    return heldKeys.includes(event.key);
+  }
+
+  /**
    * Extend the key list that about:keyboard shows with Zen's shortcuts.
    *
    * @param {JSWindowActorParent} actor The CustomKeysParent actor serving the page.
@@ -251,9 +471,31 @@ class nsZenKeyboardShortcuts {
         data.title = text[l10nId];
         entries[id] = data;
       }
-      if (Object.keys(entries).length) {
-        Object.assign((keys[label] ??= {}), entries);
+      const { category: from, ids: firefoxIds = [] } =
+        category.firefoxKeys ?? {};
+      for (const id of firefoxIds) {
+        if (keys[from]?.[id]) {
+          entries[id] = keys[from][id];
+          delete keys[from][id];
+        }
       }
+      if (!Object.keys(entries).length) {
+        continue;
+      }
+      if (keys[label] || !(category.after in keys)) {
+        Object.assign((keys[label] ??= {}), entries);
+        continue;
+      }
+      // Rebuild the object to put the category in place, since about:keyboard
+      // shows categories in the order they were added.
+      const ordered = {};
+      for (const [name, entry] of Object.entries(keys)) {
+        ordered[name] = entry;
+        if (name == category.after) {
+          ordered[label] = entries;
+        }
+      }
+      keys = ordered;
     }
     return keys;
   }

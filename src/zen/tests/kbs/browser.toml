@@ -11,4 +11,6 @@ support-files = [
 
 ["browser_legacy_migration.js"]
 
+["browser_tab_switcher_keys.js"]
+
 ["browser_zen_keys.js"]

@@ -16,6 +16,7 @@ zen-action-settings = Gosodiadau
 zen-action-open-private-window = Agor Ffenestr Breifat
 zen-action-open-new-window = Agor Ffenest Newydd
 zen-action-new-blank-window = Ffenestr Wag Newydd
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Pinio'r Tab
 zen-action-unpin-tab = Dadbinio'r Tab
 zen-action-open-space-routing = Agor Llwybro Gofod

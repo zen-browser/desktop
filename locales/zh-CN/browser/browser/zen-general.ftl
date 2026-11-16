@@ -43,17 +43,15 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
-zen-copy-current-url-confirmation = 网址已复制到剪贴板！
-zen-copy-current-url-as-markdown-confirmation = 已将当前网址复制为 Markdown 格式！
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] 已复制 { $count } 个 URL！
-       *[other] 已复制 { $count } 个 URL！
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] 已复制 { $count } 个 Markdown 格式的 URL！
-       *[other] 已复制 { $count } 个 Markdown 格式的 URL！
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
     }
 zen-general-cancel-label = 
     .label = 取消
@@ -150,3 +148,11 @@ zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 知道了
 zen-appmenu-new-blank-window = 
     .label = 新建空白窗口
+zen-appmenu-new-little-window = 
+    .label = New Little Window
+zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Open in { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Choose a Space
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close

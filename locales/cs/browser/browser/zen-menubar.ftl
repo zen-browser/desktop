@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Tmavý
 zen-menubar-new-blank-window = 
     .label = Nové prázdné okno
+zen-menubar-new-little-window = 
+    .label = New Little Window

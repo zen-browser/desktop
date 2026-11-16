@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Tamsų
 zen-menubar-new-blank-window = 
     .label = Naujas tuščias langas
+zen-menubar-new-little-window = 
+    .label = New Little Window

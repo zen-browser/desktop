@@ -45,17 +45,15 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimizează
     .tooltip = Minimizează
 zen-panel-ui-gradient-generator-custom-color = Culoare Personalizată
-zen-copy-current-url-confirmation = URL-ul curent a fost copiat!
-zen-copy-current-url-as-markdown-confirmation = URL-ul curent a fost copiat ca Markdown!
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] Copiat un URL!
-       *[other] Copiat { $count } URL-uri!
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copiat un URL ca Markdown!
-       *[other] Copiat { $count } URL-uri ca Markdown!
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
     }
 zen-general-cancel-label = 
     .label = Anulează
@@ -152,3 +150,11 @@ zen-window-sync-migration-dialog-learn-more = Află mai multe
 zen-window-sync-migration-dialog-accept = Am înțeles
 zen-appmenu-new-blank-window = 
     .label = Fereastră Nouă Goală
+zen-appmenu-new-little-window = 
+    .label = New Little Window
+zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Open in { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Choose a Space
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close

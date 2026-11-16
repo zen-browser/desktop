@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = 深色
 zen-menubar-new-blank-window = 
     .label = 新空白窗口
+zen-menubar-new-little-window = 
+    .label = New Little Window

@@ -38,12 +38,12 @@ const LEGACY_VERSION_PREF = "zen.keyboard.shortcuts.version";
 // then.
 const LEGACY_DEVTOOLS_GROUP = "devTools";
 
-/**
- * Zen's own shortcuts, grouped the way about:keyboard shows them.
- */
 // The shortcuts mods add through the mod API, named by the mods.
 const MODS_CATEGORY_L10N_ID = "zenCKSOption-group-zen-mods";
 
+/**
+ * Zen's own shortcuts, grouped the way about:keyboard shows them.
+ */
 const ZEN_KEY_CATEGORIES = [
   {
     l10nId: "zenCKSOption-group-zen-workspace",

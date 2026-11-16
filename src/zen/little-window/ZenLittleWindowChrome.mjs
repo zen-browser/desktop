@@ -35,6 +35,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   #isWatchingUrlbar = false;
   #isNavigating = false;
   #urlbarOnlyProgressListener = null;
+  #urlbarBlurListener = event => this.#onUrlbarBlur(event);
 
   constructor() {
     super();
@@ -209,6 +210,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       }
       gBrowser.addTabsProgressListener(this.#urlbarOnlyProgressListener);
       gURLBar.controller.addListener(this);
+      gURLBar.inputField.addEventListener("blur", this.#urlbarBlurListener);
     });
   }
 
@@ -222,7 +224,17 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   onViewClose() {
-    if (!this.#urlbarOnly || this.#isNavigating) {
+    this.#closeUnlessNavigating();
+  }
+
+  #onUrlbarBlur(aEvent) {
+    if (!gURLBar.contains(aEvent.relatedTarget)) {
+      this.#closeUnlessNavigating();
+    }
+  }
+
+  #closeUnlessNavigating() {
+    if (!this.#urlbarOnly || this.#isNavigating || this.#isWaitingToShow) {
       return;
     }
     this.#baseWindow.visibility = false;
@@ -245,6 +257,10 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     this.#isWatchingUrlbar = false;
     Services.obs.removeObserver(this, URLBAR_NAVIGATION_TOPIC);
     window.gURLBar?.controller.removeListener(this);
+    window.gURLBar?.inputField.removeEventListener(
+      "blur",
+      this.#urlbarBlurListener
+    );
   }
 
   async #showWithUrlbarReady() {
@@ -446,9 +462,10 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     // platform puts them on the left.
     const target = document.getElementById("nav-bar-customization-target");
     if (gZenVerticalTabsManager.isWindowsStyledButtons) {
-      (document.getElementById("zen-little-window-back") ?? target).before(
-        fragment
-      );
+      const spaces = fragment.querySelector("#zen-little-window-spaces-button");
+      popup.setAttribute("position", "bottomleft topleft");
+      spaces.parentElement.prepend(spaces);
+      target.before(fragment);
     } else {
       target.after(fragment);
     }

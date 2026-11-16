@@ -84,3 +84,18 @@ add_task(async function test_little_window_closes_with_its_urlbar() {
   await closed;
   ok(true, "Closing the URL bar closed the window");
 });
+
+add_task(async function test_little_window_closes_when_its_urlbar_is_left() {
+  const win = await openLittleWindow();
+  await TestUtils.waitForCondition(
+    () =>
+      win.docShell.treeOwner.QueryInterface(Ci.nsIBaseWindow).visibility &&
+      win.gURLBar.focused,
+    "The window is shown with its URL bar focused"
+  );
+
+  const closed = BrowserTestUtils.windowClosed(win);
+  win.gURLBar.inputField.blur();
+  await closed;
+  ok(true, "Leaving the URL bar closed the window");
+});

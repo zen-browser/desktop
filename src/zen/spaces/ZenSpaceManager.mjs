@@ -1534,7 +1534,7 @@ class nsZenWorkspaces {
 
   get shouldShowContainers() {
     return (
-      !this.isPrivateWindow &&
+      this.currentWindowIsSyncing &&
       Services.prefs.getBoolPref("privacy.userContext.ui.enabled")
     );
   }

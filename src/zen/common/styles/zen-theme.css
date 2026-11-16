@@ -245,10 +245,6 @@
   }
 
   &[zen-unsynced-window='true'] {
-    --zen-main-browser-background: color-mix(in srgb, light-dark(rgb(196, 202, 229), rgb(8, 9, 40)) 60%, var(--zen-themed-toolbar-bg-transparent));
-    --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
-    --zen-primary-color: light-dark(rgb(100, 115, 255), rgb(80, 90, 200)) !important;
-    --toolbox-textcolor: color-mix(in srgb, currentColor 95%, transparent) !important;
     --zen-workspace-indicator-height: 42px;
   }
 

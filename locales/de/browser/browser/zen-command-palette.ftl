@@ -16,6 +16,7 @@ zen-action-settings = Einstellungen
 zen-action-open-private-window = Privates Fenster öffnen
 zen-action-open-new-window = Neues Fenster öffnen
 zen-action-new-blank-window = Neues leeres Fenster
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Tab anheften
 zen-action-unpin-tab = Tab lösen
 zen-action-open-space-routing = Arbeitsbereich-Routing öffnen

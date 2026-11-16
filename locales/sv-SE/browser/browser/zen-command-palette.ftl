@@ -16,6 +16,7 @@ zen-action-settings = Inställningar
 zen-action-open-private-window = Öppna privat fönster
 zen-action-open-new-window = Öppna nytt fönster
 zen-action-new-blank-window = Nytt blankt fönster
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Fäst flik
 zen-action-unpin-tab = Avfäst flik
 zen-action-open-space-routing = Rutter med öppet utrymme

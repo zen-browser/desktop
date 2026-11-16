@@ -45,14 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = カスタムカラー
-zen-copy-current-url-confirmation = URLをクリップボードにコピーしました！
-zen-copy-current-url-as-markdown-confirmation = URLをMarkdownとしてコピーしました！
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] URLをコピーしました！
-       *[other] { $count }個のURLをコピーしました!
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation = { $count }個の URL を Markdown でコピーしました！
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = キャンセル
 zen-general-confirm = 
@@ -64,7 +66,7 @@ zen-pinned-tab-edit-url-title = ピン留めされたタブのURLを編集
 zen-pinned-tab-edit-url-label = このピン留めされたタブのURLを入力してください：
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
-zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
+zen-zoom-changed-toast = ズーム: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
 zen-split-view-limit-toast = 分割ビューにこれ以上パネルを追加できません！
 zen-sidebar-drag-collapsed-toast = サイドバーを非表示にしました！ <span>{ $shortcut }</span> で元に戻せます。
@@ -148,3 +150,11 @@ zen-window-sync-migration-dialog-learn-more = もっと詳しく
 zen-window-sync-migration-dialog-accept = わかりました
 zen-appmenu-new-blank-window = 
     .label = 新しい空のウィンドウ
+zen-appmenu-new-little-window = 
+    .label = New Little Window
+zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Open in { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Choose a Space
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close

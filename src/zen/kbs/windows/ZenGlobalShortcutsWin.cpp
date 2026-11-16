@@ -15,8 +15,10 @@ static const wchar_t kWindowClassName[] = L"ZenGlobalShortcutsWindow";
 
 static const uint32_t kMaxHotKeyId = 0xBFFF;
 
-// A window that is never shown, there to receive WM_HOTKEY on the main
-// thread.
+// A window that is never shown. It is there to receive WM_HOTKEY on the main
+// thread, and to be made the foreground window when a shortcut is pressed
+// over another application. A message-only window cannot be that, so it is a
+// top-level one.
 static HWND sMessageWindow = nullptr;
 
 static LRESULT CALLBACK MessageWindowProc(HWND aWindow, UINT aMessage,
@@ -41,8 +43,10 @@ static HWND EnsureMessageWindow() {
       ::GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
     return nullptr;
   }
-  sMessageWindow = ::CreateWindowExW(0, kWindowClassName, L"", 0, 0, 0, 0, 0,
-                                     HWND_MESSAGE, nullptr, instance, nullptr);
+  // A tool window has no taskbar button and is left out of Alt+Tab.
+  sMessageWindow =
+      ::CreateWindowExW(WS_EX_TOOLWINDOW, kWindowClassName, L"", WS_POPUP, 0, 0,
+                        0, 0, nullptr, nullptr, instance, nullptr);
   return sMessageWindow;
 }
 
@@ -100,6 +104,17 @@ void ZenGlobalShortcuts::PlatformUnregister(uint32_t aHotKeyId,
                                             void* aNativeHotKey) {
   if (sMessageWindow) {
     ::UnregisterHotKey(sMessageWindow, static_cast<int>(aHotKeyId));
+  }
+}
+
+/* static */
+void ZenGlobalShortcuts::PlatformWillRunKey() {
+  if (sMessageWindow && ::GetForegroundWindow() != sMessageWindow) {
+    DWORD processId = 0;
+    ::GetWindowThreadProcessId(::GetForegroundWindow(), &processId);
+    if (processId != ::GetCurrentProcessId()) {
+      ::SetForegroundWindow(sMessageWindow);
+    }
   }
 }
 

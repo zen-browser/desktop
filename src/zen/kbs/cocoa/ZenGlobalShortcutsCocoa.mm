@@ -106,6 +106,9 @@ void ZenGlobalShortcuts::PlatformUnregister(uint32_t aHotKeyId,
 }
 
 /* static */
+void ZenGlobalShortcuts::PlatformWillRunKey() {}
+
+/* static */
 void ZenGlobalShortcuts::PlatformShutdown() {
   if (sEventHandler) {
     ::RemoveEventHandler(sEventHandler);

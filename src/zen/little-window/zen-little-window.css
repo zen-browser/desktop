@@ -27,7 +27,13 @@
 
   #nav-bar {
     gap: var(--zen-space-4);
-    padding-inline: var(--zen-space-5);
+    padding-inline: var(--zen-space-4);
+  }
+
+  &:not([zen-window-buttons-reversed]) #nav-bar {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-inline: 0;
   }
 
   #urlbar-container {
@@ -112,21 +118,36 @@
   border-radius: var(--border-radius-small);
   background: var(--zen-toolbar-element-bg);
   -moz-window-dragging: no-drag;
-  border-top-right-radius: calc(var(--zen-border-radius) + 6px);
 
-  :root:not([zen-window-buttons-reversed]) & {
-    border-top-right-radius: var(--border-radius-small);
-    border-top-left-radius: var(--zen-border-radius);
+  :root[zen-window-buttons-reversed] & {
+    border-top-right-radius: calc(var(--zen-border-radius) + 2px);
   }
+}
+
+:root:not([zen-window-buttons-reversed]) #zen-little-window-back[disabled] + #zen-little-window-open-in-space {
+  border-top-left-radius: var(--zen-border-radius);
+}
+
+#zen-little-window-open-in-space > :first-child {
+  border-start-start-radius: inherit;
+  border-end-start-radius: inherit;
+}
+
+#zen-little-window-open-in-space > :last-child {
+  border-inline-start: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  border-start-end-radius: inherit;
+  border-end-end-radius: inherit;
 }
 
 #zen-little-window-open-button {
   gap: var(--zen-space-6);
   height: 100%;
   padding-inline: var(--zen-space-10) var(--zen-space-6);
-  border-start-start-radius: inherit;
-  border-end-start-radius: inherit;
   white-space: nowrap;
+
+  &:last-child {
+    padding-inline: var(--zen-space-6) var(--zen-space-10);
+  }
 
   &:hover {
     background: var(--zen-toolbar-element-bg-hover);
@@ -152,9 +173,6 @@
   height: 100%;
   margin: 0;
   padding: 0 var(--zen-space-8);
-  border-inline-start: 1px solid color-mix(in srgb, currentColor 10%, transparent);
-  border-start-end-radius: inherit;
-  border-end-end-radius: inherit;
   list-style-image: url("chrome://global/skin/icons/arrow-down.svg");
   -moz-context-properties: fill;
   fill: currentColor;

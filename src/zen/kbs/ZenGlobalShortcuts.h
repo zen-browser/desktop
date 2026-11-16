@@ -88,12 +88,20 @@ class ZenGlobalShortcuts final {
    *   been unregistered by then.
    */
   static void PlatformShutdown();
+  /**
+   * @brief Called right before a pressed shortcut runs its key, for what the
+   *   platform needs so that a window the key opens can come to the front
+   *   although another application has the focus. The windows Zen already
+   *   has are to stay where they are.
+   */
+  static void PlatformWillRunKey();
 #else
   static bool PlatformRegister(uint32_t, uint32_t, mozilla::Modifiers, void**) {
     return false;
   }
   static void PlatformUnregister(uint32_t, void*) {}
   static void PlatformShutdown() {}
+  static void PlatformWillRunKey() {}
 #endif
 };
 

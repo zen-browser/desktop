@@ -282,7 +282,8 @@
 
 #new-window-button,
 #appMenu-new-window-button2,
-#appMenu-new-zen-unsynced-window-button {
+#appMenu-new-zen-unsynced-window-button,
+#appMenu-new-zen-little-window-button {
   list-style-image: url("window.svg") !important;
 }
 

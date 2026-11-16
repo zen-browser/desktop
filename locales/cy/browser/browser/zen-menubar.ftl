@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Tywyll
 zen-menubar-new-blank-window = 
     .label = Ffenestr Wag Newydd
+zen-menubar-new-little-window = 
+    .label = New Little Window

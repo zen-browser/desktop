@@ -6,7 +6,7 @@ migration-wizard-migrator-display-name-dia = Dia
 migration-zen-spaces-option-label = スペースとピン留めされたタブ
 migration-zen-all-profiles-label = すべてのプロファイル
 # Lowercase form shown in the sentence listing the selected data.
-migration-list-zen-spaces-label = spaces and pinned tabs
+migration-list-zen-spaces-label = スペースとピン留めされたタブ
 migration-wizard-progress-success-zen-spaces =
     { $quantity ->
         [one] { $quantity } つのスペース

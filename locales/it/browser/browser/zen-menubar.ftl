@@ -4,7 +4,7 @@
 
 zen-menubar-toggle-pinned-tabs = 
     .label =
-        { $pinnedAreCollapsed ->
+        {$pinnedAreCollapsed ->
             [true] Espandi le schede bloccate
            *[false] Comprimi le schede bloccate
         }
@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Scuro
 zen-menubar-new-blank-window = 
     .label = Nuova Finestra Vuota
+zen-menubar-new-little-window = 
+    .label = Nuova Finestra Piccola

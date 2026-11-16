@@ -45,17 +45,15 @@ pictureinpicture-minimize-btn =
     .aria-label = 최소화
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
-zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
-zen-copy-current-url-as-markdown-confirmation = 현재 URL을 마크다운으로 복사했습니다!
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] { $count }개의 URL을 복사했습니다!
-       *[other] { $count }개의 URL을 복사했습니다!
+        [1] 현재 URL을 복사했습니다!
+       *[other] { $count }개 URL을 복사했습니다!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] { $count }개의 URL을 마크다운 형식으로 복사했습니다!
-       *[other] { $count }개의 URL을 마크다운 형식으로 복사했습니다!
+        [1] 현재 URL을 마크다운으로 복사했습니다!
+       *[other] { $count }개 URL을 마크다운으로 복사했습니다!
     }
 zen-general-cancel-label = 
     .label = 취소
@@ -152,3 +150,11 @@ zen-window-sync-migration-dialog-learn-more = 더 알아보기
 zen-window-sync-migration-dialog-accept = 알겠습니다
 zen-appmenu-new-blank-window = 
     .label = 새 빈 창
+zen-appmenu-new-little-window = 
+    .label = 새 작은 창
+zen-little-window-open-in-space = <b data-l10n-name="space">{ $space }</b>에서 열기
+zen-little-window-open-in-new-window = { -brand-short-name }에서 열기
+zen-little-window-choose-space = 
+    .tooltiptext = 스페이스 선택
+zen-little-window-intro-title = <i data-l10n-name="name">작은 Zen</i>으로 열림
+zen-little-window-intro-description = “...에서 열기”를 클릭해 이 페이지를 큰 창으로 옮기거나, { $shortcut }으로 닫을 수 있습니다

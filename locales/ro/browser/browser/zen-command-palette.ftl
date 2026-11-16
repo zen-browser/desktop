@@ -16,6 +16,7 @@ zen-action-settings = Setări
 zen-action-open-private-window = Deschide fereastră privată
 zen-action-open-new-window = Deschide o fereastră nouă
 zen-action-new-blank-window = Fereastră nouă goală
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Fixează fila
 zen-action-unpin-tab = Anulează fixarea filei
 zen-action-open-space-routing = Deschide rutarea spațiilor

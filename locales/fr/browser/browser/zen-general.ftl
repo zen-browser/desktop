@@ -45,17 +45,15 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimiser
     .tooltip = Minimiser
 zen-panel-ui-gradient-generator-custom-color = Couleur personnalisée
-zen-copy-current-url-confirmation = URL actuelle copiée !
-zen-copy-current-url-as-markdown-confirmation = URL actuelle copiée en tant que Markdown !
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] { $count } URL copiée !
-       *[other] { $count } URL copiées !
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] { $count } URL copiée au format Markdown !
-       *[other] { $count } URL copiées au format Markdown !
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
     }
 zen-general-cancel-label = 
     .label = Annuler
@@ -152,3 +150,11 @@ zen-window-sync-migration-dialog-learn-more = En savoir plus
 zen-window-sync-migration-dialog-accept = J'ai compris
 zen-appmenu-new-blank-window = 
     .label = Nouvelle fenêtre vide
+zen-appmenu-new-little-window = 
+    .label = Nouvelle fenêtre Little
+zen-little-window-open-in-space = Ouvrir dans <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Ouvrir dans { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Choisissez un espace
+zen-little-window-intro-title = Ouvert dans <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Cliquez sur « Ouvrir dans » pour déplacer cette page vers une fenêtre complète, ou { $shortcut } pour fermer

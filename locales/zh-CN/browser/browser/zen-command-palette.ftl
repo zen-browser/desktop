@@ -16,6 +16,7 @@ zen-action-settings = 设置
 zen-action-open-private-window = 打开隐私窗口
 zen-action-open-new-window = 打开新窗口
 zen-action-new-blank-window = 新建空白窗口
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = 固定标签页
 zen-action-unpin-tab = 取消固定标签页
 zen-action-open-space-routing = 打开工作区路由

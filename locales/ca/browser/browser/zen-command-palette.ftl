@@ -16,6 +16,7 @@ zen-action-settings = Configuració
 zen-action-open-private-window = Obre una finestra privada
 zen-action-open-new-window = Obre una nova finestra
 zen-action-new-blank-window = Finestra en blanc nova
+zen-action-new-little-window = Mini finestra nova
 zen-action-pin-tab = Fixa la pestanya
 zen-action-unpin-tab = Desfixa la pestanya
 zen-action-open-space-routing = Obre l'encaminador d'espais

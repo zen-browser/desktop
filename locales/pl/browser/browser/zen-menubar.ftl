@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Ciemny
 zen-menubar-new-blank-window = 
     .label = Nowe puste okno
+zen-menubar-new-little-window = 
+    .label = Nowe małe okno

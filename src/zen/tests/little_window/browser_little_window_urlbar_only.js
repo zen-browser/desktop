@@ -68,6 +68,13 @@ add_task(async function test_little_window_urlbar_only() {
     () => win.outerWidth == width && win.outerHeight == height,
     "The window grew to the regular size"
   );
+  const { availTop, availHeight } = win.screen;
+  const centeredTop = availTop + (availHeight - height) / 2;
+  await TestUtils.waitForCondition(
+    () => Math.abs(win.screenY - centeredTop) <= 1,
+    "And moved up, so it stays in the middle of the screen it was shown in"
+  );
+  Assert.greaterOrEqual(win.screenY, win.screen.availTop, "Staying on screen");
   ok(isShown(win, "zen-little-window-open-button"), "Open in space is back");
 
   await BrowserTestUtils.closeWindow(win);

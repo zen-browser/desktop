@@ -14,6 +14,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   DownloadsCommon:
     "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
   DownloadsViewUI:
     "moz-src:///browser/components/downloads/DownloadsViewUI.sys.mjs",
@@ -78,6 +80,23 @@ class ZenLibraryDownloadStack {
     this.#data.addView(this);
   }
 
+  get #isPrivate() {
+    return lazy.PrivateBrowsingUtils.isWindowPrivate(this.#window);
+  }
+
+  #markDownloadsSeen() {
+    for (const win of lazy.BrowserWindowTracker.orderedWindows) {
+      if (lazy.PrivateBrowsingUtils.isWindowPrivate(win) !== this.#isPrivate) {
+        continue;
+      }
+      const stack = stacks.get(win.document);
+      if (stack) {
+        stack.#recentNewDownload = false;
+        stack.#updateBadgeShowing();
+      }
+    }
+  }
+
   destroy() {
     this.#window.removeEventListener("unload", this);
     this.#data.removeView(this);
@@ -137,6 +156,7 @@ class ZenLibraryDownloadStack {
       return;
     }
     this.#aimBadge();
+    this.#markDownloadsSeen();
     this.#downloadsListWrapper.removeAttribute("zen-library-stack-closing");
     for (const host of [this.#footButtons, this.#downloadsListWrapper]) {
       host.setAttribute("zen-library-stack-open", "true");
@@ -147,8 +167,7 @@ class ZenLibraryDownloadStack {
     if (!this.#footButtons.hasAttribute("zen-library-stack-open")) {
       return;
     }
-    this.#recentNewDownload = false;
-    this.#updateBadgeShowing();
+    this.#markDownloadsSeen();
     for (const host of [this.#footButtons, this.#downloadsListWrapper]) {
       host.removeAttribute("zen-library-stack-open");
     }

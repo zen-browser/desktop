@@ -372,6 +372,7 @@ class nsZenSettingsWindow {
     const actions = {
       "open-mods": () => leaveFor("paneZenMarketplace"),
       "open-more-settings": () => leaveFor("paneGeneral"),
+      "open-about": () => window.openAboutDialog(),
       "open-privacy-settings": () => window.openPreferences("panePrivacy"),
       "open-sync-settings": () => window.openPreferences("paneSync"),
       "clear-data": () => lazy.Sanitizer.showUI(window),

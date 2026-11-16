@@ -21,6 +21,7 @@ zen-settings-window-pane-privacy = Privacy
 zen-settings-window-pane-advanced = Advanced
 zen-settings-window-link-mods = Mods
 zen-settings-window-link-more = More Settings
+zen-settings-window-link-about = About { -brand-short-name }
 
 ## General
 

@@ -18,6 +18,7 @@
 
   #nav-bar-customization-target > #urlbar-container {
     flex-shrink: 1;
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- Narrow toolbar layout constraint */
     min-inline-size: min(140px, 40%);
   }
 }

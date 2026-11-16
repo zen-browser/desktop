@@ -10,23 +10,48 @@ let localURL;
 add_setup(async function () {
   await gZenStartup.promiseInitialized;
   const { HttpServer } = ChromeUtils.importESModule(
-    "resource://testing-common/httpd.sys.mjs",
+    "resource://testing-common/httpd.sys.mjs"
   );
   const server = new HttpServer();
   server.registerPathHandler("/developer", (request, response) => {
     response.setHeader("Content-Type", "text/html", false);
     response.write(
-      "<!doctype html><title>Developer Mode test</title><p>Local page</p>",
+      "<!doctype html><title>Developer Mode test</title><p>Local page</p>"
     );
   });
   server.start(-1);
+  server.identity.add("http", "127.0.0.1", server.identity.primaryPort);
   localURL = `http://localhost:${server.identity.primaryPort}/developer?query=kept#fragment`;
-  registerCleanupFunction(() => new Promise((resolve) => server.stop(resolve)));
+  registerCleanupFunction(() => new Promise(resolve => server.stop(resolve)));
+
+  const { Preferences } = ChromeUtils.importESModule(
+    "resource://gre/modules/Preferences.sys.mjs"
+  );
+  const toolPrefs = [
+    "devtools.toolsidebar-width.inspector.splitsidebar",
+    "devtools.toolsidebar-height.inspector",
+    "devtools.toolsidebar-width.inspector",
+    "devtools.everOpened",
+    "devtools.toolbox.selectedTool",
+    "devtools.netmonitor.msg.visibleColumns",
+  ].map(name => [
+    name,
+    Services.prefs.prefHasUserValue(name) ? Preferences.get(name) : undefined,
+  ]);
+  registerCleanupFunction(() => {
+    for (const [name, value] of toolPrefs) {
+      if (value === undefined) {
+        Preferences.reset(name);
+      } else {
+        Preferences.set(name, value);
+      }
+    }
+  });
 });
 
 add_task(function test_local_host_boundaries() {
   const { isLocalDevelopmentURI } = ChromeUtils.importESModule(
-    "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs",
+    "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs"
   );
   for (const [spec, expected] of [
     ["http://localhost:3000/path?x=1#fragment", true],
@@ -44,7 +69,7 @@ add_task(function test_local_host_boundaries() {
     Assert.equal(
       isLocalDevelopmentURI(Services.io.newURI(spec)),
       expected,
-      spec,
+      spec
     );
   }
 });
@@ -69,9 +94,9 @@ add_task(async function test_stable_sidebar_and_selected_border() {
     ],
   });
   await TestUtils.waitForCondition(
-    () => gZenVerticalTabsManager._hasSetSingleToolbar,
+    () => gZenVerticalTabsManager._hasSetSingleToolbar
   );
-  await BrowserTestUtils.withNewTab(localURL, async (browser) => {
+  await BrowserTestUtils.withNewTab(localURL, async browser => {
     const tab = gBrowser.getTabForBrowser(browser);
     const urlbarParent = gURLBar.parentNode;
     const navbarParent = document.getElementById("nav-bar").parentNode;
@@ -83,114 +108,114 @@ add_task(async function test_stable_sidebar_and_selected_border() {
     Assert.greater(
       subtitle.getBoundingClientRect().height,
       0,
-      "Hostname subtitle is visibly rendered",
+      "Hostname subtitle is visibly rendered"
     );
     Assert.lessOrEqual(
       subtitle.getBoundingClientRect().bottom,
       tab.querySelector(".tab-background").getBoundingClientRect().bottom - 2,
-      "Hostname subtitle fits inside the tab's caution border",
+      "Hostname subtitle fits inside the tab's caution border"
     );
     Assert.equal(
       getComputedStyle(tab.querySelector(".tab-background")).outlineStyle,
       "dashed",
-      "Selected development tab has a caution border",
+      "Selected development tab has a caution border"
     );
 
     Assert.equal(
       gURLBar.value,
       Services.io.newURI(localURL).displayHostPort,
-      "Unfocused native sidebar field shows only hostname and port",
+      "Unfocused native sidebar field shows only hostname and port"
     );
     Assert.equal(
       gURLBar.untrimmedValue,
       localURL,
-      "Native URLbar retains the complete URL for editing",
+      "Native URLbar retains the complete URL for editing"
     );
 
     Assert.ok(
       BrowserTestUtils.isVisible(toolbar),
-      "Local page has its own toolbar",
+      "Local page has its own toolbar"
     );
     Assert.ok(
       gZenVerticalTabsManager._hasSetSingleToolbar,
-      "Native sidebar layout stays enabled",
+      "Native sidebar layout stays enabled"
     );
     Assert.equal(
       gURLBar.parentNode,
       urlbarParent,
-      "Native URLbar stays in its original parent",
+      "Native URLbar stays in its original parent"
     );
     Assert.equal(
       document.getElementById("nav-bar").parentNode,
       navbarParent,
-      "Navigation controls stay in place",
+      "Navigation controls stay in place"
     );
     const after = gURLBar.getBoundingClientRect();
     Assert.lessOrEqual(
       Math.abs(after.x - bounds.x),
       0.5,
-      "URLbar does not move horizontally",
+      "URLbar does not move horizontally"
     );
     Assert.lessOrEqual(
       Math.abs(after.y - bounds.y),
       0.5,
-      "URLbar does not move vertically",
+      "URLbar does not move vertically"
     );
     Assert.equal(
       document.querySelectorAll("#urlbar").length,
       1,
-      "One native Firefox URLbar remains",
+      "One native Firefox URLbar remains"
     );
     Assert.equal(
       toolbar.querySelector("input").value,
       localURL,
-      "Page field shows full URL",
+      "Page field shows full URL"
     );
 
     await BrowserTestUtils.withNewTab("about:robots", async () => {
       Assert.ok(
         tab.hasAttribute(MODE_ATTRIBUTE),
-        "Inactive local tab keeps its development marker",
+        "Inactive local tab keeps its development marker"
       );
       const style = getComputedStyle(tab.querySelector(".tab-background"));
       Assert.notEqual(
         style.outlineStyle,
         "dashed",
-        "Inactive local tab has no caution outline",
+        "Inactive local tab has no caution outline"
       );
       Assert.equal(
         tab.querySelector(".zen-developer-tab-sublabel").value,
         Services.io.newURI(localURL).displayHostPort,
-        "Inactive development tab retains hostname subtitle",
+        "Inactive development tab retains hostname subtitle"
       );
       Assert.ok(
         !toolbarFor(gBrowser.selectedBrowser),
-        "Ordinary page has no development toolbar",
+        "Ordinary page has no development toolbar"
       );
       Assert.equal(
         gURLBar.parentNode,
         urlbarParent,
-        "Switching tabs never reparents the URLbar",
+        "Switching tabs never reparents the URLbar"
       );
       Assert.equal(
         document.getElementById("nav-bar").parentNode,
         navbarParent,
-        "Switching tabs never reparents navigation controls",
+        "Switching tabs never reparents navigation controls"
       );
       Assert.ok(
         gZenVerticalTabsManager._hasSetSingleToolbar,
-        "Ordinary tab uses the same native layout",
+        "Ordinary tab uses the same native layout"
       );
     });
     await SpecialPowers.popPrefEnv();
     await TestUtils.waitForCondition(() => !toolbarFor(browser));
     Assert.ok(
       !tab.hasAttribute(MODE_ATTRIBUTE),
-      "Disabling clears inactive and active markers",
+      "Disabling clears inactive and active markers"
     );
     Assert.ok(
       Services.prefs.getBoolPref("zen.view.use-single-toolbar"),
-      "Saved layout preference is unchanged",
+      "Saved layout preference is unchanged"
     );
   });
   await SpecialPowers.popPrefEnv();
@@ -198,13 +223,13 @@ add_task(async function test_stable_sidebar_and_selected_border() {
 
 add_task(async function test_background_navigation_updates_development_state() {
   await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, true]] });
-  await BrowserTestUtils.withNewTab("about:robots", async (foreground) => {
+  await BrowserTestUtils.withNewTab("about:robots", async foreground => {
     const tab = BrowserTestUtils.addTab(gBrowser, "about:blank");
     try {
       let loaded = BrowserTestUtils.browserLoaded(
         tab.linkedBrowser,
         false,
-        localURL,
+        localURL
       );
       BrowserTestUtils.startLoadingURIString(tab.linkedBrowser, localURL);
       await loaded;
@@ -212,19 +237,19 @@ add_task(async function test_background_navigation_updates_development_state() {
       Assert.equal(
         gBrowser.selectedBrowser,
         foreground,
-        "Loading a background local page does not select it",
+        "Loading a background local page does not select it"
       );
       loaded = BrowserTestUtils.browserLoaded(
         tab.linkedBrowser,
         false,
-        "about:robots",
+        "about:robots"
       );
       BrowserTestUtils.startLoadingURIString(tab.linkedBrowser, "about:robots");
       await loaded;
       await TestUtils.waitForCondition(() => !tab.hasAttribute(MODE_ATTRIBUTE));
       Assert.ok(
         !toolbarFor(tab.linkedBrowser),
-        "Navigating background tab away removes its toolbar",
+        "Navigating background tab away removes its toolbar"
       );
     } finally {
       BrowserTestUtils.removeTab(tab);
@@ -235,55 +260,57 @@ add_task(async function test_background_navigation_updates_development_state() {
 
 add_task(async function test_address_editing_and_icon_hit_areas() {
   await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, true]] });
-  await BrowserTestUtils.withNewTab(localURL, async (browser) => {
+  await BrowserTestUtils.withNewTab(localURL, async browser => {
     const toolbar = await waitForToolbar(browser);
     await document.l10n.translateFragment(toolbar);
     const stripBounds = toolbar.getBoundingClientRect();
     const pageBounds = browser.getBoundingClientRect();
     Assert.lessOrEqual(
       Math.abs(
-        pageBounds.bottom -
-          browser.parentElement.getBoundingClientRect().bottom,
+        pageBounds.bottom - browser.parentElement.getBoundingClientRect().bottom
       ),
       0.5,
-      "Page fills remaining pane height without overflowing",
+      "Page fills remaining pane height without overflowing"
     );
 
     Assert.lessOrEqual(
       Math.abs(stripBounds.left - pageBounds.left),
       0.5,
-      "Toolbar and page share the same left edge",
+      "Toolbar and page share the same left edge"
     );
     Assert.lessOrEqual(
       Math.abs(stripBounds.width - pageBounds.width),
       0.5,
-      "Toolbar spans the full page width",
+      "Toolbar spans the full page width"
     );
     Assert.lessOrEqual(
       stripBounds.bottom,
       pageBounds.top + 0.5,
-      "Toolbar sits above the page instead of beside it",
+      "Toolbar sits above the page instead of beside it"
     );
 
-    for (const button of toolbar.querySelectorAll("button")) {
+    for (const button of toolbar.querySelectorAll("button[data-action]")) {
+      if (BrowserTestUtils.isHidden(button)) {
+        continue;
+      }
       const image = button.querySelector("img");
       await TestUtils.waitForCondition(
         () => image.complete && image.naturalWidth > 0,
-        "Native icon loads",
+        "Native icon loads"
       );
       Assert.equal(
         button.textContent.trim(),
         "",
-        "Tool button contains no visible text or hidden label box",
+        "Tool button contains no visible text or hidden label box"
       );
       Assert.ok(
         button.title && button.getAttribute("aria-label"),
-        "Icon button has tooltip and accessible label",
+        "Icon button has tooltip and accessible label"
       );
       Assert.equal(
         button.getBoundingClientRect().width,
         28,
-        "Button has a compact, predictable hit area",
+        "Button has a compact, predictable hit area"
       );
     }
     const input = toolbar.querySelector("input");
@@ -297,7 +324,7 @@ add_task(async function test_address_editing_and_icon_hit_areas() {
     Assert.equal(
       browser.currentURI.spec,
       edited,
-      "Editing full URL navigates its own page",
+      "Editing full URL navigates its own page"
     );
     input.focus();
     input.value = "http://localhost:1/cancelled";
@@ -305,24 +332,81 @@ add_task(async function test_address_editing_and_icon_hit_areas() {
     Assert.equal(
       input.value,
       edited,
-      "Escape restores committed URL without navigating",
+      "Escape restores committed URL without navigating"
     );
+
+    for (const invalid of [
+      "",
+      "http://[",
+      "javascript:void(0)",
+      "unsupported:some-address",
+    ]) {
+      input.focus();
+      input.value = invalid;
+      EventUtils.synthesizeKey("KEY_Enter");
+      Assert.equal(input.value, edited, "Invalid pane input restores the URL");
+    }
+
+    const tab = gBrowser.getTabForBrowser(browser);
+    gBrowser.pinTab(tab);
+    try {
+      const target = new URL(edited);
+      target.hostname = "127.0.0.1";
+      target.username = "u";
+      target.password = "p";
+      const loadedInPinnedTab = BrowserTestUtils.browserLoaded(browser);
+      input.focus();
+      input.value = target.href;
+      EventUtils.synthesizeKey("KEY_Enter");
+      await loadedInPinnedTab;
+
+      Assert.equal(
+        browser.currentURI.host,
+        target.hostname,
+        "Cross-host pane navigation stays in its pinned tab"
+      );
+      Assert.equal(
+        browser.currentURI.userPass,
+        "u:p",
+        "Test page loaded with credentials in the underlying URI"
+      );
+      target.username = "";
+      target.password = "";
+      Assert.equal(
+        (await waitForToolbar(browser)).querySelector("input").value,
+        target.href,
+        "Pane address field strips credentials from the committed URL"
+      );
+    } finally {
+      gBrowser.unpinTab(tab);
+    }
   });
   await SpecialPowers.popPrefEnv();
 });
 
 add_task(async function test_all_tool_buttons_repeat_close() {
-  await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, true]] });
-  await BrowserTestUtils.withNewTab(localURL, async (browser) => {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      [DEV_PREF, true],
+      ["zen.view.use-single-toolbar", true],
+      ["devtools.inspector.activeSidebar", "ruleview"],
+    ],
+  });
+  await BrowserTestUtils.withNewTab(localURL, async browser => {
     const toolbar = await waitForToolbar(browser);
     const { require } = ChromeUtils.importESModule(
-      "resource://devtools/shared/loader/Loader.sys.mjs",
+      "resource://devtools/shared/loader/Loader.sys.mjs"
     );
     const { gDevTools } = require("devtools/client/framework/devtools");
     const tab = gBrowser.selectedTab;
-    const clickTool = (id) =>
-      toolbar.querySelector(`[data-tool="${id}"]`).click();
-    const ready = async (id) => {
+    const clickTool = async id => {
+      const button = toolbar.querySelector(`[data-tool="${id}"]`);
+      await TestUtils.waitForCondition(() =>
+        BrowserTestUtils.isVisible(button)
+      );
+      button.click();
+    };
+    const ready = async id => {
       await TestUtils.waitForCondition(() => {
         const toolbox = gDevTools.getToolboxForTab(tab);
         return (
@@ -334,24 +418,42 @@ add_task(async function test_all_tool_buttons_repeat_close() {
       return gDevTools.getToolboxForTab(tab);
     };
     try {
-      for (const toolId of ["webconsole", "netmonitor", "inspector"]) {
-        clickTool(toolId);
+      for (const toolId of ["webconsole", "netmonitor"]) {
+        await clickTool(toolId);
         const toolbox = await ready(toolId);
         const destroyed = toolbox.once("destroyed");
-        clickTool(toolId);
+        await clickTool(toolId);
         await destroyed;
         Assert.ok(
           !gDevTools.getToolboxForTab(tab),
-          `Second ${toolId} click closes the complete toolbox`,
+          `Second ${toolId} click closes the complete toolbox`
         );
       }
-      clickTool("webconsole");
+      await clickTool("webconsole");
       const toolbox = await ready("webconsole");
-      clickTool("netmonitor");
+      await clickTool("netmonitor");
       Assert.equal(
         await ready("netmonitor"),
         toolbox,
-        "Different tool selects its panel in the existing toolbox",
+        "Different tool selects its panel in the existing toolbox"
+      );
+
+      const pickerReady = toolbox.nodePicker.once(
+        "inspector-front-ready-for-picker"
+      );
+      await clickTool("inspector");
+      await pickerReady;
+      Assert.equal(
+        await ready("inspector"),
+        toolbox,
+        "Inspect selects Inspector in the existing toolbox"
+      );
+      const destroyed = toolbox.once("destroyed");
+      await clickTool("inspector");
+      await destroyed;
+      Assert.ok(
+        !gDevTools.getToolboxForTab(tab),
+        "Second Inspect click closes the complete toolbox"
       );
     } finally {
       await gDevTools.getToolboxForTab(tab)?.destroy();
@@ -362,19 +464,19 @@ add_task(async function test_all_tool_buttons_repeat_close() {
 
 add_task(async function test_split_controls_target_their_own_page() {
   await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, true]] });
-  await BrowserTestUtils.withNewTab(localURL, async (firstBrowser) => {
+  await BrowserTestUtils.withNewTab(localURL, async firstBrowser => {
     const firstTab = gBrowser.getTabForBrowser(firstBrowser);
     const secondURL = localURL.replace("query=kept", "pane=second");
     const secondTab = BrowserTestUtils.addTab(gBrowser, secondURL);
     const { require } = ChromeUtils.importESModule(
-      "resource://devtools/shared/loader/Loader.sys.mjs",
+      "resource://devtools/shared/loader/Loader.sys.mjs"
     );
     const { gDevTools } = require("devtools/client/framework/devtools");
     try {
       await BrowserTestUtils.browserLoaded(secondTab.linkedBrowser);
       const activated = BrowserTestUtils.waitForEvent(
         window,
-        "ZenViewSplitter:SplitViewActivated",
+        "ZenViewSplitter:SplitViewActivated"
       );
       gZenViewSplitter.splitTabs([firstTab, secondTab], "grid");
       await activated;
@@ -382,7 +484,7 @@ add_task(async function test_split_controls_target_their_own_page() {
       const secondBar = await waitForToolbar(secondTab.linkedBrowser);
       Assert.ok(
         firstBar !== secondBar,
-        "Each local split pane owns its toolbar",
+        "Each local split pane owns its toolbar"
       );
       gBrowser.selectedTab = firstTab;
       secondBar.querySelector('[data-tool="webconsole"]').click();
@@ -393,11 +495,11 @@ add_task(async function test_split_controls_target_their_own_page() {
       Assert.equal(
         gBrowser.selectedTab,
         secondTab,
-        "Tool action selects its owning pane",
+        "Tool action selects its owning pane"
       );
       Assert.ok(
         !gDevTools.getToolboxForTab(firstTab),
-        "Other pane's toolbox stays closed",
+        "Other pane's toolbox stays closed"
       );
       await gDevTools.getToolboxForTab(secondTab).destroy();
 
@@ -405,41 +507,70 @@ add_task(async function test_split_controls_target_their_own_page() {
       await SimpleTest.promiseClipboardChange(secondURL, () => {
         secondBar.querySelector('[data-action="copy"]').click();
       });
+      secondBar.style.inlineSize = "140px";
+      const overflow = secondBar.querySelector('[data-action="more"]');
+      await TestUtils.waitForCondition(() =>
+        BrowserTestUtils.isVisible(overflow)
+      );
+      Assert.ok(
+        BrowserTestUtils.isHidden(
+          secondBar.querySelector('[data-action="copy"]')
+        ),
+        "Narrow pane shows one menu button in place of the inline tools"
+      );
+      overflow.click();
+      const menu = secondBar.querySelector("menupopup");
+      await TestUtils.waitForCondition(() => menu.state === "open");
+      Assert.equal(
+        menu.childElementCount,
+        5,
+        "Pane menu contains all five actions"
+      );
+      const loadedCopy = SimpleTest.promiseClipboardChange(secondURL, () => {
+        menu.querySelector('[data-action="copy"]').doCommand();
+      });
+      await loadedCopy;
+      menu.hidePopup();
+      secondBar.style.removeProperty("inline-size");
+      await TestUtils.waitForCondition(() =>
+        BrowserTestUtils.isHidden(overflow)
+      );
+
       const toastLabel = await TestUtils.waitForCondition(() =>
         document.querySelector(
-          '#zen-toast-container [data-l10n-id="zen-copy-current-url-confirmation"]',
-        ),
+          '#zen-toast-container [data-l10n-id="zen-copy-current-url-confirmation"]'
+        )
       );
       if (Services.zen.canShare()) {
         Assert.ok(
           toastLabel
             .closest(".zen-toast")
             .querySelector("#zen-copy-current-url-button"),
-          "Copy confirmation includes the native Share button when available",
+          "Copy confirmation includes the native Share button when available"
         );
       }
 
       gBrowser.selectedTab = firstTab;
       const screenshot = secondBar.querySelector('[data-action="screenshot"]');
       const { ScreenshotsUtils, UIPhases } = ChromeUtils.importESModule(
-        "moz-src:///browser/components/screenshots/ScreenshotsUtils.sys.mjs",
+        "moz-src:///browser/components/screenshots/ScreenshotsUtils.sys.mjs"
       );
       screenshot.click();
       const secondBrowser = secondTab.linkedBrowser;
       await TestUtils.waitForCondition(
         () => ScreenshotsUtils.getUIPhase(secondBrowser) === UIPhases.INITIAL,
-        "Native screenshot panel opens in the owning pane",
+        "Native screenshot panel opens in the owning pane"
       );
       Assert.equal(
         ScreenshotsUtils.getUIPhase(firstBrowser),
         UIPhases.CLOSED,
-        "The other pane's screenshot panel stays closed",
+        "The other pane's screenshot panel stays closed"
       );
       await SimpleTest.promiseFocus(window);
       EventUtils.synthesizeKey("KEY_Escape");
       await TestUtils.waitForCondition(
         () => ScreenshotsUtils.getUIPhase(secondBrowser) === UIPhases.CLOSED,
-        "Escape closes the native screenshot panel",
+        "Escape closes the native screenshot panel"
       );
 
       await SpecialPowers.pushPrefEnv({
@@ -448,12 +579,12 @@ add_task(async function test_split_controls_target_their_own_page() {
       const screenshotDivider = screenshot.nextElementSibling;
       await TestUtils.waitForCondition(
         () => [screenshot, screenshotDivider].every(BrowserTestUtils.isHidden),
-        "The camera and its trailing divider hide when Screenshots is disabled",
+        "The camera and its trailing divider hide when Screenshots is disabled"
       );
       await SpecialPowers.popPrefEnv();
       await TestUtils.waitForCondition(
         () => [screenshot, screenshotDivider].every(BrowserTestUtils.isVisible),
-        "The camera and its trailing divider return when Screenshots is enabled",
+        "The camera and its trailing divider return when Screenshots is enabled"
       );
 
       gBrowser.selectedTab = firstTab;
@@ -462,48 +593,48 @@ add_task(async function test_split_controls_target_their_own_page() {
       Assert.equal(
         gBrowser.selectedTab,
         secondTab,
-        "Keyboard focus selects the address field's pane",
+        "Keyboard focus selects the address field's pane"
       );
       Assert.equal(
         document.activeElement,
         input,
-        "Pane activation preserves URL field keyboard focus",
+        "Pane activation preserves URL field keyboard focus"
       );
       const edited = secondURL.replace("pane=second", "pane=edited");
       input.value = edited;
       let loaded = BrowserTestUtils.browserLoaded(
         secondTab.linkedBrowser,
         false,
-        edited,
+        edited
       );
       EventUtils.synthesizeKey("KEY_Enter");
       await loaded;
       Assert.equal(
         firstBrowser.currentURI.spec,
         localURL,
-        "Editing second pane leaves first pane's URL unchanged",
+        "Editing second pane leaves first pane's URL unchanged"
       );
       Assert.equal(
         secondTab.linkedBrowser.currentURI.spec,
         edited,
-        "Second pane navigates to its edited URL",
+        "Second pane navigates to its edited URL"
       );
       loaded = BrowserTestUtils.browserLoaded(
         secondTab.linkedBrowser,
         false,
-        "about:robots",
+        "about:robots"
       );
       BrowserTestUtils.startLoadingURIString(
         secondTab.linkedBrowser,
-        "about:robots",
+        "about:robots"
       );
       await loaded;
       await TestUtils.waitForCondition(
-        () => !toolbarFor(secondTab.linkedBrowser),
+        () => !toolbarFor(secondTab.linkedBrowser)
       );
       Assert.ok(
         firstBar.isConnected && firstTab.hasAttribute(MODE_ATTRIBUTE),
-        "Mixed split retains development toolbar and marker on local pane only",
+        "Mixed split retains development toolbar and marker on local pane only"
       );
     } finally {
       await gDevTools.getToolboxForTab(secondTab)?.destroy();
@@ -515,7 +646,7 @@ add_task(async function test_split_controls_target_their_own_page() {
 
 add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
   await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, true]] });
-  await BrowserTestUtils.withNewTab(localURL, async (browser) => {
+  await BrowserTestUtils.withNewTab(localURL, async browser => {
     const tab = gBrowser.getTabForBrowser(browser);
     const root = document.documentElement;
     const nativeURLbar = gURLBar;
@@ -537,52 +668,52 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
       await TestUtils.waitForCondition(
         () =>
           gZenVerticalTabsManager._hasSetSingleToolbar === single &&
-          root.hasAttribute("zen-developer-top-toolbar") === !single,
+          root.hasAttribute("zen-developer-top-toolbar") === !single
       );
       const paneToolbar = await waitForToolbar(browser);
       const nativeTools = document.getElementById("zen-developer-nav-tools");
       Assert.equal(
         gURLBar,
         nativeURLbar,
-        name + " retains the original native URLbar",
+        name + " retains the original native URLbar"
       );
       Assert.equal(
         BrowserTestUtils.isVisible(paneToolbar),
         single,
-        name + " shows pane strip only when the URLbar is in the sidebar",
+        name + " shows pane strip only when the URLbar is in the sidebar"
       );
       Assert.equal(
         Boolean(nativeTools && BrowserTestUtils.isVisible(nativeTools)),
         !single,
-        name + " uses the existing top row for developer actions",
+        name + " uses the existing top row for developer actions"
       );
       Assert.equal(
         gURLBar.value,
         single ? Services.io.newURI(localURL).displayHostPort : localURL,
-        name + " formats the native address appropriately",
+        name + " formats the native address appropriately"
       );
       Assert.equal(
         tab.querySelector(".zen-developer-tab-sublabel").value,
         Services.io.newURI(localURL).displayHostPort,
-        name + " retains hostname subtitle",
+        name + " retains hostname subtitle"
       );
       Assert.equal(
         ordinarySublabel.value,
         "Status owned by another feature",
-        name + " preserves another feature's subtitle value",
+        name + " preserves another feature's subtitle value"
       );
       Assert.equal(
         ordinarySublabel.getAttribute("data-l10n-args"),
         originalL10n,
-        name + " preserves native subtitle localization ownership",
+        name + " preserves native subtitle localization ownership"
       );
       const nav = document.getElementById("nav-bar");
       const stripedBar = single ? paneToolbar : nav;
       Assert.ok(
         getComputedStyle(stripedBar).backgroundImage.startsWith(
-          "repeating-linear-gradient(",
+          "repeating-linear-gradient("
         ),
-        name + " renders the developer toolbar stripes",
+        name + " renders the developer toolbar stripes"
       );
       const [beforeCamera, afterCamera] = (
         single ? paneToolbar : nativeTools
@@ -595,7 +726,7 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
           beforeCamera.nextElementSibling ===
             afterCamera.previousElementSibling &&
           afterCamera.nextElementSibling?.dataset.tool === "webconsole",
-        name + " separates the camera from both Copy URL and Console",
+        name + " separates the camera from both Copy URL and Console"
       );
       const navParent = nav.parentNode;
       const localGap =
@@ -603,19 +734,19 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
         nav.getBoundingClientRect().bottom;
       await BrowserTestUtils.withNewTab(
         "about:robots",
-        async (ordinaryBrowser) => {
+        async ordinaryBrowser => {
           Assert.equal(
             nav.parentNode,
             navParent,
-            name + " never moves navigation controls on tab selection",
+            name + " never moves navigation controls on tab selection"
           );
           Assert.ok(
             !root.hasAttribute("zen-developer-top-toolbar-active"),
-            name + " restores normal top-row presentation on ordinary tabs",
+            name + " restores normal top-row presentation on ordinary tabs"
           );
           Assert.ok(
             !nativeTools || !BrowserTestUtils.isVisible(nativeTools),
-            name + " hides developer actions on ordinary tabs",
+            name + " hides developer actions on ordinary tabs"
           );
           if (!single) {
             const ordinaryGap =
@@ -624,17 +755,17 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
             Assert.lessOrEqual(
               Math.abs(localGap - ordinaryGap),
               0.5,
-              name + " has no extra address row above the development page",
+              name + " has no extra address row above the development page"
             );
           }
-        },
+        }
       );
       await TestUtils.waitForCondition(
-        () => single || root.hasAttribute("zen-developer-top-toolbar-active"),
+        () => single || root.hasAttribute("zen-developer-top-toolbar-active")
       );
       if (!single) {
         const { require } = ChromeUtils.importESModule(
-          "resource://devtools/shared/loader/Loader.sys.mjs",
+          "resource://devtools/shared/loader/Loader.sys.mjs"
         );
         const { gDevTools } = require("devtools/client/framework/devtools");
         const button = nativeTools.querySelector('[data-tool="webconsole"]');
@@ -649,7 +780,7 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
         await destroyed;
         Assert.ok(
           !gDevTools.getToolboxForTab(tab),
-          name + " top-row Console repeat closes DevTools",
+          name + " top-row Console repeat closes DevTools"
         );
       }
       await SpecialPowers.popPrefEnv();
@@ -657,12 +788,12 @@ add_task(async function test_all_look_and_feel_layouts_use_one_url_row() {
     await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, false]] });
     Assert.ok(
       !tab.querySelector(".zen-developer-tab-sublabel"),
-      "Disabling removes only the development subtitle",
+      "Disabling removes only the development subtitle"
     );
     Assert.equal(
       ordinarySublabel.value,
       "Status owned by another feature",
-      "Disabling preserves the original subtitle owner",
+      "Disabling preserves the original subtitle owner"
     );
     await SpecialPowers.popPrefEnv();
   });
@@ -677,11 +808,11 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       ["zen.view.sidebar-expanded", true],
     ],
   });
-  await BrowserTestUtils.withNewTab(localURL, async (browser) => {
+  await BrowserTestUtils.withNewTab(localURL, async browser => {
     const localTab = gBrowser.getTabForBrowser(browser);
     const ordinaryTab = BrowserTestUtils.addTab(gBrowser, "about:robots");
     const { require } = ChromeUtils.importESModule(
-      "resource://devtools/shared/loader/Loader.sys.mjs",
+      "resource://devtools/shared/loader/Loader.sys.mjs"
     );
     const { gDevTools } = require("devtools/client/framework/devtools");
     const originalWidth = window.outerWidth;
@@ -690,27 +821,27 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       await BrowserTestUtils.browserLoaded(ordinaryTab.linkedBrowser);
       const activated = BrowserTestUtils.waitForEvent(
         window,
-        "ZenViewSplitter:SplitViewActivated",
+        "ZenViewSplitter:SplitViewActivated"
       );
       gZenViewSplitter.splitTabs([localTab, ordinaryTab], "grid");
       await activated;
       const root = document.documentElement;
       gBrowser.selectedTab = ordinaryTab;
       await TestUtils.waitForCondition(
-        () => !root.hasAttribute("zen-developer-top-toolbar-active"),
+        () => !root.hasAttribute("zen-developer-top-toolbar-active")
       );
       Assert.ok(
         !BrowserTestUtils.isVisible(toolbarFor(browser)),
-        "Mixed top-toolbar split has no extra local-pane row",
+        "Mixed top-toolbar split has no extra local-pane row"
       );
       gBrowser.selectedTab = localTab;
       await TestUtils.waitForCondition(() =>
-        root.hasAttribute("zen-developer-top-toolbar-active"),
+        root.hasAttribute("zen-developer-top-toolbar-active")
       );
       Assert.equal(
         gURLBar.value,
         localURL,
-        "Shared native top row follows the selected local pane",
+        "Shared native top row follows the selected local pane"
       );
       const tools = document.getElementById("zen-developer-nav-tools");
       const button = tools.querySelector('[data-tool="netmonitor"]');
@@ -725,7 +856,7 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       });
       Assert.ok(
         !gDevTools.getToolboxForTab(ordinaryTab),
-        "Top-row action never opens tools on the other pane",
+        "Top-row action never opens tools on the other pane"
       );
       const toolbox = gDevTools.getToolboxForTab(localTab);
       const destroyed = toolbox.once("destroyed");
@@ -733,7 +864,7 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       await destroyed;
       Assert.ok(
         !gDevTools.getToolboxForTab(localTab),
-        "Mixed-split top-row repeat closes its own toolbox",
+        "Mixed-split top-row repeat closes its own toolbox"
       );
       const target = document.getElementById("nav-bar-customization-target");
       const overflowButton = document.getElementById("nav-bar-overflow-button");
@@ -742,16 +873,16 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       window.resizeTo(660, height);
       await TestUtils.waitForCondition(
         compact,
-        "Narrowing the top row puts its actions in the app menu",
+        "Narrowing the top row puts its actions in the app menu"
       );
       Assert.ok(
         !BrowserTestUtils.isVisible(tools),
-        "The compact top bar hides the inline actions",
+        "The compact top bar hides the inline actions"
       );
       Assert.equal(
         tools.parentNode,
         target,
-        "Firefox's customizable overflow keeps the non-customizable group in place",
+        "Firefox's customizable overflow keeps the non-customizable group in place"
       );
 
       const appMenu = PanelUI.panel;
@@ -763,7 +894,7 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       await TestUtils.waitForCondition(() => copy.getAttribute("label"));
       Assert.ok(
         BrowserTestUtils.isVisible(menuTools),
-        "The app menu shows labeled developer actions",
+        "The app menu shows labeled developer actions"
       );
       const hidden = BrowserTestUtils.waitForPopupEvent(appMenu, "hidden");
       await SimpleTest.promiseClipboardChange(localURL, () => copy.doCommand());
@@ -773,34 +904,34 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       const stopReload = document.getElementById("stop-reload-button");
       const appMenuButton = document.getElementById("PanelUI-button");
       const narrowWidth = navBar.clientWidth;
-      const checkNavigation = (pane) => {
+      const checkNavigation = pane => {
         const navBounds = navBar.getBoundingClientRect();
         const urlBounds = gURLBar.getBoundingClientRect();
         const menuBounds = appMenuButton.getBoundingClientRect();
         Assert.equal(
           stopReload.parentNode,
           target,
-          pane + " keeps Reload in the navigation row",
+          pane + " keeps Reload in the navigation row"
         );
         Assert.ok(
           BrowserTestUtils.isVisible(stopReload),
-          pane + " keeps Reload visible",
+          pane + " keeps Reload visible"
         );
         Assert.lessOrEqual(
           urlBounds.right,
           menuBounds.left + 1,
-          pane + " keeps the address field clear of the app menu",
+          pane + " keeps the address field clear of the app menu"
         );
         Assert.lessOrEqual(
           menuBounds.right,
           navBounds.right + 1,
-          pane + " keeps the app menu inside the toolbar",
+          pane + " keeps the app menu inside the toolbar"
         );
       };
       window.resizeTo(520, height);
       await TestUtils.waitForCondition(
         () => navBar.clientWidth < narrowWidth,
-        "The shared toolbar becomes narrower than the first compact layout",
+        "The shared toolbar becomes narrower than the first compact layout"
       );
       checkNavigation("The narrow developer pane");
 
@@ -809,14 +940,14 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       checkNavigation("The narrow ordinary pane");
       Assert.ok(
         !BrowserTestUtils.isVisible(overflowButton),
-        "The ordinary pane has no empty overflow button",
+        "The ordinary pane has no empty overflow button"
       );
       await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, false]] });
       try {
         checkNavigation("The top toolbar with Developer Mode disabled");
         Assert.ok(
           !BrowserTestUtils.isVisible(overflowButton),
-          "The chevron stays hidden when there are no overflowed widgets",
+          "The chevron stays hidden when there are no overflowed widgets"
         );
       } finally {
         await SpecialPowers.popPrefEnv();
@@ -825,16 +956,16 @@ add_task(async function test_native_top_toolbar_tracks_mixed_split_selection() {
       await TestUtils.waitForCondition(compact);
       Assert.ok(
         !menuTools.hidden,
-        "Selecting the local pane restores its app menu actions",
+        "Selecting the local pane restores its app menu actions"
       );
 
       window.resizeTo(originalWidth, height);
       await TestUtils.waitForCondition(
-        () => !compact() && BrowserTestUtils.isVisible(tools),
+        () => !compact() && BrowserTestUtils.isVisible(tools)
       );
       Assert.ok(
         menuTools.hidden,
-        "Growing the window restores the inline actions",
+        "Growing the window restores the inline actions"
       );
     } finally {
       window.resizeTo(originalWidth, height);
@@ -856,7 +987,7 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
   const panel = gZenSiteDataPanel.unifiedPanel;
   const button = document.getElementById("zen-site-data-developer-mode");
   const { readDeveloperMode, setDeveloperMode } = ChromeUtils.importESModule(
-    "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs",
+    "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs"
   );
 
   async function open() {
@@ -866,7 +997,7 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
       null,
       panel,
       gZenSiteDataPanel.unifiedPanelView,
-      gZenSiteDataPanel.anchor,
+      gZenSiteDataPanel.anchor
     );
     await shown;
     await TestUtils.waitForCondition(() => !button.hidden && !button.disabled);
@@ -887,14 +1018,14 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
         button.getAttribute("aria-checked") === String(enabled) &&
         !button.hasAttribute("aria-busy") &&
         Boolean(toolbarFor(browser)) === enabled,
-      "The setting and the current tab reflect the new mode",
+      "The setting and the current tab reflect the new mode"
     );
   }
 
-  await BrowserTestUtils.withNewTab(localURL, async (browser) => {
+  await BrowserTestUtils.withNewTab(localURL, async browser => {
     const sameHostTab = BrowserTestUtils.addTab(
       gBrowser,
-      localURL.replace("query=kept", "query=other-tab"),
+      localURL.replace("query=kept", "query=other-tab")
     );
     const uri = browser.currentURI;
     const context = browser.loadContext;
@@ -904,55 +1035,55 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
       Assert.equal(
         button.getAttribute("aria-checked"),
         "true",
-        "Localhost defaults to On",
+        "Localhost defaults to On"
       );
       Assert.ok(
         button.previousElementSibling.classList.contains(
-          "permission-popup-permission-item-site-protection",
+          "permission-popup-permission-item-site-protection"
         ),
-        "The switch is directly below Tracking Protection",
+        "The switch is directly below Tracking Protection"
       );
       await toggle(browser, false);
       await TestUtils.waitForCondition(
-        () => !toolbarFor(sameHostTab.linkedBrowser),
+        () => !toolbarFor(sameHostTab.linkedBrowser)
       );
       const sameHostOtherPort = Services.io.newURI("http://localhost:3001/");
       Assert.ok(
         !(await readDeveloperMode(sameHostOtherPort, context)),
-        "Turning localhost off also applies to a different port",
+        "Turning localhost off also applies to a different port"
       );
       const privateContext = Cu.createPrivateLoadContext();
       Assert.ok(
         !(await readDeveloperMode(uri, privateContext)),
-        "Private browsing starts with the profile's choice",
+        "Private browsing starts with the profile's choice"
       );
       await setDeveloperMode(uri, privateContext, true);
       Assert.ok(
         await readDeveloperMode(uri, privateContext),
-        "Private sessions can override it",
+        "Private sessions can override it"
       );
       Assert.ok(
         !(await readDeveloperMode(uri, context)),
-        "The private choice does not change the profile",
+        "The private choice does not change the profile"
       );
       await setDeveloperMode(uri, privateContext, false);
       Assert.ok(
         !(await readDeveloperMode(uri, privateContext)),
-        "Returning to the inherited value clears the private override",
+        "Returning to the inherited value clears the private override"
       );
       await close();
       await open();
       Assert.equal(
         button.getAttribute("aria-checked"),
         "false",
-        "The same control remains reachable after turning off the toolbar",
+        "The same control remains reachable after turning off the toolbar"
       );
       await toggle(browser, true);
       await waitForToolbar(sameHostTab.linkedBrowser);
       const contentPrefs = Cc["@mozilla.org/content-pref/service;1"].getService(
-        Ci.nsIContentPrefService2,
+        Ci.nsIContentPrefService2
       );
-      const saved = await new Promise((resolve) => {
+      const saved = await new Promise(resolve => {
         let value;
         contentPrefs.getByDomainAndName(
           "localhost",
@@ -965,13 +1096,13 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
             handleCompletion() {
               resolve(value);
             },
-          },
+          }
         );
       });
       Assert.equal(
         saved,
         undefined,
-        "Toggling back to the default removes the saved exception",
+        "Toggling back to the default removes the saved exception"
       );
     } finally {
       await close();
@@ -980,27 +1111,27 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
     }
   });
 
-  await BrowserTestUtils.withNewTab("https://example.com/", async (browser) => {
+  await BrowserTestUtils.withNewTab("https://example.com/", async browser => {
     const uri = browser.currentURI;
     try {
       await open();
       Assert.equal(
         button.getAttribute("aria-checked"),
         "false",
-        "An ordinary host defaults to Off",
+        "An ordinary host defaults to Off"
       );
       await toggle(browser, true);
       Assert.equal(
         gBrowser.selectedTab.querySelector(".zen-developer-tab-sublabel").value,
         "example.com",
-        "An explicitly enabled host gets a hostname subtitle",
+        "An explicitly enabled host gets a hostname subtitle"
       );
       Assert.ok(
         !(await readDeveloperMode(
           Services.io.newURI("https://other.example.com/"),
-          browser.loadContext,
+          browser.loadContext
         )),
-        "Explicit activation does not apply to subdomains",
+        "Explicit activation does not apply to subdomains"
       );
       await toggle(browser, false);
     } finally {
@@ -1009,4 +1140,47 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
     }
   });
   await SpecialPowers.popPrefEnv();
+});
+
+add_task(async function test_lazy_tab_uses_its_private_window_preference() {
+  await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, true]] });
+  const { setDeveloperMode } = ChromeUtils.importESModule(
+    "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs"
+  );
+  const privateWindow = await BrowserTestUtils.openNewBrowserWindow({
+    private: true,
+  });
+  const uri = Services.io.newURI(localURL);
+  const normalContext = Cu.createLoadContext();
+  try {
+    await privateWindow.gZenStartup.promiseInitialized;
+    await setDeveloperMode(uri, normalContext, false);
+    await setDeveloperMode(
+      uri,
+      privateWindow.gBrowser.selectedBrowser.loadContext,
+      true
+    );
+
+    const tab = BrowserTestUtils.addTab(privateWindow.gBrowser, localURL, {
+      createLazyBrowser: true,
+    });
+    Assert.equal(
+      tab.linkedPanel,
+      null,
+      "Private background tab starts unloaded"
+    );
+    await TestUtils.waitForCondition(
+      () => tab.hasAttribute(MODE_ATTRIBUTE),
+      "Unloaded private tab follows the private override"
+    );
+    Assert.equal(
+      tab.linkedPanel,
+      null,
+      "Developer Mode leaves the tab unloaded"
+    );
+  } finally {
+    await BrowserTestUtils.closeWindow(privateWindow);
+    await setDeveloperMode(uri, normalContext, true);
+    await SpecialPowers.popPrefEnv();
+  }
 });

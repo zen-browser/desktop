@@ -3,10 +3,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
-import {
-  cachedDeveloperMode,
-  isLocalDevelopmentURI,
-} from "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs";
+
+const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  cachedDeveloperMode: "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs",
+  isLocalDevelopmentURI: "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs",
+});
 
 const SEARCH_MODE_ANIMATION_RESET_MS = 1000;
 
@@ -380,8 +382,8 @@ export class nsZenUrlbarController {
       try {
         const uri = Services.io.newURI(aURL);
         const development =
-          cachedDeveloperMode(uri, gBrowser.selectedBrowser.loadContext) ??
-          isLocalDevelopmentURI(uri);
+          lazy.cachedDeveloperMode(uri, gBrowser.selectedBrowser.loadContext) ??
+          lazy.isLocalDevelopmentURI(uri);
         if (development) {
           if (!singleToolbar) {
             return aURL;

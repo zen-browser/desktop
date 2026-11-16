@@ -18,11 +18,12 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   PanelMultiView:
     "moz-src:///browser/components/customizableui/PanelMultiView.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
 });
 ChromeUtils.defineLazyGetter(lazy, "contentPrefs", () =>
   Cc["@mozilla.org/content-pref/service;1"].getService(
-    Ci.nsIContentPrefService2,
-  ),
+    Ci.nsIContentPrefService2
+  )
 );
 
 export function developerModeHost(uri) {
@@ -40,7 +41,7 @@ export function isLocalDevelopmentURI(uri) {
       host.endsWith(".localhost") ||
       host === "127.0.0.1" ||
       host === "::1" ||
-      host === "[::1]"),
+      host === "[::1]")
   );
 }
 
@@ -60,7 +61,7 @@ function contentPrefOperation(operation) {
       },
       handleError(status) {
         reject(
-          Components.Exception("Developer Mode site preference failed", status),
+          Components.Exception("Developer Mode site preference failed", status)
         );
       },
       handleCompletion(reason) {
@@ -77,8 +78,8 @@ function contentPrefOperation(operation) {
 function readOverride(host, context) {
   return (
     lazy.contentPrefs.getCachedByDomainAndName(host, SITE_PREF, context) ??
-    contentPrefOperation((callback) =>
-      lazy.contentPrefs.getByDomainAndName(host, SITE_PREF, context, callback),
+    contentPrefOperation(callback =>
+      lazy.contentPrefs.getByDomainAndName(host, SITE_PREF, context, callback)
     )
   );
 }
@@ -95,7 +96,7 @@ export function cachedDeveloperMode(uri, context) {
   const pref = lazy.contentPrefs.getCachedByDomainAndName(
     developerModeHost(uri),
     SITE_PREF,
-    context,
+    context
   );
   return pref ? effectiveMode(uri, pref) : null;
 }
@@ -106,7 +107,7 @@ export async function readDeveloperMode(uri, context) {
   }
   return effectiveMode(
     uri,
-    await readOverride(developerModeHost(uri), context),
+    await readOverride(developerModeHost(uri), context)
   );
 }
 
@@ -121,25 +122,23 @@ export async function setDeveloperMode(uri, context, enabled) {
     ? effectiveMode(uri, await readOverride(host, Cu.createLoadContext()))
     : isLocalDevelopmentURI(uri);
   if (enabled === baseline) {
-    await contentPrefOperation((callback) =>
+    await contentPrefOperation(callback =>
       lazy.contentPrefs.removeByDomainAndName(
         host,
         SITE_PREF,
         context,
-        callback,
-      ),
+        callback
+      )
     );
   } else {
-    await contentPrefOperation((callback) =>
-      lazy.contentPrefs.set(
-        host,
-        SITE_PREF,
-        enabled ? 1 : 0,
-        context,
-        callback,
-      ),
+    await contentPrefOperation(callback =>
+      lazy.contentPrefs.set(host, SITE_PREF, enabled ? 1 : 0, context, callback)
     );
   }
+}
+
+function displayURL(browser) {
+  return Services.io.createExposableURI(browser.currentURI).spec;
 }
 
 export class ZenDeveloperMode extends ZenUIComponent {
@@ -149,6 +148,8 @@ export class ZenDeveloperMode extends ZenUIComponent {
   ]);
 
   #ready = false;
+  #enabled = false;
+  #loadContext;
   #closed = false;
   #bars = new Map();
   #command = Promise.resolve();
@@ -162,20 +163,18 @@ export class ZenDeveloperMode extends ZenUIComponent {
       "TabSelect",
       "TabOpen",
       "SSTabRestored",
+      "TabBrowserDiscarded",
+      "TabClose",
       "resize",
       "aftercustomization",
     ]) {
       this.addEventListener(type);
     }
-    this.addEventListener("TabClose");
     this.#navBar = this.document.getElementById("nav-bar");
     this.#toolbarObserver = new this.window.ResizeObserver(() => {
       this.#syncToolbarOverflow();
     });
-    this.#toolbarObserver.observe(this.#navBar);
-    this.listenBrowserTabsProgress();
     Services.prefs.addObserver(ENABLED_PREF, this);
-    lazy.contentPrefs.addObserverForName(SITE_PREF, this);
     this.window.gZenStartup.promiseInitialized.then(() => {
       if (!this.#closed) {
         this.#ready = true;
@@ -187,23 +186,44 @@ export class ZenDeveloperMode extends ZenUIComponent {
   uninit() {
     this.#closed = true;
     Services.prefs.removeObserver(ENABLED_PREF, this);
+    if (this.#enabled) {
+      this.#stopTracking();
+    }
+    this.#bars.clear();
+  }
+
+  #stopTracking() {
     lazy.contentPrefs.removeObserverForName(SITE_PREF, this);
     this.window.gBrowser.removeTabsProgressListener(this);
-    for (const tab of this.window.gBrowser.tabs) {
-      this.#removeToolbar(tab);
-    }
     this.#toolbarObserver.disconnect();
-    this.#nativeTools?.remove();
-    this.#menuTools?.remove();
   }
 
   observe() {
-    for (const tab of this.window.gBrowser.tabs) {
+    const enabled = Services.prefs.getBoolPref(ENABLED_PREF);
+    if (!this.#ready || this.#closed || this.#enabled === enabled) {
+      return;
+    }
+    this.#enabled = enabled;
+    if (enabled) {
+      this.#loadContext ??= lazy.PrivateBrowsingUtils.isWindowPrivate(
+        this.window
+      )
+        ? Cu.createPrivateLoadContext()
+        : Cu.createLoadContext();
+      this.#toolbarObserver.observe(this.#navBar);
+      this.listenBrowserTabsProgress();
+      lazy.contentPrefs.addObserverForName(SITE_PREF, this);
+    } else {
+      this.#stopTracking();
+    }
+    const { gBrowser, gURLBar } = this.window;
+    for (const tab of gBrowser.tabs) {
       this.#refreshTab(tab);
     }
     this.#syncLayout();
-    if (this.#ready && !this.#closed && !this.window.gURLBar.focused) {
-      this.window.gURLBar.setURI();
+    this.#refreshSitePanel();
+    if (!gURLBar.focused) {
+      gURLBar.setURI();
     }
   }
 
@@ -224,6 +244,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
     }
     if (developerModeHost(gBrowser.currentURI) === host) {
       this.#syncLayout();
+      this.#refreshSitePanel();
       if (!gURLBar.focused) {
         gURLBar.setURI();
       }
@@ -231,8 +252,11 @@ export class ZenDeveloperMode extends ZenUIComponent {
   }
 
   on_TabSelect(event) {
-    this.#refreshTab(event.target);
-    this.#syncLayout();
+    if (this.#enabled) {
+      this.#refreshTab(event.target);
+      this.#syncLayout();
+      this.#refreshSitePanel();
+    }
   }
   on_TabOpen(event) {
     this.#refreshTab(event.target);
@@ -242,10 +266,19 @@ export class ZenDeveloperMode extends ZenUIComponent {
     this.#syncLayout();
   }
   on_resize() {
-    this.#syncLayout();
+    if (this.#enabled) {
+      this.#syncLayout();
+    }
   }
+
   on_aftercustomization() {
-    this.#syncLayout();
+    this.on_resize();
+  }
+
+  on_TabBrowserDiscarded(event) {
+    this.#bars.get(event.target)?.toolbar.remove();
+    this.#bars.delete(event.target);
+    this.#refreshTab(event.target);
   }
   on_TabClose(event) {
     this.#removeToolbar(event.target);
@@ -256,11 +289,15 @@ export class ZenDeveloperMode extends ZenUIComponent {
       this.#refreshTab(this.window.gBrowser.getTabForBrowser(browser));
       if (browser === this.window.gBrowser.selectedBrowser) {
         this.#syncLayout();
+        this.#refreshSitePanel();
       }
     }
   }
 
   #removeToolbar(tab) {
+    if (!tab.hasAttribute(MODE_ATTRIBUTE)) {
+      return;
+    }
     this.#bars.get(tab)?.toolbar.remove();
     this.#bars.delete(tab);
     tab.querySelector(".zen-developer-tab-sublabel")?.remove();
@@ -271,22 +308,26 @@ export class ZenDeveloperMode extends ZenUIComponent {
     if (!this.#ready || this.#closed || !tab || tab.closing) {
       return;
     }
+    if (!this.#enabled) {
+      this.#removeToolbar(tab);
+      return;
+    }
     const browser = tab.linkedBrowser;
     const uri = browser?.currentURI;
-    const active = cachedDeveloperMode(uri, browser?.loadContext);
+    const active = cachedDeveloperMode(uri, this.#loadContext);
     if (active === null) {
       this.#removeToolbar(tab);
       const host = developerModeHost(uri);
-      readDeveloperMode(uri, browser.loadContext)
+      readDeveloperMode(uri, this.#loadContext)
         .then(() => {
           if (
             this.#closed ||
+            !this.#enabled ||
             tab.closing ||
             !tab.isConnected ||
             browser !== tab.linkedBrowser ||
             developerModeHost(browser.currentURI) !== host ||
-            cachedDeveloperMode(browser.currentURI, browser.loadContext) ===
-              null
+            cachedDeveloperMode(browser.currentURI, this.#loadContext) === null
           ) {
             return;
           }
@@ -302,11 +343,11 @@ export class ZenDeveloperMode extends ZenUIComponent {
         .catch(console.error);
       return;
     }
-    tab.toggleAttribute(MODE_ATTRIBUTE, active);
     if (!active) {
       this.#removeToolbar(tab);
       return;
     }
+    tab.setAttribute(MODE_ATTRIBUTE, "true");
     let subtitle = tab.querySelector(".zen-developer-tab-sublabel");
     if (!subtitle) {
       subtitle = this.document.createXULElement("label");
@@ -327,16 +368,16 @@ export class ZenDeveloperMode extends ZenUIComponent {
       this.#bars.set(tab, bar);
     }
     if (this.document.activeElement !== bar.input) {
-      bar.input.value = browser.currentURI.spec;
+      bar.input.value = displayURL(browser);
     }
   }
 
   #createToolbar(tab) {
     const toolbar = this.document.createElementNS(HTML_NS, "div");
     toolbar.className = "zen-developer-toolbar";
-    toolbar.setAttribute("role", "toolbar");
+    toolbar.setAttribute("role", "group");
     this.document.l10n.setAttributes(toolbar, "zen-developer-mode-toolbar");
-    toolbar.addEventListener("focusin", (event) => {
+    toolbar.addEventListener("focusin", event => {
       if (this.window.gBrowser.selectedTab !== tab) {
         this.window.gBrowser.selectedTab = tab;
         event.target.focus({ preventScroll: true });
@@ -348,40 +389,67 @@ export class ZenDeveloperMode extends ZenUIComponent {
     input.spellcheck = false;
     input.setAttribute("autocomplete", "off");
     this.document.l10n.setAttributes(input, "zen-developer-mode-url");
-    input.addEventListener("keydown", (event) => {
+    const restoreURL = () => {
+      input.value = displayURL(tab.linkedBrowser);
+    };
+    input.addEventListener("keydown", event => {
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();
-        input.value = tab.linkedBrowser.currentURI.spec;
+        restoreURL();
         tab.linkedBrowser.focus();
       } else if (event.key === "Enter" && !event.isComposing) {
         event.preventDefault();
         event.stopPropagation();
-        const value = input.value.trim();
-        if (value) {
-          const uri = Services.uriFixup.getFixupURIInfo(
-            value,
-            Ci.nsIURIFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS,
-          ).preferredURI;
-          this.window.gBrowser.selectedTab = tab;
-          this.window.openTrustedLinkIn(uri.spec, "current");
+        let uri;
+        try {
+          uri = Services.uriFixup.getFixupURIInfo(
+            input.value.trim(),
+            Ci.nsIURIFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS
+          ).fixedURI;
+        } catch {
+          restoreURL();
+          return;
         }
+        if (!developerModeHost(uri)) {
+          restoreURL();
+          return;
+        }
+        this.window.gBrowser.selectedTab = tab;
+        this.window.openTrustedLinkIn(uri.spec, "current", {
+          allowPinnedTabHostChange: true,
+          indicateErrorPageLoad: true,
+        });
       }
     });
-    input.addEventListener("blur", () => {
-      input.value = tab.linkedBrowser.currentURI.spec;
-    });
+    input.addEventListener("blur", restoreURL);
     toolbar.append(input);
     this.#appendButtons(toolbar, () => tab);
+
+    const overflow = this.#createButton(
+      "more",
+      "chrome://browser/skin/zen-icons/menu.svg"
+    );
+    overflow.setAttribute("aria-haspopup", "menu");
+    let menu;
+    overflow.addEventListener("click", () => {
+      if (!menu) {
+        menu = this.document.createXULElement("menupopup");
+        this.#appendButtons(menu, () => tab, "menuitem");
+        toolbar.append(menu);
+      }
+      menu.openPopup(overflow, "after_end");
+    });
+    toolbar.append(overflow);
     return { toolbar, input };
   }
 
-  #appendButtons(toolbar, getTab, inMenu = false) {
-    const event = inMenu ? "command" : "click";
+  #appendButtons(toolbar, getTab, menuElement) {
+    const event = menuElement ? "command" : "click";
     const copy = this.#createButton(
       "copy",
       "chrome://browser/skin/zen-icons/link.svg",
-      inMenu,
+      menuElement
     );
     copy.addEventListener(event, () => {
       this.window.gBrowser.selectedTab = getTab();
@@ -390,18 +458,18 @@ export class ZenDeveloperMode extends ZenUIComponent {
     const screenshot = this.#createButton(
       "screenshot",
       "chrome://browser/skin/zen-icons/screenshot.svg",
-      inMenu,
+      menuElement
     );
     screenshot.addEventListener(event, () => {
       this.window.gBrowser.selectedTab = getTab();
       Services.obs.notifyObservers(
         this.window,
         "menuitem-screenshot",
-        "ToolbarButton",
+        "ToolbarButton"
       );
     });
 
-    if (inMenu) {
+    if (menuElement) {
       toolbar.append(copy, screenshot);
     } else {
       const divider = this.document.createElementNS(HTML_NS, "span");
@@ -417,11 +485,12 @@ export class ZenDeveloperMode extends ZenUIComponent {
       const button = this.#createButton(
         name,
         "chrome://devtools/skin/images/" + icon,
-        inMenu,
+        menuElement
       );
       button.dataset.tool = toolId;
       button.addEventListener(event, () => {
         const tab = getTab();
+        this.window.gBrowser.selectedTab = tab;
         this.#command = this.#command
           .then(() => this.#toggleTool(tab, toolId))
           .catch(console.error);
@@ -437,7 +506,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
     const { gBrowser, gZenVerticalTabsManager, gURLBar } = this.window;
     const root = this.document.documentElement;
     const top =
-      Services.prefs.getBoolPref(ENABLED_PREF, false) &&
+      this.#enabled &&
       !gZenVerticalTabsManager._hasSetSingleToolbar &&
       !gZenVerticalTabsManager.hidesTabsToolbar;
     const changed = root.hasAttribute(TOP_TOOLBAR_ATTRIBUTE) !== top;
@@ -447,16 +516,19 @@ export class ZenDeveloperMode extends ZenUIComponent {
       gBrowser.selectedTab.hasAttribute(MODE_ATTRIBUTE) &&
       !root.hasAttribute("customizing");
     root.toggleAttribute(ACTIVE_TOOLBAR_ATTRIBUTE, active);
-    const sitePanel = this.window.gZenSiteDataPanel;
-    if (sitePanel?.unifiedPanel.state === "open") {
-      sitePanel.refreshDeveloperMode();
-    }
     if (active) {
       this.#ensureNativeTools();
     }
     this.#syncToolbarOverflow();
     if (changed && !gURLBar.focused) {
       gURLBar.setURI();
+    }
+  }
+
+  #refreshSitePanel() {
+    const sitePanel = this.window.gZenSiteDataPanel;
+    if (sitePanel?.unifiedPanel.state === "open") {
+      sitePanel.refreshDeveloperMode();
     }
   }
 
@@ -473,13 +545,17 @@ export class ZenDeveloperMode extends ZenUIComponent {
     if (compact && !this.#menuTools) {
       const view = lazy.PanelMultiView.getViewNode(
         this.document,
-        "appMenu-mainView",
+        "appMenu-mainView"
       );
       const group = this.document.createXULElement("vbox");
       group.id = "zen-developer-menu-tools";
       group.setAttribute("role", "group");
       this.document.l10n.setAttributes(group, "zen-developer-mode-toolbar");
-      this.#appendButtons(group, () => this.window.gBrowser.selectedTab, true);
+      this.#appendButtons(
+        group,
+        () => this.window.gBrowser.selectedTab,
+        "toolbarbutton"
+      );
       group.append(this.document.createXULElement("toolbarseparator"));
       view.querySelector("#appMenu-new-tab-button2").before(group);
       this.#menuTools = group;
@@ -513,14 +589,19 @@ export class ZenDeveloperMode extends ZenUIComponent {
     }
   }
 
-  #createButton(name, icon, inMenu) {
-    if (inMenu) {
-      const button = this.document.createXULElement("toolbarbutton");
-      button.className = "subviewbutton subviewbutton-iconic";
+  #createButton(name, icon, menuElement) {
+    if (menuElement) {
+      const button = this.document.createXULElement(menuElement);
+      button.className =
+        menuElement === "menuitem"
+          ? "menuitem-iconic"
+          : "subviewbutton subviewbutton-iconic";
       button.setAttribute("image", icon);
       button.dataset.action = name;
       this.document.l10n.setAttributes(button, "zen-developer-mode-" + name);
-      button.addEventListener("command", () => this.window.PanelUI.hide());
+      if (menuElement === "toolbarbutton") {
+        button.addEventListener("command", () => this.window.PanelUI.hide());
+      }
       return button;
     }
 
@@ -538,19 +619,23 @@ export class ZenDeveloperMode extends ZenUIComponent {
   }
 
   async #toggleTool(tab, toolId) {
-    if (this.#closed || tab.closing || !tab.isConnected) {
+    if (
+      this.#closed ||
+      tab.closing ||
+      this.window.gBrowser.selectedTab !== tab ||
+      !tab.hasAttribute(MODE_ATTRIBUTE)
+    ) {
       return;
     }
     const { DevToolsShim } = ChromeUtils.importESModule(
-      "chrome://devtools-startup/content/DevToolsShim.sys.mjs",
+      "chrome://devtools-startup/content/DevToolsShim.sys.mjs"
     );
     if (!DevToolsShim.isEnabled()) {
       return;
     }
-    this.window.gBrowser.selectedTab = tab;
     DevToolsShim.initDevTools();
     const { require } = ChromeUtils.importESModule(
-      "resource://devtools/shared/loader/Loader.sys.mjs",
+      "resource://devtools/shared/loader/Loader.sys.mjs"
     );
     const { gDevTools } = require("devtools/client/framework/devtools");
     const toolbox = gDevTools.getToolboxForTab(tab);

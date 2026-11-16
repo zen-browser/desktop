@@ -10,7 +10,9 @@ const { nsZenMultiWindowFeature } = ChromeUtils.importESModule(
 
 var gZenMarketplaceManager = {
   async init() {
-    const checkForUpdates = document.getElementById("zenThemeMarketplaceCheckForUpdates");
+    const checkForUpdates = document.getElementById(
+      "zenThemeMarketplaceCheckForUpdates"
+    );
     const header = document.getElementById("zenMarketplaceHeader");
 
     if (!checkForUpdates || !header) {
@@ -42,7 +44,7 @@ var gZenMarketplaceManager = {
 
     await this._buildModsList();
 
-    const checkForUpdateClick = (event) => {
+    const checkForUpdateClick = event => {
       if (event.target === checkForUpdates) {
         event.preventDefault();
 
@@ -52,26 +54,36 @@ var gZenMarketplaceManager = {
 
     checkForUpdates.addEventListener("click", checkForUpdateClick);
 
-    document.addEventListener("ZenModsMarketplace:CheckForUpdatesFinished", (event) => {
-      checkForUpdates.disabled = false;
+    document.addEventListener(
+      "ZenModsMarketplace:CheckForUpdatesFinished",
+      event => {
+        checkForUpdates.disabled = false;
 
-      const updates = event.detail.updates;
-      const success = document.getElementById("zenThemeMarketplaceUpdatesSuccess");
-      const error = document.getElementById("zenThemeMarketplaceUpdatesFailure");
+        const updates = event.detail.updates;
+        const success = document.getElementById(
+          "zenThemeMarketplaceUpdatesSuccess"
+        );
+        const error = document.getElementById(
+          "zenThemeMarketplaceUpdatesFailure"
+        );
 
-      if (updates) {
-        success.hidden = false;
-        error.hidden = true;
-      } else {
-        success.hidden = true;
-        error.hidden = false;
+        if (updates) {
+          success.hidden = false;
+          error.hidden = true;
+        } else {
+          success.hidden = true;
+          error.hidden = false;
+        }
       }
-    });
+    );
 
     window.addEventListener("unload", () => {
       this.__hasInitializedEvents = false;
 
-      document.removeEventListener("ZenModsMarketplace:CheckForUpdatesFinished", this);
+      document.removeEventListener(
+        "ZenModsMarketplace:CheckForUpdatesFinished",
+        this
+      );
       document.removeEventListener("ZenCheckForModUpdates", this);
 
       checkForUpdates.removeEventListener("click", checkForUpdateClick);
@@ -95,7 +107,10 @@ var gZenMarketplaceManager = {
   },
 
   _initDisableAll() {
-    const areModsDisabled = Services.prefs.getBoolPref("zen.themes.disable-all", false);
+    const areModsDisabled = Services.prefs.getBoolPref(
+      "zen.themes.disable-all",
+      false
+    );
     const browser = nsZenMultiWindowFeature.currentBrowser;
     const mozToggle = document.createElement("moz-toggle");
 
@@ -108,7 +123,7 @@ var gZenMarketplaceManager = {
       `zen-theme-disable-all-${!areModsDisabled ? "enabled" : "disabled"}`
     );
 
-    mozToggle.addEventListener("toggle", async (event) => {
+    mozToggle.addEventListener("toggle", async event => {
       const { pressed = false } = event.target || {};
 
       this.modsList.style.display = pressed ? "" : "none";
@@ -168,8 +183,12 @@ var gZenMarketplaceManager = {
   },
 
   async _importThemes() {
-    const errorBox = document.getElementById("zenThemeMarketplaceImportFailure");
-    const successBox = document.getElementById("zenThemeMarketplaceImportSuccess");
+    const errorBox = document.getElementById(
+      "zenThemeMarketplaceImportFailure"
+    );
+    const successBox = document.getElementById(
+      "zenThemeMarketplaceImportSuccess"
+    );
 
     successBox.hidden = true;
     errorBox.hidden = true;
@@ -184,8 +203,8 @@ var gZenMarketplaceManager = {
 
     let timeout;
 
-    const filePromise = new Promise((resolve) => {
-      input.addEventListener("change", (event) => {
+    const filePromise = new Promise(resolve => {
+      input.addEventListener("change", event => {
         if (timeout) {
           clearTimeout(timeout);
         }
@@ -195,7 +214,9 @@ var gZenMarketplaceManager = {
       });
 
       timeout = setTimeout(() => {
-        console.warn("[ZenSettings:ZenMods]: Import timeout reached, aborting.");
+        console.warn(
+          "[ZenSettings:ZenMods]: Import timeout reached, aborting."
+        );
         resolve(null);
       }, 60000);
     });
@@ -223,7 +244,10 @@ var gZenMarketplaceManager = {
         await window.ZenInstallMod(mod);
       }
     } catch (error) {
-      console.error("[ZenSettings:ZenMods]: Error while importing mods:", error);
+      console.error(
+        "[ZenSettings:ZenMods]: Error while importing mods:",
+        error
+      );
       errorBox.hidden = false;
     }
 
@@ -233,8 +257,12 @@ var gZenMarketplaceManager = {
   },
 
   async _exportThemes() {
-    const errorBox = document.getElementById("zenThemeMarketplaceExportFailure");
-    const successBox = document.getElementById("zenThemeMarketplaceExportSuccess");
+    const errorBox = document.getElementById(
+      "zenThemeMarketplaceExportFailure"
+    );
+    const successBox = document.getElementById(
+      "zenThemeMarketplaceExportSuccess"
+    );
 
     successBox.hidden = true;
     errorBox.hidden = true;
@@ -269,7 +297,10 @@ var gZenMarketplaceManager = {
         successBox.hidden = false;
       }
     } catch (error) {
-      console.error("[ZenSettings:ZenMods]: Error while exporting mods:", error);
+      console.error(
+        "[ZenSettings:ZenMods]: Error while exporting mods:",
+        error
+      );
       errorBox.hidden = false;
     }
   },
@@ -288,7 +319,9 @@ var gZenMarketplaceManager = {
     const browser = nsZenMultiWindowFeature.currentBrowser;
     const modList = document.createElement("div");
 
-    for (const mod of Object.values(mods).sort((a, b) => a.name.localeCompare(b.name))) {
+    for (const mod of Object.values(mods).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )) {
       const sanitizedName = gZenMods.sanitizeModName(mod.name);
       const isModEnabled = mod.enabled === undefined || mod.enabled;
       const fragment = window.MozXULElement.parseXULToFragment(`
@@ -310,7 +343,9 @@ var gZenMarketplaceManager = {
       const modName = `${mod.name} (v${mod.version ?? "1.0.0"})`;
 
       const base = fragment.querySelector(".zenThemeMarketplaceItem");
-      const baseHeader = fragment.querySelector("#zenThemeMarketplaceItemContentHeader");
+      const baseHeader = fragment.querySelector(
+        "#zenThemeMarketplaceItemContentHeader"
+      );
 
       const dialog = document.createElement("dialog");
       const mainDialogDiv = document.createElement("div");
@@ -323,12 +358,19 @@ var gZenMarketplaceManager = {
       mainDialogDiv.className = "zenThemeMarketplaceItemPreferenceDialog";
       headerDiv.className = "zenThemeMarketplaceItemPreferenceDialogTopBar";
       headerTitle.textContent = modName;
-      browser.document.l10n.setAttributes(headerTitle, "zen-theme-marketplace-theme-header-title", {
-        name: sanitizedName,
-      });
+      browser.document.l10n.setAttributes(
+        headerTitle,
+        "zen-theme-marketplace-theme-header-title",
+        {
+          name: sanitizedName,
+        }
+      );
       headerTitle.className = "zenThemeMarketplaceItemTitle";
       closeButton.id = `${sanitizedName}-modal-close`;
-      browser.document.l10n.setAttributes(closeButton, "zen-theme-marketplace-close-modal");
+      browser.document.l10n.setAttributes(
+        closeButton,
+        "zen-theme-marketplace-close-modal"
+      );
       contentDiv.id = `${sanitizedName}-preferences-content`;
       contentDiv.className = "zenThemeMarketplaceItemPreferenceDialogContent";
       mozToggle.className = "zenThemeMarketplaceItemPreferenceToggle";
@@ -353,7 +395,7 @@ var gZenMarketplaceManager = {
         dialog.close();
       });
 
-      mozToggle.addEventListener("toggle", async (event) => {
+      mozToggle.addEventListener("toggle", async event => {
         const modId = event.target
           .closest(".zenThemeMarketplaceItem")
           .querySelector(".zenThemeMarketplaceItemUninstallButton")
@@ -370,7 +412,9 @@ var gZenMarketplaceManager = {
 
           if (mod.preferences) {
             document
-              .getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`)
+              .getElementById(
+                `zenThemeMarketplaceItemConfigureButton-${sanitizedName}`
+              )
               .setAttribute("hidden", true);
           }
         } else {
@@ -383,7 +427,9 @@ var gZenMarketplaceManager = {
 
           if (mod.preferences) {
             document
-              .getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`)
+              .getElementById(
+                `zenThemeMarketplaceItemConfigureButton-${sanitizedName}`
+              )
               .removeAttribute("hidden");
           }
         }
@@ -393,11 +439,14 @@ var gZenMarketplaceManager = {
         }, 400);
       });
 
-      fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent = modName;
-      fragment.querySelector(".zenThemeMarketplaceItemDescription").textContent = mod.description;
+      fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent =
+        modName;
+      fragment.querySelector(
+        ".zenThemeMarketplaceItemDescription"
+      ).textContent = mod.description;
       fragment
         .querySelector(".zenThemeMarketplaceItemUninstallButton")
-        .addEventListener("click", async (event) => {
+        .addEventListener("click", async event => {
           const [msg] = await document.l10n.formatValues([
             { id: "zen-theme-marketplace-remove-confirmation" },
           ]);
@@ -410,7 +459,9 @@ var gZenMarketplaceManager = {
         });
 
       if (mod.homepage) {
-        const homepageButton = fragment.querySelector(".zenThemeMarketplaceItemHomepageButton");
+        const homepageButton = fragment.querySelector(
+          ".zenThemeMarketplaceItemHomepageButton"
+        );
         homepageButton.addEventListener("click", () => {
           // open the homepage url in a new tab
           const url = mod.homepage;
@@ -458,7 +509,10 @@ var gZenMarketplaceManager = {
               menulist.setAttribute("sizetopopup", "none");
               menulist.setAttribute("id", property + "-popup-menulist");
 
-              const savedValue = Services.prefs.getStringPref(property, defaultValue ?? "none");
+              const savedValue = Services.prefs.getStringPref(
+                property,
+                defaultValue ?? "none"
+              );
 
               menulist.setAttribute("value", savedValue);
               menulist.setAttribute("tooltiptext", property);
@@ -515,13 +569,19 @@ var gZenMarketplaceManager = {
 
                 element.setAttribute(property?.replaceAll(/\./g, "-"), value);
 
-                Services.prefs.setStringPref(property, value === "none" ? "" : value);
+                Services.prefs.setStringPref(
+                  property,
+                  value === "none" ? "" : value
+                );
                 this._triggerBuildUpdateWithoutRebuild();
               });
 
               const nameLabel = document.createXULElement("label");
               nameLabel.setAttribute("flex", "1");
-              nameLabel.setAttribute("class", "zenThemeMarketplaceItemPreferenceLabel");
+              nameLabel.setAttribute(
+                "class",
+                "zenThemeMarketplaceItemPreferenceLabel"
+              );
               nameLabel.setAttribute("value", label);
               nameLabel.setAttribute("tooltiptext", property);
 
@@ -552,8 +612,10 @@ var gZenMarketplaceManager = {
                 checkboxElement.setAttribute("checked", "true");
               }
 
-              checkboxElement.addEventListener("click", (event) => {
-                const target = event.target.closest(".zenThemeMarketplaceItemPreferenceCheckbox");
+              checkboxElement.addEventListener("click", event => {
+                const target = event.target.closest(
+                  ".zenThemeMarketplaceItemPreferenceCheckbox"
+                );
                 const key = target.getAttribute("zen-pref");
                 const checked = target.hasAttribute("checked");
 
@@ -576,7 +638,10 @@ var gZenMarketplaceManager = {
               container.setAttribute("align", "center");
               container.setAttribute("role", "group");
 
-              const savedValue = Services.prefs.getStringPref(property, defaultValue ?? "");
+              const savedValue = Services.prefs.getStringPref(
+                property,
+                defaultValue ?? ""
+              );
               const sanitizedProperty = property?.replaceAll(/\./g, "-");
 
               const input = document.createElement("input");
@@ -596,7 +661,7 @@ var gZenMarketplaceManager = {
 
               input.addEventListener(
                 "change",
-                gZenMods.debounce((event) => {
+                gZenMods.debounce(event => {
                   const value = event.target.value;
 
                   Services.prefs.setStringPref(property, value);
@@ -616,7 +681,10 @@ var gZenMarketplaceManager = {
 
               const nameLabel = document.createXULElement("label");
               nameLabel.setAttribute("flex", "1");
-              nameLabel.setAttribute("class", "zenThemeMarketplaceItemPreferenceLabel");
+              nameLabel.setAttribute(
+                "class",
+                "zenThemeMarketplaceItemPreferenceLabel"
+              );
               nameLabel.setAttribute("value", label);
               nameLabel.setAttribute("tooltiptext", property);
 
@@ -645,233 +713,10 @@ var gZenMarketplaceManager = {
   },
 };
 
-const kZenExtendedSidebar = "zen.view.sidebar-expanded";
-const kZenSingleToolbar = "zen.view.use-single-toolbar";
-
-var gZenLooksAndFeel = {
-  init() {
-    if (this.__hasInitialized) {
-      return;
-    }
-    this.__hasInitialized = true;
-    gZenMarketplaceManager.init();
-    for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
-      Services.prefs.addObserver(pref, this);
-    }
-    window.addEventListener("unload", () => {
-      for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
-        Services.prefs.removeObserver(pref, this);
-      }
-    });
-    this.applySidebarLayout();
-  },
-
-  observe() {
-    this.applySidebarLayout();
-  },
-
-  applySidebarLayout() {
-    const isSingleToolbar = Services.prefs.getBoolPref(kZenSingleToolbar);
-    const isExtendedSidebar = Services.prefs.getBoolPref(kZenExtendedSidebar);
-    for (const layout of document.getElementById("zenLayoutList").children) {
-      layout.classList.remove("selected");
-      if (layout.getAttribute("layout") == "single" && isSingleToolbar) {
-        layout.classList.add("selected");
-      } else if (
-        layout.getAttribute("layout") == "multiple" &&
-        !isSingleToolbar &&
-        isExtendedSidebar
-      ) {
-        layout.classList.add("selected");
-      } else if (layout.getAttribute("layout") == "collapsed" && !isExtendedSidebar) {
-        layout.classList.add("selected");
-      }
-    }
-    if (this.__hasInitializedLayout) {
-      return;
-    }
-    this.__hasInitializedLayout = true;
-    for (const layout of document.getElementById("zenLayoutList").children) {
-      layout.addEventListener("click", () => {
-        if (layout.hasAttribute("disabled")) {
-          return;
-        }
-
-        for (const el of document.getElementById("zenLayoutList").children) {
-          el.classList.remove("selected");
-        }
-
-        layout.classList.add("selected");
-
-        Services.prefs.setBoolPref(
-          kZenExtendedSidebar,
-          layout.getAttribute("layout") != "collapsed"
-        );
-        Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
-      });
-    }
-  },
-};
-
-var gZenWorkspacesSettings = {
-  init() {
-    var tabsUnloaderPrefListener = {
-      async observe() {
-        let buttonIndex = await confirmRestartPrompt(true, 1, true, true);
-        if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
-          Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
-        }
-      },
-    };
-
-    let toggleZenCycleByAttrWarning = {
-      observe() {
-        const warning = document.getElementById("zenTabsCycleByAttributeWarning");
-        warning.hidden = !(
-          Services.prefs.getBoolPref("zen.tabs.ctrl-tab.ignore-essential-tabs", false) &&
-          Services.prefs.getBoolPref("browser.ctrlTab.sortByRecentlyUsed", false)
-        );
-      },
-    };
-
-    toggleZenCycleByAttrWarning.observe(); // call it once on initial load
-
-    Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
-    Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
-    Services.prefs.addObserver("zen.window-sync.sync-only-pinned-tabs", tabsUnloaderPrefListener);
-    Services.prefs.addObserver(
-      "zen.tabs.ctrl-tab.ignore-essential-tabs",
-      toggleZenCycleByAttrWarning
-    );
-    Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
-    window.addEventListener("unload", () => {
-      Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
-      Services.prefs.removeObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
-      Services.prefs.removeObserver(
-        "zen.window-sync.sync-only-pinned-tabs",
-        tabsUnloaderPrefListener
-      );
-      Services.prefs.removeObserver(
-        "zen.tabs.ctrl-tab.ignore-essential-tabs",
-        toggleZenCycleByAttrWarning
-      );
-      Services.prefs.removeObserver(
-        "browser.ctrlTab.sortByRecentlyUsed",
-        toggleZenCycleByAttrWarning
-      );
-    });
-  },
-};
-
 Preferences.addAll([
-  {
-    id: "zen.view.compact.toolbar-flash-popup",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.workspaces.hide-default-container-indicator",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.tab-unloader.timeout-minutes",
-    type: "int",
-    default: 10,
-  },
-  {
-    id: "zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.pinned-tab-manager.close-shortcut-behavior",
-    type: "string",
-    default: "switch",
-  },
-  {
-    id: "zen.workspaces.force-container-workspace",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.glance.activation-method",
-    type: "string",
-    default: "ctrl",
-  },
-  {
-    id: "zen.glance.enabled",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.view.drag-window-from-content",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.workspaces.separate-essentials",
-    type: "bool",
-    default: false,
-  },
-  {
-    id: "zen.tabs.show-newtab-vertical",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.view.show-newtab-button-top",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "media.videocontrols.picture-in-picture.enabled",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.workspaces.continue-where-left-off",
-    type: "bool",
-    default: false,
-  },
   {
     id: "zen.mods.auto-update",
     type: "bool",
     default: true,
   },
-  {
-    id: "zen.tabs.ctrl-tab.ignore-essential-tabs",
-    type: "bool",
-    default: false,
-  },
-  {
-    id: "zen.tabs.ctrl-tab.ignore-pending-tabs",
-    type: "bool",
-    default: false,
-  },
-  {
-    id: "zen.tabs.close-on-back-with-no-history",
-    type: "bool",
-    default: false,
-  },
-  {
-    id: "zen.tabs.select-recently-used-on-close",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.window-sync.sync-only-pinned-tabs",
-    type: "bool",
-    default: false,
-  },
 ]);
-
-Preferences.addSetting({
-  id: "zenWorkspaceContinueWhereLeftOff",
-  pref: "zen.workspaces.continue-where-left-off",
-});

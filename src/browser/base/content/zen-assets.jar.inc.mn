@@ -21,5 +21,6 @@
 #include ../../../zen/share/jar.inc.mn
 #include ../../../zen/library/jar.inc.mn
 #include ../../../zen/little-window/jar.inc.mn
+#include ../../../zen/settings/jar.inc.mn
 #include ../../../zen/about/jar.inc.mn
 #include ../../../zen/migration/jar.inc.mn

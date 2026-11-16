@@ -1104,10 +1104,6 @@
       "zen-library-boost-icon-border-color": {
         "value": "#ffffff99",
         "type": "color"
-      },
-      "zen-dialog-box-border-light-color": {
-        "value": "#00000033",
-        "type": "color"
       }
     },
     "icon-color": {
@@ -1251,6 +1247,10 @@
         "value": "#ffffff4d",
         "type": "color"
       },
+      "zen-settings-background": {
+        "value": "#f3f3f4",
+        "type": "color"
+      },
       "zen-share-badge-background": {
         "value": "#ffffff",
         "type": "color"
@@ -1331,8 +1331,8 @@
         "value": "#00000014",
         "type": "color"
       },
-      "zen-dialog-box-outline-color": {
-        "value": "#00000000",
+      "zen-dialog-border-color": {
+        "value": "#00000014",
         "type": "color"
       },
       "zen-toast-button-border-top-color": {
@@ -1491,6 +1491,10 @@
         "value": "#0000004d",
         "type": "color"
       },
+      "zen-settings-background": {
+        "value": "#1e1e1f",
+        "type": "color"
+      },
       "zen-share-badge-background": {
         "value": "#1c1c1c",
         "type": "color"
@@ -1571,8 +1575,8 @@
         "value": "#ffffff14",
         "type": "color"
       },
-      "zen-dialog-box-outline-color": {
-        "value": "#a1a1a180",
+      "zen-dialog-border-color": {
+        "value": "#ffffff14",
         "type": "color"
       },
       "zen-toast-button-border-top-color": {

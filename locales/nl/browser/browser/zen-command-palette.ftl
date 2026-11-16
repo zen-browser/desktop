@@ -16,6 +16,7 @@ zen-action-settings = Instellingen
 zen-action-open-private-window = Privévenster openen
 zen-action-open-new-window = Nieuw venster openen
 zen-action-new-blank-window = Nieuw blanco venster
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Tab vastzetten
 zen-action-unpin-tab = Tab losmaken
 zen-action-open-space-routing = Ruimte routering openen

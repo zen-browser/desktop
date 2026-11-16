@@ -43,17 +43,15 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自訂顏色
-zen-copy-current-url-confirmation = 網址已複製到剪貼簿！
-zen-copy-current-url-as-markdown-confirmation = 已以Markdown格式複製當前網址！
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] 已複製 { $count } 條網址！
-       *[other] 已複製 { $count } 條網址！
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] 已以Markdown格式複製 { $count } 條網址！
-       *[other] 已以Markdown格式複製 { $count } 條網址！
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
     }
 zen-general-cancel-label = 
     .label = 取消
@@ -66,7 +64,7 @@ zen-pinned-tab-edit-url-title = 修改釘選分頁的網址
 zen-pinned-tab-edit-url-label = 輸入要指定給此釘選分頁的網址：
 zen-tabs-renamed = 成功重新命名分頁！
 zen-background-tab-opened-toast = 新分頁已在背景開啟！
-zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
+zen-zoom-changed-toast = 頁面縮放： { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = 成功重新命名工作區！
 zen-split-view-limit-toast = 無法加入更多分頁至分割畫面！
 zen-sidebar-drag-collapsed-toast = 側邊欄已隱藏！可使用<span>{$shortcut}</span>將它再次顯示。
@@ -150,3 +148,11 @@ zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 明白了
 zen-appmenu-new-blank-window = 
     .label = 開新簡白視窗
+zen-appmenu-new-little-window = 
+    .label = New Little Window
+zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Open in { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Choose a Space
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close

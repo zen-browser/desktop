@@ -16,6 +16,7 @@ zen-action-settings = Stillingar
 zen-action-open-private-window = Opna huliðsglugga
 zen-action-open-new-window = Opna nýjan glugga
 zen-action-new-blank-window = Nýr auður gluggi
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Festa flipa
 zen-action-unpin-tab = Losa flipa
 zen-action-open-space-routing = Opna Svæðabeiningar

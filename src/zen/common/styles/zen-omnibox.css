@@ -263,7 +263,7 @@
     }
   }
 
-  & #identity-box {
+  #identity-box {
     height: 100%;
   }
 
@@ -271,7 +271,7 @@
     margin-inline-end: 0;
   }
 
-  & .urlbar-background {
+  .urlbar-background {
     --zen-urlbar-background-base: light-dark(rgb(255, 255, 255), rgb(24 24 24));
     @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce)) {
       &:not(:-moz-window-inactive) {
@@ -297,7 +297,7 @@
     border-radius: var(--zen-border-radius-15) !important;
   }
 
-  &[breakout-extend][animate-searchmode="true"]::before {
+  &[animate-searchmode="true"]::before {
     position: absolute;
     content: "";
     inset: 0;
@@ -308,8 +308,9 @@
     animation: zen-urlbar-searchmode ease-out 1s forwards;
   }
 
-  & #zen-copy-url-button {
-    display: none;
+  #zen-copy-url-button,
+  #urlbar-zoom-button {
+    display: none !important;
   }
 }
 

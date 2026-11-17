@@ -14,7 +14,7 @@ tab-context-zen-reset-pinned-tab =
 tab-context-zen-add-essential = 
     .label = Essentialsに追加
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max }スロットがいっぱいです
+tab-context-zen-add-essential-badge = { $num } / { $max } スロットを使用中
 tab-context-zen-remove-essential = 
     .label = Essentialsから削除
     .accesskey = R
@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = カスタムカラー
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] 現在のURLをコピーしました！
+       *[other] { $count }個のURLをコピーしました！
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] 現在のURLをMarkdownとしてコピーしました！
+       *[other] { $count }個のURLをMarkdownとしてコピーしました！
     }
 zen-general-cancel-label = 
     .label = キャンセル
@@ -151,10 +151,12 @@ zen-window-sync-migration-dialog-accept = わかりました
 zen-appmenu-new-blank-window = 
     .label = 新しい空のウィンドウ
 zen-appmenu-new-little-window = 
-    .label = New Little Window
-zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
-zen-little-window-open-in-new-window = Open in { -brand-short-name }
+    .label = 新しい小さなウィンドウ
+zen-little-window-open-in-space = <b data-l10n-name="space">{ $space }</b> で開く
+zen-little-window-open-in-new-window = { -brand-short-name } で開く
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
-zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
-zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+    .tooltiptext = スペースを選択
+zen-little-window-intro-title = <i data-l10n-name="name">小さな Zen</i> で開きました
+zen-little-window-intro-description = 開くボタンからこのページをフルウィンドウへ移動するか、{ $shortcut } で閉じることができます
+zen-little-window-download-source = 
+    .value = From { $host }

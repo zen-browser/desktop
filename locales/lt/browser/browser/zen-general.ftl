@@ -47,13 +47,19 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Pasirinktinė spalva
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Nukopijuotas dabartinis URL.
+        [one] Nukopijuotas { $count } URL.
+        [few] Nukopijuoti { $count } URL.
+        [many] Nukopijuota { $count } URL.
+       *[other] Nukopijuota { $count } URL.
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] Nukopijuotas dabartinis URL kaip ženklinimas („Markdown“).
+        [one] Nukopijuotas { $count } URL kaip ženklinimas („Markdown“).
+        [few] Nukopijuoti { $count } URL kaip ženklinimas („Markdown“).
+        [many] Nukopijuota { $count } URL kaip ženklinimas („Markdown“).
+       *[other] Nukopijuota { $count } URL kaip ženklinimas („Markdown“).
     }
 zen-general-cancel-label = 
     .label = Atšaukti
@@ -151,10 +157,12 @@ zen-window-sync-migration-dialog-accept = Supratau
 zen-appmenu-new-blank-window = 
     .label = Naujas tuščias langas
 zen-appmenu-new-little-window = 
-    .label = New Little Window
+    .label = Naujas mažas langelis
 zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
-zen-little-window-open-in-new-window = Open in { -brand-short-name }
+zen-little-window-open-in-new-window = Atverti mažame „{ -brand-short-name }“
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
+    .tooltiptext = Pasirinkite sritį
 zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
 zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+zen-little-window-download-source = 
+    .value = From { $host }

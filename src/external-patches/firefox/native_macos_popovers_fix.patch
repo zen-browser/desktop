@@ -1,8 +1,9 @@
 diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
 --- a/toolkit/themes/shared/global-shared.css
 +++ b/toolkit/themes/shared/global-shared.css
-@@ -80,10 +80,9 @@
+@@ -80,11 +80,10 @@
      background-color: transparent;
+     --panel-background: transparent;
      --panel-box-shadow: none;
      --panel-border-color: transparent;
      --panel-box-shadow-margin: 0px;

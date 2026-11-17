@@ -1,0 +1,131 @@
+diff --git a/toolkit/modules/subprocess/subprocess_shared_unix.js b/toolkit/modules/subprocess/subprocess_shared_unix.js
+--- a/toolkit/modules/subprocess/subprocess_shared_unix.js
++++ b/toolkit/modules/subprocess/subprocess_shared_unix.js
+@@ -57,11 +57,11 @@
+   fcntl: [
+     ctypes.default_abi,
+     ctypes.int,
+     ctypes.int /* fildes */,
+     ctypes.int /* cmd */,
+-    ctypes.int /* ... */,
++    "...",
+   ],
+ 
+   getcwd: [
+     ctypes.default_abi,
+     ctypes.char.ptr,
+diff --git a/toolkit/modules/subprocess/subprocess_unix.sys.mjs b/toolkit/modules/subprocess/subprocess_unix.sys.mjs
+--- a/toolkit/modules/subprocess/subprocess_unix.sys.mjs
++++ b/toolkit/modules/subprocess/subprocess_unix.sys.mjs
+@@ -34,13 +34,13 @@
+       throw new Error("Unable to create pipe");
+     }
+ 
+     this.signalFd = fds[1];
+ 
+-    libc.fcntl(fds[0], LIBC.F_SETFL, LIBC.O_NONBLOCK);
+-    libc.fcntl(fds[0], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-    libc.fcntl(fds[1], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
++    libc.fcntl(fds[0], LIBC.F_SETFL, ctypes.int(LIBC.O_NONBLOCK));
++    libc.fcntl(fds[0], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++    libc.fcntl(fds[1], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
+ 
+     this.call("init", [{ signalFd: fds[0] }]);
+   }
+ 
+   closePipe() {
+diff --git a/toolkit/modules/subprocess/subprocess_unix.worker.js b/toolkit/modules/subprocess/subprocess_unix.worker.js
+--- a/toolkit/modules/subprocess/subprocess_unix.worker.js
++++ b/toolkit/modules/subprocess/subprocess_unix.worker.js
+@@ -349,13 +349,13 @@
+         our_pipes.push(new InputPipe(this, fds[1]));
+       } else {
+         our_pipes.push(new OutputPipe(this, fds[1]));
+       }
+ 
+-      libc.fcntl(fds[0], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-      libc.fcntl(fds[1], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-      libc.fcntl(fds[1], LIBC.F_SETFL, LIBC.O_NONBLOCK);
++      libc.fcntl(fds[0], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++      libc.fcntl(fds[1], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++      libc.fcntl(fds[1], LIBC.F_SETFL, ctypes.int(LIBC.O_NONBLOCK));
+ 
+       return fds[0];
+     };
+ 
+     their_pipes.set(0, pipe(false));
+diff --git a/toolkit/modules/subprocess/test/xpcshell/test_subprocess_pipe_flags.js b/toolkit/modules/subprocess/test/xpcshell/test_subprocess_pipe_flags.js
+new file mode 100644
+--- /dev/null
++++ b/toolkit/modules/subprocess/test/xpcshell/test_subprocess_pipe_flags.js
+@@ -0,0 +1,56 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++"use strict";
++
++// fcntl commands for reading the flags set by the subprocess modules. The
++// values are the same on Linux and macOS but are not exposed by
++// ChromeUtils.getLibcConstants().
++const F_GETFD = 1;
++const F_GETFL = 3;
++
++add_task(async function test_subprocess_pipe_flags() {
++  const { getSubprocessImplForTest } = ChromeUtils.importESModule(
++    "resource://gre/modules/Subprocess.sys.mjs"
++  );
++  const { libc } = ChromeUtils.importESModule(
++    "resource://gre/modules/subprocess/subprocess_unix.sys.mjs"
++  );
++  const { FD_CLOEXEC, O_NONBLOCK } = ChromeUtils.getLibcConstants();
++
++  const worker = getSubprocessImplForTest().Process.getWorker();
++  equal(
++    libc.fcntl(worker.signalFd, F_GETFD),
++    FD_CLOEXEC,
++    "The main-thread signal pipe has exactly FD_CLOEXEC set"
++  );
++
++  const proc = await Subprocess.call({
++    command: await Subprocess.pathSearch("cat"),
++    stderr: "pipe",
++  });
++  const fds = await worker.call("getFds", [proc.id]);
++  ok(
++    fds.every(Number.isInteger),
++    "The worker owns the stdin, stdout and stderr pipes"
++  );
++  for (const fd of fds) {
++    equal(
++      libc.fcntl(fd, F_GETFD),
++      FD_CLOEXEC,
++      "Worker pipes have exactly FD_CLOEXEC set"
++    );
++    equal(
++      libc.fcntl(fd, F_GETFL) & O_NONBLOCK,
++      O_NONBLOCK,
++      "Worker pipes are nonblocking"
++    );
++  }
++
++  const output = proc.stdout.readString(5);
++  await proc.stdin.write("hello");
++  equal(await output, "hello", "The subprocess pipes transfer data");
++  await proc.stdin.close();
++  equal((await proc.wait()).exitCode, 0, "The subprocess exits cleanly");
++});
+diff --git a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+--- a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
++++ b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+@@ -25,6 +25,9 @@
+ ["test_subprocess_pathSearch.js"]
+ 
+ ["test_subprocess_perf.js"]
+ requesttimeoutfactor = 2  # Slow on Windows
+ 
++["test_subprocess_pipe_flags.js"]
++skip-if = ["os == 'win'"]
++
+ ["test_subprocess_polling.js"]
+

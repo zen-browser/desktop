@@ -1,0 +1,4 @@
+@namespace url(http://www.w3.org/1999/xhtml);
+@-moz-document url("https://example.org/"), url(https://example.com/), url-prefix("https://example.net/") {
+  body { color: red; }
+}

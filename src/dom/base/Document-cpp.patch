@@ -1,8 +1,8 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index 73eb08f648d55121a0cd96cd808f932fb14bfee6..efa99861a5da12ad8d0daa2c0eb1473c57810397 100644
+index dbc92f8446f98667b98287d70c22e8433349cef0..b9a0b669bde08e9aafee8360143d2de286087e5d 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
-@@ -471,6 +471,7 @@
+@@ -483,6 +483,7 @@
  #include "prtime.h"
  #include "prtypes.h"
  #include "xpcpublic.h"
@@ -10,13 +10,17 @@ index 73eb08f648d55121a0cd96cd808f932fb14bfee6..efa99861a5da12ad8d0daa2c0eb1473c
  
  // clang-format off
  #include "mozilla/Encoding.h"
-@@ -3164,6 +3165,11 @@ void Document::FillStyleSetUserAndUASheets() {
+@@ -3448,6 +3449,15 @@ void Document::FillStyleSetUserAndUASheets() {
      }
    };
  
 +  if (IsInChromeDocShell()) {
 +    // The mods sheet is only used in the chrome docshell.
 +    MaybeAppend(zen::ZenStyleSheetCache::Singleton()->GetModsSheet());
++  } else if (!NodePrincipal()->IsSystemPrincipal()) {
++    // And their styles for pages everywhere else, but for privileged pages
++    // like about:preferences, which must stay reachable when a mod breaks.
++    MaybeAppend(zen::ZenStyleSheetCache::Singleton()->GetModsContentSheet());
 +  }
 +
    MaybeAppend(IsInChromeDocShell() ? cache->GetUserChromeSheet()

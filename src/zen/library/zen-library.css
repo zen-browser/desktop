@@ -63,7 +63,7 @@ zen-library {
     flex-direction: row-reverse;
 
     & toolbarbutton:first-child {
-      rotate:180deg;
+      rotate: 180deg;
     }
   }
 }
@@ -75,7 +75,7 @@ zen-library[open] {
   -moz-window-dragging: drag;
 
   &:not([transitioning]) {
-    transition: width 0.3s cubic-bezier(.36,.06,0,.94);
+    transition: width 0.3s cubic-bezier(0.36, 0.06, 0, 0.94);
   }
 }
 
@@ -87,8 +87,7 @@ zen-library[transitioning] #zen-library-content {
   pointer-events: none;
 }
 
-zen-library:is([transitioning], [sizing])
-  :is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
+zen-library:is([transitioning], [sizing]) :is(.zen-library-search-results, .zen-library-spaces, .zen-library-space-body) {
   scrollbar-width: none;
   overflow-x: hidden;
 }
@@ -317,13 +316,8 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
   border: 3px solid transparent;
   border-radius: var(--zen-border-radius-round);
   background:
-    conic-gradient(
-        var(--zen-accent-button-background) var(--zen-library-download-progress, 0%),
-        currentColor 0
-      )
-      border-box,
-    color-mix(in srgb, var(--zen-primary-color), var(--zen-library-download-badge-mix-color) 80%)
-      padding-box;
+    conic-gradient(var(--zen-accent-button-background) var(--zen-library-download-progress, 0%), currentColor 0) border-box,
+    color-mix(in srgb, var(--zen-primary-color), var(--zen-library-download-badge-mix-color) 80%) padding-box;
   box-shadow: var(--zen-box-shadow-glow);
   pointer-events: none;
 }
@@ -342,6 +336,18 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
 
 [data-section="space-routing"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
   background-image: url("chrome://browser/skin/zen-icons/library/library-space-routing-sprite.svg");
+}
+
+/* Placeholder until mods get a sprite of their own. */
+[data-section="mods"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-sprite.svg");
+}
+
+/* It's only a fill, with no outline to set it off, so it takes the
+ * outline's color whether the tab is active or not. */
+.zen-library-tab[data-section="mods"] .zen-library-tab-icon-image,
+[data-section="mods"] .empty-state-icon-image {
+  fill: var(--zen-library-tab-icon-stroke);
 }
 
 .zen-library-media-grid {
@@ -589,6 +595,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
 .zen-library-filter-button,
 .zen-library-filter-done,
 .zen-library-filter-chip,
+.zen-library-mods-panel-back,
 .zen-library-routing-form-buttons button {
   border: none;
   color: inherit;
@@ -875,7 +882,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   & h3 {
     margin: 0 0 var(--zen-space-6);
     /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
-  font-size: 0.93em;
+    font-size: 0.93em;
     font-weight: var(--font-weight-semibold);
     opacity: var(--zen-opacity-85);
   }
@@ -1136,7 +1143,7 @@ zen-library-history-section {
 
 /* Boosts */
 
-.zen-library-row-actions moz-toggle {
+:is(.zen-library-row-actions, .zen-library-mod-preference) moz-toggle {
   --toggle-width: 44px;
   --toggle-height: 24px;
   --toggle-dot-margin: 2px;
@@ -1145,7 +1152,9 @@ zen-library-history-section {
   --toggle-background-color-hover: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
   --toggle-background-color-active: var(--toggle-background-color-hover);
   --toggle-dot-background-color: light-dark(white, rgb(235, 235, 235));
+}
 
+.zen-library-row-actions moz-toggle {
   display: none;
 
   .zen-library-row:is(:hover, [menu-open]) & {
@@ -1217,6 +1226,307 @@ zen-library-history-section {
       transform: translate(-50%, -50%) rotate(45deg);
       pointer-events: none;
     }
+  }
+}
+
+/* Mods */
+
+.zen-library-mod-row {
+  contain-intrinsic-size: auto 46px;
+
+  &[disabled] :is(.zen-library-row-text, .zen-library-mod-icon) {
+    opacity: var(--zen-opacity-50);
+  }
+}
+
+.zen-library-mod-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--zen-size-34);
+  height: var(--zen-size-34);
+  border-radius: var(--zen-border-radius-10);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-weight: var(--font-weight-bold);
+}
+
+.zen-library-mods-views {
+  display: flex;
+  gap: var(--zen-space-6);
+  /* In line with the search box above, whose padding is wider. */
+  margin: 0 var(--zen-space-4) var(--zen-space-8);
+
+  & .zen-library-filter-chip {
+    justify-content: center;
+  }
+}
+
+.zen-library-mods-disclaimer {
+  margin: 0 var(--zen-space-8) var(--zen-space-12);
+  font-size: var(--zen-font-size-12);
+  opacity: var(--zen-opacity-60);
+  text-wrap: pretty;
+}
+
+.zen-library-mods-view-tabs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--zen-space-6);
+}
+
+.zen-library-mods-add {
+  padding-inline: var(--zen-space-9);
+
+  &[menu-open] {
+    background: var(--zen-library-pill-hover-bg);
+  }
+}
+
+.zen-library-store-thumbnail {
+  object-fit: cover;
+}
+
+.zen-library-store-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-8);
+}
+
+.zen-library-store-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--zen-library-radius);
+  background: var(--zen-library-pill-bg);
+}
+
+.zen-library-store-description {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.zen-library-store-tags,
+.zen-library-store-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zen-space-6);
+}
+
+/* The toggle shows for the keyboard too, not only on hover. */
+.zen-library-mod-row:focus-within .zen-library-row-actions moz-toggle {
+  display: block;
+}
+
+.zen-library-mod-title {
+  display: flex;
+  align-items: center;
+  gap: var(--zen-space-6);
+  min-width: 0;
+
+  & .zen-library-row-title {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.zen-library-mod-badge {
+  flex: none;
+  padding: 1px var(--zen-space-6);
+  border-radius: var(--zen-border-radius-6);
+  background: var(--zen-library-pill-bg);
+  font-size: var(--zen-font-size-11);
+  font-weight: var(--font-weight-semibold);
+
+  &[scripts="running"],
+  &[update] {
+    background: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
+  }
+
+  &[scripts="off"],
+  &[scripts="needs-approval"] {
+    opacity: var(--zen-opacity-60);
+  }
+
+  &[scripts="needs-restart"] {
+    color: var(--text-color-error);
+  }
+}
+
+.zen-library-mod-error {
+  color: var(--text-color-error);
+  opacity: 1;
+}
+
+.zen-library-mods-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--zen-space-8);
+  margin: var(--zen-space-4) var(--zen-space-2) var(--zen-space-8);
+  padding: var(--zen-space-8) var(--zen-space-8) var(--zen-space-8) var(--zen-space-14);
+  border-radius: var(--zen-library-radius);
+  background: var(--zen-library-pill-bg);
+}
+
+.zen-library-mods-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--zen-space-12);
+  /* Only the text is quiet; the way to the store isn't. */
+  opacity: 1;
+
+  & span {
+    opacity: var(--zen-opacity-60);
+  }
+}
+
+.zen-library-mod-preference {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--zen-space-12);
+  padding-block: var(--zen-space-8);
+
+  &[stacked] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--zen-space-6);
+  }
+
+  & .zen-library-routing-reference {
+    margin-top: 0;
+    /* Numbers too: toolkit aligns them right in chrome. */
+    text-align: start;
+  }
+
+  & moz-toggle {
+    flex: none;
+  }
+}
+
+.zen-library-mod-preference-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Preferences that come and go grow and shrink into place. */
+.zen-library-mod-preference-slot {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 0.2s ease,
+    opacity 0.2s ease;
+
+  & > div {
+    min-height: 0;
+    overflow: clip;
+    /* Room for focus rings. */
+    overflow-clip-margin: 4px;
+  }
+
+  &[collapsed] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+.zen-library-mod-preference[separator] {
+  margin-top: var(--zen-space-8);
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  font-weight: var(--font-weight-semibold);
+
+  .zen-library-mod-preference-slot:first-child & {
+    margin-top: 0;
+    border-top: none;
+  }
+}
+
+.zen-library-mod-preference-text {
+  margin: 0;
+  padding-block: var(--zen-space-6);
+  opacity: var(--zen-opacity-60);
+  overflow-wrap: anywhere;
+}
+
+.zen-library-mod-color {
+  flex: none;
+  width: var(--size-item-large);
+  height: var(--icon-size-medium);
+  padding: 0;
+  border: none;
+  border-radius: var(--zen-border-radius-6);
+  background: none;
+  cursor: pointer;
+
+  &::-moz-color-swatch {
+    border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    border-radius: var(--zen-border-radius-6);
+  }
+}
+
+/* Stays in sight at the bottom without moving what's under the cursor. */
+.zen-library-mod-restart {
+  position: sticky;
+  bottom: 0;
+}
+
+zen-library-mods-section[configuring] {
+  /* The preferences take the list's place, the way a route's form does. */
+  & .zen-library-search-top[open] ~ .zen-library-search-results {
+    opacity: 0;
+    pointer-events: none;
+    transform: none;
+  }
+
+  & .zen-library-mod-preferences {
+    box-sizing: border-box;
+    max-height: var(--zen-library-mods-panel-height, 60vh);
+    /* Rows bring their own 8px, for the 16px the filters keep. */
+    padding-top: var(--zen-space-8);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  & .zen-library-store-detail {
+    padding-top: var(--zen-space-16);
+  }
+}
+
+.zen-library-mods-panel-header {
+  justify-content: flex-start;
+
+  & h2 {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.zen-library-mods-panel-back {
+  display: grid;
+  place-items: center;
+  width: var(--zen-size-36);
+  height: var(--zen-size-36);
+  padding: 0;
+  border-radius: var(--zen-library-radius);
+  background: var(--zen-library-pill-bg);
+
+  & img {
+    width: var(--size-item-small);
+    height: var(--size-item-small);
+    -moz-context-properties: fill;
+    fill: currentColor;
+  }
+
+  &:dir(rtl) img {
+    scale: -1 1;
   }
 }
 
@@ -1342,11 +1652,7 @@ zen-library-history-section {
   --zen-toolbox-min-width: fit-content;
   --tab-min-width: var(--zen-library-space-width);
   --zen-toolbox-padding: var(--zen-min-toolbox-padding);
-  --zen-library-scroll-border: color-mix(
-    in srgb,
-    var(--toolbox-textcolor) 15%,
-    transparent
-  );
+  --zen-library-scroll-border: color-mix(in srgb, var(--toolbox-textcolor) 15%, transparent);
   border-block: 1px solid transparent;
   transition:
     border-top-color 0.15s ease,

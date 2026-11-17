@@ -1,0 +1,8 @@
+{
+  "name": "Pages",
+  "version": "1.0.0",
+  "style": {
+    "chrome": "chrome.css",
+    "content": "userContent.css"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "zen-test-mod-a",
+  "name": "Test Mod A",
+  "description": "A mod for tests.",
+  "author": "zen-tests",
+  "version": "2.0.0",
+  "style": "https://example.com/browser/zen/tests/mods/store-v2/a/chrome.css",
+  "readme": "https://example.com/browser/zen/tests/mods/store-v2/readme.md",
+  "preferences": "https://example.com/browser/zen/tests/mods/store/a/preferences.json"
+}

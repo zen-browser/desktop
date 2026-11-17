@@ -1,0 +1,162 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Registered as an agent sheet, whose !important beats the user origin's,
+ * where the mods' sheets are: no mod can hide what tells the user that a
+ * page went fullscreen or locked the pointer. The values are Firefox's
+ * own, and the UA's for popovers, which center it. Transitions outrank
+ * every origin, so pinning translate state by state keeps the slide in. */
+
+@-moz-document url("chrome://browser/content/browser.xhtml")
+{
+  .pointerlockfswarning:popover-open {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    filter: none !important;
+    clip-path: none !important;
+    mask: none !important;
+    content-visibility: visible !important;
+    transform: none !important;
+    scale: none !important;
+    rotate: none !important;
+    translate: 0 -100px !important;
+    transition: translate 300ms ease-in !important;
+    offset-path: none !important;
+    clip: auto !important;
+    zoom: 1 !important;
+    mix-blend-mode: normal !important;
+    position: fixed !important;
+    inset: 0 0 auto !important;
+    margin: 0 auto !important;
+    width: max-content !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 95% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    /* Firefox's own values, in fullscreen-and-pointerlock.css, not tokens. */
+    /* stylelint-disable stylelint-plugin-mozilla/use-design-tokens */
+    font: message-box !important;
+    font-size: 21px !important;
+    color: #fafafa !important;
+    -webkit-text-fill-color: currentcolor !important;
+    background-color: rgba(45, 62, 72, 0.9) !important;
+    /* stylelint-enable stylelint-plugin-mozilla/use-design-tokens */
+
+    &[onscreen] {
+      translate: 0 50px !important;
+    }
+
+    &[ontop] {
+      translate: 0 -10px !important;
+    }
+
+    :root[macOSNativeFullscreen] &[ontop] {
+      translate: 0 80px !important;
+    }
+
+    &:is([onscreen], [ontop]) {
+      @starting-style {
+        translate: 0 -100px !important;
+      }
+    }
+
+    /* The texts start over from nothing, so no property is left for a mod
+     * to hide them with, then take what Firefox gives them. */
+    & > :is(.pointerlockfswarning-domain-text, .pointerlockfswarning-generic-text):not([hidden]),
+    & .pointerlockfswarning-domain:not([hidden]) {
+      all: initial !important;
+      direction: inherit !important;
+      unicode-bidi: normal !important;
+      font: inherit !important;
+      color: inherit !important;
+      color-scheme: inherit !important;
+      pointer-events: inherit !important;
+      cursor: inherit !important;
+      overflow-wrap: break-word !important;
+    }
+
+    & > :is(.pointerlockfswarning-domain-text, .pointerlockfswarning-generic-text):not([hidden]) {
+      display: block !important;
+      /* Firefox's own values, in fullscreen-and-pointerlock.css. */
+      /* stylelint-disable stylelint-plugin-mozilla/use-design-tokens */
+      margin: 0 16px !important;
+      min-width: 1px !important;
+      /* stylelint-enable stylelint-plugin-mozilla/use-design-tokens */
+    }
+
+    & > .pointerlockfswarning-domain-text:not([hidden]) + .pointerlockfswarning-generic-text {
+      display: none !important;
+    }
+
+    & .pointerlockfswarning-domain:not([hidden]) {
+      display: inline !important;
+      font-weight: var(--font-weight-bold) !important;
+    }
+
+    /* These have a cascade of their own; they take their element's. */
+    & *::first-line,
+    & *::first-letter {
+      all: inherit !important;
+    }
+
+    /* The exit button keeps its own look; it just can't be made away with. */
+    & > #fullscreen-exit-button:not([hidden]) {
+      visibility: visible !important;
+      opacity: 1 !important;
+      transform: none !important;
+      scale: none !important;
+      rotate: none !important;
+      translate: none !important;
+      offset-path: none !important;
+      position: static !important;
+      zoom: 1 !important;
+      filter: none !important;
+      clip-path: none !important;
+      clip: auto !important;
+      mask: none !important;
+      mix-blend-mode: normal !important;
+      content-visibility: visible !important;
+      overflow: visible !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+
+    /* Nothing laid over it. The identity icon is Firefox's own, so a mod
+     * can't show a broken connection as a secure one. */
+    &::after,
+    & *::before,
+    & *::after,
+    &:not([data-identity="verifiedDomain"], [data-identity="unknownIdentity"])::before {
+      content: none !important;
+    }
+
+    &:is([data-identity="verifiedDomain"], [data-identity="unknownIdentity"])::before {
+      content: "" !important;
+      display: block !important;
+      position: static !important;
+      /* Firefox's own values, in fullscreen-and-pointerlock.css. */
+      /* stylelint-disable stylelint-plugin-mozilla/use-design-tokens */
+      width: 24px !important;
+      height: 24px !important;
+      /* stylelint-enable stylelint-plugin-mozilla/use-design-tokens */
+      margin: 0 !important;
+      transform: none !important;
+      background-size: cover !important;
+      -moz-context-properties: fill, stroke !important;
+      fill: currentColor !important;
+    }
+
+    &[data-identity="verifiedDomain"]::before {
+      background-image: url("chrome://global/skin/icons/security.svg") !important;
+    }
+
+    &[data-identity="unknownIdentity"]::before {
+      background-image: url("chrome://global/skin/icons/security-broken.svg") !important;
+      stroke: var(--icon-color-critical) !important;
+    }
+  }
+}

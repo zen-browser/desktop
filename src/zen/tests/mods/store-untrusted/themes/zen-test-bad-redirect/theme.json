@@ -1,0 +1,9 @@
+{
+  "id": "zen-test-bad-redirect",
+  "name": "Bad Redirect",
+  "description": "A mod for tests.",
+  "author": "zen-tests",
+  "version": "1.0.0",
+  "style": "https://example.com/browser/zen/tests/mods/redirect.sjs",
+  "readme": "https://example.com/browser/zen/tests/mods/store/readme.md"
+}

@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg"><linearGradient id="g"/><filter id="f"><feFlood flood-color="red"/></filter><mask id="m"><rect width="9" height="9" fill="url(#g)"/><use href="#g"/></mask></svg>

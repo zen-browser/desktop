@@ -21,19 +21,27 @@ namespace zen {
  *   global="true" work whichever application has the focus, by registering
  *   them with the system.
  *
- *   Controlled by the zen.keyboard.global-shortcuts.enabled preference, and
- *   only does anything on macOS and Windows. Main thread only.
+ *   Controlled by the zen.keyboard.global-shortcuts.enabled preference.
+ *   Only there on macOS and Windows. Main thread only.
  */
 class ZenGlobalShortcuts final {
  public:
   /**
    * @param aKeyset A <keyset> that key events are now listened for.
    */
+#if defined(XP_MACOSX) || defined(XP_WIN)
   static void AttachKeyset(mozilla::dom::Element* aKeyset);
+#else
+  static void AttachKeyset(mozilla::dom::Element* aKeyset) {}
+#endif
   /**
    * @param aKeyset A <keyset> that key events are no longer listened for.
    */
+#if defined(XP_MACOSX) || defined(XP_WIN)
   static void DetachKeyset(mozilla::dom::Element* aKeyset);
+#else
+  static void DetachKeyset(mozilla::dom::Element* aKeyset) {}
+#endif
 
   /**
    * @brief Called by the platform code, on the main thread, when a registered
@@ -68,7 +76,6 @@ class ZenGlobalShortcuts final {
   static bool BindingOf(mozilla::dom::Element* aKey, uint32_t* aKeyCode,
                         mozilla::Modifiers* aModifiers);
 
-#if defined(XP_MACOSX) || defined(XP_WIN)
   /**
    * @param aHotKeyId     A number, unique among the registered shortcuts, to
    *   report the shortcut to OnHotKey() with.
@@ -95,14 +102,6 @@ class ZenGlobalShortcuts final {
    *   has are to stay where they are.
    */
   static void PlatformWillRunKey();
-#else
-  static bool PlatformRegister(uint32_t, uint32_t, mozilla::Modifiers, void**) {
-    return false;
-  }
-  static void PlatformUnregister(uint32_t, void*) {}
-  static void PlatformShutdown() {}
-  static void PlatformWillRunKey() {}
-#endif
 };
 
 }  // namespace zen

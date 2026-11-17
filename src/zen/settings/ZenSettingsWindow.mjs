@@ -19,6 +19,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const kDefaultPane = "general";
 const kSchemePref = "zen.view.window.scheme";
+const kDonateURL = "https://www.zen-browser.app/donate";
 const kSubDialogStyleSheets = [
   "chrome://browser/skin/preferences/dialog.css",
   "chrome://browser/skin/preferences/preferences.css",
@@ -373,6 +374,7 @@ class nsZenSettingsWindow {
       "open-mods": () => leaveFor("paneZenMarketplace"),
       "open-more-settings": () => leaveFor("paneGeneral"),
       "open-about": () => window.openAboutDialog(),
+      "open-donate": () => window.openTrustedLinkIn(kDonateURL, "tab"),
       "open-privacy-settings": () => window.openPreferences("panePrivacy"),
       "open-sync-settings": () => window.openPreferences("paneSync"),
       "clear-data": () => lazy.Sanitizer.showUI(window),

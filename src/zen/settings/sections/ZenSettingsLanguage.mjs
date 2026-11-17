@@ -6,6 +6,7 @@ const kWebsiteLanguagesDialogURL =
   "chrome://browser/content/preferences/dialogs/languages.xhtml";
 const kTranslationsDialogURL =
   "chrome://browser/content/preferences/dialogs/translations.xhtml";
+const kDictionariesURLPref = "browser.dictionaries.download.url";
 const kLocaleTopics = [
   "intl:requested-locales-changed",
   "intl:app-locales-changed",
@@ -23,6 +24,11 @@ export class ZenSettingsLanguage {
         this.settings.openDialog(kWebsiteLanguagesDialogURL),
       "open-translations": () =>
         this.settings.openDialog(kTranslationsDialogURL),
+      "download-dictionaries": () =>
+        window.openTrustedLinkIn(
+          Services.urlFormatter.formatURLPref(kDictionariesURLPref),
+          "tab"
+        ),
     };
   }
 

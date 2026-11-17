@@ -11,10 +11,12 @@
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-enabled"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="zen.little-window.enabled"/>
               </html:div>
+#if defined(XP_MACOSX) || defined(XP_WIN)
               <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="zen.little-window.enabled">
                 <html:span id="zen-settings-little-shortcut-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-global-shortcut"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="zen.keyboard.global-shortcuts.enabled"/>
               </html:div>
+#endif
               <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="zen.little-window.enabled">
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-external-links"/>
                 <html:moz-toggle id="zen-settings-little-external-links" class="zen-settings-toggle"/>
@@ -24,6 +26,7 @@
 
           <html:div class="zen-settings-group">
             <html:h2 data-l10n-id="zen-settings-window-glance-header"/>
+            <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-glance-description"/>
             <html:div class="zen-settings-card">
               <html:div class="zen-settings-row" data-depends-on="zen.glance.enabled">
                 <html:span id="zen-settings-glance-trigger-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-glance-trigger"/>

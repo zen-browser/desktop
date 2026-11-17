@@ -367,6 +367,7 @@ class nsZenSpaceRoutingManager {
         openerWindow: defaultWindow,
         url: uri.spec,
         triggeringPrincipal,
+        fromAnotherApplication: true,
       });
     } catch (err) {
       console.error(

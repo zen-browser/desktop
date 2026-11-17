@@ -140,6 +140,7 @@ export class ZenSettingsShortcuts {
     ];
 
     const scrollTop = list.scrollTop;
+    const wasInView = this.#isShortcutInView(this.#selectedShortcutRow);
     const fragment = document.createDocumentFragment();
     for (const { l10nId, label, keys } of sections) {
       if (!keys.length) {
@@ -163,6 +164,19 @@ export class ZenSettingsShortcuts {
     list.scrollTop = scrollTop;
     this.#filterShortcuts();
     this.#selectShortcut(this.#selectedShortcut);
+    const row = this.#selectedShortcutRow;
+    if (wasInView && !this.#isShortcutInView(row)) {
+      row?.scrollIntoView({ block: "center" });
+    }
+  }
+
+  #isShortcutInView(row) {
+    if (!row) {
+      return false;
+    }
+    const rect = row.getBoundingClientRect();
+    const view = this.#shortcutsList.getBoundingClientRect();
+    return rect.height > 0 && rect.bottom > view.top && rect.top < view.bottom;
   }
 
   #createShortcutRow(key) {

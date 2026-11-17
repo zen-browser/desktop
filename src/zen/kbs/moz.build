@@ -10,9 +10,10 @@ EXPORTS.mozilla += [
     "ZenGlobalShortcuts.h",
 ]
 
-SOURCES += [
-    "ZenGlobalShortcuts.cpp",
-]
+if CONFIG["MOZ_WIDGET_TOOLKIT"] in ("windows", "cocoa"):
+    SOURCES += [
+        "ZenGlobalShortcuts.cpp",
+    ]
 
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
     DIRS += ["windows"]

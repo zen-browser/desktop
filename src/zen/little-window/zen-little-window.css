@@ -11,9 +11,17 @@
   #PersonalToolbar,
   #PanelUI-button,
   #nav-bar-overflow-button,
-  #nav-bar-customization-target > :not(#urlbar-container),
-  #zen-little-window-back[disabled] {
+  #nav-bar-customization-target > :not(#urlbar-container, #back-button),
+  #back-button[disabled] {
     display: none !important;
+  }
+
+  #nav-bar-customization-target {
+    display: contents;
+  }
+
+  &:not([zen-window-buttons-reversed]) #back-button {
+    order: -1;
   }
 
   &:not([zen-little-window-urlbar-only]) #urlbar:not([breakout-extend]) #zen-little-window-urlbar-close {
@@ -60,16 +68,35 @@
   }
 }
 
+#urlbar #zen-loading-progress-bar {
+  position: absolute;
+  top: auto;
+  bottom: var(--zen-space-2);
+  height: var(--zen-size-4);
+
+  #urlbar[breakout-extend] & {
+    display: none;
+  }
+}
+
+:root[zen-little-window] #urlbar .urlbar-input-box {
+  position: relative;
+}
+
+:root[zen-little-window] #urlbar:not([breakout-extend]) .urlbar-input {
+  transition: translate 0.2s ease-in-out;
+
+  #zen-loading-progress-bar ~ & {
+    translate: 0 calc(-1 * var(--zen-space-3));
+  }
+}
+
 #main-window[zen-little-window] .titlebar-buttonbox-container {
   margin-inline: 0 !important;
 }
 
 #main-window[zen-little-window] #zen-appcontent-navbar-container {
   padding-inline: 0 !important;
-}
-
-#zen-little-window-back {
-  list-style-image: url("chrome://browser/skin/zen-icons/back.svg");
 }
 
 #zen-little-window-urlbar-close {
@@ -124,7 +151,8 @@
   }
 }
 
-:root:not([zen-window-buttons-reversed]) #zen-little-window-back[disabled] + #zen-little-window-open-in-space {
+/* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector -- the back button comes after this box in the toolbar, and only its handful of items are looked through */
+:root:not([zen-window-buttons-reversed]) #nav-bar:has(#back-button[disabled]) #zen-little-window-open-in-space {
   border-top-left-radius: var(--zen-border-radius);
 }
 
@@ -376,7 +404,7 @@
   }
 
   #urlbar[noresults] > .urlbarView,
-  #zen-little-window-back {
+  #nav-bar > :not(#nav-bar-customization-target, .titlebar-buttonbox-container) {
     display: none !important;
   }
 

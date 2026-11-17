@@ -51,5 +51,11 @@
   },
   "space": {
     "--zen-settings-art-key-edge-width": { "external": true }
+  },
+  "font-size": {
+    "--zen-settings-font-size-title": { "external": true },
+    "--zen-settings-font-size-heading": { "external": true },
+    "--zen-settings-font-size-small": { "external": true },
+    "--zen-settings-font-size-tiny": { "external": true }
   }
 }

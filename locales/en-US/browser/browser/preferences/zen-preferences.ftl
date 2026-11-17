@@ -219,10 +219,10 @@ category-zen-CKS =
 category-zen-marketplace =
     .tooltiptext = Zen Mods
 
-zenCKSOption-group-zen-compact-mode = Compact Mode
-zenCKSOption-group-zen-workspace = Workspaces
-zenCKSOption-group-zen-other = Other Zen Features
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Split View
+zenCKSOption-group-zen-layout = Layout
 
 zen-text-action-copy-url-shortcut = Copy current URL
 zen-text-action-copy-url-markdown-shortcut = Copy current URL as Markdown

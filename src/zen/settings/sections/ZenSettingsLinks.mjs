@@ -57,6 +57,10 @@ export class ZenSettingsLinks {
       lazy.gZenSpaceRoutingManager.getDefaultExternalRoute() ==
         kLittleWindowRoute;
 
+    const label = document.getElementById("zen-settings-little-shortcut-label");
+    if (!label) {
+      return;
+    }
     const win = lazy.BrowserWindowTracker.getTopWindow();
     const shortcut = win
       ? lazy.ZenKeyboardShortcuts.getShortcutDisplayFromCommand(
@@ -64,7 +68,6 @@ export class ZenSettingsLinks {
           kLittleWindowCommand
         )
       : null;
-    const label = document.getElementById("zen-settings-little-shortcut-label");
     if (shortcut) {
       document.l10n.setAttributes(
         label,

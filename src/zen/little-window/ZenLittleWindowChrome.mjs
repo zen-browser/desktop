@@ -33,6 +33,8 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   #urlbarOnly = false;
   #urlbarOnlyObserver = null;
   #isWaitingToShow = false;
+  #isActive = false;
+  #sizeToRemember = null;
   #shownHeight = 0;
   #isWatchingUrlbar = false;
   #isNavigating = false;
@@ -48,6 +50,15 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     if (typeof window._zenStartupUnsyncedUserContextId == "number") {
       this.#userContextId = window._zenStartupUnsyncedUserContextId;
     }
+    window.addEventListener("unload", () => this.#returnToPreviousApp(), {
+      once: true,
+    });
+    window.addEventListener("activate", () => {
+      this.#isActive = true;
+    });
+    window.addEventListener("deactivate", () =>
+      setTimeout(() => this.#onDeactivated(), 0)
+    );
     if (document.documentElement.hasAttribute(URLBAR_ONLY_ATTRIBUTE)) {
       this.#urlbarOnly = true;
       this.#baseWindow.visibility = false;
@@ -68,7 +79,6 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   init() {
-    this.#buildBackButton();
     this.#buildOpenInSpace();
     this.#buildContainerPill();
     this.#buildUrlbarCloseButton();
@@ -77,6 +87,8 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     }
 
     this.#watchDownloads();
+    this.#rememberSize();
+    this.#nameWindow();
 
     // The space the page would go to can change while this window is in the
     // background.
@@ -202,6 +214,44 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     );
     card._secondsLeft = secondsLeft;
     card.querySelector(".zen-little-window-download-status").value = statusText;
+  }
+
+  async #nameWindow() {
+    const windowName = await document.l10n.formatValue(
+      "zen-little-window-title"
+    );
+    if (window.closed) {
+      return;
+    }
+    const getTitle = gBrowser.getWindowTitleForBrowser.bind(gBrowser);
+    gBrowser.getWindowTitleForBrowser = browser => {
+      const brand = document.getElementById("mainWindowTitle")?.textContent;
+      const parts = getTitle(browser)
+        .split(" — ")
+        .filter(part => part && part != brand);
+      return [...parts, windowName].join(" — ");
+    };
+    gBrowser.updateTitlebar();
+  }
+
+  #rememberSize() {
+    window.addEventListener("resize", () => {
+      if (!this.#urlbarOnly && window.windowState == window.STATE_NORMAL) {
+        this.#sizeToRemember = {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      }
+    });
+    window.addEventListener(
+      "unload",
+      () => {
+        if (this.#sizeToRemember) {
+          lazy.ZenLittleWindow.rememberWindowSize(this.#sizeToRemember);
+        }
+      },
+      { once: true }
+    );
   }
 
   #maybeShowIntro() {
@@ -346,10 +396,30 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     }
   }
 
+  #returnToPreviousApp() {
+    if (
+      window._zenReturnsToPreviousApplication &&
+      (this.#isActive || Services.focus.activeWindow == window)
+    ) {
+      delete window._zenReturnsToPreviousApplication;
+      // eslint-disable-next-line mozilla/valid-services
+      Services.zen.returnToPreviousApplication();
+    }
+  }
+
+  #onDeactivated() {
+    this.#isActive = false;
+    const active = Services.focus.activeWindow;
+    if (active && active != window) {
+      delete window._zenReturnsToPreviousApplication;
+    }
+  }
+
   #closeUnlessNavigating() {
     if (!this.#urlbarOnly || this.#isNavigating || this.#isWaitingToShow) {
       return;
     }
+    this.#returnToPreviousApp();
     this.#baseWindow.visibility = false;
     setTimeout(() => {
       if (window.closed) {
@@ -501,20 +571,6 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
 
   // Mark: open in space
 
-  // Only there while there is a page to go back to: the command it runs is
-  // disabled otherwise, and the stylesheet hides a disabled one.
-  #buildBackButton() {
-    document.getElementById("nav-bar-customization-target").before(
-      window.MozXULElement.parseXULToFragment(`
-        <toolbarbutton id="zen-little-window-back"
-                       class="toolbarbutton-1 chromeclass-toolbar-additional"
-                       data-l10n-id="toolbar-button-back-3"
-                       tooltip="back-button-tooltip"
-                       command="Browser:Back" />
-      `)
-    );
-  }
-
   // Closes the open URL bar, which for a window that is only its URL bar is
   // the window.
   #buildUrlbarCloseButton() {
@@ -663,6 +719,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       isContextMenu: true,
       excludeUserContextId: this.#currentUserContextId,
       showDefaultTab: true,
+      showAddContainer: false,
     });
     const defaultItem = aEvent.target.querySelector('[data-usercontextid="0"]');
     if (defaultItem) {

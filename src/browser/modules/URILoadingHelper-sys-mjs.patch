@@ -1,5 +1,5 @@
 diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
-index 6f88bf621d9c423954d59deb2798fb37303dd04e..1deb81a7cf12052ebc854ae7a233a066ddeddebe 100644
+index 6f88bf621d9c423954d59deb2798fb37303dd04e..8363aebbc50d12c89594144e44ca9d9d785446de 100644
 --- a/browser/modules/URILoadingHelper.sys.mjs
 +++ b/browser/modules/URILoadingHelper.sys.mjs
 @@ -252,6 +252,7 @@ function openInWindow(url, params, sourceWindow) {
@@ -19,18 +19,7 @@ index 6f88bf621d9c423954d59deb2798fb37303dd04e..1deb81a7cf12052ebc854ae7a233a066
          where = "tab";
          targetBrowser = null;
        } else if (
-@@ -750,7 +751,9 @@ export const URILoadingHelper = {
-       top.document.documentElement.getAttribute("windowtype") ==
-         "navigator:browser" &&
-       !top.document.documentElement.hasAttribute("mini-window") &&
--      (!skipPopups || top.toolbar.visible) &&
-+      (!skipPopups ||
-+        (top.toolbar.visible &&
-+          !top.document.documentElement.hasAttribute("zen-little-window"))) &&
-       (!skipTaskbarTabs ||
-         !top.document.documentElement.hasAttribute("taskbartab")) &&
-       (!forceNonPrivate || !PrivateBrowsingUtils.isWindowPrivate(top))
-@@ -1029,7 +1032,7 @@ export const URILoadingHelper = {
+@@ -1029,7 +1030,7 @@ export const URILoadingHelper = {
          ignoreQueryString || replaceQueryString,
          ignoreFragmentWhenComparing
        );
@@ -39,7 +28,7 @@ index 6f88bf621d9c423954d59deb2798fb37303dd04e..1deb81a7cf12052ebc854ae7a233a066
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
          let browserCompare = cleanURL(
-@@ -1085,7 +1088,7 @@ export const URILoadingHelper = {
+@@ -1085,7 +1086,7 @@ export const URILoadingHelper = {
                }
                aSplitView.documentGlobal.focus();
              } else {

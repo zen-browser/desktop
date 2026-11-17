@@ -3,18 +3,51 @@
 
 "use strict";
 
-add_task(async function test_little_window_new_tabs_open_elsewhere() {
-  const win = await openLittleWindow({ url: TEST_URL });
-  const littleTabs = win.gBrowser.tabs.length;
-
-  const opened = BrowserTestUtils.waitForNewTab(gBrowser, OTHER_URL);
-  win.openTrustedLinkIn(OTHER_URL, "tab");
-  BrowserTestUtils.removeTab(await opened);
-  is(
-    win.gBrowser.tabs.length,
-    littleTabs,
-    "Like a popup, a little window sends new tabs to a regular window"
+function pages(win) {
+  return win.gBrowser.tabs.filter(
+    tab => !tab.closing && !tab.hasAttribute("zen-empty-tab")
   );
+}
+
+function hasPage(win, url) {
+  return pages(win).some(tab => tab.linkedBrowser.currentURI.spec == url);
+}
+
+add_task(async function test_little_window_new_tabs_stay_in_it() {
+  const win = await openLittleWindow({ url: TEST_URL });
+  const tabs = gBrowser.tabs.length;
+
+  win.openTrustedLinkIn(OTHER_URL, "tab");
+  await TestUtils.waitForCondition(
+    () => hasPage(win, OTHER_URL),
+    "A new tab asked for in a little window opens in it"
+  );
+  is(pages(win).length, 2, "Next to the page it came from");
+  ok(hasPage(win, TEST_URL), "Which is still there");
+  is(gBrowser.tabs.length, tabs, "And nothing opens in the regular window");
+  ok(!isShown(win, "navigator-toolbox"), "The tabs are still not shown");
+
+  await BrowserTestUtils.closeWindow(win);
+});
+
+add_task(async function test_little_window_links_to_new_tabs_stay() {
+  const win = await openLittleWindow({ url: TEST_URL });
+  const tabs = gBrowser.tabs.length;
+
+  await SpecialPowers.spawn(win.gBrowser.selectedBrowser, [OTHER_URL], url => {
+    const link = content.document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.textContent = "link";
+    content.document.body.append(link);
+    link.click();
+  });
+  await TestUtils.waitForCondition(
+    () => win.gBrowser.selectedBrowser.currentURI.spec == OTHER_URL,
+    "A link that opens a new tab opens it in the little window, in view"
+  );
+  is(pages(win).length, 2, "As a tab of its own");
+  is(gBrowser.tabs.length, tabs, "And nothing opens in the regular window");
 
   await BrowserTestUtils.closeWindow(win);
 });
@@ -37,6 +70,7 @@ add_task(async function test_little_window_glance_opens_elsewhere() {
     !tab.hasAttribute("zen-glance-tab"),
     "A glance asked for in a little window is a plain tab in a regular one"
   );
+  is(gBrowser.selectedTab, tab, "Selected there");
   is(win.gBrowser.tabs.length, littleTabs, "And nothing in the little window");
 
   BrowserTestUtils.removeTab(tab);

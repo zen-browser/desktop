@@ -5,7 +5,12 @@
  */
 
 :root {
-  --zen-settings-min-width: 680px;
+  --zen-settings-font-size-title: 1.154rem;
+  --zen-settings-font-size-heading: 1.077rem;
+  --zen-settings-font-size-small: 0.923rem;
+  --zen-settings-font-size-tiny: 0.615rem;
+
+  --zen-settings-min-width: 840px;
   --zen-settings-min-height: 440px;
   --zen-settings-sidebar-width: 208px;
 
@@ -77,7 +82,6 @@
   background: var(--zen-settings-background);
   color: var(--zen-settings-text-color);
   font: message-box;
-  font-size: var(--zen-font-size-13);
   min-width: var(--zen-settings-min-width);
   min-height: var(--zen-settings-min-height);
 
@@ -188,7 +192,7 @@
   @media not (-moz-platform: macos) {
     min-height: var(--zen-size-38);
     padding: 0 var(--zen-space-12);
-    border-radius: var(--zen-border-radius-4);
+    border-radius: var(--zen-border-radius-8);
 
     &[aria-selected="true"] {
       background: var(--zen-settings-button-background-hover);
@@ -233,7 +237,7 @@
 
 #zen-settings-title {
   margin: 0;
-  font-size: var(--zen-font-size-15);
+  font-size: var(--zen-settings-font-size-title);
   font-weight: var(--font-weight-bold);
 }
 
@@ -253,13 +257,13 @@
   margin: 0;
   padding: 0 var(--zen-space-2);
   color: var(--zen-settings-subtitle-color);
-  font-size: var(--zen-font-size-14);
+  font-size: var(--zen-settings-font-size-heading);
   font-weight: var(--font-weight-semibold);
 }
 
 #zen-settings-shortcuts-title {
   color: inherit;
-  font-size: var(--zen-font-size-14);
+  font-size: var(--zen-settings-font-size-heading);
   font-weight: var(--font-weight-bold);
 }
 
@@ -331,7 +335,7 @@
 .zen-settings-row-description,
 .zen-settings-note {
   color: var(--zen-settings-muted-color);
-  font-size: var(--zen-font-size-12);
+  font-size: var(--zen-settings-font-size-small);
 }
 
 .zen-settings-note {
@@ -496,7 +500,7 @@
   background: var(--zen-settings-sticky-background);
   border-bottom: 1px solid var(--zen-settings-separator-color);
   color: var(--zen-settings-muted-color);
-  font-size: var(--zen-font-size-12);
+  font-size: var(--zen-settings-font-size-small);
   font-weight: var(--font-weight-bold);
 }
 
@@ -666,7 +670,7 @@
   background: none;
   color: var(--zen-settings-muted-color);
   font: inherit;
-  font-size: var(--zen-font-size-12);
+  font-size: var(--zen-settings-font-size-small);
 
   & > img {
     width: var(--zen-settings-layout-thumbnail-width);
@@ -805,7 +809,7 @@
   height: var(--zen-size-28);
   padding: 0;
   border-radius: var(--zen-border-radius-round);
-  font-size: var(--zen-font-size-8);
+  font-size: var(--zen-settings-font-size-tiny);
   line-height: 1;
 }
 
@@ -845,7 +849,7 @@
 
   & > h1 {
     margin: 0;
-    font-size: var(--zen-font-size-15);
+    font-size: var(--zen-settings-font-size-title);
     font-weight: var(--font-weight-bold);
   }
 }

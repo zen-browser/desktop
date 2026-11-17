@@ -21,6 +21,7 @@ zen-settings-window-pane-privacy = Privacy
 zen-settings-window-pane-advanced = Advanced
 zen-settings-window-link-mods = Mods
 zen-settings-window-link-more = More Settings
+zen-settings-window-link-donate = Donate
 zen-settings-window-link-about = About { -brand-short-name }
 
 ## General
@@ -96,7 +97,7 @@ zen-settings-window-containers-remove-cancel = Cancel
 ## Links
 
 zen-settings-window-little-header = Little { -brand-short-name }
-zen-settings-window-little-description = Little { -brand-short-name } is a smaller, simpler { -brand-short-name } window. It’s perfect for quick lookups and for links you only need for a moment.
+zen-settings-window-little-description = Little { -brand-short-name } is a smaller, simpler { -brand-short-name } window, perfect for links from other apps or temporary links you don’t want in the main { -brand-short-name } window.
 zen-settings-window-little-enabled = Enable Little { -brand-short-name }
 zen-settings-window-little-global-shortcut = Open Little { -brand-short-name } with its shortcut from any app
 # Variables:
@@ -104,6 +105,7 @@ zen-settings-window-little-global-shortcut = Open Little { -brand-short-name } w
 zen-settings-window-little-global-shortcut-key = Open Little { -brand-short-name } when I press { $shortcut } in any app
 zen-settings-window-little-external-links = Links from other apps open in Little { -brand-short-name }
 zen-settings-window-glance-header = Glance
+zen-settings-window-glance-description = Glance opens a link in a preview on top of the current tab. It’s perfect for quick lookups.
 zen-settings-window-glance-trigger = Open Glance when clicking on links with
 zen-settings-window-glance-trigger-ctrl =
     .label = { PLATFORM() ->
@@ -165,14 +167,18 @@ zen-settings-window-translations-enabled = Translate web pages
 zen-settings-window-translations-offer = Offer to translate pages in other languages
 zen-settings-window-translations-languages = Languages to always or never translate
 zen-settings-window-translations-button = Translation Settings…
+zen-settings-window-spelling-header = Spell check
+zen-settings-window-spellcheck = Check your spelling as you type
+zen-settings-window-dictionaries = Dictionaries
+zen-settings-window-dictionaries-download = Download Dictionaries…
 
 ## Shortcuts
 
 zen-settings-window-shortcuts-search =
     .placeholder = Type a feature name or shortcut
-zen-settings-window-shortcuts-header = Custom Shortcuts
+zen-settings-window-shortcuts-header = Keyboard Shortcuts
 zen-settings-window-shortcuts-description = Select a shortcut, then click its keys to record new ones. Press Delete to remove it or Escape to cancel.
-zen-settings-window-shortcuts-customized = Custom Shortcuts
+zen-settings-window-shortcuts-customized = Your Shortcuts
 zen-settings-window-shortcuts-reset-one = Reset Shortcut to Default
 zen-settings-window-shortcuts-more = •••
     .title = More
@@ -250,7 +256,6 @@ zen-settings-window-sync-more = More Sync Settings…
 zen-settings-window-browsing-header = Browsing
 zen-settings-window-smooth-scroll = Use smooth scrolling
 zen-settings-window-autoscroll = Use autoscrolling
-zen-settings-window-spellcheck = Check spelling as you type
 zen-settings-window-media-header = Media
 zen-settings-window-drm = Play DRM-controlled content
 zen-settings-window-pip-toggle = Show picture-in-picture video controls

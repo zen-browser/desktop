@@ -21,4 +21,4 @@ zen-menubar-appearance-dark =
 zen-menubar-new-blank-window = 
     .label = Nýr auður gluggi
 zen-menubar-new-little-window = 
-    .label = New Little Window
+    .label = Nýr smágluggi

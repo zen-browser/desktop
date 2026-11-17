@@ -7,7 +7,6 @@
 // This prevents unnecessary test re-runs when these preferences are changed.
 [
   "zen.mods.updated-value-observer",
-  "zen.mods.last-update",
   "zen.view.compact.enable-at-startup",
   "zen.urlbar.suggestions-learner",
   "browser.newtabpage.activity-stream.trendingSearch.defaultSearchEngine",

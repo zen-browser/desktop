@@ -840,11 +840,6 @@ Preferences.addAll([
     default: false,
   },
   {
-    id: "zen.mods.auto-update",
-    type: "bool",
-    default: true,
-  },
-  {
     id: "zen.tabs.ctrl-tab.ignore-essential-tabs",
     type: "bool",
     default: false,

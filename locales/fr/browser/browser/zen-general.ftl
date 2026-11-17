@@ -158,3 +158,5 @@ zen-little-window-choose-space =
     .tooltiptext = Choisissez un espace
 zen-little-window-intro-title = Ouvert dans <i data-l10n-name="name">Little Zen</i>
 zen-little-window-intro-description = Cliquez sur « Ouvrir dans » pour déplacer cette page vers une fenêtre complète, ou { $shortcut } pour fermer
+zen-little-window-download-source = 
+    .value = From { $host }

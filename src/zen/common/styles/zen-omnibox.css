@@ -521,13 +521,11 @@
 
 .urlbarView-title {
   font-size: var(--zen-font-size-14) !important;
-  font-weight: var(--zen-font-weight-medium) !important;
 }
 
 .urlbarView-url,
 .urlbarView-title-separator::before {
   font-size: var(--zen-font-size-14) !important;
-  font-weight: var(--zen-font-weight-medium) !important;
   color: var(--zen-urlbar-view-url-color) !important;
 }
 

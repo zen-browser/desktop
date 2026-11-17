@@ -45,13 +45,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = 自訂顏色
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] 已複製當前網址！
+       *[other] 已複製 { $count } 項網址！
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] 已依Markdown格式複製當前網址！
+       *[other] 已依Markdown格式複製 { $count } 項網址！
     }
 zen-general-cancel-label = 
     .label = 取消
@@ -149,10 +149,12 @@ zen-window-sync-migration-dialog-accept = 明白了
 zen-appmenu-new-blank-window = 
     .label = 開新簡白視窗
 zen-appmenu-new-little-window = 
-    .label = New Little Window
-zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
-zen-little-window-open-in-new-window = Open in { -brand-short-name }
+    .label = 開新Little Zen視窗
+zen-little-window-open-in-space = 開啟至 <b data-l10n-name="space">{ $space }</b> 工作區
+zen-little-window-open-in-new-window = 開啟至 { -brand-short-name } 
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
-zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
-zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+    .tooltiptext = 選擇工作區
+zen-little-window-intro-title = 開啟至 <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = 點擊"開啟至"來將此頁面移到完整視窗，或使用 { $shortcut } 關閉它
+zen-little-window-download-source = 
+    .value = 來自 { $host }

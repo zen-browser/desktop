@@ -628,8 +628,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
               <menupopup>
                 <menuitem id="context_zen-replace-pinned-url-with-current"
                           data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
-                          data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
-                          command="cmd_zenReplacePinnedUrlWithCurrent"/>
+                          data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"/>
                 <menuitem id="context_zen-edit-pinned-url"
                           data-lazy-l10n-id="tab-context-zen-edit-pinned-url"
                           command="cmd_zenEditPinnedUrl"/>
@@ -642,6 +641,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                       command="cmd_zenPinnedTabResetNoTab"/>
         `);
     document.getElementById("tabContextMenu").appendChild(elements);
+
+    document
+      .getElementById("context_zen-replace-pinned-url-with-current")
+      .addEventListener("command", () => this.replacePinnedUrlWithCurrent());
 
     const element = window.MozXULElement.parseXULToFragment(`
             <menuitem id="context_zen-add-essential"
@@ -711,25 +714,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       "context_zen-replace-pinned-url-with-current"
     );
     [zenResetPinnedTab, zenEditPinnedPage].forEach(element => {
-      if (element) {
-        element.hidden = !isVisible;
-      }
+      element.hidden = !isVisible;
     });
     [zenResetPinnedTab, zenEditPinnedPage, zenReplacePinnedUrl].forEach(
       element => {
-        if (element) {
-          document.l10n.setArgs(element, { isEssential });
-        }
+        document.l10n.setArgs(element, { isEssential });
       }
     );
-    if (zenReplacePinnedUrl) {
-      // Set on the menuitem, not its command, so other triggers of the command
-      // aren't left disabled after the menu closes.
-      zenReplacePinnedUrl.disabled = this.#isPinnedUrl(
-        contextTab,
-        contextTab.linkedBrowser?.currentURI?.spec
-      );
-    }
+    zenReplacePinnedUrl.disabled = this.#isPinnedUrl(
+      contextTab,
+      contextTab.linkedBrowser?.currentURI?.spec
+    );
     zenAddEssential.hidden =
       isEssential || contextTab.group?.hasAttribute("split-view-group");
     document.l10n

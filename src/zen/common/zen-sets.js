@@ -81,8 +81,6 @@
     cmd_zenPinnedTabReset: () =>
       gZenPinnedTabManager.resetPinnedTab(gBrowser.selectedTab),
     cmd_zenPinnedTabResetNoTab: () => gZenPinnedTabManager.resetPinnedTab(),
-    cmd_zenReplacePinnedUrlWithCurrent: () =>
-      gZenPinnedTabManager.replacePinnedUrlWithCurrent(),
     cmd_zenEditPinnedUrl: () => gZenPinnedTabManager.editPinnedUrl(),
     cmd_contextZenAddToEssentials: () => gZenPinnedTabManager.addToEssentials(),
     cmd_contextZenRemoveFromEssentials: () =>

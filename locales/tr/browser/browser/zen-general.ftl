@@ -158,3 +158,5 @@ zen-little-window-choose-space =
     .tooltiptext = Bir alan seçin
 zen-little-window-intro-title = <i data-l10n-name="name">Küçük Zen</i> içinde açıldı
 zen-little-window-intro-description = Bu sayfayı tam pencereye taşımak için “Şurada aç” düğmesine tıklayın veya kapatmak için { $shortcut } tuşlarına basın
+zen-little-window-download-source = 
+    .value = From { $host }

@@ -506,6 +506,11 @@
   }
 }
 
+/* The new tab URL bar isn't about the current page, so don't show its zoom level (gh-16616) */
+#urlbar[zen-newtab] #urlbar-zoom-button {
+  display: none !important;
+}
+
 #urlbar[open][zen-floating-urlbar="true"] #identity-icon-box,
 :root[zen-single-toolbar="true"] #urlbar[breakout-extend] #identity-icon-box {
   --urlbar-box-hover-bgcolor: transparent;

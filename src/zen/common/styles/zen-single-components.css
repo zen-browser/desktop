@@ -347,12 +347,16 @@
         background-color 0.1s ease-in-out,
         transform 0.12s ease-in-out;
 
-      & toolbarbutton {
+      toolbarbutton {
         background: transparent !important;
         border-radius: 6px;
+
+        .unified-extensions-item-icon {
+          margin-inline: 0;
+        }
       }
 
-      & .toolbarbutton-badge-stack {
+      .toolbarbutton-badge-stack {
         margin: 0;
       }
 

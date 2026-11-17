@@ -519,13 +519,11 @@
 
 .urlbarView-title {
   font-size: 14px !important;
-  font-weight: 500 !important;
 }
 
 .urlbarView-url,
 .urlbarView-title-separator::before {
   font-size: 14px !important;
-  font-weight: 500 !important;
   color: light-dark(#4f4f4f, #aaa) !important;
 }
 

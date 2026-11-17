@@ -494,8 +494,6 @@ class nsZenMods extends nsZenPreloadedFeature {
         return;
       }
 
-      // getMods() already runs inside #getEnabledMods() and resets a missing
-      // or corrupted data file itself, so one read per window is enough.
       const mods = await this.#getEnabledMods();
 
       const modsWithPreferences = await Promise.all(
@@ -511,25 +509,6 @@ class nsZenMods extends nsZenPreloadedFeature {
       );
 
       this.#writeToDom(modsWithPreferences);
-
-      // The mods stylesheet is loaded from disk once by ZenStyleSheetCache
-      // (see Document::FillStyleSetUserAndUASheets) and shared by every chrome
-      // document, so there is nothing to re-parse here. Re-parsing is only
-      // needed after #writeStylesheet(), which #rebuildModsStylesheet() does.
-
-      this.#setNewMilestoneIfNeeded();
-      if (this.#shouldAutoUpdate()) {
-        requestIdleCallback(
-          () => {
-            if (!window.closed) {
-              requestAnimationFrame(() => {
-                this.checkForModsUpdates();
-              });
-            }
-          },
-          { timeout: 1000 }
-        );
-      }
     } catch (e) {
       console.error("[ZenMods]: Error loading Zen Mods:", e);
     }
@@ -548,38 +527,6 @@ class nsZenMods extends nsZenPreloadedFeature {
         );
       },
       { once: true }
-    );
-  }
-
-  #setNewMilestoneIfNeeded() {
-    const previousMilestone = Services.prefs.getStringPref(
-      "zen.mods.milestone",
-      ""
-    );
-    if (previousMilestone != Services.appinfo.version) {
-      Services.prefs.setStringPref(
-        "zen.mods.milestone",
-        Services.appinfo.version
-      );
-      Services.prefs.clearUserPref("zen.mods.last-update");
-    }
-  }
-
-  #shouldAutoUpdate() {
-    const daysBeforeUpdate = Services.prefs.getIntPref(
-      "zen.mods.auto-update-days"
-    );
-    const lastUpdatedSec = Services.prefs.getIntPref(
-      "zen.mods.last-update",
-      -1
-    );
-    const nowSec = Math.floor(Date.now() / 1000);
-    const daysSinceUpdate = (nowSec - lastUpdatedSec) / (60 * 60 * 24);
-
-    return (
-      (Services.prefs.getBoolPref("zen.mods.auto-update", true) &&
-        daysSinceUpdate >= daysBeforeUpdate) ||
-      lastUpdatedSec < 0
     );
   }
 
@@ -625,10 +572,6 @@ class nsZenMods extends nsZenPreloadedFeature {
     );
 
     await this.updateMods(mods);
-    Services.prefs.setIntPref(
-      "zen.mods.last-update",
-      Math.floor(Date.now() / 1000)
-    );
     return updates.filter(update => {
       return update !== null;
     });

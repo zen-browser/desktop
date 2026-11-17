@@ -712,11 +712,3 @@ var gZenMarketplaceManager = {
     modList.remove();
   },
 };
-
-Preferences.addAll([
-  {
-    id: "zen.mods.auto-update",
-    type: "bool",
-    default: true,
-  },
-]);

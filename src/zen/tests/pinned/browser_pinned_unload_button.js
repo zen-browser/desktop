@@ -59,9 +59,8 @@ add_task(async function test_UnloadButton_KeepsUrlByDefault() {
     tab.hasAttribute("zen-pinned-changed"),
     "The tab should keep its changed state when unloading without reset"
   );
-  is(
-    tab.linkedBrowser.currentURI.spec,
-    "https://example.com/2",
+  await BrowserTestUtils.waitForCondition(
+    () => tab.linkedBrowser.currentURI.spec === "https://example.com/2",
     "The tab should keep its current URL after unloading"
   );
   Assert.notEqual(
@@ -101,9 +100,8 @@ add_task(async function test_UnloadButton_ResetsUrlWhenConfigured() {
     !tab.hasAttribute("zen-pinned-changed"),
     "The tab should no longer be marked as changed after reset"
   );
-  is(
-    tab.linkedBrowser.currentURI.spec,
-    "https://example.com/1",
+  await BrowserTestUtils.waitForCondition(
+    () => tab.linkedBrowser.currentURI.spec === "https://example.com/1",
     "The tab should be reset to its pinned URL after unloading"
   );
   Assert.notEqual(

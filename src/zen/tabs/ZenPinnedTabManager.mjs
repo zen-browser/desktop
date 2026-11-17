@@ -722,6 +722,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         }
       }
     );
+    if (zenReplacePinnedUrl) {
+      // Set on the menuitem, not its command, so other triggers of the command
+      // aren't left disabled after the menu closes.
+      zenReplacePinnedUrl.disabled = this.#isPinnedUrl(
+        contextTab,
+        contextTab.linkedBrowser?.currentURI?.spec
+      );
+    }
     zenAddEssential.hidden =
       isEssential || contextTab.group?.hasAttribute("split-view-group");
     document.l10n
@@ -962,17 +970,24 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    // Remove # from the URL
-    const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
-    const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
-    if (
-      Services.io.newURI(currentUrl).spec === Services.io.newURI(pinUrl).spec
-    ) {
+    if (this.#isPinnedUrl(tab, location)) {
       this.resetPinChangedUrl(tab);
       return;
     }
     this.pinHasChangedUrl(tab);
+  }
+
+  // Ignores the fragment, so in-page anchors still count as the pinned page.
+  #isPinnedUrl(tab, url) {
+    const pinUrl = tab._zenPinnedInitialState?.entry?.url;
+    if (!pinUrl || !url) {
+      return false;
+    }
+    return (
+      Services.io.newURI(url.split("#")[0]).spec ===
+      Services.io.newURI(pinUrl.split("#")[0]).spec
+    );
   }
 
   resetPinChangedUrl(tab) {

@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Anpassad färg
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Kopierade nuvarande URL!
+       *[other] Kopierade { $count } URL:er!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] Kopierade nuvarande URL som Markdown!
+       *[other] Kopierade { $count } URL:er som Markdown!
     }
 zen-general-cancel-label = 
     .label = Avbryt
@@ -158,3 +158,5 @@ zen-little-window-choose-space =
     .tooltiptext = Choose a Space
 zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
 zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+zen-little-window-download-source = 
+    .value = From { $host }

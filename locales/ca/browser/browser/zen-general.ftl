@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Color personalitzat
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] S'ha copiat l'URL actual!
+       *[other] S'han copiat { $count } URL!!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] S'ha copiat l'URL actual en format Markdown!
+       *[other] S'han copiat { $count } URL en format Markdown!
     }
 zen-general-cancel-label = 
     .label = Cancel·la
@@ -158,3 +158,5 @@ zen-little-window-choose-space =
     .tooltiptext = Trieu un espai
 zen-little-window-intro-title = S'ha obert al <i data-l10n-name="name">Mini Zen</i>
 zen-little-window-intro-description = Feu clic a «Obre al» per moure aquesta pàgina a una finestra completa, o a { $shortcut } per tancar-la
+zen-little-window-download-source = 
+    .value = From { $host }

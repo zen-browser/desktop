@@ -50,7 +50,7 @@ zen-glance-trigger-shift-click =
             [macos] ⇧ + Click
            *[other] Shift + Click
         }
-    .aria-label = Shift + Click
+    .aria-label = Lyg2 + spausti
 zen-glance-trigger-meta-click = 
     .label =
         { PLATFORM() ->

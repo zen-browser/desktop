@@ -238,7 +238,9 @@ index 81c6e5dd4047fc7d57b5938e797a014c71d07cf9..12c55470bc166ecf610abb92bb96aa51
 +        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');
 +        gBrowser.tabContainer._blockDblClick = true;
 +      } else if (!event.getModifierState("Accel") && event.target.classList.contains("tab-reset-button")) {
-+        gZenPinnedTabManager.onCloseTabShortcut(event, this);
++        gZenPinnedTabManager.onCloseTabShortcut(event, this, {
++          fromUnloadButton: true,
++        });
 +        gBrowser.tabContainer._blockDblClick = true;
 +      }
    }

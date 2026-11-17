@@ -66,10 +66,6 @@
 
 .tab-reset-button {
   list-style-image: url("unpin.svg");
-
-  @media (-moz-pref("zen.pinned-tab-manager.close-shortcut-behavior", "close")) {
-    list-style-image: url("close.svg");
-  }
 }
 
 #sidebar-button {

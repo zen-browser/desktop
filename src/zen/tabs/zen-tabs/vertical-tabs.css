@@ -1006,11 +1006,6 @@ zen-library {
 .tabbrowser-tab > .tab-stack > .tab-content > .tab-reset-button {
   --zen-tab-button-line-rotation: 0deg;
   --zen-tab-button-line-length: 12px;
-
-  @media (-moz-pref("zen.pinned-tab-manager.close-shortcut-behavior", "close")) {
-    --zen-tab-button-line-rotation: 45deg;
-    --zen-tab-button-line-length: 15px;
-  }
 }
 
 @starting-style {

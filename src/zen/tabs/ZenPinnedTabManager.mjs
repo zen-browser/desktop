@@ -27,6 +27,12 @@ class ZenPinnedTabsObserver {
     );
     XPCOMUtils.defineLazyPreferenceGetter(
       lazy,
+      "zenPinnedTabUnloadButtonBehavior",
+      "zen.pinned-tab-manager.unload-button-behavior",
+      "unload"
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      lazy,
       "zenTabsEssentialsMax",
       "zen.tabs.essentials.max",
       12
@@ -321,6 +327,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       closeIfPending = false,
       alwaysUnload = false,
       folderToUnload = null,
+      fromUnloadButton = false,
     } = {}
   ) {
     try {
@@ -347,6 +354,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
       if (noClose && behavior === "close") {
         behavior = "unload-switch";
+      }
+
+      if (fromUnloadButton) {
+        // The unload ("-") button is a dedicated unload affordance, so it
+        // follows its own setting instead of the close shortcut behavior.
+        // This keeps it consistent with the "Unload tab" context menu entry,
+        // which unloads without resetting the tab to its pinned URL.
+        behavior =
+          lazy.zenPinnedTabUnloadButtonBehavior === "reset-unload"
+            ? "reset-unload-switch"
+            : "unload-switch";
       }
 
       if (

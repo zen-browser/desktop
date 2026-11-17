@@ -125,6 +125,27 @@ add_task(async function test_menulists() {
     "Choosing an item writes the pref"
   );
 
+  const unloadBehavior = doc.querySelector(
+    'menulist[data-pref="zen.pinned-tab-manager.unload-button-behavior"]'
+  );
+  is(unloadBehavior.value, "unload", "The unload list shows its pref");
+  Services.prefs.setStringPref(
+    "zen.pinned-tab-manager.unload-button-behavior",
+    "reset-unload"
+  );
+  is(
+    unloadBehavior.value,
+    "reset-unload",
+    "The unload list follows changes made elsewhere"
+  );
+  unloadBehavior.value = "unload";
+  unloadBehavior.dispatchEvent(new win.Event("command", { bubbles: true }));
+  is(
+    Services.prefs.getStringPref("zen.pinned-tab-manager.unload-button-behavior"),
+    "unload",
+    "Choosing an unload item writes the pref"
+  );
+
   Services.prefs.setIntPref("zen.view.window.scheme", 0);
   is(
     doc.documentElement.style.colorScheme,

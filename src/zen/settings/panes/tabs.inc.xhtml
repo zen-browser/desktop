@@ -28,6 +28,15 @@
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-pinned-restore"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url"/>
               </html:div>
+              <html:div class="zen-settings-row">
+                <html:span id="zen-settings-pinned-unload-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-pinned-unload"/>
+                <menulist data-pref="zen.pinned-tab-manager.unload-button-behavior" aria-labelledby="zen-settings-pinned-unload-label">
+                  <menupopup>
+                    <menuitem value="unload" data-l10n-id="zen-settings-window-pinned-unload-unload"/>
+                    <menuitem value="reset-unload" data-l10n-id="zen-settings-window-pinned-unload-reset-unload"/>
+                  </menupopup>
+                </menulist>
+              </html:div>
               <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span class="zen-settings-row-text">
                   <html:span data-l10n-id="zen-settings-window-pinned-separate-essentials"/>

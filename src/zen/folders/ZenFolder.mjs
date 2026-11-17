@@ -267,6 +267,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
       noClose,
       alwaysUnload: true,
       folderToUnload: this,
+      fromUnloadButton: true,
     });
     this.activeTabs = [];
     this.collapsed = true;

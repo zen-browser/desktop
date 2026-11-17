@@ -44,9 +44,9 @@ export class ZenProgressBar extends ZenUIComponent {
       this.#loadingTab
     ) {
       this.#element._loadingTab = new WeakRef(this.#loadingTab);
-      const container = this.window.document.getElementById(
-        this.#loadingTab.linkedPanel
-      );
+      const container = this.window.gZenLittleWindow
+        ? this.window.document.querySelector("#urlbar .urlbar-input-box")
+        : this.window.document.getElementById(this.#loadingTab.linkedPanel);
       container.firstChild.before(this.#element);
       this.window.gZenUIManager.elementAnimate(
         this.#element,

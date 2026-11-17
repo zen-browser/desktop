@@ -38,4 +38,19 @@
               </html:div>
             </html:div>
           </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-spelling-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-spellcheck"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="layout.spellcheckDefault" data-pref-on="1" data-pref-off="0"/>
+              </html:div>
+              <html:div class="zen-settings-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-dictionaries"/>
+                <html:button class="zen-settings-button" data-action="download-dictionaries" data-l10n-id="zen-settings-window-dictionaries-download"/>
+              </html:div>
+            </html:div>
+            <html:moz-promo id="zen-settings-spellcheck-promo" data-l10n-id="spellcheck-promo" imagesrc="chrome://browser/content/preferences/spell-check-promo.svg" imagewidth="large" imagedisplay="cover"/>
+          </html:div>
         </html:section>

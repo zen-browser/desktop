@@ -33,11 +33,15 @@ add_task(async function test_links_pane() {
   const shortcutLabel = doc.getElementById(
     "zen-settings-little-shortcut-label"
   );
-  is(
-    shortcutLabel.dataset.l10nId,
-    "zen-settings-window-little-global-shortcut-key",
-    "The global shortcut row names the shortcut"
-  );
+  if (AppConstants.platform == "linux") {
+    ok(!shortcutLabel, "There is no system wide shortcut to offer on Linux");
+  } else {
+    is(
+      shortcutLabel.dataset.l10nId,
+      "zen-settings-window-little-global-shortcut-key",
+      "The global shortcut row names the shortcut"
+    );
+  }
   ok(
     !external.closest(".zen-settings-row").inert,
     "Little window rows are usable while the feature is on"

@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
@@ -25,6 +26,9 @@ const LITTLE_WINDOW_WIDTH = 960;
 const LITTLE_WINDOW_HEIGHT = 680;
 const LITTLE_WINDOW_BAR_WIDTH = 680;
 const LITTLE_WINDOW_BAR_HEIGHT = 66;
+const LITTLE_WINDOW_MIN_WIDTH = 400;
+const LITTLE_WINDOW_MIN_HEIGHT = 300;
+const LITTLE_WINDOW_STORE_ID = "zen-little-window";
 
 class nsZenLittleWindowService {
   /** Whether little windows can be opened at all. */
@@ -32,9 +36,44 @@ class nsZenLittleWindowService {
     return lazy.enabled;
   }
 
-  /** The size of a little window that is showing a page. */
+  /**
+   * The size of a little window that is showing a page: the one the user
+   * last left one at, if any.
+   */
   get windowSize() {
-    return { width: LITTLE_WINDOW_WIDTH, height: LITTLE_WINDOW_HEIGHT };
+    const stored = (name, fallback, min) => {
+      const value = parseInt(
+        Services.xulStore.getValue(
+          AppConstants.BROWSER_CHROME_URL,
+          LITTLE_WINDOW_STORE_ID,
+          name
+        ),
+        10
+      );
+      return Number.isFinite(value) ? Math.max(value, min) : fallback;
+    };
+    return {
+      width: stored("width", LITTLE_WINDOW_WIDTH, LITTLE_WINDOW_MIN_WIDTH),
+      height: stored("height", LITTLE_WINDOW_HEIGHT, LITTLE_WINDOW_MIN_HEIGHT),
+    };
+  }
+
+  /**
+   * @param {{width: number, height: number}} aSize
+   *   The size to open little windows at from now on.
+   */
+  rememberWindowSize({ width, height }) {
+    for (const [name, value] of [
+      ["width", width],
+      ["height", height],
+    ]) {
+      Services.xulStore.setValue(
+        AppConstants.BROWSER_CHROME_URL,
+        LITTLE_WINDOW_STORE_ID,
+        name,
+        String(Math.round(value))
+      );
+    }
   }
 
   /**
@@ -62,10 +101,19 @@ class nsZenLittleWindowService {
    * @param {nsIPrincipal} [options.triggeringPrincipal]
    *   The principal to load the page with, for one that did not come from
    *   the user.
+   * @param {boolean} [options.fromAnotherApplication]
+   *   Whether the page was sent here by another application, which the
+   *   window then goes back to when it closes.
    * @returns {Window|null} The new window, which has not loaded yet, or null
    *   when little windows are disabled.
    */
-  open({ openerWindow, url, userContextId, triggeringPrincipal } = {}) {
+  open({
+    openerWindow,
+    url,
+    userContextId,
+    triggeringPrincipal,
+    fromAnotherApplication = false,
+  } = {}) {
     if (!this.enabled) {
       return null;
     }
@@ -102,8 +150,9 @@ class nsZenLittleWindowService {
     args.appendElement(
       triggeringPrincipal ?? Services.scriptSecurityManager.getSystemPrincipal()
     );
-    const width = url ? LITTLE_WINDOW_WIDTH : LITTLE_WINDOW_BAR_WIDTH;
-    const height = url ? LITTLE_WINDOW_HEIGHT : LITTLE_WINDOW_BAR_HEIGHT;
+    const { width, height } = url
+      ? this.windowSize
+      : { width: LITTLE_WINDOW_BAR_WIDTH, height: LITTLE_WINDOW_BAR_HEIGHT };
     let features = `width=${width},height=${height},centerscreen`;
     const screen = openerWindow?.screen;
     if (screen) {
@@ -122,6 +171,8 @@ class nsZenLittleWindowService {
     });
     win._zenStartupSyncFlag = "unsynced";
     win._zenStartupUnsyncedUserContextId = userContextId;
+    win._zenReturnsToPreviousApplication =
+      fromAnotherApplication || !Services.focus.activeWindow;
     return win;
   }
 
@@ -186,10 +237,23 @@ class nsZenLittleWindowService {
       });
     }
     target.focus();
+    aLittleWindow._zenReturnsToPreviousApplication = false;
     if (!aLittleWindow.closed) {
       aLittleWindow.close();
     }
     return target;
+  }
+
+  /**
+   * Opens a link as a tab of a regular window.
+   *
+   * @param {string} aUrl
+   * @param {object} aParams What openLinkIn() takes.
+   */
+  async openInRegularWindow(aUrl, aParams) {
+    const target =
+      lazy.ZenWindowSync.firstSyncedWindow ?? (await this.#openSpacesWindow());
+    target.openLinkIn(aUrl, "tab", { ...aParams, inBackground: false });
   }
 
   /**

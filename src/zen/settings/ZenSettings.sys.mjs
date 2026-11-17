@@ -62,9 +62,7 @@ class nsZenSettings {
       return existing;
     }
 
-    // The window has one size: it can't be resized, which also rules out
-    // maximizing it, nor minimized.
-    const features = "chrome,centerscreen,dialog=no,resizable,minimizable=no";
+    const features = "chrome,centerscreen,dialog,resizable=no";
     const args = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
     if (pane) {
       const paneArg = Cc["@mozilla.org/supports-string;1"].createInstance(

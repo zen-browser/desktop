@@ -5,6 +5,7 @@
 FINAL_LIBRARY = "xul"
 SOURCES += [
     "ZenHapticFeedback.mm",
+    "ZenPreviousApplication.mm",
     "ZenShareInternal.mm",
 ]
 

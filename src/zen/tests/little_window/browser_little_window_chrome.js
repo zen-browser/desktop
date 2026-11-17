@@ -221,3 +221,66 @@ add_task(async function test_little_window_shows_its_downloads() {
   await list.remove(elsewhere);
   await BrowserTestUtils.closeWindow(win);
 });
+
+add_task(async function test_little_window_is_named_in_its_title() {
+  const win = await openLittleWindowWithPage();
+  const contentTitle = win.gBrowser.selectedBrowser.contentTitle;
+  await TestUtils.waitForCondition(
+    () => win.document.title.endsWith("Little Zen"),
+    "The title of the window says what it is"
+  );
+  ok(
+    !win.document.title.includes(
+      win.document.getElementById("mainWindowTitle").textContent
+    ),
+    "In place of the name of the browser"
+  );
+  if (contentTitle) {
+    is(
+      win.document.title,
+      `${contentTitle} — Little Zen`,
+      "After the title of its page"
+    );
+  }
+  ok(!document.title.includes("Little Zen"), "A regular window is not");
+
+  await BrowserTestUtils.closeWindow(win);
+});
+
+add_task(async function test_little_window_remembers_its_size() {
+  const defaultSize = ZenLittleWindow.windowSize;
+  registerCleanupFunction(() =>
+    ZenLittleWindow.rememberWindowSize(defaultSize)
+  );
+
+  let win = await openLittleWindow({ url: TEST_URL });
+  const width = win.innerWidth - 160;
+  const height = win.innerHeight - 120;
+  const resized = BrowserTestUtils.waitForEvent(win, "resize");
+  win.resizeTo(
+    width + win.outerWidth - win.innerWidth,
+    height + win.outerHeight - win.innerHeight
+  );
+  await resized;
+  await BrowserTestUtils.closeWindow(win);
+  Assert.deepEqual(
+    ZenLittleWindow.windowSize,
+    { width, height },
+    "The size a little window is left at is kept"
+  );
+
+  win = await openLittleWindow({ url: TEST_URL });
+  is(win.innerWidth, width, "The next one opens as wide");
+  is(win.innerHeight, height, "And as tall");
+  await BrowserTestUtils.closeWindow(win);
+
+  win = await openLittleWindow();
+  await BrowserTestUtils.closeWindow(win);
+  Assert.deepEqual(
+    ZenLittleWindow.windowSize,
+    { width, height },
+    "A window that was only a URL bar leaves it alone"
+  );
+
+  ZenLittleWindow.rememberWindowSize(defaultSize);
+});

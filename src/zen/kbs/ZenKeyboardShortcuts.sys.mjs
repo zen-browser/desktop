@@ -43,16 +43,6 @@ const LEGACY_DEVTOOLS_GROUP = "devTools";
  */
 const ZEN_KEY_CATEGORIES = [
   {
-    l10nId: "zenCKSOption-group-zen-compact-mode",
-    keys: [
-      ["zen-compact-mode-toggle", "zen-compact-mode-shortcut-toggle"],
-      [
-        "zen-compact-mode-show-sidebar",
-        "zen-compact-mode-shortcut-show-sidebar",
-      ],
-    ],
-  },
-  {
     l10nId: "zenCKSOption-group-zen-workspace",
     menuId: "zen-spaces-menubar",
     keys: [
@@ -61,7 +51,18 @@ const ZEN_KEY_CATEGORIES = [
         `zen-workspace-shortcut-switch-${i + 1}`,
       ]),
       ["zen-workspace-create", "zen-workspace-shortcut-create"],
+    ],
+  },
+  {
+    l10nId: "zenCKSOption-group-zen-tabs",
+    keys: [
+      ["zen-toggle-pin-tab", "zen-toggle-pin-tab-shortcut"],
+      ["zen-pinned-tab-reset-shortcut", "zen-pinned-tab-shortcut-reset"],
+      ["zen-duplicate-tab", "zen-duplicate-tab-shortcut"],
       ["zen-close-all-unpinned-tabs", "zen-close-all-unpinned-tabs-shortcut"],
+      ["zen-glance-expand", "zen-glance-expand"],
+      ["zen-copy-url", "zen-text-action-copy-url-shortcut"],
+      ["zen-copy-url-markdown", "zen-text-action-copy-url-markdown-shortcut"],
     ],
   },
   {
@@ -75,16 +76,15 @@ const ZEN_KEY_CATEGORIES = [
     ],
   },
   {
-    l10nId: "zenCKSOption-group-zen-other",
+    l10nId: "zenCKSOption-group-zen-layout",
     keys: [
+      ["zen-compact-mode-toggle", "zen-compact-mode-shortcut-toggle"],
+      [
+        "zen-compact-mode-show-sidebar",
+        "zen-compact-mode-shortcut-show-sidebar",
+      ],
       ["zen-toggle-sidebar", "zen-sidebar-shortcut-toggle"],
       ["zen-library-toggle", "zen-library-shortcut-toggle"],
-      ["zen-glance-expand", "zen-glance-expand"],
-      ["zen-toggle-pin-tab", "zen-toggle-pin-tab-shortcut"],
-      ["zen-pinned-tab-reset-shortcut", "zen-pinned-tab-shortcut-reset"],
-      ["zen-duplicate-tab", "zen-duplicate-tab-shortcut"],
-      ["zen-copy-url", "zen-text-action-copy-url-shortcut"],
-      ["zen-copy-url-markdown", "zen-text-action-copy-url-markdown-shortcut"],
     ],
   },
 ];
@@ -247,6 +247,7 @@ class nsZenKeyboardShortcuts {
     const values = await lazy.l10n.formatValues(ids.map(id => ({ id })));
     const text = Object.fromEntries(ids.map((id, i) => [id, values[i] ?? id]));
 
+    const zenKeys = {};
     for (const category of ZEN_KEY_CATEGORIES) {
       const menu = category.menuId
         ? document.getElementById(category.menuId)
@@ -262,10 +263,11 @@ class nsZenKeyboardShortcuts {
         entries[id] = data;
       }
       if (Object.keys(entries).length) {
-        Object.assign((keys[label] ??= {}), entries);
+        zenKeys[label] = { ...keys[label], ...entries };
+        delete keys[label];
       }
     }
-    return keys;
+    return { ...zenKeys, ...keys };
   }
 
   /**

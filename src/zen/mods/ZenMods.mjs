@@ -494,7 +494,8 @@ class nsZenMods extends nsZenPreloadedFeature {
         return;
       }
 
-      await this.getMods(); // Check for any errors in the themes data file
+      // getMods() already runs inside #getEnabledMods() and resets a missing
+      // or corrupted data file itself, so one read per window is enough.
       const mods = await this.#getEnabledMods();
 
       const modsWithPreferences = await Promise.all(
@@ -511,7 +512,10 @@ class nsZenMods extends nsZenPreloadedFeature {
 
       this.#writeToDom(modsWithPreferences);
 
-      await this.#insertStylesheet();
+      // The mods stylesheet is loaded from disk once by ZenStyleSheetCache
+      // (see Document::FillStyleSetUserAndUASheets) and shared by every chrome
+      // document, so there is nothing to re-parse here. Re-parsing is only
+      // needed after #writeStylesheet(), which #rebuildModsStylesheet() does.
 
       this.#setNewMilestoneIfNeeded();
       if (this.#shouldAutoUpdate()) {

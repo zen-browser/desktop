@@ -8,6 +8,6 @@ zen-space-routing-tab-routed-toast = Nýr flipi opnaður innan { $targetWorkspac
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Bæta við beiningu fyrir lén
-           *[other] Bæta við beiningu fyrir lén
+            [one] Bæta við tengileið fyrir lén
+           *[other] Bæta við tengileið fyrir lén
         }

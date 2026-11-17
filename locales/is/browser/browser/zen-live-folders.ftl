@@ -3,23 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Valkostir fyrir beintengda möppu
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Síðast sótt: { $time }
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Endurlesa
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Búið til af mér
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Úthlutað mér
 zen-live-folder-github-option-review-requested = 
     .label = My Review Requests
 zen-live-folder-github-option-include-drafts = 
     .label = Include Draft Pull Requests
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = RSS-streymi
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Millibil við að sækja
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
@@ -33,7 +33,7 @@ zen-live-folder-fetch-interval-hours =
            *[other] { $hours } hours
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Tímasvið
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
@@ -41,7 +41,7 @@ zen-live-folder-time-range-hours =
            *[other] Last { $hours } hours
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = Allir tímar
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
@@ -49,32 +49,32 @@ zen-live-folder-time-range-days =
            *[other] Last { $days } days
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Takmörk atriða
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = Slóð á streymi
+zen-live-folder-rss-prompt-feed-url = Settu inn slóð á streymi
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } atriði
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Uppfærsla mistókst
+    .tooltiptext = Mistókst að uppfæra. Reyndu aftur síðar.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Ekki skráð/ur inn á GitHub
+    .tooltiptext = Skráðu þig aftur inn á GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = Sía er ekki stillt
+    .tooltiptext = Engin sía stillt, ekki verður náð í neitt.
+zen-live-folder-rss-invalid-url-title = Mistókst að búa til beintengdu möppuna
+zen-live-folder-rss-invalid-url-description = Slóð streymisins er ógild. Athugaðu slóðina og prófaðu svo aftur
 zen-live-folder-github-option-repo-filter = 
-    .label = Repositories
+    .label = Gagnasöfn
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull Requests
+    .label = Pull-beiðnir
 zen-live-folder-github-issues = 
-    .label = Issues
+    .label = Verkbeiðnir (Issues)
 zen-live-folder-github-option-repo-list-note = 
     .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
+zen-live-folders-promotion-title = Bjó til beintengda möppu!
 zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.

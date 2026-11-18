@@ -8,6 +8,9 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   DevToolsShim: "chrome://devtools-startup/content/DevToolsShim.sys.mjs",
 });
+ChromeUtils.defineLazyGetter(lazy, "ClipboardHelper", () =>
+  Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper)
+);
 
 const ENABLED_PREF = "zen.urlbar.local-developer-mode.enabled";
 const POLICY_DISABLED_PREF = "devtools.policy.disabled";
@@ -54,6 +57,8 @@ export class ZenDeveloperMode extends ZenUIComponent {
     this.listenBrowserTabsProgress();
     this.addEventListener("TabSelect");
     this.addEventListener("SSTabRestoring");
+    // Firefox dispatches this event on the browser without bubbling.
+    this.addEventListener("EndSwapDocShells", { capture: true });
     Services.prefs.addObserver(ENABLED_PREF, this);
     Services.prefs.addObserver(POLICY_DISABLED_PREF, this);
     this.observe();
@@ -71,13 +76,8 @@ export class ZenDeveloperMode extends ZenUIComponent {
   }
 
   onLocationChange(browser, webProgress, request, location) {
-    if (!webProgress.isTopLevel) {
-      return;
-    }
-    const { gBrowser } = this.window;
-    this.#updateTab(gBrowser.getTabForBrowser(browser), location);
-    if (browser === gBrowser.selectedBrowser) {
-      this.#updateToolbar(location);
+    if (webProgress.isTopLevel) {
+      this.#updateBrowser(browser, location);
     }
   }
 
@@ -91,6 +91,11 @@ export class ZenDeveloperMode extends ZenUIComponent {
   on_SSTabRestoring(event) {
     const tab = event.target;
     this.#updateTab(tab, tab.linkedBrowser?.currentURI);
+  }
+
+  on_EndSwapDocShells(event) {
+    const browser = event.originalTarget;
+    this.#updateBrowser(browser, browser.currentURI);
   }
 
   observe() {
@@ -107,8 +112,14 @@ export class ZenDeveloperMode extends ZenUIComponent {
       return;
     }
 
-    const { browserCommand, toolId } = event.target.dataset;
-    if (browserCommand) {
+    const { browserCommand, copyAddress, toolId } = event.target.dataset;
+    if (copyAddress) {
+      lazy.ClipboardHelper.copyString(this.#addressText.textContent);
+      this.window.gZenUIManager.showToast("zen-copy-urls-confirmation", {
+        l10nArgs: { count: 1 },
+        timeout: 3000,
+      });
+    } else if (browserCommand) {
       this.document.getElementById(browserCommand).doCommand();
     } else if (toolId !== undefined) {
       try {
@@ -129,26 +140,39 @@ export class ZenDeveloperMode extends ZenUIComponent {
     );
   }
 
+  #updateBrowser(browser, uri) {
+    const { gBrowser } = this.window;
+    this.#updateTab(gBrowser.getTabForBrowser(browser), uri);
+    if (browser === gBrowser.selectedBrowser) {
+      this.#updateToolbar(uri);
+    }
+  }
+
   #updateTab(tab, uri) {
     if (!tab) {
       return;
     }
 
     const active = this.#isActive(uri);
-    if (tab.hasAttribute("zen-local-development") === active) {
+    tab.toggleAttribute("zen-local-development", active);
+    const existingBadge = tab.querySelector(".zen-developer-mode-tab-badge");
+    if (!active) {
+      existingBadge?.remove();
+      return;
+    }
+    if (existingBadge) {
       return;
     }
 
-    tab.toggleAttribute("zen-local-development", active);
-    if (!active) {
-      tab.querySelector(".zen-developer-mode-tab-badge")?.remove();
+    const label = tab.querySelector(".tab-label-container");
+    if (!label) {
       return;
     }
 
     const badge = this.document.createXULElement("label");
     badge.className = "zen-developer-mode-tab-badge";
     this.document.l10n.setAttributes(badge, "zen-developer-mode-tab-badge");
-    tab.querySelector(".tab-label-container")?.after(badge);
+    label.after(badge);
   }
 
   #updateToolbar(uri) {
@@ -183,7 +207,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
         </toolbarbutton>
         <toolbarbutton class="tabbable zen-developer-mode-icon" tabindex="0"
                        style="--zen-developer-mode-icon-image: url(chrome://browser/skin/zen-icons/link.svg)"
-                       data-browser-command="cmd_zenCopyCurrentURL"
+                       data-copy-address="true"
                        data-l10n-id="zen-developer-mode-copy-address">
           <box class="zen-developer-mode-glyph" aria-hidden="true"/>
         </toolbarbutton>

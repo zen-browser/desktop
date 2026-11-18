@@ -157,6 +157,40 @@ add_task(async function test_selection_navigation_and_reload() {
   }
 });
 
+add_task(async function test_badge_recovers_when_out_of_sync() {
+  await BrowserTestUtils.withNewTab(localURL, async browser => {
+    const tab = gBrowser.selectedTab;
+    const badgeSelector = ".zen-developer-mode-tab-badge";
+    tab.querySelector(badgeSelector).remove();
+    ok(
+      tab.hasAttribute("zen-local-development"),
+      "The local marker remains after removing the badge"
+    );
+
+    const nextURL = localURL + "&restore-badge=1";
+    const loaded = BrowserTestUtils.browserLoaded(browser, {
+      wantLoad: nextURL,
+    });
+    BrowserTestUtils.startLoadingURIString(browser, nextURL);
+    await loaded;
+    Assert.ok(
+      tab.querySelector(badgeSelector),
+      "A local update recreates the badge"
+    );
+
+    tab.removeAttribute("zen-local-development");
+    const blank = BrowserTestUtils.browserLoaded(browser, {
+      wantLoad: "about:blank",
+    });
+    BrowserTestUtils.startLoadingURIString(browser, "about:blank");
+    await blank;
+    ok(
+      !tab.querySelector(badgeSelector),
+      "A non-local update removes a stale badge"
+    );
+  });
+});
+
 add_task(async function test_window_isolation_and_preferences() {
   await BrowserTestUtils.withNewTab(localURL, async () => {
     const other = await BrowserTestUtils.openNewBrowserWindow({
@@ -179,6 +213,70 @@ add_task(async function test_window_isolation_and_preferences() {
         ok(devToolbar(), "Restoring the preference brings back the toolbar");
         ok(!devToolbar(other), "The other window stays outside Developer Mode");
       }
+    } finally {
+      await BrowserTestUtils.closeWindow(other);
+    }
+  });
+});
+
+add_task(async function test_background_adoption_between_windows() {
+  await BrowserTestUtils.withNewTab(localURL, async sourceBrowser => {
+    const sourceTab = gBrowser.selectedTab;
+    const other = await BrowserTestUtils.openNewBrowserWindow({
+      zenSyncedWindow: false,
+    });
+    try {
+      const destinationURL = localURL + "&destination=1";
+      await BrowserTestUtils.withNewTab(
+        { gBrowser: other.gBrowser, url: destinationURL },
+        async destinationBrowser => {
+          const toolbar = devToolbar(other);
+          const swapped = BrowserTestUtils.waitForEvent(
+            other,
+            "EndSwapDocShells",
+            true,
+            event => event.detail === sourceBrowser
+          );
+          const adopted = other.gBrowser.adoptTab(sourceTab, {
+            tabIndex: other.gBrowser.tabs.length,
+            selectTab: false,
+          });
+          Assert.ok(adopted, "The loaded local tab was adopted");
+          is(
+            (await swapped).target,
+            adopted.linkedBrowser,
+            "The destination receives the swap event"
+          );
+          is(
+            adopted.linkedBrowser.currentURI.spec,
+            localURL,
+            "The adopted tab keeps its URL"
+          );
+          ok(
+            adopted.hasAttribute("zen-local-development"),
+            "The adopted tab is marked in the background"
+          );
+          ok(
+            adopted.querySelector(".zen-developer-mode-tab-badge"),
+            "The adopted tab has a DEV badge before selection"
+          );
+          is(
+            other.gBrowser.selectedBrowser,
+            destinationBrowser,
+            "Adoption preserves the destination selection"
+          );
+          is(
+            devToolbar(other),
+            toolbar,
+            "The destination keeps its existing toolbar"
+          );
+          is(
+            toolbar.querySelector(".zen-developer-mode-url").textContent,
+            destinationURL,
+            "The toolbar still displays the selected tab's address"
+          );
+        }
+      );
     } finally {
       await BrowserTestUtils.closeWindow(other);
     }
@@ -247,13 +345,15 @@ add_task(async function test_toolbar_layouts_and_address_command() {
   });
 });
 
-add_task(async function test_toolbar_wraps_in_a_narrow_split() {
-  await BrowserTestUtils.withNewTab(localURL, async () => {
+add_task(async function test_toolbar_wraps_and_copies_in_a_narrow_split() {
+  const longURL = `${localURL}&path=${"x".repeat(256)}&next=%2Fkeep%3Fx%3D1#section`;
+  const otherURL = "https://example.com/";
+  await BrowserTestUtils.withNewTab(longURL, async () => {
     const localTab = gBrowser.selectedTab;
-    const otherTab = BrowserTestUtils.addTab(gBrowser, "about:robots");
+    const otherTab = BrowserTestUtils.addTab(gBrowser, otherURL);
     try {
       await BrowserTestUtils.browserLoaded(otherTab.linkedBrowser, {
-        wantLoad: "about:robots",
+        wantLoad: otherURL,
       });
       const activated = BrowserTestUtils.waitForEvent(
         window,
@@ -291,6 +391,29 @@ add_task(async function test_toolbar_wraps_in_a_narrow_split() {
           "The button fits inside the narrow toolbar"
         );
       }
+
+      const addressText = toolbar.querySelector(".zen-developer-mode-url");
+      Assert.greater(
+        addressText.scrollWidth,
+        addressText.clientWidth,
+        "The long URL is truncated visually"
+      );
+      is(
+        addressText.textContent,
+        longURL,
+        "The toolbar retains the complete URL"
+      );
+      gBrowser.addToMultiSelectedTabs(otherTab);
+      ok(
+        gBrowser.selectedTabs.includes(otherTab),
+        "The other tab is multiselected"
+      );
+      const copyButton = toolbar.querySelector(
+        '[data-l10n-id="zen-developer-mode-copy-address"]'
+      );
+      await SimpleTest.promiseClipboardChange(longURL, () =>
+        copyButton.doCommand()
+      );
     } finally {
       await BrowserTestUtils.removeTab(otherTab);
     }

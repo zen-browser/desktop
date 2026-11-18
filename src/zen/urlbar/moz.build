@@ -12,5 +12,6 @@ EXTRA_JS_MODULES += [
 ]
 
 EXTRA_JS_MODULES.zen.urlbar += [
+  "ZenDeveloperMode.sys.mjs",
   "ZenUrlbarController.mjs",
 ]

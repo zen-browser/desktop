@@ -46,6 +46,9 @@
 - name: zen.urlbar.open-on-startup
   value: true
 
+- name: zen.urlbar.local-developer-mode.enabled
+  value: true
+
 # Mark: Zen suggestions controls
 
 - name: zen.urlbar.suggestions.quick-actions

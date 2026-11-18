@@ -154,7 +154,8 @@ zen-little-window-open-in-space = Opna í <b data-l10n-name="space">{ $space }</
 zen-little-window-open-in-new-window = Opna í { -brand-short-name }
 zen-little-window-choose-space = 
     .tooltiptext = Veldu svæði
+zen-little-window-title = Little Zen
 zen-little-window-intro-title = Opnað í <i data-l10n-name="name">Litla Zen</i>
 zen-little-window-intro-description = Smelltu á “Opna í” til að flytja þessa síðu yfir í fullan glugga, eða á { $shortcut } til að loka
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = Frá { $host }

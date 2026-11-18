@@ -31,7 +31,7 @@ zen-scroll-to-selected-tab =
 sidebar-zen-expand = 
     .label = Espandi barra laterale
 sidebar-zen-create-new = 
-    .label = Crea nuova...
+    .label = Crea Nuova
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

@@ -13,9 +13,9 @@ zen-live-folder-github-option-author-self =
 zen-live-folder-github-option-assigned-self = 
     .label = Úthlutað mér
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Beiðnir mínar um yfirlestur
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Hafa með drög að sameiningarbeiðnum (Draft Pull Requests)
 zen-live-folder-type-rss = 
     .label = RSS-streymi
 zen-live-folder-option-fetch-interval = 
@@ -23,30 +23,30 @@ zen-live-folder-option-fetch-interval =
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 mínúta
+           *[other] { $mins } mínútur
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 klukkustund
+           *[other] { $hours } klukkustundir
         }
 zen-live-folder-rss-option-time-range = 
     .label = Tímasvið
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] Síðustu klukkustund
+           *[other] Síðustu { $hours } klukkustundir
         }
 zen-live-folder-time-range-all-time = 
     .label = Allir tímar
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] Síðasta dag
+           *[other] Síðustu { $days } daga
         }
 zen-live-folder-rss-option-item-limit = 
     .label = Takmörk atriða
@@ -71,10 +71,10 @@ zen-live-folder-github-option-repo-filter =
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull-beiðnir
+    .label = Sameiningarbeiðnir (Pull Requests)
 zen-live-folder-github-issues = 
     .label = Verkbeiðnir (Issues)
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
+    .label = Þessi listi er framkallaður út frá fyrirliggjandi virkum sameiningarbeiðnum (pull requests) frá þér.
 zen-live-folders-promotion-title = Bjó til beintengda möppu!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+zen-live-folders-promotion-description = Nýjustu atriðin frá RSS-streymum þínum eða sameiningarbeiðnum á GitHub munu birtast hér.

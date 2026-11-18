@@ -41,6 +41,6 @@ zen-action-switch-to-automatic-appearance = Skipta yfir í sjálfvirkan útlitsh
 zen-action-switch-to-light-mode = Skipta yfir í ljósan ham
 zen-action-switch-to-dark-mode = Skipta yfir í dökkan ham
 zen-action-print = Prenta
-zen-action-focus-on = Skerpa
+zen-action-focus-on = Fókus á
 zen-action-extension = Forritsauki
 zen-action-open = Opna

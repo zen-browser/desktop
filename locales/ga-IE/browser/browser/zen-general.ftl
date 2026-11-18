@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Cóipeáladh an URL reatha! 
+       *[other] Cóipeáladh { $count } URL!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] Cóipeáladh an URL reatha mar Markdown!
+       *[other] Cóipeáladh { $count } URL mar Markdown!
     }
 zen-general-cancel-label = 
     .label = Cealaigh
@@ -151,12 +151,13 @@ zen-window-sync-migration-dialog-accept = Tuigim é
 zen-appmenu-new-blank-window = 
     .label = Fuinneog bán nua
 zen-appmenu-new-little-window = 
-    .label = New Little Window
-zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
-zen-little-window-open-in-new-window = Open in { -brand-short-name }
+    .label = Fuinneog Bheag Nua
+zen-little-window-open-in-space = Oscail i <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Oscail i { -brand-short-name }
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
-zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
-zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+    .tooltiptext = Roghnaigh Spás
+zen-little-window-title = Little Zen
+zen-little-window-intro-title = Oscailte i <i data-l10n-name="name">Zen Beag</i>
+zen-little-window-intro-description = Cliceáil “Oscail i” chun an leathanach seo a bhogadh go fuinneog iomlán, nó { $shortcut } chun é a dhúnadh
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = Ó { $host }

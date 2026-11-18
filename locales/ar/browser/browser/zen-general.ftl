@@ -63,7 +63,7 @@ zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
 zen-pinned-tab-url-edited = Pinned tab URL has been updated!
 zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
 zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-edit-url-label = أدخل عنوان ويب هذا التبويب المثبت ينبغي أن يشير إلى:
 zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
 zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
 zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
@@ -156,6 +156,7 @@ zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</
 zen-little-window-open-in-new-window = Open in { -brand-short-name }
 zen-little-window-choose-space = 
     .tooltiptext = Choose a Space
+zen-little-window-title = Little Zen
 zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
 zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
 zen-little-window-download-source = 

@@ -154,6 +154,7 @@ zen-little-window-open-in-space = 開啟至 <b data-l10n-name="space">{ $space }
 zen-little-window-open-in-new-window = 開啟至 { -brand-short-name } 
 zen-little-window-choose-space = 
     .tooltiptext = 選擇工作區
+zen-little-window-title = Little Zen
 zen-little-window-intro-title = 開啟至 <i data-l10n-name="name">Little Zen</i>
 zen-little-window-intro-description = 點擊"開啟至"來將此頁面移到完整視窗，或使用 { $shortcut } 關閉它
 zen-little-window-download-source = 

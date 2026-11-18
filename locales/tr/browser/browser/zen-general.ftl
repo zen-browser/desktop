@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Özel renk
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Geçerli URL kopyalandı!
+       *[other] { $count } URL kopyalandı!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] Geçerli URL Markdown olarak kopyalandı!
+       *[other] { $count } URL Markdown olarak kopyalandı!
     }
 zen-general-cancel-label = 
     .label = İptal
@@ -156,7 +156,8 @@ zen-little-window-open-in-space = <b data-l10n-name="space">{ $space }</b> alan�
 zen-little-window-open-in-new-window = { -brand-short-name } içinde aç
 zen-little-window-choose-space = 
     .tooltiptext = Bir alan seçin
+zen-little-window-title = Little Zen
 zen-little-window-intro-title = <i data-l10n-name="name">Küçük Zen</i> içinde açıldı
 zen-little-window-intro-description = Bu sayfayı tam pencereye taşımak için “Şurada aç” düğmesine tıklayın veya kapatmak için { $shortcut } tuşlarına basın
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = { $host } kaynağından

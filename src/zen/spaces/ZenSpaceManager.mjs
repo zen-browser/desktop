@@ -2374,6 +2374,8 @@ class nsZenWorkspaces {
     } = {}
   ) {
     gZenUIManager.tabsWrapper.style.scrollbarWidth = "none";
+    // With reduced motion, spaces snap into place instead of sliding over.
+    shouldAnimate &&= !gReduceMotion;
     const kGlobalAnimationDuration =
       Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
       1000;

@@ -24,9 +24,15 @@
 }
 
 & .zen-workspace-icon {
-  transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+  transition: opacity 150ms ease-in-out;
   z-index: 2;
   transform-origin: center;
+
+  @media not (prefers-reduced-motion: reduce) {
+    transition:
+      opacity 150ms ease-in-out,
+      transform 150ms ease-in-out;
+  }
 }
 
 &:not(:hover) {

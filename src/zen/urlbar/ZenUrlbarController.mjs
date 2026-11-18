@@ -103,9 +103,12 @@ export class nsZenUrlbarController {
       return false;
     }
 
+    // An extension that replaces the new-tab page gets its page; the URL bar
+    // only stands in for a new tab nobody has replaced.
     const shouldOpenURLBar =
       overridePreferance ||
       (gZenVerticalTabsManager._canReplaceNewTab &&
+        !AboutNewTab.newTabURLOverridden &&
         !werePassedURL &&
         !searchClipboard &&
         where === "tab");

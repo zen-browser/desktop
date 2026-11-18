@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Lliw Cyfaddas
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Copïwyd yr URL cyfredol!
+       *[other] Copïwyd { $count } URL!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] Copïwyd yr URL cyfredol fel Markdown!
+       *[other] Copïwyd { $count } URL fel Markdown!
     }
 zen-general-cancel-label = 
     .label = Na
@@ -66,10 +66,10 @@ zen-pinned-tab-edit-url-title = Golygu URL wedi'u Pinio
 zen-pinned-tab-edit-url-label = Rhowch y URL dylai'r tab pinio hwn bwyntio at:
 zen-tabs-renamed = Mae'r tab wedi cael ei ailenwi'n llwyddiannus!
 zen-background-tab-opened-toast = Tab cefndir newydd wedi'i agor!
-zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
+zen-zoom-changed-toast = Chwyddo: { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Mae'r Man Gwaith wedi cael ei ailenwi'n llwyddiannus!
 zen-split-view-limit-toast = Methu ychwanegu mwy o baneli at y golwg hollt!
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-sidebar-drag-collapsed-toast = Bar ochr wedi'i guddio! Defnyddiwch <span>{ $shortcut }</span> i ddychwelyd y bar.
 zen-toggle-compact-mode-button = 
     .label = Modd Cryno
     .tooltiptext = Togglo Modd Cryno
@@ -113,7 +113,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Rhannu'r Dudalen Hon
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Creu Hwb
 zen-site-data-header-reader-mode = 
     .tooltiptext = Mynd i'r Modd Darllenydd
 zen-site-data-header-screenshot = 
@@ -151,12 +151,13 @@ zen-window-sync-migration-dialog-accept = Iawn
 zen-appmenu-new-blank-window = 
     .label = Ffenestr wag newydd
 zen-appmenu-new-little-window = 
-    .label = New Little Window
-zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
-zen-little-window-open-in-new-window = Open in { -brand-short-name }
+    .label = Ffenestr Fach Newydd
+zen-little-window-open-in-space = Agor yn <b data-l10n-name="space">{ $space}</b>
+zen-little-window-open-in-new-window = Agor yn { -brand-short-name }
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
-zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
-zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+    .tooltiptext = Dewis Gofod
+zen-little-window-title = Little Zen
+zen-little-window-intro-title = Wedi agor yn <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Cliciwch “Agor yn” i symud y dudalen hon i ffenestr lawn, neu { $shortcut } i gau
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = O { $host }

@@ -66,7 +66,7 @@ zen-pinned-tab-edit-url-title = Redigera fäst URL
 zen-pinned-tab-edit-url-label = Ange den URL som den fästa fliken ska peka till:
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
-zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
+zen-zoom-changed-toast = Zoom: { NUMBER($percentage, stil: "procent") }
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
 zen-split-view-limit-toast = Kan inte lägga till fler paneler till delad vy!
 zen-sidebar-drag-collapsed-toast = Sidofältet dolt! Använd <span>{$shortcut }</span> för att få tillbaka sidofältet.
@@ -151,12 +151,13 @@ zen-window-sync-migration-dialog-accept = Jag förstår
 zen-appmenu-new-blank-window = 
     .label = Nytt blankt fönster
 zen-appmenu-new-little-window = 
-    .label = New Little Window
+    .label = Nytt litet fönster
 zen-little-window-open-in-space = Öppna i <b data-l10n-name="space">{ $space }</b>
 zen-little-window-open-in-new-window = Öppna i { -brand-short-name }
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
-zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
-zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+    .tooltiptext = Välj en arbetsyta
+zen-little-window-title = Liten Zen
+zen-little-window-intro-title = Öppnat i <i data-l10n-name="name">Liten Zen</i>
+zen-little-window-intro-description = Klicka på "Öppna i" för att flytta denna sida till ett full stort fönster, eller { $shortcut } för att stänga
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = Från { $host}

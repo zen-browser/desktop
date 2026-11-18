@@ -28,10 +28,10 @@ zen-about-firefox-version = Based on { -zen-engine-name } { $firefoxVersion }
 zen-about-update-check = Check for updates
 zen-about-update-try-again = Try again
 zen-about-update-checking = Checking for updates…
-zen-about-update-up-to-date = { -brand-short-name } is up to date
+zen-about-update-up-to-date = { -brand-short-name } محدث
 # Variables:
 #   $version (String): the version that can be downloaded, e.g. 1.25b
-zen-about-update-available = { -brand-short-name } { $version } is available
+zen-about-update-available = { -brand-short-name } { $version } متاح
 zen-about-update-download = Download and install
 # Variables:
 #   $transfer (String): download progress, e.g. 12.3 of 90.1 MB

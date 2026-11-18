@@ -54,10 +54,10 @@ zen-boost-receive-made-for = Gert fyrir
 zen-boost-receive-by = af
 zen-boost-receive-info = 
     .tooltiptext = Um þessa endurhönnun
-zen-boost-receive-info-text = Boost creator names are not verified. Boosts can change how a page looks using CSS and visual filters. They can't run code or send your data anywhere. This Boost will only run on { $domain }.
+zen-boost-receive-info-text = Nöfn hönnuða endurhannana eru ekki sannreynd. Endurhannanir geta breytt því hvernig síður líta út með notkun CSS og myndrænna sía. Þær geta ekki keyrt kóða eða sent gögnin þín neitt. Þessi endurhönnun mun einungis keyra á { $domain }.
 zen-boost-receive-title = Bæta þessari endurhönnun við Zen?
 # The span carries the Library icon in front of the word.
-zen-boost-receive-description = Try it on! You can always switch back from the <span data-l10n-name="library">Library</span>.
+zen-boost-receive-description = Prófaðu þetta! Þú getur alltaf skipt til baka úr <span data-l10n-name="library">safninu</span>.
 zen-boost-received-toast = Endurhönnun bætt við!
 zen-boost-receive-error-toast = Gat ekki hlaðið inn þessari deildu endurhönnun
 zen-boost-back = Til baka
@@ -74,7 +74,7 @@ zen-boost-text-case-toggle =
 zen-boost-css-picker = 
     .tooltiptext = Veljari
 zen-boost-css-inspector = 
-    .tooltiptext = Opna rýni
+    .tooltiptext = Opna greinanda
 zen-boost-color-contrast = Birtuskil
 zen-boost-color-brightness = Birtustig
 zen-boost-color-original-saturation = Upprunaleg litmettun

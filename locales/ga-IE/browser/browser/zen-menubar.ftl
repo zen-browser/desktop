@@ -21,4 +21,4 @@ zen-menubar-appearance-dark =
 zen-menubar-new-blank-window = 
     .label = Fuinneog Nua Bán
 zen-menubar-new-little-window = 
-    .label = New Little Window
+    .label = Fuinneog Bheag Nua

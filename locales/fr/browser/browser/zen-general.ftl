@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Couleur personnalisée
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] URL actuelle copiée !
+       *[autre] { $count } URL copiées !
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] L'URL actuelle a été copiée au format Markdown !
+       *[autre] { $count } URL ont été copiées au format Markdown !
     }
 zen-general-cancel-label = 
     .label = Annuler
@@ -156,7 +156,8 @@ zen-little-window-open-in-space = Ouvrir dans <b data-l10n-name="space">{ $space
 zen-little-window-open-in-new-window = Ouvrir dans { -brand-short-name }
 zen-little-window-choose-space = 
     .tooltiptext = Choisissez un espace
+zen-little-window-title = Little Zen
 zen-little-window-intro-title = Ouvert dans <i data-l10n-name="name">Little Zen</i>
 zen-little-window-intro-description = Cliquez sur « Ouvrir dans » pour déplacer cette page vers une fenêtre complète, ou { $shortcut } pour fermer
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = Depuis { $host }

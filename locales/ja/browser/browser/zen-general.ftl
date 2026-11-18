@@ -156,6 +156,7 @@ zen-little-window-open-in-space = <b data-l10n-name="space">{ $space }</b> で�
 zen-little-window-open-in-new-window = { -brand-short-name } で開く
 zen-little-window-choose-space = 
     .tooltiptext = スペースを選択
+zen-little-window-title = Little Zen
 zen-little-window-intro-title = <i data-l10n-name="name">小さな Zen</i> で開きました
 zen-little-window-intro-description = 開くボタンからこのページをフルウィンドウへ移動するか、{ $shortcut } で閉じることができます
 zen-little-window-download-source = 

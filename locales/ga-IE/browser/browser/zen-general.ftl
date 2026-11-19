@@ -156,7 +156,7 @@ zen-little-window-open-in-space = Oscail i <b data-l10n-name="space">{ $space }<
 zen-little-window-open-in-new-window = Oscail i { -brand-short-name }
 zen-little-window-choose-space = 
     .tooltiptext = Roghnaigh Spás
-zen-little-window-title = Little Zen
+zen-little-window-title = Zen Beag
 zen-little-window-intro-title = Oscailte i <i data-l10n-name="name">Zen Beag</i>
 zen-little-window-intro-description = Cliceáil “Oscail i” chun an leathanach seo a bhogadh go fuinneog iomlán, nó { $shortcut } chun é a dhúnadh
 zen-little-window-download-source = 

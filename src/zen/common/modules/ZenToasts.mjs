@@ -45,11 +45,6 @@ export class nsZenToastManager {
       this.#hideToast(toast);
     };
 
-    if (reused && toast._zenToastVisible) {
-      this.#scheduleHide(messageId, hide, timeout);
-      return;
-    }
-
     if (reused) {
       await gZenUIManager.motion.animate(
         toast,
@@ -66,7 +61,6 @@ export class nsZenToastManager {
     if (!toast.style.transform) {
       toast.style.transform = "scale(0)";
     }
-    toast._zenToastVisible = true;
     await gZenUIManager.motion.animate(
       toast,
       { scale: 1 },
@@ -89,7 +83,6 @@ export class nsZenToastManager {
     if (!toast.isConnected) {
       return;
     }
-    toast._zenToastVisible = false;
     const container = this.#toastContainer;
     gZenUIManager.motion
       .animate(

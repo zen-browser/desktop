@@ -138,6 +138,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   insertIntoContextMenu() {
+    if (!this.canSplit) {
+      return;
+    }
     const sibling = document.getElementById("context-sep-open");
     const menuitem = document.createXULElement("menuitem");
     menuitem.setAttribute("id", "context-zenSplitLink");
@@ -324,7 +327,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   // eslint-disable-next-line complexity
   onBrowserDragOverToSplit(event) {
     gBrowser.tabContainer.tabDragAndDrop.clearSpaceSwitchTimer();
-    if (this.fakeBrowser) {
+    if (this.fakeBrowser || !this.canSplit) {
       return;
     }
     var dt = event.dataTransfer;
@@ -1238,9 +1241,22 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Windows that do not show their tabs, like popups and little windows,
+   * cannot split them.
+   *
+   * @returns {boolean}
+   */
+  get canSplit() {
+    return !gZenVerticalTabsManager.hidesTabsToolbar;
+  }
+
+  /**
    * Splits a link in a new tab.
    */
   splitLinkInNewTab() {
+    if (!this.canSplit) {
+      return;
+    }
     const url =
       window.gContextMenu.linkURL ||
       window.gContextMenu.mediaURL ||
@@ -1318,7 +1334,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if the tabs can be split, false otherwise.
    */
   contextCanSplitTabs() {
-    if (window.gBrowser.selectedTabs.length > this.MAX_TABS) {
+    if (!this.canSplit || window.gBrowser.selectedTabs.length > this.MAX_TABS) {
       return false;
     }
     for (const tab of window.gBrowser.selectedTabs) {
@@ -1434,6 +1450,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     initialIndex = 0,
     { groupFetchId = null, activate = true } = {}
   ) {
+    if (!this.canSplit) {
+      return;
+    }
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
@@ -2532,6 +2551,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   canOpenLinkInSplitView() {
+    if (!this.canSplit) {
+      return false;
+    }
     const currentView = this.currentView;
     if (currentView < 0) {
       return true;
@@ -2565,6 +2587,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   createEmptySplit(side = "right") {
+    if (!this.canSplit) {
+      return;
+    }
     const selectedTab = gBrowser.selectedTab;
     const emptyTab = gZenWorkspaces._emptyTab;
     const gridType = side === "top" || side === "bottom" ? "hsep" : "vsep";

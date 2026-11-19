@@ -76,3 +76,24 @@ add_task(async function test_little_window_glance_opens_elsewhere() {
   BrowserTestUtils.removeTab(tab);
   await BrowserTestUtils.closeWindow(win);
 });
+
+add_task(async function test_little_window_does_not_split() {
+  const win = await openLittleWindow({ url: TEST_URL });
+  const first = win.gBrowser.selectedTab;
+  const second = BrowserTestUtils.addTab(win.gBrowser, OTHER_URL);
+  const splitter = win.gZenViewSplitter;
+
+  ok(!splitter.canSplit, "A little window cannot split its tabs");
+  splitter.splitTabs([first, second]);
+  ok(!first.splitView && !second.splitView, "Asking for a split does nothing");
+  splitter.createEmptySplit();
+  ok(!splitter.splitViewActive, "Nor does asking for an empty one");
+  ok(!splitter.contextCanSplitTabs(), "And the menus do not offer it");
+  ok(!splitter.canOpenLinkInSplitView(), "Nor for links");
+  ok(
+    !win.document.getElementById("context-zenSplitLink"),
+    "Whose menu has no item to split them"
+  );
+
+  await BrowserTestUtils.closeWindow(win);
+});

@@ -283,6 +283,14 @@
 
   /** components/little-window: background-color **/
   --zen-little-window-container-background: light-dark(#ffffff, rgba(255, 255, 255, 0.12));
+  --zen-little-window-open-background: light-dark(#fdfdff, #050627);
+  --zen-little-window-open-shortcut-background: light-dark(#eaeaec, #171834);
+
+  /** components/little-window: text-color **/
+  --zen-little-window-open-color: light-dark(#000000, #ffffff);
+  --zen-little-window-open-muted-color: light-dark(#7e7e7f, #828393);
+  --zen-little-window-open-shortcut-color: light-dark(#757576, #8b8c9a);
+  --zen-little-window-open-space-color: light-dark(#924400, #ffead1);
 
   /** components/little-window: size **/
   --zen-little-window-intro-width: 300px;

@@ -9,9 +9,21 @@ ChromeUtils.defineESModuleGetters(lazy, {
   CustomKeys: "moz-src:///browser/components/customkeys/CustomKeys.sys.mjs",
   ZenKeyboardShortcuts:
     "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
+  ZenLittleWindow:
+    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
+  gZenSpaceRoutingManager:
+    "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
 });
 
 const kInvalidKeyMs = 900;
+const kSitePermissionPref = "permissions.default.shortcuts";
+const kOverridePref = "zen.keyboard.shortcuts.override-page-shortcuts";
+const kDeny = Ci.nsIPermissionManager.DENY_ACTION;
+const kLittleWindowKey = "zen-new-little-window";
+const kLittleWindowPref = "zen.little-window.enabled";
+const kGlobalShortcutsPref = "zen.keyboard.global-shortcuts.enabled";
+const kLittleWindowRoute = "little-window";
+const kMostRecentSpaceRoute = "most-recent-space";
 const kModifierSymbols = "⌃⌥⇧⌘";
 
 const kFaceReachPx = 5;
@@ -25,6 +37,130 @@ export class ZenSettingsShortcuts {
   constructor(settings) {
     this.settings = settings;
     this.#initShortcuts();
+    this.#initConflicts();
+    this.#initLittleWindow();
+  }
+
+  #initLittleWindow() {
+    const global = document.getElementById(
+      "zen-settings-shortcuts-little-global"
+    );
+    const links = document.getElementById(
+      "zen-settings-shortcuts-little-links"
+    );
+    global?.addEventListener("change", () => {
+      Services.prefs.setBoolPref(kGlobalShortcutsPref, global.checked);
+    });
+    links.addEventListener("change", () => {
+      const manager = lazy.gZenSpaceRoutingManager;
+      manager.setDefaultExternalRoute(
+        links.checked ? kLittleWindowRoute : kMostRecentSpaceRoute
+      );
+      manager.saveRoutes();
+    });
+    this.settings.watchPrefs([kLittleWindowPref, kGlobalShortcutsPref], () =>
+      this.#updateLittleWindow()
+    );
+  }
+
+  #updateLittleWindow() {
+    const row = this.#selectedShortcutRow;
+    const box = document.getElementById("zen-settings-shortcuts-little");
+    box.hidden = row?.dataset.id != kLittleWindowKey;
+    if (box.hidden) {
+      return;
+    }
+    const enabled = lazy.ZenLittleWindow.enabled;
+    const links = document.getElementById(
+      "zen-settings-shortcuts-little-links"
+    );
+    links.disabled = !enabled;
+    links.checked =
+      enabled &&
+      lazy.gZenSpaceRoutingManager.getDefaultExternalRoute() ==
+        kLittleWindowRoute;
+
+    const global = document.getElementById(
+      "zen-settings-shortcuts-little-global"
+    );
+    if (!global) {
+      return;
+    }
+    const { shortcut } = row.dataset;
+    global.disabled =
+      !enabled ||
+      !shortcut ||
+      Services.prefs.prefIsLocked(kGlobalShortcutsPref);
+    global.checked =
+      !!shortcut && Services.prefs.getBoolPref(kGlobalShortcutsPref, false);
+    const label = document.getElementById(
+      "zen-settings-shortcuts-little-global-label"
+    );
+    if (shortcut) {
+      document.l10n.setAttributes(
+        label,
+        "zen-settings-window-little-global-shortcut-key",
+        { shortcut }
+      );
+    } else {
+      document.l10n.setAttributes(
+        label,
+        "zen-settings-window-little-global-shortcut"
+      );
+    }
+  }
+
+  #initConflicts() {
+    const list = document.getElementById(
+      "zen-settings-shortcuts-conflict-list"
+    );
+    this.settings.watchPrefs([kSitePermissionPref, kOverridePref], () =>
+      this.#updateConflict()
+    );
+    list.addEventListener("command", () => {
+      const id = this.#selectedShortcutRow?.dataset.id;
+      if (id) {
+        lazy.ZenKeyboardShortcuts.setConflict(id, list.value);
+      }
+      this.#updateConflict();
+    });
+  }
+
+  #updateConflict() {
+    const box = document.getElementById("zen-settings-shortcuts-conflict");
+    const list = document.getElementById(
+      "zen-settings-shortcuts-conflict-list"
+    );
+    const row = this.#selectedShortcutRow;
+    const win = this.#shortcutsWindow;
+    box.hidden =
+      !row ||
+      !win ||
+      !row.dataset.shortcut ||
+      row.hasAttribute("data-internal");
+    if (box.hidden) {
+      return;
+    }
+    const { id } = row.dataset;
+    const enabled = lazy.ZenKeyboardShortcuts.conflictsEnabled;
+    const forced =
+      Services.prefs.getIntPref(kSitePermissionPref, 0) == kDeny ||
+      lazy.ZenKeyboardShortcuts.isConflictLocked(win, id);
+    if (forced) {
+      list.value = "zen";
+    } else if (!enabled) {
+      list.value = "website";
+    } else {
+      list.value = lazy.ZenKeyboardShortcuts.getConflict(id);
+    }
+    list.disabled = forced || !enabled;
+    const choice = list.value == "ask" ? "both" : list.value;
+    document.l10n.setAttributes(
+      document.getElementById("zen-settings-shortcuts-conflict-description"),
+      forced
+        ? "zen-settings-window-shortcuts-conflict-reserved-description"
+        : `zen-settings-window-shortcuts-conflict-${choice}-description`
+    );
   }
 
   onPaneShown(pane) {
@@ -313,7 +449,9 @@ export class ZenSettingsShortcuts {
     const dx = event.clientX - (rect.x + rect.width / 2);
     const dy = event.clientY - (rect.y + rect.height / 2);
     const lean = kFaceReachPx / (Math.hypot(dx, dy) + kFaceHalfReachDistancePx);
-    face.style.translate = `${(dx * lean).toFixed(2)}px ${(dy * lean).toFixed(2)}px`;
+    const snap = value =>
+      Math.round(value * window.devicePixelRatio) / window.devicePixelRatio;
+    face.style.translate = `${snap(dx * lean)}px ${snap(dy * lean)}px`;
   }
 
   #updateShortcutDetails() {
@@ -348,6 +486,8 @@ export class ZenSettingsShortcuts {
         "zen-settings-window-shortcuts-header"
       );
     }
+    this.#updateLittleWindow();
+    this.#updateConflict();
     reset.disabled = !row?.hasAttribute("data-customized");
     document.getElementById("zen-settings-shortcuts-more").disabled =
       !hasWindow;

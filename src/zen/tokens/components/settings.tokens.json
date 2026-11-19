@@ -4,7 +4,6 @@
       "value": { "light": "#f3f3f4", "dark": "#1e1e1f" }
     },
     "--zen-settings-sidebar-background": { "external": true },
-    "--zen-settings-sidebar-mica-background": { "external": true },
     "--zen-settings-sticky-background": { "external": true },
     "--zen-settings-dialog-backdrop": { "external": true },
     "--zen-settings-art-key-face": { "external": true },
@@ -13,16 +12,21 @@
     "--zen-settings-hover-background": { "external": true },
     "--zen-settings-button-background": { "external": true },
     "--zen-settings-button-background-hover": { "external": true },
-    "--zen-settings-primary-background-hover": { "external": true }
+    "--zen-settings-primary-background-hover": { "external": true },
+    "--zen-settings-win-card-background": { "external": true },
+    "--zen-settings-win-tile-background": { "external": true },
+    "--zen-settings-win-tile-selected-background": { "external": true }
   },
   "border-color": {
-    "--zen-settings-sidebar-border-color": { "external": true }
+    "--zen-settings-sidebar-border-color": { "external": true },
+    "--zen-settings-win-layer-border": { "external": true }
   },
   "versatile-color": {
     "--zen-settings-separator-color": { "external": true },
     "--zen-settings-muted-color": { "external": true },
     "--zen-settings-success-color": { "external": true },
-    "--zen-settings-warning-color": { "external": true }
+    "--zen-settings-warning-color": { "external": true },
+    "--zen-settings-win-card-border": { "external": true }
   },
   "box-shadow": {
     "--zen-settings-drop-before-shadow": { "external": true },
@@ -47,7 +51,9 @@
     "--zen-settings-dialog-max-height": { "external": true },
     "--zen-settings-layout-thumbnail-width": { "external": true },
     "--zen-settings-art-key-size": { "external": true },
-    "--zen-settings-art-key-icon-size": { "external": true }
+    "--zen-settings-art-key-icon-size": { "external": true },
+    "--zen-settings-art-face-size": { "external": true },
+    "--zen-settings-win-tile-width": { "external": true }
   },
   "space": {
     "--zen-settings-art-key-edge-width": { "external": true }
@@ -56,6 +62,8 @@
     "--zen-settings-font-size-title": { "external": true },
     "--zen-settings-font-size-heading": { "external": true },
     "--zen-settings-font-size-small": { "external": true },
-    "--zen-settings-font-size-tiny": { "external": true }
+    "--zen-settings-font-size-tiny": { "external": true },
+    "--zen-settings-win-font-size-title": { "external": true },
+    "--zen-settings-win-font-size-heading": { "external": true }
   }
 }

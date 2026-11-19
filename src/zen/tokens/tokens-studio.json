@@ -1231,6 +1231,14 @@
         "value": "#ffffff",
         "type": "color"
       },
+      "zen-little-window-open-background": {
+        "value": "#fdfdff",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-background": {
+        "value": "#eaeaec",
+        "type": "color"
+      },
       "zen-bookmark-panel-favicon-container-background": {
         "value": "#ffffff",
         "type": "color"
@@ -1311,6 +1319,22 @@
       },
       "zen-library-media-preview-header-color": {
         "value": "#1c1c1c",
+        "type": "color"
+      },
+      "zen-little-window-open-color": {
+        "value": "#000000",
+        "type": "color"
+      },
+      "zen-little-window-open-muted-color": {
+        "value": "#7e7e7f",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-color": {
+        "value": "#757576",
+        "type": "color"
+      },
+      "zen-little-window-open-space-color": {
+        "value": "#924400",
         "type": "color"
       },
       "zen-spaces-theme-picker-button-color": {
@@ -1475,6 +1499,14 @@
         "value": "#ffffff1f",
         "type": "color"
       },
+      "zen-little-window-open-background": {
+        "value": "#050627",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-background": {
+        "value": "#171834",
+        "type": "color"
+      },
       "zen-bookmark-panel-favicon-container-background": {
         "value": "#ffffff1a",
         "type": "color"
@@ -1555,6 +1587,22 @@
       },
       "zen-library-media-preview-header-color": {
         "value": "#e9e9e9",
+        "type": "color"
+      },
+      "zen-little-window-open-color": {
+        "value": "#ffffff",
+        "type": "color"
+      },
+      "zen-little-window-open-muted-color": {
+        "value": "#828393",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-color": {
+        "value": "#8b8c9a",
+        "type": "color"
+      },
+      "zen-little-window-open-space-color": {
+        "value": "#ffead1",
         "type": "color"
       },
       "zen-spaces-theme-picker-button-color": {

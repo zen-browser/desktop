@@ -33,8 +33,8 @@ const kBlankWindowColors = {
     [21, 9, 28],
   ],
   light: [
-    [233, 233, 247],
-    [196, 170, 222],
+    [224, 224, 238],
+    [248, 233, 228],
   ],
 };
 
@@ -1990,6 +1990,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
       if (browser.closing) {
         return;
+      }
+
+      if (theme === null) {
+        browser.gZenThemePicker.invalidateGradientCache(uuid);
       }
 
       // Only rebuild for the workspace the window shows, or the one its

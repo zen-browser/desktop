@@ -14,3 +14,9 @@
   condition: "defined(XP_MACOSX) || defined(XP_WIN)"
   mirror: always
   type: static
+
+- name: zen.keyboard.shortcuts.override-page-shortcuts
+  cpptype: bool
+  value: true
+  mirror: always
+  type: static

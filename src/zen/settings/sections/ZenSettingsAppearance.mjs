@@ -4,11 +4,39 @@
 
 const kSingleToolbarPref = "zen.view.use-single-toolbar";
 const kExpandedSidebarPref = "zen.view.sidebar-expanded";
+const kMicaPref = "widget.windows.mica";
+const kBackdropPref = "widget.windows.mica.toplevel-backdrop";
 
 export class ZenSettingsAppearance {
   constructor(settings) {
     this.settings = settings;
     this.#initLayout();
+    this.#initBackdrop();
+  }
+
+  #initBackdrop() {
+    const list = document.getElementById("zen-settings-backdrop");
+    if (!list) {
+      return;
+    }
+    this.settings.watchPrefs([kMicaPref, kBackdropPref], () => {
+      const backdrop = Services.prefs.getIntPref(kBackdropPref, 0);
+      if (!Services.prefs.getBoolPref(kMicaPref, false)) {
+        list.value = "0";
+      } else {
+        list.value = backdrop == 1 || backdrop == 2 ? String(backdrop) : "3";
+      }
+      list.disabled =
+        Services.prefs.prefIsLocked(kMicaPref) ||
+        Services.prefs.prefIsLocked(kBackdropPref);
+    });
+    list.addEventListener("command", () => {
+      const backdrop = parseInt(list.value, 10);
+      if (backdrop) {
+        Services.prefs.setIntPref(kBackdropPref, backdrop);
+      }
+      Services.prefs.setBoolPref(kMicaPref, !!backdrop);
+    });
   }
 
   #initLayout() {

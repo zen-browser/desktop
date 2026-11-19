@@ -1,0 +1,32 @@
+diff --git a/dom/events/GlobalKeyListener.h b/dom/events/GlobalKeyListener.h
+index 71529326ccc2afb216a45bcdeb2b792eef22fb99..0169fa6dd7a788eb9abafe66f1bff04aba69158a 100644
+--- a/dom/events/GlobalKeyListener.h
++++ b/dom/events/GlobalKeyListener.h
+@@ -12,6 +12,10 @@
+ 
+ class nsAtom;
+ 
++namespace zen {
++class ZenBlockedShortcuts;
++}  // namespace zen
++
+ namespace mozilla {
+ class EventListenerManager;
+ class WidgetKeyboardEvent;
+@@ -37,6 +41,8 @@ class KeyEventHandler;
+  * when a keyboard event is received.
+  */
+ class GlobalKeyListener : public nsIDOMEventListener {
++  friend class zen::ZenBlockedShortcuts;
++
+  public:
+   explicit GlobalKeyListener(dom::EventTarget* aTarget);
+ 
+@@ -70,6 +76,7 @@ class GlobalKeyListener : public nsIDOMEventListener {
+     // Set to a Command that is found but may correspond to a different type
+     // of keyboard event, this is set only for LookForCommand purpose.
+     Maybe<Command> mRelevantCommand;
++    KeyEventHandler* mHandler = nullptr;
+   };
+ 
+   // walk the handlers, looking for one to handle the event

@@ -34,14 +34,17 @@
   }
 
   #nav-bar {
-    gap: var(--zen-space-4);
-    padding-inline: var(--zen-space-4);
+    gap: var(--zen-space-8);
+    padding-inline: var(--zen-space-8);
+  }
+
+  &:not([zen-little-window-urlbar-only]) {
+    --zen-toolbar-height: 50px;
   }
 
   &:not([zen-window-buttons-reversed]) #nav-bar {
     width: 100% !important;
     margin-left: 0 !important;
-    padding-inline: 0;
   }
 
   #urlbar-container {
@@ -95,6 +98,10 @@
   margin-inline: 0 !important;
 }
 
+#main-window[zen-little-window][zen-window-buttons-reversed] .titlebar-buttonbox-container {
+  margin-inline-end: calc(-1 * var(--zen-space-6)) !important;
+}
+
 #main-window[zen-little-window] #zen-appcontent-navbar-container {
   padding-inline: 0 !important;
 }
@@ -118,7 +125,7 @@
   font-weight: var(--zen-font-weight-medium);
   -moz-context-properties: fill, fill-opacity;
   fill: var(--zen-little-window-container-color, currentColor);
-  background: color-mix(in srgb, var(--zen-little-window-container-background) 85%, currentColor);
+  background: color-mix(in srgb, var(--zen-little-window-container-background) 90%, currentColor);
 
   &:hover {
     background: var(--zen-little-window-container-background);
@@ -142,29 +149,16 @@
 #zen-little-window-open-in-space {
   flex-shrink: 0;
   height: calc(var(--urlbar-height) + 2px);
+  border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
   border-radius: var(--border-radius-small);
-  background: var(--zen-toolbar-element-bg);
+  background: var(--zen-little-window-open-background);
+  color: var(--zen-little-window-open-color);
+  overflow: clip;
   -moz-window-dragging: no-drag;
-
-  :root[zen-window-buttons-reversed] & {
-    border-top-right-radius: calc(var(--zen-border-radius) + 2px);
-  }
-}
-
-/* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector -- the back button comes after this box in the toolbar, and only its handful of items are looked through */
-:root:not([zen-window-buttons-reversed]) #nav-bar:has(#back-button[disabled]) #zen-little-window-open-in-space {
-  border-top-left-radius: var(--zen-border-radius);
-}
-
-#zen-little-window-open-in-space > :first-child {
-  border-start-start-radius: inherit;
-  border-end-start-radius: inherit;
 }
 
 #zen-little-window-open-in-space > :last-child {
   border-inline-start: 1px solid color-mix(in srgb, currentColor 10%, transparent);
-  border-start-end-radius: inherit;
-  border-end-end-radius: inherit;
 }
 
 #zen-little-window-open-button {
@@ -178,12 +172,16 @@
   }
 
   &:hover {
-    background: var(--zen-toolbar-element-bg-hover);
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
 }
 
 #zen-little-window-open-label {
-  color: var(--text-color-deemphasized);
+  color: var(--zen-little-window-open-muted-color);
+
+  > b {
+    color: var(--zen-little-window-open-space-color);
+  }
 }
 
 #zen-little-window-open-shortcut {
@@ -192,8 +190,8 @@
   border-radius: var(--zen-border-radius-4);
   /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
   font-size: 0.85em;
-  color: var(--text-color-deemphasized);
-  background: color-mix(in srgb, currentColor 8%, transparent);
+  color: var(--zen-little-window-open-shortcut-color);
+  background: var(--zen-little-window-open-shortcut-background);
 }
 
 #zen-little-window-spaces-button {
@@ -207,7 +205,7 @@
 
   &:hover,
   &[open] {
-    background: var(--zen-toolbar-element-bg-hover);
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
 
   > .toolbarbutton-text,
@@ -218,7 +216,7 @@
   > .toolbarbutton-icon {
     width: var(--zen-size-10);
     height: var(--zen-size-10);
-    opacity: var(--zen-opacity-60);
+    opacity: var(--zen-opacity-30);
   }
 }
 
@@ -405,6 +403,10 @@
 
   #urlbar[noresults] > .urlbarView,
   #nav-bar > :not(#nav-bar-customization-target, .titlebar-buttonbox-container) {
+    display: none !important;
+  }
+
+  .titlebar-buttonbox-container {
     display: none !important;
   }
 

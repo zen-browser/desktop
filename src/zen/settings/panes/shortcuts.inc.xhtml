@@ -28,6 +28,28 @@
             </html:div>
             <html:h2 id="zen-settings-shortcuts-title" data-l10n-id="zen-settings-window-shortcuts-header"/>
             <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-shortcuts-description"/>
+            <html:div id="zen-settings-shortcuts-conflict">
+              <menulist id="zen-settings-shortcuts-conflict-list" data-l10n-id="zen-settings-window-shortcuts-conflict" aria-describedby="zen-settings-shortcuts-conflict-description">
+                <menupopup>
+                  <menuitem value="ask" data-l10n-id="zen-settings-window-shortcuts-conflict-both"/>
+                  <menuitem value="zen" data-l10n-id="zen-settings-window-shortcuts-conflict-zen"/>
+                  <menuitem value="website" data-l10n-id="zen-settings-window-shortcuts-conflict-website"/>
+                </menupopup>
+              </menulist>
+              <html:p id="zen-settings-shortcuts-conflict-description" class="zen-settings-note"/>
+            </html:div>
+            <html:div id="zen-settings-shortcuts-little" hidden="hidden">
+#if defined(XP_MACOSX) || defined(XP_WIN)
+              <html:label class="zen-settings-check">
+                <html:input id="zen-settings-shortcuts-little-global" type="checkbox"/>
+                <html:span id="zen-settings-shortcuts-little-global-label"/>
+              </html:label>
+#endif
+              <html:label class="zen-settings-check">
+                <html:input id="zen-settings-shortcuts-little-links" type="checkbox"/>
+                <html:span data-l10n-id="zen-settings-window-little-external-links"/>
+              </html:label>
+            </html:div>
             <html:span class="zen-settings-spacer"/>
             <html:div id="zen-settings-shortcuts-actions">
               <html:button id="zen-settings-shortcuts-reset" class="zen-settings-button" data-l10n-id="zen-settings-window-shortcuts-reset-one"/>

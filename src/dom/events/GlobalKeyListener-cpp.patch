@@ -1,16 +1,43 @@
 diff --git a/dom/events/GlobalKeyListener.cpp b/dom/events/GlobalKeyListener.cpp
-index f601a3421f458913aff51fc25c37400f75881814..abcf41c81382e433d877153900d92b7869a9a2c8 100644
+index f601a3421f458913aff51fc25c37400f75881814..9b3f433119438e72022a5fc985df4e05de2133df 100644
 --- a/dom/events/GlobalKeyListener.cpp
 +++ b/dom/events/GlobalKeyListener.cpp
-@@ -17,6 +17,7 @@
+@@ -17,6 +17,8 @@
  #include "mozilla/ShortcutKeys.h"
  #include "mozilla/StaticPtr.h"
  #include "mozilla/TextEvents.h"
++#include "mozilla/ZenBlockedShortcuts.h"
 +#include "mozilla/ZenGlobalShortcuts.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/dom/Element.h"
  #include "mozilla/dom/Event.h"
-@@ -556,6 +557,7 @@ void XULKeySetGlobalKeyListener::AttachKeyHandler(
+@@ -89,6 +91,7 @@ static void BuildHandlerChain(nsIContent* aContent, KeyEventHandler** aResult) {
+ 
+ void GlobalKeyListener::WalkHandlers(dom::KeyboardEvent* aKeyEvent) {
+   if (aKeyEvent->DefaultPrevented()) {
++    zen::ZenBlockedShortcuts::OnKeyEventPreventedByContent(this, aKeyEvent);
+     return;
+   }
+ 
+@@ -380,6 +383,7 @@ GlobalKeyListener::WalkHandlersResult GlobalKeyListener::WalkHandlersAndExecute(
+         result.mMeaningfulHandlerFound = true;
+         result.mReservedHandlerForChromeFound =
+             IsReservedKey(widgetKeyboardEvent, handler);
++        result.mHandler = handler;
+         // Only set relevantCommand if the handler can be executed for the
+         // command.
+         if (CanHandle(handler, true)) {
+@@ -468,6 +472,9 @@ bool GlobalKeyListener::IsReservedKey(WidgetKeyboardEvent* aKeyEvent,
+     return false;
+   }
+   ReservedKey reserved = aHandler->GetIsReserved();
++  if (zen::ZenBlockedShortcuts::IsPreferredByZen(aHandler)) {
++    reserved = ReservedKey_True;
++  }
+   // reserved="true" means that the key is always reserved. reserved="false"
+   // means that the key is never reserved. Otherwise, we check site-specific
+   // permissions.
+@@ -556,6 +563,7 @@ void XULKeySetGlobalKeyListener::AttachKeyHandler(
  
    aElementTarget->SetProperty(nsGkAtoms::listener, handler.forget().take(),
                                nsPropertyTable::SupportsDtorFunc, true);
@@ -18,7 +45,7 @@ index f601a3421f458913aff51fc25c37400f75881814..abcf41c81382e433d877153900d92b78
  }
  
  //
-@@ -565,6 +567,7 @@ void XULKeySetGlobalKeyListener::AttachKeyHandler(
+@@ -565,6 +573,7 @@ void XULKeySetGlobalKeyListener::AttachKeyHandler(
  //
  void XULKeySetGlobalKeyListener::DetachKeyHandler(
      dom::Element* aElementTarget) {

@@ -7,6 +7,13 @@ import { nsZenToastManager } from "resource:///modules/zen/ZenToasts.mjs";
 import { nsZenUrlbarController } from "resource:///modules/zen/urlbar/ZenUrlbarController.mjs";
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenKeyboardShortcuts:
+    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
+});
+
 const SPRING_SETTLE_DISTANCE = 0.01;
 
 // Minimum height the floating URL bar is vertically centered against.
@@ -60,6 +67,7 @@ class nsZenUIManager {
     document.addEventListener("mousedown", this, true);
     window.addEventListener("TabClose", this);
     window.addEventListener("FullZoomChange", this);
+    window.addEventListener("ZenShortcutBlocked", this);
 
     gZenWorkspaces.promiseInitialized.finally(() => {
       this._hasLoadedDOM = true;
@@ -98,6 +106,9 @@ class nsZenUIManager {
         break;
       case "FullZoomChange":
         this.#onFullZoomChange(event);
+        break;
+      case "ZenShortcutBlocked":
+        lazy.ZenKeyboardShortcuts.onShortcutBlocked(window, event);
         break;
     }
   }
@@ -305,6 +316,16 @@ class nsZenUIManager {
    */
   showToast(messageId, options = {}) {
     return this.#toasts.show(messageId, options);
+  }
+
+  /**
+   * Takes a toast down before its timeout, for when what it asked the user
+   * to do has been done.
+   *
+   * @param {string} messageId - Fluent id of the toast to hide.
+   */
+  hideToast(messageId) {
+    this.#toasts.hide(messageId);
   }
 
   #onFullZoomChange(event) {

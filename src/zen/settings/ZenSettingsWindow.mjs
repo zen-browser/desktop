@@ -13,12 +13,10 @@ import { ZenSettingsShortcuts } from "./sections/ZenSettingsShortcuts.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  Sanitizer: "resource:///modules/Sanitizer.sys.mjs",
   SubDialogManager: "resource://gre/modules/SubDialog.sys.mjs",
 });
 
 const kDefaultPane = "general";
-const kSchemePref = "zen.view.window.scheme";
 const kDonateURL = "https://www.zen-browser.app/donate";
 const kSubDialogStyleSheets = [
   "chrome://browser/skin/preferences/dialog.css",
@@ -53,7 +51,10 @@ class ZenSettingsPref {
   set value(value) {
     switch (this.type) {
       case Services.prefs.PREF_BOOL:
-        Services.prefs.setBoolPref(this.name, !!value);
+        Services.prefs.setBoolPref(
+          this.name,
+          value === true || value == "true"
+        );
         break;
       case Services.prefs.PREF_INT:
         Services.prefs.setIntPref(this.name, parseInt(value, 10));
@@ -113,7 +114,6 @@ class nsZenSettingsWindow {
   };
 
   constructor() {
-    this.#initColorScheme();
     this.#initWindowControls();
     this.#initNavigation();
     this.#initPrefs();
@@ -195,14 +195,6 @@ class nsZenSettingsWindow {
     document
       .getElementById("cmd_closeWindow")
       ?.addEventListener("command", () => window.close());
-  }
-
-  #initColorScheme() {
-    this.watchPrefs([kSchemePref], () => {
-      const scheme = Services.prefs.getIntPref(kSchemePref, 2);
-      const value = { 0: "dark", 1: "light" }[scheme];
-      document.documentElement.style.colorScheme = value ?? "";
-    });
   }
 
   /* Navigation */
@@ -375,9 +367,9 @@ class nsZenSettingsWindow {
       "open-more-settings": () => leaveFor("paneGeneral"),
       "open-about": () => window.openAboutDialog(),
       "open-donate": () => window.openTrustedLinkIn(kDonateURL, "tab"),
-      "open-privacy-settings": () => window.openPreferences("panePrivacy"),
+      "open-privacy-settings": () => leaveFor("panePrivacy"),
+      "open-accessibility-settings": () => leaveFor("paneAccessibility"),
       "open-sync-settings": () => window.openPreferences("paneSync"),
-      "clear-data": () => lazy.Sanitizer.showUI(window),
     };
     for (const section of Object.values(this.sections)) {
       Object.assign(actions, section.actions);

@@ -38,6 +38,13 @@ const LEGACY_VERSION_PREF = "zen.keyboard.shortcuts.version";
 // then.
 const LEGACY_DEVTOOLS_GROUP = "devTools";
 
+const BLOCKED_SHORTCUT_REPEAT_MS = 3000;
+
+export const CONFLICT_ZEN = "zen";
+export const CONFLICT_WEBSITE = "website";
+export const CONFLICT_ASK = "ask";
+const CONFLICT_VALUES = [CONFLICT_ZEN, CONFLICT_WEBSITE, CONFLICT_ASK];
+
 /**
  * Zen's own shortcuts, grouped the way about:keyboard shows them.
  */
@@ -202,6 +209,8 @@ async function defaultBindingOf(keyEl) {
 
 class nsZenKeyboardShortcuts {
   #legacyMigration = null;
+  /** @type {WeakMap<Window, {key: Element, time: number}>} */
+  #lastBlocked = new WeakMap();
 
   get legacyFilePath() {
     return PathUtils.join(PathUtils.profileDir, LEGACY_FILE);
@@ -225,6 +234,80 @@ class nsZenKeyboardShortcuts {
       return null;
     }
     return lazy.ShortcutUtils.prettifyShortcut(keyEl);
+  }
+
+  onShortcutBlocked(window, event) {
+    const keyEl = event.target;
+    const now = ChromeUtils.now();
+    const last = this.#lastBlocked.get(window);
+    if (last?.key == keyEl && now - last.time < BLOCKED_SHORTCUT_REPEAT_MS) {
+      this.#lastBlocked.delete(window);
+      window.gZenUIManager.hideToast("zen-shortcut-blocked-toast");
+      event.preventDefault();
+      return;
+    }
+    this.#lastBlocked.set(window, { key: keyEl, time: now });
+    this.#showBlockedToast(window, keyEl);
+  }
+
+  async #showBlockedToast(window, keyEl) {
+    const armed = this.#lastBlocked.get(window);
+    let action = null;
+    try {
+      const categories = await this.getShortcuts(window);
+      action = categories
+        .flatMap(category => category.keys)
+        .find(key => key.id == keyEl.id)?.title;
+    } catch (e) {
+      console.error("Zen CKS: Could not name the blocked shortcut", e);
+    }
+    action ||= await window.document.l10n.formatValue(
+      "zen-shortcut-blocked-toast-default-action"
+    );
+    if (window.closed || this.#lastBlocked.get(window) !== armed) {
+      return;
+    }
+    window.gZenUIManager.showToast("zen-shortcut-blocked-toast", {
+      l10nArgs: {
+        shortcut: lazy.ShortcutUtils.prettifyShortcut(keyEl),
+        action,
+      },
+      timeout: BLOCKED_SHORTCUT_REPEAT_MS,
+    });
+  }
+
+  get conflictsEnabled() {
+    return Services.prefs.getBoolPref(
+      "zen.keyboard.shortcuts.override-page-shortcuts",
+      true
+    );
+  }
+
+  /**
+   * @param {string} id The id of a <key> element.
+   * @returns {string} CONFLICT_ZEN, CONFLICT_WEBSITE or CONFLICT_ASK.
+   */
+  getConflict(id) {
+    const value = lazy.CustomKeys.getZenConflict(id);
+    return CONFLICT_VALUES.includes(value) ? value : CONFLICT_ASK;
+  }
+
+  setConflict(id, value) {
+    if (!CONFLICT_VALUES.includes(value)) {
+      throw new Error(`Unknown shortcut conflict choice: ${value}`);
+    }
+    lazy.CustomKeys.setZenConflict(id, value == CONFLICT_ASK ? null : value);
+  }
+
+  /**
+   * @param {Window} window A browser window.
+   * @param {string} id The id of a <key> element.
+   * @returns {boolean} Whether Firefox reserves the shortcut itself, so that
+   *   pages can never take it over whatever is chosen.
+   */
+  isConflictLocked(window, id) {
+    const keyEl = window.document.getElementById(id);
+    return keyEl?.tagName == "key" && keyEl.getAttribute("reserved") == "true";
   }
 
   /**

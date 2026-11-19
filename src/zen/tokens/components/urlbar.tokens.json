@@ -29,6 +29,7 @@
   },
   "size": {
     "--zen-urlbar-single-toolbar-open-width": { "value": "min(90%, 40rem)" },
+    "--zen-urlbar-top-toolbar-min-width": { "value": "min(140px, 40%)" },
     "--zen-urlbar-floating-min-width": { "value": "min(90%, 62rem)" },
     "--zen-urlbar-results-max-height": { "value": "244px" }
   },

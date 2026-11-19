@@ -402,6 +402,7 @@
 
   /** components/urlbar: size **/
   --zen-urlbar-single-toolbar-open-width: min(90%, 40rem);
+  --zen-urlbar-top-toolbar-min-width: min(140px, 40%);
   --zen-urlbar-floating-min-width: min(90%, 62rem);
   --zen-urlbar-results-max-height: 244px;
 

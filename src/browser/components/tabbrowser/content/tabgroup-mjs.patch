@@ -1,0 +1,284 @@
+diff --git a/browser/components/tabbrowser/content/tabgroup.mjs b/browser/components/tabbrowser/content/tabgroup.mjs
+index 885fe2f53d84e364a4edc4000e96087707aac9c5..61f00575a80678c73202d82a4b4e59554aeaeba7 100644
+--- a/browser/components/tabbrowser/content/tabgroup.mjs
++++ b/browser/components/tabbrowser/content/tabgroup.mjs
+@@ -86,11 +86,11 @@ function maybeShowSaveHint(win) {
+ export class MozTabbrowserTabGroup extends MozXULElement {
+   static markup = `
+     <vbox class="tab-group-label-container" pack="center">
+-      <vbox class="tab-group-label-hover-highlight" pack="center">
+         <label class="tab-group-label" role="button" />
+-      </vbox>
+     </vbox>
+-    <html:slot/>
++    <html:div class="tab-group-container">
++      <html:div class="zen-tab-group-start"/>
++    </html:div>
+     <vbox class="tab-group-overflow-count-container" pack="center">
+       <label class="tab-group-overflow-count" role="button" />
+     </vbox>
+@@ -145,21 +145,37 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+   }
+ 
+   connectedCallback() {
++    if (this._lastGroup && this._lastGroup !== this.group) {
++      this._lastGroup.dispatchEvent(
++        new CustomEvent("FolderUngrouped", {
++          bubbles: true,
++          detail: this,
++        })
++      );
++    }
++    if (this.group && this._lastGroup != this.group) {
++      this._lastGroup = this.group;
++      this.group.dispatchEvent(
++        new CustomEvent("FolderGrouped", {
++          bubbles: true,
++          detail: this,
++        })
++      );
++    } else if (!this.group) {
++      this._lastGroup = null;
++    }
+     // Always set the mutation observer to listen for tab change events, even
+     // if we are already initialized.
+     // This is needed to ensure events continue to fire even if the tab group is
+     // moved from the horizontal to vertical tab layout or vice-versa, which
+     // causes the component to be repositioned in the DOM.
+-    this.#observeTabChanges();
+ 
+     // Similar to above, always set up TabSelect listener, as this gets
+     // removed in disconnectedCallback
+     this.documentGlobal.addEventListener("TabSelect", this);
+     this.addEventListener("SplitViewTabChange", this);
+ 
+-    if (this._initialized) {
+-      return;
+-    }
++    if (!this._initialized) {
+ 
+     this._initialized = true;
+     this.saveOnWindowClose = true;
+@@ -190,11 +206,14 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+ 
+     this.#labelContainerElement.addEventListener("mouseover", this);
+     this.#labelContainerElement.addEventListener("mouseout", this);
+-    this.#labelElement.addEventListener("contextmenu", e => {
+-      e.preventDefault();
+-      gBrowser.tabGroupMenu.openEditModal(this);
+-      return false;
+-    });
++    this.appendChild = function (child) {
++      this.groupContainer.appendChild(child);
++      for (let tab of this.tabs) {
++        if (tab.hasAttribute("zen-empty-tab") && tab.group === this) {
++          this.groupStartElement.after(tab);
++        }
++      }
++    };
+ 
+     this.#updateLabelAriaAttributes();
+ 
+@@ -205,17 +224,21 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+       ".tab-group-overflow-count"
+     );
+ 
++    if (!this.hasAttribute('drag-image')) {
+     this.dispatchEvent(
+       new CustomEvent("TabGroupCreate", {
+         bubbles: true,
+         detail: { adopting: this.#wasCreatedByAdoption },
+       })
+     );
++    }
+     // Reset `wasCreatedByAdoption` to default of false so that we only
+     // claim that a tab group was created by adoption the first time it
+     // mounts after getting created by `Tabbrowser.adoptTabGroup`.
+     this.#wasCreatedByAdoption = false;
+   }
++    this.#observeTabChanges();
++  }
+ 
+   resetDefaultGroupName = () => {
+     this.#defaultGroupName = "";
+@@ -250,13 +273,21 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+     if (!this.#tabChangeObserver) {
+       this.#tabChangeObserver = new window.MutationObserver(mutations => {
+         if (!this.tabs.length) {
++          if (this.tagName === "zen-workspace-collapsible-pins") {
++            return;
++          }
+           this.dispatchEvent(
+             new CustomEvent("TabGroupRemoved", {
+               bubbles: true,
+               detail: { adopting: this.#removedByAdoption },
+             })
+           );
+-          this.remove();
++          gZenVerticalTabsManager.animateItemClose(this).then(() => {
++            this.dispatchEvent(
++              new CustomEvent("TabGroupRemovedFromDOM", { bubbles: true })
++            );
++            this.remove();
++          });
+           Services.obs.notifyObservers(
+             /** @type {nsISupports} */ (this),
+             "browser-tabgroup-removed-from-dom"
+@@ -301,7 +332,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+         }
+       });
+     }
+-    this.#tabChangeObserver.observe(this, { childList: true });
++    const container = this.groupContainer;
++    if (container) {
++      this.#tabChangeObserver.observe(container, { childList: true });
++    }
+   }
+ 
+   get color() {
+@@ -407,6 +441,9 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+   }
+ 
+   set collapsed(val) {
++    if (this.hasAttribute("split-view-group")) {
++      return;
++    }
+     if (!!val == this.collapsed) {
+       return;
+     }
+@@ -427,6 +464,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+     const eventName = val ? "TabGroupCollapse" : "TabGroupExpand";
+     this.dispatchEvent(new CustomEvent(eventName, { bubbles: true }));
+ 
++    if (this.isZenFolder) {
++      return;
++    }
++
+     let pendingAnimationPromises = this.tabs.flatMap(tab =>
+       tab
+         .getAnimations()
+@@ -492,7 +533,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+         tabGroupName,
+       })
+       .then(result => {
+-        this.dataset.tooltip = result;
+       });
+   }
+ 
+@@ -567,9 +607,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+    *
+    * @returns {false}
+    */
+-  get pinned() {
+-    return false;
+-  }
+ 
+   /**
+    * @returns {null}
+@@ -578,10 +615,10 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+     return null;
+   }
+ 
+-  /**
+-   * @returns {null}
+-   */
+   get group() {
++    if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
++      return this.parentElement.parentElement;
++    }
+     return null;
+   }
+ 
+@@ -589,14 +626,61 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+    * @returns {MozTabbrowserTab[]}
+    */
+   get tabs() {
+-    let childrenArray = Array.from(this.children);
+-    for (let i = childrenArray.length - 1; i >= 0; i--) {
+-      let child = childrenArray[i];
+-      if (Tabbrowser.isSplitViewWrapper(child)) {
+-        childrenArray.splice(i, 1, ...child.tabs);
++    // add other group tabs if they are under this group
++    let childs = Array.from(this.groupContainer?.children ?? []);
++    const tabsCollect = [];
++    for (let item of childs) {
++      tabsCollect.push(item);
++      if (gBrowser.isTabGroup(item)) {
++        tabsCollect.push(...item.tabs);
+       }
+     }
+-    return childrenArray.filter(node => Tabbrowser.isTab(node));
++    return tabsCollect.filter(node => node.matches("tab"));
++  }
++
++  get groupContainer() {
++    return this.querySelector(".tab-group-container");
++  }
++
++  get groupStartElement() {
++    return this.querySelector(".zen-tab-group-start");
++  }
++
++  get childGroupsAndTabs() {
++    const result = [];
++    const container = this.groupContainer;
++
++    for (const item of Array.from(container.children)) {
++      if (gBrowser.isTab(item)) {
++        result.push(item);
++      } else if (gBrowser.isTabGroup(item)) {
++        const labelContainer = item.labelElement;
++        labelContainer.visible = item.visible;
++        if (gBrowser.isTabGroupLabel(labelContainer)) {
++          result.push(labelContainer);
++        }
++        result.push(...item.childGroupsAndTabs);
++      }
++    }
++    return result;
++  }
++
++  get visible() {
++    let currentGroup = this;
++    while (currentGroup?.group) {
++      currentGroup = currentGroup?.group;
++      if (currentGroup.collapsed) {
++        return false;
++      }
++    }
++    if (this.pinned && gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs) {
++      return false;
++    }
++    return true;
++  }
++
++  get level() {
++    return this.group?.level + 1 || 0;
+   }
+ 
+   /**
+@@ -727,9 +811,6 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+         });
+       } else {
+         if (tabOrSplitView.pinned) {
+-          tabOrSplitView.documentGlobal.gBrowser.unpinTab(tabOrSplitView, {
+-            metricsContext,
+-          });
+         }
+         let tabToMove =
+           this.documentGlobal === tabOrSplitView.documentGlobal
+@@ -800,7 +881,7 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+    */
+   on_click(event) {
+     let isToggleElement =
+-      event.target === this.#labelElement ||
++      this.labelElement.parentElement.contains(event.target) ||
+       event.target === this.#overflowCountLabel;
+     if (isToggleElement && event.button === 0) {
+       event.preventDefault();
+@@ -889,4 +970,5 @@ export class MozTabbrowserTabGroup extends MozXULElement {
+   }
+ }
+ 
++window.MozTabbrowserTabGroup = MozTabbrowserTabGroup;
+ customElements.define("tab-group", MozTabbrowserTabGroup);

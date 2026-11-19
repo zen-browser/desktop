@@ -1,0 +1,14 @@
+diff --git a/dom/ipc/ContentChild.h b/dom/ipc/ContentChild.h
+index 089bc0b192dc85d9f23c5bb6e4b8d66eced68c90..f1add36582ee2282ff50fc51a2425fc9ba6f8921 100644
+--- a/dom/ipc/ContentChild.h
++++ b/dom/ipc/ContentChild.h
+@@ -431,6 +431,9 @@ class ContentChild final : public PContentChild,
+   mozilla::ipc::IPCResult RecvUnregisterSheet(nsIURI* aURI,
+                                               const uint32_t& aType);
+ 
++  mozilla::ipc::IPCResult RecvZenUpdateBoostStyleSheet(
++      const nsCString& aDomain, const nsCString& aStyleSheet);
++
+   void AddIdleObserver(nsIObserver* aObserver, uint32_t aIdleTimeInS);
+ 
+   void RemoveIdleObserver(nsIObserver* aObserver, uint32_t aIdleTimeInS);

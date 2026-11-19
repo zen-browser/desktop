@@ -7,11 +7,7 @@
       "type": "string"
     },
     "shared": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "$ref": "#/$defs/shareable"
-      }
+      "$ref": "#/$defs/shareable"
     }
   },
   "required": ["shared"],
@@ -23,17 +19,34 @@
         { "$ref": "#/$defs/space" },
         { "$ref": "#/$defs/folder" },
         { "$ref": "#/$defs/splitView" },
-        { "$ref": "#/$defs/gradientPreset" }
+        { "$ref": "#/$defs/boost" }
       ]
     },
 
-    "gradientPreset": {
+    "boost": {
       "type": "object",
       "properties": {
-        "type": { "const": "gradientPreset" },
-        "theme": { "$ref": "#/$defs/theme" }
+        "type": { "const": "boost" },
+        "name": { "type": "string" },
+        "domain": { "type": "string" },
+        "author": { "type": "string" },
+        "icon": { "type": "string" },
+        "preview": { "type": "string" },
+        "signature": {
+          "type": "object",
+          "properties": {
+            "viewBox": { "type": "string" },
+            "paths": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["viewBox", "paths"],
+          "additionalProperties": false
+        },
+        "boostData": { "type": "object" }
       },
-      "required": ["type", "theme"],
+      "required": ["type", "name", "domain", "boostData"],
       "additionalProperties": false
     },
 
@@ -118,7 +131,8 @@
         "type": { "const": "tab" },
         "url": {
           "type": "string",
-          "format": "uri"
+          "format": "uri",
+          "pattern": "^https?://"
         },
         "label": { "type": "string" },
         "image": { "type": "string" },
@@ -144,11 +158,19 @@
     },
 
     "spaceItem": {
-      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
+      "oneOf": [
+        { "$ref": "#/$defs/tab" },
+        { "$ref": "#/$defs/folder" },
+        { "$ref": "#/$defs/splitView" }
+      ]
     },
 
     "folderItem": {
-      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
+      "oneOf": [
+        { "$ref": "#/$defs/tab" },
+        { "$ref": "#/$defs/folder" },
+        { "$ref": "#/$defs/splitView" }
+      ]
     }
   }
 }

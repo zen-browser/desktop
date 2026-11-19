@@ -23,6 +23,11 @@ zen-toolbar-context-move-to-folder =
 zen-toolbar-context-new-folder = 
     .label = Nuova cartella
     .accesskey = N
+zen-tabs-newtab-paste-and-search = 
+    .label = Paste & Search
+zen-scroll-to-selected-tab = 
+    .tooltiptext = Scroll to the selected tab
+    .aria-label = Scroll to the selected tab
 sidebar-zen-expand = 
     .label = Espandi barra laterale
 sidebar-zen-create-new = 
@@ -41,7 +46,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] Torna all'url bloccato
+        [zen-default-pinned-cmd] Separa dalla scheda bloccata
        *[other] { $tabSubtitle }
     }

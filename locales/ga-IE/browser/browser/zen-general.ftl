@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } sliotán líonta
 tab-context-zen-remove-essential = 
     .label = Bain de na Bunriachtanais
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Cuir an URL Riachtanach in ionad an URL Reatha
-           *[false] Cuir an URL Priontáilte in ionad an URL Reatha
+            [true] Cuir URL Riachtanach in Eagar
+           *[false] Cuir URL Priontáilte in Eagar
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Ionadaigh leis an URL Reatha
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Cuir in eagar…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Athraigh Lipéad...
 tab-context-zen-edit-icon = 
     .label = Athraigh Deilbhín...
 zen-themes-corrupted = Tá do chomhad mods { -brand-short-name } truaillithe. Tá siad athshocraithe chuig an téama réamhshocraithe.
-zen-shortcuts-corrupted = Tá do chomhad aicearraí { -brand-short-name } truaillithe. Tá siad athshocraithe chuig na haicearraí réamhshocraithe.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Tá an barra URL nua cumasaithe, rud a fhágann nach bhfuil gá le leathanaigh cluaisín nua.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Deimhnigh
 zen-pinned-tab-replaced = Tá URL an chluaisín phinnáilte curtha in ionad an URL reatha!
+zen-pinned-tab-url-edited = Tá URL an chluaisín phinnáilte nuashonraithe!
+zen-pinned-tab-url-invalid = Ní cosúil gur URL bailí é sin.
+zen-pinned-tab-edit-url-title = Cuir URL bioráin in Eagar
+zen-pinned-tab-edit-url-label = Cuir isteach an URL ar cheart don chluaisín bioráilte seo a bheith ag pointeáil chuige:
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
 zen-split-view-limit-toast = Ní féidir níos mó painéil a chur leis an radharc scoilte!
+zen-sidebar-drag-collapsed-toast = An barra taoibh i bhfolach! Bain úsáid as <span>{ $shortcut }</span> chun an barra taoibh a thabhairt ar ais.
 zen-toggle-compact-mode-button = 
     .label = Mód Dlúth
     .tooltiptext = Mód Dlúth a Athrú
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Deilbhíní
+zen-emojis-picker-search = 
+    .placeholder = Cuardaigh emojis
 urlbar-search-mode-zen_actions = Gníomhartha
 zen-site-data-settings = Socruithe
 zen-generic-manage = Bainistigh
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Ceadaithe
 zen-site-data-setting-block = Blocáilte
 zen-site-data-protections-enabled = Cumasaithe
 zen-site-data-protections-disabled = Díchumasaithe
-zen-site-data-setting-cross-site = Fianán Tras-Láithreáin
 zen-site-data-security-info-extension = 
     .label = Síneadh
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Gach Socrú Suímh
 zen-site-data-header-share = 
     .tooltiptext = Comhroinn an Leathanach seo
+zen-site-data-header-boost = 
+    .tooltiptext = Cruthaigh Treisiú
 zen-site-data-header-reader-mode = 
     .tooltiptext = Téigh isteach i Mód Léitheora
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Nuashonrú críochnaithe!
 zen-sidebar-notification-updated-label = Cad atá nua i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Féach ar Nótaí Eisiúna
+zen-sidebar-notification-donate-label = Tacaíocht { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Tabhair síntiús don tionscadal
 zen-sidebar-notification-restart-safe-mode-label = Bhris rud éigin?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Atosaigh i Mód Sábháilte

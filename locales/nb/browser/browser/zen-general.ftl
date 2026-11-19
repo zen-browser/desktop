@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Fjern fra Essentials
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Erstatt Essential nettadresse med gjeldende
-           *[false] Erstatt festet nettadresse med gjeldende
+            [true] Rediger Essential nettadresse
+           *[false] Rediger Festet nettadresse
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Erstatt med gjeldende nettadresse
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Rediger...
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Endre etikett...
 tab-context-zen-edit-icon = 
     .label = Endre ikon...
 zen-themes-corrupted = Din { -brand-short-name }-mods fil er skadet. De har blitt tilbakestilt til standardtemaet.
-zen-shortcuts-corrupted = { -brand-short-name } snarvei-filen din er skadet. De har blitt tilbakestilt til standard-snarveiene.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Det nye nettadressefeltet har blitt aktivert, som tar vekk behovet for nye fanesider.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekreft
 zen-pinned-tab-replaced = Festet fanes nettadresse har blit erstattet med gjeldende nettadresse!
+zen-pinned-tab-url-edited = Festet fane-nettadresse har blitt oppdatert!
+zen-pinned-tab-url-invalid = Det ser ikke ut som en gyldig nettadresse.
+zen-pinned-tab-edit-url-title = Rediger festet nettadresse
+zen-pinned-tab-edit-url-label = Skriv inn nettadressen som denne festede fanen skal peke til:
 zen-tabs-renamed = Fanen har fått nytt navn!
 zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
 zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!
 zen-split-view-limit-toast = Kan ikke legge til flere paneler i delt visning!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Kompakt modus
     .tooltiptext = Veksle kompakt modus
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojier
 zen-icons-picker-svg = 
     .label = Ikoner
+zen-emojis-picker-search = 
+    .placeholder = Søk emojier
 urlbar-search-mode-zen_actions = Handlinger
 zen-site-data-settings = Innstillinger
 zen-generic-manage = Behandle
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Tillat
 zen-site-data-setting-block = Blokker
 zen-site-data-protections-enabled = Aktivert
 zen-site-data-protections-disabled = Deaktivert
-zen-site-data-setting-cross-site = Tvers-side informasjonskapsel
 zen-site-data-security-info-extension = 
     .label = Utvidelse
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Alle nettstedsinnstillinger
 zen-site-data-header-share = 
     .tooltiptext = Del denne siden
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Gå til lesermodus
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Oppdatering fullført!
 zen-sidebar-notification-updated-label = Hva er nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Se versjonsnotater
+zen-sidebar-notification-donate-label = Støtt { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donér til prosjektet
 zen-sidebar-notification-restart-safe-mode-label = Er noe ødelagt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Start på nytt i sikker modus

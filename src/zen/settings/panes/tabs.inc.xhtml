@@ -1,0 +1,79 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-tabs" class="zen-settings-pane" role="tabpanel" data-pane="tabs" hidden="hidden">
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-tabs-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-recently-used-on-close"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.select-recently-used-on-close"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-close-on-back"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.close-on-back-with-no-history"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-warn-on-quit"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.warnOnQuitShortcut"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-pinned-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-pinned-restore"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text">
+                  <html:span data-l10n-id="zen-settings-window-pinned-separate-essentials"/>
+                  <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-restart-note"/>
+                </html:span>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.workspaces.separate-essentials"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-spaces-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text">
+                  <html:span data-l10n-id="zen-settings-window-spaces-sync-pinned-only"/>
+                  <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-restart-note"/>
+                </html:span>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.window-sync.sync-only-pinned-tabs"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-spaces-force-container"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.workspaces.force-container-workspace"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-spaces-hide-default-container"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.workspaces.hide-default-container-indicator"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-ctrl-tab-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-ctrl-tab-recent"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.ctrlTab.sortByRecentlyUsed"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-ctrl-tab-ignore-pending"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.ctrl-tab.ignore-pending-tabs"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-ctrl-tab-ignore-essentials"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.ctrl-tab.ignore-essential-tabs"/>
+              </html:div>
+            </html:div>
+          </html:div>
+        </html:section>

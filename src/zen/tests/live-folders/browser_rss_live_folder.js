@@ -342,3 +342,29 @@ add_task(async function test_fetch_network_error() {
 
   sandbox.restore();
 });
+
+add_task(async function test_error_page_is_a_failed_fetch() {
+  info("should return an error when the response isn't a feed");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getRssProviderForTest(sandbox);
+
+  const responses = [
+    "<html><head><title>503 Service Unavailable</title></head></html>",
+    "<!DOCTYPE html><html><head><title>Just a moment...</title></head></html>",
+    '{"error":"rate limited"}',
+  ];
+
+  for (const text of responses) {
+    instance.fetch.resolves({ text });
+
+    const items = await instance.fetchItems();
+    Assert.equal(
+      items,
+      "zen-live-folder-failed-fetch",
+      "Should return an error instead of an empty list"
+    );
+  }
+
+  sandbox.restore();
+});

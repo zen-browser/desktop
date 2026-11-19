@@ -1,0 +1,37 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-shortcuts" class="zen-settings-pane" role="tabpanel" data-pane="shortcuts" hidden="hidden">
+          <html:div id="zen-settings-shortcuts-card" class="zen-settings-card">
+            <html:label id="zen-settings-shortcuts-search-box">
+              <html:img src="chrome://browser/skin/zen-icons/search-glass.svg" alt=""/>
+              <html:input id="zen-settings-shortcuts-search" type="search" data-l10n-id="zen-settings-window-shortcuts-search"/>
+            </html:label>
+            <html:div id="zen-settings-shortcuts-list"/>
+            <html:p id="zen-settings-shortcuts-empty" class="zen-settings-note" hidden="hidden"/>
+          </html:div>
+          <html:aside id="zen-settings-shortcuts-aside">
+            <html:div id="zen-settings-shortcuts-art" aria-hidden="true" data-default="">
+              <html:span class="zen-settings-art-key zen-settings-art-default zen-squircle-before">
+#ifdef XP_MACOSX
+                <html:span>⌘</html:span>
+#else
+                <html:span class="zen-settings-art-key-word">Ctrl</html:span>
+#endif
+              </html:span>
+              <html:span class="zen-settings-art-key zen-settings-art-default zen-squircle-before">
+                <svg xmlns="http://www.w3.org/2000/svg" id="zen-settings-shortcuts-face" viewBox="0 0 24 24">
+                  <path d="M9 6v4M15 6v4M7 14.5c1.2 1.6 2.9 2.5 5 2.5s3.8-.9 5-2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </html:span>
+            </html:div>
+            <html:h2 id="zen-settings-shortcuts-title" data-l10n-id="zen-settings-window-shortcuts-header"/>
+            <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-shortcuts-description"/>
+            <html:span class="zen-settings-spacer"/>
+            <html:div id="zen-settings-shortcuts-actions">
+              <html:button id="zen-settings-shortcuts-reset" class="zen-settings-button" data-l10n-id="zen-settings-window-shortcuts-reset-one"/>
+              <html:button id="zen-settings-shortcuts-more" class="zen-settings-button no-squircles" data-l10n-id="zen-settings-window-shortcuts-more"/>
+            </html:div>
+          </html:aside>
+        </html:section>

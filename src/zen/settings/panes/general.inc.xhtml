@@ -1,0 +1,97 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-general" class="zen-settings-pane" role="tabpanel" data-pane="general" hidden="hidden">
+          <html:div id="zen-settings-default-browser" class="zen-settings-group" hidden="hidden">
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row">
+                <html:img id="zen-settings-default-browser-icon" src="chrome://browser/skin/zen-icons/heart-circle-fill.svg" alt=""/>
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-default-browser"/>
+                <html:button id="zen-settings-default-browser-button" class="zen-settings-button" data-l10n-id="zen-settings-window-default-browser-button"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div id="zen-settings-sync">
+            <html:div id="zen-settings-sync-signed-out" class="zen-settings-group">
+              <html:div class="zen-settings-card">
+                <html:div class="zen-settings-row">
+                  <html:span class="zen-settings-row-text">
+                    <html:span data-l10n-id="zen-settings-window-sync-signed-out"/>
+                    <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-sync-signed-out-description"/>
+                  </html:span>
+                  <html:button class="zen-settings-button zen-settings-button-primary" data-action="sync-sign-in" data-l10n-id="zen-settings-window-sync-sign-in"/>
+                </html:div>
+              </html:div>
+            </html:div>
+
+            <html:div id="zen-settings-sync-account" class="zen-settings-group">
+              <html:h2 data-l10n-id="zen-settings-window-sync-account-header"/>
+              <html:div class="zen-settings-card">
+                <html:div class="zen-settings-row">
+                  <html:img id="zen-settings-sync-avatar" alt=""/>
+                  <html:span class="zen-settings-row-text">
+                    <html:span id="zen-settings-sync-name"/>
+                    <html:span id="zen-settings-sync-email" class="zen-settings-row-description"/>
+                  </html:span>
+                  <html:button class="zen-settings-button" data-action="sync-manage-account" data-l10n-id="zen-settings-window-sync-manage-account"/>
+                </html:div>
+                <html:div id="zen-settings-sync-problem" class="zen-settings-row">
+                  <html:span class="zen-settings-status" data-state="warning">
+                    <html:span class="zen-settings-status-dot"/>
+                    <html:span id="zen-settings-sync-problem-text"/>
+                  </html:span>
+                  <html:button class="zen-settings-button zen-settings-button-primary" data-action="sync-sign-in-again" data-l10n-id="zen-settings-window-sync-sign-in-again"/>
+                </html:div>
+                <html:div id="zen-settings-sync-summary-row" class="zen-settings-row">
+                  <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-header"/>
+                  <html:span id="zen-settings-sync-summary" class="zen-settings-status" data-state="success">
+                    <html:span class="zen-settings-status-dot"/>
+                    <html:span id="zen-settings-sync-summary-text"/>
+                  </html:span>
+                  <html:button class="zen-settings-button" data-action="sync-open-dialog" data-l10n-id="zen-settings-window-sync-settings"/>
+                </html:div>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-startup-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row" hidden="hidden">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-launch-on-login"/>
+                <html:moz-toggle id="zen-settings-launch-on-login" class="zen-settings-toggle"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-restore-session"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.startup.page" data-pref-on="3" data-pref-off="1"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-continue-where-left-off"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.workspaces.continue-where-left-off"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-check-default-browser"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.shell.checkDefaultBrowser"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-downloads-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row">
+                <html:span id="zen-settings-download-location-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-download-location"/>
+                <menulist id="zen-settings-download-location" aria-labelledby="zen-settings-download-location-label">
+                  <menupopup>
+                    <menuitem id="zen-settings-download-folder" class="menuitem-iconic" value="folder"/>
+                    <menuitem value="other" data-l10n-id="zen-settings-window-download-location-other"/>
+                    <menuseparator/>
+                    <menuitem value="ask" data-l10n-id="zen-settings-window-download-location-ask"/>
+                  </menupopup>
+                </menulist>
+              </html:div>
+            </html:div>
+          </html:div>
+        </html:section>

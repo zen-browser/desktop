@@ -1,46 +1,46 @@
 diff --git a/browser/components/sessionstore/SessionStartup.sys.mjs b/browser/components/sessionstore/SessionStartup.sys.mjs
-index 86600ffb5178599ab23270a964064ca657a3283f..70d7b5c7d69d3700475d663b595052264c67d351 100644
+index 05a5fd3d69605ec8c65d84c27657179916c2ac4d..90a8d9f4eb94547cb3dd211dcf63259e710c91bd 100644
 --- a/browser/components/sessionstore/SessionStartup.sys.mjs
 +++ b/browser/components/sessionstore/SessionStartup.sys.mjs
-@@ -40,6 +40,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
-   StartupPerformance:
-     "resource:///modules/sessionstore/StartupPerformance.sys.mjs",
-   sessionStoreLogger: "resource:///modules/sessionstore/SessionLogger.sys.mjs",
+@@ -41,6 +41,7 @@ const lazy = XPCOMUtils.declareLazy({
+     "moz-src:///browser/components/sessionstore/StartupPerformance.sys.mjs",
+   sessionStoreLogger:
+     "moz-src:///browser/components/sessionstore/SessionLogger.sys.mjs",
 +  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
  });
  
  const STATE_RUNNING_STR = "running";
-@@ -85,7 +86,7 @@ export var SessionStartup = {
+@@ -99,7 +100,7 @@ class _SessionStartup {
      }
  
      // do not need to initialize anything in auto-started private browsing sessions
 -    if (lazy.PrivateBrowsingUtils.permanentPrivateBrowsing) {
 +    if (false) {
-       this._initialized = true;
        gOnceInitializedDeferred.resolve();
        return;
-@@ -179,6 +180,8 @@ export var SessionStartup = {
-       this._initialState = parsed;
+     }
+@@ -239,6 +240,8 @@ class _SessionStartup {
+       this.#initialState = parsed;
      }
  
-+    this._initialState = lazy.ZenSessionStore.onFileRead(this._initialState);
++    this.#initialState = lazy.ZenSessionStore.onFileRead(this.#initialState);
 +
-     if (this._initialState == null) {
+     if (this.#initialState == null) {
        // No valid session found.
-       this._sessionType = this.NO_SESSION;
-@@ -276,6 +279,8 @@ export var SessionStartup = {
-         `Previous shutdown ok? ${this._previousSessionCrashed}, reason: ${previousSessionCrashedReason}`
+       this.#sessionType = this.NO_SESSION;
+@@ -337,6 +340,8 @@ class _SessionStartup {
+         `Previous shutdown ok? ${this.#previousSessionCrashed}, reason: ${previousSessionCrashedReason}`
        );
  
-+      lazy.ZenSessionStore.onCrashCheckpoints(this._initialState);
++      lazy.ZenSessionStore.onCrashCheckpoints(this.#initialState);
 +
        Services.obs.addObserver(this, "sessionstore-windows-restored", true);
  
        if (this.sessionType == this.NO_SESSION) {
-@@ -336,12 +341,7 @@ export var SessionStartup = {
+@@ -397,12 +402,7 @@ class _SessionStartup {
    isAutomaticRestoreEnabled() {
-     if (this._resumeSessionEnabled === null) {
-       this._resumeSessionEnabled =
+     if (this.#resumeSessionEnabled === null) {
+       this.#resumeSessionEnabled =
 -        !lazy.PrivateBrowsingUtils.permanentPrivateBrowsing &&
 -        (Services.prefs.getBoolPref(
 -          "browser.sessionstore.resume_session_once"
@@ -50,8 +50,8 @@ index 86600ffb5178599ab23270a964064ca657a3283f..70d7b5c7d69d3700475d663b59505226
 +        true;
      }
  
-     return this._resumeSessionEnabled;
-@@ -354,8 +354,7 @@ export var SessionStartup = {
+     return this.#resumeSessionEnabled;
+@@ -415,8 +415,7 @@ class _SessionStartup {
     */
    willRestore() {
      return (
@@ -59,5 +59,5 @@ index 86600ffb5178599ab23270a964064ca657a3283f..70d7b5c7d69d3700475d663b59505226
 -      this.sessionType == this.RESUME_SESSION
 +      true
      );
-   },
+   }
  

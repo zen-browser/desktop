@@ -1,11 +1,10 @@
 diff --git a/browser/themes/shared/jar.inc.mn b/browser/themes/shared/jar.inc.mn
-index e3bdc11e449fb2cd2a4033a1d8c1bba00455e748..f928bc1a3a668dcc1a9ecde9945c6349e5903828 100644
+index 7892988bd5994d5183d25bf575d486f89ac888d0..a837672bb2fa1a404640fc8b2908fe4bd68d3c04 100644
 --- a/browser/themes/shared/jar.inc.mn
 +++ b/browser/themes/shared/jar.inc.mn
-@@ -352,3 +352,5 @@
- 
+@@ -357,3 +357,5 @@
    skin/classic/browser/illustrations/market-opt-in.svg         (../shared/illustrations/market-opt-in.svg)
+   skin/classic/browser/illustrations/tab-groups.svg            (../shared/illustrations/tab-groups.svg)
    skin/classic/browser/illustrations/yelpRealtime-opt-in.svg   (../shared/illustrations/yelpRealtime-opt-in.svg)
 +
 +#include zen-sources.inc.mn
-\ No newline at end of file

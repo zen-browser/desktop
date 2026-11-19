@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } zaplněných slotů
 tab-context-zen-remove-essential = 
     .label = Odstranit z Essentials
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Nahradit Essential URL aktuální
-           *[false] Nahradit připnutou URL aktuální
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Nahradit současnou URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Upravit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Změnit název...
 tab-context-zen-edit-icon = 
     .label = Změnit ikonu...
 zen-themes-corrupted = Váš { -brand-short-name } mods soubor je poškozen. Byl obnoven na výchozí motiv.
-zen-shortcuts-corrupted = Soubor se zkratky prohlížeče { -brand-short-name } je poškozen. Zkratky byly resetovány na výchozí nastavení.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Nový adresní řádek je nyní zapnutý, takže už není potřeba otevírat nové karty.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Potvrdit
 zen-pinned-tab-replaced = Připnutá URL adresa panelu byla nahrazena aktuální URL adresou.
+zen-pinned-tab-url-edited = URL připnuté karty byla aktualizována!
+zen-pinned-tab-url-invalid = To nevypadá jako platná URL adresa.
+zen-pinned-tab-edit-url-title = Upravit připnutou adresu URL
+zen-pinned-tab-edit-url-label = Zadejte URL, na kterou by měl tento připnutý panel odkazovat:
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
 zen-background-tab-opened-toast = Nový panel na pozadí byl otevřen!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
 zen-split-view-limit-toast = Do rozděleného zobrazení nelze přidat více panelů!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Kompaktní režim
     .tooltiptext = Přepnout kompaktní režim
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emodži
 zen-icons-picker-svg = 
     .label = Ikony
+zen-emojis-picker-search = 
+    .placeholder = Vyhledat emoji
 urlbar-search-mode-zen_actions = Akce
 zen-site-data-settings = Nastavení
 zen-generic-manage = Spravovat
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Povoleno
 zen-site-data-setting-block = Blokováno
 zen-site-data-protections-enabled = Zapnuto
 zen-site-data-protections-disabled = Vypnuto
-zen-site-data-setting-cross-site = Mezi stránkové cookies
 zen-site-data-security-info-extension = 
     .label = Rozšíření
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Nastavení všech stránek
 zen-site-data-header-share = 
     .tooltiptext = Sdílet tuto stránku
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Zapnout čtecí režim
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Aktualizace byla dokončena!
 zen-sidebar-notification-updated-label = Co je nového v prohlížeči { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Zobrazit změny
+zen-sidebar-notification-donate-label = Podpořte { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Přispět na projekt
 zen-sidebar-notification-restart-safe-mode-label = Něco se rozbilo?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Restartovat v Nouzovém Režimu

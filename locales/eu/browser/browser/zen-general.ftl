@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } hutsune beteta
 tab-context-zen-remove-essential = 
     .label = Funtsezko fitxetatik Kendu
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Ordezkatu Funtsezko URLa Oraingoarekin
-           *[false] Ordezkatu Ainguratutako URLa Oraingoarekin
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Etiketa aldatu...
 tab-context-zen-edit-icon = 
     .label = Ikonoa aldatu...
 zen-themes-corrupted = Zure { -brand-short-name }eko mod-artxiboa kaltetuta dago. Lehenetsitako gaia berrezarri da.
-zen-shortcuts-corrupted = Zure { -brand-short-name }eko lasterbide-artxiboa kaltetuta dago. Lehenetsitako lasterbideak berrezarri dira.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     URL-barra berria gaitu da. Jada ez dira beharrezkoa fitxa berriak.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Baieztatu
 zen-pinned-tab-replaced = Oraingo estekak ordezkatu du ainguratutako fitxarena!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Fitxaren izena ongi aldatu da!
 zen-background-tab-opened-toast = Fitxa berri bat zabaldu da bigarren planoan!
 zen-workspace-renamed-toast = Lan-eremuaren izena ongi aldatu da!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Modu Trinkoa
     .tooltiptext = Modu Trinkoa Aktibatu/Desaktibatu
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojiak
 zen-icons-picker-svg = 
     .label = Ikonoak
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Ekintzak
 zen-site-data-settings = Ezarpenak
 zen-generic-manage = Kudeatu
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Baimenduta
 zen-site-data-setting-block = Blokeatuta
 zen-site-data-protections-enabled = Gaituta
 zen-site-data-protections-disabled = Ezgaituta
-zen-site-data-setting-cross-site = Bitartekoen cookieak
 zen-site-data-security-info-extension = 
     .label = Gehigarria
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Webgunearen Ezarpen Guztiak
 zen-site-data-header-share = 
     .tooltiptext = Orri Hau Partekatu
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Irakurle-moduan Sartu
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Update Complete!
 zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = View Release Notes
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Something broke?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Restart in Safe Mode

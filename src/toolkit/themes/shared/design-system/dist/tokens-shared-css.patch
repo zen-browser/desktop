@@ -1,24 +1,39 @@
 diff --git a/toolkit/themes/shared/design-system/dist/tokens-shared.css b/toolkit/themes/shared/design-system/dist/tokens-shared.css
-index 94afbe630914eef375967f2eff310d69c61fa1aa..04b42529d43c5100a76c883220875c0b70ad0616 100644
+index cab9cabbc9b2bb128a4433eb3dae0b9046d13ded..a71b9d094f67c5d764d43bd87874fc127a7c1330 100644
 --- a/toolkit/themes/shared/design-system/dist/tokens-shared.css
 +++ b/toolkit/themes/shared/design-system/dist/tokens-shared.css
 @@ -7,6 +7,8 @@
  
- @layer tokens-foundation, tokens-foundation-nova, tokens-prefers-contrast, tokens-prefers-contrast-nova, tokens-forced-colors, tokens-forced-colors-nova, tokens-browser-theme, tokens-browser-theme-nova;
+ @layer tokens-foundation, tokens-browser-theme, tokens-foundation-brand, tokens-foundation-nova, tokens-browser-theme-nova, tokens-foundation-brand-nova, tokens-prefers-contrast, tokens-prefers-contrast-nova, tokens-forced-colors, tokens-forced-colors-nova;
  
 +@import url("chrome://browser/content/zen-styles/zen-theme.css");
 +
- @layer tokens-foundation {
-   :root,
-   :host(.anonymous-content-host) {
-@@ -368,8 +370,8 @@
-     --panel-background-color-dimmed-further: color-mix(in srgb, currentColor 30%, transparent);
-     --panel-border-color: ThreeDShadow;
-     --panel-border-radius: var(--border-radius-medium);
+ :root,
+ :host(.anonymous-content-host) {
+   @layer tokens-foundation {
+@@ -27,10 +29,10 @@
+     --border-color-selected: var(--color-accent-primary);
+     --border-color-transparent: transparent;
+     --border-radius-circle: 9999px;
+-    --border-radius-xsmall: 2px;
+-    --border-radius-small: 4px;
+-    --border-radius-medium: 8px;
+-    --border-radius-large: 16px;
++    --border-radius-xsmall: calc(2px * var(--zen-squircle-value));
++    --border-radius-small: calc(4px * var(--zen-squircle-value));
++    --border-radius-medium: calc(8px * var(--zen-squircle-value));
++    --border-radius-large: calc(16px * var(--zen-squircle-value));
+     --border-width: 1px;
+ 
+     /** box-shadow **/
+@@ -440,8 +442,8 @@
+     --panel-background-color: light-dark(var(--color-white), rgb(66, 65, 77));
+     --panel-border-color: var(--popup-border-color);
+     --panel-border-radius: var(--popup-border-radius);
 -    --panel-box-shadow: 0 0 var(--panel-box-shadow-margin) hsla(0, 0%, 0%, 0.2);
 -    --panel-box-shadow-margin: 4px;
 +    --panel-box-shadow: var(--zen-big-shadow);
 +    --panel-box-shadow-margin: 8px;
+     --panel-footer-background-color: light-dark(color-mix(in srgb, currentColor 12%, transparent), color-mix(in srgb, currentColor 17%, transparent));
+     --panel-footer-text-color: inherit;
      --panel-menuitem-border-radius: var(--border-radius-small);
-     --panel-menuitem-margin: var(--panel-menuitem-margin-block) var(--panel-menuitem-margin-inline);
-     --panel-menuitem-margin-block: 0px;

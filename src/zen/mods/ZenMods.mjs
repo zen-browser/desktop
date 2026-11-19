@@ -182,15 +182,21 @@ class nsZenMods extends nsZenPreloadedFeature {
       ({ enabled, preferences, name }) => ({
         enabled,
         sanitizedName: this.sanitizeModName(name),
-        prefs: preferences.map(({ property, type }) => ({
-          property,
-          type,
-          sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
-          value:
-            enabled === undefined || enabled
-              ? Services.prefs.getStringPref(property, "")
-              : "",
-        })),
+        prefs: preferences.map(({ property, type }) => {
+          const isEnabled = enabled === undefined || enabled;
+          const getPref =
+            type === "checkbox"
+              ? Services.prefs.getBoolPref
+              : Services.prefs.getStringPref;
+          const fallback = type === "checkbox" ? false : "";
+
+          return {
+            property,
+            type,
+            sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
+            value: isEnabled ? getPref(property, fallback) : fallback,
+          };
+        }),
       })
     );
 
@@ -488,7 +494,6 @@ class nsZenMods extends nsZenPreloadedFeature {
         return;
       }
 
-      await this.getMods(); // Check for any errors in the themes data file
       const mods = await this.#getEnabledMods();
 
       const modsWithPreferences = await Promise.all(
@@ -504,65 +509,24 @@ class nsZenMods extends nsZenPreloadedFeature {
       );
 
       this.#writeToDom(modsWithPreferences);
-
-      await this.#insertStylesheet();
-
-      this.#setNewMilestoneIfNeeded();
-      if (this.#shouldAutoUpdate()) {
-        requestIdleCallback(
-          () => {
-            if (!window.closed) {
-              requestAnimationFrame(() => {
-                this.checkForModsUpdates();
-              });
-            }
-          },
-          { timeout: 1000 }
-        );
-      }
     } catch (e) {
       console.error("[ZenMods]: Error loading Zen Mods:", e);
     }
 
-    Services.prefs.addObserver(
-      this.updatePref,
-      this.#rebuildModsStylesheet.bind(this)
-    );
-    Services.prefs.addObserver(
-      "zen.themes.disable-all",
-      this.#handleDisableMods.bind(this)
-    );
-  }
-
-  #setNewMilestoneIfNeeded() {
-    const previousMilestone = Services.prefs.getStringPref(
-      "zen.mods.milestone",
-      ""
-    );
-    if (previousMilestone != Services.appinfo.version) {
-      Services.prefs.setStringPref(
-        "zen.mods.milestone",
-        Services.appinfo.version
-      );
-      Services.prefs.clearUserPref("zen.mods.last-update");
-    }
-  }
-
-  #shouldAutoUpdate() {
-    const daysBeforeUpdate = Services.prefs.getIntPref(
-      "zen.mods.auto-update-days"
-    );
-    const lastUpdatedSec = Services.prefs.getIntPref(
-      "zen.mods.last-update",
-      -1
-    );
-    const nowSec = Math.floor(Date.now() / 1000);
-    const daysSinceUpdate = (nowSec - lastUpdatedSec) / (60 * 60 * 24);
-
-    return (
-      (Services.prefs.getBoolPref("zen.mods.auto-update", true) &&
-        daysSinceUpdate >= daysBeforeUpdate) ||
-      lastUpdatedSec < 0
+    const rebuildObserver = this.#rebuildModsStylesheet.bind(this);
+    const disableObserver = this.#handleDisableMods.bind(this);
+    Services.prefs.addObserver(this.updatePref, rebuildObserver);
+    Services.prefs.addObserver("zen.themes.disable-all", disableObserver);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.prefs.removeObserver(this.updatePref, rebuildObserver);
+        Services.prefs.removeObserver(
+          "zen.themes.disable-all",
+          disableObserver
+        );
+      },
+      { once: true }
     );
   }
 
@@ -608,10 +572,6 @@ class nsZenMods extends nsZenPreloadedFeature {
     );
 
     await this.updateMods(mods);
-    Services.prefs.setIntPref(
-      "zen.mods.last-update",
-      Math.floor(Date.now() / 1000)
-    );
     return updates.filter(update => {
       return update !== null;
     });

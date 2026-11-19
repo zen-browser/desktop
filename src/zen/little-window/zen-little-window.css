@@ -1,0 +1,423 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+:root[zen-little-window] {
+  #navigator-toolbox,
+  #zen-sidebar-splitter,
+  #zen-sidebar-top-buttons,
+  #PersonalToolbar,
+  #PanelUI-button,
+  #nav-bar-overflow-button,
+  #nav-bar-customization-target > :not(#urlbar-container, #back-button),
+  #back-button[disabled] {
+    display: none !important;
+  }
+
+  #nav-bar-customization-target {
+    display: contents;
+  }
+
+  &:not([zen-window-buttons-reversed]) #back-button {
+    order: -1;
+  }
+
+  &:not([zen-little-window-urlbar-only]) #urlbar:not([breakout-extend]) #zen-little-window-urlbar-close {
+    display: none;
+  }
+
+  .urlbar-background {
+    border-radius: var(--border-radius-small);
+    margin: var(--space-xxsmall);
+  }
+
+  #nav-bar {
+    gap: var(--zen-space-4);
+    padding-inline: var(--zen-space-4);
+  }
+
+  &:not([zen-window-buttons-reversed]) #nav-bar {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-inline: 0;
+  }
+
+  #urlbar-container {
+    flex: 1 !important;
+    max-width: unset !important;
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  #urlbar:not([breakout-extend]) {
+    .urlbar-input {
+      text-align: center;
+      cursor: default;
+    }
+
+    #zen-copy-url-button {
+      order: 1000 !important;
+    }
+  }
+
+  &[zen-has-empty-tab="true"] #zen-little-window-container,
+  #urlbar[breakout-extend] #zen-little-window-container {
+    display: none;
+  }
+}
+
+#urlbar #zen-loading-progress-bar {
+  position: absolute;
+  top: auto;
+  bottom: var(--zen-space-2);
+  height: var(--zen-size-4);
+
+  #urlbar[breakout-extend] & {
+    display: none;
+  }
+}
+
+:root[zen-little-window] #urlbar .urlbar-input-box {
+  position: relative;
+}
+
+:root[zen-little-window] #urlbar:not([breakout-extend]) .urlbar-input {
+  transition: translate 0.2s ease-in-out;
+
+  #zen-loading-progress-bar ~ & {
+    translate: 0 calc(-1 * var(--zen-space-3));
+  }
+}
+
+#main-window[zen-little-window] .titlebar-buttonbox-container {
+  margin-inline: 0 !important;
+}
+
+#main-window[zen-little-window] #zen-appcontent-navbar-container {
+  padding-inline: 0 !important;
+}
+
+#zen-little-window-urlbar-close {
+  order: 1001;
+
+  > image {
+    list-style-image: url("chrome://browser/skin/zen-icons/close.svg");
+  }
+}
+
+#zen-little-window-container {
+  order: -2;
+  gap: var(--zen-space-5);
+  height: var(--zen-size-22);
+  padding: 0 var(--zen-space-9);
+  border-radius: var(--zen-border-radius-12);
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
+  font-size: 0.85em;
+  font-weight: var(--zen-font-weight-medium);
+  -moz-context-properties: fill, fill-opacity;
+  fill: var(--zen-little-window-container-color, currentColor);
+  background: color-mix(in srgb, var(--zen-little-window-container-background) 85%, currentColor);
+
+  &:hover {
+    background: var(--zen-little-window-container-background);
+  }
+
+  > image {
+    width: var(--zen-size-14);
+    height: var(--zen-size-14);
+  }
+
+  > label {
+    margin: 0;
+  }
+}
+
+#zen-little-window-container:focus-visible,
+#zen-little-window-open-button:focus-visible {
+  outline: var(--focus-outline);
+}
+
+#zen-little-window-open-in-space {
+  flex-shrink: 0;
+  height: calc(var(--urlbar-height) + 2px);
+  border-radius: var(--border-radius-small);
+  background: var(--zen-toolbar-element-bg);
+  -moz-window-dragging: no-drag;
+
+  :root[zen-window-buttons-reversed] & {
+    border-top-right-radius: calc(var(--zen-border-radius) + 2px);
+  }
+}
+
+/* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector -- the back button comes after this box in the toolbar, and only its handful of items are looked through */
+:root:not([zen-window-buttons-reversed]) #nav-bar:has(#back-button[disabled]) #zen-little-window-open-in-space {
+  border-top-left-radius: var(--zen-border-radius);
+}
+
+#zen-little-window-open-in-space > :first-child {
+  border-start-start-radius: inherit;
+  border-end-start-radius: inherit;
+}
+
+#zen-little-window-open-in-space > :last-child {
+  border-inline-start: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  border-start-end-radius: inherit;
+  border-end-end-radius: inherit;
+}
+
+#zen-little-window-open-button {
+  gap: var(--zen-space-6);
+  height: 100%;
+  padding-inline: var(--zen-space-10) var(--zen-space-6);
+  white-space: nowrap;
+
+  &:last-child {
+    padding-inline: var(--zen-space-6) var(--zen-space-10);
+  }
+
+  &:hover {
+    background: var(--zen-toolbar-element-bg-hover);
+  }
+}
+
+#zen-little-window-open-label {
+  color: var(--text-color-deemphasized);
+}
+
+#zen-little-window-open-shortcut {
+  margin: 0;
+  padding: var(--zen-space-2) var(--zen-space-5);
+  border-radius: var(--zen-border-radius-4);
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
+  font-size: 0.85em;
+  color: var(--text-color-deemphasized);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+#zen-little-window-spaces-button {
+  appearance: none;
+  height: 100%;
+  margin: 0;
+  padding: 0 var(--zen-space-8);
+  list-style-image: url("chrome://global/skin/icons/arrow-down.svg");
+  -moz-context-properties: fill;
+  fill: currentColor;
+
+  &:hover,
+  &[open] {
+    background: var(--zen-toolbar-element-bg-hover);
+  }
+
+  > .toolbarbutton-text,
+  > .toolbarbutton-menu-dropmarker {
+    display: none;
+  }
+
+  > .toolbarbutton-icon {
+    width: var(--zen-size-10);
+    height: var(--zen-size-10);
+    opacity: var(--zen-opacity-60);
+  }
+}
+
+#zen-little-window-intro {
+  position: absolute;
+  top: var(--zen-space-8);
+  inset-inline-end: var(--zen-space-8);
+  z-index: 10;
+  width: var(--zen-little-window-intro-width);
+  gap: var(--zen-space-4);
+  padding: var(--zen-space-12) var(--zen-space-14);
+  border-radius: var(--zen-border-radius-8);
+  background: var(--zen-primary-color);
+  color: white;
+}
+
+#zen-little-window-intro-title {
+  font-size: var(--zen-font-size-14);
+  font-weight: var(--font-weight-semibold);
+}
+
+#zen-little-window-intro-description {
+  margin: 0;
+  font-size: var(--zen-font-size-13);
+  opacity: var(--zen-opacity-80);
+}
+
+#zen-little-window-intro-close {
+  appearance: none;
+  margin: 0;
+  padding: var(--zen-space-2);
+  border-radius: var(--zen-border-radius-4);
+  opacity: var(--zen-opacity-70);
+  -moz-context-properties: fill;
+  fill: currentColor;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+#zen-little-window-downloads {
+  position: absolute;
+  bottom: var(--zen-space-8);
+  inset-inline: var(--zen-space-8);
+  z-index: 10;
+  flex-wrap: wrap-reverse;
+  gap: var(--zen-space-6);
+  pointer-events: none;
+}
+
+.zen-little-window-download {
+  gap: var(--zen-space-10);
+  width: var(--zen-little-window-download-width);
+  padding: var(--zen-space-10) var(--zen-space-12);
+  border-radius: var(--zen-border-radius-12);
+  background: var(--zen-colors-tertiary);
+  box-shadow: var(--zen-box-shadow-glow);
+  pointer-events: auto;
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+  }
+
+  &:not([done]) .zen-little-window-download-icon {
+    opacity: var(--zen-opacity-50);
+  }
+
+  &[downloading] .zen-little-window-download-source,
+  &:not([downloading]) .zen-little-window-download-status {
+    display: none;
+  }
+}
+
+.zen-little-window-download-progress {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--zen-size-36);
+  height: var(--zen-size-36);
+
+  .zen-little-window-download[downloading] > &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--border-radius-circle);
+    background: conic-gradient(
+      currentColor var(--zen-little-window-download-progress, 0%),
+      color-mix(in srgb, currentColor 20%, transparent) 0
+    );
+    mask-image: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--zen-space-3)),
+      black calc(100% - var(--zen-space-2))
+    );
+  }
+}
+
+.zen-little-window-download > vbox {
+  min-width: 0;
+}
+
+.zen-little-window-download-icon {
+  width: var(--zen-size-22);
+  height: var(--zen-size-22);
+}
+
+.zen-little-window-download-name,
+.zen-little-window-download-status,
+.zen-little-window-download-source {
+  margin: 0;
+}
+
+.zen-little-window-download-name {
+  font-weight: var(--zen-font-weight-medium);
+}
+
+.zen-little-window-download-status,
+.zen-little-window-download-source {
+  font-size: var(--zen-font-size-13);
+  opacity: var(--zen-opacity-60);
+}
+
+.zen-little-window-download-close {
+  appearance: none;
+  margin: 0;
+  padding: var(--zen-space-2);
+  border-radius: var(--zen-border-radius-4);
+  opacity: var(--zen-opacity-70);
+  -moz-context-properties: fill;
+  fill: currentColor;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+#main-window[zen-little-window-urlbar-only][windowtype="navigator:browser"]:not([popup-window]) {
+  min-width: var(--zen-little-window-urlbar-width, 0) !important;
+  max-width: var(--zen-little-window-urlbar-width, none) !important;
+  min-height: var(--zen-little-window-urlbar-height, 0) !important;
+  max-height: var(--zen-little-window-urlbar-height, none) !important;
+}
+
+:root[zen-little-window-urlbar-only] {
+  #zen-tabbox-wrapper {
+    min-height: 0 !important;
+  }
+
+  #nav-bar {
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0;
+  }
+
+  #nav-bar,
+  #nav-bar-customization-target,
+  #urlbar-container {
+    align-items: start !important;
+    padding-block: 0 !important;
+  }
+
+  #urlbar {
+    top: 0 !important;
+    left: 0 !important;
+    translate: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+  }
+
+  #urlbar[open][zen-floating-urlbar="true"] {
+    --urlbar-container-height: 66px !important;
+  }
+
+  #urlbar,
+  #identity-icon-box {
+    -moz-window-dragging: drag;
+  }
+
+  #urlbar :is(.urlbar-input, .urlbarView, .urlbar-page-action, toolbarbutton) {
+    -moz-window-dragging: no-drag;
+  }
+
+  #urlbar[noresults] > .urlbarView,
+  #nav-bar > :not(#nav-bar-customization-target, .titlebar-buttonbox-container) {
+    display: none !important;
+  }
+
+  #urlbar,
+  #urlbar > .urlbar-background,
+  #urlbar > .urlbar-input-container {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  #urlbar > .urlbar-background {
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+}

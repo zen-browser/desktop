@@ -1,0 +1,61 @@
+{
+  "background-color": {
+    "--zen-settings-background": {
+      "value": { "light": "#f3f3f4", "dark": "#1e1e1f" }
+    },
+    "--zen-settings-sidebar-background": { "external": true },
+    "--zen-settings-sidebar-mica-background": { "external": true },
+    "--zen-settings-sticky-background": { "external": true },
+    "--zen-settings-dialog-backdrop": { "external": true },
+    "--zen-settings-art-key-face": { "external": true },
+    "--zen-settings-art-key-edge": { "external": true },
+    "--zen-settings-card-background": { "external": true },
+    "--zen-settings-hover-background": { "external": true },
+    "--zen-settings-button-background": { "external": true },
+    "--zen-settings-button-background-hover": { "external": true },
+    "--zen-settings-primary-background-hover": { "external": true }
+  },
+  "border-color": {
+    "--zen-settings-sidebar-border-color": { "external": true }
+  },
+  "versatile-color": {
+    "--zen-settings-separator-color": { "external": true },
+    "--zen-settings-muted-color": { "external": true },
+    "--zen-settings-success-color": { "external": true },
+    "--zen-settings-warning-color": { "external": true }
+  },
+  "box-shadow": {
+    "--zen-settings-drop-before-shadow": { "external": true },
+    "--zen-settings-drop-after-shadow": { "external": true }
+  },
+  "icon-color": {
+    "--zen-settings-heart-color": { "external": true }
+  },
+  "text-color": {
+    "--zen-settings-text-color": { "external": true },
+    "--zen-settings-subtitle-color": { "external": true },
+    "--zen-settings-art-key-color": { "external": true }
+  },
+  "size": {
+    "--zen-settings-min-width": { "external": true },
+    "--zen-settings-min-height": { "external": true },
+    "--zen-settings-sidebar-width": { "external": true },
+    "--zen-settings-shortcuts-aside-width": { "external": true },
+    "--zen-settings-keyword-width": { "external": true },
+    "--zen-settings-dialog-width": { "external": true },
+    "--zen-settings-dialog-max-width": { "external": true },
+    "--zen-settings-dialog-max-height": { "external": true },
+    "--zen-settings-layout-thumbnail-width": { "external": true },
+    "--zen-settings-art-key-size": { "external": true },
+    "--zen-settings-art-key-icon-size": { "external": true }
+  },
+  "space": {
+    "--zen-settings-art-key-edge-width": { "external": true }
+  },
+  "font-size": {
+    "--zen-settings-font-size-title": { "external": true },
+    "--zen-settings-font-size-heading": { "external": true },
+    "--zen-settings-font-size-small": { "external": true },
+    "--zen-settings-font-size-tiny": { "external": true }
+  }
+}

@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: zen.view.sidebar-height-throttle
-  value: 0
-
 - name: zen.view.sidebar-expanded.max-width
   value: 500
 
@@ -40,11 +37,20 @@
 - name: zen.view.show-newtab-button-top
   value: true
 
+- name: zen.view.show-scroll-to-selected-tab
+  value: true
+
 - name: zen.view.window.scheme
   value: 2
 
 - name: zen.view.context-menu.refresh
   value: "@IS_TWILIGHT@"
+
+- name: zen.view.drag-window-from-content
+  value: true
+
+- name: zen.view.drag-window-from-content.height-percentage
+  value: 5
 
 - name: zen.view.borderless-fullscreen
   value: true

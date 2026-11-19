@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<!-- Any copyright is dedicated to the Public Domain.
+   - http://creativecommons.org/publicdomain/zero/1.0/ -->
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        title="Sample sub-dialog">
+<dialog id="subDialog">
+  <script>
+    document.addEventListener("dialogaccept", acceptSubdialog);
+    function acceptSubdialog() {
+      window.arguments[0].acceptCount++;
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!window.arguments) {
+        return;
+      }
+      let [options] = window.arguments;
+      if (options?.testCustomFocusHandler) {
+        document.subDialogSetDefaultFocus = () => {
+          document.getElementById("custom-focus-el").focus();
+        }
+      }
+    }, {once: true})
+  </script>
+
+  <description id="desc">A sample sub-dialog for testing</description>
+
+  <html:input id="textbox" value="Default text" />
+
+  <html:select id="select">
+    <html:option>Foo</html:option>
+    <html:option>Bar</html:option>
+  </html:select>
+
+  <html:input id="custom-focus-el" value="Custom Focus Test" />
+
+  <separator class="thin"/>
+
+  <button oncommand="window.close();" label="Close" />
+
+</dialog>
+</window>

@@ -1,0 +1,18 @@
+diff --git a/tools/lint/stylelint/stylelint-plugin-mozilla/property-validator.mjs b/tools/lint/stylelint/stylelint-plugin-mozilla/property-validator.mjs
+index 73ca68a5a6265ca5bca4e114728b7264b564cd66..b0a89de706f0d6f7d6b00e78fb97364548dce850 100644
+--- a/tools/lint/stylelint/stylelint-plugin-mozilla/property-validator.mjs
++++ b/tools/lint/stylelint/stylelint-plugin-mozilla/property-validator.mjs
+@@ -5,9 +5,12 @@
+  */
+ 
+ import valueParser from "postcss-value-parser";
+-import { tokensTable } from "../../../../toolkit/themes/shared/design-system/dist/semantic-categories.mjs";
++import { tokensTable as mozTokensTable } from "../../../../toolkit/themes/shared/design-system/dist/semantic-categories.mjs";
++import { mergeZenTokens } from "../../../../zen/tokens/tokens.mjs";
+ import { isSystemColor } from "./helpers.mjs";
+ 
++const tokensTable = mergeZenTokens(mozTokensTable);
++
+ /**
+  * Validates whether a given CSS property value complies with allowed design token rules.
+  *

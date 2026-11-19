@@ -17,18 +17,35 @@
     "resource:///modules/zen/ZenSpaceManager.mjs",
     "chrome://browser/content/zen-components/ZenCompactMode.mjs",
     "chrome://browser/content/ZenUIManager.mjs",
+    "resource:///modules/zen/ZenVerticalTabsManager.mjs",
     "chrome://browser/content/zen-components/ZenMods.mjs",
-    "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
     "chrome://browser/content/zen-components/ZenSessionStore.mjs",
-    "chrome://browser/content/zen-components/ZenMediaController.mjs",
     "chrome://browser/content/zen-components/ZenGlanceManager.mjs",
     "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",
+    "resource:///modules/zen/ZenTabRenamer.mjs",
     "chrome://browser/content/zen-components/ZenViewSplitter.mjs",
     "chrome://browser/content/zen-components/ZenFolders.mjs",
     "chrome://browser/content/zen-components/ZenEmojiPicker.mjs",
-    "chrome://browser/content/zen-components/ZenLiveFoldersUI.mjs",
     "chrome://browser/content/zen-components/ZenDownloadAnimation.mjs",
+    "resource:///modules/zen/share/ZenShareManager.mjs",
   ];
+
+
+  let extraOptions = window.arguments?.[1];
+  if (
+    extraOptions instanceof Ci.nsIPropertyBag2 &&
+    extraOptions.hasKey("zen-little-window")
+  ) {
+    let root = document.documentElement;
+    root.setAttribute("zen-little-window", "true");
+    if (extraOptions.hasKey("zen-little-window-urlbar-only")) {
+      root.setAttribute("zen-little-window-urlbar-only", "true");
+    }
+    root.setAttribute("persist", "none");
+    scripts.push(
+      "resource:///modules/zen/littlewindow/ZenLittleWindowChrome.mjs"
+    );
+  }
 
   for (let script of scripts) {
     ChromeUtils.importESModule(script, { global: "current" });
@@ -38,7 +55,8 @@
     ["zen-folder", "chrome://browser/content/zen-components/ZenFolder.mjs"],
     ["zen-workspace-creation", "resource:///modules/zen/ZenSpaceCreation.mjs"],
     ["zen-workspace", "resource:///modules/zen/ZenSpace.mjs"],
-    ["zen-workspace-icons", "resource:///modules/zen/ZenSpaceIcons.mjs"]
+    ["zen-workspace-icons", "resource:///modules/zen/ZenSpaceIcons.mjs"],
+    ["zen-zap-bar", "chrome://browser/content/zen-components/ZenZapBar.mjs"]
   ];
 
   document.addEventListener(

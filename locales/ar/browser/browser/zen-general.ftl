@@ -18,21 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } مملؤة
 tab-context-zen-remove-essential = 
     .label = إزالة من الأساسيات
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] استبدل الرابط الأساسي بـ
-           *[false]
-                استبدل الرابط المثبت بـ
-                الحالي
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = تغيير الاسم...
 tab-context-zen-edit-icon = 
     .label = تغيير الأيقونة...
 zen-themes-corrupted = ملف التعديل { -brand-short-name } الخاص بك تالف. تم إعادة تعيينه إلى السمة الافتراضية.
-zen-shortcuts-corrupted = ملف الاختصارات { -brand-short-name } الخاص بك تالف. تم إعادة تعيينه إلى الاختصارات الافتراضية.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     تم تمكين شريط URL الجديد، بإزالة الحاجة إلى صفحات علامة تبويب جديدة.<br/><br/>
@@ -49,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = تأكيد
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
 zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
 zen-workspace-renamed-toast = تم تغيير اسم مساحة العمل بنجاح!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = الوضع المدمج
     .tooltiptext = تبديل الوضع المدمج
@@ -67,6 +75,8 @@ zen-icons-picker-emoji =
     .label = ايموجي
 zen-icons-picker-svg = 
     .label = الأيقونات
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = الإجراءات
 zen-site-data-settings = الاعدادات
 zen-generic-manage = إدارة
@@ -79,7 +89,6 @@ zen-site-data-setting-allow = مسموح
 zen-site-data-setting-block = محظور
 zen-site-data-protections-enabled = مفعّل
 zen-site-data-protections-disabled = معطَّل
-zen-site-data-setting-cross-site = ملف تعريف الارتباط عبر المواقع
 zen-site-data-security-info-extension = 
     .label = ملحق
 zen-site-data-security-info-secure = 
@@ -94,6 +103,8 @@ zen-site-data-site-settings =
     .label = جميع إعدادات الموقع
 zen-site-data-header-share = 
     .tooltiptext = شارك هذه الصفحة
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = أدخل وضع القارئ
 zen-site-data-header-screenshot = 
@@ -118,6 +129,9 @@ zen-sidebar-notification-updated-heading = اكتمل التحديث!
 zen-sidebar-notification-updated-label = ما الجديد في { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = عرض ملاحظات الإصدار
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = شيء معطل؟
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = إعادة التشغيل في الوضع الآمن

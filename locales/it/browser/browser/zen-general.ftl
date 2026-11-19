@@ -7,8 +7,8 @@ unified-extensions-description = Le estensioni sono usate per portare più funzi
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Reset Essential Tab
-           *[false] Reset Pinned Tab
+            [true] Resetta Scheda Essenziale
+           *[false] Resetta Scheda Bloccata
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slot riempiti
 tab-context-zen-remove-essential = 
     .label = Rimuovi dagli Essenziali
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Cambia Etichetta...
 tab-context-zen-edit-icon = 
     .label = Cambia icona...
 zen-themes-corrupted = Il tuo file { -brand-short-name } mods è danneggiato. Sono stati reimpostati al tema predefinito.
-zen-shortcuts-corrupted = Il file delle scorciatoie per { -brand-short-name } è corrotto. Le scorciatoie sono state riportate alle impostazioni predefinite.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = La nuova barra degli indirizzi è stata abilitata, eliminando la necessità della pagina di una nuova scheda.<br/><br/>Prova ad aprire una nuova scheda per vedere la nuova barra degli indirizzi in azione!
 zen-disable = Disabilita
@@ -39,16 +44,21 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizza
 zen-panel-ui-gradient-generator-custom-color = Colore personalizzato
 zen-copy-current-url-confirmation = L'URL corrente è stato copiato!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-copy-current-url-as-markdown-confirmation = URL corrente copiato come Markdown!
 zen-general-cancel-label = 
     .label = Annulla
 zen-general-confirm = 
     .label = Conferma
 zen-pinned-tab-replaced = L'URL della scheda bloccata è stato sostituito con l'URL attuale.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = La scheda è stata rinominata con successo!
 zen-background-tab-opened-toast = Nuova scheda aperta in background!
 zen-workspace-renamed-toast = Il Workspace è stato rinominato con successo!
-zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-split-view-limit-toast = Impossibile aggiungere altri pannelli alla vista divisa!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Modalità compatta
     .tooltiptext = Attiva/disattiva Modalità compatta
@@ -63,6 +73,8 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Icone
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Azioni
 zen-site-data-settings = Impostazioni
 zen-generic-manage = Gestisci
@@ -75,7 +87,6 @@ zen-site-data-setting-allow = Consentito
 zen-site-data-setting-block = Bloccato
 zen-site-data-protections-enabled = Attivato
 zen-site-data-protections-disabled = Disattivato
-zen-site-data-setting-cross-site = Cookie Cross-Site
 zen-site-data-security-info-extension = 
     .label = Estensione
 zen-site-data-security-info-secure = 
@@ -90,6 +101,8 @@ zen-site-data-site-settings =
     .label = Tutte le impostazioni del sito
 zen-site-data-header-share = 
     .tooltiptext = Condividi questa pagina
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Entra nella Modalità Lettura
 zen-site-data-header-screenshot = 
@@ -114,6 +127,9 @@ zen-sidebar-notification-updated-heading = Aggiornamento completato!
 zen-sidebar-notification-updated-label = Cosa c'è di nuovo in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Vedi Note di Rilascio
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Si è rotto qualcosa?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Riavvia in Modalità Provvisoria
@@ -122,4 +138,4 @@ zen-window-sync-migration-dialog-message = Zen ora sincronizza le finestre sullo
 zen-window-sync-migration-dialog-learn-more = Scopri di più
 zen-window-sync-migration-dialog-accept = Ho capito
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = Nuova finestra vuota

@@ -1,0 +1,15 @@
+[DEFAULT]
+support-files = [
+  "head.js",
+  "page_style_sample.html",
+  "style.css",
+]
+
+["browser_disable_author_style_oop.js"]
+https_first_disabled = true
+support-files = ["page_style.html"]
+
+["browser_page_style_menu.js"]
+support-files = ["page_style_only_alternates.html"]
+
+["browser_page_style_menu_update.js"]

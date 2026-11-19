@@ -1,0 +1,40 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+webidl BrowsingContext;
+
+/**
+ * @brief Parent-process registry of the active boost of every domain.
+ */
+[scriptable, builtinclass, uuid(7353c16a-2eab-4508-92dd-3fb59236dddc)]
+interface nsIZenBoostsBackend : nsISupports {
+  /**
+   * @brief Registers, or replaces, the boost applied to a domain.
+   * @param aDomain The host the boost applies to, without port.
+   * @param aBoostData The boost data object, as stored by ZenBoostsManager.
+   */
+  [implicit_jscontext]
+  void setBoostForDomain(in AUTF8String aDomain, in jsval aBoostData);
+
+  /**
+   * @brief Removes the boost of a domain and restores the pages showing it.
+   * @param aDomain The host the boost applied to.
+   */
+  void removeBoostForDomain(in AUTF8String aDomain);
+
+  /**
+   * @brief Removes every registered boost.
+   */
+  void removeAllBoosts();
+
+  /**
+   * @brief Sets the color that boosts following the workspace theme take
+   * their hue from, for the tabs of one browser window.
+   * @param aChromeBrowsingContext The top BrowsingContext of the window.
+   */
+  void setWorkspaceAccent(in BrowsingContext aChromeBrowsingContext,
+                          in octet aRed, in octet aGreen, in octet aBlue);
+};

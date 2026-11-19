@@ -20,14 +20,11 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [chromehidden~="location"], [chromehidden~="toolbar"]) {
-  #navigator-toolbox,
-  #zen-sidebar-splitter {
-    visibility: collapse;
-  }
+:root:is([inDOMFullscreen="true"], [popup-window]) #navigator-toolbox {
+  visibility: collapse;
 }
 
-:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
 :root[zen-before-loaded="true"] #urlbar {
   opacity: 0 !important;
 }
@@ -35,6 +32,101 @@ body,
 #browser {
   background: transparent !important;
   width: 100%;
+}
+
+.zen-browser-generic-background,
+#PanelUI-zen-gradient-generator-texture-wrapper {
+  --zen-grain-texture: url(chrome://browser/content/zen-images/grain-bg.png);
+  --zen-grain-tile: 155px;
+  --zen-grain-alpha: 0.7;
+  --zen-grain-rendering: pixelated;
+  --zen-grain-texture-old: url(chrome://browser/content/zen-images/grain-bg.png);
+  --zen-grain-tile-old: 155px;
+  --zen-grain-alpha-old: 0.7;
+  --zen-grain-rendering-old: pixelated;
+
+  &[zen-grain-texture="none"] {
+    --zen-grain-texture: none;
+    --zen-grain-alpha: 0;
+  }
+
+  &[zen-grain-texture="sand"] {
+    --zen-grain-texture: url(chrome://browser/content/zen-images/sand-bg.png);
+    --zen-grain-tile: 100px;
+    --zen-grain-alpha: 0.3;
+  }
+
+  &[zen-grain-texture="denim"] {
+    --zen-grain-texture: url(chrome://browser/content/zen-images/denim-bg.png);
+    --zen-grain-tile: 100px;
+    --zen-grain-alpha: 0.85;
+    --zen-grain-rendering: auto;
+  }
+
+  &[zen-grain-texture="tweed"] {
+    --zen-grain-texture: image-set(
+      url(chrome://browser/content/zen-images/tweed-bg-1x.png) 1x,
+      url(chrome://browser/content/zen-images/tweed-bg-1.5x.png) 1.5x,
+      url(chrome://browser/content/zen-images/tweed-bg.png) 2x
+    );
+    --zen-grain-tile: 100px;
+    --zen-grain-alpha: 0.85;
+    --zen-grain-rendering: auto;
+  }
+
+  &[zen-grain-texture-old="none"] {
+    --zen-grain-texture-old: none;
+    --zen-grain-alpha-old: 0;
+  }
+
+  &[zen-grain-texture-old="sand"] {
+    --zen-grain-texture-old: url(chrome://browser/content/zen-images/sand-bg.png);
+    --zen-grain-tile-old: 100px;
+    --zen-grain-alpha-old: 0.3;
+  }
+
+  &[zen-grain-texture-old="denim"] {
+    --zen-grain-texture-old: url(chrome://browser/content/zen-images/denim-bg.png);
+    --zen-grain-tile-old: 100px;
+    --zen-grain-alpha-old: 0.85;
+    --zen-grain-rendering-old: auto;
+  }
+
+  &[zen-grain-texture-old="tweed"] {
+    --zen-grain-texture-old: image-set(
+      url(chrome://browser/content/zen-images/tweed-bg-1x.png) 1x,
+      url(chrome://browser/content/zen-images/tweed-bg-1.5x.png) 1.5x,
+      url(chrome://browser/content/zen-images/tweed-bg.png) 2x
+    );
+    --zen-grain-tile-old: 100px;
+    --zen-grain-alpha-old: 0.85;
+    --zen-grain-rendering-old: auto;
+  }
+}
+
+.zen-browser-generic-background,
+.zen-library-space {
+  --zen-gradient-width: 100vw;
+  --zen-gradient-height: 100vh;
+  --zen-gradient-tilt: 1;
+  --zen-gradient-phi: atan2(var(--zen-gradient-height), var(--zen-gradient-width));
+  --zen-gradient-tan: tan(var(--zen-gradient-phi));
+  --zen-gradient-dx: min(
+    var(--zen-gradient-width),
+    var(--zen-gradient-width) / (var(--zen-gradient-tan) * var(--zen-gradient-tilt))
+  );
+  --zen-gradient-dy: min(
+    var(--zen-gradient-height),
+    var(--zen-gradient-height) * var(--zen-gradient-tan) * var(--zen-gradient-tilt)
+  );
+  --zen-gradient-slope: atan2(var(--zen-gradient-dy), var(--zen-gradient-dx));
+  --zen-gradient-base-angle: calc(90deg + var(--zen-gradient-slope));
+  --zen-gradient-sin: sin(var(--zen-gradient-slope));
+  --zen-gradient-cos: cos(var(--zen-gradient-slope));
+  --zen-gradient-x0: calc((var(--zen-gradient-width) - var(--zen-gradient-dx)) / 2);
+  --zen-gradient-y0: calc((var(--zen-gradient-height) - var(--zen-gradient-dy)) / 2);
+  --zen-gradient-base-start: calc(var(--zen-gradient-x0) * var(--zen-gradient-cos) + var(--zen-gradient-y0) * var(--zen-gradient-sin));
+  --zen-gradient-base-span: calc(var(--zen-gradient-dx) * var(--zen-gradient-cos) + var(--zen-gradient-dy) * var(--zen-gradient-sin));
 }
 
 .zen-browser-generic-background {
@@ -45,7 +137,7 @@ body,
   overflow: clip;
 
   isolation: isolate;
-  contain: content;
+  contain: size style;
 
   &::after,
   &::before {
@@ -61,7 +153,6 @@ body,
     background: var(--zen-main-browser-background);
     opacity: var(--zen-background-opacity);
     transition: 0s;
-    background-blend-mode: screen;
   }
 
   &:is(.zen-toolbar-background) {
@@ -74,7 +165,6 @@ body,
     background: var(--zen-main-browser-background-old);
     opacity: calc(1 - var(--zen-background-opacity));
     transition: 0s;
-    background-blend-mode: screen;
   }
 
   &:is(.zen-toolbar-background) {
@@ -83,7 +173,7 @@ body,
     }
   }
 
-  :root:not([animating-background="true"]) &::before {
+  &:not([animating-background])::before {
     transition: background-color var(--inactive-window-transition);
   }
 
@@ -91,43 +181,49 @@ body,
     display: none;
     position: absolute;
     inset: 0;
-    background-image: url(chrome://browser/content/zen-images/grain-bg.png);
     pointer-events: none;
     z-index: 1;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    &::after {
+      background-image: var(--zen-grain-texture);
+      background-size: var(--zen-grain-tile) var(--zen-grain-tile);
+      image-rendering: var(--zen-grain-rendering);
+      opacity: calc(
+        var(--zen-grainy-background-opacity, 0) * var(--zen-grain-alpha) * var(--zen-background-opacity, 1)
+      );
+    }
+
+    &::before {
+      background-image: var(--zen-grain-texture-old);
+      background-size: var(--zen-grain-tile-old) var(--zen-grain-tile-old);
+      image-rendering: var(--zen-grain-rendering-old);
+      opacity: calc(
+        var(--zen-grainy-background-opacity-old, 0) * var(--zen-grain-alpha-old) *
+          (1 - var(--zen-background-opacity, 1))
+      );
+    }
   }
 
   &[zen-show-grainy-background="true"] .zen-browser-grain {
     display: flex;
-    opacity: var(--zen-grainy-background-opacity, 0);
+  }
 
-    :root:not([swipe-gesture="true"]) & {
-      /* note: Keep in sync with kGlobalAnimationDuration */
-      transition: opacity 0.2s ease-in-out;
-    }
+  &:not([animating-background]) .zen-browser-grain:not([swipe-gesture])::after {
+    /* note: Keep in sync with kGlobalAnimationDuration */
+    transition: opacity 0.2s ease-in-out;
   }
 }
 
-:root[swipe-gesture] #tabbrowser-arrowscrollbox {
+#tabbrowser-arrowscrollbox[swipe-gesture] {
   /* See gh-13703 for rationale. */
   pointer-events: none;
-}
-
-#zen-browser-background {
-  /* This is conceptually a background, but putting this on a pseudo-element
-    * avoids it from suppressing the chrome-content separator border, etc.
-    *
-    * See bugzilla's 1949528 and bug 1476281 (which would make this unnecessary). */
-  @media (-moz-platform: macos) {
-    -moz-default-appearance: -moz-sidebar;
-    appearance: auto;
-  }
-
-  /*
-   *  Important: We set the color to `AccentColor` so we can
-   *  Compute the stylings and get the native accent color.
-   *  Please, do not remove this.
-   */
-  color: AccentColor;
 }
 
 #sidebar-box {
@@ -153,7 +249,6 @@ body,
   /* See bug #8814, don't add overflow here as it causes issues
    * with firefox's rendering of the tab bar */
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-pref("zen.view.grey-out-inactive-windows")) {
     &:-moz-window-inactive {
       background: InactiveCaption;
@@ -161,10 +256,9 @@ body,
   }
 
   & > * {
-    z-index: 1;
+    z-index: var(--zen-main-app-child-z-index, 1);
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media (-moz-windows-accent-color-in-titlebar) and ((-moz-windows-mica) or -moz-pref("browser.theme.windows.accent-color-in-tabs.enabled")) {
     background: ActiveCaption;
     color: CaptionText;
@@ -179,7 +273,7 @@ body,
   min-width: 1px;
 }
 
-:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+:root:not([inDOMFullscreen="true"]):not([popup-window]) {
   & #zen-tabbox-wrapper {
     margin: var(--zen-element-separation);
     margin-top: 0;
@@ -201,6 +295,12 @@ body,
   gap: var(--zen-element-separation);
 }
 
+@media -moz-pref("zen.view.experimental-no-window-controls") {
+  .titlebar-buttonbox-container {
+    display: none !important;
+  }
+}
+
 @media not (-moz-platform: macos) {
   .titlebar-buttonbox-container {
     height: 100%;
@@ -209,15 +309,14 @@ body,
 
 @media (-moz-platform: macos) {
   .titlebar-buttonbox-container {
-    margin-inline-end: 8px;
-    padding: 3px 0;
+    margin-inline-end: var(--zen-space-8);
+    padding: var(--zen-space-3) 0;
 
     & > .titlebar-buttonbox {
       margin-inline-start: var(--zen-toolbox-padding);
     }
   }
 
-  /* stylelint-disable-next-line media-query-no-invalid */
   @media -moz-pref("zen.widget.mac.mono-window-controls") {
     :root:not([window-modal-open="true"]) .titlebar-buttonbox-container {
       color: var(--toolbox-textcolor);
@@ -248,7 +347,8 @@ body,
 
 @media (-moz-platform: macos) {
   :root[zen-window-buttons-reversed="true"][zen-right-side="true"] .titlebar-buttonbox-container {
-    margin-inline-start: max(calc(var(--zen-element-separation) - 3px), 4px);
+    --zen-window-buttons-reversed-margin-start: max(calc(var(--zen-element-separation) - 3px), 4px);
+    margin-inline-start: var(--zen-window-buttons-reversed-margin-start);
     margin-block: auto;
   }
 }
@@ -264,6 +364,7 @@ body,
   border: none;
   cursor: ew-resize;
   z-index: 3;
+  -moz-window-dragging: no-drag;
 
   &:is(.zen-split-view-splitter[orient="vertical"]) {
     /* Bit of a hacky solution, but it works */
@@ -272,31 +373,15 @@ body,
     height: unset;
     cursor: ew-resize;
   }
-
-  &::before {
-    height: 50px;
-    width: 2px;
-    background: var(--button-background-color-primary);
-    border-radius: 2px;
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
-    pointer-events: none;
-  }
-
-  &:hover::before {
-    opacity: 1;
-  }
 }
+
 .zen-split-view-splitter[orient="horizontal"] {
   &::before {
-    height: 2px;
-    width: 50px;
+    height: var(--zen-size-2);
+    width: var(--zen-size-50);
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-paired-color-tokens */
     background: var(--button-background-color-primary);
-    border-radius: 2px;
+    border-radius: var(--zen-border-radius-2);
     content: "";
     position: absolute;
     top: 40%;
@@ -322,21 +407,27 @@ body,
 
 :root[customizing] #zen-sidebar-top-buttons-customization-target {
   border: 1px dashed;
-  border-radius: 2px;
-  margin: 10px 2px 0 0;
+  border-radius: var(--zen-border-radius-2);
+  margin: var(--zen-space-10) var(--zen-space-2) 0 0;
 }
 
 #zen-sidebar-splitter {
-  border-radius: 14px;
-  transition:
-    background 0.2s ease-in-out,
-    opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+  border-radius: var(--zen-border-radius-4);
+  background: var(--zen-accent-button-background);
+  height: calc(100% - var(--zen-element-separation) * 2);
+  top: var(--zen-element-separation);
+  width: var(--zen-toolbox-padding);
+  position: absolute;
+  :root:not([zen-right-side="true"]) & {
+    right: 0;
+    left: unset;
+  }
 
-  &:hover {
-    background: var(--zen-primary-color);
-    transition: background 0.2s ease-in-out;
+  &:is(:hover, [zen-resizing="true"]) {
     transition-delay: 0.2s;
-    opacity: 1;
+    opacity: var(--zen-opacity-80);
   }
 }
 
@@ -352,4 +443,12 @@ body,
 
 :root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
+}
+
+/* See #14409: firefox 150's body paint containment prevents the right side compact
+ sidebar from remaining active at the screen edge in macOS fullscreen */
+@media (-moz-platform: macos) {
+  :root[macOSNativeFullscreen][zen-compact-mode][zen-right-side] body {
+    contain: none;
+  }
 }

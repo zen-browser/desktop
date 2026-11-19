@@ -1,16 +1,16 @@
 diff --git a/layout/style/StyleColor.cpp b/layout/style/StyleColor.cpp
-index 95c7ae6abea5032bef0466e8d59d212374d7a4d0..85a48f27251756c72db8ed03a673a18e96cf76f9 100644
+index f922f7fdacc7e1a14beb8da77b48aef3f6ae0b2b..47d19242baaf2a1f25ee07c6e210c839cc7b5089 100644
 --- a/layout/style/StyleColor.cpp
 +++ b/layout/style/StyleColor.cpp
 @@ -8,6 +8,7 @@
- #include "mozilla/dom/BindingDeclarations.h"
+ #include "mozilla/StyleColorInlines.h"
  #include "nsIFrame.h"
  #include "nsStyleStruct.h"
 +#include "mozilla/nsZenBoostsBackend.h"
+ #include "nsStyleUtil.h"
  
  namespace mozilla {
- 
-@@ -34,23 +35,24 @@ StyleAbsoluteColor StyleColor::ResolveColor(
+@@ -98,23 +99,24 @@ StyleAbsoluteColor StyleColor::ResolveColor(
  
  template <>
  nscolor StyleColor::CalcColor(nscolor aColor) const {
@@ -40,27 +40,31 @@ index 95c7ae6abea5032bef0466e8d59d212374d7a4d0..85a48f27251756c72db8ed03a673a18e
  }
  
  StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
-@@ -58,7 +60,7 @@ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
+@@ -122,7 +124,7 @@ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
    return Servo_ConvertColorSpace(this, aColorSpace);
  }
  
 -nscolor StyleAbsoluteColor::ToColor() const {
 +nscolor StyleAbsoluteColor::ToColor(const nsIFrame* aFrame) const {
-   auto srgb = ToColorSpace(StyleColorSpace::Srgb);
+   constexpr StyleColorSpace DEST_COLOR_SPACE = StyleColorSpace::Srgb;
  
-   // TODO(tlouw): Needs gamut mapping here. Right now we just hard clip the
-@@ -68,10 +70,12 @@ nscolor StyleAbsoluteColor::ToColor() const {
-   auto green = std::clamp(srgb.components._1, 0.0f, 1.0f);
-   auto blue = std::clamp(srgb.components._2, 0.0f, 1.0f);
+   constexpr float MIN = 0.0f;
+@@ -164,11 +166,13 @@ nscolor StyleAbsoluteColor::ToColor() const {
+     }
+   }
  
--  return NS_RGBA(nsStyleUtil::FloatToColorComponent(red),
+-  return NS_RGBA(
+-      nsStyleUtil::FloatToColorComponent(translatedColor.components._0),
+-      nsStyleUtil::FloatToColorComponent(translatedColor.components._1),
+-      nsStyleUtil::FloatToColorComponent(translatedColor.components._2),
+-      nsStyleUtil::FloatToColorComponent(translatedColor.alpha));
 +  return zen::nsZenBoostsBackend::ResolveStyleColor(
-+         NS_RGBA(nsStyleUtil::FloatToColorComponent(red),
-                  nsStyleUtil::FloatToColorComponent(green),
-                  nsStyleUtil::FloatToColorComponent(blue),
--                 nsStyleUtil::FloatToColorComponent(srgb.alpha));
-+                 nsStyleUtil::FloatToColorComponent(srgb.alpha)),
-+         aFrame);
++      NS_RGBA(
++          nsStyleUtil::FloatToColorComponent(translatedColor.components._0),
++          nsStyleUtil::FloatToColorComponent(translatedColor.components._1),
++          nsStyleUtil::FloatToColorComponent(translatedColor.components._2),
++          nsStyleUtil::FloatToColorComponent(translatedColor.alpha)),
++      aFrame);
  }
  
  }  // namespace mozilla

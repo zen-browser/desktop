@@ -1,0 +1,11 @@
+{
+  "background-color": {
+    "--zen-little-window-container-background": {
+      "value": { "light": "#ffffff", "dark": "rgba(255, 255, 255, 0.12)" }
+    }
+  },
+  "size": {
+    "--zen-little-window-intro-width": { "value": "300px" },
+    "--zen-little-window-download-width": { "value": "260px" }
+  }
+}

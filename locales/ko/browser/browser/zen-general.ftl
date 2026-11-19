@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max }개 추가됨
 tab-context-zen-remove-essential = 
     .label = 에센셜에서 제거하기
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] 에센셜 탭을 현재 URL로 초기화
-           *[false] 고정된 탭을 현재 URL로 초기화
+            [true] 에센셜 URL 편집
+           *[false] 고정된 탭 URL 편집
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = 현재 URL로 변경
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = 편집…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = 라벨 편집...
 tab-context-zen-edit-icon = 
     .label = 아이콘 편집...
 zen-themes-corrupted = { -brand-short-name } 모드 파일이 손상되었습니다. 기본 테마로 재설정되었습니다.
-zen-shortcuts-corrupted = { -brand-short-name } 단축키 파일이 손상되었습니다. 기본 단축키 설정으로 재설정 되었습니다.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     새 탭 페이지가 필요 없는 새로운 주소 표시줄이 활성화 되었습니다.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 확인
 zen-pinned-tab-replaced = 고정 URL이 현재 URL로 변경되었습니다!
+zen-pinned-tab-url-edited = 고정된 탭 URL이 변경되었습니다!
+zen-pinned-tab-url-invalid = 올바른 URL 형식이 아닙니다.
+zen-pinned-tab-edit-url-title = 고정된 탭 URL 편집
+zen-pinned-tab-edit-url-label = 이 고정된 탭이 고정할 URL을 입력하세요:
 zen-tabs-renamed = 탭의 이름이 성공적으로 변경되었습니다!
 zen-background-tab-opened-toast = 새 백그라운드 탭이 열렸습니다!
 zen-workspace-renamed-toast = 워크스페이스 이름이 변경되었습니다!
 zen-split-view-limit-toast = 패널을 더 추가할 수 없습니다!
+zen-sidebar-drag-collapsed-toast = 사이드바가 숨겨져 있습니다! <span>{ $shortcut }</span>으로 사이드바를 되돌릴 수 있습니다.
 zen-toggle-compact-mode-button = 
     .label = 사이드바 축소 모드
     .tooltiptext = 사이드바 축소 토글
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = 이모티콘
 zen-icons-picker-svg = 
     .label = 아이콘
+zen-emojis-picker-search = 
+    .placeholder = 이모지 검색
 urlbar-search-mode-zen_actions = 액션
 zen-site-data-settings = 설정
 zen-generic-manage = 관리
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = 허용됨
 zen-site-data-setting-block = 금지됨
 zen-site-data-protections-enabled = 활성화됨
 zen-site-data-protections-disabled = 비활성화됨
-zen-site-data-setting-cross-site = 사이트 간 공유 쿠키
 zen-site-data-security-info-extension = 
     .label = 확장
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = 모든 사이트 설정
 zen-site-data-header-share = 
     .tooltiptext = 이 페이지 공유
+zen-site-data-header-boost = 
+    .tooltiptext = 부스트 만들기
 zen-site-data-header-reader-mode = 
     .tooltiptext = 읽기 모드 켜기
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = 업데이트 완료!
 zen-sidebar-notification-updated-label = { -brand-short-name }의 새로운 기능
 zen-sidebar-notification-updated-tooltip = 
     .title = 업데이트 기록 보기
+zen-sidebar-notification-donate-label = { -brand-short-name } 후원
+zen-sidebar-notification-donate-tooltip = 
+    .title = 프로젝트에 후원하기
 zen-sidebar-notification-restart-safe-mode-label = 무언가 고장났나요?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 안전 모드로 다시 시작

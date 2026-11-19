@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slotiau wedi'u llenwi
 tab-context-zen-remove-essential = 
     .label = Dileu o'r Hanfodion
     .accesskey = D
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Amnewid URL Hanfodol gyda'r Cyfredol
-           *[false] Amnewid URL wedi'i binio gyda'r Cyfredol
+            [true] Golygu URL Hanfodol
+           *[false] Golygu URL wedi'i Binio
         }
     .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Amnewid gyda'r URL Cyfredol
+    .accesskey = P
+tab-context-zen-edit-pinned-url = 
+    .label = Golygu…
+    .accesskey = G
 tab-context-zen-edit-title = 
-    .label = Newid Label...
+    .label = Newid Label…
 tab-context-zen-edit-icon = 
-    .label = Newid Eicon...
+    .label = Newid Eicon…
 zen-themes-corrupted = Mae eich ffeil addasiadau { -brand-short-name } wedi'i llygru. Maen nhw wedi cael eu hailosod i'r thema rhagosodedig.
-zen-shortcuts-corrupted = Mae eich ffeil llwybr-byr { -brand-short-name } wedi'i llygru. Maen nhw wedi cael eu hailosod i'r llwybr byr rhagosodedig.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Mae'r bar URL newydd wedi'i alluogi, sydd yn dileu'r angen am dudalennau tab newydd.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Cadarnhau
 zen-pinned-tab-replaced = Mae URL y tab wedi'i binio wedi'i newid i'r URL gyfredol!
+zen-pinned-tab-url-edited = Mae URL tab wedi'i binio wedi'i ddiweddaru!
+zen-pinned-tab-url-invalid = Dyw hwn ddim yn edrych fel URL dilys.
+zen-pinned-tab-edit-url-title = Golygu URL wedi'u Pinio
+zen-pinned-tab-edit-url-label = Rhowch y URL dylai'r tab pinio hwn bwyntio at:
 zen-tabs-renamed = Mae'r tab wedi cael ei ailenwi'n llwyddiannus!
 zen-background-tab-opened-toast = Tab cefndir newydd wedi'i agor!
 zen-workspace-renamed-toast = Mae'r Man Gwaith wedi cael ei ailenwi'n llwyddiannus!
 zen-split-view-limit-toast = Methu ychwanegu mwy o baneli at y golwg hollt!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Modd Cryno
     .tooltiptext = Togglo Modd Cryno
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Eiconau
+zen-emojis-picker-search = 
+    .placeholder = Chwilio emojis
 urlbar-search-mode-zen_actions = Gweithredoedd
 zen-site-data-settings = Gosodiadau
 zen-generic-manage = Rheoli
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Caniatawyd
 zen-site-data-setting-block = Rhwystrwyd
 zen-site-data-protections-enabled = Galluogwyd
 zen-site-data-protections-disabled = Analluogwyd
-zen-site-data-setting-cross-site = Cwci Traws-Gwefan
 zen-site-data-security-info-extension = 
     .label = Estyniad
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Pob Gosodiad Gwefan
 zen-site-data-header-share = 
     .tooltiptext = Rhannu'r Dudalen Hon
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Mynd i'r Modd Darllenydd
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Diweddariad Wedi'i Gwblhau!
 zen-sidebar-notification-updated-label = Beth sy'n newydd yn { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Gweld Nodiadau Rhyddhau
+zen-sidebar-notification-donate-label = Cymorth { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Cyfrannu at y prosiect
 zen-sidebar-notification-restart-safe-mode-label = Rhywbeth wedi torri?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Ailgychwyn yn y Modd Diogel

@@ -15,13 +15,13 @@
 
 .zen-download-arc-animation {
   position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: var(--zen-size-30);
+  height: var(--zen-size-30);
+  border-radius: var(--zen-border-radius-round);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2px;
+  padding: var(--zen-space-2);
   background-color: var(--zen-colors-hover-bg);
   box-shadow: var(--zen-big-shadow);
 }
@@ -30,7 +30,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: var(--zen-border-radius-round);
   background-color: var(--toolbar-color);
 }
 

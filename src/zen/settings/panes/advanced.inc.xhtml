@@ -1,0 +1,61 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-advanced" class="zen-settings-pane" role="tabpanel" data-pane="advanced" hidden="hidden">
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-browsing-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-smooth-scroll"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="general.smoothScroll"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-autoscroll"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="general.autoScroll"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-media-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-drm"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="media.eme.enabled"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-pip-toggle"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="media.videocontrols.picture-in-picture.video-toggle.enabled"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-pip-auto"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="media.videocontrols.picture-in-picture.enable-when-switching-tabs.enabled"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-window-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-drag-from-content"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.view.drag-window-from-content"/>
+              </html:div>
+#ifdef XP_MACOSX
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-haptic-feedback"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.haptic-feedback.enabled"/>
+              </html:div>
+#endif
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-compact-flash-popup"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.view.compact.toolbar-flash-popup"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-actions">
+            <html:button class="zen-settings-button" data-action="open-more-settings" data-l10n-id="zen-settings-window-more-settings"/>
+          </html:div>
+        </html:section>

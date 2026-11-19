@@ -1,0 +1,17 @@
+[DEFAULT]
+support-files = [
+  "empty_file.html",
+  "head.js",
+  "plugin_bug797677.html",
+]
+
+["browser_bug797677.js"]
+
+["browser_enable_DRM_prompt.js"]
+
+["browser_globalplugin_crashinfobar.js"]
+run-if = [
+  "crashreporter",
+]
+
+["browser_private_browsing_eme_persistent_state.js"]

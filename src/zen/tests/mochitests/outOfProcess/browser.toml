@@ -1,0 +1,17 @@
+[DEFAULT]
+support-files = [
+  "file_base.html",
+  "file_frame1.html",
+  "file_frame2.html",
+  "file_innerframe.html",
+  "head.js",
+]
+
+["browser_basic_outofprocess.js"]
+
+["browser_controller.js"]
+skip-if = [
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && display == 'wayland'", # Bug 1663506
+]
+
+["browser_promisefocus.js"]

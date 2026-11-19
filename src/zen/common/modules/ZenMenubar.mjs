@@ -11,13 +11,7 @@ const WINDOW_SCHEME_MAPPING = {
 
 export class nsZenMenuBar {
   constructor() {
-    window.addEventListener(
-      "ZenKeyboardShortcutsReady",
-      () => {
-        this.#init();
-      },
-      { once: true }
-    );
+    this.#init();
   }
 
   #init() {
@@ -129,6 +123,33 @@ export class nsZenMenuBar {
                 data-l10n-id="zen-menubar-new-blank-window"
                 key="zen-new-unsynced-window"
                 command="cmd_zenNewNavigatorUnsynced"/>`)
+    );
+    this.#initLittleWindowMenus(openUnsyncedWindowItem);
+  }
+
+  #initLittleWindowMenus(aAppMenuAnchor) {
+    if (!Services.prefs.getBoolPref("zen.little-window.enabled", false)) {
+      document
+        .getElementById("cmd_zenNewLittleWindow")
+        .setAttribute("disabled", "true");
+      return;
+    }
+    aAppMenuAnchor.after(
+      window.MozXULElement.parseXULToFragment(
+        `<toolbarbutton id="appMenu-new-zen-little-window-button"
+                class="subviewbutton"
+                data-l10n-id="zen-appmenu-new-little-window"
+                key="zen-new-little-window"
+                command="cmd_zenNewLittleWindow"/>`
+      )
+    );
+    document.getElementById("menu_new_zen_unsynced_window").after(
+      window.MozXULElement.parseXULToFragment(`
+        <menuitem id="menu_new_zen_little_window"
+                class="subviewbutton"
+                data-l10n-id="zen-menubar-new-little-window"
+                key="zen-new-little-window"
+                command="cmd_zenNewLittleWindow"/>`)
     );
   }
 

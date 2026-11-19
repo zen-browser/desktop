@@ -1,0 +1,41 @@
+{
+  "border-color": {
+    "--arrowpanel-border-color": { "external": true },
+    "--tab-selected-outline-color": { "external": true }
+  },
+  "border-radius": {
+    "--arrowpanel-menuitem-border-radius": { "external": true },
+    "--urlbar-icon-border-radius": { "external": true }
+  },
+  "space": {
+    "--arrowpanel-menuitem-padding-block": { "external": true },
+    "--arrowpanel-menuitem-padding-inline": { "external": true },
+    "--panel-separator-margin-vertical": { "external": true },
+    "--panel-subview-body-padding": { "external": true },
+    "--tab-group-label-padding": { "external": true },
+    "--urlbar-icon-padding": { "external": true },
+    "--urlbarview-results-padding": { "external": true }
+  },
+  "versatile-color": {
+    "--button-primary-color": { "external": true },
+    "--toolbar-color": { "external": true },
+    "--toolbox-textcolor": { "external": true }
+  },
+  "background-color": {
+    "--panel-item-active-bgcolor": { "external": true },
+    "--panel-item-hover-bgcolor": { "external": true }
+  },
+  "size": {
+    "--tab-collapsed-background-width": { "external": true },
+    "--tab-collapsed-width": { "external": true },
+    "--tab-min-height": { "external": true, "also": ["space"] },
+    "--tab-min-width": { "external": true },
+    "--urlbar-container-padding": { "external": true },
+    "--urlbar-height": { "external": true },
+    "--urlbar-min-height": { "external": true },
+    "--tab-margin-block": { "external": true }
+  },
+  "outline": {
+    "--tab-outline": { "external": true }
+  }
+}

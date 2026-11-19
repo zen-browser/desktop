@@ -1,0 +1,72 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -70,10 +70,11 @@
+ #include "nsXULPopupManager.h"
+ 
+ #include "gfxPlatform.h"
+ #include "qcms.h"
+ 
++#import <objc/runtime.h>
+ #include <algorithm>
+ #include "mozilla/AutoRestore.h"
+ #include "mozilla/BasicEvents.h"
+ #include "mozilla/Maybe.h"
+ #include "mozilla/NativeKeyBindingsType.h"
+@@ -6948,10 +6949,31 @@
+     return nsSizeMode_Maximized;
+   }
+   return nsSizeMode_Normal;
+ }
+ 
++// The tiling state lives in a private NSWindow ivar "_tilingStateController"
++// (an _NSWMWindowTilingStateController). That controller's -tilingState returns
++// a non-nil _WMWindowTilingState only while the window is tiled by the system
++// window manager. None of this is public API, so it is all guarded and degrades
++// to false if the internals ever change.
++static bool WindowIsTiled(NSWindow* aWindow) {
++  if (!aWindow) {
++    return false;
++  }
++  static Ivar sControllerIvar =
++      class_getInstanceVariable([NSWindow class], "_tilingStateController");
++  if (!sControllerIvar) {
++    return false;
++  }
++  id controller = object_getIvar(aWindow, sControllerIvar);
++  if (![controller respondsToSelector:@selector(tilingState)]) {
++    return false;
++  }
++  return [controller performSelector:@selector(tilingState)] != nil;
++}
++
+ void nsCocoaWindow::ReportMoveEvent() {
+   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+ 
+   // Prevent recursion, which can become infinite (see bug 708278).  This
+   // can happen when the call to [NSWindow setFrameTopLeftPoint:] in
+@@ -6961,10 +6983,11 @@
+     return;
+   }
+   mInReportMoveEvent = true;
+ 
+   UpdateBounds();
++  SetIsTiled(WindowIsTiled(mWindow));
+ 
+   // The zoomed state can change when we're moving, in which case we need to
+   // update our internal mSizeMode. This can happen either if we're maximized
+   // and then moved, or if we're not maximized and moved back to zoomed state.
+   if (mWindow && (mSizeMode == nsSizeMode_Maximized) ^ mWindow.isZoomed) {
+@@ -7055,10 +7078,11 @@
+ 
+ void nsCocoaWindow::ReportSizeEvent() {
+   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+ 
+   UpdateBounds();
++  SetIsTiled(WindowIsTiled(mWindow));
+   LayoutDeviceIntRect innerBounds = GetClientBounds();
+   if (mWidgetListener) {
+     mWidgetListener->WindowResized(this, innerBounds.Size());
+   }
+   if (mAttachedWidgetListener) {
+

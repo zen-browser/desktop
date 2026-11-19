@@ -7,6 +7,13 @@
 
 #include "nsIZenDragAndDrop.h"
 #include "nsCOMPtr.h"
+#include "Units.h"
+#include "nsINode.h"
+#include "nsTArray.h"
+
+#if defined(XP_MACOSX) && defined(__OBJC__)
+@protocol NSDraggingInfo;
+#endif
 
 #define ZEN_DND_MANAGER_CONTRACTID "@mozilla.org/zen/drag-and-drop;1"
 
@@ -26,6 +33,15 @@ class nsZenDragAndDrop final : public nsIZenDragAndDrop {
  public:
   explicit nsZenDragAndDrop();
   auto GetDragImageOpacity() const { return mDragImageOpacity; }
+  auto DropLandingArmed() const { return mDropLandingArmed; }
+  const auto& DragImages() const { return mDragImages; }
+
+  /**
+   * @brief Take the rects the drag items are to land on after the drop
+   * being handled, as the drop added them, in screen CSS pixels and item
+   * order. Empty when the drop added none.
+   */
+  nsTArray<mozilla::DesktopIntRect> TakeDropLandingRects();
 
   /**
    * @brief Get the singleton instance of nsZenDragAndDrop. There may be
@@ -39,7 +55,24 @@ class nsZenDragAndDrop final : public nsIZenDragAndDrop {
  private:
   ~nsZenDragAndDrop() = default;
   float mDragImageOpacity{};
+  bool mDropLandingArmed{};
+  nsTArray<nsCOMPtr<nsINode>> mDragImages;
+  nsTArray<mozilla::DesktopIntRect> mDropLandingRects;
 };
+
+#if defined(XP_MACOSX) && defined(__OBJC__)
+/**
+ * @brief From the drag destination view, once a dragover is handled, ask
+ * the OS to land the drag image on the drop, if the drag wants that.
+ */
+void PrepareDropLanding(id<NSDraggingInfo> aInfo);
+
+/**
+ * @brief From the drag destination view, once a drop is handled, send the
+ * drag image to the rect the drop set, if it set one.
+ */
+void LandDrop(id<NSDraggingInfo> aInfo);
+#endif
 
 }  // namespace zen
 

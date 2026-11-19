@@ -1,0 +1,35 @@
+diff --git a/browser/base/content/utilityOverlay.js b/browser/base/content/utilityOverlay.js
+index 3b8782f6fc..46e112091e 100644
+--- a/browser/base/content/utilityOverlay.js
++++ b/browser/base/content/utilityOverlay.js
+@@ -27,6 +27,7 @@ ChromeUtils.defineESModuleGetters(this, {
+   Referrals: "moz-src:///browser/components/referrals/Referrals.sys.mjs",
+   ShellService: "moz-src:///browser/components/shell/ShellService.sys.mjs",
+   URILoadingHelper: "resource:///modules/URILoadingHelper.sys.mjs",
++  ZenSettings: "resource:///modules/zen/settings/ZenSettings.sys.mjs",
+ });
+ 
+ ChromeUtils.defineLazyGetter(this, "ReferrerInfo", () =>
+@@ -428,7 +429,11 @@ function openAboutDialog() {
+   }
+ 
+   var win = BrowserWindowTracker.getTopWindow() || window;
+-  win.openDialog("chrome://browser/content/aboutDialog.xhtml", "", features);
++  win.openDialog(
++    "chrome://browser/content/zen-components/windows/zen-about.xhtml",
++    "",
++    features
++  );
+ }
+ 
+ function openReferralsPage() {
+@@ -436,6 +441,9 @@ function openReferralsPage() {
+ }
+ 
+ async function openPreferences(paneID, extraArgs) {
++  if (ZenSettings.handleOpenPreferences(paneID, extraArgs)) {
++    return;
++  }
+   // This function is duplicated from preferences.js.
+   function internalPrefCategoryNameToFriendlyName(aName) {
+     return (aName || "").replace(/^pane./, function (toReplace) {

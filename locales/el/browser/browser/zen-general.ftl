@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } γεμισμένες �
 tab-context-zen-remove-essential = 
     .label = Αφαίρεση από Απαραίτητα
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Αντικατάσταση Απαραίτητης διεύθυνσής με την τωρινή
-           *[false] Αντικατάσταση Καρφιτσωμένης διεύθυνσής με την τωρινή
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Αλλαγή Ετικέτας...
 tab-context-zen-edit-icon = 
     .label = Αλλαγή Εικονιδίου...
 zen-themes-corrupted = Το αρχείο { -brand-short-name } mods είναι κατεστραμμένο. Έχει γίνει επαναφορά στο προεπιλεγμένο θέμα.
-zen-shortcuts-corrupted = Το αρχείο συντομεύσεων σας { -brand-short-name } είναι κατεστραμμένο. Έχει γίνει επαναφορά στις προεπιλεγμένες συντομεύσεις.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Η νέα γραμμή URL έχει ενεργοποιηθεί, αφαιρώντας την ανάγκη για σελίδες νέας καρτέλας.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Επιβεβαίωση
 zen-pinned-tab-replaced = Το URL της καρφιτσωμένης καρτέλας έχει αντικατασταθεί από το τρέχον URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Η καρτέλα μετονομάστηκε επιτυχώς!
 zen-background-tab-opened-toast = Άνοιξε νέα καρτέλα στο παρασκήνιο!
 zen-workspace-renamed-toast = Ο χώρος εργασίας μετονομάστηκε επιτυχώς!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Συμπαγής Λειτουργία
     .tooltiptext = Εναλλαγή Συμπαγούς Λειτουργίας
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Εμότζι
 zen-icons-picker-svg = 
     .label = Εικονίδια
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Ενέργειες
 zen-site-data-settings = Ρυθμίσεις
 zen-generic-manage = Διαχείριση
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Επιτρέπεται
 zen-site-data-setting-block = Αποκλείστηκε
 zen-site-data-protections-enabled = Ενεργό
 zen-site-data-protections-disabled = Ανενεργό
-zen-site-data-setting-cross-site = Cookies Mεταξύ Iστότοπων
 zen-site-data-security-info-extension = 
     .label = Επέκταση
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Όλες Οι Ρυθμίσεις Ιστοσελίδας
 zen-site-data-header-share = 
     .tooltiptext = Κοινοποίηση Αυτή Της Σελίδας
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Είσοδος Σε Λειτουργία Ανάγνωσης
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Η Ενημέρωση Ολοκληρ�
 zen-sidebar-notification-updated-label = Τι νέο υπάρχει στο { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Προβολή Σημειώσεων Έκδοσης
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Χάλασε κάτι;
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Επανεκκίνηση σε Ασφαλή Λειτουργία

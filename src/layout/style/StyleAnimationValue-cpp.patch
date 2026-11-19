@@ -1,0 +1,13 @@
+diff --git a/layout/style/StyleAnimationValue.cpp b/layout/style/StyleAnimationValue.cpp
+index 778fd72c7c132d4ee7f110a1dc3513cd23feedde..7117539233af531584b22400de18badf67209dca 100644
+--- a/layout/style/StyleAnimationValue.cpp
++++ b/layout/style/StyleAnimationValue.cpp
+@@ -50,7 +50,7 @@ nscolor AnimationValue::GetColor(
+   MOZ_ASSERT(mServo);
+   StyleAbsoluteColor result;
+   Servo_AnimationValue_GetColor(mServo, &aForegroundColor, &result);
+-  return result.ToColor();
++  return result.ToColor(nullptr);
+ }
+ 
+ bool AnimationValue::IsCurrentColor() const {

@@ -1,8 +1,17 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
+index f20c90621a73fed5cee4410ec4af6762d07448ba..e947f5abf60c018d572cc7c9b459744206539a28 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {
+@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   ShellService: "moz-src:///browser/components/shell/ShellService.sys.mjs",
+   SpecialMessageActions:
+     "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
++  gZenSpaceRoutingManager:
++    "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
+ });
+ 
+ /**
+@@ -672,6 +674,61 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -27,15 +36,126 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +      }
 +    }
 +
++    try {
++      let zenWorkspaceParam = cmdLine.handleFlagWithParam("space", false);
++      if (zenWorkspaceParam) {
++        let targetWin = lazy.BrowserWindowTracker.getTopWindow({
++          private: false,
++          allowPopups: false,
++        });
++        if (
++          targetWin?.gZenWorkspaces &&
++          !targetWin.gZenWorkspaces.privateWindowOrDisabled &&
++          cmdLine.findFlag("new-window", false) == -1
++        ) {
++          targetWin.gZenWorkspaces
++            .changeWorkspaceFromCommandLine(zenWorkspaceParam)
++            .catch(console.error);
++          targetWin.focus();
++          if (!cmdLine.length) {
++            cmdLine.preventDefault = true;
++          }
++        } else {
++          // Cold start: stash the space so the first window that
++          // restores picks it up, and let normal startup open that window.
++          Services.prefs.setStringPref(
++            "zen.workspaces.cmdline-initial-workspace",
++            zenWorkspaceParam
++          );
++        }
++      }
++    } catch (e) {
++      if (e.result != Cr.NS_ERROR_INVALID_ARG) {
++        throw e;
++      }
++    }
 +
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -672,6 +694,7 @@ nsBrowserContentHandler.prototype = {
-       "  --new-window <url> Open <url> in a new window.\n" +
-       "  --new-tab <url>    Open <url> in a new tab.\n" +
+@@ -743,6 +800,8 @@ nsBrowserContentHandler.prototype = {
+       "  --url-background <url> Open <url> in a background tab.\n" +
+       "  --data <data-URL>  Open a data: URL.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
 +    info += "  --blank-window [<url>]  Open the new blank window.\n";
++    info += "  --space <space> [<url>]  Switch to the space with the given name or UUID, and open <url> in it if given.\n";
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
+@@ -1331,13 +1390,38 @@ function handURIToExistingBrowser(
+   });
+ 
+   if (navWin) {
+-    openInWindow(navWin);
++    if (
++      !forceAllowDataURI &&
++      lazy.gZenSpaceRoutingManager.handleExternalUri(
++        uri,
++        navWin,
++        triggeringPrincipal
++      )
++    ) {
++      return;
++    }
++    openInWindow(
++      lazy.gZenSpaceRoutingManager.getWindowForExternalUri(uri, navWin)
++    );
+     return;
+   }
+ 
+   let pending = lazy.BrowserWindowTracker.getPendingWindow({
+     private: allowPrivate,
+   });
++  if (
++    !forcePrivate &&
++    !forceAllowDataURI &&
++    lazy.gZenSpaceRoutingManager.takesExternalUrisWithoutWindow
++  ) {
++    if (!pending) {
++      openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
++    }
++    lazy.gZenSpaceRoutingManager.openExternalUrisAfterStartup([
++      { uri, principal: triggeringPrincipal },
++    ]);
++    return;
++  }
+   if (pending) {
+     // Note that we cannot make this function async as some callers rely on
+     // catching exceptions it can throw in some cases and some of those callers
+@@ -1771,6 +1855,7 @@ nsDefaultCommandLineHandler.prototype = {
+           ({ where }) => where == Ci.nsIBrowserDOMWindow.OPEN_DEFAULTWINDOW
+         ).length <= 1;
+       let windowURLs = [];
++      let zenExternalURIs = [];
+       for (let { uri, principal, where } of urls) {
+         if (
+           shouldOpenInExistingWindow ||
+@@ -1786,6 +1871,10 @@ nsDefaultCommandLineHandler.prototype = {
+             }
+           }
+         }
++        if (lazy.gZenSpaceRoutingManager.takesExternalUrisWithoutWindow) {
++          zenExternalURIs.push({ uri, principal });
++          continue;
++        }
+         windowURLs.push(uri.spec);
+       }
+ 
+@@ -1793,6 +1882,17 @@ nsDefaultCommandLineHandler.prototype = {
+       if (windowURLs.length) {
+         openBrowserWindow(cmdLine, lazy.gSystemPrincipal, windowURLs);
+       }
++      if (zenExternalURIs.length) {
++        if (
++          !lazy.BrowserWindowTracker.getTopWindow() &&
++          !lazy.BrowserWindowTracker.getPendingWindow()
++        ) {
++          openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
++        }
++        lazy.gZenSpaceRoutingManager.openExternalUrisAfterStartup(
++          zenExternalURIs
++        );
++      }
+     } else if (!cmdLine.preventDefault) {
+       if (
+         AppConstants.platform == "win" &&

@@ -23,6 +23,11 @@ zen-toolbar-context-move-to-folder =
 zen-toolbar-context-new-folder = 
     .label = 新しいフォルダ
     .accesskey = N
+zen-tabs-newtab-paste-and-search = 
+    .label = Paste & Search
+zen-scroll-to-selected-tab = 
+    .tooltiptext = Scroll to the selected tab
+    .aria-label = Scroll to the selected tab
 sidebar-zen-expand = 
     .label = サイドバーを展開する
 sidebar-zen-create-new = 
@@ -37,11 +42,11 @@ tabbrowser-reset-pin-button =
     .tooltiptext =
         { $tabCount ->
             [one] タブをリセットして固定する
-           *[other] タブをリセットして{ $tabCount }つのタブを固定する
+           *[other] タブをリセットして{ $tabCount }つのタブをピン留めする
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] 固定された URL に戻る
-        [zen-default-pinned-cmd] 固定されたタブから切り離す
+        [zen-default-pinned] ピン留めされた URL に戻る
+        [zen-default-pinned-cmd] ピン留めされたタブから切り離す
        *[other] { $tabSubtitle }
     }

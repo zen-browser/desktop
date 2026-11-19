@@ -1,0 +1,17 @@
+{
+  "$schema": "https://tokens.studio/schema/cli/v2.json",
+  "version": 2,
+  "source": {
+    "project": "82ca0cbd-dde0-417b-a705-73b2d84121e4",
+    "ref": {
+      "type": "branch",
+      "name": "main"
+    }
+  },
+  "outputs": {
+    "zen": {
+      "format": "raw",
+      "dir": ".tokens-studio"
+    }
+  }
+}

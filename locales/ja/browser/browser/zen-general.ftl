@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max }スロットがいっ�
 tab-context-zen-remove-essential = 
     .label = Essentialsから削除
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] EssentialタブのURLを今開いているURLで置き換える
-           *[false] ピン留めされたタブのURLを今開いているURLで置き換える
+            [true] EssentialのURLを編集
+           *[false] ピン留めされたURLを編集
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = 現在のURLに置き換えられます
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = 編集…
+    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = ラベルを変更する...
+    .label = ラベルを変更する…
 tab-context-zen-edit-icon = 
-    .label = アイコンを変更する...
+    .label = アイコンを変更する…
 zen-themes-corrupted = { -brand-short-name }モッドファイルが文字化けしています。デフォルトのテーマにリセットされました。
-zen-shortcuts-corrupted = { -brand-short-name }ショートカットファイルが文字化けしています。デフォルトのショートカットにリセットされました。
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     新しいURLバーが有効になり、新しいタブページの必要性がなくなりました。<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 確定
 zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換えられました！
+zen-pinned-tab-url-edited = ピン留めされたタブのURLを更新しました！
+zen-pinned-tab-url-invalid = このURLは有効が見えません。
+zen-pinned-tab-edit-url-title = ピン留めされたURLを編集
+zen-pinned-tab-edit-url-label = このピン留めされたタブのURLを入力してください：
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
 zen-split-view-limit-toast = 分割ビューにこれ以上パネルを追加できません！
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = コンパクトモード
     .tooltiptext = コンパクトモードの切り替え
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = 絵文字
 zen-icons-picker-svg = 
     .label = アイコン
+zen-emojis-picker-search = 
+    .placeholder = 絵文字を検索
 urlbar-search-mode-zen_actions = アクション
 zen-site-data-settings = 設定
 zen-generic-manage = 管理
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = 許可済み
 zen-site-data-setting-block = ブロック済み
 zen-site-data-protections-enabled = 有効
 zen-site-data-protections-disabled = 無効
-zen-site-data-setting-cross-site = クロスサイトクッキー
 zen-site-data-security-info-extension = 
     .label = 拡張機能
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = すべてのサイト設定
 zen-site-data-header-share = 
     .tooltiptext = このページをシェアする
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = リーダーモードにする
 zen-site-data-header-screenshot = 
@@ -116,10 +129,13 @@ zen-sidebar-notification-updated-heading = アップデートが完了しまし�
 zen-sidebar-notification-updated-label = { -brand-short-name }の新機能
 zen-sidebar-notification-updated-tooltip = 
     .title = リリースノートを表示する
+zen-sidebar-notification-donate-label = { -brand-short-name }に寄付
+zen-sidebar-notification-donate-tooltip = 
+    .title = プロジェクトに寄付
 zen-sidebar-notification-restart-safe-mode-label = 何か壊れましたか？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = セーフモードで再起動する
-zen-window-sync-migration-dialog-title = Windowsを同期させておく
+zen-window-sync-migration-dialog-title = Windowsとの同期を維持
 zen-window-sync-migration-dialog-message = Zenは同一デバイス内のウィンドウを同期するようになり、１つのウィンドウでの操作が、他のウィンドウに、即座に反映されます。
 zen-window-sync-migration-dialog-learn-more = もっと詳しく
 zen-window-sync-migration-dialog-accept = わかりました

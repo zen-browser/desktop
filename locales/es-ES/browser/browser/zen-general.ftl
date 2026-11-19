@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } huecos llenos
 tab-context-zen-remove-essential = 
     .label = Quitar de esenciales
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Reemplazar URL esencial con la actual
-           *[false] Reemplazar URL fijada con la actual
+            [true] Editar URL esencial
+           *[false] Editar URL fijada
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Reemplazar con la URL actual
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Editar…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Cambiar etiqueta...
 tab-context-zen-edit-icon = 
     .label = Cambiar icono...
 zen-themes-corrupted = Su archivo de mods de { -brand-short-name } está dañado. Se ha restablecido el tema por defecto.
-zen-shortcuts-corrupted = Su archivo de atajos de { -brand-short-name } está dañado. Se han restablecido los atajos por defecto.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Se ha habilitado la nueva barra de direcciones, eliminando la necesidad de la página de nueva pestaña.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Confirmar
 zen-pinned-tab-replaced = La URL de la pestaña fijada se ha reemplazado por la URL actual.
+zen-pinned-tab-url-edited = ¡La URL de la pestaña fijada ha sido actualizada!
+zen-pinned-tab-url-invalid = Eso no parece una URL válida.
+zen-pinned-tab-edit-url-title = Editar URL fijada
+zen-pinned-tab-edit-url-label = Introduzca la URL a la que debe apuntar esta pestaña fijada:
 zen-tabs-renamed = ¡La pestaña se ha renombrado con éxito!
 zen-background-tab-opened-toast = ¡Nueva pestaña abierta en segundo plano!
 zen-workspace-renamed-toast = ¡El espacio de trabajo ha sido renombrado con éxito!
 zen-split-view-limit-toast = ¡No se pueden añadir más paneles a la vista dividida!
+zen-sidebar-drag-collapsed-toast = ¡Barra lateral oculta! Use <span>{ $shortcut }</span> para volver a mostrar la barra lateral.
 zen-toggle-compact-mode-button = 
     .label = Modo compacto
     .tooltiptext = Alternar modo compacto
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Iconos
+zen-emojis-picker-search = 
+    .placeholder = Buscar emojis
 urlbar-search-mode-zen_actions = Acciones
 zen-site-data-settings = Ajustes
 zen-generic-manage = Administrar
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
 zen-site-data-protections-enabled = Activada
 zen-site-data-protections-disabled = Desactivada
-zen-site-data-setting-cross-site = Cookie de terceros
 zen-site-data-security-info-extension = 
     .label = Extensión
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Todas las configuraciones del sitio
 zen-site-data-header-share = 
     .tooltiptext = Compartir esta página
+zen-site-data-header-boost = 
+    .tooltiptext = Crear un Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Entrar en modo lectura
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = ¡Actualización completada!
 zen-sidebar-notification-updated-label = Novedades en { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Ver notas de la versión
+zen-sidebar-notification-donate-label = Soporte { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donar al proyecto
 zen-sidebar-notification-restart-safe-mode-label = ¿Algo dejó de funcionar?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reiniciar en modo seguro

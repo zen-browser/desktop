@@ -1,0 +1,72 @@
+[DEFAULT]
+run-if = [
+  "os != 'android'",
+]
+head = "head.js"
+tags = "condprof"
+firefox-appdir = "browser"
+support-files = [
+  "data/sessionCheckpoints_all.json",
+  "data/sessionstore_invalid.js",
+  "data/sessionstore_valid.js",
+]
+
+["test_backup_once.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_encryption.js"]
+skip-if = [
+  "condprof",
+]
+
+["test_encryption_pref_locked.js"]
+
+["test_final_write_cleanup.js"]
+
+["test_format_tab_state_for_saved_group.js"]
+
+["test_glean_backup_can_be_loaded.js"]
+
+["test_histogram_corrupt_files.js"]
+
+["test_migration_lz4compression.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_restore_session_suggestion_count.js"]
+
+["test_session_availability.js"]
+
+["test_session_migration_encryption.js"]
+
+["test_session_migration_show_reason.js"]
+
+["test_session_schema.js"]
+support-files = [
+  "data/sessionstore_complete.json",
+]
+
+["test_shutdown_success_final_write_incomplete.js"]
+
+["test_shutdown_success_no_checkpoints.js"]
+
+["test_shutdown_success_stopped_state.js"]
+
+["test_startup_invalid_session.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_startup_nosession_async.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_startup_session_async.js"]
+
+["test_tab_group_state.js"]
+
+["test_write_outcome.js"]

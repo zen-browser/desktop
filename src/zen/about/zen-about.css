@@ -1,0 +1,257 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+:root {
+  --zen-about-width: 280px;
+  --zen-about-text-color: light-dark(#1c1c1e, #f2f2f4);
+  --zen-about-muted-color: light-dark(rgba(28, 28, 30, 0.6), rgba(242, 242, 244, 0.6));
+  --zen-about-button-background: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+  --zen-about-button-background-hover: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.16));
+  --zen-about-primary-background: light-dark(#1c1c1e, #e8e8ea);
+  --zen-about-primary-color: light-dark(#ffffff, #1c1c1e);
+  --zen-about-success-color: light-dark(#2e9e44, #4ad466);
+  --zen-about-warning-color: light-dark(#c47a00, #f0b429);
+
+  color-scheme: light dark;
+  appearance: none;
+  background: -moz-Dialog;
+  color: var(--zen-about-text-color);
+  font: message-box;
+  /* The root bounds are what size the window. */
+  min-width: var(--zen-about-width);
+  max-width: var(--zen-about-width);
+}
+
+#zen-about-content {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--zen-space-18) var(--zen-space-24) var(--zen-space-10);
+  gap: var(--zen-space-2);
+}
+
+#zen-about-logo {
+  width: var(--zen-size-80);
+  height: var(--zen-size-80);
+  margin-bottom: var(--zen-space-8);
+  pointer-events: none;
+  user-select: none;
+}
+
+#zen-about-name {
+  margin: 0;
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
+  font-size: 1.25em;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--zen-space-4);
+}
+
+.zen-about-muted {
+  margin: 0;
+  color: var(--zen-about-muted-color);
+}
+
+#zen-about-version {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zen-space-6);
+  padding: var(--zen-space-2) var(--zen-space-8);
+  border-radius: var(--zen-border-radius-6);
+
+  &:hover {
+    background: var(--zen-about-button-background);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+  }
+}
+
+#zen-about-copied {
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
+  font-size: 0.9em;
+  font-weight: var(--zen-font-weight-medium);
+  color: AccentColor;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+#zen-about-update {
+  width: 100%;
+  min-height: var(--zen-size-44);
+  margin-top: var(--zen-space-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--zen-space-6);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+#zen-about-update-status {
+  display: flex;
+  align-items: center;
+  gap: var(--zen-space-6);
+  min-height: var(--zen-size-18);
+}
+
+#zen-about-update-text {
+  margin: 0;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+#zen-about-update-icon {
+  display: none;
+  width: var(--size-item-small);
+  height: var(--size-item-small);
+  -moz-context-properties: fill;
+  fill: currentColor;
+
+  #zen-about-update:is(
+    [data-state="checking"],
+    [data-state="downloading"],
+    [data-state="applying"],
+    [data-state="restarting"]
+  ) & {
+    display: block;
+    content: url("chrome://global/skin/icons/loading.svg");
+  }
+
+  #zen-about-update[data-state="up-to-date"] & {
+    display: block;
+    content: url("chrome://global/skin/icons/check.svg");
+    fill: var(--zen-about-success-color);
+  }
+
+  #zen-about-update[data-state="available"] & {
+    display: block;
+    content: url("chrome://browser/skin/zen-icons/sparkles.svg");
+  }
+
+  #zen-about-update[data-state="ready"] & {
+    display: block;
+    content: url("chrome://browser/skin/zen-icons/reload.svg");
+  }
+
+  #zen-about-update:is([data-state="failed"], [data-state="blocked"]) & {
+    display: block;
+    content: url("chrome://global/skin/icons/warning.svg");
+    fill: var(--zen-about-warning-color);
+  }
+}
+
+#zen-about-update-button {
+  appearance: none;
+  margin: 0;
+  user-select: none;
+  padding: var(--zen-space-3) var(--zen-space-10);
+  border: none;
+  border-radius: var(--zen-border-radius-6);
+  background: var(--zen-about-button-background);
+  color: inherit;
+  font: inherit;
+  font-weight: var(--zen-font-weight-medium);
+  transition:
+    background 0.1s,
+    transform 0.1s;
+
+  &:hover {
+    background: var(--zen-about-button-background-hover);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: 2px;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  &.primary {
+    background: var(--zen-about-primary-background);
+    color: var(--zen-about-primary-color);
+
+    &:hover {
+      opacity: var(--zen-opacity-90);
+    }
+  }
+
+  @media (prefers-contrast) {
+    border: 1px solid currentColor;
+  }
+}
+
+#zen-about-content a {
+  color: var(--zen-about-link-color);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    border-radius: var(--zen-border-radius-2);
+  }
+}
+
+#zen-about-links,
+#zen-about-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--zen-space-6);
+  margin: 0;
+
+  /* Inline-block keeps the link underline off the separator. */
+  & a + a::before {
+    content: "·";
+    display: inline-block;
+    margin-inline-end: var(--zen-space-6);
+    color: var(--zen-about-muted-color);
+  }
+}
+
+#zen-about-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-18);
+  margin-top: var(--zen-space-10);
+}
+
+#zen-about-link-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-4);
+}
+
+#zen-about-community {
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #zen-about-update-button {
+    transition: none;
+  }
+}

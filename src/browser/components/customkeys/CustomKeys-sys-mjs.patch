@@ -1,0 +1,26 @@
+diff --git a/browser/components/customkeys/CustomKeys.sys.mjs b/browser/components/customkeys/CustomKeys.sys.mjs
+index 76f99381ab7011992b8f28f8d031ed41f73d6293..070518c5aa3b3d77447f2ba63e288948af5a25ae 100644
+--- a/browser/components/customkeys/CustomKeys.sys.mjs
++++ b/browser/components/customkeys/CustomKeys.sys.mjs
+@@ -4,6 +4,13 @@
+ 
+ import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+ 
++const lazy = {};
++
++ChromeUtils.defineESModuleGetters(lazy, {
++  ZenKeyboardShortcuts:
++    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
++});
++
+ // All the attributes for a <key> element that might specify the key to press.
+ // We include data-l10n-id because keys are often specified using Fluent. Note
+ // that we deliberately remove data-l10n-id when a key is customized because
+@@ -83,6 +90,7 @@ async function applyToNewWindow(window) {
+   }
+   refreshKeysets(window, keysets);
+   observe(window);
++  await lazy.ZenKeyboardShortcuts.migrateLegacyShortcuts(window);
+ }
+ 
+ function refreshKeysets(window, keysets) {

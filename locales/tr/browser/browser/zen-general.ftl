@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Temel sekmelerden kaldır
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Temel sekmenin URL’sini geçerli olanla değiştir
-           *[false] Sabitlenmiş sekme URL’sini geçerli olanla değiştir
+            [true] Temel sekme adresini düzenle
+           *[false] Sabitlenmiş sekme adresini düzenle
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Mevcut adresle değiştir
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Düzenle…
+    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Etiketi Değiştir...
+    .label = Etiketi değiştir…
 tab-context-zen-edit-icon = 
-    .label = Simgeyi Değiştir...
+    .label = Simgeyi değiştir…
 zen-themes-corrupted = { -brand-short-name } adlı modun dosyaları hatalı. Varsayılan temaya sıfırlandılar.
-zen-shortcuts-corrupted = { -brand-short-name } kısayol dosyanız bozuldu. Varsayılan kısayollara sıfırlandı.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Yeni adres çubuğu etkinleştirildi ve yeni sekme sayfalarına olan ihtiyaç ortadan kalktı.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Onayla
 zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiştirildi!
+zen-pinned-tab-url-edited = Sabitlenmiş sekme adresi güncellendi!
+zen-pinned-tab-url-invalid = Bu geçerli bir adres gibi görünmüyor.
+zen-pinned-tab-edit-url-title = Sabitlenmiş sekme adresini düzenle
+zen-pinned-tab-edit-url-label = Bu sabitlenmiş sekmenin yönlendirileceği adresi girin:
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
 zen-split-view-limit-toast = Bölünmüş görünüme daha fazla panel eklenemiyor!
+zen-sidebar-drag-collapsed-toast = Kenar çubuğu gizlendi! Kenar çubuğunu yeniden açmak için <span>{ $shortcut }</span> tuşunu kullanın.
 zen-toggle-compact-mode-button = 
     .label = Kompakt mod
     .tooltiptext = Kompakt modu aç/kapat
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojiler
 zen-icons-picker-svg = 
     .label = Simgeler
+zen-emojis-picker-search = 
+    .placeholder = Emojilerde ara
 urlbar-search-mode-zen_actions = Eylemler
 zen-site-data-settings = Ayarlar
 zen-generic-manage = Yönet
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = İzin verildi
 zen-site-data-setting-block = Engellendi
 zen-site-data-protections-enabled = Etkinleştirildi
 zen-site-data-protections-disabled = Devre dışı bırakıldı
-zen-site-data-setting-cross-site = Siteler arası çerez
 zen-site-data-security-info-extension = 
     .label = Uzantı
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Tüm site ayarları
 zen-site-data-header-share = 
     .tooltiptext = Bu sayfayı paylaş
+zen-site-data-header-boost = 
+    .tooltiptext = Bir Boost oluştur
 zen-site-data-header-reader-mode = 
     .tooltiptext = Okuyucu moduna gir
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Güncelleme tamamlandı!
 zen-sidebar-notification-updated-label = { -brand-short-name }'de neler yeni
 zen-sidebar-notification-updated-tooltip = 
     .title = Sürüm Notlarını Görüntüle
+zen-sidebar-notification-donate-label = { -brand-short-name } uygulamasını destekle
+zen-sidebar-notification-donate-tooltip = 
+    .title = Projeye bağış yap
 zen-sidebar-notification-restart-safe-mode-label = Bir sorun mu oluştu?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Güvenli Modda Yeniden Başlat

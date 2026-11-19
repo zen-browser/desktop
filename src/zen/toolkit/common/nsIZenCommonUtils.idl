@@ -32,4 +32,9 @@ interface nsIZenCommonUtils : nsISupports {
    * @brief Play a single haptic feedback note if supported.
    */
   void playHapticFeedback();
+  /*
+   * @brief Bring the application whose windows are right behind this one's
+   * forward. Only on macOS.
+   */
+  void returnToPreviousApplication();
 };

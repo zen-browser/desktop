@@ -1,0 +1,29 @@
+diff --git a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
+index 9868c288653b83717afb0403901c8adc0058bd4d..f596ad0c0c98f54b425f3e11f28558f6b5299b6c 100644
+--- a/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
++++ b/browser/components/contextualidentity/content/ContainerCreationPanel.mjs
+@@ -4,7 +4,6 @@
+ 
+ import { ContainerEditor } from "chrome://browser/content/usercontext/ContainerEditor.mjs";
+ 
+-const ANCHOR_ID = "userContext-icons";
+ const ANCHOR_PINNED_CLASS = "container-anchor-pinned";
+ 
+ const lazy = {};
+@@ -80,7 +79,7 @@ export const ContainerCreationPanel = {
+     createButton.addEventListener("click", onCreate);
+     cancelButton.addEventListener("click", onCancel);
+ 
+-    let anchor = doc.getElementById(ANCHOR_ID);
++    let anchor = win.gNavToolbox;
+ 
+     panel.addEventListener("popupshown", () => editor.focus(), { once: true });
+     panel.addEventListener(
+@@ -99,6 +98,6 @@ export const ContainerCreationPanel = {
+       anchor.hidden = false;
+     }
+ 
+-    panel.openPopup(anchor, "bottomright topright");
++    panel.openPopup(anchor, win.gZenUIManager.panelUIPosition(panel, anchor));
+   },
+ };

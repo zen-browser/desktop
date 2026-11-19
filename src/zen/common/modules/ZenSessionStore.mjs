@@ -5,13 +5,18 @@
 import { nsZenPreloadedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 class ZenSessionStore extends nsZenPreloadedFeature {
+  #initialized = Promise.withResolvers();
+
   init() {
-    this.#waitAndCleanup();
+    SessionStore.promiseInitialized.then(() => this.#initialized.resolve());
   }
 
-  promiseInitialized = new Promise(resolve => {
-    this._resolveInitialized = resolve;
-  });
+  /**
+   * Resolves once Firefox's SessionStore has finished initializing.
+   */
+  get promiseInitialized() {
+    return this.#initialized.promise;
+  }
 
   restoreInitialTabData(tab, tabData) {
     if (tabData.zenWorkspace) {
@@ -39,15 +44,6 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData._zenPinnedInitialState) {
       tab._zenPinnedInitialState = tabData._zenPinnedInitialState;
     }
-  }
-
-  async #waitAndCleanup() {
-    await SessionStore.promiseInitialized;
-    this.#cleanup();
-  }
-
-  #cleanup() {
-    this._resolveInitialized();
   }
 }
 

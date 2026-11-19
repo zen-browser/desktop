@@ -17,9 +17,13 @@ support-files = [
 
 ["browser_boosts_animation.js"]
 
+["browser_boosts_backend.js"]
+
 ["browser_boosts_background.js"]
 
 ["browser_boosts_border.js"]
+
+["browser_boosts_code_editor.js"]
 
 ["browser_boosts_gradient.js"]
 
@@ -46,3 +50,5 @@ support-files = [
 ["browser_boosts_svg_use_sprite.js"]
 
 ["browser_boosts_text_color.js"]
+
+["browser_boosts_zap_bar.js"]

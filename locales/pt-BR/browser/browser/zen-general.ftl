@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Perfil atual
+zen-panel-ui-current-profile-text = perfil atual
 unified-extensions-description = As extensões são usadas para trazer mais recursos adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } Espaços preenchidos
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Substituir URL Essencial pela atual
-           *[false] Substituir URL Fixada pela atual
+            [true] Editar URL Essencial
+           *[false] Editar URL Fixada
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Substituir por URL atual
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Editar…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Alterar Rótulo...
 tab-context-zen-edit-icon = 
     .label = Alterar Ícone...
 zen-themes-corrupted = Seu arquivo de modificações { -brand-short-name } está corrompido. Eles foram redefinidos para o tema padrão.
-zen-shortcuts-corrupted = Seu arquivo de atalhos { -brand-short-name } está corrompido. Eles foram redefinidos para os atalhos padrão.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = A nova barra de URL foi ativada, removendo a necessidade de novas páginas de guia.<br/><br/>Tente abrir uma nova guia para ver a nova barra de URL em ação!
 zen-disable = Desativar
@@ -44,11 +49,16 @@ zen-general-cancel-label =
     .label = Cancelar
 zen-general-confirm = 
     .label = Confirmar
-zen-pinned-tab-replaced = A URL da guia fixada foi substituída pela URL atual!
-zen-tabs-renamed = A guia foi renomeada com sucesso!
-zen-background-tab-opened-toast = Nova guia em segundo plano aberta!
+zen-pinned-tab-replaced = A URL da aba fixada foi substituída pela URL atual!
+zen-pinned-tab-url-edited = A URL da aba fixada foi atualizada!
+zen-pinned-tab-url-invalid = Isso não parece ser uma URL válida.
+zen-pinned-tab-edit-url-title = Editar URL Fixada
+zen-pinned-tab-edit-url-label = Digite a URL que esta aba fixada deve apontar para:
+zen-tabs-renamed = A aba foi renomeada com sucesso!
+zen-background-tab-opened-toast = Nova aba em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
 zen-split-view-limit-toast = Não é possível adicionar mais painéis à visualização dividida!
+zen-sidebar-drag-collapsed-toast = Barra lateral oculta! Use <span>{ $shortcut }</span> para trazer a barra lateral de volta.
 zen-toggle-compact-mode-button = 
     .label = Modo Compacto
     .tooltiptext = Alternar Modo Compacto
@@ -63,6 +73,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ícones
+zen-emojis-picker-search = 
+    .placeholder = Procurar emojis
 urlbar-search-mode-zen_actions = Ações
 zen-site-data-settings = Configurações
 zen-generic-manage = Gerenciar
@@ -75,7 +87,6 @@ zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
 zen-site-data-protections-enabled = Habilitado
 zen-site-data-protections-disabled = Desabilitado
-zen-site-data-setting-cross-site = Cookie entre Sites
 zen-site-data-security-info-extension = 
     .label = Extensão
 zen-site-data-security-info-secure = 
@@ -90,6 +101,8 @@ zen-site-data-site-settings =
     .label = Todas as Configurações do Site
 zen-site-data-header-share = 
     .tooltiptext = Compartilhar Esta Página
+zen-site-data-header-boost = 
+    .tooltiptext = Criar um Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Entrar no Modo Leitura
 zen-site-data-header-screenshot = 
@@ -114,6 +127,9 @@ zen-sidebar-notification-updated-heading = Atualização Completa!
 zen-sidebar-notification-updated-label = O que há de novo em { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Ver Notas da Versão
+zen-sidebar-notification-donate-label = Apoie { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Doe para o projeto
 zen-sidebar-notification-restart-safe-mode-label = Algo quebrou?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reiniciar no Modo Seguro

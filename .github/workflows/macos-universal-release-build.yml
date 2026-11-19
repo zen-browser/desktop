@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
@@ -31,6 +31,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -98,6 +99,16 @@ jobs:
           npm run build
           cd engine
           ./mach configure
+
+      - name: Build host mar tool
+        run: |
+          set -ex
+          cd engine
+          echo "ac_add_options --enable-project=tools/update-packaging" > mar-mozconfig
+          echo "mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-mar-tools" >> mar-mozconfig
+          MOZCONFIG=$PWD/mar-mozconfig ./mach build -v
+          cp obj-mar-tools/dist/host/bin/mar ../zen-macos-host-mar
+          rm -rf obj-mar-tools mar-mozconfig
 
       - name: Download x86_64 DMG from artifacts
         uses: actions/download-artifact@v4
@@ -212,11 +223,6 @@ jobs:
             --no-s3-acceleration \
             --wait
           xcrun stapler staple "zen.macos-universal.dmg"
-
-      - name: Download host mar
-        uses: actions/download-artifact@v4
-        with:
-          name: zen-macos-host-mar
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

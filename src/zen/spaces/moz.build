@@ -5,8 +5,15 @@
 EXTRA_JS_MODULES.zen += [
   "ZenGradientGenerator.mjs",
   "ZenSpace.mjs",
+  "ZenSpaceAddSwipe.mjs",
   "ZenSpaceCreation.mjs",
   "ZenSpaceIcons.mjs",
   "ZenSpaceManager.mjs",
   "ZenSpacesSwipe.mjs",
 ]
+
+SOURCES += [
+  "nsZenSwipeOverrides.cpp",
+]
+
+FINAL_LIBRARY = "xul"

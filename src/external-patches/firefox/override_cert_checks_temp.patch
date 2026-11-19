@@ -1,0 +1,32 @@
+diff --git a/toolkit/mozapps/update/common/registrycertificates.cpp b/toolkit/mozapps/update/common/registrycertificates.cpp
+index f7f5acdfa08879a0ff3095e15eebf7b436cf5092..5915141b3f4a6d3536841cc1040e70afe033e058 100644
+--- a/toolkit/mozapps/update/common/registrycertificates.cpp
++++ b/toolkit/mozapps/update/common/registrycertificates.cpp
+@@ -33,9 +33,21 @@
+  *
+  * @return TRUE if the binary matches any of the allowed certificates.
+  */
++// TEMPORARY: accept any binary without consulting the allowed-certificate
++// values. Those values are only ever written by an installer run, so after a
++// signing certificate change every existing install still names the previous
++// certificate, the maintenance service refuses the newly signed binaries, and
++// updates fall back to prompting for elevation every time. Remove this define
++// and the block below once installs have been migrated.
++#define ZEN_SKIP_ALLOWED_CERTIFICATE_CHECK 1
++
+ BOOL DoesBinaryMatchAllowedCertificates(LPCWSTR basePathForUpdate,
+                                         LPCWSTR filePath,
+                                         BOOL allowFallbackKeySkip) {
++#ifdef ZEN_SKIP_ALLOWED_CERTIFICATE_CHECK
++  LOG(("Skipping the allowed certificate check for \"%ls\"", filePath));
++  return TRUE;
++#else
+ #ifdef DISABLE_UPDATER_AUTHENTICODE_CHECK
+   if (allowFallbackKeySkip) {
+     LOG_WARN(("Skipping authenticode check"));
+@@ -163,4 +175,5 @@ BOOL DoesBinaryMatchAllowedCertificates(LPCWSTR basePathForUpdate,
+   RegCloseKey(baseKey);
+   // No certificates match, :'(
+   return FALSE;
++#endif  // ZEN_SKIP_ALLOWED_CERTIFICATE_CHECK
+ }

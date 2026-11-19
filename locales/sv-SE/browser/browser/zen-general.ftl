@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } platser fyllda
 tab-context-zen-remove-essential = 
     .label = Ta bort från Essentials
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Ersätt Essential webbadress med nuvarande
-           *[false] Ersätt fäst webbadress med nuvarande
+            [true] Redigera Essential URL
+           *[false] Redigera fäst URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Ersätt med nuvarande URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Redigera…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Ändra etikett...
 tab-context-zen-edit-icon = 
     .label = Ändra ikon...
 zen-themes-corrupted = Din { -brand-short-name } modds-fil är skadad. De har återställts till standardtemat.
-zen-shortcuts-corrupted = Din { -brand-short-name } Genvägsfil är korrupt. De har återställts till standardgenvägarna.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Det nya adressfältet har aktiverats, vilket eliminerar behovet av nya fliksidor.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekräfta
 zen-pinned-tab-replaced = Den fästa flikens URL har ersatts med den aktuella URL!
+zen-pinned-tab-url-edited = Fäst flik URL har uppdaterats!
+zen-pinned-tab-url-invalid = Det ser inte ut som en giltig URL.
+zen-pinned-tab-edit-url-title = Redigera fäst URL
+zen-pinned-tab-edit-url-label = Ange den URL som den fästa fliken ska peka till:
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
 zen-split-view-limit-toast = Kan inte lägga till fler paneler till delad vy!
+zen-sidebar-drag-collapsed-toast = Sidofältet dolt! Använd <span>{$shortcut }</span> för att få tillbaka sidofältet.
 zen-toggle-compact-mode-button = 
     .label = Kompakt läge
     .tooltiptext = Växla kompakt läge
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ikoner
+zen-emojis-picker-search = 
+    .placeholder = Sök emojis
 urlbar-search-mode-zen_actions = Åtgärder
 zen-site-data-settings = Inställningar
 zen-generic-manage = Hantera
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Tillåtet
 zen-site-data-setting-block = Blockerade
 zen-site-data-protections-enabled = Aktiverad
 zen-site-data-protections-disabled = Inaktiverad
-zen-site-data-setting-cross-site = Globala kakor
 zen-site-data-security-info-extension = 
     .label = Tillägg
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Alla webbplatsinställningar
 zen-site-data-header-share = 
     .tooltiptext = Dela denna sida
+zen-site-data-header-boost = 
+    .tooltiptext = Skapa en Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Öppna läsläge
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Uppdatering slutförd!
 zen-sidebar-notification-updated-label = Vad är nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Visa versionsfakta
+zen-sidebar-notification-donate-label = Stöd { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donera till projektet
 zen-sidebar-notification-restart-safe-mode-label = Har något gått sönder?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Starta om i felsäkert läge

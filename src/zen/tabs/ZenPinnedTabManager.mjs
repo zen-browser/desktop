@@ -34,7 +34,8 @@ class ZenPinnedTabsObserver {
     ChromeUtils.defineESModuleGetters(lazy, {
       // eslint-disable-next-line mozilla/valid-lazy
       E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
-      TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+      TabStateCache:
+        "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
     });
     this.#listenPinnedTabEvents();
   }
@@ -144,10 +145,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
     const tab = event.target;
-    if (this._ignoreNextTabPinnedEvent) {
-      delete this._ignoreNextTabPinnedEvent;
-      return;
-    }
     switch (action) {
       case "TabPinned":
         tab._zenClickEventListener = this._zenClickEventListener;
@@ -356,7 +353,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         alwaysUnload &&
         ["close", "reset", "switch", "reset-switch"].includes(behavior)
       ) {
-        behavior = behavior.contains("reset")
+        behavior = behavior.includes("reset")
           ? "reset-unload-switch"
           : "unload-switch";
       }
@@ -373,6 +370,23 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         case "reset-switch":
         case "switch":
           if (behavior.includes("unload")) {
+            const allAreUnloaded = pinnedTabs.every(
+              tab =>
+                tab.hasAttribute("pending") &&
+                !tab.hasAttribute("zen-essential")
+            );
+            for (const tabItem of pinnedTabs) {
+              if (allAreUnloaded && closeIfPending) {
+                await this.onCloseTabShortcut(event, tabItem, {
+                  behavior: "close",
+                });
+                return;
+              }
+            }
+            const successful = await gBrowser.explicitUnloadTabs(pinnedTabs);
+            if (!successful) {
+              return;
+            }
             for (const tab of pinnedTabs) {
               if (tab.hasAttribute("glance-id")) {
                 // We have a glance tab inside the tab we are trying to unload,
@@ -411,23 +425,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             if (folderToUnload) {
               await gZenFolders.animateUnloadAll(folderToUnload);
             }
-            const allAreUnloaded = pinnedTabs.every(
-              tab =>
-                tab.hasAttribute("pending") &&
-                !tab.hasAttribute("zen-essential")
-            );
-            for (const tabItem of pinnedTabs) {
-              if (allAreUnloaded && closeIfPending) {
-                await this.onCloseTabShortcut(event, tabItem, {
-                  behavior: "close",
-                });
-                return;
-              }
-            }
-            let successful = await gBrowser.explicitUnloadTabs(pinnedTabs);
-            if (!successful) {
-              return;
-            }
             for (const tab of pinnedTabs) {
               tab.removeAttribute("discarded");
             }
@@ -465,14 +462,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
 
     // Remove everything except the entry we want to keep
+    let url;
+    try {
+      url = Services.io.newURI(initialState.entry.url);
+    } catch {}
     state.entries = [
       {
         ...initialState.entry,
         triggeringPrincipal_base64: E10SUtils.serializePrincipal(
-          Services.scriptSecurityManager.createContentPrincipal(
-            Services.io.newURI(initialState.entry.url),
-            {}
-          )
+          url
+            ? Services.scriptSecurityManager.createContentPrincipal(url, {})
+            : Services.scriptSecurityManager.createNullPrincipal()
         ),
       },
     ];
@@ -484,6 +484,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     // otherwise when we reset the pinned tab, it will scroll to the previous position
     // which can be confusing for the user, especially if they have a long page.
     delete state.scroll;
+
+    // Session storage is restored along with the tab, and sites that route on
+    // the client read their last view back out of it, so the page would come
+    // back showing where the tab had got to rather than the URL being reset to.
+    delete state.storage;
 
     SessionStore.setTabState(tab, state);
     this.resetPinChangedUrl(tab);
@@ -503,7 +508,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  addToEssentials(tab) {
+  addToEssentials(tab, { replicating = false } = {}) {
     // eslint-disable-next-line no-nested-ternary
     const tabs = tab
       ? // if it's already an array, dont make it [tab]
@@ -518,7 +523,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       // eslint-disable-next-line no-shadow
       let tab = tabs[i];
       const section = gZenWorkspaces.getEssentialsSection(tab);
-      if (!this.canEssentialBeAdded(tab)) {
+      // canEssentialBeAdded gates user-initiated adds on the *active* space's
+      // container. A replicated add mirrors a decision already made in another
+      // window or on another device, always into the tab's own container
+      // section.
+      if (!replicating && !this.canEssentialBeAdded(tab)) {
+        this.log(`addToEssentials rejected for ${tab.id}`);
         movedAll = false;
         continue;
       }
@@ -541,7 +551,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         });
       } else {
         gBrowser.pinTab(tab);
-        this._ignoreNextTabPinnedEvent = true;
       }
       tab.setAttribute("zenDefaultUserContextId", true);
       if (tab.selected) {
@@ -570,6 +579,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     for (let i = 0; i < tabs.length; i++) {
       // eslint-disable-next-line no-shadow
       const tab = tabs[i];
+      if (this._canLog) {
+        // eslint-disable-next-line no-console
+        console.trace(
+          `ZenPinnedTabManager: removing tab ${tab.id} from essentials ` +
+            `(unpin=${unpin})`
+        );
+      }
       tab.removeAttribute("zen-essential");
       if (
         gZenWorkspaces.workspaceEnabled &&
@@ -612,8 +628,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
               <menupopup>
                 <menuitem id="context_zen-replace-pinned-url-with-current"
                           data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
-                          data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
-                          command="cmd_zenReplacePinnedUrlWithCurrent"/>
+                          data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"/>
                 <menuitem id="context_zen-edit-pinned-url"
                           data-lazy-l10n-id="tab-context-zen-edit-pinned-url"
                           command="cmd_zenEditPinnedUrl"/>
@@ -626,6 +641,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                       command="cmd_zenPinnedTabResetNoTab"/>
         `);
     document.getElementById("tabContextMenu").appendChild(elements);
+
+    document
+      .getElementById("context_zen-replace-pinned-url-with-current")
+      .addEventListener("command", () => this.replacePinnedUrlWithCurrent());
 
     const element = window.MozXULElement.parseXULToFragment(`
             <menuitem id="context_zen-add-essential"
@@ -650,7 +669,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     document
       .getElementById("context_zen-edit-tab-title")
       .addEventListener("command", event => {
-        gZenVerticalTabsManager.renameTabStart(event);
+        gZenTabRenamer.start(event);
       });
     document
       .getElementById("context_zen-edit-tab-icon")
@@ -668,7 +687,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             }
             gBrowser.setIcon(tab, icon);
             lazy.TabStateCache.update(tab.permanentKey, {
-              image: null,
+              image: icon || null,
             });
           },
         });
@@ -695,18 +714,19 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       "context_zen-replace-pinned-url-with-current"
     );
     [zenResetPinnedTab, zenEditPinnedPage].forEach(element => {
-      if (element) {
-        element.hidden = !isVisible;
-      }
+      element.hidden = !isVisible;
     });
     [zenResetPinnedTab, zenEditPinnedPage, zenReplacePinnedUrl].forEach(
       element => {
-        if (element) {
-          document.l10n.setArgs(element, { isEssential });
-        }
+        document.l10n.setArgs(element, { isEssential });
       }
     );
-    zenAddEssential.hidden = isEssential || !!contextTab.group;
+    zenReplacePinnedUrl.disabled = this.#isPinnedUrl(
+      contextTab,
+      contextTab.linkedBrowser?.currentURI?.spec
+    );
+    zenAddEssential.hidden =
+      isEssential || contextTab.group?.hasAttribute("split-view-group");
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {
         num: gBrowser._numZenEssentials,
@@ -835,6 +855,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         let isRegularTabs = false;
         // Check for essentials container
         if (essentialTabsTarget) {
+          if (gZenWorkspaces.containerSpecificEssentials) {
+            const targetContainerId =
+              gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0;
+            const sameContextId =
+              (tab.getAttribute("usercontextid") || 0) == targetContainerId;
+            if (!sameContextId && tab.hasAttribute("zen-essential")) {
+              this.removeEssentials(tab, false);
+              moved = true;
+            }
+          }
           if (
             !tab.hasAttribute("zen-essential") &&
             !tab?.group?.hasAttribute("split-view-group")
@@ -935,17 +965,24 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    // Remove # from the URL
-    const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
-    const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
-    if (
-      Services.io.newURI(currentUrl).spec === Services.io.newURI(pinUrl).spec
-    ) {
+    if (this.#isPinnedUrl(tab, location)) {
       this.resetPinChangedUrl(tab);
       return;
     }
     this.pinHasChangedUrl(tab);
+  }
+
+  // Ignores the fragment, so in-page anchors still count as the pinned page.
+  #isPinnedUrl(tab, url) {
+    const pinUrl = tab._zenPinnedInitialState?.entry?.url;
+    if (!pinUrl || !url) {
+      return false;
+    }
+    return (
+      Services.io.newURI(url.split("#")[0]).spec ===
+      Services.io.newURI(pinUrl.split("#")[0]).spec
+    );
   }
 
   resetPinChangedUrl(tab) {
@@ -1009,12 +1046,18 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   canEssentialBeAdded(tab) {
+    if (tab.group?.hasAttribute("split-view-group")) {
+      return false;
+    }
+    const isExistingEssentialTab = tab.hasAttribute("zen-essential");
     return (
       !(
         (tab.getAttribute("usercontextid") || 0) !=
-          gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
+          (gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0) &&
         gZenWorkspaces.containerSpecificEssentials
-      ) && gBrowser._numZenEssentials < this.maxEssentialTabs
+      ) &&
+      (isExistingEssentialTab ||
+        gBrowser._numZenEssentials < this.maxEssentialTabs)
     );
   }
 

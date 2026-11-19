@@ -1,0 +1,66 @@
+{
+  "versatile-color": {
+    "--zen-welcome-accent": { "external": true }
+  },
+  "border-color": {
+    "--zen-welcome-border": { "external": true },
+    "--zen-welcome-check-border-color": {
+      "value": {
+        "light": "var(--color-black-alpha-30)",
+        "dark": "var(--color-white-alpha-40)"
+      }
+    }
+  },
+  "background-color": {
+    "--zen-welcome-content-bg": { "external": true },
+    "--zen-welcome-sidebar-bg": { "external": true },
+    "--zen-welcome-surface-bg": { "external": true },
+    "--zen-welcome-tile-bg": { "external": true },
+    "--zen-welcome-start-button-background": { "value": "rgb(62, 115, 62)" },
+    "--zen-welcome-mock-browser-background": {
+      "value": { "light": "#e2e2e2", "dark": "#202020" }
+    }
+  },
+  "text-color": {
+    "--zen-welcome-text-secondary": { "external": true },
+    "--zen-welcome-pages-text-color": {
+      "value": { "light": "#101010", "dark": "#ffffff" }
+    }
+  },
+  "box-shadow": {
+    "--zen-welcome-pages-shadow": { "value": "0 3px 8px rgba(0, 0, 0, 0.05)" },
+    "--zen-welcome-sidebar-shadow": {
+      "value": "4px 0 24px rgba(0, 0, 0, 0.05)"
+    },
+    "--zen-welcome-surface-shadow": {
+      "value": "0 2px 10px rgba(0, 0, 0, 0.05)"
+    },
+    "--zen-welcome-mock-browser-shadow": {
+      "value": "0 8px 40px rgba(0, 0, 0, 0.12)"
+    }
+  },
+  "size": {
+    "--zen-welcome-window-min-width": { "value": "875px" },
+    "--zen-welcome-window-min-height": { "value": "560px" },
+    "--zen-welcome-start-button-min-width": { "value": "100px" },
+    "--zen-welcome-option-max-width": { "value": "30rem" },
+    "--zen-welcome-option-compact-max-width": { "value": "24rem" },
+    "--zen-welcome-option-compact-min-height": { "value": "7.5rem" },
+    "--zen-welcome-import-option-min-height": { "value": "9rem" },
+    "--zen-welcome-mock-tab-height": { "value": "4.5rem" }
+  },
+  "border-radius": {
+    "--zen-welcome-pages-border-radius": { "value": "1.4rem" },
+    "--zen-welcome-mock-browser-border-radius": { "value": "2.4rem" },
+    "--zen-welcome-essential-border-radius": { "value": "2rem" },
+    "--zen-welcome-mock-tab-border-radius": { "value": "1.6rem" }
+  },
+  "font-size": {
+    "--zen-welcome-title-font-size": { "value": "5.2rem" },
+    "--zen-welcome-back-font-size": { "value": "1.1rem" },
+    "--zen-welcome-heading-font-size": { "value": "3rem" },
+    "--zen-welcome-description-font-size": { "value": "1.25rem" },
+    "--zen-welcome-import-profile-font-size": { "value": "1.05rem" },
+    "--zen-welcome-option-font-size": { "value": "1.3rem" }
+  }
+}

@@ -106,38 +106,89 @@ class nsZenWorkspaceIcons extends MozXULElement {
   #createWorkspaceIcon(workspace) {
     const button = document.createXULElement("toolbarbutton");
     button.setAttribute("class", "subviewbutton toolbarbutton-1");
-    button.setAttribute("tooltiptext", workspace.name);
     button.setAttribute("zen-workspace-id", workspace.uuid);
     button.setAttribute("context", "zenWorkspaceMoreActions");
-    const icon = document.createXULElement("label");
-    icon.setAttribute("class", "zen-workspace-icon");
-    const isSvgIcon = workspace.icon && workspace.icon.endsWith(".svg");
-    if (gZenWorkspaces.workspaceHasIcon(workspace)) {
-      if (isSvgIcon) {
-        const image = document.createElement("img");
-        image.src = workspace.icon;
+    button.addEventListener("command", this);
+    this.#updateWorkspaceIcon(button, workspace);
+    return button;
+  }
+
+  /**
+   * Syncs the parts of a workspace button that can change between updates, so
+   * an existing button can be reused instead of rebuilt.
+   *
+   * @param {Element} button - The button standing in for the workspace
+   * @param {object} workspace - The workspace it represents
+   */
+  #updateWorkspaceIcon(button, workspace) {
+    button.setAttribute("tooltiptext", workspace.name);
+
+    const isSvgIcon = !!workspace.icon?.endsWith(".svg");
+    const hasIcon = gZenWorkspaces.workspaceHasIcon(workspace);
+
+    let image = button.querySelector("img.zen-workspace-icon");
+    if (hasIcon && isSvgIcon) {
+      if (!image) {
+        image = document.createElement("img");
         image.classList.add("zen-workspace-icon");
         button.appendChild(image);
-      } else {
-        icon.textContent = workspace.icon;
+      }
+      if (image.getAttribute("src") !== workspace.icon) {
+        image.src = workspace.icon;
       }
     } else {
-      icon.setAttribute("no-icon", true);
+      image?.remove();
     }
-    if (!isSvgIcon) {
+
+    let icon = button.querySelector("label.zen-workspace-icon");
+    if (isSvgIcon) {
+      icon?.remove();
+      return;
+    }
+    if (!icon) {
+      icon = document.createXULElement("label");
+      icon.setAttribute("class", "zen-workspace-icon no-squircles");
       button.appendChild(icon);
     }
-    button.addEventListener("command", this);
-    return button;
+    if (hasIcon) {
+      icon.removeAttribute("no-icon");
+      icon.textContent = workspace.icon;
+    } else {
+      icon.setAttribute("no-icon", true);
+      icon.textContent = "";
+    }
   }
 
   async #updateIcons() {
     const workspaces = gZenWorkspaces.getWorkspaces();
-    this.innerHTML = "";
-    for (const workspace of workspaces) {
-      const button = this.#createWorkspaceIcon(workspace);
-      this.appendChild(button);
+    const reusable = new Map();
+    for (const button of this.children) {
+      const uuid = button.getAttribute("zen-workspace-id");
+      if (uuid) {
+        reusable.set(uuid, button);
+      }
     }
+
+    let slot = this.firstElementChild;
+    for (const workspace of workspaces) {
+      const existing = reusable.get(workspace.uuid);
+      if (existing) {
+        reusable.delete(workspace.uuid);
+        this.#updateWorkspaceIcon(existing, workspace);
+      }
+      const button = existing ?? this.#createWorkspaceIcon(workspace);
+      if (button === slot) {
+        slot = slot.nextElementSibling;
+      } else if (existing) {
+        this.moveBefore(button, slot);
+      } else {
+        this.insertBefore(button, slot);
+      }
+    }
+    for (const button of reusable.values()) {
+      button.remove();
+    }
+
     if (workspaces.length <= 1) {
       this.setAttribute("dont-show", "true");
     } else {
@@ -169,7 +220,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
     for (const button of buttons) {
       if (button.getAttribute("zen-workspace-id") == uuid) {
         selected = i;
-      } else {
+      } else if (button.hasAttribute("active")) {
         button.removeAttribute("active");
       }
       i++;
@@ -178,7 +229,12 @@ class nsZenWorkspaceIcons extends MozXULElement {
       return;
     }
     buttons[selected].setAttribute("active", true);
-    buttons[selected].scrollIntoView({ behavior: "smooth", inline: "nearest" });
+    window.promiseDocumentFlushed(() => {
+      buttons[selected].scrollIntoView({
+        behavior: "smooth",
+        inline: "nearest",
+      });
+    });
     this.setAttribute("selected", selected);
   }
 

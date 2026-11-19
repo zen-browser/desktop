@@ -1,0 +1,34 @@
+[DEFAULT]
+# Currently disabled on debug due to debug-only failures, see bug 1549723.
+# Disabled on Linux asan due to bug 1549729.
+skip-if = [
+  "debug",
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && asan",
+  "tsan",
+]
+# to avoid overhead when running the browser normally, StartupRecorder.sys.mjs will
+# do almost nothing unless browser.startup.record is true.
+# gfx.canvas.willReadFrequently.enable is just an optimization, but needs to be
+# set during early startup to have an impact as a canvas will be used by
+# StartupRecorder.sys.mjs
+prefs = [
+  "browser.startup.record=true",
+  "gfx.canvas.willReadFrequently.enable=true",
+]
+environment = [
+  "GNOME_ACCESSIBILITY=0",
+  "MOZ_PROFILER_STARTUP=1",
+  "MOZ_PROFILER_STARTUP_PERFORMANCE_TEST=1",
+  "MOZ_PROFILER_STARTUP_FEATURES=js,mainthreadio",
+  "MOZ_PROFILER_STARTUP_ENTRIES=10000000",
+]
+
+["../browser_startup_content_mainthreadio.js"]
+
+["../browser_startup_mainthreadio.js"]
+skip-if = [
+  "os == 'win' && msix", # Bug 1833639
+  "socketprocess_networking", # bug 1707724
+]
+
+["../browser_startup_syncIPC.js"]

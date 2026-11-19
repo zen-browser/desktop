@@ -1,0 +1,900 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+:root {
+  --zen-settings-font-size-title: 1.154rem;
+  --zen-settings-font-size-heading: 1.077rem;
+  --zen-settings-font-size-small: 0.923rem;
+  --zen-settings-font-size-tiny: 0.615rem;
+
+  --zen-settings-min-width: 840px;
+  --zen-settings-min-height: 440px;
+  --zen-settings-sidebar-width: 208px;
+
+  --zen-settings-sidebar-background: light-dark(#e9e9eb, #262627);
+  --zen-settings-sidebar-mica-background: light-dark(
+    rgba(255, 255, 255, 0.35),
+    rgba(32, 32, 33, 0.35)
+  );
+  --zen-settings-sticky-background: light-dark(#fcfcfc, #282829);
+  --zen-settings-shortcuts-aside-width: 236px;
+  --zen-settings-keyword-width: 110px;
+  --zen-settings-dialog-width: 480px;
+  --zen-settings-dialog-max-width: calc(100vw - 40px);
+  --zen-settings-dialog-max-height: calc(100vh - 40px);
+  --zen-settings-dialog-backdrop: light-dark(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+  --zen-settings-layout-thumbnail-width: 84px;
+  --zen-settings-art-key-size: 60px;
+  --zen-settings-art-key-icon-size: 50cqi;
+  --zen-settings-art-key-edge-width: 4px 4px 8px;
+  --zen-settings-drop-before-shadow: inset 0 2px 0 AccentColor;
+  --zen-settings-drop-after-shadow: inset 0 -2px 0 AccentColor;
+  --zen-settings-art-key-face: linear-gradient(#bcd0fb, #8fb0f2);
+  --zen-settings-art-key-edge: #2f6be6;
+  --zen-settings-art-key-color: #2f6be6;
+  --zen-settings-heart-color: light-dark(#e0245e, #ff5c8a);
+  --zen-settings-card-background: light-dark(
+    rgba(255, 255, 255, 0.75),
+    rgba(255, 255, 255, 0.045)
+  );
+  --zen-settings-hover-background: light-dark(
+    rgba(0, 0, 0, 0.06),
+    rgba(255, 255, 255, 0.07)
+  );
+  --zen-settings-button-background: light-dark(
+    rgba(0, 0, 0, 0.07),
+    rgba(255, 255, 255, 0.09)
+  );
+  --zen-settings-button-background-hover: light-dark(
+    rgba(0, 0, 0, 0.11),
+    rgba(255, 255, 255, 0.14)
+  );
+  --zen-settings-primary-background-hover: color-mix(
+    in srgb,
+    AccentColor 88%,
+    CanvasText
+  );
+  --zen-settings-separator-color: light-dark(
+    rgba(0, 0, 0, 0.08),
+    rgba(255, 255, 255, 0.08)
+  );
+  --zen-settings-sidebar-border-color: light-dark(
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.45)
+  );
+  --zen-settings-text-color: light-dark(#1c1c1e, #f2f2f4);
+  --zen-settings-muted-color: light-dark(
+    rgba(28, 28, 30, 0.6),
+    rgba(242, 242, 244, 0.55)
+  );
+  --zen-settings-subtitle-color: light-dark(
+    rgba(28, 28, 30, 0.8),
+    rgba(242, 242, 244, 0.78)
+  );
+  --zen-settings-success-color: light-dark(#2e9e44, #4ad466);
+  --zen-settings-warning-color: light-dark(#c47a00, #f0b429);
+
+  color-scheme: light dark;
+  appearance: none;
+  background: var(--zen-settings-background);
+  color: var(--zen-settings-text-color);
+  font: message-box;
+  min-width: var(--zen-settings-min-width);
+  min-height: var(--zen-settings-min-height);
+
+  @media (-moz-windows-mica) or (-moz-platform: macos) {
+    background: transparent;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#zen-settings-root {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar */
+
+#zen-settings-sidebar {
+  box-sizing: border-box;
+  flex: none;
+  width: var(--zen-settings-sidebar-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--zen-space-12);
+  padding: var(--zen-space-12);
+  background: var(--zen-settings-sidebar-background);
+  border-inline-end: 1px solid var(--zen-settings-sidebar-border-color);
+  overflow-y: auto;
+  -moz-window-dragging: drag;
+  position: relative;
+
+  @media (-moz-platform: macos) {
+    padding-top: var(--zen-space-50);
+    appearance: auto;
+    -moz-default-appearance: -moz-sidebar;
+    background: none;
+  }
+
+  @media (-moz-windows-mica) {
+    background: var(--zen-settings-sidebar-mica-background);
+  }
+}
+
+#zen-settings-sidebar > .titlebar-buttonbox-container {
+  position: absolute;
+  top: var(--zen-space-18);
+  inset-inline-start: var(--zen-space-8);
+}
+
+#zen-settings-categories,
+#zen-settings-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-2);
+}
+
+#zen-settings-links {
+  padding-top: var(--zen-space-10);
+  border-top: 1px solid var(--zen-settings-separator-color);
+}
+
+.zen-settings-category {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: var(--zen-space-10);
+  min-height: var(--zen-size-30);
+  margin: 0;
+  padding: 0 var(--zen-space-10);
+  border: none;
+  border-radius: var(--zen-border-radius-8);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  -moz-window-dragging: no-drag;
+
+  & > img {
+    flex: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+    pointer-events: none;
+  }
+
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    background: var(--zen-settings-hover-background);
+  }
+
+  &[aria-selected="true"] {
+    background: AccentColor;
+    color: AccentColorText;
+    font-weight: var(--zen-font-weight-medium);
+  }
+
+  @media not (-moz-platform: macos) {
+    min-height: var(--zen-size-38);
+    padding: 0 var(--zen-space-12);
+    border-radius: var(--zen-border-radius-8);
+
+    &[aria-selected="true"] {
+      background: var(--zen-settings-button-background-hover);
+      color: inherit;
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+/* Content */
+
+#zen-settings-main {
+  flex: 1;
+  min-width: 0;
+  background: var(--zen-settings-background);
+  display: flex;
+  flex-direction: column;
+}
+
+#zen-settings-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--zen-size-50);
+  padding-inline-start: var(--zen-space-24);
+  -moz-window-dragging: drag;
+
+  & > .titlebar-buttonbox-container {
+    align-self: stretch;
+    -moz-window-dragging: no-drag;
+  }
+}
+
+.titlebar-button:not(.titlebar-close) {
+  display: none;
+}
+
+#zen-settings-title {
+  margin: 0;
+  font-size: var(--zen-settings-font-size-title);
+  font-weight: var(--font-weight-bold);
+}
+
+#zen-settings-panes {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--zen-space-20) var(--zen-space-24);
+}
+
+.zen-settings-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-24);
+}
+
+.zen-settings-pane h2 {
+  margin: 0;
+  padding: 0 var(--zen-space-2);
+  color: var(--zen-settings-subtitle-color);
+  font-size: var(--zen-settings-font-size-heading);
+  font-weight: var(--font-weight-semibold);
+}
+
+#zen-settings-shortcuts-title {
+  color: inherit;
+  font-size: var(--zen-settings-font-size-heading);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Groups that come and go together without being a group themselves. */
+#zen-settings-sync {
+  display: contents;
+}
+
+.zen-settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-10);
+}
+
+.zen-settings-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--zen-border-radius-12);
+  background: var(--zen-settings-card-background);
+}
+
+.zen-settings-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--zen-space-12);
+  min-height: var(--zen-size-44);
+  padding: var(--zen-space-6) var(--zen-space-12);
+  box-sizing: border-box;
+
+  /* An inset separator between rows, which a border can't draw. */
+  &:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    inset: 0 var(--zen-space-12) auto;
+    height: 1px;
+    background: var(--zen-settings-separator-color);
+  }
+
+  &[inert] > * {
+    opacity: var(--zen-opacity-50);
+  }
+
+  & > menulist {
+    margin: 0;
+    max-width: 50%;
+
+    &::part(label-box) {
+      font-weight: var(--font-weight);
+    }
+
+    /* Without an image the icon would still hold its space open. */
+    &[image]:not([image=""])::part(icon) {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      border-radius: var(--zen-border-radius-4);
+    }
+  }
+}
+
+.zen-settings-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-2);
+}
+
+.zen-settings-row-description,
+.zen-settings-note {
+  color: var(--zen-settings-muted-color);
+  font-size: var(--zen-settings-font-size-small);
+}
+
+.zen-settings-note {
+  margin: 0;
+  padding: 0 var(--zen-space-2);
+}
+
+.zen-settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--zen-space-8);
+}
+
+/* Controls */
+
+.zen-settings-button {
+  appearance: none;
+  flex: none;
+  min-height: var(--zen-size-28);
+  margin: 0;
+  padding: 0 var(--zen-space-12);
+  border: none;
+  border-radius: var(--zen-border-radius-8);
+  background: var(--zen-settings-button-background);
+  color: inherit;
+  font: inherit;
+
+  &:hover {
+    background: var(--zen-settings-button-background-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  &:disabled {
+    opacity: var(--zen-opacity-50);
+    pointer-events: none;
+  }
+}
+
+.zen-settings-button-primary {
+  background: AccentColor;
+  color: AccentColorText;
+
+  &:hover {
+    background: var(--zen-settings-primary-background-hover);
+  }
+}
+
+.zen-settings-toggle {
+  flex: none;
+}
+
+.zen-settings-toggle-row > .zen-settings-row-text {
+  cursor: default;
+}
+
+.zen-settings-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zen-space-8);
+  color: var(--zen-settings-muted-color);
+
+  .zen-settings-row > &:first-child {
+    flex: 1;
+  }
+}
+
+.zen-settings-status-dot {
+  flex: none;
+  width: var(--zen-size-8);
+  height: var(--zen-size-8);
+  border-radius: var(--zen-border-radius-round);
+  background: var(--zen-settings-muted-color);
+
+  [data-state="success"] > & {
+    background: var(--zen-settings-success-color);
+  }
+
+  [data-state="warning"] > & {
+    background: var(--zen-settings-warning-color);
+  }
+}
+
+#zen-settings-sync-avatar {
+  flex: none;
+  width: var(--zen-size-36);
+  height: var(--zen-size-36);
+  border-radius: var(--zen-border-radius-round);
+  -moz-context-properties: fill;
+  fill: currentColor;
+}
+
+/* Shortcuts */
+
+#zen-settings-pane-shortcuts {
+  flex-direction: row;
+  gap: var(--zen-space-20);
+  height: 100%;
+}
+
+#zen-settings-shortcuts-card {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+#zen-settings-shortcuts-search-box {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--zen-space-8);
+  padding: var(--zen-space-10) var(--zen-space-14);
+  background: var(--zen-settings-hover-background);
+  border-bottom: 1px solid var(--zen-settings-separator-color);
+  color: var(--zen-settings-muted-color);
+
+  & > img {
+    flex: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+  }
+
+  &:focus-within {
+    color: var(--zen-settings-text-color);
+  }
+}
+
+#zen-settings-shortcuts-search {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--zen-settings-text-color);
+  font: inherit;
+}
+
+#zen-settings-shortcuts-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+#zen-settings-shortcuts-empty {
+  padding: var(--zen-space-16);
+}
+
+.zen-settings-shortcut-category > h3 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: var(--zen-space-10) var(--zen-space-16);
+  background: var(--zen-settings-sticky-background);
+  border-bottom: 1px solid var(--zen-settings-separator-color);
+  color: var(--zen-settings-muted-color);
+  font-size: var(--zen-settings-font-size-small);
+  font-weight: var(--font-weight-bold);
+}
+
+.zen-settings-shortcut {
+  display: flex;
+  align-items: center;
+  gap: var(--zen-space-8);
+  min-height: var(--zen-size-44);
+  padding: 0 var(--zen-space-16);
+
+  & + & {
+    border-top: 1px solid var(--zen-settings-separator-color);
+  }
+
+  &[aria-selected="true"] {
+    background: var(--zen-settings-button-background-hover);
+  }
+}
+
+.zen-settings-shortcut-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.zen-settings-icon-button {
+  appearance: none;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--zen-size-26);
+  height: var(--zen-size-26);
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--zen-border-radius-6);
+  background: none;
+  color: var(--zen-settings-muted-color);
+
+  & > img {
+    width: var(--zen-size-14);
+    height: var(--zen-size-14);
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: var(--zen-settings-hover-background);
+    color: var(--zen-settings-text-color);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+  }
+}
+
+.zen-settings-keycap {
+  appearance: none;
+  flex: none;
+  min-width: var(--zen-size-64);
+  min-height: var(--zen-size-26);
+  margin: 0;
+  padding: 0 var(--zen-space-10);
+  border: 1px solid var(--zen-settings-separator-color);
+  border-radius: var(--zen-border-radius-6);
+  background: var(--zen-settings-button-background);
+  color: inherit;
+  font: inherit;
+
+  &:hover {
+    background: var(--zen-settings-button-background-hover);
+  }
+
+  &:focus-visible,
+  &[data-recording] {
+    outline: var(--focus-outline);
+  }
+
+  &[data-recording] {
+    color: var(--zen-settings-muted-color);
+  }
+
+  &:disabled {
+    opacity: var(--zen-opacity-50);
+    pointer-events: none;
+  }
+}
+
+#zen-settings-shortcuts-aside {
+  flex: none;
+  width: var(--zen-settings-shortcuts-aside-width);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--zen-space-8);
+}
+
+.zen-settings-spacer {
+  flex: 1;
+}
+
+/* Rows with more than text and one control */
+
+#zen-settings-default-browser-icon {
+  flex: none;
+  width: var(--zen-size-18);
+  height: var(--zen-size-18);
+  -moz-context-properties: fill, fill-opacity;
+  fill: var(--zen-settings-heart-color);
+}
+
+.zen-settings-row-icon {
+  flex: none;
+  width: var(--zen-size-18);
+  height: var(--zen-size-18);
+  border-radius: var(--zen-border-radius-4);
+}
+
+.zen-settings-input {
+  appearance: none;
+  flex: none;
+  box-sizing: border-box;
+  width: var(--zen-settings-keyword-width);
+  min-height: var(--zen-size-26);
+  margin: 0;
+  padding: 0 var(--zen-space-8);
+  border: 1px solid var(--zen-settings-separator-color);
+  border-radius: var(--zen-border-radius-6);
+  background: var(--zen-settings-button-background);
+  color: inherit;
+  font: inherit;
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+  }
+}
+
+/* Layout picker */
+
+#zen-settings-layout {
+  flex: none;
+  display: flex;
+  gap: var(--zen-space-4);
+  /* The row centers its label on the thumbnails otherwise. */
+  margin-block: var(--zen-space-4);
+}
+
+.zen-settings-layout-row {
+  align-items: flex-start;
+
+  & > .zen-settings-row-text {
+    padding-top: var(--zen-space-10);
+  }
+}
+
+.zen-settings-layout-option {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--zen-space-8);
+  margin: 0;
+  padding: var(--zen-space-6);
+  border: none;
+  border-radius: var(--zen-border-radius-10);
+  background: none;
+  color: var(--zen-settings-muted-color);
+  font: inherit;
+  font-size: var(--zen-settings-font-size-small);
+
+  & > img {
+    width: var(--zen-settings-layout-thumbnail-width);
+    height: auto;
+    border-radius: var(--zen-border-radius-6);
+    outline: 2px solid transparent;
+    outline-offset: var(--zen-space-2);
+    pointer-events: none;
+  }
+
+  &:hover > img {
+    outline-color: var(--zen-settings-separator-color);
+  }
+
+  &[aria-checked="true"] {
+    color: var(--zen-settings-text-color);
+    font-weight: var(--font-weight-bold);
+
+    & > img {
+      outline-color: AccentColor;
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+  }
+}
+
+/* Containers */
+
+.zen-settings-container {
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: calc(-1 * var(--focus-outline-width));
+    border-radius: var(--zen-border-radius-12);
+  }
+
+  &[data-dragging] {
+    opacity: var(--zen-opacity-50);
+  }
+
+  &[data-drop="before"] {
+    box-shadow: var(--zen-settings-drop-before-shadow);
+  }
+
+  &[data-drop="after"] {
+    box-shadow: var(--zen-settings-drop-after-shadow);
+  }
+}
+
+.zen-settings-drag-handle {
+  flex: none;
+  width: var(--zen-size-14);
+  height: var(--zen-size-14);
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  opacity: var(--zen-opacity-50);
+  cursor: grab;
+}
+
+.zen-settings-container-icon {
+  -moz-context-properties: fill;
+}
+
+/* The two key caps above the shortcuts description. */
+
+#zen-settings-shortcuts-art {
+  display: flex;
+  align-self: stretch;
+  gap: var(--zen-space-6);
+  margin-bottom: var(--zen-space-12);
+}
+
+.zen-settings-art-key {
+  box-sizing: border-box;
+  flex: 0 1 var(--zen-settings-art-key-size);
+  min-width: 0;
+  aspect-ratio: 1;
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  isolation: isolate;
+  padding: var(--zen-settings-art-key-edge-width);
+  border-radius: var(--zen-border-radius-12);
+  background: var(--zen-settings-art-key-edge);
+  color: var(--zen-settings-art-key-color);
+  font-weight: var(--zen-font-weight-medium);
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: var(--zen-settings-art-key-edge-width);
+    z-index: -1;
+    border-radius: var(--zen-border-radius-8);
+    background: var(--zen-settings-art-key-face);
+  }
+
+  & > span {
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the width of the key */
+    font-size: 44cqi;
+    white-space: nowrap;
+  }
+
+  & > svg {
+    width: var(--zen-settings-art-key-icon-size);
+    height: var(--zen-settings-art-key-icon-size);
+  }
+
+  &[data-word] > span,
+  & > .zen-settings-art-key-word {
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the width of the key */
+    font-size: 24cqi;
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+#zen-settings-shortcuts-face {
+  transition: translate 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* The default pair only shows while no shortcut's keys are on display. */
+#zen-settings-shortcuts-art:not([data-default]) > .zen-settings-art-default {
+  display: none;
+}
+
+#zen-settings-shortcuts-actions {
+  display: flex;
+  gap: var(--zen-space-6);
+}
+
+#zen-settings-shortcuts-more {
+  width: var(--zen-size-28);
+  height: var(--zen-size-28);
+  padding: 0;
+  border-radius: var(--zen-border-radius-round);
+  font-size: var(--zen-settings-font-size-tiny);
+  line-height: 1;
+}
+
+/* A setting that refines the one above it. */
+.zen-settings-sub-row {
+  padding-inline-start: var(--zen-space-28);
+}
+
+#zen-settings-root img {
+  pointer-events: none;
+}
+
+/* Dialogs */
+
+.zen-settings-dialog {
+  box-sizing: border-box;
+  width: var(--zen-settings-dialog-width);
+  max-width: var(--zen-settings-dialog-max-width);
+  max-height: var(--zen-settings-dialog-max-height);
+  padding: var(--zen-space-20);
+  border: 1px solid var(--zen-dialog-border-color);
+  border-radius: var(--zen-border-radius-16);
+  background: var(--zen-settings-background);
+  color: var(--zen-settings-text-color);
+  box-shadow: var(--zen-dialog-box-shadow);
+  overflow-y: auto;
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--zen-space-16);
+  }
+
+  &::backdrop {
+    background: var(--zen-settings-dialog-backdrop);
+  }
+
+  & > h1 {
+    margin: 0;
+    font-size: var(--zen-settings-font-size-title);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+/* browser.css styles the dialog classes for tab dialogs, so they are scoped
+ * to the stack here to win over it. */
+#zen-settings-dialog-stack {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+
+  & .dialogOverlay {
+    visibility: hidden;
+
+    &[topmost="true"] {
+      background: var(--zen-settings-dialog-backdrop);
+    }
+  }
+
+  & .dialogBox {
+    display: flex;
+    max-width: var(--zen-settings-dialog-max-width);
+    margin-top: 0;
+    border: 1px solid var(--zen-dialog-border-color);
+    border-radius: var(--zen-border-radius-16);
+    outline: none;
+    background: var(--zen-settings-background);
+    color: var(--zen-settings-text-color);
+    box-shadow: var(--zen-dialog-box-shadow);
+    overflow: hidden;
+  }
+
+  & .dialogTitleBar {
+    padding: var(--zen-space-8) var(--zen-space-10);
+    border-bottom: 1px solid var(--zen-settings-separator-color);
+  }
+
+  & .dialogTitle {
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    user-select: none;
+  }
+
+  & .dialogFrame {
+    flex: 1;
+    margin: var(--zen-space-10);
+  }
+}

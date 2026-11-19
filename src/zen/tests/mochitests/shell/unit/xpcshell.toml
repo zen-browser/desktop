@@ -5,14 +5,42 @@ run-if = [
 firefox-appdir = "browser"
 tags = "os_integration"
 
+["test_customIconManager.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["test_desktopEntryStatus.js"]
 run-if = [
   "os == 'linux'",
 ]
 
+["test_dynamicLauncher.js"]
+environment = [
+  "XPCSHELL_TEST=1",
+  # The following prevents gsettings from initializing dbus before our mock is
+  # ready.
+  "GSETTINGS_BACKEND=memory",
+]
+run-if = [
+  "os == 'linux'",
+]
+support-files = [
+  "../../../places/tests/browser/favicon-normal16.png",
+]
+tags = ["portal"]
+
+["test_isOneClickSetDefaultEnabled.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["test_linuxDesktopEntry.js"]
 run-if = [
   "os == 'linux'",
+]
+prefs = [
+  "browser.shell.desktop-entry-api=filesystem",
 ]
 
 ["test_macOS_showSecurityPreferences.js"]
@@ -20,14 +48,14 @@ run-if = [
   "os == 'mac'",
 ]
 
-["test_maybeCreateLaunchOnLoginOnFirstRun.js"]
+["test_secondaryTileJs.js"]
 run-if = [
   "os == 'win'"
 ]
 
-["test_secondaryTileJs.js"]
+["test_taskbarPinningPolicy.js"]
 run-if = [
-  "os == 'win'"
+  "os == 'win'",
 ]
 
 ["test_writeShortcutIcon.js"]
@@ -37,5 +65,5 @@ run-if = [
 ]
 support-files = [
   "../../../places/tests/browser/favicon-normal16.png",
-  "../../../../base/content/test/favicons/icon.svg",
+  "../../../../base/content/test/browser-favicons/icon.svg",
 ]

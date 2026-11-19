@@ -101,16 +101,17 @@ def import_test_suite(test_suite, source_path, output_path, ignore_list, manifes
 def write_moz_build_file(manifest):
   moz_build_path = os.path.join(EXTERNAL_TESTS_OUTPUT, "moz.build")
   print(f"Writing moz.build file to '{moz_build_path}'")
+  suites = sorted(manifest.keys(), key=str.lower)
   with open(moz_build_path, "w") as f:
     f.write(FILE_PREFIX)
     f.write(BROWSER_MANIFEST_LIST_PREFIX)
-    for test_suite in manifest.keys():
+    for test_suite in suites:
       # add for browser.toml first
       if not manifest[test_suite].get("xpcshell", False):
         f.write(f'\t"{test_suite}/browser.toml",\n')
     f.write(FILE_SUFFIX)
     f.write(XPCSHELL_MANIFESTS_LIST_PREFIX)
-    for test_suite in manifest.keys():
+    for test_suite in suites:
       # add for xpcshell.toml
       if manifest[test_suite].get("xpcshell", False):
         f.write(f'\t"{test_suite}/xpcshell.toml",\n')

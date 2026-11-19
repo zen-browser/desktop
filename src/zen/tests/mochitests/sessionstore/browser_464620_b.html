@@ -1,0 +1,57 @@
+<!-- Testcase originally by <moz_bug_r_a4@yahoo.com> -->
+
+<title>Test for bug 464620 (injection on DOM node insertion)</title>
+
+<iframe></iframe>
+<iframe></iframe>
+<iframe onload="setup()"></iframe>
+
+<script>
+  var targetUrl = "http://mochi.test:8888/browser/" +
+    "browser/components/sessionstore/test/browser_464620_xd.html";
+  var firstPass;
+
+  function setup() {
+    if (firstPass !== undefined)
+      return;
+    firstPass = frames[2].location.href == "about:blank";
+    if (firstPass) {
+      frames[0].location = 'data:text/html;charset=utf-8,<body onload="parent.step()">a</body>';
+      frames[1].location = 'data:text/html;charset=utf-8,<body onload="document.designMode=\'on\';">XXX</body>';
+    }
+    frames[2].location = targetUrl;
+  }
+
+  function step() {
+    frames[0].document.designMode = "on";
+    if (firstPass)
+      return;
+
+    var body = frames[0].document.body;
+    body.addEventListener("DOMNodeInserted", function() {
+      xss();
+    }, {capture: true, once: true});
+  }
+
+  function xss() {
+    var documentInjected = false;
+    document.getElementsByTagName("iframe")[1].onload =
+      function() { documentInjected = true; };
+    frames[1].location = targetUrl;
+
+    for (var c = 0; !documentInjected && c < 20; c++) {
+      var r = new XMLHttpRequest();
+      r.open("GET", location.href, false);
+      r.overrideMimeType("text/plain");
+      r.send(null);
+    }
+    document.getElementById("state").textContent = "done";
+
+    var event = new MessageEvent("464620_b", { bubbles: true, cancelable: false,
+                                               data: "done", origin: location.href,
+                                               source: window });
+    document.dispatchEvent(event);
+  }
+</script>
+
+<p id="state">pending</p>

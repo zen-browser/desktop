@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 1982ebadbd2df5ea309db487a4f30288f1af43e5..926c681d4733c84768a23407d60ca05859408b6d 100644
+index 10faff18ca0c6df472de81b5dbdba83309fa2eb8..b675df9ad22150f5a1060dedbabf6cb27c951619 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
 @@ -10,7 +10,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -37,15 +37,15 @@ index 1982ebadbd2df5ea309db487a4f30288f1af43e5..926c681d4733c84768a23407d60ca058
          case "back-button":
          case "forward-button":
          case "reload-button":
-@@ -329,6 +341,7 @@ document.addEventListener(
+@@ -331,6 +343,7 @@ document.addEventListener(
          #downloads-button,
          #fxa-toolbar-menu-button,
          #unified-extensions-button,
 +        #zen-site-data-icon-button,
          #library-button,
+         #ipprotection-button,
          #split-view-button,
-         #smartwindow-ask-button
-@@ -413,6 +426,16 @@ document.addEventListener(
+@@ -416,6 +429,16 @@ document.addEventListener(
            gUnifiedExtensions.togglePanel(event);
            break;
  

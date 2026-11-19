@@ -18,7 +18,10 @@ zen-live-folder-github-option-assigned-self =
     .label = Assigned to Me
 
 zen-live-folder-github-option-review-requested =
-    .label = Review Requests
+    .label = My Review Requests
+
+zen-live-folder-github-option-include-drafts =
+    .label = Include Draft Pull Requests
 
 zen-live-folder-type-rss =
     .label = RSS Feed

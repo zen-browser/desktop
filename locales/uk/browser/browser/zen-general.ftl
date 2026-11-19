@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } комірок зап�
 tab-context-zen-remove-essential = 
     .label = Вилучити з основних елементів
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Замінити основну адресу на поточну
-           *[false] Замінити закріплену адресу на поточну
+            [true] Редагувати основну URL-адресу
+           *[false] Редагувати закріплену URL-адресу
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Замінити на поточну URL-адресу
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Редагувати…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Змінити мітку...
 tab-context-zen-edit-icon = 
     .label = Змінити значок...
 zen-themes-corrupted = Ваш файл модифікацій { -brand-short-name } пошкоджено. Вони були скинуті до типової теми.
-zen-shortcuts-corrupted = Ваш файл { -brand-short-name } комбінацій пошкоджено. Їх було скинуто до типових комбінацій.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Увімкнено новий рядок URL-адрес, що усуває потребу в нових сторінках вкладок.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Підтвердити
 zen-pinned-tab-replaced = URL-адресу закріпленої вкладки замінено на поточну URL-адресу.
+zen-pinned-tab-url-edited = Оновлено URL-адресу закріпленої вкладки!
+zen-pinned-tab-url-invalid = Це не схоже на дійсну URL-адресу.
+zen-pinned-tab-edit-url-title = Редагувати закріплену URL-адресу
+zen-pinned-tab-edit-url-label = Введіть URL-адресу, на яку має посилатися ця закріплена вкладка:
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
 zen-split-view-limit-toast = Неможливо додати більше панелей до розділеного перегляду!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Компактний режим
     .tooltiptext = Увімк. / Вимк. компактний режим
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Емоджі
 zen-icons-picker-svg = 
     .label = Значки
+zen-emojis-picker-search = 
+    .placeholder = Знайти емоджі
 urlbar-search-mode-zen_actions = Дії
 zen-site-data-settings = Налаштування
 zen-generic-manage = Керувати
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Дозволено
 zen-site-data-setting-block = Заблоковано
 zen-site-data-protections-enabled = Увімкнено
 zen-site-data-protections-disabled = Вимкнено
-zen-site-data-setting-cross-site = Міжсайтові cookie
 zen-site-data-security-info-extension = 
     .label = Розширення
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Усі налаштування сайту
 zen-site-data-header-share = 
     .tooltiptext = Поділитися цією сторінкою
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Увійти у режим читання
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Оновлення завершено
 zen-sidebar-notification-updated-label = Що нового в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Переглянути примітки до випуску
+zen-sidebar-notification-donate-label = Підтримати { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Пожертвуйте на проєкт
 zen-sidebar-notification-restart-safe-mode-label = Щось зламалося?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Перезапустити в безпечному режимі

@@ -3,22 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 EXTRA_PP_COMPONENTS += [
-  "ZenComponents.manifest",
+    "ZenComponents.manifest",
 ]
 
 DIRS += [
     "boosts",
     "common",
+    "compact-mode",
     "drag-and-drop",
     "glance",
+    "kbs",
+    "library",
+    "little-window",
     "live-folders",
+    "media",
+    "migration",
     "mods",
     "tests",
     "urlbar",
     "toolkit",
     "sessionstore",
+    "settings",
     "share",
     "spaces",
     "space-routing",
     "sync",
+    "tabs",
+    "window-drag",
 ]

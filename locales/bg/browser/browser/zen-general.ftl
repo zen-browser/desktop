@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = Запълнени слотове: { $num 
 tab-context-zen-remove-essential = 
     .label = Премахване от Основни
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Промени етикета...
 tab-context-zen-edit-icon = 
     .label = Промени иконата...
 zen-themes-corrupted = Файлът с модификации на { -brand-short-name } е повреден. Те бяха нулирани до темата по подразбиране.
-zen-shortcuts-corrupted = Файлът с клавишни комбинации на { -brand-short-name } е повреден. Комбинациите бяха нулирани до настройките по подразбиране.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Новата адресна лента е активирана, което премахва нуждата от страници за нов раздел.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Потвърди
 zen-pinned-tab-replaced = Адресът на закачения раздел беше заменен с текущия адрес!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Разделът беше успешно преименуван!
 zen-background-tab-opened-toast = Отворен е нов раздел на заден план!
 zen-workspace-renamed-toast = Работното пространство беше преименувано успешно!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Компактен изглед
     .tooltiptext = Превключи компактен режим
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Емоджита
 zen-icons-picker-svg = 
     .label = Икони
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Действия
 zen-site-data-settings = Настройки
 zen-generic-manage = Управление
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Позволено
 zen-site-data-setting-block = Блокирани
 zen-site-data-protections-enabled = Включено
 zen-site-data-protections-disabled = Изключено
-zen-site-data-setting-cross-site = Междусайтови бисквитки
 zen-site-data-security-info-extension = 
     .label = Разширение
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Всички настройки за сайтове
 zen-site-data-header-share = 
     .tooltiptext = Сподели тази страница
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Отвори режим на четене
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Актуализацията е за�
 zen-sidebar-notification-updated-label = Какво е ново в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Виж бележките към изданието
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Има проблем?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Рестартирай в безопасен режим

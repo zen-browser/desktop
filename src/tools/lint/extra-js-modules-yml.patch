@@ -1,0 +1,12 @@
+diff --git a/tools/lint/extra-js-modules.yml b/tools/lint/extra-js-modules.yml
+index 56d92110d241e9339c0cc98d2ab7981c579f2d86..af22d0cde98922df4d4e7fd2dd680187863c0625 100644
+--- a/tools/lint/extra-js-modules.yml
++++ b/tools/lint/extra-js-modules.yml
+@@ -12,6 +12,7 @@ extra-js-modules:
+         - testing/specialpowers/
+         - python/mozbuild/mozbuild/test/
+         - tools/lint/test/files/
++        - zen/
+     extensions:
+         - build
+     support-files:

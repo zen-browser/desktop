@@ -1,10 +1,10 @@
 diff --git a/browser/modules/ExtensionsUI.sys.mjs b/browser/modules/ExtensionsUI.sys.mjs
-index 95a4b6e40bd568c3ea5003b648b0acbf96bbb725..6ab8a658721aa6470d482dc958e4b3ac78f49f44 100644
+index 73ef024602cb4554a024de4ddef83f492adc33ef..959c3403a48a3e4294ad5d2f72bad0e5d4fbfd75 100644
 --- a/browser/modules/ExtensionsUI.sys.mjs
 +++ b/browser/modules/ExtensionsUI.sys.mjs
-@@ -502,7 +502,7 @@ export var ExtensionsUI = {
-         eventCallback,
-         removeOnDismissal: true,
+@@ -507,7 +507,7 @@ export var ExtensionsUI = {
+         // right after the panel opens can't accidentally grant permissions).
+         autofocus: true,
          popupOptions: {
 -          position: "bottomright topright",
 +          position: window.gZenUIManager.panelUIPosition(),

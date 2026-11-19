@@ -1,0 +1,70 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+    <html:nav id="zen-settings-sidebar">
+#ifdef XP_MACOSX
+#include ../../browser/base/content/titlebar-items.inc.xhtml
+#endif
+      <html:div id="zen-settings-categories" role="tablist" aria-orientation="vertical">
+        <html:button class="zen-settings-category" role="tab" data-pane="general" aria-controls="zen-settings-pane-general">
+          <html:img src="chrome://browser/skin/zen-icons/settings.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-general"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="appearance" aria-controls="zen-settings-pane-appearance">
+          <html:img src="chrome://browser/skin/zen-icons/palette.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-appearance"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="tabs" aria-controls="zen-settings-pane-tabs">
+          <html:img src="chrome://browser/skin/zen-icons/tab.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-tabs"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="containers" aria-controls="zen-settings-pane-containers">
+          <html:img src="chrome://browser/skin/zen-icons/container-tab.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-containers"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="links" aria-controls="zen-settings-pane-links">
+          <html:img src="chrome://browser/skin/zen-icons/link.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-links"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="search" aria-controls="zen-settings-pane-search">
+          <html:img src="chrome://browser/skin/zen-icons/search-glass.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-search"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="language" aria-controls="zen-settings-pane-language">
+          <html:img src="chrome://browser/skin/zen-icons/translations.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-language"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="shortcuts" aria-controls="zen-settings-pane-shortcuts">
+          <html:img src="chrome://browser/skin/zen-icons/text-title-case.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-shortcuts"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="privacy" aria-controls="zen-settings-pane-privacy">
+          <html:img src="chrome://browser/skin/zen-icons/security.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-privacy"/>
+        </html:button>
+        <html:button class="zen-settings-category" role="tab" data-pane="advanced" aria-controls="zen-settings-pane-advanced">
+          <html:img src="chrome://browser/skin/zen-icons/sliders.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-pane-advanced"/>
+        </html:button>
+      </html:div>
+
+      <html:div id="zen-settings-links">
+        <html:button class="zen-settings-category" data-action="open-mods">
+          <html:img src="chrome://browser/skin/zen-icons/wand-sparkle.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-link-mods"/>
+        </html:button>
+        <html:button class="zen-settings-category" data-action="open-more-settings">
+          <html:img src="chrome://browser/skin/zen-icons/menu.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-link-more"/>
+        </html:button>
+        <html:button class="zen-settings-category" data-action="open-donate">
+          <html:img src="chrome://browser/skin/zen-icons/heart.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-link-donate"/>
+        </html:button>
+        <html:button class="zen-settings-category" data-action="open-about">
+          <html:img src="chrome://browser/skin/zen-icons/info.svg" alt=""/>
+          <html:span data-l10n-id="zen-settings-window-link-about"/>
+        </html:button>
+      </html:div>
+    </html:nav>

@@ -2,25 +2,27 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-welcome-title-line1 = Welcome to
-zen-welcome-title-line2 = a calmer internet
-zen-welcome-import-title = A Fresh Start, Same Bookmarks
-zen-welcome-import-description-1 = Your bookmarks, history, and passwords are like a trail of breadcrumbs through the internet—don’t leave them behind!
-zen-welcome-import-description-2 = Easily bring them over from another browser and pick up right where you left off.
-zen-welcome-import-button = Import now
-zen-welcome-set-default-browser = Set { -brand-short-name } as your default browser
-zen-welcome-dont-set-default-browser = DON’T set { -brand-short-name } as your default browser
-zen-welcome-initial-essentials-title = Your Key Tabs, Always Within Reach
-zen-welcome-initial-essentials-description-1 = Keep your most important tabs easily accessible and always at hand, no matter how many you open.
-zen-welcome-initial-essentials-description-2 = Essential tabs are always visible, no matter what workspace you are in.
-zen-welcome-workspace-colors-title = Your Workspaces, Your Colors
-zen-welcome-workspace-colors-description = Personalize your browser by giving each workspace its own unique color identity.
-zen-welcome-start-browsing-title =
-    All set?<br/>
-    Let’s get rolling!
-zen-welcome-start-browsing-description-1 = You’re all set up and ready to go. Click the button below to start browsing with { -brand-short-name }.
-zen-welcome-start-browsing = Dive in!
-zen-welcome-default-search-title = Your Default Search Engine
-zen-welcome-default-search-description = Choose your default search engine. You can always change it later!
-zen-welcome-skip-button = Skip
-zen-welcome-finished = Your Zen has been set up correctly!
+zen-welcome-title-line1 = Bine ai venit la
+zen-welcome-title-line2 = un internet mai calm
+zen-welcome-back = Înapoi
+zen-welcome-skip = Omite momentan
+zen-welcome-import-title = Un Început Proaspăt, Aceleași Marcaje
+zen-welcome-import-description = Pick a browser to import your bookmarks, history and passwords from and pick up right where you left off.
+zen-welcome-import-no = <strong>NU</strong>, începe proaspăt.
+zen-welcome-default-browser-title = Faci { -brand-short-name } să fie implicit?
+zen-welcome-default-browser-description = Link-urile din alte aplicații se vor deschide în { -brand-short-name }. Poți schimba asta oricând.
+zen-welcome-set-default-browser = <strong>DA</strong>, setează { -brand-short-name } ca implicit.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, încă îmi explorez opțiunile.
+zen-welcome-default-search-title = Motorul Tău de Căutare Principal
+zen-welcome-default-search-description = Alege-ți motorul tău de căutare principal. Îl poți schimba oricând mai târziu!
+zen-welcome-essentials-title = Alege aplicațiile pe care le folosești cel mai des.
+zen-welcome-essentials-description = Selectează-ți aplicațiile preferate pe care să le ai la îndemână în bara laterală.
+zen-welcome-block-ads-title = Block ads and trackers?
+zen-welcome-block-ads-description = { -brand-short-name } can install uBlock Origin for you, so pages load cleaner and faster. You can remove it any time.
+zen-welcome-block-ads-yes = <strong>YES</strong>, block ads for me.
+zen-welcome-block-ads-no = <strong>NO</strong>, show me everything.
+zen-welcome-workspace-colors-title = Spațiul Tău de Lucru, Culorile Tale
+zen-welcome-workspace-colors-description = Personalizează-ți browser-ul dând fiecărui Spațiu de Lucru o culoare de identitate unică.
+zen-welcome-start-browsing-title = Totul este gata? Haide să începem!
+zen-welcome-start-browsing-description-1 = Totul este pregătit. Dă click pe butonul de mai jos și începe navigarea cu { -brand-short-name }.
+zen-welcome-start-browsing = Începe acum!

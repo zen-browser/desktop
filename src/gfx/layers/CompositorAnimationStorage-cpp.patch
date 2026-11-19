@@ -1,0 +1,13 @@
+diff --git a/gfx/layers/CompositorAnimationStorage.cpp b/gfx/layers/CompositorAnimationStorage.cpp
+index 113f52409d2f2b985ea2fd7824893b65437147b3..212ff912f3b942177ec77df78fdc26a86cc96203 100644
+--- a/gfx/layers/CompositorAnimationStorage.cpp
++++ b/gfx/layers/CompositorAnimationStorage.cpp
+@@ -241,7 +241,7 @@ void CompositorAnimationStorage::StoreAnimatedValue(
+       StyleAbsoluteColor color;
+       Servo_AnimationValue_GetColor(
+           aAnimationValues[0], &StyleAbsoluteColor::TRANSPARENT_BLACK, &color);
+-      SetAnimatedValue(aId, aAnimatedValueEntry, color.ToColor());
++      SetAnimatedValue(aId, aAnimatedValueEntry, color.ToColor(nullptr));
+       break;
+     }
+     case eCSSProperty_opacity: {

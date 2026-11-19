@@ -1,8 +1,8 @@
 diff --git a/layout/painting/nsImageRenderer.cpp b/layout/painting/nsImageRenderer.cpp
-index 6e464b48c90174b8954aad8a79bae30a7a30cbc9..9ea9a4963ceae679f092e014ac24a0d24fb106ce 100644
+index 7ddc4f7e259272e7b905f44aff7316c1ba540c22..277a92e5d10e6a04b12373854ffe6791d562215e 100644
 --- a/layout/painting/nsImageRenderer.cpp
 +++ b/layout/painting/nsImageRenderer.cpp
-@@ -90,7 +90,7 @@ static already_AddRefed<imgIContainer> GetSymbolicIconImage(nsAtom* aName,
+@@ -95,7 +95,7 @@ static already_AddRefed<imgIContainer> GetSymbolicIconImage(nsAtom* aName,
    if (NS_WARN_IF(!XRE_IsParentProcess())) {
      return nullptr;
    }
@@ -11,7 +11,7 @@ index 6e464b48c90174b8954aad8a79bae30a7a30cbc9..9ea9a4963ceae679f092e014ac24a0d2
    auto key = std::make_tuple(aName, aScale, fg);
    auto* cache = aFrame->GetOrCreateDeletableProperty(SymbolicImageCacheProp());
    auto lookup = cache->Lookup(key);
-@@ -575,7 +575,7 @@ ImgDrawResult nsImageRenderer::Draw(nsPresContext* aPresContext,
+@@ -580,7 +580,7 @@ ImgDrawResult nsImageRenderer::Draw(nsPresContext* aPresContext,
      }
      case StyleImage::Tag::Gradient: {
        nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(
@@ -20,7 +20,7 @@ index 6e464b48c90174b8954aad8a79bae30a7a30cbc9..9ea9a4963ceae679f092e014ac24a0d2
  
        renderer.Paint(*ctx, aDest, aFill, aRepeatSize, aSrc, aDirtyRect,
                       aOpacity);
-@@ -652,7 +652,7 @@ ImgDrawResult nsImageRenderer::BuildWebRenderDisplayItems(
+@@ -657,7 +657,7 @@ ImgDrawResult nsImageRenderer::BuildWebRenderDisplayItems(
    switch (mType) {
      case StyleImage::Tag::Gradient: {
        nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(
@@ -29,16 +29,16 @@ index 6e464b48c90174b8954aad8a79bae30a7a30cbc9..9ea9a4963ceae679f092e014ac24a0d2
  
        renderer.BuildWebRenderDisplayItems(aBuilder, aSc, aDest, aFill,
                                            aRepeatSize, aSrc,
-@@ -678,6 +678,8 @@ ImgDrawResult nsImageRenderer::BuildWebRenderDisplayItems(
-           nsPresContext::AppUnitsToIntCSSPixels(aDest.height)};
+@@ -679,6 +679,8 @@ ImgDrawResult nsImageRenderer::BuildWebRenderDisplayItems(
+       }
  
-       SVGImageContext svgContext(Some(destCSSSize));
+       SVGImageContext svgContext(Some(CSSSize::FromAppUnits(aDest.Size())));
 +      SVGImageContext::MaybeStoreZenBoosts(svgContext,
 +                                           *mForFrame->PresContext());
        Maybe<ImageIntRegion> region;
  
        const int32_t appUnitsPerDevPixel = aPresContext->AppUnitsPerDevPixel();
-@@ -1092,7 +1094,7 @@ ImgDrawResult nsImageRenderer::DrawShapeImage(nsPresContext* aPresContext,
+@@ -1098,7 +1100,7 @@ ImgDrawResult nsImageRenderer::DrawShapeImage(nsPresContext* aPresContext,
  
    if (mImage->IsGradient()) {
      nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(

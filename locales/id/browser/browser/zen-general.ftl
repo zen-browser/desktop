@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slot terisi
 tab-context-zen-remove-essential = 
     .label = Hapus dari Esensial
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Perbarui URL awal Tab Esensial
-           *[false] Perbarui URL awal Tab Sematan
+            [true] Edit URL Esensial
+           *[false] Edit URL Tab Sematan
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Ganti dengan URL Saat Ini
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Ubah Label...
 tab-context-zen-edit-icon = 
     .label = Ubah Ikon...
 zen-themes-corrupted = Tidak dapat memuat file tema { -brand-short-name } Anda karena rusak. File tersebut telah diatur ulang ke tema default.
-zen-shortcuts-corrupted = File pintasan { -brand-short-name } Anda rusak. Mereka telah diatur ulang ke pintasan default.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Bilah URL baru telah diaktifkan, menghapus kebutuhan untuk halaman tab baru.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Konfirmasi
 zen-pinned-tab-replaced = URL awal dari tab yang disematkan telah diganti dengan URL saat ini.
+zen-pinned-tab-url-edited = URL tab sematan telah diperbarui!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit URL Tab Sematan
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tab telah berhasil diubah namanya!
 zen-background-tab-opened-toast = Tab baru telah terbuka di latar belakang!
 zen-workspace-renamed-toast = Ruang Kerja telah berhasil diubah namanya!
-zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-split-view-limit-toast = Tidak dapat menambah panel lagi ke tampilan belah!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Mode Ringkas
     .tooltiptext = Aktifkan/Sembunyikan Mode Ringkas
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Ikon
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Aksi
 zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Diizinkan
 zen-site-data-setting-block = Diblokir
 zen-site-data-protections-enabled = Diaktifkan
 zen-site-data-protections-disabled = Dinonaktifkan
-zen-site-data-setting-cross-site = Kuki Lintas Situs
 zen-site-data-security-info-extension = 
     .label = Ekstensi
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Semua Pengaturan Situs
 zen-site-data-header-share = 
     .tooltiptext = Bagikan Halaman Ini
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Masuki Mode Membaca
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Pembaruan Selesai!
 zen-sidebar-notification-updated-label = Apa yang baru di { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Lihat Catatan Rilis
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Ada yang rusak?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Mulai Ulang dalam Mode Aman

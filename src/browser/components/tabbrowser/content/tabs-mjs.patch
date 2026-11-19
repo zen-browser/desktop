@@ -1,0 +1,250 @@
+diff --git a/browser/components/tabbrowser/content/tabs.mjs b/browser/components/tabbrowser/content/tabs.mjs
+index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a411e2a4fd1 100644
+--- a/browser/components/tabbrowser/content/tabs.mjs
++++ b/browser/components/tabbrowser/content/tabs.mjs
+@@ -190,8 +190,12 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+     XPCOMUtils.defineLazyPreferenceGetter(
+       this,
+       "_sidebarPositionStart",
+-      "sidebar.position_start",
+-      true
++        "zen.tabs.vertical.right-side",
++        true,
++        null,
++        newValue => {
++          return !newValue;
++        }
+     );
+ 
+     if (gMultiProcessBrowser) {
+@@ -200,7 +204,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+ 
+     this.tooltip = "tabbrowser-tab-tooltip";
+ 
+-    this.tabDragAndDrop = new window.TabDragAndDrop(this);
++      this.tabDragAndDrop = new window.ZenDragAndDrop(this);
+     this.tabDragAndDrop.init();
+   }
+ 
+@@ -427,7 +431,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+     // and we're not hitting the scroll buttons.
+     if (
+       event.button != 0 ||
+-      event.target != this.arrowScrollbox ||
++        !event.target.classList.contains("zen-workspace-empty-space") ||
+       event.composedTarget.localName == "toolbarbutton"
+     ) {
+       return;
+@@ -512,7 +516,6 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+           });
+         }
+       } else if (isTabGroupLabel(event.target)) {
+-        event.target.group.saveAndClose();
+       } else if (
+         event.originalTarget.closest("scrollbox") &&
+         !Services.prefs.getBoolPref(
+@@ -548,6 +551,9 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+   }
+ 
+   on_keydown(event) {
++      if (document.documentElement.getAttribute('zen-renaming-tab') === 'true') {
++        return;
++      }
+     let { altKey, shiftKey } = event;
+     let [accel, nonAccel] =
+       AppConstants.platform == "macosx"
+@@ -830,7 +836,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+   }
+ 
+   get newTabButton() {
+-    return this.querySelector("#tabs-newtab-button");
++      return gZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
+   }
+ 
+   get verticalMode() {
+@@ -846,6 +852,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+   }
+ 
+   get overflowing() {
++      gZenWorkspaces.updateOverflowingTabs();
+     return this.hasAttribute("overflow");
+   }
+ 
+@@ -859,29 +866,55 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+     if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery") {
+       pinnedChildren.pop();
+     }
+-    let unpinnedChildren = Array.from(this.arrowScrollbox.children);
++    let unpinnedChildren = gZenWorkspaces.tabboxChildren;
+     // remove arrowScrollbox periphery element.
+     unpinnedChildren.pop();
+ 
+     // explode tab groups and split view wrappers
+     // Iterate backwards over the array to preserve indices while we modify
+     // things in place
+-    for (let i = unpinnedChildren.length - 1; i >= 0; i--) {
+-      let child = unpinnedChildren[i];
+-      if (isTabGroup(child) || isSplitViewWrapper(child)) {
+-        unpinnedChildren.splice(i, 1, ...child.tabs);
++    const pinnedTabs = [...gZenWorkspaces.getCurrentEssentialsContainer().children, ...pinnedChildren];
++    const expandTabs = (tabs) => {
++      for (let i = tabs.length - 1; i >= 0; i--) {
++        const tab = tabs[i];
++        if (isTabGroup(tab)) {
++          // remove the group from the list
++          tabs.splice(i, 1);
++          // add the tabs in the group to the list
++          tabs.splice(i, 0, ...tab.tabs);
++        } else if (!isTab(tab)) {
++          tabs.splice(i, 1);
++        }
+       }
++    };
++    expandTabs(pinnedTabs);
++    expandTabs(unpinnedChildren);
++    const allTabs = [
++      ...pinnedTabs,
++      ...unpinnedChildren,
++    ];
++    const lastPinnedTabIdx = pinnedTabs.length - 1;
++    let i = 0;
++    for (const tab of [...allTabs]) {
++      // add glance tabs (tabs inside tabs) to the list
++      const glanceTab = tab.glanceTab;
++      if (glanceTab) {
++        // insert right after the parent tab. note: it must be inserted before
++        // the last pinned tab so it can be inserted in the correct order
++        allTabs.splice(Math.max(i++ + 1, lastPinnedTabIdx), 0, glanceTab);
++      } else if (tab.classList.contains("pinned-tabs-container-separator")) {
++        // remove the separator from the list
++        allTabs.splice(i, 1);
++        i--;
++      }
++      i++;
+     }
+-
+-    this.#allTabs = [...pinnedChildren, ...unpinnedChildren];
++    this.#allTabs = allTabs;
+     return this.#allTabs;
+   }
+ 
+   get allGroups() {
+-    let children = Array.from(this.arrowScrollbox.children);
+-    return /** @type {MozTabbrowserTabGroup[]} */ (
+-      children.filter(node => node.tagName == "tab-group")
+-    );
++    return gZenWorkspaces.allTabGroups;
+   }
+ 
+   get allSplitViews() {
+@@ -970,28 +1003,35 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+       return this.#focusableItems;
+     }
+ 
+-    let unpinnedChildren = Array.from(this.arrowScrollbox.children);
+-    let pinnedChildren = Array.from(this.pinnedTabsContainer.children);
++    let elementIndex = 0;
++    let children = gZenWorkspaces.tabboxChildrenWithoutEmpty;
+ 
+     let focusableItems = [];
+-    for (let child of pinnedChildren) {
+-      if (isTab(child)) {
+-        focusableItems.push(child);
+-      }
+-    }
+-    for (let child of unpinnedChildren) {
++    for (let child of [
++      ...gZenWorkspaces.getCurrentEssentialsContainer().children,
++      ...(gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs
++        ? []
++        : this.pinnedTabsContainer.children),
++      ...children,
++    ]) {
+       if (isTab(child) && child.visible) {
+         focusableItems.push(child);
+       } else if (isTabGroup(child)) {
+         focusableItems.push(child.labelElement);
+-
+-        let visibleTabsInGroup = child.tabs.filter(tab => tab.visible);
+-        focusableItems.push(...visibleTabsInGroup);
++        if (!child.hasAttribute("split-view-group")) {
++          let visibleTabsInGroup = child.childGroupsAndTabs.filter(
++            tab => tab.visible
++          );
++          focusableItems.push(...visibleTabsInGroup);
++        }
+       } else if (isSplitViewWrapper(child)) {
+         let visibleTabsInSplitView = child.tabs.filter(tab => tab.visible);
+         focusableItems.push(...visibleTabsInSplitView);
+       }
+     }
++    focusableItems.forEach(item => {
++      item.elementIndex = elementIndex++;
++    });
+ 
+     this.#focusableItems = focusableItems;
+ 
+@@ -1006,6 +1046,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+    * @returns {DragAndDropElement[]}
+    */
+   get dragAndDropElements() {
++    return this.ariaFocusableItems;
+     if (this.#dragAndDropElements) {
+       return this.#dragAndDropElements;
+     }
+@@ -1079,6 +1120,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+   _invalidateCachedTabs() {
+     this.#allTabs = null;
+     this._invalidateCachedVisibleTabs();
++      gZenWorkspaces._allStoredTabs = null;
+   }
+ 
+   _invalidateCachedVisibleTabs() {
+@@ -1098,7 +1140,8 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+ 
+   isContainerVerticalPinnedGrid(tab) {
+     return (
+-      tab.pinned &&
++        tab.hasAttribute("zen-essential") &&
++        (this.hasAttribute("expanded") || document.documentElement.hasAttribute("zen-sidebar-expanded")) &&
+       this.verticalMode &&
+       this.hasAttribute("expanded") &&
+       !this.expandOnHover
+@@ -1231,7 +1274,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+ 
+     if (node == null) {
+       // We have a container for non-tab elements at the end of the scrollbox.
+-      node = this.arrowScrollbox.lastChild;
++      node = gZenWorkspaces.activeWorkspaceStrip.lastChild;
+     }
+ 
+     /** @type {Element} */ (node).before(tab);
+@@ -1276,7 +1319,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+         // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
+         // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
+         // Attach the long click popup to all of them.
+-        const newTab = document.getElementById("new-tab-button");
++          const newTab = gZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
+         const newTab2 = this.newTabButton;
+         const newTabVertical = document.getElementById(
+           "vertical-tabs-newtab-button"
+@@ -1391,7 +1434,10 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+       return;
+     }
+     let selectedTab = /** @type {MozTabbrowserTab} */ (this.selectedItem);
++    if (!selectedTab) return;
+     this.#ensureTabIsVisible(selectedTab, aInstant);
++
++    gZenCompactModeManager.flashSidebarIfNecessary(aInstant);
+   }
+ 
+   /**
+@@ -1528,7 +1574,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+   }
+ 
+   _notifyBackgroundTab(aTab) {
+-    if (aTab.pinned || !aTab.visible || !this.overflowing) {
++      if (aTab.hasAttribute("zen-essential") || !aTab.visible || !this.overflowing) {
+       return;
+     }
+ 

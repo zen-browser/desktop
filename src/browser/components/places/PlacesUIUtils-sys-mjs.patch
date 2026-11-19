@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/PlacesUIUtils.sys.mjs b/browser/components/places/PlacesUIUtils.sys.mjs
-index 7c2786cc1be512ddfc165fb8f6514131ac033040..5846aff53030ef0fad2f87d017ba3713889b474d 100644
+index 7c11a2004c87aa6f0c61cf05ca522c7471c7be71..0f92f9925221cadbd258402f1b6a86a71fdb42e9 100644
 --- a/browser/components/places/PlacesUIUtils.sys.mjs
 +++ b/browser/components/places/PlacesUIUtils.sys.mjs
 @@ -61,6 +61,7 @@ class BookmarkState {
@@ -157,12 +157,3 @@ index 7c2786cc1be512ddfc165fb8f6514131ac033040..5846aff53030ef0fad2f87d017ba3713
    /**
     * Append transactions to update tags by given information.
     *
-@@ -915,7 +1024,7 @@ export var PlacesUIUtils = {
-     aNode,
-     aWhere,
-     aWindow,
--    { aPrivate = false, userContextId = 0 } = {}
-+    { aPrivate = false, userContextId = undefined } = {}
-   ) {
-     if (
-       aNode &&

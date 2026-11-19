@@ -6,11 +6,19 @@ import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.s
 import { GithubTokenManager } from "resource:///modules/zen/GithubAuth.sys.mjs";
 
 const lazy = {};
+
 ChromeUtils.defineLazyGetter(
   lazy,
   "l10n",
   () => new Localization(["browser/zen-live-folders.ftl"])
 );
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenLittleWindow:
+    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
+});
+
+const LOGIN_URL = "https://github.com/login";
+const AUTH_ERROR_STATUSES = new Set([401, 403, 404]);
 
 export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "github";
@@ -68,8 +76,13 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
             Accept: "application/json,text/html",
           },
         });
-        if (status === 404) {
+        if (AUTH_ERROR_STATUSES.has(status)) {
           return "zen-live-folder-github-no-auth";
+        }
+        // Don't decide the page format from an error response, try again on
+        // the next fetch instead.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
         }
         try {
           JSON.parse(text);
@@ -97,9 +110,15 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const combinedActiveRepos = new Set();
 
       for (const { status, items, activeRepos } of requests) {
-        // Any non-2xx status likely means not authenticated
-        if (status && (status < 200 || status >= 300)) {
+        if (AUTH_ERROR_STATUSES.has(status)) {
           return "zen-live-folder-github-no-auth";
+        }
+
+        // Any other error (rate limit, server error) is a failed fetch, not an
+        // empty result. Otherwise every tab in the folder gets closed and the
+        // known repositories are cleared.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
         }
 
         if (items) {
@@ -314,45 +333,36 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     }
 
     const document = new DOMParser().parseFromString(text, "text/html");
-    const issues = document.querySelectorAll(
-      "div[class^=IssueItem-module__defaultRepoContainer]"
+    const links = document.querySelectorAll(
+      'a[data-testid="issue-listitem-title-link"]'
     );
     const items = [];
     const activeRepos = new Set();
 
-    if (issues.length) {
-      const authors = document.querySelectorAll(
-        "a[class^=IssueItem-module__authorCreatedLink]"
+    for (const link of links) {
+      const issueUrl = new URL(link.getAttribute("href"), this.state.url);
+      const pathMatch = issueUrl.pathname.match(
+        /^\/([^/]+\/[^/]+)\/(?:issues|pull)\/([0-9]+)/
       );
-      const titles = document.querySelectorAll(
-        "div[class^=Title-module__container]"
-      );
-      const links = document.querySelectorAll(
-        '[data-testid="issue-pr-title-link"]'
-      );
-
-      for (let i = 0; i < issues.length; i++) {
-        const [rawRepo, rawNumber] = issues[i].childNodes;
-        const author = authors[i]?.textContent;
-        const title = titles[i]?.textContent;
-        const issueUrl = links[i]?.href;
-
-        const repo = rawRepo.textContent?.trim();
-        if (repo) {
-          activeRepos.add(repo);
-        }
-
-        const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
-        const number = numberMatch?.[0] ?? "";
-
-        items.push({
-          title,
-          subtitle: author,
-          icon: "chrome://browser/content/zen-images/favicons/github.svg",
-          url: new URL(issueUrl, this.state.host).href,
-          id: `${repo}#${number}`,
-        });
+      if (!pathMatch) {
+        continue;
       }
+
+      const [, repo, number] = pathMatch;
+      activeRepos.add(repo);
+
+      const author = link
+        .closest("li")
+        ?.querySelector('[data-testid="author-filter-link"]')
+        ?.lastChild?.textContent.trim();
+
+      items.push({
+        title: link.textContent.trim(),
+        subtitle: author,
+        icon: "chrome://browser/content/zen-images/favicons/github.svg",
+        url: issueUrl.href,
+        id: `${repo}#${number}`,
+      });
     }
 
     return {
@@ -367,8 +377,16 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     const baseQuery = [
       this.state.type === "pull-requests" ? "is:pr" : "is:issue",
       "is:open",
+      "archived:false",
       "sort:updated-desc",
     ];
+
+    if (
+      this.state.type === "pull-requests" &&
+      !(this.state.options.includeDrafts ?? true)
+    ) {
+      baseQuery.push("draft:false");
+    }
 
     const options = [
       {
@@ -380,7 +398,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         enabled: this.state.options.assignedMe ?? true,
       },
       {
-        value: "review-requested:@me",
+        value: "user-review-requested:@me",
         enabled: this.state.options.reviewRequested ?? false,
       },
     ];
@@ -452,6 +470,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         key: "reviewRequested",
         checked: this.state.options.reviewRequested ?? false,
         hidden: this.state.type === "issues",
+      },
+      {
+        l10nId: "zen-live-folder-github-option-include-drafts",
+        key: "includeDrafts",
+        checked: this.state.options.includeDrafts ?? true,
+        hidden: this.state.type !== "pull-requests",
       },
       { type: "separator" },
       {
@@ -558,14 +582,14 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
         if (this.#isGitHubEnterprise) {
-          // For GHE instances, open the PAT creation page
           this.#openPatCreationPage(this.state.host);
         } else {
-          // For github.com, open the login page
-          const tab = this.manager.window.gBrowser.addTrustedTab(
-            new URL("/login", this.state.host).href
-          );
-          this.manager.window.gBrowser.selectedTab = tab;
+          const win = this.manager.window;
+          if (
+            !lazy.ZenLittleWindow.open({ openerWindow: win, url: LOGIN_URL })
+          ) {
+            win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(LOGIN_URL);
+          }
         }
         break;
       }

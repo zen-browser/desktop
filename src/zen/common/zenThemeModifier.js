@@ -13,6 +13,18 @@
   const { AppConstants } = ChromeUtils.importESModule(
     "resource://gre/modules/AppConstants.sys.mjs"
   );
+  const { XPCOMUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/XPCOMUtils.sys.mjs"
+  );
+
+  const lazy = {};
+
+  XPCOMUtils.defineLazyPreferenceGetter(
+    lazy,
+    "elementSeparation",
+    "zen.theme.content-element-separation",
+    8
+  );
 
   const kZenThemePrefsList = [
     "zen.theme.accent-color",
@@ -109,7 +121,7 @@
         if (AppConstants.platform == "macosx") {
           const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)")
             .matches
-            ? 14
+            ? 11
             : 10;
           document.documentElement.style.setProperty(
             "--zen-border-radius",
@@ -125,7 +137,7 @@
           // Windows defaults to 8px
           document.documentElement.style.setProperty(
             "--zen-border-radius",
-            "8px"
+            "9px"
           );
         }
       } else {
@@ -158,6 +170,9 @@
       ) {
         separation = 0;
       }
+      if (document.documentElement.hasAttribute("zen-little-window")) {
+        separation = 0;
+      }
       // In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible)
       separation = Math.max(kMinElementSeparation, separation);
       document.documentElement.style.setProperty(
@@ -183,10 +198,7 @@
     },
 
     get elementSeparation() {
-      return Math.min(
-        Services.prefs.getIntPref("zen.theme.content-element-separation"),
-        kZenMaxElementSeparation
-      );
+      return Math.min(lazy.elementSeparation, kZenMaxElementSeparation);
     },
 
     /**

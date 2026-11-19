@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num } / { $max } täytetty paikka
 tab-context-zen-remove-essential = 
     .label = Poista olennaisista
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Change Label...
 tab-context-zen-edit-icon = 
     .label = Change Icon...
 zen-themes-corrupted = { -brand-short-name } modejasi tiedosto on vioittunut. Ne on palautettu oletusteemaan.
-zen-shortcuts-corrupted = { -brand-short-name } Oikotietä sisältävä tiedosto on korruptoitunut. Ne on palautettu oletus oikoteihin.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Uusi URL-palkki on otettu käyttöön, uusia välilehtisivuja ei enää tarvita.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Vahvista
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Välilehti on nimetty uudelleen!
 zen-background-tab-opened-toast = Uusi taustavälilehti avattu!
 zen-workspace-renamed-toast = Työtila on nimetty uudelleen!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Kompakti Tila
     .tooltiptext = Ota käyttöön Kompakti tila
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojit
 zen-icons-picker-svg = 
     .label = Kuvakkeet
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Toiminnot
 zen-site-data-settings = Asetukset
 zen-generic-manage = Hallitse
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Sallittu
 zen-site-data-setting-block = Estetty
 zen-site-data-protections-enabled = Käytössä
 zen-site-data-protections-disabled = Pois käytöstä
-zen-site-data-setting-cross-site = Sivuston välinen eväste
 zen-site-data-security-info-extension = 
     .label = Laajennus
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Kaikki Sivuston Asetukset
 zen-site-data-header-share = 
     .tooltiptext = Jaa Tämä Sivu
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Siirry lukutilaan
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Päivitys valmis!
 zen-sidebar-notification-updated-label = Mitä uutta { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Katso Julkaisutiedot
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Jotain rikki?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Käynnistä uudelleen vianmääritystilassa

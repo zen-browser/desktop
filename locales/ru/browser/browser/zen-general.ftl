@@ -18,19 +18,24 @@ tab-context-zen-add-essential-badge = { $num }/{ $max } мест занято
 tab-context-zen-remove-essential = 
     .label = Удалить из важного
     .accesskey = К
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Заменить адрес важной вкладки на текущий
-           *[false] Заменить адрес закреплённой вкладки на текущий
+            [true] Изменить URL-адрес из важного
+           *[false] Изменить закрепленный URL-адрес
         }
+    .accesskey = З
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Заменить текущим URL-адресом
     .accesskey = С
+tab-context-zen-edit-pinned-url = 
+    .label = Редактировать…
+    .accesskey = У
 tab-context-zen-edit-title = 
     .label = Переименовать...
 tab-context-zen-edit-icon = 
     .label = Изменить значок...
 zen-themes-corrupted = Файл модов { -brand-short-name } повреждён. Тема сброшена к стандартной.
-zen-shortcuts-corrupted = Файл сочетаний клавиш { -brand-short-name } повреждён. Возвращены сочетания клавиш по умолчанию.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Новая адресная строка активирована, теперь нет необходимости использовать отдельные страницы для новых вкладок.<br/><br/>
@@ -47,10 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Подтвердить
 zen-pinned-tab-replaced = Адрес закреплённой вкладки заменён на текущий адрес!
+zen-pinned-tab-url-edited = Ссылка на закрепленную вкладку обновлена!
+zen-pinned-tab-url-invalid = Это не похоже на допустимый URL.
+zen-pinned-tab-edit-url-title = Редактировать прикрепленный URL
+zen-pinned-tab-edit-url-label = Введите URL на который должна вести эта вкладка:
 zen-tabs-renamed = Вкладка успешно переименована!
 zen-background-tab-opened-toast = Открыта новая фоновая вкладка!
 zen-workspace-renamed-toast = Пространство успешно переименовано!
 zen-split-view-limit-toast = Невозможно добавить больше панелей в раздельный вид!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Компактный режим
     .tooltiptext = Переключить компактный режим
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Эмодзи
 zen-icons-picker-svg = 
     .label = Иконки
+zen-emojis-picker-search = 
+    .placeholder = Поиск эмодзи
 urlbar-search-mode-zen_actions = Действия
 zen-site-data-settings = Настройки
 zen-generic-manage = Изменить
@@ -77,7 +89,6 @@ zen-site-data-setting-allow = Разрешено
 zen-site-data-setting-block = Запрещено
 zen-site-data-protections-enabled = Включено
 zen-site-data-protections-disabled = Отключено
-zen-site-data-setting-cross-site = Межсайтовые куки
 zen-site-data-security-info-extension = 
     .label = Расширение
 zen-site-data-security-info-secure = 
@@ -92,6 +103,8 @@ zen-site-data-site-settings =
     .label = Все настройки сайта
 zen-site-data-header-share = 
     .tooltiptext = Поделиться страницей
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Режим чтения
 zen-site-data-header-screenshot = 
@@ -116,6 +129,9 @@ zen-sidebar-notification-updated-heading = Обновление завершен
 zen-sidebar-notification-updated-label = Что нового в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Примечания к выпуску
+zen-sidebar-notification-donate-label = Поддержать { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Поддержать проект
 zen-sidebar-notification-restart-safe-mode-label = Что-то пошло не так?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Перезапустить в безопасном режиме

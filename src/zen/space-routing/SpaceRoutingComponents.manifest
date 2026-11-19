@@ -3,3 +3,4 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 category browser-window-delayed-startup resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs gZenSpaceRoutingManager.onDelayedBrowserStartup
+category browser-window-delayed-startup resource:///modules/zen/spacerouting/ZenSpaceRoutingNavigation.sys.mjs ZenSpaceRoutingNavigation.create

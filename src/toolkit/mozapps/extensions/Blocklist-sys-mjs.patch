@@ -1,0 +1,22 @@
+diff --git a/toolkit/mozapps/extensions/Blocklist.sys.mjs b/toolkit/mozapps/extensions/Blocklist.sys.mjs
+index 4e1e0aac91612c846bb664efe3dbb50ecf63597d..93eb9a05520198eb3f9af35aa58d789719169434 100644
+--- a/toolkit/mozapps/extensions/Blocklist.sys.mjs
++++ b/toolkit/mozapps/extensions/Blocklist.sys.mjs
+@@ -411,7 +411,7 @@ class TargetAppFilter {
+     if (!Array.isArray(versionRange)) {
+       const { maxVersion = "*" } = versionRange;
+       const matchesRange =
+-        Services.vc.compare(lazy.gApp.version, maxVersion) <= 0;
++        Services.vc.compare(AppConstants.ZEN_FIREFOX_VERSION, maxVersion) <= 0;
+       return matchesRange ? entry : null;
+     }
+ 
+@@ -433,7 +433,7 @@ class TargetAppFilter {
+         const { maxVersion = "*" } = ta;
+         if (
+           guid == lazy.gAppID &&
+-          Services.vc.compare(lazy.gApp.version, maxVersion) <= 0
++          Services.vc.compare(AppConstants.ZEN_FIREFOX_VERSION, maxVersion) <= 0
+         ) {
+           return entry;
+         }

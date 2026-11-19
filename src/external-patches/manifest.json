@@ -3,27 +3,27 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 [
   {
-    "type": "phabricator",
-    "id": "D299584",
-    "name": "Native MacOS popovers fix"
-  },
-  {
-    "type": "phabricator",
-    "id": "D284404",
-    "name": "Add urlbar closeOnWindowBlur preference",
-    "replaces": {
-      "\n\n": "\n     // may want to figure out a more robust way to detect abandonment."
-    }
-  },
-  {
+    // From D299584.
     "type": "local",
-    // TODO: Convert into https://phabricator.services.mozilla.com/D298079
-    //    once it gets accepted.
-    "path": "firefox/allow_backdrop_to_work_on_transparency.patch"
+    "path": "firefox/native_macos_popovers_fix.patch"
+  },
+  {
+    // Bug 2079476, backported from mozilla-central (Firefox 161) revisions
+    // 8e142a8b9911, 898c1161a502, ae869c1635bd and f79fc2dbdfd6. Drop this
+    // once the engine is on 161 or later.
+    "type": "local",
+    "path": "firefox/backdrop_filter_reads_web_content.patch"
   },
   {
     "type": "local",
     "path": "firefox/no_liquid_glass_icon.patch"
+  },
+  {
+    // The BrowserUtils half of D336362, which adds getExposableURI. The rest of
+    // that revision needs D336260 and Firefox 161's tabgroup-menu.mjs. Drop
+    // this once the engine is on 161 or later.
+    "type": "local",
+    "path": "firefox/get_exposable_uri.patch"
   },
   {
     "type": "patch",
@@ -37,7 +37,35 @@
   },
   {
     "type": "phabricator",
-    "id": "D291714",
-    "name": "gh-12979 Clip dirty_rect to device_size"
+    "id": "D312091",
+    "name": "Expose tiled attribute to all platforms"
+  },
+  {
+    // The IOUtils half of D298708 landed upstream in Firefox 160, so only the
+    // SessionWriter change is still ours.
+    "type": "local",
+    "path": "firefox/issue_14990.patch"
+  },
+  {
+    "type": "phabricator",
+    "id": "D321446",
+    "name": "Issue 14710"
+  },
+  {
+    "type": "local",
+    "path": "firefox/override_cert_checks_temp.patch"
+  },
+  {
+    "type": "phabricator",
+    "id": "D323514",
+    "name": "Fix HEVC video stutters and dropped frames"
+  },
+  {
+    // D337289, rebased onto Firefox 160 and pointed at Zen's own profile
+    // migrator. Re-pull it from Phabricator by hand when the revision changes,
+    // and keep the ArcProfileMigrator moduleURI on
+    // resource:///modules/zen/ZenProfileMigrators.sys.mjs.
+    "type": "local",
+    "path": "firefox/arc_browser_migrator.patch"
   }
 ]

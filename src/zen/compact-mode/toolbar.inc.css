@@ -29,10 +29,11 @@
     & .zen-toolbar-background {
       display: flex;
     }
-    transition: height var(--zen-hidden-toolbar-transition);
 
     height: var(--zen-element-separation);
+    transition: height var(--zen-hidden-toolbar-transition);
     overflow: clip;
+    contain: layout paint;
 
     & #urlbar:not([breakout-extend]) {
       /* Sometimes, "opacity: 1" is forced elsewhere */

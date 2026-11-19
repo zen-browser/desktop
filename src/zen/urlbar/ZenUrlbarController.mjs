@@ -374,10 +374,10 @@ export class nsZenUrlbarController {
    * @returns {string}
    */
   trimURL(aURL) {
-    if (gURLBar.hasAttribute("breakout-extend")) {
-      return aURL;
-    }
-    if (Services.prefs.getBoolPref("zen.developer-mode.enabled", false)) {
+    if (
+      Services.prefs.getBoolPref("zen.developer-mode.enabled", false) &&
+      !gURLBar.hasAttribute("breakout-extend")
+    ) {
       const singleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
       let uri;
       try {
@@ -396,6 +396,9 @@ export class nsZenUrlbarController {
           return uri.displayHostPort;
         }
       }
+    }
+    if (gURLBar.hasAttribute("breakout-extend")) {
+      return aURL;
     }
     if (gZenVerticalTabsManager._hasSetSingleToolbar && this.showDomainOnly) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);

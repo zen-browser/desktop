@@ -448,46 +448,6 @@
   align-items: center;
 }
 
-#zen-site-data-developer-mode {
-  display: flex;
-  appearance: none;
-  margin: 0;
-  padding-inline: 0;
-  border: 0;
-  border-radius: var(--border-radius-small);
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: start;
-
-  &[hidden] {
-    display: none;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--focus-outline-color);
-    outline-offset: -2px;
-  }
-
-  .zen-site-data-developer-icon {
-    display: grid;
-    place-items: center;
-    box-sizing: border-box;
-    flex: none;
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .zen-site-data-developer-labels {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-}
-
 .permission-popup-permission-label-container,
 .permission-popup-boost-label-container {
   min-width: 1px;

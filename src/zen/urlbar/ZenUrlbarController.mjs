@@ -377,24 +377,27 @@ export class nsZenUrlbarController {
     if (gURLBar.hasAttribute("breakout-extend")) {
       return aURL;
     }
-    const singleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
     if (Services.prefs.getBoolPref("zen.developer-mode.enabled", false)) {
+      const singleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
+      let uri;
       try {
-        const uri = Services.io.newURI(aURL);
-        const development =
-          lazy.cachedDeveloperMode(uri, gBrowser.selectedBrowser.loadContext) ??
-          lazy.isLocalDevelopmentURI(uri);
-        if (development) {
-          if (!singleToolbar) {
-            return aURL;
-          }
-          if (this.showDomainOnly) {
-            return uri.displayHostPort;
-          }
+        uri = Services.io.newURI(aURL);
+      } catch {
+        return BrowserUIUtils.trimURL(aURL);
+      }
+      const development =
+        lazy.cachedDeveloperMode(uri, gBrowser.selectedBrowser.loadContext) ??
+        lazy.isLocalDevelopmentURI(uri);
+      if (development) {
+        if (!singleToolbar) {
+          return aURL;
         }
-      } catch {}
+        if (this.showDomainOnly) {
+          return uri.displayHostPort;
+        }
+      }
     }
-    if (singleToolbar && this.showDomainOnly) {
+    if (gZenVerticalTabsManager._hasSetSingleToolbar && this.showDomainOnly) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
       let stripped = url.startsWith("https://") ? url.split("/")[2] : url;
       if (stripped.startsWith("www.")) {

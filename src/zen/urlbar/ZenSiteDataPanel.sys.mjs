@@ -461,6 +461,7 @@ export class nsZenSiteDataPanel {
     const host = developerModeHost(uri);
     const request = ++this.#developerModeRequest;
     this.#developerModeTarget = null;
+    button.disabled = true;
     button.hidden = !canUseDeveloperMode(uri);
     if (button.hidden) {
       return;
@@ -469,7 +470,6 @@ export class nsZenSiteDataPanel {
     try {
       let active = cachedDeveloperMode(uri, browser.loadContext);
       if (active === null) {
-        button.disabled = true;
         active = await readDeveloperMode(uri, browser.loadContext);
       }
       if (

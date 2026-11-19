@@ -24,9 +24,6 @@ add_setup(async function () {
   localURL = `http://localhost:${server.identity.primaryPort}/developer?query=kept#fragment`;
   registerCleanupFunction(() => new Promise(resolve => server.stop(resolve)));
 
-  const { Preferences } = ChromeUtils.importESModule(
-    "resource://gre/modules/Preferences.sys.mjs"
-  );
   const toolPrefs = [
     "devtools.toolsidebar-width.inspector.splitsidebar",
     "devtools.toolsidebar-height.inspector",
@@ -34,16 +31,37 @@ add_setup(async function () {
     "devtools.everOpened",
     "devtools.toolbox.selectedTool",
     "devtools.netmonitor.msg.visibleColumns",
-  ].map(name => [
-    name,
-    Services.prefs.prefHasUserValue(name) ? Preferences.get(name) : undefined,
-  ]);
+  ].map(name => {
+    if (!Services.prefs.prefHasUserValue(name)) {
+      return { name };
+    }
+    switch (Services.prefs.getPrefType(name)) {
+      case Services.prefs.PREF_BOOL:
+        return {
+          name,
+          value: Services.prefs.getBoolPref(name),
+          setter: "setBoolPref",
+        };
+      case Services.prefs.PREF_INT:
+        return {
+          name,
+          value: Services.prefs.getIntPref(name),
+          setter: "setIntPref",
+        };
+      default:
+        return {
+          name,
+          value: Services.prefs.getStringPref(name),
+          setter: "setStringPref",
+        };
+    }
+  });
   registerCleanupFunction(() => {
-    for (const [name, value] of toolPrefs) {
-      if (value === undefined) {
-        Preferences.reset(name);
+    for (const { name, value, setter } of toolPrefs) {
+      if (setter) {
+        Services.prefs[setter](name, value);
       } else {
-        Preferences.set(name, value);
+        Services.prefs.clearUserPref(name);
       }
     }
   });
@@ -58,10 +76,10 @@ add_task(function test_local_host_boundaries() {
     ["https://app.localhost/", true],
     ["http://LOCALHOST./", true],
     ["http://127.0.0.1/", true],
-    ["http://[::1]:3000/", true],
+    ["https://[::1]:3000/", true],
     ["http://localhost.example.com/", false],
     ["http://127.0.0.1.example.com/", false],
-    ["http://192.168.1.1/", false],
+    ["https://192.168.1.1/", false],
     ["https://example.com/?host=localhost", false],
     ["file:///localhost/index.html", false],
     ["about:blank", false],
@@ -313,6 +331,36 @@ add_task(async function test_address_editing_and_icon_hit_areas() {
         "Button has a compact, predictable hit area"
       );
     }
+    await SpecialPowers.pushPrefEnv({
+      set: [["devtools.policy.disabled", true]],
+    });
+    try {
+      await TestUtils.waitForCondition(() =>
+        [...toolbar.querySelectorAll("[data-tool]")].every(
+          BrowserTestUtils.isHidden
+        )
+      );
+      Assert.ok(
+        BrowserTestUtils.isVisible(
+          toolbar.querySelector('[data-action="copy"]')
+        ),
+        "Developer tools policy leaves Copy URL available"
+      );
+      Assert.ok(
+        BrowserTestUtils.isVisible(
+          toolbar.querySelector('[data-action="screenshot"]')
+        ),
+        "Developer tools policy leaves Screenshots available"
+      );
+    } finally {
+      await SpecialPowers.popPrefEnv();
+    }
+    await TestUtils.waitForCondition(() =>
+      [...toolbar.querySelectorAll("[data-tool]")].every(
+        BrowserTestUtils.isVisible
+      )
+    );
+
     const input = toolbar.querySelector("input");
     const edited = localURL.replace("query=kept", "edited=kept");
     const loaded = BrowserTestUtils.browserLoaded(browser, false, edited);
@@ -337,7 +385,7 @@ add_task(async function test_address_editing_and_icon_hit_areas() {
 
     for (const invalid of [
       "",
-      "http://[",
+      "https://[",
       "javascript:void(0)",
       "unsupported:some-address",
     ]) {
@@ -463,9 +511,16 @@ add_task(async function test_all_tool_buttons_repeat_close() {
 });
 
 add_task(async function test_split_controls_target_their_own_page() {
-  await SpecialPowers.pushPrefEnv({ set: [[DEV_PREF, true]] });
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      [DEV_PREF, true],
+      ["zen.view.use-single-toolbar", true],
+      ["zen.view.sidebar-expanded", true],
+    ],
+  });
   await BrowserTestUtils.withNewTab(localURL, async firstBrowser => {
     const firstTab = gBrowser.getTabForBrowser(firstBrowser);
+    const originalWidth = window.outerWidth;
     const secondURL = localURL.replace("query=kept", "pane=second");
     const secondTab = BrowserTestUtils.addTab(gBrowser, secondURL);
     const { require } = ChromeUtils.importESModule(
@@ -482,8 +537,9 @@ add_task(async function test_split_controls_target_their_own_page() {
       await activated;
       const firstBar = await waitForToolbar(firstBrowser);
       const secondBar = await waitForToolbar(secondTab.linkedBrowser);
-      Assert.ok(
-        firstBar !== secondBar,
+      Assert.notStrictEqual(
+        firstBar,
+        secondBar,
         "Each local split pane owns its toolbar"
       );
       gBrowser.selectedTab = firstTab;
@@ -507,7 +563,7 @@ add_task(async function test_split_controls_target_their_own_page() {
       await SimpleTest.promiseClipboardChange(secondURL, () => {
         secondBar.querySelector('[data-action="copy"]').click();
       });
-      secondBar.style.inlineSize = "140px";
+      window.resizeTo(660, window.outerHeight);
       const overflow = secondBar.querySelector('[data-action="more"]');
       await TestUtils.waitForCondition(() =>
         BrowserTestUtils.isVisible(overflow)
@@ -522,6 +578,11 @@ add_task(async function test_split_controls_target_their_own_page() {
       const menu = secondBar.querySelector("menupopup");
       await TestUtils.waitForCondition(() => menu.state === "open");
       Assert.equal(
+        overflow.getAttribute("aria-expanded"),
+        "true",
+        "The pane menu exposes its expanded state"
+      );
+      Assert.equal(
         menu.childElementCount,
         5,
         "Pane menu contains all five actions"
@@ -531,7 +592,13 @@ add_task(async function test_split_controls_target_their_own_page() {
       });
       await loadedCopy;
       menu.hidePopup();
-      secondBar.style.removeProperty("inline-size");
+      await TestUtils.waitForCondition(() => menu.state === "closed");
+      Assert.equal(
+        overflow.getAttribute("aria-expanded"),
+        "false",
+        "Closing the pane menu resets its expanded state"
+      );
+      window.resizeTo(originalWidth, window.outerHeight);
       await TestUtils.waitForCondition(() =>
         BrowserTestUtils.isHidden(overflow)
       );
@@ -541,7 +608,10 @@ add_task(async function test_split_controls_target_their_own_page() {
           '#zen-toast-container [data-l10n-id="zen-copy-current-url-confirmation"]'
         )
       );
-      if (Services.zen.canShare()) {
+      const zen = Cc["@mozilla.org/zen/common-utils;1"].getService(
+        Ci.nsIZenCommonUtils
+      );
+      if (zen.canShare()) {
         Assert.ok(
           toastLabel
             .closest(".zen-toast")
@@ -637,6 +707,7 @@ add_task(async function test_split_controls_target_their_own_page() {
         "Mixed split retains development toolbar and marker on local pane only"
       );
     } finally {
+      window.resizeTo(originalWidth, window.outerHeight);
       await gDevTools.getToolboxForTab(secondTab)?.destroy();
       await BrowserTestUtils.removeTab(secondTab);
     }
@@ -984,7 +1055,7 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
       ["zen.view.use-single-toolbar", true],
     ],
   });
-  const panel = gZenSiteDataPanel.unifiedPanel;
+  const panel = window.gZenSiteDataPanel.unifiedPanel;
   const button = document.getElementById("zen-site-data-developer-mode");
   const { readDeveloperMode, setDeveloperMode } = ChromeUtils.importESModule(
     "resource:///modules/zen/ui/ZenDeveloperMode.sys.mjs"
@@ -996,8 +1067,8 @@ add_task(async function test_site_controls_toggle_and_restore_defaults() {
       null,
       null,
       panel,
-      gZenSiteDataPanel.unifiedPanelView,
-      gZenSiteDataPanel.anchor
+      window.gZenSiteDataPanel.unifiedPanelView,
+      window.gZenSiteDataPanel.anchor
     );
     await shown;
     await TestUtils.waitForCondition(() => !button.hidden && !button.disabled);

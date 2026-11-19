@@ -662,6 +662,10 @@
       "zen-opacity-90": {
         "value": "0.9",
         "type": "opacity"
+      },
+      "zen-developer-mode-sublabel-opacity": {
+        "value": "0.65",
+        "type": "opacity"
       }
     },
     "box-shadow": {
@@ -750,6 +754,17 @@
           "spread": "0",
           "color": "#00000022",
           "type": "dropShadow"
+        },
+        "type": "boxShadow"
+      },
+      "zen-developer-mode-tab-shadow": {
+        "value": {
+          "x": "0",
+          "y": "0",
+          "blur": "0",
+          "spread": "2px",
+          "color": "#26282b",
+          "type": "innerShadow"
         },
         "type": "boxShadow"
       },
@@ -1319,6 +1334,10 @@
       }
     },
     "border-color": {
+      "zen-developer-mode-tab-border-color": {
+        "value": "#a66a00",
+        "type": "color"
+      },
       "zen-library-media-preview-stage-border-color": {
         "value": "#00000014",
         "type": "color"
@@ -1555,6 +1574,10 @@
       }
     },
     "border-color": {
+      "zen-developer-mode-tab-border-color": {
+        "value": "#f2c94c",
+        "type": "color"
+      },
       "zen-library-media-preview-stage-border-color": {
         "value": "#ffffff14",
         "type": "color"

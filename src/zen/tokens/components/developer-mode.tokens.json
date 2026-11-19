@@ -1,0 +1,20 @@
+{
+  "border-color": {
+    "--zen-developer-mode-tab-border-color": {
+      "value": {
+        "light": "#a66a00",
+        "dark": "#f2c94c"
+      }
+    }
+  },
+  "box-shadow": {
+    "--zen-developer-mode-tab-shadow": {
+      "value": "inset 0 0 0 2px #26282b"
+    }
+  },
+  "opacity": {
+    "--zen-developer-mode-sublabel-opacity": {
+      "value": "0.65"
+    }
+  }
+}

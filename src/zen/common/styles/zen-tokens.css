@@ -225,6 +225,15 @@
   /** components/compact-mode: border-color **/
   --zen-compact-mode-toolbar-outline-color: rgba(255, 255, 255, 0.15);
 
+  /** components/developer-mode: border-color **/
+  --zen-developer-mode-tab-border-color: light-dark(#a66a00, #f2c94c);
+
+  /** components/developer-mode: box-shadow **/
+  --zen-developer-mode-tab-shadow: inset 0 0 0 2px #26282b;
+
+  /** components/developer-mode: opacity **/
+  --zen-developer-mode-sublabel-opacity: 0.65;
+
   /** components/folders: size **/
   --zen-folder-tabs-popup-width: 250px;
   --zen-folder-tabs-list-max-height: 263px;

@@ -276,8 +276,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
   }
 
   on_TabBrowserDiscarded(event) {
-    this.#bars.get(event.target)?.toolbar.remove();
-    this.#bars.delete(event.target);
+    this.#removeToolbar(event.target);
     this.#refreshTab(event.target);
   }
   on_TabClose(event) {
@@ -298,7 +297,12 @@ export class ZenDeveloperMode extends ZenUIComponent {
     if (!tab.hasAttribute(MODE_ATTRIBUTE)) {
       return;
     }
-    this.#bars.get(tab)?.toolbar.remove();
+    const toolbar = this.#bars.get(tab)?.toolbar;
+    toolbar?.parentElement?.removeAttribute(MODE_ATTRIBUTE);
+    toolbar
+      ?.closest(".browserSidebarContainer")
+      ?.removeAttribute(MODE_ATTRIBUTE);
+    toolbar?.remove();
     this.#bars.delete(tab);
     tab.querySelector(".zen-developer-tab-sublabel")?.remove();
     tab.removeAttribute(MODE_ATTRIBUTE);
@@ -365,6 +369,10 @@ export class ZenDeveloperMode extends ZenUIComponent {
       }
       bar = this.#createToolbar(tab);
       container.prepend(bar.toolbar);
+      container.setAttribute(MODE_ATTRIBUTE, "true");
+      container
+        .closest(".browserSidebarContainer")
+        .setAttribute(MODE_ATTRIBUTE, "true");
       this.#bars.set(tab, bar);
     }
     if (this.document.activeElement !== bar.input) {
@@ -431,10 +439,17 @@ export class ZenDeveloperMode extends ZenUIComponent {
       "chrome://browser/skin/zen-icons/menu.svg"
     );
     overflow.setAttribute("aria-haspopup", "menu");
+    overflow.setAttribute("aria-expanded", "false");
     let menu;
     overflow.addEventListener("click", () => {
       if (!menu) {
         menu = this.document.createXULElement("menupopup");
+        menu.addEventListener("popupshown", () =>
+          overflow.setAttribute("aria-expanded", "true")
+        );
+        menu.addEventListener("popuphidden", () =>
+          overflow.setAttribute("aria-expanded", "false")
+        );
         this.#appendButtons(menu, () => tab, "menuitem");
         toolbar.append(menu);
       }
@@ -570,7 +585,7 @@ export class ZenDeveloperMode extends ZenUIComponent {
     if (!this.#nativeTools?.isConnected) {
       const group = this.document.createElementNS(HTML_NS, "div");
       group.id = "zen-developer-nav-tools";
-      // This is an ephemeral group, not a customizable overflow widget.
+      // Keep Firefox's widget overflow from moving this temporary action group.
       group.setAttribute("overflows", "false");
       group.setAttribute("skipintoolbarset", "true");
       group.setAttribute("role", "group");

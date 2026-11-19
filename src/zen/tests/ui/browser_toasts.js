@@ -8,6 +8,10 @@ const DESCRIPTION_ID = "zen-live-folder-rss-invalid-url-description";
 const ZOOM_TOAST_ID = "zen-zoom-changed-toast";
 const TEST_PAGE_URL = "https://example.com/";
 
+function changeZoom(command = "cmd_fullZoomEnlarge") {
+  document.getElementById(command).doCommand();
+}
+
 function toastContainer() {
   return document.getElementById("zen-toast-container");
 }
@@ -158,7 +162,7 @@ add_task(async function test_zoom_change_shows_toast_in_single_toolbar() {
   await waitForLayout(true);
 
   await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
-    FullZoom.enlarge();
+    changeZoom();
     await TestUtils.waitForCondition(
       () => zoomToasts().length === 1,
       "A zoom toast is shown"
@@ -175,10 +179,11 @@ add_task(async function test_zoom_change_shows_toast_in_single_toolbar() {
   await waitForToastsGone();
 });
 
-add_task(async function test_zoom_change_does_not_show_toast_on_blank_page() {
+add_task(async function test_zoom_change_without_command_does_not_show_toast() {
   await waitForLayout(true);
+  await waitForToastsGone();
 
-  await BrowserTestUtils.withNewTab("about:blank", async () => {
+  await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
     const zoomChanged = new Promise(resolve =>
       window.addEventListener("FullZoomChange", resolve, { once: true })
     );
@@ -186,9 +191,32 @@ add_task(async function test_zoom_change_does_not_show_toast_on_blank_page() {
     await zoomChanged;
     // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     await new Promise(resolve => setTimeout(resolve, 500));
-    is(zoomToasts().length, 0, "No zoom toast is shown on about:blank");
+    is(
+      zoomToasts().length,
+      0,
+      "No zoom toast is shown when zoom changes without a zoom command"
+    );
 
     await FullZoom.reset();
+  });
+
+  await waitForToastsGone();
+});
+
+add_task(async function test_zoom_change_does_not_show_toast_on_blank_page() {
+  await waitForLayout(true);
+
+  await BrowserTestUtils.withNewTab("about:blank", async () => {
+    const zoomChanged = new Promise(resolve =>
+      window.addEventListener("FullZoomChange", resolve, { once: true })
+    );
+    changeZoom();
+    await zoomChanged;
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
+    await new Promise(resolve => setTimeout(resolve, 500));
+    is(zoomToasts().length, 0, "No zoom toast is shown on about:blank");
+
+    await changeZoom("cmd_fullZoomReset");
   });
 
   await waitForToastsGone();
@@ -203,12 +231,12 @@ add_task(
     await waitForToastsGone();
 
     await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
-      FullZoom.enlarge();
+      changeZoom();
       // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       await new Promise(resolve => setTimeout(resolve, 500));
       is(zoomToasts().length, 0, "No zoom toast is shown");
 
-      await FullZoom.reset();
+      await changeZoom("cmd_fullZoomReset");
     });
 
     await SpecialPowers.popPrefEnv();
@@ -224,7 +252,7 @@ add_task(
     await waitForToastsGone();
 
     await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
-      FullZoom.enlarge();
+      changeZoom();
       await TestUtils.waitForCondition(
         () =>
           !document
@@ -242,7 +270,7 @@ add_task(
         "No zoom toast is shown while the URL bar is visible"
       );
 
-      await FullZoom.reset();
+      await changeZoom("cmd_fullZoomReset");
     });
 
     await SpecialPowers.popPrefEnv();
@@ -274,13 +302,13 @@ add_task(
     );
 
     await BrowserTestUtils.withNewTab(TEST_PAGE_URL, async () => {
-      FullZoom.enlarge();
+      changeZoom();
       await TestUtils.waitForCondition(
         () => zoomToasts().length === 1,
         "A zoom toast is shown because the URL bar is hidden in compact mode"
       );
 
-      await FullZoom.reset();
+      await changeZoom("cmd_fullZoomReset");
     });
 
     gZenCompactModeManager.preference = false;

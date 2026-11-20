@@ -125,12 +125,19 @@ browser[zen-pseudo-hidden="true"] {
   }
 }
 
-#zen-developer-mode-toolbar {
-  :root[inDOMFullscreen="true"] & {
-    display: none;
+:root {
+  @media (forced-colors: none) and (prefers-contrast: no-preference) {
+    --zen-developer-mode-stripes: repeating-linear-gradient(
+      135deg,
+      transparent 0 8px,
+      color-mix(in srgb, currentColor 4%, transparent) 8px 16px
+    );
   }
+}
 
+#zen-developer-mode-toolbar {
   grid-area: zen-developer-toolbar;
+  container: zen-developer-pane / inline-size;
   --zen-developer-mode-surface: light-dark(var(--color-gray-20), var(--color-gray-80));
   --zen-developer-mode-text: light-dark(var(--color-gray-100), var(--color-gray-0));
   --zen-developer-mode-divider: color-mix(in srgb, var(--zen-developer-mode-text) 16%, transparent);
@@ -141,6 +148,7 @@ browser[zen-pseudo-hidden="true"] {
   gap: var(--space-xsmall);
   padding: var(--space-xsmall) var(--space-medium);
   background-color: color-mix(in srgb, var(--zen-primary-color) 16%, var(--zen-developer-mode-surface));
+  background-image: var(--zen-developer-mode-stripes, none);
   color: var(--zen-developer-mode-text);
   border-block-end: var(--border-width) solid var(--zen-developer-mode-divider);
 
@@ -164,26 +172,66 @@ browser[zen-pseudo-hidden="true"] {
     }
   }
 
-  & .zen-developer-mode-icon {
-    flex: none;
-    padding: var(--space-small);
+  & .zen-developer-mode-controls {
+    margin-inline-start: auto;
+    padding-inline-start: var(--space-small);
+    border-inline-start: var(--border-width) solid var(--zen-developer-mode-divider);
 
-    & > :is(.toolbarbutton-icon, .toolbarbutton-text) {
+    & toolbarbutton > .toolbarbutton-text {
       display: none;
-    }
-
-    & > .zen-developer-mode-glyph {
-      width: var(--icon-size);
-      height: var(--icon-size);
-      background-color: currentColor;
-      mask: var(--zen-developer-mode-icon-image) center / contain no-repeat;
-      pointer-events: none;
     }
   }
 }
 
+.zen-developer-mode-shortcuts {
+  gap: var(--space-xsmall);
+}
+
+.zen-developer-mode-overflow {
+  display: none;
+  list-style-image: url("chrome://browser/skin/zen-icons/developer.svg");
+}
+
+.zen-developer-mode-menu-indicator {
+  flex: none;
+  align-self: center;
+  margin-inline-end: var(--space-xxsmall);
+  pointer-events: none;
+
+  & > image {
+    inline-size: var(--icon-size-xsmall);
+    block-size: var(--icon-size-xsmall);
+    list-style-image: url("chrome://browser/skin/zen-icons/arrow-down.svg");
+    -moz-context-properties: fill;
+    fill: var(--icon-color);
+    opacity: var(--zen-opacity-80);
+  }
+}
+
+@container zen-developer-pane (width >= 290px) {
+  /* Keep the focused control out of flow until the resize callback moves focus. */
+  .zen-developer-mode-overflow:focus-within {
+    position: absolute;
+    display: flex;
+  }
+}
+
+@container zen-developer-pane (width < 290px) {
+  .zen-developer-mode-shortcuts {
+    position: absolute;
+
+    &:not(:focus-within) {
+      display: none;
+    }
+  }
+
+  .zen-developer-mode-overflow {
+    display: flex;
+  }
+}
+
 #zen-developer-mode-address {
-  flex: 1 0 var(--size-layout-xsmall);
+  flex: 1 1 var(--size-layout-xsmall);
   align-self: stretch;
   min-width: 0;
   max-width: 100%;
@@ -208,12 +256,4 @@ browser[zen-pseudo-hidden="true"] {
   direction: ltr;
   text-align: start;
   font-family: monospace;
-}
-
-.zen-developer-mode-tools {
-  flex-wrap: wrap;
-  min-width: 0;
-  gap: var(--space-small);
-  padding-inline-start: var(--space-small);
-  border-inline-start: var(--border-width) solid var(--zen-developer-mode-divider);
 }

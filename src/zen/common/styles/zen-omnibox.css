@@ -91,6 +91,47 @@
   }
 }
 
+:root[zen-developer-mode-in-nav-bar] {
+  & #nav-bar {
+    container: zen-developer-navbar / inline-size;
+  }
+
+  & #zen-copy-url-button {
+    display: none;
+  }
+
+  & #urlbar[pageproxystate="valid"]:not([breakout-extend], [focused="true"]) > .urlbar-background {
+    background-image: var(--zen-developer-mode-stripes, none) !important;
+  }
+}
+
+@container zen-developer-navbar (width >= 720px) {
+  #zen-developer-mode-nav-controls .zen-developer-mode-overflow:focus-within {
+    position: absolute;
+    display: flex;
+  }
+}
+
+@container zen-developer-navbar (width < 720px) {
+  #urlbar-container {
+    /* Leave room for the fixed controls next to Firefox's customizable area. */
+    flex-shrink: 1;
+    min-inline-size: 0;
+  }
+
+  #zen-developer-mode-nav-controls .zen-developer-mode-shortcuts {
+    position: absolute;
+
+    &:not(:focus-within) {
+      display: none;
+    }
+  }
+
+  #zen-developer-mode-nav-controls .zen-developer-mode-overflow {
+    display: flex;
+  }
+}
+
 #identity-box.chromeUI:not([pageproxystate="invalid"]) {
   & #identity-icon-box {
     background: var(--zen-color-contrast-10) !important;

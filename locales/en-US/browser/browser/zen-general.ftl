@@ -148,6 +148,10 @@ zen-developer-mode-tab-badge =
 zen-developer-mode-toolbar =
     .aria-label = Local Developer Mode
 
+zen-developer-mode-overflow =
+    .label = Developer actions
+    .tooltiptext = Developer actions
+
 zen-developer-mode-edit-address =
     .aria-label = Edit address
     .tooltiptext = Edit address

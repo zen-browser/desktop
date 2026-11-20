@@ -18,16 +18,16 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Peida mõlemad
     .accesskey = P
 zen-toolbar-context-move-to-folder = 
-    .label = Move to Folder...
+    .label = Teisalda kausta
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Uus kaust
     .accesskey = U
 zen-tabs-newtab-paste-and-search = 
-    .label = Paste & Search
+    .label = Aseta ja otsi
 zen-scroll-to-selected-tab = 
-    .tooltiptext = Scroll to the selected tab
-    .aria-label = Scroll to the selected tab
+    .tooltiptext = Keri valitud kaardi juurde
+    .aria-label = Keri valitud kaardi juurde
 sidebar-zen-expand = 
     .label = Laienda külgriba
 sidebar-zen-create-new = 
@@ -46,7 +46,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] Tagasi esiletõstetud aadressi juurde
+        [zen-default-pinned-cmd] Eraldi esiletõstetud vahekaardist
        *[other] { $tabSubtitle }
     }

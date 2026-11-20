@@ -64,9 +64,11 @@ zen-pinned-tab-edit-url-title = Breyta festri vefslóð
 zen-pinned-tab-edit-url-label = Sláðu inn slóðina sem þessi festi flipi ætti að vísa á:
 zen-tabs-renamed = Tókst að endurnefna flipann!
 zen-background-tab-opened-toast = Nýr bakgrunnsflipi opnaður!
-zen-zoom-changed-toast = Aðdráttur: { NUMBER($percentage, style: "percent") }
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Tókst að endurnefna vinnusvæðið!
 zen-split-view-limit-toast = Get ekki bætt fleiri spjöldum á klofið yfirlit!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> aftur í { $action }
+zen-shortcut-blocked-toast-default-action = nota það í { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Hliðarstika falin! Notaðu <span>{ $shortcut }</span> til að birta hana aftur.
 zen-toggle-compact-mode-button = 
     .label = Þjappað viðmót
@@ -154,7 +156,7 @@ zen-little-window-open-in-space = Opna í <b data-l10n-name="space">{ $space }</
 zen-little-window-open-in-new-window = Opna í { -brand-short-name }
 zen-little-window-choose-space = 
     .tooltiptext = Veldu svæði
-zen-little-window-title = Little Zen
+zen-little-window-title = Litli Zen
 zen-little-window-intro-title = Opnað í <i data-l10n-name="name">Litla Zen</i>
 zen-little-window-intro-description = Smelltu á “Opna í” til að flytja þessa síðu yfir í fullan glugga, eða á { $shortcut } til að loka
 zen-little-window-download-source = 

@@ -228,3 +228,26 @@ add_task(async function test_devtools_keys_wait_for_their_keyset() {
     }
   }
 });
+
+add_task(async function test_non_macos_fullscreen_conflict_skipped() {
+  if (AppConstants.platform == "macosx") {
+    return;
+  }
+  await writeLegacy([
+    legacyEntry("key_enterFullScreen", {
+      key: "f",
+      modifiers: { control: true },
+    }),
+  ]);
+
+  await ZenKeyboardShortcuts.migrateLegacyShortcuts(window);
+
+  is(
+    CustomKeys.getDefaultKey("key_enterFullScreen"),
+    null,
+    "key_enterFullScreen with Ctrl+F is not customized on non-macOS"
+  );
+  ok(!(await IOUtils.exists(LEGACY_PATH)), "Legacy file is removed");
+
+  CustomKeys.resetAll();
+});

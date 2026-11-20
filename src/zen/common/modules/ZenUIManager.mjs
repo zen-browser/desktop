@@ -73,7 +73,7 @@ class nsZenUIManager {
       "cmd_fullZoomReduce",
       "cmd_fullZoomReset",
     ]) {
-      document.getElementById(id)?.addEventListener("command", () => {
+      document.getElementById(id).addEventListener("command", () => {
         this.#onZoomCommand();
       });
     }
@@ -348,7 +348,9 @@ class nsZenUIManager {
         this.#onFullZoomChange(browser);
       }
     };
-    window.addEventListener("FullZoomChange", this.#zoomChangeListener, { once: true });
+    window.addEventListener("FullZoomChange", this.#zoomChangeListener, {
+      once: true,
+    });
   }
 
   #onFullZoomChange(browser) {

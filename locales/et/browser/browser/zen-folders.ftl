@@ -5,7 +5,7 @@
 zen-folders-search-placeholder = 
     .placeholder = Otsi kaustast { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Nimeta kaust ümber
+    .label = Muuda kausta nime…
 zen-folders-panel-unpack-folder = 
     .label = Paki kaust lahti
 zen-folders-new-subfolder = 

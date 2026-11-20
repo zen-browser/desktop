@@ -605,7 +605,7 @@ add_task(async function test_split_controls_target_their_own_page() {
 
       const toastLabel = await TestUtils.waitForCondition(() =>
         document.querySelector(
-          '#zen-toast-container [data-l10n-id="zen-copy-current-url-confirmation"]'
+          '#zen-toast-container [data-l10n-id="zen-copy-urls-confirmation"]'
         )
       );
       const zen = Cc["@mozilla.org/zen/common-utils;1"].getService(

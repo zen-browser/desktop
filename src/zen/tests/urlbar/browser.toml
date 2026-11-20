@@ -9,6 +9,8 @@ support-files = [
   "!/browser/components/urlbar/tests/browser/head.js",
 ]
 
+["browser_developer_mode.js"]
+
 ["browser_floating_urlbar.js"]
 
 ["browser_issue_7385.js"]
@@ -18,5 +20,3 @@ support-files = [
 ["browser_top_sites_shortcuts.js"]
 
 ["browser_urlbar_close_token.js"]
-
-["browser_developer_mode.js"]

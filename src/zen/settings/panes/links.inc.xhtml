@@ -41,6 +41,23 @@
                   </menupopup>
                 </menulist>
               </html:div>
+              <html:div class="zen-settings-row" data-depends-on="zen.glance.enabled">
+                <html:span class="zen-settings-row-text">
+                  <html:span id="zen-settings-split-link-trigger-label" data-l10n-id="zen-settings-window-split-link-trigger"/>
+                  <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-split-link-trigger-note"/>
+                </html:span>
+                <menulist data-pref="zen.splitView.link-activation-method" aria-labelledby="zen-settings-split-link-trigger-label">
+                  <menupopup>
+                    <menuitem value="none" data-l10n-id="zen-settings-window-split-link-trigger-none"/>
+                    <menuitem value="ctrl" data-l10n-id="zen-settings-window-glance-trigger-ctrl"/>
+                    <menuitem value="alt" data-l10n-id="zen-settings-window-glance-trigger-alt"/>
+                    <menuitem value="shift" data-l10n-id="zen-settings-window-glance-trigger-shift"/>
+#ifdef XP_MACOSX
+                    <menuitem value="meta" data-l10n-id="zen-settings-window-glance-trigger-meta"/>
+#endif
+                  </menupopup>
+                </menulist>
+              </html:div>
               <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="zen.glance.enabled">
                 <html:span class="zen-settings-row-text">
                   <html:span data-l10n-id="zen-settings-window-glance-external-links"/>

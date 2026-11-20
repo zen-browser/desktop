@@ -15,6 +15,10 @@ export class ZenGlanceParent extends JSWindowActorParent {
         this.openGlance(this.browsingContext.topChromeWindow, message.data);
         break;
       }
+      case "ZenGlance:OpenInSplit": {
+        this.openInSplit(this.browsingContext.topChromeWindow, message.data);
+        break;
+      }
       case "ZenGlance:CloseGlance": {
         // Explicitly allowlist fields from content; never forward
         // skipPermitUnload or other privileged flags.
@@ -39,5 +43,34 @@ export class ZenGlanceParent extends JSWindowActorParent {
 
   openGlance(window, data) {
     return window.gZenGlanceManager.openGlance(data);
+  }
+
+  openInSplit(window, data) {
+    if (
+      Services.prefs.getStringPref(
+        "zen.splitView.link-activation-method",
+        "none"
+      ) === "none"
+    ) {
+      return;
+    }
+    // Only take the url from content. The principal comes from the
+    // sender's window global, never from the message itself.
+    const url = data?.url;
+    const triggeringPrincipal = this.manager.documentPrincipal;
+    if (typeof url !== "string" || !triggeringPrincipal?.isContentPrincipal) {
+      return;
+    }
+    if (!window.gZenViewSplitter.canSplit) {
+      // Windows without a tab bar can't split, behave like Glance there.
+      this.openGlance(window, { url, triggeringPrincipal });
+      return;
+    }
+    const browser = this.browsingContext.top.embedderElement;
+    window.gZenViewSplitter.openLinkInSplit({
+      url,
+      triggeringPrincipal,
+      sourceTab: browser ? window.gBrowser.getTabForBrowser(browser) : null,
+    });
   }
 }

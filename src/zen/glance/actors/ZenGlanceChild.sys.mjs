@@ -24,6 +24,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
   "ctrl"
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "splitActivationMethod",
+  "zen.splitView.link-activation-method",
+  "none"
+);
+
 // A small threshold to allow for minor mouse jitter during a normal click.
 // Anything beyond this is likely an intentional drag (like selecting text).
 const CLICK_DRAG_THRESHOLD_PX = 4;
@@ -52,6 +59,25 @@ export class ZenGlanceChild extends JSWindowActorChild {
       url: href,
       triggeringPrincipal: principal,
     });
+  }
+
+  #openInSplit(href) {
+    this.sendAsyncMessage("ZenGlance:OpenInSplit", { url: href });
+  }
+
+  #isModifierPressed(event, method) {
+    switch (method) {
+      case "ctrl":
+        return event.ctrlKey;
+      case "alt":
+        return event.altKey;
+      case "shift":
+        return event.shiftKey;
+      case "meta":
+        return event.metaKey;
+      default:
+        return false;
+    }
   }
 
   #sendClickDataToParent(node, originalTarget) {
@@ -156,22 +182,34 @@ export class ZenGlanceChild extends JSWindowActorChild {
     ) {
       return;
     }
-    const activationMethod = lazy.activationMethod;
-    if (activationMethod === "ctrl" && !event.ctrlKey) {
-      return;
-    } else if (activationMethod === "alt" && !event.altKey) {
-      return;
-    } else if (activationMethod === "shift" && !event.shiftKey) {
-      return;
-    } else if (activationMethod === "meta" && !event.metaKey) {
-      return;
+    // The split view modifier wins over the glance modifier
+    // when both are set to the same key.
+    const openInSplit = this.#isModifierPressed(
+      event,
+      lazy.splitActivationMethod
+    );
+    if (!openInSplit) {
+      const activationMethod = lazy.activationMethod;
+      if (activationMethod === "ctrl" && !event.ctrlKey) {
+        return;
+      } else if (activationMethod === "alt" && !event.altKey) {
+        return;
+      } else if (activationMethod === "shift" && !event.shiftKey) {
+        return;
+      } else if (activationMethod === "meta" && !event.metaKey) {
+        return;
+      }
     }
     if (this.#checkSecurity(href, principal)) {
       return;
     }
     event.preventDefault();
     event.stopPropagation();
-    this.#openGlance(href, principal);
+    if (openInSplit) {
+      this.#openInSplit(href);
+    } else {
+      this.#openGlance(href, principal);
+    }
   }
 
   on_keydown(event) {

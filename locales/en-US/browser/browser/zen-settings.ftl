@@ -55,10 +55,12 @@ zen-settings-window-newtab-button-top = Keep the new tab button above the tabs
 zen-settings-window-backdrop-header = Window
 zen-settings-window-backdrop = Window backdrop
 zen-settings-window-backdrop-description = The material Windows draws behind { -brand-short-name }’s windows
-zen-settings-window-backdrop-none = None
-zen-settings-window-backdrop-mica = Mica
-zen-settings-window-backdrop-mica-alt = Mica Alt
-zen-settings-window-backdrop-acrylic = Acrylic
+zen-settings-window-backdrop-mica =
+    .label = Mica
+zen-settings-window-backdrop-mica-alt =
+    .label = Mica Alt
+zen-settings-window-backdrop-acrylic =
+    .label = Acrylic
 
 ## Tabs
 

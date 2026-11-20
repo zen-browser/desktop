@@ -11,10 +11,5 @@
     "--zen-developer-mode-tab-shadow": {
       "value": "inset 0 0 0 2px #26282b"
     }
-  },
-  "opacity": {
-    "--zen-developer-mode-sublabel-opacity": {
-      "value": "0.65"
-    }
   }
 }

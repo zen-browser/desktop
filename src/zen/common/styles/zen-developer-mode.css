@@ -148,7 +148,7 @@
   margin: 0;
   font-size: x-small;
   line-height: 1.2;
-  opacity: var(--zen-developer-mode-sublabel-opacity);
+  opacity: var(--zen-opacity-60);
   pointer-events: none;
 }
 

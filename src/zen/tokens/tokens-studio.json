@@ -670,10 +670,6 @@
       "zen-opacity-90": {
         "value": "0.9",
         "type": "opacity"
-      },
-      "zen-developer-mode-sublabel-opacity": {
-        "value": "0.65",
-        "type": "opacity"
       }
     },
     "box-shadow": {

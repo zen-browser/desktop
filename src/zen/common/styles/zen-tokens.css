@@ -231,9 +231,6 @@
   /** components/developer-mode: box-shadow **/
   --zen-developer-mode-tab-shadow: inset 0 0 0 2px #26282b;
 
-  /** components/developer-mode: opacity **/
-  --zen-developer-mode-sublabel-opacity: 0.65;
-
   /** components/folders: size **/
   --zen-folder-tabs-popup-width: 250px;
   --zen-folder-tabs-list-max-height: 263px;

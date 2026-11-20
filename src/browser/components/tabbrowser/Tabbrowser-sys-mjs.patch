@@ -992,7 +992,16 @@ index b8dbcfda7392a220d8fd15a25a68f3962b2725d4..544f672e49679fa60156e8cb7e13ee05
        aTab.selected ||
        aTab.closing ||
        // Tabs that are sharing the screen, microphone or camera cannot be hidden.
-@@ -7865,7 +8139,8 @@ export class Tabbrowser {
+@@ -7833,7 +8111,7 @@ export class Tabbrowser {
+    *   The context for the operation for telemetry purposes.
+    */
+   selectTabAtIndex(aIndex, { event, metricsContext } = {}) {
+-    let tabs = this.visibleTabs;
++    let tabs = this.visibleTabs.filter(tab => !tab.hasAttribute("zen-glance-tab"));
+ 
+     // count backwards for aIndex < 0
+     if (aIndex < 0) {
+@@ -7865,7 +8143,8 @@ export class Tabbrowser {
     * @param {boolean} [options.replaceLastTab=false]
     *   When true, opens a newtab to prevent the window from closing.
     */

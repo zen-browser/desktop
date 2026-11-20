@@ -148,12 +148,18 @@ class nsZenWorkspaceCreation extends MozXULElement {
     });
   }
 
+  #hasConnected = false;
+  #isConfirmed = false;
+
+  connectedMoveCallback() {}
+
   connectedCallback() {
-    if (this.delayConnectedCallback()) {
+    if (this.delayConnectedCallback() || this.#hasConnected) {
       // If we are not ready yet, or if we have already connected, we
       // don't need to do anything.
       return;
     }
+    this.#hasConnected = true;
 
     lazy.ZenLibrary.close();
     this.appendChild(this.constructor.fragment);
@@ -277,6 +283,11 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async onCreateButtonCommand() {
+    if (this.#isConfirmed) {
+      return;
+    }
+    this.#isConfirmed = true;
+
     const workspace = gZenWorkspaces.getActiveWorkspace();
     workspace.name = this.inputName.value.trim();
     workspace.icon = this.inputIcon.image || this.inputIcon.label || undefined;
@@ -365,6 +376,9 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async handleZenWorkspacesChange() {
+    if (this.#isConfirmed) {
+      return;
+    }
     // The space we were living in has already slid away, no need to animate
     // ourselves out of it.
     await this.#cleanup({ animateOut: false });

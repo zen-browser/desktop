@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index f20c90621a73fed5cee4410ec4af6762d07448ba..bef1b9bb2f3cfab9c192d8b63c1617fef9ee4c46 100644
+index f20c90621a73fed5cee4410ec4af6762d07448ba..e947f5abf60c018d572cc7c9b459744206539a28 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
 @@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -82,14 +82,80 @@ index f20c90621a73fed5cee4410ec4af6762d07448ba..bef1b9bb2f3cfab9c192d8b63c1617fe
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
-@@ -1331,7 +1390,9 @@ function handURIToExistingBrowser(
+@@ -1331,13 +1390,38 @@ function handURIToExistingBrowser(
    });
  
    if (navWin) {
 -    openInWindow(navWin);
++    if (
++      !forceAllowDataURI &&
++      lazy.gZenSpaceRoutingManager.handleExternalUri(
++        uri,
++        navWin,
++        triggeringPrincipal
++      )
++    ) {
++      return;
++    }
 +    openInWindow(
 +      lazy.gZenSpaceRoutingManager.getWindowForExternalUri(uri, navWin)
 +    );
      return;
    }
  
+   let pending = lazy.BrowserWindowTracker.getPendingWindow({
+     private: allowPrivate,
+   });
++  if (
++    !forcePrivate &&
++    !forceAllowDataURI &&
++    lazy.gZenSpaceRoutingManager.takesExternalUrisWithoutWindow
++  ) {
++    if (!pending) {
++      openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
++    }
++    lazy.gZenSpaceRoutingManager.openExternalUrisAfterStartup([
++      { uri, principal: triggeringPrincipal },
++    ]);
++    return;
++  }
+   if (pending) {
+     // Note that we cannot make this function async as some callers rely on
+     // catching exceptions it can throw in some cases and some of those callers
+@@ -1771,6 +1855,7 @@ nsDefaultCommandLineHandler.prototype = {
+           ({ where }) => where == Ci.nsIBrowserDOMWindow.OPEN_DEFAULTWINDOW
+         ).length <= 1;
+       let windowURLs = [];
++      let zenExternalURIs = [];
+       for (let { uri, principal, where } of urls) {
+         if (
+           shouldOpenInExistingWindow ||
+@@ -1786,6 +1871,10 @@ nsDefaultCommandLineHandler.prototype = {
+             }
+           }
+         }
++        if (lazy.gZenSpaceRoutingManager.takesExternalUrisWithoutWindow) {
++          zenExternalURIs.push({ uri, principal });
++          continue;
++        }
+         windowURLs.push(uri.spec);
+       }
+ 
+@@ -1793,6 +1882,17 @@ nsDefaultCommandLineHandler.prototype = {
+       if (windowURLs.length) {
+         openBrowserWindow(cmdLine, lazy.gSystemPrincipal, windowURLs);
+       }
++      if (zenExternalURIs.length) {
++        if (
++          !lazy.BrowserWindowTracker.getTopWindow() &&
++          !lazy.BrowserWindowTracker.getPendingWindow()
++        ) {
++          openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
++        }
++        lazy.gZenSpaceRoutingManager.openExternalUrisAfterStartup(
++          zenExternalURIs
++        );
++      }
+     } else if (!cmdLine.preventDefault) {
+       if (
+         AppConstants.platform == "win" &&

@@ -170,6 +170,9 @@
       ) {
         separation = 0;
       }
+      if (document.documentElement.hasAttribute("zen-little-window")) {
+        separation = 0;
+      }
       // In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible)
       separation = Math.max(kMinElementSeparation, separation);
       document.documentElement.style.setProperty(

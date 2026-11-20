@@ -1,0 +1,56 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-language" class="zen-settings-pane" role="tabpanel" data-pane="language" hidden="hidden">
+          <html:div class="zen-settings-group">
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row">
+                <html:span class="zen-settings-row-text">
+                  <html:span id="zen-settings-language-label" data-l10n-id="zen-settings-window-language"/>
+                  <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-language-note"/>
+                </html:span>
+                <menulist id="zen-settings-language" aria-labelledby="zen-settings-language-label">
+                  <menupopup/>
+                </menulist>
+              </html:div>
+              <html:div class="zen-settings-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-website-languages"/>
+                <html:button class="zen-settings-button" data-action="open-website-languages" data-l10n-id="zen-settings-window-website-languages-button"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-translations-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-translations-enabled"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.translations.enable"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="browser.translations.enable">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-translations-offer"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.translations.automaticallyPopup"/>
+              </html:div>
+              <html:div class="zen-settings-row" data-depends-on="browser.translations.enable">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-translations-languages"/>
+                <html:button class="zen-settings-button" data-action="open-translations" data-l10n-id="zen-settings-window-translations-button"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-spelling-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-spellcheck"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="layout.spellcheckDefault" data-pref-on="1" data-pref-off="0"/>
+              </html:div>
+              <html:div class="zen-settings-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-dictionaries"/>
+                <html:button class="zen-settings-button" data-action="download-dictionaries" data-l10n-id="zen-settings-window-dictionaries-download"/>
+              </html:div>
+            </html:div>
+            <html:moz-promo id="zen-settings-spellcheck-promo" data-l10n-id="spellcheck-promo" imagesrc="chrome://browser/content/preferences/spell-check-promo.svg" imagewidth="large" imagedisplay="cover"/>
+          </html:div>
+        </html:section>

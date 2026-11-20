@@ -72,3 +72,70 @@ add_task(async function test_copy_urls_of_multiselected_tabs() {
   );
   ok(true, "Copy URL as Markdown copies a link per multiselected tab");
 });
+
+add_task(async function test_copy_url_of_loading_tab() {
+  const url = "https://example.com/?loading=1";
+  const previousTab = gBrowser.selectedTab;
+  const tab = BrowserTestUtils.addTab(gBrowser, url);
+  gBrowser.selectedTab = tab;
+  is(
+    tab.linkedBrowser.currentURI.spec,
+    "about:blank",
+    "The tab is still on its initial page"
+  );
+
+  const [[link], isMultiple] = gZenCommonActions.getCurrentURLs();
+  ok(!isMultiple, "Only the current tab is copied");
+  is(link.uri.spec, url, "The address being loaded is what is copied");
+
+  await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
+  is(
+    gZenCommonActions.getCurrentURLs()[0][0].uri.spec,
+    url,
+    "And still once it has loaded"
+  );
+
+  gBrowser.selectedTab = previousTab;
+  BrowserTestUtils.removeTab(tab);
+});
+
+add_task(async function test_copy_url_right_after_typing_in_new_tab() {
+  const start = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "https://example.org/"
+  );
+  gZenUIManager.handleNewTab(false, false, "tab", true);
+  await TestUtils.waitForCondition(
+    () => gURLBar.focused && gURLBar.hasAttribute("zen-newtab"),
+    "The new tab URL bar is open"
+  );
+  EventUtils.sendString("example.com");
+  EventUtils.synthesizeKey("KEY_Enter");
+
+  const copied = new Set();
+  await TestUtils.waitForCondition(() => {
+    if (gBrowser.selectedTab == start) {
+      return false;
+    }
+    copied.add(gZenCommonActions.getCurrentURLs()[0][0].uri.host);
+    return gBrowser.selectedBrowser.currentURI.spec == "https://example.com/";
+  }, "The page loads in a new tab");
+  Assert.deepEqual(
+    [...copied],
+    ["example.com"],
+    "The new tab only ever gives the address it was opened for"
+  );
+  is(
+    gBrowser.selectedBrowser.userTypedValue,
+    null,
+    "The address stops counting as typed once the page shows"
+  );
+  is(
+    gURLBar.untrimmedValue,
+    "https://example.com/",
+    "And the URL bar shows the page"
+  );
+
+  BrowserTestUtils.removeTab(gBrowser.selectedTab);
+  BrowserTestUtils.removeTab(start);
+});

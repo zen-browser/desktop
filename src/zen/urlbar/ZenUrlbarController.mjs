@@ -21,6 +21,7 @@ export class nsZenUrlbarController {
   #lastSearch = "";
   #clearTimeout = null;
   #lastTab = null;
+  #openedOnTab = null;
   #sessionCounter = 0;
   #owner = null;
 
@@ -189,6 +190,19 @@ export class nsZenUrlbarController {
   }
 
   /**
+   * Puts the URL bar back to showing the selected tab, dropping what was
+   * typed into it.
+   */
+  revert() {
+    const isLoadingAnotherTab =
+      this.#openedOnTab?.deref() !== gBrowser.selectedTab &&
+      !!gBrowser.selectedBrowser.userTypedValue;
+    if (!isLoadingAnotherTab) {
+      gURLBar.handleRevert();
+    }
+  }
+
+  /**
    * Closes the URL bar session started by handleNewTab and restores the tab
    * and URL bar state it replaced.
    *
@@ -246,7 +260,7 @@ export class nsZenUrlbarController {
           });
         }
 
-        gURLBar.handleRevert();
+        this.revert();
       }
 
       if (isFocusedBefore) {
@@ -293,6 +307,7 @@ export class nsZenUrlbarController {
   // Section: open and close
 
   onUrlbarOpen() {
+    this.#openedOnTab = new WeakRef(gBrowser.selectedTab);
     setTimeout(() => {
       const hadValid = gURLBar.getAttribute("pageproxystate") === "valid";
       gURLBar.setPageProxyState("invalid", false);
@@ -400,7 +415,10 @@ export class nsZenUrlbarController {
     if (gURLBar.hasAttribute("breakout-extend")) {
       return aURL;
     }
-    if (gZenVerticalTabsManager._hasSetSingleToolbar && this.showDomainOnly) {
+    if (
+      (gZenVerticalTabsManager._hasSetSingleToolbar && this.showDomainOnly) ||
+      gZenVerticalTabsManager.isLittleWindow
+    ) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
       let stripped = url.startsWith("https://") ? url.split("/")[2] : url;
       if (stripped.startsWith("www.")) {

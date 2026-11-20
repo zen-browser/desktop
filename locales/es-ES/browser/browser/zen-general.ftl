@@ -66,9 +66,11 @@ zen-pinned-tab-edit-url-title = Editar URL fijada
 zen-pinned-tab-edit-url-label = Introduzca la URL a la que debe apuntar esta pestaña fijada:
 zen-tabs-renamed = ¡La pestaña se ha renombrado con éxito!
 zen-background-tab-opened-toast = ¡Nueva pestaña abierta en segundo plano!
-zen-zoom-changed-toast = Zoom: { NUMBER($percentage, style: "percent") }
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = ¡El espacio de trabajo ha sido renombrado con éxito!
 zen-split-view-limit-toast = ¡No se pueden añadir más paneles a la vista dividida!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
+zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = ¡Barra lateral oculta! Use <span>{ $shortcut }</span> para volver a mostrar la barra lateral.
 zen-toggle-compact-mode-button = 
     .label = Modo compacto
@@ -156,7 +158,7 @@ zen-little-window-open-in-space = Abrir en <b data-l10n-name="space">{ $space }<
 zen-little-window-open-in-new-window = Abrir en { -brand-short-name }
 zen-little-window-choose-space = 
     .tooltiptext = Elija un espacio
-zen-little-window-title = Little Zen
+zen-little-window-title = Pequeño Zen
 zen-little-window-intro-title = Abierto en <i data-l10n-name="name">Pequeño Zen</i>
 zen-little-window-intro-description = Haga clic en "Abrir en" para mover esta página a una ventana completa, o { $shortcut } para cerrar
 zen-little-window-download-source = 

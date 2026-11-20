@@ -869,7 +869,7 @@ zen-library:not([open]) :is(.zen-library-search-header, .zen-library-filter-head
   flex: none;
   margin-inline: var(--zen-space-14);
   padding-block: var(--zen-space-10) var(--zen-space-14);
-  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
   -moz-window-dragging: no-drag;
 
   & h3 {

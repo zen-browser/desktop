@@ -10,15 +10,11 @@
   --zen-settings-font-size-small: 0.923rem;
   --zen-settings-font-size-tiny: 0.615rem;
 
-  --zen-settings-min-width: 840px;
+  --zen-settings-min-width: 760px;
   --zen-settings-min-height: 440px;
   --zen-settings-sidebar-width: 208px;
 
   --zen-settings-sidebar-background: light-dark(#e9e9eb, #262627);
-  --zen-settings-sidebar-mica-background: light-dark(
-    rgba(255, 255, 255, 0.35),
-    rgba(32, 32, 33, 0.35)
-  );
   --zen-settings-sticky-background: light-dark(#fcfcfc, #282829);
   --zen-settings-shortcuts-aside-width: 236px;
   --zen-settings-keyword-width: 110px;
@@ -29,6 +25,7 @@
   --zen-settings-layout-thumbnail-width: 84px;
   --zen-settings-art-key-size: 60px;
   --zen-settings-art-key-icon-size: 50cqi;
+  --zen-settings-art-face-size: 24px;
   --zen-settings-art-key-edge-width: 4px 4px 8px;
   --zen-settings-drop-before-shadow: inset 0 2px 0 AccentColor;
   --zen-settings-drop-after-shadow: inset 0 -2px 0 AccentColor;
@@ -77,6 +74,31 @@
   --zen-settings-success-color: light-dark(#2e9e44, #4ad466);
   --zen-settings-warning-color: light-dark(#c47a00, #f0b429);
 
+  --zen-settings-win-layer-border: light-dark(
+    rgba(0, 0, 0, 0.06),
+    rgba(255, 255, 255, 0.06)
+  );
+  --zen-settings-win-card-background: light-dark(
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.05)
+  );
+  --zen-settings-win-card-border: light-dark(
+    rgba(0, 0, 0, 0.058),
+    rgba(0, 0, 0, 0.1)
+  );
+  --zen-settings-win-tile-background: light-dark(
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.03)
+  );
+  --zen-settings-win-tile-selected-background: color-mix(
+    in srgb,
+    AccentColor 10%,
+    transparent
+  );
+  --zen-settings-win-font-size-title: 2.15rem;
+  --zen-settings-win-font-size-heading: 1.25rem;
+  --zen-settings-win-tile-width: 148px;
+
   color-scheme: light dark;
   appearance: none;
   background: var(--zen-settings-background);
@@ -109,7 +131,6 @@
   width: var(--zen-settings-sidebar-width);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: var(--zen-space-12);
   padding: var(--zen-space-12);
   background: var(--zen-settings-sidebar-background);
@@ -125,8 +146,12 @@
     background: none;
   }
 
+  @media (-moz-platform: windows) {
+    border-inline-end: none;
+  }
+
   @media (-moz-windows-mica) {
-    background: var(--zen-settings-sidebar-mica-background);
+    background: none;
   }
 }
 
@@ -137,15 +162,21 @@
 }
 
 #zen-settings-categories,
+#zen-settings-firefox-links,
 #zen-settings-links {
   display: flex;
   flex-direction: column;
   gap: var(--zen-space-2);
 }
 
+#zen-settings-firefox-links,
 #zen-settings-links {
   padding-top: var(--zen-space-10);
   border-top: 1px solid var(--zen-settings-separator-color);
+}
+
+#zen-settings-links {
+  margin-top: auto;
 }
 
 .zen-settings-category {
@@ -599,6 +630,47 @@
   gap: var(--zen-space-8);
 }
 
+#zen-settings-shortcuts-conflict {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-8);
+  margin-top: var(--zen-space-8);
+  padding-top: var(--zen-space-16);
+  border-top: 1px solid var(--zen-settings-separator-color);
+
+  & > menulist {
+    margin: 0;
+
+    &::part(label-box) {
+      font-weight: var(--font-weight);
+    }
+  }
+}
+
+#zen-settings-shortcuts-little {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--zen-space-10);
+  margin-top: var(--zen-space-8);
+}
+
+.zen-settings-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--zen-space-8);
+
+  & > input {
+    flex: none;
+    margin: var(--zen-space-2) 0 0;
+  }
+
+  & > input:disabled + span {
+    opacity: var(--zen-opacity-50);
+  }
+}
+
 .zen-settings-spacer {
   flex: 1;
 }
@@ -687,7 +759,6 @@
 
   &[aria-checked="true"] {
     color: var(--zen-settings-text-color);
-    font-weight: var(--font-weight-bold);
 
     & > img {
       outline-color: AccentColor;
@@ -791,6 +862,8 @@
 }
 
 #zen-settings-shortcuts-face {
+  width: var(--zen-settings-art-face-size);
+  height: var(--zen-settings-art-face-size);
   transition: translate 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -896,5 +969,63 @@
   & .dialogFrame {
     flex: 1;
     margin: var(--zen-space-10);
+  }
+}
+
+/* Windows 11 Fluent skin */
+@media (-moz-platform: windows) {
+  #zen-settings-firefox-links,
+  #zen-settings-links {
+    margin-inline: calc(-1 * var(--zen-space-12));
+    padding-block-start: var(--zen-space-12);
+    padding-inline: var(--zen-space-12);
+  }
+
+  #zen-settings-main {
+    border-inline-start: 1px solid var(--zen-settings-win-layer-border);
+  }
+
+  #zen-settings-header {
+    position: relative;
+    align-items: flex-end;
+    height: auto;
+    padding: var(--zen-space-40) var(--zen-space-32) var(--zen-space-16);
+
+    & > .titlebar-buttonbox-container {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-end: 0;
+      align-self: flex-start;
+    }
+  }
+
+  #zen-settings-title {
+    font-size: var(--zen-settings-win-font-size-title);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  #zen-settings-panes {
+    padding: 0 var(--zen-space-32) var(--zen-space-32);
+  }
+
+  .zen-settings-pane h2 {
+    color: var(--zen-settings-text-color);
+    font-size: var(--zen-settings-win-font-size-heading);
+  }
+
+  .zen-settings-card {
+    border: 1px solid var(--zen-settings-win-card-border);
+    border-radius: var(--zen-border-radius-12);
+    background: var(--zen-settings-win-card-background);
+  }
+
+  .zen-settings-row {
+    min-height: var(--zen-size-52);
+    padding: var(--zen-space-10) var(--zen-space-16);
+
+    &:not(:first-child)::before {
+      inset-inline: 0;
+      background: var(--zen-settings-win-card-border);
+    }
   }
 }

@@ -7,12 +7,28 @@
             <html:h2 data-l10n-id="zen-settings-window-tabs-header"/>
             <html:div class="zen-settings-card">
               <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-links-in-tabs"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.link.open_newwindow" data-pref-on="3" data-pref-off="2"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-switch-to-new"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.tabs.loadInBackground" data-pref-on="false" data-pref-off="true"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-app-links-next-to-active"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.link.open_newwindow.override.external" data-pref-on="7" data-pref-off="-1"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-recently-used-on-close"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.select-recently-used-on-close"/>
               </html:div>
               <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-close-on-back"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="zen.tabs.close-on-back-with-no-history"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-warn-on-close"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.tabs.warnOnClose"/>
               </html:div>
               <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-warn-on-quit"/>

@@ -37,4 +37,24 @@
               </html:div>
             </html:div>
           </html:div>
+#ifdef XP_WIN
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-backdrop-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row">
+                <html:div class="zen-settings-row-text">
+                  <html:span id="zen-settings-backdrop-label" data-l10n-id="zen-settings-window-backdrop"/>
+                  <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-backdrop-description"/>
+                </html:div>
+                <menulist id="zen-settings-backdrop" aria-labelledby="zen-settings-backdrop-label">
+                  <menupopup>
+                    <menuitem value="1" data-l10n-id="zen-settings-window-backdrop-mica"/>
+                    <menuitem value="3" data-l10n-id="zen-settings-window-backdrop-mica-alt"/>
+                    <menuitem value="2" data-l10n-id="zen-settings-window-backdrop-acrylic"/>
+                  </menupopup>
+                </menulist>
+              </html:div>
+            </html:div>
+          </html:div>
+#endif
         </html:section>

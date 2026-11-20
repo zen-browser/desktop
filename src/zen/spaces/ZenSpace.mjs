@@ -59,6 +59,7 @@ export class nsZenWorkspace extends MozXULElement {
   #watchedTabWasVisible = false;
   #scrollToTabShown = false;
   #scrollToTabSeq = 0;
+  #appliedPalette = null;
 
   static get markup() {
     return `
@@ -682,16 +683,24 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   onGradientCacheChanged() {
-    const { isDarkMode, isExplicitMode, paletteStyles } =
-      gZenThemePicker.getGradientForWorkspace(
-        gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid),
-        { getGradient: false }
-      );
-    if (isExplicitMode) {
-      this.style.colorScheme = isDarkMode ? "dark" : "light";
-    } else {
-      this.style.colorScheme = "";
+    const workspace = gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid);
+    if (!workspace) {
+      return;
     }
+    const { isDarkMode, isExplicitMode, paletteStyles } =
+      gZenThemePicker.getGradientForWorkspace(workspace, {
+        getGradient: false,
+      });
+    let colorScheme = "";
+    if (isExplicitMode) {
+      colorScheme = isDarkMode ? "dark" : "light";
+    }
+    const applied = JSON.stringify([colorScheme, paletteStyles]);
+    if (this.#appliedPalette === applied) {
+      return;
+    }
+    this.#appliedPalette = applied;
+    this.style.colorScheme = colorScheme;
     for (const [property, value] of Object.entries(paletteStyles)) {
       this.style.setProperty(property, value);
     }
@@ -710,6 +719,7 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   clearThemeStyles() {
+    this.#appliedPalette = null;
     this.style.colorScheme = "";
     this.style.removeProperty("--toolbox-textcolor");
     this.style.removeProperty("--zen-primary-color");

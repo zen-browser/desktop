@@ -244,14 +244,14 @@ export class ZenLibrary extends MozLitElement {
     if (this.#stylesLoaded && p !== 0) {
       let libraryWidth =
         window.windowUtils.getBoundsWithoutFlushing(this).width;
-      const compactModeOffsetDirection = this.#libraryOnRight
+      const compactModeOffsetDirection = this.#libraryOnRightVisually
         ? -this.#toolboxWidth + ZenThemeModifier.elementSeparation
         : this.#toolboxWidth - ZenThemeModifier.elementSeparation;
       const compactModeOffset = this.#isCompactMode
         ? compactModeOffsetDirection
         : 0;
 
-      const leftAligned = this.#libraryOnRight ? -1 : 1;
+      const leftAligned = this.#libraryOnRightVisually ? -1 : 1;
       let webOffset =
         leftAligned * (libraryWidth - this.#toolboxWidth) + compactModeOffset;
 
@@ -270,7 +270,7 @@ export class ZenLibrary extends MozLitElement {
 
       const toolboxProgress = Math.min(1, value * 3);
       if (this.#isCompactMode) {
-        if (this.#libraryOnRight) {
+        if (this.#libraryOnRightVisually) {
           gNavToolbox.style.setProperty(
             "transform",
             `translateX(calc(100% * ${toolboxProgress}))`
@@ -303,6 +303,15 @@ export class ZenLibrary extends MozLitElement {
 
   get #libraryOnRight() {
     return gZenVerticalTabsManager._prefsRightSide;
+  }
+
+  /**
+   * Right-to-left locales mirror the window, so the sidebar the library
+   * opens over is on the other side from what the preference says.
+   */
+  get #libraryOnRightVisually() {
+    const isRTL = document.documentElement.matches(":-moz-locale-dir(rtl)");
+    return this.#libraryOnRight !== isRTL;
   }
 
   get #isCompactMode() {

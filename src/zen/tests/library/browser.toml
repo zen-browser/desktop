@@ -21,6 +21,8 @@ prefs = [
 
 ["browser_library_rapid_toggle.js"]
 
+["browser_library_rtl.js"]
+
 ["browser_library_space_routing.js"]
 
 ["browser_library_spaces_refresh.js"]

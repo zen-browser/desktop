@@ -7,7 +7,7 @@ zen-boost-edit-rename =
 zen-boost-edit-shuffle = 
     .label = Shuffle Vibes
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Lähtesta kõik muudatused
 zen-boost-edit-delete = 
     .label = Delete Boost
 zen-boost-size = Size
@@ -60,7 +60,7 @@ zen-boost-receive-title = Add this Boost to Zen?
 zen-boost-receive-description = Try it on! You can always switch back from the <span data-l10n-name="library">Library</span>.
 zen-boost-received-toast = Boost added!
 zen-boost-receive-error-toast = Couldn't load this shared Boost
-zen-boost-back = Back
+zen-boost-back = Tagasi
 zen-boost-shuffle = 
     .tooltiptext = Shuffle Boost Settings
 zen-boost-invert = 

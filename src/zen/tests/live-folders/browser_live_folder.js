@@ -41,6 +41,7 @@ describe("Zen Live Folder Scheduling", () => {
     mockManager = {
       saveState: sandbox.spy(),
       onLiveFolderFetch: sandbox.spy(),
+      clearDismissedItems: sandbox.spy(),
     };
   });
 
@@ -147,5 +148,45 @@ describe("Zen Live Folder Scheduling", () => {
       2,
       "Should have once after the new interval"
     );
+  });
+
+  it("should clear dismissed items on manual refresh", async () => {
+    const { fetchStub } = createInstance({
+      id: "test-folder-manual-refresh",
+      interval: INTERVAL,
+      lastFetched: Date.now(),
+    });
+
+    await instance.refresh(true);
+    sinon.assert.calledWith(mockManager.clearDismissedItems, "test-folder-manual-refresh");
+    sinon.assert.calledOnce(fetchStub);
+  });
+
+  it("should not clear dismissed items on default refresh", async () => {
+    const { fetchStub } = createInstance({
+      id: "test-folder-default-refresh",
+      interval: INTERVAL,
+      lastFetched: Date.now(),
+    });
+
+    await instance.refresh();
+    sinon.assert.notCalled(mockManager.clearDismissedItems);
+    sinon.assert.calledOnce(fetchStub);
+  });
+
+  it("should clear dismissed items when triggered via refresh option", () => {
+    const { fetchStub } = createInstance({
+      id: "test-folder-option-refresh",
+      interval: INTERVAL,
+      lastFetched: Date.now(),
+    });
+
+    const refreshSpy = sandbox.spy(instance, "refresh");
+    const option = {
+      getAttribute: attr => (attr === "option-key" ? "refresh" : null),
+    };
+
+    instance.onOptionTrigger(option);
+    sinon.assert.calledWith(refreshSpy, true);
   });
 });

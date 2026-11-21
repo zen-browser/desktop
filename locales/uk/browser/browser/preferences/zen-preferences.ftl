@@ -25,42 +25,42 @@ zen-glance-enabled =
 zen-glance-trigger-ctrl-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌃ + Click
-           *[other] Ctrl + Click
+            [macos] ⌃ + клац
+           *[other] Ctrl + клац
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Control + Click
-           *[other] Ctrl + Click
+            [macos] Control + клац
+           *[other] Ctrl + клац
         }
 zen-glance-trigger-alt-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌥ + Click
-           *[other] Alt + Click
+            [macos] ⌥ + клац
+           *[other] Alt + клац
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Option + Click
-           *[other] Alt + Click
+            [macos] Option + клац
+           *[other] Alt + клац
         }
 zen-glance-trigger-shift-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⇧ + Click
-           *[other] Shift + Click
+            [macos] ⇧ + клац
+           *[other] Shift + клац
         }
-    .aria-label = Shift + Click
+    .aria-label = Shift + клац
 zen-glance-trigger-meta-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⌘ + Click
-           *[other] Meta (Command) + Click
+            [macos] ⌘ + клац
+           *[other] Meta (Command) + клац
         }
     .aria-label =
         { PLATFORM() ->
-            [macos] Command + Click
-           *[other] Meta (Command) + Click
+            [macos] Command + клац
+           *[other] Meta (Command) + клац
         }
 zen-look-and-feel-compact-view-header = Показати в компактному вигляді
 zen-look-and-feel-compact-view-description = Показати лише панелі інструментів, які ви використовуєте!
@@ -190,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Моди
-zenCKSOption-group-zen-workspace = Spaces
-zenCKSOption-group-zen-tabs = Tabs
+zenCKSOption-group-zen-workspace = Простори
+zenCKSOption-group-zen-tabs = Вкладки
 zenCKSOption-group-zen-split-view = Розділений вигляд
-zenCKSOption-group-zen-layout = Layout
+zenCKSOption-group-zen-layout = Макет
 zen-text-action-copy-url-shortcut = Копіювати поточну URL-адресу
 zen-text-action-copy-url-markdown-shortcut = Копіювати поточний URL як Markdown
 zen-toggle-pin-tab-shortcut = Закріпити / відкріпити вкладку

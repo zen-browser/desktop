@@ -16,6 +16,7 @@ zen-action-settings = Ayarlar
 zen-action-open-private-window = Gizli pencere aç
 zen-action-open-new-window = Yeni pencere aç
 zen-action-new-blank-window = Yeni boş pencere
+zen-action-new-little-window = Yeni küçük pencere
 zen-action-pin-tab = Sekmeyi sabitle
 zen-action-unpin-tab = Sabitlemeyi kaldır
 zen-action-open-space-routing = Alan yönlendirmesini aç

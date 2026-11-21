@@ -24,13 +24,13 @@ zen-boost-share-name-input =
 zen-boost-share-shared-by = frá
 zen-boost-share-author-input = 
     .placeholder = Nafnlaus
-zen-boost-share-scribble-text = No great work of art is complete without a signature, so scribble your name, write a poem or draw something
+zen-boost-share-scribble-text = Engin stórkostleg listaverk eru fullgerð án undirskriftar, þannig að þú skalt krafsa nafnið þitt, skrifa ljóð eða teikna eitthvað
 zen-boost-share-hide-screenshot = 
     .label = Fela skjámynd
 zen-boost-share-info = 
     .tooltiptext = Um deilingu
     .aria-label = Um deilingu
-zen-boost-share-info-text = Double-check this info because you won't be able to edit a shared Boost. Anyone with the link can install it, and any updates you make only apply to your own version.
+zen-boost-share-info-text = Yfirfarðu vandlega þessar upplýsingar því þú munt ekki geta breytt deildri endurhönnun. Hver sá sem er með tengilinn getur sett hana upp og allar þær uppfærslur sem þú gerir munu einungis eiga við um þína eigin útgáfu af henni.
 zen-boost-share-pane-sign = 
     .tooltiptext = Bæta við undirritun
     .aria-label = Bæta við undirritun
@@ -54,10 +54,10 @@ zen-boost-receive-made-for = Gert fyrir
 zen-boost-receive-by = af
 zen-boost-receive-info = 
     .tooltiptext = Um þessa endurhönnun
-zen-boost-receive-info-text = Boost creator names are not verified. Boosts can change how a page looks using CSS and visual filters. They can't run code or send your data anywhere. This Boost will only run on { $domain }.
+zen-boost-receive-info-text = Nöfn hönnuða endurhannana eru ekki sannreynd. Endurhannanir geta breytt því hvernig síður líta út með notkun CSS og myndrænna sía. Þær geta ekki keyrt kóða eða sent gögnin þín neitt. Þessi endurhönnun mun einungis keyra á { $domain }.
 zen-boost-receive-title = Bæta þessari endurhönnun við Zen?
 # The span carries the Library icon in front of the word.
-zen-boost-receive-description = Try it on! You can always switch back from the <span data-l10n-name="library">Library</span>.
+zen-boost-receive-description = Prófaðu þetta! Þú getur alltaf skipt til baka úr <span data-l10n-name="library">safninu</span>.
 zen-boost-received-toast = Endurhönnun bætt við!
 zen-boost-receive-error-toast = Gat ekki hlaðið inn þessari deildu endurhönnun
 zen-boost-back = Til baka
@@ -74,7 +74,7 @@ zen-boost-text-case-toggle =
 zen-boost-css-picker = 
     .tooltiptext = Veljari
 zen-boost-css-inspector = 
-    .tooltiptext = Opna rýni
+    .tooltiptext = Opna greinanda
 zen-boost-color-contrast = Birtuskil
 zen-boost-color-brightness = Birtustig
 zen-boost-color-original-saturation = Upprunaleg litmettun
@@ -87,7 +87,7 @@ zen-zap-this = Einangra þetta
 zen-zap-related = Einangra öll skyld atriði
 zen-zap-cancel = Hætta við
 zen-zap-done = Lokið
-zen-boost-focus = Focus
+zen-boost-focus = Fókus
 zen-unzap-tooltip =
     { $elementCount ->
         [0] Engin einindi einangruð

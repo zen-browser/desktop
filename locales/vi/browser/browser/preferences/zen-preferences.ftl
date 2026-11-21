@@ -23,13 +23,45 @@ zen-glance-trigger-label = Phương pháp kích hoạt
 zen-glance-enabled = 
     .label = Bật xem nhanh
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Hiển thị ở chế độ thu gọn
 zen-look-and-feel-compact-view-description = Chỉ hiển thị các thanh công cụ mà bạn sử dụng!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Gõ gì đó đi...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Tự động cập nhật các tùy chỉnh khi mở trình duyệt
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Chuyển sang không gian làm việc mặc định của ngăn chứa khi mở thẻ ngăn chứa
 zen-theme-marketplace-link = Vào cửa hàng
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Bản mod Zen
-zenCKSOption-group-zen-compact-mode = Chế độ thu gọn
-zenCKSOption-group-zen-workspace = Không gian làm việc
-zenCKSOption-group-zen-other = Các tính năng khác của Zen
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Chế độ chia khung
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Sao chép địa chỉ hiện tại
 zen-text-action-copy-url-markdown-shortcut = Sao chép địa chỉ dưới dạng Markdown
 zen-toggle-pin-tab-shortcut = Bật/Tắt ghim thẻ

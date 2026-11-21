@@ -23,13 +23,45 @@ zen-glance-trigger-label = วิธีการใช้
 zen-glance-enabled = 
     .label = เปิดใช้งาน Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + คลิก
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + คลิก
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + คลิก
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + คลิก
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = แสดงในมุมมองแบบกะทัดรัด
 zen-look-and-feel-compact-view-description = แสดงเฉพาะแถบเครื่องมือที่คุณใช้
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = พิมพ์อะไรบางอย่าง...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Automatically update installed mods on startup
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Switch to workspace where container is set as default when opening container tabs
 zen-theme-marketplace-link = เยี่ยมชมร้านค้า
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = โหมดกะทัดรัด
-zenCKSOption-group-zen-workspace = Other Workspaces
-zenCKSOption-group-zen-other = Other Zen Features
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Split View
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = คัดลอก URL ปัจจุบัน
 zen-text-action-copy-url-markdown-shortcut = คัดลอก URL ปัจจุบันในรูปแบบ Markdown
 zen-toggle-pin-tab-shortcut = Toggle Pin Tab

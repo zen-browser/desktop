@@ -16,6 +16,7 @@ zen-action-settings = Innstillinger
 zen-action-open-private-window = Åpne privat vindu
 zen-action-open-new-window = Åpne nytt vindu
 zen-action-new-blank-window = Nytt tomt vindu
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Fest fane
 zen-action-unpin-tab = Løsne fane
 zen-action-open-space-routing = Åpne område routing

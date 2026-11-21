@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Dorcha
 zen-menubar-new-blank-window = 
     .label = Fuinneog Nua Bán
+zen-menubar-new-little-window = 
+    .label = Fuinneog Bheag Nua

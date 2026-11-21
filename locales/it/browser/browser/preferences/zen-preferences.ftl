@@ -23,13 +23,45 @@ zen-glance-trigger-label = Metodo di attivazione
 zen-glance-enabled = 
     .label = Abilita Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Maiusc + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Mostra nella vista compatta
 zen-look-and-feel-compact-view-description = Mostra solo le barre degli strumenti che utilizzi!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Digita qualcosa...
 pane-zen-marketplace-title = Zen Mod
-zen-themes-auto-update = 
-    .label = Aggiorna automaticamente le mod installate all'avvio
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Passa allo spazio di lavoro in cui il contenitore è impostato come predefinito quando si aprono le schede contenitore
 zen-theme-marketplace-link = Visita Il Negozio
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mod
-zenCKSOption-group-zen-compact-mode = Modalità Compatta
-zenCKSOption-group-zen-workspace = Altri spazi di lavoro
-zenCKSOption-group-zen-other = Altre Caratteristiche Zen
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Dividi Vista
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Copia URL corrente
 zen-text-action-copy-url-markdown-shortcut = Copia l'URL corrente come Markdown
 zen-toggle-pin-tab-shortcut = Attiva/Disattiva Scheda Pin

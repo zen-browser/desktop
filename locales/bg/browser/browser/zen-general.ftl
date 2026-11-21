@@ -45,8 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = Минимизирай
     .tooltip = Минимизирай
 zen-panel-ui-gradient-generator-custom-color = Персонализиран цвят
-zen-copy-current-url-confirmation = Текущият адрес е копиран!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Отказ
 zen-general-confirm = 
@@ -58,8 +66,11 @@ zen-pinned-tab-edit-url-title = Edit Pinned URL
 zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Разделът беше успешно преименуван!
 zen-background-tab-opened-toast = Отворен е нов раздел на заден план!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Работното пространство беше преименувано успешно!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
+zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Компактен изглед
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = Научи повече
 zen-window-sync-migration-dialog-accept = Добре
 zen-appmenu-new-blank-window = 
     .label = New blank window
+zen-appmenu-new-little-window = 
+    .label = New Little Window
+zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Open in { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Choose a Space
+zen-little-window-title = Little Zen
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+zen-little-window-download-source = 
+    .value = From { $host }

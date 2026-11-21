@@ -45,8 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = Küçült
     .tooltip = Küçült
 zen-panel-ui-gradient-generator-custom-color = Özel renk
-zen-copy-current-url-confirmation = Geçerli URL kopyalandı!
-zen-copy-current-url-as-markdown-confirmation = Geçerli URL Markdown olarak kopyalandı!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Geçerli URL kopyalandı!
+       *[other] { $count } URL kopyalandı!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Geçerli URL Markdown olarak kopyalandı!
+       *[other] { $count } URL Markdown olarak kopyalandı!
+    }
 zen-general-cancel-label = 
     .label = İptal
 zen-general-confirm = 
@@ -58,8 +66,11 @@ zen-pinned-tab-edit-url-title = Sabitlenmiş sekme adresini düzenle
 zen-pinned-tab-edit-url-label = Bu sabitlenmiş sekmenin yönlendirileceği adresi girin:
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
 zen-split-view-limit-toast = Bölünmüş görünüme daha fazla panel eklenemiyor!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> tekrar basarak {$action }
+zen-shortcut-blocked-toast-default-action = { -brand-short-name } içinde kullan
 zen-sidebar-drag-collapsed-toast = Kenar çubuğu gizlendi! Kenar çubuğunu yeniden açmak için <span>{ $shortcut }</span> tuşunu kullanın.
 zen-toggle-compact-mode-button = 
     .label = Kompakt mod
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = Daha fazla bilgi
 zen-window-sync-migration-dialog-accept = Anladım
 zen-appmenu-new-blank-window = 
     .label = Yeni boş pencere
+zen-appmenu-new-little-window = 
+    .label = Yeni küçük pencere
+zen-little-window-open-in-space = <b data-l10n-name="space">{ $space }</b> alanında aç
+zen-little-window-open-in-new-window = { -brand-short-name } içinde aç
+zen-little-window-choose-space = 
+    .tooltiptext = Bir alan seçin
+zen-little-window-title = Küçük Zen
+zen-little-window-intro-title = <i data-l10n-name="name">Küçük Zen</i> içinde açıldı
+zen-little-window-intro-description = Bu sayfayı tam pencereye taşımak için “Şurada aç” düğmesine tıklayın veya kapatmak için { $shortcut } tuşlarına basın
+zen-little-window-download-source = 
+    .value = { $host } kaynağından

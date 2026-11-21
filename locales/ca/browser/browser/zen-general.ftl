@@ -45,8 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimitza
     .tooltip = Minimitza
 zen-panel-ui-gradient-generator-custom-color = Color personalitzat
-zen-copy-current-url-confirmation = L'URL actual s'ha copiat.
-zen-copy-current-url-as-markdown-confirmation = L'URL actual s'ha copiat com a Markdown!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] S'ha copiat l'URL actual!
+       *[other] S'han copiat { $count } URL!!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] S'ha copiat l'URL actual en format Markdown!
+       *[other] S'han copiat { $count } URL en format Markdown!
+    }
 zen-general-cancel-label = 
     .label = Cancel·la
 zen-general-confirm = 
@@ -58,8 +66,11 @@ zen-pinned-tab-edit-url-title = Edita l'URL fixada
 zen-pinned-tab-edit-url-label = Introduïu l'URL a la qual ha d'apuntar aquesta pestanya fixada:
 zen-tabs-renamed = S'ha canviat el nom de la pestanya correctament
 zen-background-tab-opened-toast = S'ha obert una nova pestanya de fons
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = S'ha canviat el nom de l'espai de treball correctament
 zen-split-view-limit-toast = No es poden afegir més panells a la vista dividida!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> de nou a { $action }
+zen-shortcut-blocked-toast-default-action = utilitza-ho al { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Barra lateral oculta! Utilitzeu <span>{ $shortcut }</span> per tornar-la a mostrar.
 zen-toggle-compact-mode-button = 
     .label = Mode compacte
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = Més informació
 zen-window-sync-migration-dialog-accept = D'acord
 zen-appmenu-new-blank-window = 
     .label = Nova finestra en blanc
+zen-appmenu-new-little-window = 
+    .label = Mini finestra nova
+zen-little-window-open-in-space = Obre al <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Obre al { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Trieu un espai
+zen-little-window-title = Mini Zen
+zen-little-window-intro-title = S'ha obert al <i data-l10n-name="name">Mini Zen</i>
+zen-little-window-intro-description = Feu clic a «Obre al» per moure aquesta pàgina a una finestra completa, o a { $shortcut } per tancar-la
+zen-little-window-download-source = 
+    .value = De { $host }

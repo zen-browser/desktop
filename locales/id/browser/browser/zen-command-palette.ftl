@@ -16,6 +16,7 @@ zen-action-settings = Pengaturan
 zen-action-open-private-window = Buka Jendela Pribadi
 zen-action-open-new-window = Buka Jendela Baru
 zen-action-new-blank-window = Jendela Kosong Baru
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Sematkan Tab
 zen-action-unpin-tab = Hapus Sematan Tab
 zen-action-open-space-routing = Open Space Routing

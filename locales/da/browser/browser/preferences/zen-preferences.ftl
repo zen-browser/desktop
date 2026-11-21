@@ -23,13 +23,45 @@ zen-glance-trigger-label = Udløsermetode
 zen-glance-enabled = 
     .label = Aktiver glimt
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Kommando) + Klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Vis i kompakt visning
 zen-look-and-feel-compact-view-description = Vis kun de værktøjslinjer, du bruger!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skriv noget...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Opdater automatisk installerede mods ved opstart
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Skift til et arbejdsområde, hvor beholderen er indstillet som standard, når du åbner beholderfaner
 zen-theme-marketplace-link = Besøg Butik
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = Kompakt Tilstand
-zenCKSOption-group-zen-workspace = Arbejdsområder
-zenCKSOption-group-zen-other = Andre Zen-funktioner
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Delt Visning
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Kopiér nuværende URL
 zen-text-action-copy-url-markdown-shortcut = Kopiér nuværende URL som Markdown
 zen-toggle-pin-tab-shortcut = Slå fanen Fastgør til/fra

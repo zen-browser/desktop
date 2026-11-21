@@ -45,8 +45,18 @@ pictureinpicture-minimize-btn =
     .aria-label = Zminimalizuj
     .tooltip = Zminimalizuj
 zen-panel-ui-gradient-generator-custom-color = Niestandardowy kolor
-zen-copy-current-url-confirmation = Skopiowano bieżący URL!
-zen-copy-current-url-as-markdown-confirmation = Skopiowano bieżący adres URL jako Markdown!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Skopiowano bieżący adres URL!
+        [few] Skopiowano { $count } adresy URL!
+       *[many] Skopiowano { $count } adresów URL!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Skopiowano bieżący adres URL jako Markdown!
+        [few] Skopiowano { $count } adresy URL jako Markdown!
+       *[many] Skopiowano { $count } adresów URL jako Markdown!
+    }
 zen-general-cancel-label = 
     .label = Anuluj
 zen-general-confirm = 
@@ -58,8 +68,11 @@ zen-pinned-tab-edit-url-title = Edytuj przypięty adres URL
 zen-pinned-tab-edit-url-label = Wprowadź adres URL, do którego ma prowadzić ta przypięta karta:
 zen-tabs-renamed = Nazwa karty została pomyślnie zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
 zen-split-view-limit-toast = Nie można dodać kolejnych paneli do widoku podzielonego!
+zen-shortcut-blocked-toast = Naciśnij ponownie <span>{ $shortcut }</span>, by wykonać { $action }
+zen-shortcut-blocked-toast-default-action = użyj tego w { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Pasek boczny ukryty! Użyj <span>{ $shortcut }</span>, aby przywrócić pasek boczny.
 zen-toggle-compact-mode-button = 
     .label = Tryb kompaktowy
@@ -141,3 +154,14 @@ zen-window-sync-migration-dialog-learn-more = Dowiedz się więcej
 zen-window-sync-migration-dialog-accept = Rozumiem
 zen-appmenu-new-blank-window = 
     .label = Nowe puste okno
+zen-appmenu-new-little-window = 
+    .label = Nowe małe okno
+zen-little-window-open-in-space = Otwórz w <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Otwórz w { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Wybierz przestrzeń
+zen-little-window-title = Mały Zen
+zen-little-window-intro-title = Otwarto w <i data-l10n-name="name">Małym Zen'ie</i>
+zen-little-window-intro-description = Kliknij "Otwórz w", aby przenieść tę stronę do pełnego okna lub { $shortcut } aby zamknąć
+zen-little-window-download-source = 
+    .value = Z { $host}

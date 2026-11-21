@@ -23,13 +23,45 @@ zen-glance-trigger-label = Μέθοδος ενεργοποίησης
 zen-glance-enabled = 
     .label = Ενεργοποίηση Ματιάς
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Κλικ
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Κλικ
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Κλικ
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Εντολή) + Κλικ
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Εμφάνιση σε συμπαγή προβολή
 zen-look-and-feel-compact-view-description = Εμφάνιση μόνο των γραμμών εργαλείων που χρησιμοποιείτε!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Πληκτρολογήστε κάτι...
 pane-zen-marketplace-title = Επεκτάσεις Zen
-zen-themes-auto-update = 
-    .label = Αυτόματη ενημέρωση εγκατεστημένων mods κατά την εκκίνηση
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Εναλλαγή στο χώρο εργασίας όπου ο περιέκτης ορίζεται ως προεπιλεγμένος κατά το άνοιγμα των καρτελών περιέκτη
 zen-theme-marketplace-link = Επισκεφθείτε το Κατάστημα
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Επεκτάσεις Zen
-zenCKSOption-group-zen-compact-mode = Συμπαγής Λειτουργία
-zenCKSOption-group-zen-workspace = Χώροι Εργασίας
-zenCKSOption-group-zen-other = Άλλες Λειτουργίες του Zen
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Διαιρεμένη Προβολή
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Αντιγραφή τρέχοντος URL
 zen-text-action-copy-url-markdown-shortcut = Αντιγραφή τρέχοντος URL ως Markdown
 zen-toggle-pin-tab-shortcut = Εναλλαγή Καρφιτσώματος Καρτέλας

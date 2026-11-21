@@ -45,8 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = Íoslaghdaigh
     .tooltip = Íoslaghdaigh
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
-zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
-zen-copy-current-url-as-markdown-confirmation = Cóipeáladh an URL reatha mar Markdown!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Cóipeáladh an URL reatha! 
+       *[other] Cóipeáladh { $count } URL!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Cóipeáladh an URL reatha mar Markdown!
+       *[other] Cóipeáladh { $count } URL mar Markdown!
+    }
 zen-general-cancel-label = 
     .label = Cealaigh
 zen-general-confirm = 
@@ -58,8 +66,11 @@ zen-pinned-tab-edit-url-title = Cuir URL bioráin in Eagar
 zen-pinned-tab-edit-url-label = Cuir isteach an URL ar cheart don chluaisín bioráilte seo a bheith ag pointeáil chuige:
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
 zen-split-view-limit-toast = Ní féidir níos mó painéil a chur leis an radharc scoilte!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> arís chun { $action }
+zen-shortcut-blocked-toast-default-action = úsáid é i { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = An barra taoibh i bhfolach! Bain úsáid as <span>{ $shortcut }</span> chun an barra taoibh a thabhairt ar ais.
 zen-toggle-compact-mode-button = 
     .label = Mód Dlúth
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = Foghlaim Tuilleadh
 zen-window-sync-migration-dialog-accept = Tuigim é
 zen-appmenu-new-blank-window = 
     .label = Fuinneog bán nua
+zen-appmenu-new-little-window = 
+    .label = Fuinneog Bheag Nua
+zen-little-window-open-in-space = Oscail i <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Oscail i { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Roghnaigh Spás
+zen-little-window-title = Zen Beag
+zen-little-window-intro-title = Oscailte i <i data-l10n-name="name">Zen Beag</i>
+zen-little-window-intro-description = Cliceáil “Oscail i” chun an leathanach seo a bhogadh go fuinneog iomlán, nó { $shortcut } chun é a dhúnadh
+zen-little-window-download-source = 
+    .value = Ó { $host }

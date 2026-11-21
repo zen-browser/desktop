@@ -23,13 +23,45 @@ zen-glance-trigger-label = Metoda wywołania
 zen-glance-enabled = 
     .label = Włącz szybki podgląd
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + kliknięcie
+           *[other] Ctrl + kliknięcie
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + kliknięcie
+           *[other] Ctrl + kliknięcie
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + kliknięcie
+           *[other] Alt + kliknięcie
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + kliknięcie
+           *[other] Alt + kliknięcie
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + kliknięcie
+           *[other] Shift + kliknięcie
+        }
+    .aria-label = Shift + kliknięcie
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + kliknięcie
+    .label =
+        { PLATFORM() ->
+            [macos] Control + kliknięcie
+           *[other] Meta (Command) + kliknięcie
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + kliknięcie
+           *[other] Meta (Command) + kliknięcie
+        }
 zen-look-and-feel-compact-view-header = Pokaż w widoku kompaktowym
 zen-look-and-feel-compact-view-description = Pokaż tylko paski narzędzi, których używasz!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Wpisz coś...
 pane-zen-marketplace-title = Modyfikacje Zen
-zen-themes-auto-update = 
-    .label = Automatycznie aktualizuj zainstalowane modyfikacje podczas startu przeglądarki
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Przełącz na obszar roboczy, w którym kontener jest ustawiony jako domyślny podczas otwierania kart kontenera
 zen-theme-marketplace-link = Odwiedź sklep
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Modyfikacje Zen
-zenCKSOption-group-zen-compact-mode = Tryb kompaktowy
-zenCKSOption-group-zen-workspace = Obszary robocze
-zenCKSOption-group-zen-other = Inne funkcje Zen
+zenCKSOption-group-zen-workspace = Przestrzenie
+zenCKSOption-group-zen-tabs = Karty
 zenCKSOption-group-zen-split-view = Podziel widok
+zenCKSOption-group-zen-layout = Układ
 zen-text-action-copy-url-shortcut = Skopiuj bieżący adres URL
 zen-text-action-copy-url-markdown-shortcut = Skopiuj bieżący adres URL w formacie Markdown
 zen-toggle-pin-tab-shortcut = Przełącz przypięcie karty

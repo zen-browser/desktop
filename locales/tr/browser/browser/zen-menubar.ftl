@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Koyu
 zen-menubar-new-blank-window = 
     .label = Yeni boş pencere
+zen-menubar-new-little-window = 
+    .label = Yeni küçük pencere

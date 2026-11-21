@@ -23,13 +23,45 @@ zen-glance-trigger-label = Paleidimo būdas
 zen-glance-enabled = 
     .label = Įjungti „Glance“
 zen-glance-trigger-ctrl-click = 
-    .label = Vald + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Lyg2 + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Lyg2 + spausti
 zen-glance-trigger-meta-click = 
-    .label = „Meta“ (komanda) + spausti
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Rodyti kompaktiniame rodinyje
 zen-look-and-feel-compact-view-description = Rodyti tik tas įrankių juostas, kurias naudojate.
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Įrašykite kažką...
 pane-zen-marketplace-title = „Zen“ modifikacijos
-zen-themes-auto-update = 
-    .label = Automatiškai atnaujinti įdiegtas modifikacijas paleidimo metu
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Perjungti į darbo sritį, kurioje konteineris nustatytas kaip numatytasis, atveriant konteinerio korteles
 zen-theme-marketplace-link = Aplankyti parduotuvę
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = „Zen“ modifikacijos
-zenCKSOption-group-zen-compact-mode = Kompaktinis režimas
-zenCKSOption-group-zen-workspace = Darbo sritys
-zenCKSOption-group-zen-other = Kitos „Zen“ funkcijos
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Skaidyti rodinį
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Kopijuoti dabartinį URL
 zen-text-action-copy-url-markdown-shortcut = Kopijuoti dabartinį URL kaip ženklinimą
 zen-toggle-pin-tab-shortcut = Perjungti prisegtą kortelę

@@ -45,8 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = 최소화
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
-zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
-zen-copy-current-url-as-markdown-confirmation = 현재 URL을 마크다운으로 복사했습니다!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] 현재 URL을 복사했습니다!
+       *[other] { $count }개 URL을 복사했습니다!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] 현재 URL을 마크다운으로 복사했습니다!
+       *[other] { $count }개 URL을 마크다운으로 복사했습니다!
+    }
 zen-general-cancel-label = 
     .label = 취소
 zen-general-confirm = 
@@ -58,8 +66,11 @@ zen-pinned-tab-edit-url-title = 고정된 탭 URL 편집
 zen-pinned-tab-edit-url-label = 이 고정된 탭이 고정할 URL을 입력하세요:
 zen-tabs-renamed = 탭의 이름이 성공적으로 변경되었습니다!
 zen-background-tab-opened-toast = 새 백그라운드 탭이 열렸습니다!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = 워크스페이스 이름이 변경되었습니다!
 zen-split-view-limit-toast = 패널을 더 추가할 수 없습니다!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span>를 다시 입력해 { $action }
+zen-shortcut-blocked-toast-default-action = { -brand-short-name }에서 쓰기
 zen-sidebar-drag-collapsed-toast = 사이드바가 숨겨져 있습니다! <span>{ $shortcut }</span>으로 사이드바를 되돌릴 수 있습니다.
 zen-toggle-compact-mode-button = 
     .label = 사이드바 축소 모드
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = 더 알아보기
 zen-window-sync-migration-dialog-accept = 알겠습니다
 zen-appmenu-new-blank-window = 
     .label = 새 빈 창
+zen-appmenu-new-little-window = 
+    .label = 새 작은 창
+zen-little-window-open-in-space = <b data-l10n-name="space">{ $space }</b>에서 열기
+zen-little-window-open-in-new-window = { -brand-short-name }에서 열기
+zen-little-window-choose-space = 
+    .tooltiptext = 스페이스 선택
+zen-little-window-title = 작은 창
+zen-little-window-intro-title = <i data-l10n-name="name">작은 창</i>으로 열림
+zen-little-window-intro-description = “...에서 열기”를 클릭해 이 페이지를 큰 창으로 옮기거나, { $shortcut }으로 닫을 수 있습니다
+zen-little-window-download-source = 
+    .value = { $host }에서 옴

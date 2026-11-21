@@ -23,13 +23,45 @@ zen-glance-trigger-label = Metode pemicu
 zen-glance-enabled = 
     .label = Aktifkan Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Windows (Command) + Klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Tampilkan dalam tampilan ringkas
 zen-look-and-feel-compact-view-description = Tampilkan hanya toolbar yang Anda gunakan!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Ketik sesuatu...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Otomatis perbarui mod yang terinstal saat startup
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Otomatis pindahkan tab kontainer ke ruang kerja defaultnya saat dibuka
 zen-theme-marketplace-link = Kunjungi Toko
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = Mode Ringkas
-zenCKSOption-group-zen-workspace = Ruang Kerja
-zenCKSOption-group-zen-other = Fitur Zen Lainnya
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Tampilan Belah
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Salin URL saat ini
 zen-text-action-copy-url-markdown-shortcut = Salin URL saat ini sebagai Markdown
 zen-toggle-pin-tab-shortcut = Alihkan Sematan Tab

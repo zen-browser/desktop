@@ -16,6 +16,7 @@ zen-action-settings = Paramètres
 zen-action-open-private-window = Ouvrir une fenêtre privée
 zen-action-open-new-window = Ouvrir une nouvelle fenêtre
 zen-action-new-blank-window = Nouvelle fenêtre vide
+zen-action-new-little-window = Nouvelle fenêtre Little
 zen-action-pin-tab = Épingler l'onglet
 zen-action-unpin-tab = Désépingler l'onglet
 zen-action-open-space-routing = Ouvrir le routage des espaces

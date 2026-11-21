@@ -3,78 +3,78 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = Dewisiadau Ffolderi Byw
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = Nôl olaf: { $time }
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = Adnewyddu
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = Crëwyd gennyf i
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = Wedi'i aseinio i mi
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = Fy Ngheisiadau Adolygu
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = Cynnwys Ceisiadau Tynnu Drafft
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = Llif RSS
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = Cyfnod Nôl
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 munud
+           *[other] { $mins } munud
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 awr
+           *[other] { $hours } oriau
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = Ystod Amser
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] Awr olaf
+           *[other] Oriau diwethaf { $hours }
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = Bob amser
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] Diwrnod olaf
+           *[other] Y dyddiau diwethaf { $days }
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = Terfyn Eitem
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = URL y ffrwd
+zen-live-folder-rss-prompt-feed-url = Rhoi URL y ffrwd
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } eitemau
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = Methu diweddaru
+    .tooltiptext = Methu diweddaru. Ceisio eto.
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = Heb fewngofnodi i GitHub
+    .tooltiptext = Ailfewngofnodi i GitHub.
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = Dyw'r hidlydd heb ei osod
+    .tooltiptext = Dim hidlydd wedi'i osod, bydd dim yn cael ei nôl.
+zen-live-folder-rss-invalid-url-title = Methu creu'r Ffolder Byw
+zen-live-folder-rss-invalid-url-description = Mae URL y ffrws yn annilys. Gwiriwch y cyfeiriad a cheisiwch eto
 zen-live-folder-github-option-repo-filter = 
-    .label = Repositories
+    .label = Storfannau
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull Requests
+    .label = Ceisiadau Tynnu
 zen-live-folder-github-issues = 
-    .label = Issues
+    .label = Materion
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+    .label = Mae'r rhestr hon yn cael ei chynhyrchu ar sail eich ceisiadau tynnu gweithredol ar hyn o bryd.
+zen-live-folders-promotion-title = Ffolder Fyw wedi'i Greu!
+zen-live-folders-promotion-description = Bydd y cynnwys diweddaraf o'ch ffrydiau RSS neu geisiadau tynnu GitHub yn ymddangos yma'n awtomatig.

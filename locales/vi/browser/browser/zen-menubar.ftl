@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Tối
 zen-menubar-new-blank-window = 
     .label = Cửa sổ trống mới
+zen-menubar-new-little-window = 
+    .label = New Little Window

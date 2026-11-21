@@ -23,13 +23,45 @@ zen-glance-trigger-label = 觸發方式
 zen-glance-enabled = 
     .label = 啟用 Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + 左鍵
+           *[other] Ctrl + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + 左鍵
+           *[other] Ctrl + 左鍵
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + 左鍵
+           *[other] Alt + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + 左鍵
+           *[other] Alt + 左鍵
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + 左鍵
+           *[other] Shift + 左鍵
+        }
+    .aria-label = Shift + 左鍵
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + 左鍵
+           *[other] Meta (Command) + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + 左鍵
+           *[other] Meta (Command) + 左鍵
+        }
 zen-look-and-feel-compact-view-header = 在緊湊模式下顯示
 zen-look-and-feel-compact-view-description = 只顯示你需要用的工具欄！
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = 請輸入...
 pane-zen-marketplace-title = Zen 模組
-zen-themes-auto-update = 
-    .label = 啟動時自動更新已安裝模組
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = 開啟容器分頁時，切換到已將該容器設為預設的工作區
 zen-theme-marketplace-link = 造訪商店
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen 模組
-zenCKSOption-group-zen-compact-mode = 緊湊模式
 zenCKSOption-group-zen-workspace = 工作區
-zenCKSOption-group-zen-other = 其它 Zen 功能
+zenCKSOption-group-zen-tabs = 分頁
 zenCKSOption-group-zen-split-view = 分割畫面
+zenCKSOption-group-zen-layout = 版面配置
 zen-text-action-copy-url-shortcut = 複製目前網址
 zen-text-action-copy-url-markdown-shortcut = 將目前網址複製為 Markdown
 zen-toggle-pin-tab-shortcut = 切換釘選分頁

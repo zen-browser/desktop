@@ -3,12 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 migration-wizard-migrator-display-name-dia = Dia
-migration-zen-spaces-option-label = Spaces and pinned tabs
-migration-zen-all-profiles-label = All profiles
+migration-zen-spaces-option-label = Spazi e schede fissate
+migration-zen-all-profiles-label = Tutti i profili
 # Lowercase form shown in the sentence listing the selected data.
-migration-list-zen-spaces-label = spaces and pinned tabs
+migration-list-zen-spaces-label = spazi e schede fissate
 migration-wizard-progress-success-zen-spaces =
     { $quantity ->
-        [one] { $quantity } space
-       *[other] { $quantity } spaces
+        [one] { $quantity } spazio
+       *[other] { $quantity } spazi
     }

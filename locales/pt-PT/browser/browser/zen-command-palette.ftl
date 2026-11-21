@@ -16,6 +16,7 @@ zen-action-settings = Definições
 zen-action-open-private-window = Abrir Janela Privada
 zen-action-open-new-window = Abrir Nova Janela
 zen-action-new-blank-window = Nova Janela sem Sincronização
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Fixar a Página
 zen-action-unpin-tab = Soltar a Página
 zen-action-open-space-routing = Abrir Roteamento de Espaços

@@ -16,6 +16,7 @@ zen-action-settings = Configurações
 zen-action-open-private-window = Abrir Janela Privada
 zen-action-open-new-window = Abrir nova janela
 zen-action-new-blank-window = Nova Janela em Branco
+zen-action-new-little-window = Nova Mini Janela
 zen-action-pin-tab = Fixar Aba
 zen-action-unpin-tab = Desafixar Aba
 zen-action-open-space-routing = Abrir Roteamento de Espaço

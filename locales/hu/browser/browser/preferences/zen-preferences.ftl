@@ -23,13 +23,45 @@ zen-glance-trigger-label = Kiváltó módszer
 zen-glance-enabled = 
     .label = Bepillantás engedélyezése
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Kattintás
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Kattintás
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Kattintás
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Kattintás
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Kompakt nézet
 zen-look-and-feel-compact-view-description = Csak azokat az eszköztárakat lásd amit használsz!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Írj valamit...
 pane-zen-marketplace-title = Zen modok
-zen-themes-auto-update = 
-    .label = Modok automatikus frissítése indításkor
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Válts a munkakörnyezetre, ahol a konténer alapértelmezettnek van beállítva konténerlapok megnyitásakor
 zen-theme-marketplace-link = Áruház megnyitása
@@ -160,10 +190,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen modok
-zenCKSOption-group-zen-compact-mode = Kompakt mód
-zenCKSOption-group-zen-workspace = Munkakörnyezetek
-zenCKSOption-group-zen-other = Egyéb Zen funkciók
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Osztott nézet
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Jelenlegi URL másolása
 zen-text-action-copy-url-markdown-shortcut = Jelenlegi URL másolása Markdownként
 zen-toggle-pin-tab-shortcut = Lap rögzítése/feloldása

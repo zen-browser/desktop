@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = כהה
 zen-menubar-new-blank-window = 
     .label = חלון ריק חדש
+zen-menubar-new-little-window = 
+    .label = New Little Window

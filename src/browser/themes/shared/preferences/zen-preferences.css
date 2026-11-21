@@ -85,14 +85,6 @@ groupbox h2 {
   margin-bottom: var(--zen-space-15);
 }
 
-#category-zen-looks > .category-icon {
-  list-style-image: url("chrome://browser/skin/customize.svg");
-}
-
-#zenLooksAndFeelGroup > html|div:last-of-type {
-  margin-top: var(--zen-space-15);
-}
-
 .zen-compact-mode-styles-browser-wrapper {
   width: 55%;
   height: var(--zen-size-60);
@@ -137,76 +129,6 @@ groupbox h2 {
 }
 
 /* Workspace */
-
-#category-zen-tabs-management > .category-icon {
-  list-style-image: url("chrome://browser/skin/window.svg");
-}
-
-#zenTabsUnloadDelayContainer {
-  display: flex;
-  align-items: center;
-
-  & #zenTabsUnloadDelay {
-    margin-left: auto;
-  }
-}
-
-/* CKS */
-
-#category-zen-CKS > .category-icon {
-  list-style-image: url("chrome://browser/skin/quickactions.svg");
-}
-
-/* Theme builder */
-
-#zen-theme-builder {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--zen-space-15);
-  background: var(--zen-colors-tertiary);
-  border-radius: var(--zen-border-radius-10);
-  margin-bottom: var(--zen-space-10);
-}
-
-#zen-theme-builder-color-picker {
-  width: var(--zen-preferences-color-picker-size);
-  height: var(--zen-preferences-color-picker-size);
-  border-radius: var(--zen-border-radius-10);
-  margin-right: var(--zen-space-10);
-  position: relative;
-}
-
-#zen-theme-builder-color-picker-canvas {
-  border-radius: var(--zen-border-radius-10);
-  width: 100%;
-  height: 100%;
-}
-
-#zen-theme-builder-color-picker-deck {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: calc(100% - var(--icon-size-medium));
-  height: calc(100% - var(--icon-size-medium));
-  border-radius: var(--zen-border-radius-10);
-  margin: var(--zen-space-10);
-  background: var(--zen-preferences-color-picker-deck-background);
-  backdrop-filter: blur(15px);
-  border: 2px solid var(--zen-color-contrast-10);
-}
-
-#zen-theme-builder-color-picker-thumb {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 4px solid light-dark(white, black);
-  width: var(--icon-size-medium);
-  height: var(--icon-size-medium);
-  border-radius: var(--border-radius-circle);
-  background: var(--zen-primary-color);
-  transform: translate(-50%, -50%);
-}
 
 /* THemes marketplace */
 
@@ -365,42 +287,6 @@ groupbox h2 {
 
   & moz-toggle {
     margin-left: var(--zen-space-10);
-  }
-}
-
-#zenLayoutList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--zen-space-20);
-  margin-bottom: var(--zen-space-10);
-
-  & > [layout] {
-    display: flex;
-    flex-direction: column;
-    gap: var(--zen-space-3);
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
-
-    &[disabled="true"] {
-      opacity: var(--zen-opacity-70);
-      cursor: not-allowed;
-    }
-
-    & img {
-      width: var(--zen-preferences-layout-preview-width);
-      border-radius: var(--zen-border-radius-10);
-      border: 4px solid transparent;
-    }
-
-    &.selected img {
-      border: 4px solid var(--zen-colors-primary);
-    }
-  }
-}
-
-@media (max-width: 1320px) {
-  #zenLayoutList {
-    flex-wrap: wrap;
   }
 }
 

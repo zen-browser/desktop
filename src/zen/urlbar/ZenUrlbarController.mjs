@@ -106,6 +106,7 @@ export class nsZenUrlbarController {
     const shouldOpenURLBar =
       overridePreferance ||
       (gZenVerticalTabsManager._canReplaceNewTab &&
+        !AboutNewTab.newTabURLOverridden &&
         !werePassedURL &&
         !searchClipboard &&
         where === "tab");

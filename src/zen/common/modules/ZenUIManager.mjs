@@ -7,6 +7,13 @@ import { nsZenToastManager } from "resource:///modules/zen/ZenToasts.mjs";
 import { nsZenUrlbarController } from "resource:///modules/zen/urlbar/ZenUrlbarController.mjs";
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenKeyboardShortcuts:
+    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
+});
+
 const SPRING_SETTLE_DISTANCE = 0.01;
 
 // Minimum height the floating URL bar is vertically centered against.
@@ -39,6 +46,7 @@ class nsZenUIManager {
 
   #toasts = new nsZenToastManager();
   #urlbar = new nsZenUrlbarController();
+  #zoomChangeListener = null;
 
   // Elements that get `has-popup-menu` while a popup opened from them is up.
   #popupTrackingElements = new Set();
@@ -59,7 +67,16 @@ class nsZenUIManager {
     document.addEventListener("popuphidden", this);
     document.addEventListener("mousedown", this, true);
     window.addEventListener("TabClose", this);
-    window.addEventListener("FullZoomChange", this);
+    window.addEventListener("ZenShortcutBlocked", this);
+    for (const id of [
+      "cmd_fullZoomEnlarge",
+      "cmd_fullZoomReduce",
+      "cmd_fullZoomReset",
+    ]) {
+      document.getElementById(id).addEventListener("command", () => {
+        this.#onZoomCommand();
+      });
+    }
 
     gZenWorkspaces.promiseInitialized.finally(() => {
       this._hasLoadedDOM = true;
@@ -96,8 +113,8 @@ class nsZenUIManager {
       case "TabClose":
         this.onTabClose(event);
         break;
-      case "FullZoomChange":
-        this.#onFullZoomChange(event);
+      case "ZenShortcutBlocked":
+        lazy.ZenKeyboardShortcuts.onShortcutBlocked(window, event);
         break;
     }
   }
@@ -307,8 +324,36 @@ class nsZenUIManager {
     return this.#toasts.show(messageId, options);
   }
 
-  #onFullZoomChange(event) {
-    const browser = event.originalTarget;
+  /**
+   * Takes a toast down before its timeout, for when what it asked the user
+   * to do has been done.
+   *
+   * @param {string} messageId - Fluent id of the toast to hide.
+   */
+  hideToast(messageId) {
+    this.#toasts.hide(messageId);
+  }
+
+  #onZoomCommand() {
+    const browser = gBrowser.selectedBrowser;
+    if (this.#zoomChangeListener) {
+      window.removeEventListener("FullZoomChange", this.#zoomChangeListener);
+    }
+    this.#zoomChangeListener = event => {
+      if (event.originalTarget !== browser) {
+        return;
+      }
+      this.#zoomChangeListener = null;
+      if (browser === gBrowser.selectedBrowser) {
+        this.#onFullZoomChange(browser);
+      }
+    };
+    window.addEventListener("FullZoomChange", this.#zoomChangeListener, {
+      once: true,
+    });
+  }
+
+  #onFullZoomChange(browser) {
     const isSingleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
     const zoomButtonHidden =
       isSingleToolbar &&
@@ -326,12 +371,7 @@ class nsZenUIManager {
       (!browser.contentPrincipal || browser.contentPrincipal.isNullPrincipal);
     const isPdfViewer =
       browser.contentPrincipal?.spec === "resource://pdf.js/web/viewer.html";
-    if (
-      browser !== gBrowser.selectedBrowser ||
-      !showToast ||
-      isBlankPage ||
-      isPdfViewer
-    ) {
+    if (!showToast || isBlankPage || isPdfViewer) {
       return;
     }
 

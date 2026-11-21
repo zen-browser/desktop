@@ -1,8 +1,8 @@
 diff --git a/browser/components/customkeys/CustomKeys.sys.mjs b/browser/components/customkeys/CustomKeys.sys.mjs
-index 76f99381ab7011992b8f28f8d031ed41f73d6293..070518c5aa3b3d77447f2ba63e288948af5a25ae 100644
+index 76f99381ab7011992b8f28f8d031ed41f73d6293..2d58b98bbb4a43596e1a8139284b714a0ec9a52b 100644
 --- a/browser/components/customkeys/CustomKeys.sys.mjs
 +++ b/browser/components/customkeys/CustomKeys.sys.mjs
-@@ -4,6 +4,13 @@
+@@ -4,11 +4,19 @@
  
  import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
  
@@ -16,7 +16,47 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..070518c5aa3b3d77447f2ba63e288948
  // All the attributes for a <key> element that might specify the key to press.
  // We include data-l10n-id because keys are often specified using Fluent. Note
  // that we deliberately remove data-l10n-id when a key is customized because
-@@ -83,6 +90,7 @@ async function applyToNewWindow(window) {
+ // otherwise, Fluent would overwrite the customization.
+-const ATTRS = ["data-l10n-id", "key", "keycode", "modifiers"];
++const ZEN_CONFLICT = "zen-website-conflict";
++const ATTRS = ["data-l10n-id", "key", "keycode", "modifiers", ZEN_CONFLICT];
+ 
+ // The original keys for any shortcuts that have been customized. This is used
+ // to identify whether a shortcut has been customized, as well as to reset a
+@@ -31,6 +39,23 @@ const config = new JSONFile({
+   path: PathUtils.join(PathUtils.profileDir, "customKeys.json"),
+ });
+ 
++function keyFromElement(id) {
++  for (const window of windows.keys()) {
++    const keyEl = window.document.getElementById(id);
++    if (keyEl?.tagName == "key") {
++      const data = {};
++      for (const attr of ["modifiers", "key", "keycode"]) {
++        const val = keyEl.getAttribute(attr);
++        if (val) {
++          data[attr] = val;
++        }
++      }
++      return data;
++    }
++  }
++  return null;
++}
++
+ function applyToKeyEl(window, keyId, keysets) {
+   const keyEl = window.document.getElementById(keyId);
+   if (!keyEl || keyEl.tagName != "key") {
+@@ -50,7 +75,7 @@ function applyToKeyEl(window, keyId, keysets) {
+     keyEl.removeAttribute(attr);
+   }
+   const data = config.data[keyId];
+-  for (const attr of ["modifiers", "key", "keycode"]) {
++  for (const attr of ["modifiers", "key", "keycode", ZEN_CONFLICT]) {
+     const val = data[attr];
+     if (val) {
+       keyEl.setAttribute(attr, val);
+@@ -83,6 +108,7 @@ async function applyToNewWindow(window) {
    }
    refreshKeysets(window, keysets);
    observe(window);
@@ -24,3 +64,67 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..070518c5aa3b3d77447f2ba63e288948
  }
  
  function refreshKeysets(window, keysets) {
+@@ -150,19 +176,29 @@ export const CustomKeys = {
+    * @param {string} data.modifiers The modifiers for the key; e.g. "accel,shift".
+    * @param {string} data.key The key itself; e.g. "Y". Mutually exclusive with data.keycode.
+    * @param {string} data.keycode The key code; e.g. VK_F1. Mutually exclusive with data.key.
++   *   data may also carry the zen-website-conflict choice: omit it to keep the
++   *   current one, pass null to drop it.
+    */
+-  changeKey(id, { modifiers, key, keycode }) {
++  changeKey(id, { modifiers, key, keycode, ...rest }) {
+     const existing = config.data[id];
++    let conflict =
++      ZEN_CONFLICT in rest ? rest[ZEN_CONFLICT] : existing?.[ZEN_CONFLICT];
++    if (!key && !keycode) {
++      conflict = null;
++    }
++    conflict ||= undefined;
+     if (
+       existing &&
+       modifiers == existing.modifiers &&
+       key == existing.key &&
+-      keycode == existing.keycode
++      keycode == existing.keycode &&
++      conflict == existing[ZEN_CONFLICT]
+     ) {
+       return; // No change.
+     }
+     const defaultKey = this.getDefaultKey(id);
+     if (
++      !conflict &&
+       defaultKey &&
+       modifiers == defaultKey.modifiers &&
+       key == defaultKey.key &&
+@@ -181,6 +217,9 @@ export const CustomKeys = {
+     if (keycode) {
+       data.keycode = keycode;
+     }
++    if (conflict) {
++      data[ZEN_CONFLICT] = conflict;
++    }
+     for (const window of windows.keys()) {
+       const keysets = new Set();
+       applyToKeyEl(window, id, keysets);
+@@ -262,6 +301,21 @@ export const CustomKeys = {
+     config.saveSoon();
+   },
+ 
++  getZenConflict(id) {
++    return config.data[id]?.[ZEN_CONFLICT];
++  },
++
++  setZenConflict(id, value) {
++    const existing = config.data[id];
++    if (existing && !existing.key && !existing.keycode) {
++      return;
++    }
++    const current = existing ?? keyFromElement(id);
++    if (current) {
++      this.changeKey(id, { ...current, [ZEN_CONFLICT]: value || null });
++    }
++  },
++
+   initWindow(window) {
+     applyToNewWindow(window);
+   },

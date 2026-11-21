@@ -339,6 +339,10 @@
         "value": "300px",
         "type": "sizing"
       },
+      "zen-little-window-download-width": {
+        "value": "260px",
+        "type": "sizing"
+      },
       "zen-bookmark-panel-favicon-container-size": {
         "value": "100px",
         "type": "sizing"
@@ -1104,10 +1108,6 @@
       "zen-library-boost-icon-border-color": {
         "value": "#ffffff99",
         "type": "color"
-      },
-      "zen-dialog-box-border-light-color": {
-        "value": "#00000033",
-        "type": "color"
       }
     },
     "icon-color": {
@@ -1231,6 +1231,14 @@
         "value": "#ffffff",
         "type": "color"
       },
+      "zen-little-window-open-background": {
+        "value": "#fdfdff",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-background": {
+        "value": "#eaeaec",
+        "type": "color"
+      },
       "zen-bookmark-panel-favicon-container-background": {
         "value": "#ffffff",
         "type": "color"
@@ -1249,6 +1257,10 @@
       },
       "zen-preferences-color-picker-deck-background": {
         "value": "#ffffff4d",
+        "type": "color"
+      },
+      "zen-settings-background": {
+        "value": "#f3f3f4",
         "type": "color"
       },
       "zen-share-badge-background": {
@@ -1309,6 +1321,22 @@
         "value": "#1c1c1c",
         "type": "color"
       },
+      "zen-little-window-open-color": {
+        "value": "#000000",
+        "type": "color"
+      },
+      "zen-little-window-open-muted-color": {
+        "value": "#7e7e7f",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-color": {
+        "value": "#757576",
+        "type": "color"
+      },
+      "zen-little-window-open-space-color": {
+        "value": "#924400",
+        "type": "color"
+      },
       "zen-spaces-theme-picker-button-color": {
         "value": "#000000b3",
         "type": "color"
@@ -1331,8 +1359,8 @@
         "value": "#00000014",
         "type": "color"
       },
-      "zen-dialog-box-outline-color": {
-        "value": "#00000000",
+      "zen-dialog-border-color": {
+        "value": "#00000014",
         "type": "color"
       },
       "zen-toast-button-border-top-color": {
@@ -1471,6 +1499,14 @@
         "value": "#ffffff1f",
         "type": "color"
       },
+      "zen-little-window-open-background": {
+        "value": "#050627",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-background": {
+        "value": "#171834",
+        "type": "color"
+      },
       "zen-bookmark-panel-favicon-container-background": {
         "value": "#ffffff1a",
         "type": "color"
@@ -1489,6 +1525,10 @@
       },
       "zen-preferences-color-picker-deck-background": {
         "value": "#0000004d",
+        "type": "color"
+      },
+      "zen-settings-background": {
+        "value": "#1e1e1f",
         "type": "color"
       },
       "zen-share-badge-background": {
@@ -1549,6 +1589,22 @@
         "value": "#e9e9e9",
         "type": "color"
       },
+      "zen-little-window-open-color": {
+        "value": "#ffffff",
+        "type": "color"
+      },
+      "zen-little-window-open-muted-color": {
+        "value": "#828393",
+        "type": "color"
+      },
+      "zen-little-window-open-shortcut-color": {
+        "value": "#8b8c9a",
+        "type": "color"
+      },
+      "zen-little-window-open-space-color": {
+        "value": "#ffead1",
+        "type": "color"
+      },
       "zen-spaces-theme-picker-button-color": {
         "value": "#ffffffe6",
         "type": "color"
@@ -1571,8 +1627,8 @@
         "value": "#ffffff14",
         "type": "color"
       },
-      "zen-dialog-box-outline-color": {
-        "value": "#a1a1a180",
+      "zen-dialog-border-color": {
+        "value": "#ffffff14",
         "type": "color"
       },
       "zen-toast-button-border-top-color": {

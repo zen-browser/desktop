@@ -1,18 +1,8 @@
 diff --git a/browser/modules/BrowserDOMWindow.sys.mjs b/browser/modules/BrowserDOMWindow.sys.mjs
-index 62086f2eecd602db7e71ae88f1154feca93cb011..24e3e7ae3beb861a613fe763874a599701e01682 100644
+index 62086f2eecd602db7e71ae88f1154feca93cb011..23547a5579e3864a507b92903808d89e31a8fe99 100644
 --- a/browser/modules/BrowserDOMWindow.sys.mjs
 +++ b/browser/modules/BrowserDOMWindow.sys.mjs
-@@ -108,7 +108,8 @@ export class BrowserDOMWindow {
-     if (
-       this.win.toolbar.visible &&
-       !lazy.TaskbarTabsUtils.isTaskbarTabWindow(this.win) &&
--      !this.win.document.documentElement.hasAttribute("mini-window")
-+      !this.win.document.documentElement.hasAttribute("mini-window") &&
-+      !this.win.document.documentElement.hasAttribute("zen-little-window")
-     ) {
-       win = this.win;
-     } else {
-@@ -455,7 +456,7 @@ export class BrowserDOMWindow {
+@@ -455,7 +455,7 @@ export class BrowserDOMWindow {
      // Passing a null-URI to only create the content window,
      // and pass true for aSkipLoad to prevent loading of
      // about:blank
@@ -21,7 +11,7 @@ index 62086f2eecd602db7e71ae88f1154feca93cb011..24e3e7ae3beb861a613fe763874a5997
        null,
        aParams,
        aWhere,
-@@ -463,6 +464,10 @@ export class BrowserDOMWindow {
+@@ -463,6 +463,10 @@ export class BrowserDOMWindow {
        aName,
        true
      );

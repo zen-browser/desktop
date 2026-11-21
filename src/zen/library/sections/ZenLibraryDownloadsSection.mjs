@@ -216,8 +216,21 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     return new lazy.FileUtils.File(download.target.path);
   }
 
+  /**
+   * @param {string} url - A download's source URL
+   * @returns {string} Its source, safe to show as the origin
+   */
   #formatUrl(url) {
-    return url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+    const parsed = URL.parse(url);
+    const uri = parsed && Services.io.newURI(parsed.href);
+    if (!uri) {
+      return "";
+    }
+    const host = lazy.BrowserUtils.formatURIForDisplay(uri);
+    if (uri.scheme !== "http" && uri.scheme !== "https") {
+      return host;
+    }
+    return (host + uri.pathQueryRef).replace(/\/$/, "");
   }
 
   #matchesQuery(download) {

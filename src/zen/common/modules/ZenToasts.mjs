@@ -39,24 +39,10 @@ export class nsZenToastManager {
     const timeout = options.timeout || DEFAULT_TOAST_TIMEOUT_MS;
     const hide = () => {
       this.#timeouts.delete(messageId);
-      if (
-        !toast.isConnected ||
-        Services.prefs.getBoolPref("ui.popup.disable_autohide")
-      ) {
+      if (Services.prefs.getBoolPref("ui.popup.disable_autohide")) {
         return;
       }
-      gZenUIManager.motion
-        .animate(
-          toast,
-          { opacity: [1, 0], scale: [1, 0.5] },
-          { duration: 0.2, bounce: 0, reduceMotion: false }
-        )
-        .then(() => {
-          toast.remove();
-          if (!container.children.length) {
-            container.setAttribute("hidden", true);
-          }
-        });
+      this.#hideToast(toast);
     };
 
     if (reused) {
@@ -81,6 +67,35 @@ export class nsZenToastManager {
       { type: "spring", bounce: 0.2, duration: 0.5, reduceMotion: false }
     );
     this.#scheduleHide(messageId, hide, timeout);
+  }
+
+  hide(messageId) {
+    this.#clearTimer(messageId);
+    const toast = [...this.#toastContainer.children].find(
+      child => child._messageId === messageId
+    );
+    if (toast) {
+      this.#hideToast(toast);
+    }
+  }
+
+  #hideToast(toast) {
+    if (!toast.isConnected) {
+      return;
+    }
+    const container = this.#toastContainer;
+    gZenUIManager.motion
+      .animate(
+        toast,
+        { opacity: [1, 0], scale: [1, 0.5] },
+        { duration: 0.2, bounce: 0, reduceMotion: false }
+      )
+      .then(() => {
+        toast.remove();
+        if (!container.children.length) {
+          container.setAttribute("hidden", true);
+        }
+      });
   }
 
   #clearTimer(messageId) {

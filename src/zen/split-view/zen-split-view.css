@@ -194,6 +194,15 @@
     width: var(--zen-size-10);
   }
 
+  &.zen-tab-pin-split-button image {
+    height: var(--zen-size-13);
+    width: var(--zen-size-13);
+  }
+
+  .browserSidebarContainer[zen-split-anchored] &.zen-tab-pin-split-button {
+    opacity: 1;
+  }
+
   &.zen-tab-rearrange-button {
     cursor: move;
 
@@ -264,4 +273,26 @@ zen-split-fake-tab {
   background-color: color-mix(in srgb, var(--button-background-color-primary), transparent 40%);
   margin: var(--tab-margin-block);
   flex: 1;
+}
+
+/* Tab pinned to the split view (it stays visible while switching tabs) */
+.tabbrowser-tab[zen-split-anchored] {
+  & .tab-content::after {
+    content: "";
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    margin-inline-start: auto;
+    padding-inline-start: 4px;
+    background: url("chrome://browser/skin/zen-icons/pin.svg") center / contain no-repeat;
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Make room for the close button on hover, and hide the badge when only icons are shown */
+  &:hover .tab-content::after,
+  :root:not([zen-sidebar-expanded="true"]) & .tab-content::after {
+    display: none;
+  }
 }

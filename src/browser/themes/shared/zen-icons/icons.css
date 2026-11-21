@@ -422,6 +422,14 @@
   list-style-image: url("drag-indicator.svg") !important;
 }
 
+.zen-tab-pin-split-button {
+  list-style-image: url("pin.svg") !important;
+}
+
+.browserSidebarContainer[zen-split-anchored] .zen-tab-pin-split-button {
+  list-style-image: url("unpin.svg") !important;
+}
+
 #protections-popup-mainView .subviewbutton-nav:not(.notFound)::after,
 #identity-popup-mainView .subviewbutton-nav::after,
 .widget-overflow-list .subviewbutton-nav::after,

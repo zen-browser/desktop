@@ -1343,8 +1343,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (otherTabHint && !tabs.includes(otherTabHint)) {
       tabs.push(otherTabHint);
     }
+    const addingToPinnedPair =
+      tabs.length === 1 && this.#isInAnchoredPair(tabs[0]);
     // If all are already in a split view, we unsplit them first.
-    if (tabs.every(tab => tab.splitView)) {
+    if (!addingToPinnedPair && tabs.every(tab => tab.splitView)) {
       for (const tab of tabs) {
         if (tab.splitView) {
           this.removeTabFromGroup(tab);
@@ -1407,7 +1409,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this._maybeRemoveFakeBrowser();
     {
       const shouldDisableEmptySplits =
-        tab.hasAttribute("zen-empty-tab") || tab.splitView;
+        tab.hasAttribute("zen-empty-tab") ||
+        (tab.splitView && !this.#isInAnchoredPair(tab));
       const command = document.getElementById("cmd_zenNewEmptySplit");
       if (shouldDisableEmptySplits) {
         command.setAttribute("disabled", "true");
@@ -2568,6 +2571,33 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
+  /**
+   * @param {Tab} tab
+   * @returns {boolean} Whether the tab is shown in the pinned (anchored) pair.
+   */
+  #isInAnchoredPair(tab) {
+    return this._data.some(group => group.anchored && group.tabs.includes(tab));
+  }
+
+  /**
+   * Takes a tab out of the pinned pair so it can be split on its own. The pin
+   * is kept unless the tab is the pinned tab itself.
+   *
+   * @param {Tab} tab
+   */
+  #detachFromAnchoredPair(tab) {
+    const index = this._data.findIndex(
+      group => group.anchored && group.tabs.includes(tab)
+    );
+    if (index < 0) {
+      return;
+    }
+    this.removeGroup(index, { keepAnchor: tab !== this._anchoredTab });
+    if (gBrowser.selectedTab === tab) {
+      tab.linkedBrowser.docShellIsActive = true;
+    }
+  }
+
   #clearAnchor() {
     const tab = this._anchoredTab;
     this._anchoredTab = null;
@@ -2587,6 +2617,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   #canPairWithAnchor(tab) {
     const anchor = this._anchoredTab;
     if (!anchor || !this.canSplit || tab === anchor) {
+      return false;
+    }
+    if (this.waitingForSplitTab) {
+      // A new split is being created for this tab, see createEmptySplit.
       return false;
     }
     if (!anchor.isConnected || anchor.closing || tab.closing) {
@@ -2870,6 +2904,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const selectedTab = gBrowser.selectedTab;
     const emptyTab = gZenWorkspaces._emptyTab;
     const gridType = side === "top" || side === "bottom" ? "hsep" : "vsep";
+    this.#detachFromAnchoredPair(selectedTab);
     const topOrLeft = side === "top" || side === "left";
     let tabs = topOrLeft ? [emptyTab, selectedTab] : [selectedTab, emptyTab];
     const data = {

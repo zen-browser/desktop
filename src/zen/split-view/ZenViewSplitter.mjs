@@ -2563,7 +2563,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       const sizes = layoutTree.children.map(child => child.sizeInParent);
       const selectedIndex = tabs.indexOf(gBrowser.selectedTab);
       this.removeGroup(index);
-      const split = this.splitTabs(tabs, gridType, Math.max(0, selectedIndex));
+      // Only show the new split if one of its tabs is the selected one.
+      const split = this.splitTabs(tabs, gridType, selectedIndex, {
+        activate: selectedIndex >= 0,
+      });
       // Keep the panels exactly where and as big as they were.
       if (split?.layoutTree.children.length === sizes.length) {
         split.layoutTree.children.forEach(
@@ -2604,12 +2607,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   #anchorTab(tab) {
     // Only one tab can be anchored at a time.
     if (this._anchoredTab) {
-      const index = this._data.findIndex(group => group.anchored);
-      if (index >= 0) {
-        this.removeGroup(index);
-      } else {
+      const pinnedGroup = this._data.find(group => group.anchored);
+      if (pinnedGroup?.tabs.includes(tab)) {
+        // Pinning the other panel of the pinned pair: just move the pin, the
+        // split and its layout stay as they are.
         this.#clearAnchor();
+        this.#setAnchor(tab);
+        this.#rememberAnchoredLayout(pinnedGroup);
+        return;
       }
+      // Pinning a panel of another split: the old pinned pair stays as a
+      // regular split instead of being taken apart.
+      this.unpinAnchoredTab({ keepSplit: true });
     }
 
     let partner = gBrowser.selectedTab;
@@ -2628,11 +2637,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this._anchoredLayout = null;
     }
 
-    this._anchoredTab = tab;
-    tab.setAttribute("zen-split-anchored", "true");
-    tab.linkedBrowser
-      .closest(".browserSidebarContainer")
-      ?.setAttribute("zen-split-anchored", "true");
+    this.#setAnchor(tab);
 
     if (partner && partner !== tab) {
       if (gBrowser.selectedTab === partner) {
@@ -2668,6 +2673,14 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (gBrowser.selectedTab === tab) {
       tab.linkedBrowser.docShellIsActive = true;
     }
+  }
+
+  #setAnchor(tab) {
+    this._anchoredTab = tab;
+    tab.setAttribute("zen-split-anchored", "true");
+    tab.linkedBrowser
+      .closest(".browserSidebarContainer")
+      ?.setAttribute("zen-split-anchored", "true");
   }
 
   #clearAnchor() {

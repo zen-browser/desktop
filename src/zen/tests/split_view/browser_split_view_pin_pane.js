@@ -175,3 +175,30 @@ add_task(async function test_Unpin_Keeps_Panel_Order() {
     await BrowserTestUtils.removeTab(tab);
   }
 });
+
+add_task(async function test_Switch_Pin_Within_Pair() {
+  const [left, right] = await Promise.all(
+    [1, 2].map(i => addTabTo(gBrowser, getUrlForNthTab(i)))
+  );
+  await createSplitView([left, right], "vsep");
+  gZenViewSplitter.toggleAnchoredTab(left);
+  await TestUtils.waitForTick();
+  const pair = anchoredGroup();
+
+  gZenViewSplitter.toggleAnchoredTab(right);
+  await TestUtils.waitForTick();
+  Assert.equal(gZenViewSplitter._anchoredTab, right, "Pin moved");
+  ok(!left.hasAttribute("zen-split-anchored"), "Old tab is no longer pinned");
+  Assert.equal(anchoredGroup(), pair, "Same pair, nothing was unsplit");
+  ok(gZenViewSplitter.splitViewActive, "Split view stays active");
+  Assert.deepEqual(
+    pair.layoutTree.children.map(child => child.tab),
+    [left, right],
+    "Panels keep their sides"
+  );
+
+  gZenViewSplitter.unpinAnchoredTab();
+  for (const tab of [left, right]) {
+    await BrowserTestUtils.removeTab(tab);
+  }
+});

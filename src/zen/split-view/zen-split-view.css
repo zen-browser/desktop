@@ -275,11 +275,45 @@ zen-split-fake-tab {
   flex: 1;
 }
 
-/* Tab pinned to the split view (it stays visible while switching tabs) */
+/* Tab pinned to the split view (it stays visible while switching tabs).
+   Looks like a one-tab split view group in the sidebar. */
 .tabbrowser-tab[zen-split-anchored] {
+  --zen-split-view-active-tab-bg: color-mix(in srgb, var(--zen-toolbar-element-bg), transparent 40%);
+  --tab-box-shadow-selected: none;
+  --zen-active-tab-scale: 1;
+
+  & .tab-stack {
+    border-radius: var(--border-radius-medium);
+    padding: var(--zen-space-2, 2px) calc(var(--zen-space-2, 2px) * 2);
+    outline: var(--tab-outline);
+    outline-offset: var(--tab-outline-offset);
+    outline-color: var(--tab-selected-outline-color);
+  }
+
+  &:hover .tab-stack {
+    background-color: var(--zen-toolbar-element-bg);
+  }
+
+  /* The pinned pair is on screen: same as a split group with the active tab */
+  &[split-view] .tab-stack {
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/use-paired-color-tokens -- the tab sets its own text color */
+    background-color: var(--tab-background-color-selected);
+  }
+
   & .tab-background {
-    outline: 1px solid color-mix(in srgb, var(--zen-primary-color) 70%, transparent);
-    outline-offset: -1px;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  &[split-view] .tab-background,
+  &[visuallyselected] .tab-background {
+    background-color: var(--zen-split-view-active-tab-bg) !important;
+  }
+
+  :root:not([zen-sidebar-expanded="true"]) & .tab-stack {
+    padding: 0;
+    outline: 2px solid var(--zen-colors-border-contrast);
+    outline-offset: -2px;
   }
 
   & .tab-content::after {

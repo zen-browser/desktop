@@ -1797,7 +1797,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     pinButton.addEventListener("click", event => {
       event.stopPropagation();
       const tab = gBrowser.getTabForBrowser(container.querySelector("browser"));
-      if (tab) {
+      if (!tab) {
+        return;
+      }
+      if (tab === this._anchoredTab) {
+        this.#openUnpinMenu(pinButton);
+      } else {
         this.toggleAnchoredTab(tab);
       }
     });
@@ -2517,10 +2522,29 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   toggleAnchoredTab(tab) {
     tab = gZenGlanceManager.getTabOrGlanceParent(tab);
     if (tab === this._anchoredTab) {
-      // Unpinning keeps what's on screen as a regular split view.
-      const index = this._data.findIndex(group => group.anchored);
-      if (index < 0) {
-        this.#clearAnchor();
+      this.unpinAnchoredTab();
+      return;
+    }
+    // Panels must land in their new place directly, without animating.
+    this.#withoutSplitViewTransitionFlushed(() => this.#anchorTab(tab));
+  }
+
+  /**
+   * Unpins the pinned tab.
+   *
+   * @param {object} [options]
+   * @param {boolean} [options.keepSplit=true] - Keep the two visible panels as a
+   * regular split view. When false, both tabs are split out.
+   */
+  unpinAnchoredTab({ keepSplit = true } = {}) {
+    const index = this._data.findIndex(group => group.anchored);
+    if (index < 0) {
+      this.#clearAnchor();
+      return;
+    }
+    this.#withoutSplitViewTransitionFlushed(() => {
+      if (!keepSplit) {
+        this.removeGroup(index);
         return;
       }
       // Copy before removeGroup(), which reverses the group's tabs in place.
@@ -2539,9 +2563,35 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           this.applyGridLayout(split.layoutTree);
         }
       }
-      return;
-    }
+    });
+  }
 
+  /**
+   * @param {Element} anchorElement - The pin button that was clicked.
+   */
+  #openUnpinMenu(anchorElement) {
+    let popup = document.getElementById("zen-split-unpin-menu");
+    if (!popup) {
+      const fragment = window.MozXULElement.parseXULToFragment(`
+        <menupopup id="zen-split-unpin-menu">
+          <menuitem id="zen-split-unpin-keep-split"
+                    data-l10n-id="zen-split-view-unpin-keep-split"/>
+          <menuitem id="zen-split-unpin-split-out"
+                    data-l10n-id="zen-split-view-unpin-split-out"/>
+        </menupopup>
+      `);
+      document.getElementById("mainPopupSet").appendChild(fragment);
+      popup = document.getElementById("zen-split-unpin-menu");
+      popup.addEventListener("command", event => {
+        this.unpinAnchoredTab({
+          keepSplit: event.target.id === "zen-split-unpin-keep-split",
+        });
+      });
+    }
+    popup.openPopup(anchorElement, "after_start");
+  }
+
+  #anchorTab(tab) {
     // Only one tab can be anchored at a time.
     if (this._anchoredTab) {
       const index = this._data.findIndex(group => group.anchored);
@@ -2669,7 +2719,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   #pairWithAnchor(tab) {
     // The new tab must show up directly at its place in the split, instead of
     // animating its inset from full size down to its panel.
-    this.#withoutSplitViewTransition(() => this.#doPairWithAnchor(tab));
+    this.#withoutSplitViewTransitionFlushed(() => this.#doPairWithAnchor(tab));
   }
 
   #doPairWithAnchor(tab) {
@@ -2886,6 +2936,21 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Like #withoutSplitViewTransition, but flushes styles before transitions are
+   * turned back on. Otherwise the first style flush can happen after the class
+   * is removed, and the new insets would still animate.
+   *
+   * @param {Function} callback
+   */
+  #withoutSplitViewTransitionFlushed(callback) {
+    return this.#withoutSplitViewTransition(() => {
+      const result = callback();
+      this.tabBrowserPanel.getBoundingClientRect();
+      return result;
+    });
   }
 
   #withoutSplitViewTransition(callback) {

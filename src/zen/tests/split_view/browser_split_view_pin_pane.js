@@ -122,3 +122,44 @@ add_task(async function test_Adding_Tab_Turns_Pair_Into_Split() {
     await BrowserTestUtils.removeTab(tab);
   }
 });
+
+add_task(async function test_Unpin_Split_Out() {
+  const [anchor, other] = await Promise.all(
+    [1, 2].map(i => addTabTo(gBrowser, getUrlForNthTab(i)))
+  );
+  await createSplitView([anchor, other], "vsep");
+  gZenViewSplitter.toggleAnchoredTab(anchor);
+  await TestUtils.waitForTick();
+
+  gZenViewSplitter.unpinAnchoredTab({ keepSplit: false });
+  await TestUtils.waitForTick();
+  Assert.equal(gZenViewSplitter._anchoredTab, null, "Anchor is cleared");
+  ok(!gZenViewSplitter.splitViewActive, "No split view is left");
+  ok(!anchor.splitView && !other.splitView, "Both tabs are split out");
+
+  for (const tab of [anchor, other]) {
+    await BrowserTestUtils.removeTab(tab);
+  }
+});
+
+add_task(async function test_Unpin_Keeps_Panel_Order() {
+  const [left, right] = await Promise.all(
+    [1, 2].map(i => addTabTo(gBrowser, getUrlForNthTab(i)))
+  );
+  await createSplitView([left, right], "vsep");
+  gZenViewSplitter.toggleAnchoredTab(left);
+  await TestUtils.waitForTick();
+
+  gZenViewSplitter.unpinAnchoredTab();
+  await TestUtils.waitForTick();
+  const group = gZenViewSplitter._data[gZenViewSplitter.currentView];
+  Assert.deepEqual(
+    group.layoutTree.children.map(child => child.tab),
+    [left, right],
+    "Panels keep their sides after unpinning"
+  );
+
+  for (const tab of [left, right]) {
+    await BrowserTestUtils.removeTab(tab);
+  }
+});

@@ -17,6 +17,10 @@ zen-split-link =
 
 zen-split-view-pin-pane =
     .tooltiptext = Keep this panel open while switching tabs
+zen-split-view-unpin-keep-split =
+    .label = Unpin and Keep Split
+zen-split-view-unpin-split-out =
+    .label = Unpin and Split Out
 
 zen-split-view-modifier-header = Split View
 zen-split-view-modifier-activate-reallocation =

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index 2ffa3cac3c3730e8ce96159e0772e3c9f944b36c..7923f7f30f3a5044ec6c0ca7b5bd4a09c85f2208 100644
+index 2ffa3cac3c3730e8ce96159e0772e3c9f944b36c..cc955a4937fec0a8a0d877020039edf2eb77c698 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
 @@ -231,7 +231,6 @@
@@ -10,7 +10,24 @@ index 2ffa3cac3c3730e8ce96159e0772e3c9f944b36c..7923f7f30f3a5044ec6c0ca7b5bd4a09
  
    display: grid;
    /**
-@@ -429,7 +428,6 @@
+@@ -241,6 +240,7 @@
+    * will have a size of 0x0 when there's no item for it.
+    */
+   grid-template-areas:
++    "devtools-side-start      devtools-side-start-splitter zen-developer-toolbar  devtools-side-end-splitter  devtools-side-end"
+     "devtools-side-start      devtools-side-start-splitter notificationbox          devtools-side-end-splitter  devtools-side-end"
+     "devtools-side-start      devtools-side-start-splitter rdm-toolbar              devtools-side-end-splitter  devtools-side-end"
+     "devtools-side-start      devtools-side-start-splitter browserstack             devtools-side-end-splitter  devtools-side-end"
+@@ -262,6 +262,8 @@
+     /* DevTools toolbox docked on the right */
+     auto;
+   grid-template-rows:
++    /* Zen Developer Mode toolbar */
++    auto
+     /* notificationbox */
+     auto
+     /* rdm toolbar */
+@@ -429,7 +431,6 @@
    }
  
    browser:is([blank], [pendingpaint]) {
@@ -18,7 +35,7 @@ index 2ffa3cac3c3730e8ce96159e0772e3c9f944b36c..7923f7f30f3a5044ec6c0ca7b5bd4a09
    }
  
    @media (-moz-platform: macos) {
-@@ -875,7 +873,7 @@ split-view-footer {
+@@ -875,7 +876,7 @@ split-view-footer {
  
  .dialogStack {
    z-index: var(--browser-stack-z-index-dialog-stack);
@@ -27,7 +44,7 @@ index 2ffa3cac3c3730e8ce96159e0772e3c9f944b36c..7923f7f30f3a5044ec6c0ca7b5bd4a09
  
    /* --browser-with-dialog set on browser[tabDialogShowing], we want to position the overlay
       only on the top of the <browser> element so it doesn't overlap the DevTools toolbox */
-@@ -1055,7 +1053,7 @@ split-view-footer {
+@@ -1055,7 +1056,7 @@ split-view-footer {
  
  .dialogOverlay[topmost="true"],
  #window-modal-dialog::backdrop {

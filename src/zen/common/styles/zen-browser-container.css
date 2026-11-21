@@ -77,3 +77,183 @@ browser[zen-pseudo-hidden="true"] {
 .browserSidebarContainer[zen-zapping] {
   outline: 2px solid var(--zen-accent-button-background);
 }
+
+.tabbrowser-tab[zen-local-development][selected] .tab-background {
+  --zen-developer-mode-outline-color: light-dark(var(--color-yellow-60), var(--color-yellow-20));
+
+  outline: calc(2 * var(--border-width)) dashed var(--zen-developer-mode-outline-color);
+  outline-offset: calc(-2 * var(--border-width));
+}
+
+.zen-developer-mode-tab-badge {
+  --zen-developer-mode-badge-color: light-dark(var(--color-yellow-80), var(--color-yellow-20));
+  --zen-developer-mode-badge-background: light-dark(
+    color-mix(in srgb, var(--color-yellow-0) 40%, var(--color-gray-20)),
+    color-mix(in srgb, var(--color-yellow-90) 35%, var(--color-gray-80))
+  );
+  --zen-developer-mode-badge-border: color-mix(in srgb, var(--zen-developer-mode-badge-color) 23%, transparent);
+
+  flex: none;
+  align-self: center;
+  margin: 0 var(--space-xxsmall);
+  padding: var(--space-xxsmall) var(--space-xsmall);
+  border: var(--border-width) solid var(--zen-developer-mode-badge-border);
+  border-radius: var(--border-radius-circle);
+  background-color: var(--zen-developer-mode-badge-background);
+  color: var(--zen-developer-mode-badge-color);
+  font-size: calc(var(--font-size-small) * 0.84);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+
+  .tabbrowser-tab[selected] & {
+    display: none;
+  }
+
+  :root:not([zen-sidebar-expanded="true"]) &,
+  .tabbrowser-tab[zen-essential] & {
+    position: absolute;
+    inset-block-start: var(--space-xsmall);
+    inset-inline-end: var(--space-xsmall);
+    width: calc(var(--icon-size-xsmall) / 2);
+    height: calc(var(--icon-size-xsmall) / 2);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background-color: var(--zen-developer-mode-badge-color);
+  }
+}
+
+:root {
+  @media (forced-colors: none) and (prefers-contrast: no-preference) {
+    --zen-developer-mode-stripes: repeating-linear-gradient(
+      135deg,
+      transparent 0 8px,
+      color-mix(in srgb, currentColor 4%, transparent) 8px 16px
+    );
+  }
+}
+
+#zen-developer-mode-toolbar {
+  grid-area: zen-developer-toolbar;
+  container: zen-developer-pane / inline-size;
+  --zen-developer-mode-surface: light-dark(var(--color-gray-20), var(--color-gray-80));
+  --zen-developer-mode-text: light-dark(var(--color-gray-100), var(--color-gray-0));
+  --zen-developer-mode-divider: color-mix(in srgb, var(--zen-developer-mode-text) 16%, transparent);
+
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: var(--size-item-large);
+  gap: var(--space-xsmall);
+  padding: var(--space-xsmall) var(--space-medium);
+  background-color: color-mix(in srgb, var(--zen-primary-color) 16%, var(--zen-developer-mode-surface));
+  background-image: var(--zen-developer-mode-stripes, none);
+  color: var(--zen-developer-mode-text);
+  border-block-end: var(--border-width) solid var(--zen-developer-mode-divider);
+
+  & toolbarbutton {
+    appearance: none;
+    padding: var(--space-xsmall);
+    color: inherit;
+    border-radius: var(--border-radius-medium);
+
+    &:hover {
+      background-color: color-mix(in srgb, currentColor 9%, transparent);
+    }
+
+    &:active {
+      background-color: color-mix(in srgb, currentColor 15%, transparent);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: var(--focus-outline-inset);
+    }
+  }
+
+  & .zen-developer-mode-controls {
+    margin-inline-start: auto;
+    padding-inline-start: var(--space-small);
+    border-inline-start: var(--border-width) solid var(--zen-developer-mode-divider);
+
+    & toolbarbutton > .toolbarbutton-text {
+      display: none;
+    }
+  }
+}
+
+.zen-developer-mode-shortcuts {
+  gap: var(--space-xsmall);
+}
+
+.zen-developer-mode-overflow {
+  display: none;
+  list-style-image: url("chrome://browser/skin/zen-icons/developer.svg");
+}
+
+.zen-developer-mode-menu-indicator {
+  flex: none;
+  align-self: center;
+  margin-inline-end: var(--space-xxsmall);
+  pointer-events: none;
+
+  & > image {
+    inline-size: var(--icon-size-xsmall);
+    block-size: var(--icon-size-xsmall);
+    list-style-image: url("chrome://browser/skin/zen-icons/arrow-down.svg");
+    -moz-context-properties: fill;
+    fill: var(--icon-color);
+    opacity: var(--zen-opacity-80);
+  }
+}
+
+@container zen-developer-pane (width >= 290px) {
+  /* Keep the focused control out of flow until the resize callback moves focus. */
+  .zen-developer-mode-overflow:focus-within {
+    position: absolute;
+    display: flex;
+  }
+}
+
+@container zen-developer-pane (width < 290px) {
+  .zen-developer-mode-shortcuts {
+    position: absolute;
+
+    &:not(:focus-within) {
+      display: none;
+    }
+  }
+
+  .zen-developer-mode-overflow {
+    display: flex;
+  }
+}
+
+#zen-developer-mode-address {
+  flex: 1 1 var(--size-layout-xsmall);
+  align-self: stretch;
+  min-width: 0;
+  max-width: 100%;
+
+  & > :is(.toolbarbutton-icon, .toolbarbutton-text) {
+    display: none;
+  }
+}
+
+.zen-developer-mode-address-content {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.zen-developer-mode-url {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  direction: ltr;
+  text-align: start;
+  font-family: monospace;
+}

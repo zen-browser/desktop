@@ -4,7 +4,7 @@
 
 migration-wizard-migrator-display-name-dia = Dia
 migration-zen-spaces-option-label = Tööruumid ja esiletõstetud vahekaardid
-migration-zen-all-profiles-label = All profiles
+migration-zen-all-profiles-label = Kõik profiilid
 # Lowercase form shown in the sentence listing the selected data.
 migration-list-zen-spaces-label = tööruumid ja esiletõstetud vahekaardid
 migration-wizard-progress-success-zen-spaces =

@@ -117,8 +117,12 @@ add_task(async function test_match_type_changes_what_is_saved() {
   const chips = section.querySelectorAll(
     ".zen-library-routing-match-types .zen-library-filter-chip"
   );
-  Assert.equal(chips.length, 3, "the three ways to match a link are offered");
-  chips[2].click();
+  Assert.equal(chips.length, 5, "the five ways to match a link are offered");
+  section
+    .querySelector(
+      '.zen-library-filter-chip[data-l10n-id="library-space-routing-regex"]'
+    )
+    .click();
   await section.updateComplete;
 
   const input = await fillReference(section, "zen-browser\\.app");
@@ -144,9 +148,9 @@ add_task(async function test_a_pattern_that_cannot_be_read_is_not_saved() {
   await section.updateComplete;
 
   section
-    .querySelectorAll(
-      ".zen-library-routing-match-types .zen-library-filter-chip"
-    )[2]
+    .querySelector(
+      '.zen-library-filter-chip[data-l10n-id="library-space-routing-regex"]'
+    )
     .click();
   await section.updateComplete;
 

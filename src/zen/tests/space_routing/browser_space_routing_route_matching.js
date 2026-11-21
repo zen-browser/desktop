@@ -20,6 +20,71 @@ add_task(async function test_contains_is_case_insensitive_substring() {
   );
 });
 
+add_task(async function test_domain_contains_only_looks_at_the_host() {
+  const route = { reference: "Mozilla", matchType: "domain-contains" };
+
+  ok(
+    gZenSpaceRoutingManager.isRouteMatching("https://app.mozilla.org/x", route),
+    "'domain-contains' matches a substring of the host, including subdomains"
+  );
+  ok(
+    !gZenSpaceRoutingManager.isRouteMatching(
+      "https://github.com/mozilla/desktop",
+      route
+    ),
+    "'domain-contains' ignores the reference appearing in the path"
+  );
+  ok(
+    !gZenSpaceRoutingManager.isRouteMatching(
+      "https://example.com/?q=mozilla#mozilla",
+      route
+    ),
+    "'domain-contains' ignores the query and the hash"
+  );
+  ok(
+    !gZenSpaceRoutingManager.isRouteMatching("https://www.github.com", {
+      reference: "www",
+      matchType: "domain-contains",
+    }),
+    "'domain-contains' drops a leading www. from the host"
+  );
+});
+
+add_task(async function test_path_contains_only_looks_at_the_pathname() {
+  const route = { reference: "Mozilla", matchType: "path-contains" };
+
+  ok(
+    gZenSpaceRoutingManager.isRouteMatching(
+      "https://github.com/MOZILLA/desktop",
+      route
+    ),
+    "'path-contains' matches a substring of the pathname regardless of case"
+  );
+  ok(
+    !gZenSpaceRoutingManager.isRouteMatching("https://mozilla.org/", route),
+    "'path-contains' ignores the reference appearing in the host"
+  );
+  ok(
+    !gZenSpaceRoutingManager.isRouteMatching(
+      "https://example.com/search?q=mozilla#mozilla",
+      route
+    ),
+    "'path-contains' ignores the query and the hash"
+  );
+});
+
+add_task(async function test_url_part_match_types_reject_unparseable_urls() {
+  for (const matchType of ["domain-contains", "path-contains"]) {
+    ok(
+      !gZenSpaceRoutingManager.isRouteMatching("not a url mozilla", {
+        reference: "mozilla",
+        matchType,
+      }),
+      `An unparseable URL never matches (${matchType})`
+    );
+  }
+});
+
 add_task(async function test_equal_to_normalizes_protocol_and_www() {
   const route = { reference: "github.com", matchType: "equal-to" };
 
@@ -79,7 +144,13 @@ add_task(async function test_invalid_regex_is_swallowed() {
 });
 
 add_task(async function test_empty_reference_never_matches() {
-  for (const matchType of ["contains", "equal-to", "regex"]) {
+  for (const matchType of [
+    "contains",
+    "domain-contains",
+    "path-contains",
+    "equal-to",
+    "regex",
+  ]) {
     ok(
       !gZenSpaceRoutingManager.isRouteMatching("https://github.com", {
         reference: "",

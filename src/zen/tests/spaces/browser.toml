@@ -30,6 +30,8 @@ support-files = [
 
 ["browser_issue_16573.js"]
 
+["browser_issue_16595.js"]
+
 ["browser_issue_8699.js"]
 
 ["browser_issue_9900.js"]

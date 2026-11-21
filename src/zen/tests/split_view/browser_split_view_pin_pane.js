@@ -22,7 +22,11 @@ add_task(async function test_Pinned_Pane_Follows_Tab_Switches() {
   await TestUtils.waitForTick();
 
   Assert.equal(gZenViewSplitter._anchoredTab, anchor, "Anchor is set");
-  ok(!anchor.group, "Anchored tab left the split tab group");
+  ok(
+    anchor.group?.hasAttribute("split-view-group") &&
+      anchor.group === first.group,
+    "Pinned pair is shown as a split group in the sidebar"
+  );
   Assert.deepEqual(
     anchoredGroup()?.tabs,
     [anchor, first],
@@ -37,6 +41,12 @@ add_task(async function test_Pinned_Pane_Follows_Tab_Switches() {
     "Newly selected tab replaces the previous partner"
   );
   ok(!first.splitView, "Previous partner is no longer split");
+  ok(!first.group, "Previous partner left the sidebar split group");
+  Assert.equal(
+    anchor.group,
+    second.group,
+    "Pinned tab moved into a split group with the new partner"
+  );
   Assert.equal(
     document.querySelectorAll('.browserSidebarContainer[zen-split="true"]')
       .length,
@@ -54,8 +64,10 @@ add_task(async function test_Pinned_Pane_Follows_Tab_Switches() {
   Assert.ok(
     gZenViewSplitter
       .storeDataForSessionStore()
-      .every(group => !group.tabs.includes(anchor.id)),
-    "Pinned pair is not written to the session store"
+      .some(
+        group => group.tabs.includes(anchor.id) && group.tabs.includes(third.id)
+      ),
+    "Pinned pair is saved, so it comes back as a regular split"
   );
 
   // Closing the partner keeps the anchor around.

@@ -1214,8 +1214,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     let selectedTabs = contextTab.multiselected
       ? gBrowser.selectedTabs
       : [contextTab];
-    let isExistingSplitView = selectedTabs.every(tab =>
-      tab.group?.hasAttribute("split-view-group")
+    let isExistingSplitView = selectedTabs.every(
+      tab =>
+        tab.group?.hasAttribute("split-view-group") &&
+        !this.#isInAnchoredPair(tab)
     );
     const splitTabCommand = document.getElementById("context_zenSplitTabs");
     document.l10n.setAttributes(splitTabCommand, "tab-zen-split-tabs", {
@@ -2547,6 +2549,14 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         this.removeGroup(index);
         return;
       }
+      const pinnedGroup = this._data[index];
+      if (pinnedGroup.groupId) {
+        // Already shown as a split group: it simply becomes a regular split.
+        this.#rememberAnchoredLayout(pinnedGroup);
+        delete pinnedGroup.anchored;
+        this.#clearAnchor();
+        return;
+      }
       // Copy before removeGroup(), which reverses the group's tabs in place.
       const { gridType, layoutTree } = this._data[index];
       const tabs = [...this._data[index].tabs];
@@ -2730,11 +2740,13 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (previous && previous !== tab) {
         // Swap the partner in place. The split stays active the whole time,
         // so the anchored panel never jumps to full size and back.
+        this.#ungroupAnchoredPair(group);
         this.resetTabState(previous, false);
         const leaf = this.getSplitNodeFromTab(previous);
         leaf.tab = tab;
         this._tabToSplitNode.delete(previous);
         group.tabs[group.tabs.indexOf(previous)] = tab;
+        this.#groupAnchoredPair(group, tab);
       }
       this.activateSplitView(group, true);
       return;
@@ -2760,7 +2772,64 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       layoutTree: root,
     };
     this._data.push(group);
+    this.#groupAnchoredPair(group, tab);
     this.activateSplitView(group);
+  }
+
+  /**
+   * Shows the pinned pair as a split view group in the sidebar. The pinned
+   * tab moves next to its partner, so the partner stays where the user
+   * clicked it and the rest of the list doesn't shift.
+   *
+   * @param {object} group - The anchored split data.
+   * @param {Tab} partner - The tab shown next to the pinned tab.
+   */
+  #groupAnchoredPair(group, partner) {
+    const anchor = this._anchoredTab;
+    const cantGroup = tab =>
+      tab.hasAttribute("zen-essential") ||
+      tab.hasAttribute("zen-live-folder-item-id") ||
+      tab.group?.hasAttribute("split-view-group");
+    if (
+      !anchor ||
+      cantGroup(anchor) ||
+      cantGroup(partner) ||
+      anchor.pinned !== partner.pinned
+    ) {
+      // The pair still works, it just isn't grouped in the sidebar.
+      return;
+    }
+    const tabGroup = gBrowser.addTabGroup([...group.tabs], {
+      label: "",
+      showCreateUI: false,
+      insertBefore: partner,
+      forSplitView: true,
+    });
+    if (!tabGroup) {
+      return;
+    }
+    tabGroup.setAttribute("split-view-group", "true");
+    group.groupId = tabGroup.id;
+    this.#dispatchItemEvent("ZenSplitViewTabsSplit", tabGroup);
+  }
+
+  /**
+   * Takes the pinned pair out of its sidebar group, keeping the tab order.
+   *
+   * @param {object} group - The anchored split data.
+   */
+  #ungroupAnchoredPair(group) {
+    if (!group.groupId) {
+      return;
+    }
+    // ungroupTab() puts the tab right after the group, so go backwards.
+    for (const tab of [...group.tabs].reverse()) {
+      if (tab.group?.id === group.groupId) {
+        gBrowser.ungroupTab(tab);
+        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
+      }
+    }
+    group.groupId = null;
   }
 
   /**
@@ -2823,8 +2892,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       };
     };
 
-    // Pinned (anchored) pairs aren't backed by a tab group, skip them.
-    const groups = this._data.filter(group => !group.anchored);
+    // Pinned pairs without a tab group can't be restored; grouped ones come
+    // back as a regular split view.
+    const groups = this._data.filter(group => !group.anchored || group.groupId);
     return groups.map(group => {
       const serializedTree = serializeNode(group.layoutTree);
       return {

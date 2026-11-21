@@ -47,13 +47,15 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Власний колір
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Скопійовано поточну URL-адресу!
+        [few] Скопійовано { $count } URL-адреси!
+       *[many] Скопійовано { $count } URL-адрес!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] Скопійовано URL-адресу як Markdown!
+        [few] Скопійовано { $count } URL-адреси як Markdown!
+       *[many] Скопійовано { $count } URL-адрес як Markdown!
     }
 zen-general-cancel-label = 
     .label = Скасувати
@@ -69,8 +71,8 @@ zen-background-tab-opened-toast = Відкрито нову фонову вкл�
 zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
 zen-split-view-limit-toast = Неможливо додати більше панелей до розділеного перегляду!
-zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
-zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> знову для { $action }
+zen-shortcut-blocked-toast-default-action = використовувати це в { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Бічна панель прихована! Щоб знову показати бічну панель, скористайтеся посиланням <span>{ $shortcut }</span>.
 zen-toggle-compact-mode-button = 
     .label = Компактний режим
@@ -153,13 +155,13 @@ zen-window-sync-migration-dialog-accept = Зрозуміло
 zen-appmenu-new-blank-window = 
     .label = Нове несинхронізоване вікно
 zen-appmenu-new-little-window = 
-    .label = New Little Window
-zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
-zen-little-window-open-in-new-window = Open in { -brand-short-name }
+    .label = Нове маленьке вікно
+zen-little-window-open-in-space = Відкрити в <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Відкрити в { -brand-short-name }
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
-zen-little-window-title = Little Zen
-zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
-zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+    .tooltiptext = Обрати простір
+zen-little-window-title = Малий Zen
+zen-little-window-intro-title = Відкрито в <i data-l10n-name="name">Малому Zen</i>
+zen-little-window-intro-description = Натисніть «Відкрити в», щоб перемістити цю сторінку в окреме вікно, або натисніть { $shortcut }, щоб закрити її
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = З { $host }

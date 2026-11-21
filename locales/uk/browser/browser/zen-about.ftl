@@ -41,21 +41,21 @@ zen-about-update-ready = Оновлення готове до встановле
 zen-about-update-restart = Перезапустіть, щоб оновити
 zen-about-update-restarting = Перезапуск…
 zen-about-update-download-failed = Не вдалося завантажити оновлення
-zen-about-update-checking-failed = Could not check for updates
-zen-about-update-internal-error = Updates are unavailable because of an internal error
-zen-about-update-download-manually = Download manually
-zen-about-update-manual = A new version is available on the download page
-zen-about-update-policy-disabled = Updates are disabled by your organization
-zen-about-update-other-instance = { -brand-short-name } is being updated by another instance
-zen-about-update-unsupported = This system can no longer receive updates
-zen-about-update-learn-more = Learn more
+zen-about-update-checking-failed = Не вдалося перевірити наявність оновлень
+zen-about-update-internal-error = Оновлення недоступні через внутрішню помилку
+zen-about-update-download-manually = Завантажити вручну
+zen-about-update-manual = Нова версія доступна на сторінці завантаження
+zen-about-update-policy-disabled = Оновлення вимкнено вашою організацією
+zen-about-update-other-instance = { -brand-short-name } оновлюється в іншому екземплярі
+zen-about-update-unsupported = Ця система більше не може отримувати оновлення
+zen-about-update-learn-more = Докладніше
 
 ## Links
 
-zen-about-release-notes = What’s new
-zen-about-donate = Donate
-zen-about-report-issue = Report an issue
-zen-about-community = { -brand-short-name } is free and open source, built on { -zen-engine-name } by a <a data-l10n-name="github-link">community of contributors</a>.
-zen-about-license = License
-zen-about-rights = Your rights
-zen-about-privacy = Privacy
+zen-about-release-notes = Що нового
+zen-about-donate = Пожертвувати
+zen-about-report-issue = Повідомити про проблему
+zen-about-community = { -brand-short-name } — безплатний продукт із відкритим кодом, створений на основі { -zen-engine-name } <a data-l10n-name="github-link">спільнотою вкладників</a>.
+zen-about-license = Ліцензія
+zen-about-rights = Ваші права
+zen-about-privacy = Приватність

@@ -84,6 +84,23 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   _lastOpenedTab = null;
 
+  /**
+   * The tab that is pinned ("anchored") to the split view. While set, selecting
+   * any tab that isn't part of a split shows it side by side with this tab, so
+   * the anchored tab stays visible while switching tabs.
+   *
+   * @type {Tab|null}
+   */
+  _anchoredTab = null;
+
+  /**
+   * Last known layout of the anchored split, so it can be rebuilt with the
+   * same side and size when it is paired with another tab.
+   *
+   * @type {{direction: string, anchorIndex: number, anchorSize: number}|null}
+   */
+  _anchoredLayout = null;
+
   MAX_TABS = 4;
 
   init() {
@@ -161,10 +178,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     const groupIndex = this._data.findIndex(group => group.tabs.includes(tab));
     if (groupIndex < 0) {
+      if (tab === this._anchoredTab) {
+        this.#clearAnchor();
+      }
       return;
     }
+    const isAnchoredPartner =
+      this._data[groupIndex].anchored && tab !== this._anchoredTab;
     this.removeTabFromGroup(tab, groupIndex, {
       forUnsplit: true,
+      // Let tabbrowser pick the next tab; it will be paired with the anchor.
+      changeTab: isAnchoredPartner ? false : undefined,
     });
   }
 
@@ -238,7 +262,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           this.resetTabState(remainingTab, forUnsplit);
         }
       }
-      this.removeGroup(groupIndex);
+      this.removeGroup(groupIndex, {
+        keepAnchor: group.anchored && tab !== this._anchoredTab,
+      });
       if (changeTab) {
         const tabToSelect = remainingTabs.find(remaining => remaining !== tab);
         if (tabToSelect) {
@@ -1155,8 +1181,14 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *
    * @param {number} groupIndex - The index of the group to remove.
    */
-  removeGroup(groupIndex) {
+  removeGroup(groupIndex, { keepAnchor = false } = {}) {
     const group = this._data[groupIndex];
+    if (group.anchored) {
+      this.#rememberAnchoredLayout(group);
+      if (!keepAnchor) {
+        this.#clearAnchor();
+      }
+    }
     for (const tab of group.tabs.reverse()) {
       if (tab.group?.hasAttribute("split-view-group")) {
         gBrowser.ungroupTab(tab);
@@ -1466,6 +1498,26 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         return;
       }
 
+      const anchoredIndex = this._data.findIndex(
+        group => group.anchored && group.tabs.some(t => tabs.includes(t))
+      );
+      if (anchoredIndex >= 0) {
+        const anchoredGroup = this._data[anchoredIndex];
+        if (tabs.every(t => anchoredGroup.tabs.includes(t))) {
+          // Same tabs, only the layout changes.
+          this.#setAnchoredDirection(anchoredGroup, gridType);
+          return anchoredGroup;
+        }
+        // New tabs are joining: turn the pinned pair into a regular split.
+        const merged = [...new Set([...anchoredGroup.tabs, ...tabs])];
+        if (merged.length > this.MAX_TABS) {
+          gZenUIManager.showToast("zen-split-view-limit-toast");
+          return;
+        }
+        this.removeGroup(anchoredIndex);
+        tabs = merged;
+      }
+
       const existingSplitTab = tabs.find(tab => tab.splitView);
       let shouldActivateSplit =
         activate &&
@@ -1568,6 +1620,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const oldView = this.currentView;
     const newView = this._data.findIndex(group => group.tabs.includes(tab));
 
+    if (newView < 0 && this.#canPairWithAnchor(tab)) {
+      this.#pairWithAnchor(tab);
+      return;
+    }
     if (newView === oldView && oldView < 0) {
       return;
     }
@@ -1732,7 +1788,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     });
     const rearrangeButton = document.createXULElement("toolbarbutton");
     rearrangeButton.classList.add("zen-tab-rearrange-button");
+    const pinButton = document.createXULElement("toolbarbutton");
+    pinButton.classList.add("zen-tab-pin-split-button");
+    document.l10n.setAttributes(pinButton, "zen-split-view-pin-pane");
+    pinButton.addEventListener("click", event => {
+      event.stopPropagation();
+      const tab = gBrowser.getTabForBrowser(container.querySelector("browser"));
+      if (tab) {
+        this.toggleAnchoredTab(tab);
+      }
+    });
     header.appendChild(rearrangeButton);
+    header.appendChild(pinButton);
     header.appendChild(removeButton);
     headerContainer.appendChild(header);
     return headerContainer;
@@ -2081,6 +2148,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   toggleShortcut(gridType) {
     if (gridType === "unsplit") {
       this.unsplitCurrentView();
+      return;
+    }
+    if (this._data[this.currentView]?.anchored) {
+      this.#setAnchoredDirection(this._data[this.currentView], gridType);
       return;
     }
     const tabs = gBrowser.visibleTabs;
@@ -2434,6 +2505,205 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return splitGroup;
   }
 
+  /**
+   * Pins or unpins a tab to the split view. A pinned tab stays visible next to
+   * whatever (non-split) tab gets selected.
+   *
+   * @param {Tab} tab - The tab to pin or unpin.
+   */
+  toggleAnchoredTab(tab) {
+    tab = gZenGlanceManager.getTabOrGlanceParent(tab);
+    if (tab === this._anchoredTab) {
+      // Unpinning keeps what's on screen as a regular split view.
+      const index = this._data.findIndex(group => group.anchored);
+      if (index < 0) {
+        this.#clearAnchor();
+        return;
+      }
+      const { tabs, gridType } = this._data[index];
+      const selectedIndex = tabs.indexOf(gBrowser.selectedTab);
+      this.removeGroup(index);
+      this.splitTabs([...tabs], gridType, Math.max(0, selectedIndex));
+      return;
+    }
+
+    // Only one tab can be anchored at a time.
+    if (this._anchoredTab) {
+      const index = this._data.findIndex(group => group.anchored);
+      if (index >= 0) {
+        this.removeGroup(index);
+      } else {
+        this.#clearAnchor();
+      }
+    }
+
+    let partner = gBrowser.selectedTab;
+    const groupIndex = this._data.findIndex(group => group.tabs.includes(tab));
+    if (groupIndex >= 0) {
+      const group = this._data[groupIndex];
+      if (partner === tab || !group.tabs.includes(partner)) {
+        partner = group.tabs.find(t => t !== tab);
+      }
+      this.#rememberAnchoredLayout(group, tab);
+      this.removeTabFromGroup(tab, groupIndex, {
+        forUnsplit: true,
+        changeTab: false,
+      });
+    } else {
+      this._anchoredLayout = null;
+    }
+
+    this._anchoredTab = tab;
+    tab.setAttribute("zen-split-anchored", "true");
+    tab.linkedBrowser
+      .closest(".browserSidebarContainer")
+      ?.setAttribute("zen-split-anchored", "true");
+
+    if (partner && partner !== tab) {
+      if (gBrowser.selectedTab === partner) {
+        this.onLocationChange(partner.linkedBrowser);
+      } else {
+        gBrowser.selectedTab = partner;
+      }
+    }
+  }
+
+  #clearAnchor() {
+    const tab = this._anchoredTab;
+    this._anchoredTab = null;
+    if (!tab) {
+      return;
+    }
+    tab.removeAttribute("zen-split-anchored");
+    tab.linkedBrowser
+      ?.closest(".browserSidebarContainer")
+      ?.removeAttribute("zen-split-anchored");
+  }
+
+  /**
+   * @param {Tab} tab - The tab that was just selected.
+   * @returns {boolean} Whether the tab should be shown next to the anchored tab.
+   */
+  #canPairWithAnchor(tab) {
+    const anchor = this._anchoredTab;
+    if (!anchor || !this.canSplit || tab === anchor) {
+      return false;
+    }
+    if (!anchor.isConnected || anchor.closing || tab.closing) {
+      return false;
+    }
+    if (
+      tab.hasAttribute("zen-empty-tab") ||
+      tab.hasAttribute("zen-glance-tab")
+    ) {
+      return false;
+    }
+    // Essentials are shared between spaces, everything else must live in the
+    // same space as the anchored tab.
+    const tabSpace = tab.getAttribute("zen-workspace-id");
+    const anchorSpace = anchor.getAttribute("zen-workspace-id");
+    if (
+      !tab.hasAttribute("zen-essential") &&
+      !anchor.hasAttribute("zen-essential") &&
+      tabSpace &&
+      anchorSpace &&
+      tabSpace !== anchorSpace
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Shows the given tab side by side with the anchored tab, reusing the
+   * existing anchored split if there is one.
+   *
+   * @param {Tab} tab - The tab to pair with the anchored tab.
+   */
+  #pairWithAnchor(tab) {
+    const anchor = this._anchoredTab;
+    let group = this._data.find(g => g.anchored);
+    if (group) {
+      const previous = group.tabs.find(t => t !== anchor);
+      if (previous && previous !== tab) {
+        if (this.currentView === this._data.indexOf(group)) {
+          this.deactivateCurrentSplitView();
+        }
+        this.resetTabState(previous, false);
+        const leaf = this.getSplitNodeFromTab(previous);
+        leaf.tab = tab;
+        this._tabToSplitNode.delete(previous);
+        group.tabs[group.tabs.indexOf(previous)] = tab;
+      }
+      this.activateSplitView(group, true);
+      return;
+    }
+
+    const {
+      direction = "row",
+      anchorIndex = 0,
+      anchorSize = 50,
+    } = this._anchoredLayout ?? {};
+    const root = new nsSplitNode(direction);
+    const anchorLeaf = new nsSplitLeafNode(anchor, anchorSize);
+    const otherLeaf = new nsSplitLeafNode(tab, 100 - anchorSize);
+    const anchorFirst = anchorIndex === 0;
+    root.children = anchorFirst
+      ? [anchorLeaf, otherLeaf]
+      : [otherLeaf, anchorLeaf];
+    group = {
+      anchored: true,
+      groupId: null,
+      gridType: direction === "row" ? "vsep" : "hsep",
+      tabs: anchorFirst ? [anchor, tab] : [tab, anchor],
+      layoutTree: root,
+    };
+    this._data.push(group);
+    this.activateSplitView(group);
+  }
+
+  /**
+   * Remembers which side and how much space the anchored tab takes, so the
+   * pair can be rebuilt the same way.
+   *
+   * @param {object} group - The split data.
+   * @param {Tab} [anchor] - The anchored tab, defaults to the current one.
+   */
+  #rememberAnchoredLayout(group, anchor = this._anchoredTab) {
+    const root = group.layoutTree;
+    const leaf = this.getSplitNodeFromTab(anchor);
+    if (
+      !leaf ||
+      leaf.parent !== root ||
+      root.children.length !== 2 ||
+      root.children.some(child => !child.tab)
+    ) {
+      this._anchoredLayout = null;
+      return;
+    }
+    this._anchoredLayout = {
+      direction: root.direction,
+      anchorIndex: root.children.indexOf(leaf),
+      anchorSize: leaf.sizeInParent,
+    };
+  }
+
+  /**
+   * @param {object} group - The anchored split data.
+   * @param {string|undefined} gridType - The requested layout.
+   */
+  #setAnchoredDirection(group, gridType) {
+    const direction = gridType === "hsep" ? "column" : "row";
+    if (group.layoutTree.direction !== direction) {
+      group.layoutTree.direction = direction;
+      group.gridType = direction === "row" ? "vsep" : "hsep";
+      this.#rememberAnchoredLayout(group);
+    }
+    if (this.currentView === this._data.indexOf(group)) {
+      this.activateSplitView(group, true);
+    }
+  }
+
   storeDataForSessionStore() {
     const serializeNode = node => {
       if (node.tab) {
@@ -2452,7 +2722,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       };
     };
 
-    return this._data.map(group => {
+    // Pinned (anchored) pairs aren't backed by a tab group, skip them.
+    const groups = this._data.filter(group => !group.anchored);
+    return groups.map(group => {
       const serializedTree = serializeNode(group.layoutTree);
       return {
         groupId: group.groupId,

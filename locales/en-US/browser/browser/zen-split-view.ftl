@@ -15,6 +15,9 @@ zen-split-link =
     .label = Split Link to New Tab
     .accesskey = S
 
+zen-split-view-pin-pane =
+    .tooltiptext = Keep this panel open while switching tabs
+
 zen-split-view-modifier-header = Split View
 zen-split-view-modifier-activate-reallocation =
     .label = Activate reallocation

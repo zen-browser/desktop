@@ -194,6 +194,15 @@
     width: var(--zen-size-10);
   }
 
+  &.zen-tab-pin-split-button image {
+    height: var(--zen-size-13);
+    width: var(--zen-size-13);
+  }
+
+  .browserSidebarContainer[zen-split-anchored] &.zen-tab-pin-split-button {
+    opacity: 1;
+  }
+
   &.zen-tab-rearrange-button {
     cursor: move;
 

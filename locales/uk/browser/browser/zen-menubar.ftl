@@ -21,4 +21,4 @@ zen-menubar-appearance-dark =
 zen-menubar-new-blank-window = 
     .label = Нове несинхронізоване вікно
 zen-menubar-new-little-window = 
-    .label = New Little Window
+    .label = Нове маленьке вікно

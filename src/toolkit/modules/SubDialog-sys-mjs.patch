@@ -1,8 +1,8 @@
 diff --git a/toolkit/modules/SubDialog.sys.mjs b/toolkit/modules/SubDialog.sys.mjs
-index b3ce915315a6c3009a2fa6a4c134db8c70e569a0..22c31730934eb2402b735ae26ec3fbbe363afd37 100644
+index b3ce915..bbbdb5a 100644
 --- a/toolkit/modules/SubDialog.sys.mjs
 +++ b/toolkit/modules/SubDialog.sys.mjs
-@@ -249,7 +249,41 @@ SubDialog.prototype = {
+@@ -249,6 +249,42 @@ SubDialog.prototype = {
      this._closingPromise = new Promise(resolve => {
        this._resolveClosePromise = resolve;
      });
@@ -39,12 +39,13 @@ index b3ce915315a6c3009a2fa6a4c134db8c70e569a0..22c31730934eb2402b735ae26ec3fbbe
 +    this._window.setTimeout(finish, 400);
 +    return true;
 +  },
- 
++
 +  _zenFinishClose(aEvent) {
++    this._zenAutosize?.disconnect();
+ 
      if (this._closingCallback) {
        try {
-         this._closingCallback.call(null, aEvent);
-@@ -504,6 +538,14 @@ SubDialog.prototype = {
+@@ -504,6 +540,14 @@ SubDialog.prototype = {
        })
      );
      this._overlay.style.visibility = "inherit";
@@ -59,3 +60,69 @@ index b3ce915315a6c3009a2fa6a4c134db8c70e569a0..22c31730934eb2402b735ae26ec3fbbe
      this._overlay.style.opacity = ""; // XXX: focus hack continued from _onContentLoaded
  
      if (this._box.getAttribute("resizable") == "true") {
+@@ -512,6 +556,18 @@ SubDialog.prototype = {
+       this._resizeObserver.observe(this._box, { attributes: true });
+     }
+ 
++    // Re-measure when a section expands; runs before paint, so the clamp is painted
++    let zenRoot = this._frame.contentDocument.querySelector("[zen-max-window-ratio]");
++    if (zenRoot && !this._zenAutosize) {
++      this._zenAutosize = new this._frame.contentWindow.MutationObserver(() =>
++        this.resizeVertically()
++      );
++      this._zenAutosize.observe(zenRoot, {
++        childList: true, subtree: true,
++        attributes: true, attributeFilter: ["hidden"],
++      });
++    }
++
+     this._trapFocus();
+ 
+     this._resizeCallback?.({
+@@ -615,6 +671,11 @@ SubDialog.prototype = {
+     // Now do the same but for the height. We need to do this afterwards because otherwise
+     // XUL assumes we'll optimize for height and gives us "wrong" values which then are no
+     // longer correct after we set the width:
++    // .doScroll size-contains the content box, so measure without it
++    if (contentPane?.classList.contains("doScroll")) {
++      contentPane.classList.remove("doScroll");
++      docEl.getBoundingClientRect();
++    }
+     let frameMinHeight = getDocHeight();
+     let frameHeight = docEl.getAttribute("height")
+       ? docEl.getAttribute("height") + "px"
+@@ -624,6 +685,14 @@ SubDialog.prototype = {
+     // accounting for titlebar, padding/border and some spacing.
+     let frameOverhead = frameSizeDifference + titleBarHeight;
+     let maxHeight = this._window.innerHeight - frameOverhead;
++    // zen-max-window-ratio caps the frame as a share of the window
++    let zenRatio = +contentPane?.getAttribute("zen-max-window-ratio") || 0;
++    // Keep the cap in vh so it tracks the window without a re-measure
++    let zenCap = zenRatio > 0 && zenRatio < 1 ? `${zenRatio * 100}vh` : null;
++    if (zenCap) {
++      maxHeight = this._window.innerHeight * zenRatio;
++      this._frame.style.maxHeight = zenCap;
++    }
+     // Do this with a frame height in pixels...
+     if (!frameHeight.endsWith("px")) {
+       console.error(
+@@ -656,10 +725,11 @@ SubDialog.prototype = {
+     this._overlay.style.setProperty("--subdialog-inner-height", frameHeight);
+-    this._frame.style.height = `min(
+-      calc(100vh - ${frameOverhead}px),
+-      var(--subdialog-inner-height, ${frameHeight})
+-    )`;
+-    this._box.style.minHeight = `calc(
+-      ${boxVerticalBorder + titleBarHeight + frameVerticalMargin}px +
+-      ${frameMinHeight}
+-    )`;
++    let frameHeightCss = zenCap
++      ? `min(${zenCap}, var(--subdialog-inner-height, ${frameHeight}))`
++      : `min(calc(100vh - ${frameOverhead}px),` +
++        `var(--subdialog-inner-height, ${frameHeight}))`;
++    let boxChrome = boxVerticalBorder + titleBarHeight + frameVerticalMargin;
++    this._frame.style.height = frameHeightCss;
++    this._box.style.minHeight = zenCap
++      ? `calc(${boxChrome}px + min(${frameHeight}, ${zenCap}))`
++      : `calc(${boxChrome}px + ${frameMinHeight})`;
+   },

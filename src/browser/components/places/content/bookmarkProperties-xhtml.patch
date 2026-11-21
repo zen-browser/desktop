@@ -2,7 +2,15 @@ diff --git a/browser/components/places/content/bookmarkProperties.xhtml b/browse
 index a8fd4887f0816c671436e2085a641bd6634eccec..ad820e06be7e4455b1ead22dad5e1622a354084c 100644
 --- a/browser/components/places/content/bookmarkProperties.xhtml
 +++ b/browser/components/places/content/bookmarkProperties.xhtml
-@@ -38,8 +38,12 @@
+@@ -15,6 +15,7 @@
+         neediconheader="true"
+         style="min-width: 40em;">
+ <dialog id="bookmarkpropertiesdialog"
++        zen-max-window-ratio="0.8"
+         buttons="accept, cancel">
+
+   <linkset>
+@@ -38,8 +39,12 @@
      />
  
      <html:link rel="localization" href="browser/editBookmarkOverlay.ftl"/>

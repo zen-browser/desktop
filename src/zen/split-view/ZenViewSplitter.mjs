@@ -2523,10 +2523,22 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         this.#clearAnchor();
         return;
       }
-      const { tabs, gridType } = this._data[index];
+      // Copy before removeGroup(), which reverses the group's tabs in place.
+      const { gridType, layoutTree } = this._data[index];
+      const tabs = [...this._data[index].tabs];
+      const sizes = layoutTree.children.map(child => child.sizeInParent);
       const selectedIndex = tabs.indexOf(gBrowser.selectedTab);
       this.removeGroup(index);
-      this.splitTabs([...tabs], gridType, Math.max(0, selectedIndex));
+      const split = this.splitTabs(tabs, gridType, Math.max(0, selectedIndex));
+      // Keep the panels exactly where and as big as they were.
+      if (split?.layoutTree.children.length === sizes.length) {
+        split.layoutTree.children.forEach(
+          (child, i) => (child.sizeInParent = sizes[i])
+        );
+        if (this.currentView === this._data.indexOf(split)) {
+          this.applyGridLayout(split.layoutTree);
+        }
+      }
       return;
     }
 

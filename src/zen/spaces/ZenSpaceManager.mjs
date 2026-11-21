@@ -1996,7 +1996,7 @@ class nsZenWorkspaces {
 
   async #performWorkspaceChange(
     workspace,
-    { onInit = false, alwaysChange = false, whileScrolling = false } = {}
+    {onInit = false, alwaysChange = false, whileScrolling = false, wrapped = false,} = {}
   ) {
     const previousWorkspace = this.getActiveWorkspace();
     alwaysChange = alwaysChange || onInit;
@@ -2049,6 +2049,7 @@ class nsZenWorkspaces {
     await this.#updateWorkspaceState(workspace, onInit, tabToSelect, {
       previousWorkspaceIndex,
       previousWorkspace,
+      wrapped,
     });
   }
 
@@ -2371,6 +2372,7 @@ class nsZenWorkspaces {
       previousWorkspaceIndex = null,
       previousWorkspace = null,
       onInit = false,
+      wrapped = false,
     } = {}
   ) {
     gZenUIManager.tabsWrapper.style.scrollbarWidth = "none";
@@ -2384,12 +2386,23 @@ class nsZenWorkspaces {
     const newWorkspaceIndex = workspaces.findIndex(
       w => w.uuid === newWorkspace.uuid
     );
-    let diff = newWorkspaceIndex - previousWorkspaceIndex;
-    if (diff > Math.floor(spaceLen / 2)) {
-      diff -= spaceLen;
-    } else if (diff < -Math.floor(spaceLen / 2)) {
-      diff += spaceLen;
-    }
+    // Only go around the loop when the switch itself wrapped (last -> first
+    // via shortcut); otherwise slide from where the target sits in the strip.
+    const toAnimationDistance = d => {
+      if (!wrapped) {
+        return d;
+      }
+      if (d > Math.floor(spaceLen / 2)) {
+        return d - spaceLen;
+      }
+      if (d < -Math.floor(spaceLen / 2)) {
+        return d + spaceLen;
+      }
+      return d;
+    };
+    const diff = toAnimationDistance(
+      newWorkspaceIndex - previousWorkspaceIndex
+    );
     const isGoingLeft = diff < 0;
     const essentialsAnimData = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
@@ -2420,18 +2433,20 @@ class nsZenWorkspaces {
       if (element.classList.contains("zen-essentials-container")) {
         continue;
       }
-      const existingTransform = element.style.transform;
+      let existingTransform = element.style.transform;
       const elementWorkspaceId = element.id;
       const elementWorkspaceIndex = workspaces.findIndex(
         w => w.uuid === elementWorkspaceId
       );
-      let offset = elementWorkspaceIndex - newWorkspaceIndex;
-      if (offset > Math.floor(spaceLen / 2)) {
-        offset -= spaceLen;
-      } else if (offset < -Math.floor(spaceLen / 2)) {
-        offset += spaceLen;
+      if (!wrapped && existingTransform && previousWorkspaceIndex !== null) {
+        // The strip was laid out around the loop, start from the linear
+        // position instead.
+        const startOffset =
+          (elementWorkspaceIndex - previousWorkspaceIndex) * 100;
+        existingTransform = `translateX(${startOffset}%)`;
       }
-      offset = offset * 100;
+      const offset =
+        toAnimationDistance(elementWorkspaceIndex - newWorkspaceIndex) * 100;
       const newTransform = `translateX(${offset}%)`;
       // Only animate the workspace that is coming in, to avoid having multiple workspaces
       // animating off-screen at the same time which can cause performance issues. With an off
@@ -2704,7 +2719,7 @@ class nsZenWorkspaces {
     workspace,
     onInit,
     tabToSelect,
-    { previousWorkspaceIndex, previousWorkspace } = {}
+    { previousWorkspaceIndex, previousWorkspace, wrapped } = {}
   ) {
     // Recalculate new tab observers
     gBrowser.tabContainer.observe(
@@ -2730,6 +2745,7 @@ class nsZenWorkspaces {
         previousWorkspaceIndex,
         previousWorkspace,
         onInit,
+        wrapped,
       }
     );
     // A swipe that took over from this switch is dragging the strip now.
@@ -3314,8 +3330,12 @@ class nsZenWorkspaces {
       targetIndex = Math.max(0, Math.min(workspaces.length - 1, targetIndex));
     }
 
+    const wrapped =
+      this.shouldWrapAroundNavigation &&
+      !disableWrap &&
+      targetIndex !== workspaceIndex + offset;
     let nextWorkspace = workspaces[targetIndex];
-    return await this.changeWorkspace(nextWorkspace, { whileScrolling });
+    return await this.changeWorkspace(nextWorkspace, {whileScrolling, wrapped,});
   }
 
   #initializeWorkspaceTabContextMenus() {

@@ -1102,7 +1102,8 @@ class nsZenWorkspaces {
     initialTabWasEmpty &&= openOnStartup;
 
     // Wait for the next event loop to ensure that the startup focus logic by
-    // firefox has finished doing it's thing.
+    // firefox has finished doing it's thing. Preserve the URL bar focus it
+    // sets for custom new-tab pages.
     const focusTimer = setTimeout(() => {
       if (
         window.closed ||
@@ -1116,7 +1117,7 @@ class nsZenWorkspaces {
         BrowserCommands.openTab();
       } else if (shownEmptyTab || initialTabWasEmpty) {
         openLocation();
-      } else {
+      } else if (!gURLBar.focused) {
         gBrowser.selectedBrowser.focus();
       }
     });

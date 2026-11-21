@@ -1,0 +1,35 @@
+diff --git a/browser/modules/ExtensionControlledPopup.sys.mjs b/browser/modules/ExtensionControlledPopup.sys.mjs
+index 13f2bb2fb5019eba3305d168669bb581f63568ac..5bd4d45bffcbbac33a4cef15a43dc8620f12dbf3 100644
+--- a/browser/modules/ExtensionControlledPopup.sys.mjs
++++ b/browser/modules/ExtensionControlledPopup.sys.mjs
+@@ -278,7 +278,11 @@
+       // have been focused when the doorhanger stole focus away from it. Once an
+       // action is taken the focus state should be restored to what the user was
+       // expecting.
+-      if (urlBarWasFocused) {
++      if (
++        urlBarWasFocused ||
++        (this.confirmedType === "newTabNotification" &&
++          win.isBlankPageURL(win.gBrowser.currentURI.spec))
++      ) {
+         win.gURLBar.focus();
+       }
+     };
+@@ -336,7 +340,7 @@
+ 
+     // Anchor to a toolbar browserAction if found, otherwise use the extensions
+     // button.
+-    const anchor = action || doc.getElementById("unified-extensions-button");
++    const anchor = action || win.gUnifiedExtensions._button;
+ 
+     if (this.learnMoreLink) {
+       const learnMoreURL =
+@@ -350,7 +354,7 @@
+       popupnotification.removeAttribute("learnmoreurl");
+     }
+     popupnotification.show();
+-    if (anchor?.id == "unified-extensions-button") {
++    if (anchor === win.gUnifiedExtensions._button) {
+       const { gUnifiedExtensions } = anchor.documentGlobal;
+       gUnifiedExtensions.recordButtonTelemetry("extension_controlled_setting");
+       gUnifiedExtensions.ensureButtonShownBeforeAttachingPanel(panel);

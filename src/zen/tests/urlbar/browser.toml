@@ -15,6 +15,8 @@ support-files = [
 
 ["browser_newtab_extension_override.js"]
 
+["browser_newtab_focus.js"]
+
 ["browser_sidebar_provider.js"]
 
 ["browser_top_sites_shortcuts.js"]

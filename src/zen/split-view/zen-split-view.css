@@ -274,3 +274,29 @@ zen-split-fake-tab {
   margin: var(--tab-margin-block);
   flex: 1;
 }
+
+/* Tab pinned to the split view (it stays visible while switching tabs) */
+.tabbrowser-tab[zen-split-anchored] {
+  & .tab-background {
+    outline: 1px solid color-mix(in srgb, var(--zen-primary-color) 70%, transparent);
+    outline-offset: -1px;
+  }
+
+  & .tab-content::after {
+    content: "";
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    margin-inline-start: 4px;
+    background: url("chrome://browser/skin/zen-icons/pin.svg") center / contain no-repeat;
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Make room for the close button on hover, and hide the badge when only icons are shown */
+  &:hover .tab-content::after,
+  :root:not([zen-sidebar-expanded="true"]) & .tab-content::after {
+    display: none;
+  }
+}

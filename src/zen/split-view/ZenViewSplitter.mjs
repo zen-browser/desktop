@@ -2621,14 +2621,19 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {Tab} tab - The tab to pair with the anchored tab.
    */
   #pairWithAnchor(tab) {
+    // The new tab must show up directly at its place in the split, instead of
+    // animating its inset from full size down to its panel.
+    this.#withoutSplitViewTransition(() => this.#doPairWithAnchor(tab));
+  }
+
+  #doPairWithAnchor(tab) {
     const anchor = this._anchoredTab;
     let group = this._data.find(g => g.anchored);
     if (group) {
       const previous = group.tabs.find(t => t !== anchor);
       if (previous && previous !== tab) {
-        if (this.currentView === this._data.indexOf(group)) {
-          this.deactivateCurrentSplitView();
-        }
+        // Swap the partner in place. The split stays active the whole time,
+        // so the anchored panel never jumps to full size and back.
         this.resetTabState(previous, false);
         const leaf = this.getSplitNodeFromTab(previous);
         leaf.tab = tab;

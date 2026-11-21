@@ -4,8 +4,8 @@
 
 zen-welcome-title-line1 = Tere tulemast
 zen-welcome-title-line2 = rahulikumasse internetti
-zen-welcome-back = Back
-zen-welcome-skip = Skip for now
+zen-welcome-back = Tagasi
+zen-welcome-skip = Jäta esialgu vahele
 zen-welcome-import-title = Värske algus, samad järjehoidjad.
 zen-welcome-import-description = Pick a browser to import your bookmarks, history and passwords from and pick up right where you left off.
 zen-welcome-import-no = <strong>NO</strong>, start fresh.

@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/content/browserPlacesViews.js b/browser/components/places/content/browserPlacesViews.js
-index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389ea00ce1f 100644
+index 229e7960fc461475426b538f3a5fdc134a99ebcf..8f4fcdad0de4f79d38a0200e869579209f9b3d7e 100644
 --- a/browser/components/places/content/browserPlacesViews.js
 +++ b/browser/components/places/content/browserPlacesViews.js
 @@ -343,12 +343,23 @@ class PlacesViewBase {
@@ -37,29 +37,41 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
        } else if (PlacesUtils.containerTypes.includes(type)) {
          element = document.createXULElement("menu");
          element.setAttribute("container", "true");
-@@ -1076,25 +1088,33 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1064,6 +1076,22 @@ class PlacesToolbar extends PlacesViewBase {
+     });
+   }
+ 
++  _getWorkspaceToolbarNodes() {
++    const visibleNodes = [];
++    for (let i = 0; i < this._resultNode.childCount; i++) {
++      const child = this._resultNode.getChild(i);
++      if (
++        (PlacesUtils.nodeIsURI(child) ||
++          PlacesUtils.containerTypes.includes(child.type)) &&
++        window.gZenWorkspaces?.isBookmarkInAnotherWorkspace(child)
++      ) {
++        continue;
++      }
++      visibleNodes.push(child);
++    }
++    return visibleNodes;
++  }
++
+   async _rebuild() {
+     // Clear out references to existing nodes, since they will be removed
+     // and re-added.
+@@ -1076,25 +1104,21 @@ class PlacesToolbar extends PlacesViewBase {
        this._rootElt.firstChild.remove();
      }
  
-+    let visibleNodes = [];
-     let cc = this._resultNode.childCount;
+-    let cc = this._resultNode.childCount;
 -    if (cc > 0) {
 -      // There could be a lot of nodes, but we only want to build the ones that
 -      // are more likely to be shown, not all of them.
 -      // We also don't want to wait for reflows at every node insertion, to
 -      // calculate a precise number of visible items, thus we guess a size from
 -      // the first non-separator node (because separators have flexible size).
-+    for (let i = 0; i < cc; i++) {
-+      let child = this._resultNode.getChild(i);
-+      if (PlacesUtils.nodeIsURI(child) || PlacesUtils.containerTypes.includes(child.type)) {
-+        if (!(typeof gZenWorkspaces !== 'undefined' && gZenWorkspaces.isBookmarkInAnotherWorkspace(child))) {
-+          visibleNodes.push(child);
-+        }
-+      } else {
-+        // Always include separators
-+        visibleNodes.push(child);
-+      }
-+    }
++    const visibleNodes = this._getWorkspaceToolbarNodes();
 +
 +    if (visibleNodes.length > 0) {
 +      // Look for the first non-separator node.
@@ -82,7 +94,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
            );
            ++startIndex;
            if (elt.localName != "toolbarseparator") {
-@@ -1102,15 +1122,12 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1102,15 +1126,12 @@ class PlacesToolbar extends PlacesViewBase {
            }
          }
          if (!elt) {
@@ -101,7 +113,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
          });
        });
  
-@@ -1120,7 +1137,7 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1120,7 +1141,7 @@ class PlacesToolbar extends PlacesViewBase {
  
        let fragment = document.createDocumentFragment();
        for (let i = startIndex; i < limit; ++i) {
@@ -110,7 +122,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
        }
        await new Promise(resolve => window.requestAnimationFrame(resolve));
        if (!this._isAlive) {
-@@ -1183,6 +1200,8 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1183,6 +1204,8 @@ class PlacesToolbar extends PlacesViewBase {
            "scheme",
            PlacesUIUtils.guessUrlSchemeForUI(aChild.uri)
          );
@@ -119,7 +131,50 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
        }
      }
  
-@@ -2395,7 +2414,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
+@@ -1423,6 +1446,15 @@ class PlacesToolbar extends PlacesViewBase {
+     if (parentElt == this._rootElt) {
+       // Node is on the toolbar.
+       let children = this._rootElt.children;
++      const visibleNodes = window.gZenWorkspaces?.hasWorkspaceBookmarks
++        ? this._getWorkspaceToolbarNodes()
++        : null;
++      if (visibleNodes) {
++        aIndex = visibleNodes.indexOf(aPlacesNode);
++        if (aIndex === -1) {
++          return;
++        }
++      }
+       // Nothing to do if it's a never-visible node, but note it's possible
+       // we are appending.
+       if (aIndex > children.length) {
+@@ -1431,7 +1463,8 @@ class PlacesToolbar extends PlacesViewBase {
+ 
+       // Note that childCount is already accounting for the node being added,
+       // thus we must subtract one node from it.
+-      if (this._resultNode.childCount - 1 > children.length) {
++      const childCount = visibleNodes?.length ?? this._resultNode.childCount;
++      if (childCount - 1 > children.length) {
+         if (aIndex == children.length) {
+           // If we didn't build all the nodes and new node is being appended,
+           // we can skip it as well.
+@@ -1482,10 +1515,14 @@ class PlacesToolbar extends PlacesViewBase {
+ 
+       let overflowed = elt.style.visibility == "hidden";
+       this._removeChild(elt);
+-      if (this._resultNode.childCount > this._rootElt.children.length) {
++      const visibleNodes = window.gZenWorkspaces?.hasWorkspaceBookmarks
++        ? this._getWorkspaceToolbarNodes()
++        : null;
++      const nextIndex = this._rootElt.children.length;
++      if ((visibleNodes?.length ?? this._resultNode.childCount) > nextIndex) {
+         // A new node should be built to keep a coherent number of children.
+         this._insertNewItem(
+-          this._resultNode.getChild(this._rootElt.children.length),
++          visibleNodes ? visibleNodes[nextIndex] : this._resultNode.getChild(nextIndex),
+           this._rootElt
+         );
+       }
+@@ -2395,7 +2432,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
          PlacesUIUtils.guessUrlSchemeForUI(placesNode.uri)
        );
        element.setAttribute("label", PlacesUIUtils.getBestTitle(placesNode));

@@ -2751,10 +2751,7 @@ class nsZenWorkspaces {
 
     // Avoid forcing a startup toolbar rebuild when there are no
     // workspace-specific bookmark assignments to apply.
-    const hasWorkspaceBookmarks = !!Object.keys(
-      this._workspaceBookmarksCache?.bookmarks || {}
-    ).length;
-    if (!onInit || hasWorkspaceBookmarks) {
+    if (!onInit || this.hasWorkspaceBookmarks) {
       this._invalidateBookmarkContainers();
     }
 
@@ -3419,6 +3416,12 @@ class nsZenWorkspaces {
     }
     const workspaceToSwitch = workspaces[index];
     await this.changeWorkspace(workspaceToSwitch);
+  }
+
+  get hasWorkspaceBookmarks() {
+    return (
+      Object.keys(this._workspaceBookmarksCache?.bookmarks || {}).length > 0
+    );
   }
 
   isBookmarkInAnotherWorkspace(bookmark) {

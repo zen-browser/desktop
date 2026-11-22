@@ -29,7 +29,7 @@
   }
 
   .urlbar-background {
-    border-radius: var(--border-radius-small);
+    border-radius: var(--zen-border-radius-10);
     margin: var(--space-xxsmall);
   }
 
@@ -83,11 +83,23 @@
   }
 }
 
-:root[zen-little-window] #urlbar .urlbar-input-box {
+:root[zen-little-window] #urlbar .urlbar-input-container {
   position: relative;
 }
 
+:root[zen-little-window] #urlbar:not([breakout-extend]) .urlbar-input-container > :not(.urlbar-input-box) {
+  position: relative;
+  z-index: 1;
+}
+
+:root[zen-little-window] #urlbar:not([breakout-extend]) .urlbar-input-box {
+  position: static;
+}
+
 :root[zen-little-window] #urlbar:not([breakout-extend]) .urlbar-input {
+  position: absolute;
+  inset: 0;
+  padding-inline: var(--zen-little-window-address-inset);
   transition: translate 0.2s ease-in-out;
 
   #zen-loading-progress-bar ~ & {
@@ -118,9 +130,10 @@
 #zen-little-window-container {
   order: -2;
   gap: var(--zen-space-5);
-  height: var(--zen-size-22);
-  padding: 0 var(--zen-space-9);
-  border-radius: var(--zen-border-radius-12);
+  height: calc(var(--urlbar-height) - 2 * var(--zen-space-5));
+  margin-inline-start: calc(var(--zen-space-5) - var(--zen-space-4));
+  padding: 0 var(--zen-space-8);
+  border-radius: var(--zen-border-radius-5);
   /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
   font-size: 0.85em;
   font-weight: var(--zen-font-weight-medium);
@@ -151,7 +164,7 @@
   flex-shrink: 0;
   height: calc(var(--urlbar-height) + 2px);
   border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
-  border-radius: var(--border-radius-small);
+  border-radius: var(--zen-border-radius-10);
   background: var(--zen-little-window-open-background);
   color: var(--zen-little-window-open-color);
   overflow: clip;
@@ -175,6 +188,10 @@
   &:hover {
     background: color-mix(in srgb, currentColor 8%, transparent);
   }
+
+  &:hover:active {
+    background: color-mix(in srgb, currentColor 16%, transparent);
+  }
 }
 
 #zen-little-window-open-label {
@@ -188,7 +205,7 @@
 #zen-little-window-open-shortcut {
   margin: 0;
   padding: var(--zen-space-2) var(--zen-space-5);
-  border-radius: var(--zen-border-radius-4);
+  border-radius: var(--zen-border-radius-5);
   /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens -- relative to the inherited font size */
   font-size: 0.85em;
   color: var(--zen-little-window-open-shortcut-color);
@@ -207,6 +224,10 @@
   &:hover,
   &[open] {
     background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  &:hover:active {
+    background: color-mix(in srgb, currentColor 16%, transparent);
   }
 
   > .toolbarbutton-text,

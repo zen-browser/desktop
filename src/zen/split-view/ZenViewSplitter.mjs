@@ -2579,14 +2579,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return true;
   }
 
+  /** Recomputes styles, without the layout a rect read would also cost. */
+  #flushStyle() {
+    return window.getComputedStyle(this.tabBrowserPanel).transitionProperty;
+  }
+
   #withoutSplitViewTransition(callback) {
     this.tabBrowserPanel.classList.add("zen-split-view-no-transition");
     try {
       return callback();
     } finally {
-      requestAnimationFrame(() => {
-        this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
-      }, 0);
+      this.#flushStyle();
+      this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
     }
   }
 

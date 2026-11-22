@@ -1,8 +1,9 @@
 diff --git a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
+index ffc093235abb3144cca4a9220fbe2d2ff84d001e..4200a5bcbad75b387652870e886a31d50572a239 100644
 --- a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
-@@ -153,7 +153,21 @@
-       lazy.UrlbarPrefs.get("maxRichResults"),
+@@ -151,7 +151,21 @@ export class UrlbarProviderTopSites extends UrlbarProvider {
+       queryContext.maxResults,
        lazy.TOP_SITES_MAX_SITES_PER_ROW * UrlbarProviderTopSites.topSitesRows
      );
 -    sites = sites.slice(0, numTopSites);

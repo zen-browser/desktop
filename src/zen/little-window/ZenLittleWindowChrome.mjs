@@ -26,6 +26,15 @@ const URLBAR_NAVIGATION_TOPIC = "urlbar-user-start-navigation";
 const URLBAR_ONLY_WIDTH_PROPERTY = "--zen-little-window-urlbar-width";
 const URLBAR_ONLY_HEIGHT_PROPERTY = "--zen-little-window-urlbar-height";
 
+const UNSUPPORTED_COMMANDS = [
+  "cmd_CustomizeToolbars",
+  "cmd_zenCompactModeToggle",
+  "cmd_toggleCompactModeIgnoreHover",
+  "cmd_zenCompactModeShowSidebar",
+  "cmd_zenToggleSidebar",
+  "cmd_zenToggleTabsOnRight",
+];
+
 class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   #userContextId = 0;
   #openLabel = null;
@@ -79,6 +88,9 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   init() {
+    for (const id of UNSUPPORTED_COMMANDS) {
+      document.getElementById(id)?.setAttribute("disabled", "true");
+    }
     this.#buildOpenInSpace();
     this.#buildContainerPill();
     this.#buildUrlbarCloseButton();

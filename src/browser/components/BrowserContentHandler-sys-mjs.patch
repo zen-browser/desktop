@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index f20c90621a73fed5cee4410ec4af6762d07448ba..e947f5abf60c018d572cc7c9b459744206539a28 100644
+index 17f9d8e8905bc2c71150af26c19da4f118c6d8b5..a0299e823362c553990df2be3577b192fea44e28 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
 @@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -82,8 +82,13 @@ index f20c90621a73fed5cee4410ec4af6762d07448ba..e947f5abf60c018d572cc7c9b4597442
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
-@@ -1331,13 +1390,38 @@ function handURIToExistingBrowser(
+@@ -1329,15 +1388,43 @@ function handURIToExistingBrowser(
+   let navWin = lazy.BrowserWindowTracker.getTopWindow({
+     private: allowPrivate,
    });
++  if (!navWin && !forcePrivate && !forceAllowDataURI) {
++    navWin = lazy.gZenSpaceRoutingManager.getOpenerOnAnotherDesktop(uri);
++  }
  
    if (navWin) {
 -    openInWindow(navWin);
@@ -122,7 +127,7 @@ index f20c90621a73fed5cee4410ec4af6762d07448ba..e947f5abf60c018d572cc7c9b4597442
    if (pending) {
      // Note that we cannot make this function async as some callers rely on
      // catching exceptions it can throw in some cases and some of those callers
-@@ -1771,6 +1855,7 @@ nsDefaultCommandLineHandler.prototype = {
+@@ -1828,6 +1915,7 @@ nsDefaultCommandLineHandler.prototype = {
            ({ where }) => where == Ci.nsIBrowserDOMWindow.OPEN_DEFAULTWINDOW
          ).length <= 1;
        let windowURLs = [];
@@ -130,7 +135,7 @@ index f20c90621a73fed5cee4410ec4af6762d07448ba..e947f5abf60c018d572cc7c9b4597442
        for (let { uri, principal, where } of urls) {
          if (
            shouldOpenInExistingWindow ||
-@@ -1786,6 +1871,10 @@ nsDefaultCommandLineHandler.prototype = {
+@@ -1843,6 +1931,10 @@ nsDefaultCommandLineHandler.prototype = {
              }
            }
          }
@@ -141,7 +146,7 @@ index f20c90621a73fed5cee4410ec4af6762d07448ba..e947f5abf60c018d572cc7c9b4597442
          windowURLs.push(uri.spec);
        }
  
-@@ -1793,6 +1882,17 @@ nsDefaultCommandLineHandler.prototype = {
+@@ -1850,6 +1942,17 @@ nsDefaultCommandLineHandler.prototype = {
        if (windowURLs.length) {
          openBrowserWindow(cmdLine, lazy.gSystemPrincipal, windowURLs);
        }

@@ -41,6 +41,12 @@ add_task(async function successCases() {
       stubValue,
       "result extra matches pref"
     );
+    Assert.equal(
+      events[0].extra.com_fallback,
+      "false",
+      "no COM fallback on success"
+    );
+    Assert.equal(events[0].extra.hresult, undefined, "no hresult on success");
 
     Services.fog.testResetFOG();
   }
@@ -75,7 +81,69 @@ add_task(async function errorCases() {
       stubValue,
       "result extra matches pref"
     );
+    Assert.equal(
+      events[0].extra.com_fallback,
+      "true",
+      `fell back to COM for ${stubValue}`
+    );
+    Assert.stringMatches(
+      events[0].extra.hresult,
+      /^0x[0-9a-f]{8}$/,
+      `hresult recorded for ${stubValue}`
+    );
 
     Services.fog.testResetFOG();
   }
+});
+
+// Prompt-only: WinRT errors reject without falling back to COM.
+add_task(async function promptOnlyErrorCases() {
+  const errors = [
+    ["error_get_aumid", Cr.NS_ERROR_UNEXPECTED],
+    ["error_set_aumid", Cr.NS_ERROR_UNEXPECTED],
+    ["error_get_taskbar_manager", Cr.NS_ERROR_NOT_AVAILABLE],
+    ["error_schedule_request_pin", Cr.NS_ERROR_UNEXPECTED],
+    ["error_request_pin", Cr.NS_ERROR_UNEXPECTED],
+  ];
+
+  for (let [stubValue, expected] of errors) {
+    Services.prefs.setCharPref(kStubPref, stubValue);
+
+    Assert.equal(undefined, Glean.taskbar.pinWinrt.testGetValue());
+
+    await Assert.rejects(
+      ShellService.pinCurrentAppToTaskbar(false, false, true),
+      e => e.result == expected,
+      `prompt-only pin rejects for ${stubValue}`
+    );
+
+    let events = Glean.taskbar.pinWinrt.testGetValue();
+    Assert.equal(events.length, 1, `one pin_winrt event for ${stubValue}`);
+    Assert.equal(
+      events[0].extra.result,
+      stubValue,
+      "result extra matches pref"
+    );
+    Assert.equal(
+      events[0].extra.com_fallback,
+      "false",
+      `skipped COM fallback for ${stubValue}`
+    );
+
+    Services.fog.testResetFOG();
+  }
+});
+
+// Prompt-only: WinRT successes resolve as usual.
+add_task(async function promptOnlySuccess() {
+  Services.prefs.setCharPref(kStubPref, "success_pinned");
+
+  let result = await ShellService.pinCurrentAppToTaskbar(false, false, true);
+  Assert.equal(result, Ci.nsIWindowsShellService.PINNED, "resolved PINNED");
+
+  let events = Glean.taskbar.pinWinrt.testGetValue();
+  Assert.equal(events.length, 1, "one pin_winrt event");
+  Assert.equal(events[0].extra.com_fallback, "false", "no COM fallback");
+
+  Services.fog.testResetFOG();
 });

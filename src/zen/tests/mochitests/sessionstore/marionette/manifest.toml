@@ -3,13 +3,14 @@ subsuite = "integration"
 tags = "local os_integration"
 
 ["test_automatic_startup_window_features_mismatch.py"]
-skip-if = [ "true" ] # Bug 2084381
 
 ["test_automatic_with_taskbar_tab_window_features_mismatch.py"]
 
 ["test_close_last_nonpopup_window.py"]
 
 ["test_deferred_initial_state_window_features_mismatch.py"]
+
+["test_deferred_nothing_to_restore.py"]
 
 ["test_log_files.py"]
 
@@ -21,6 +22,9 @@ skip-if = [
 ["test_persist_closed_tabs_restore_manually.py"]
 
 ["test_restore_aiwindow.py"]
+
+["test_restore_counts.py"]
+skip-if = ["debug"] # StartupPerformance is not initialized in debug builds
 
 ["test_restore_last_session_window_mismatch.py"]
 
@@ -34,6 +38,8 @@ skip-if = [
 ["test_restore_manually_with_pinned_tabs.py"]
 
 ["test_restore_manually_with_tab_groups.py"]
+
+["test_restore_saved_tab_groups.py"]
 
 ["test_restore_sidebar.py"]
 
@@ -62,6 +68,8 @@ skip-if = [
 ["test_session_availability.py"]
 
 ["test_session_decision.py"]
+
+["test_session_outcome.py"]
 
 ["test_set_browser_state_window_features_mismatch.py"]
 

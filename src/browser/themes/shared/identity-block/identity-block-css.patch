@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 18bd129c431f565317d7ab38b0c15184341ad0d7..c5906544d8ec9afa0f08e16e5eb7e52c958ecfd0 100644
+index 2e369abc224354629a50ed22927aa3f685b6ef72..26fe8003772232a682c039e73f5c3e5da9b064a5 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
-@@ -20,7 +20,7 @@
+@@ -26,7 +26,7 @@
      margin-inline-start: var(--urlbar-component-gap);
    }
  
@@ -11,7 +11,7 @@ index 18bd129c431f565317d7ab38b0c15184341ad0d7..c5906544d8ec9afa0f08e16e5eb7e52c
      pointer-events: none;
      -moz-user-focus: ignore;
  
-@@ -104,13 +104,6 @@
+@@ -116,18 +116,6 @@
    margin: 0;
  }
  
@@ -19,13 +19,18 @@ index 18bd129c431f565317d7ab38b0c15184341ad0d7..c5906544d8ec9afa0f08e16e5eb7e52c
 -#urlbar-label-box {
 -  background-color: var(--urlbar-box-background-color);
 -  color: var(--urlbar-box-text-color);
+-  /* Prefer pixels to space tokens in platform styles */
+-  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens */
 -  padding-inline: 8px;
+-  /* Use urlbar inner border radius set in urlbar/variables.css */
+-  /* stylelint-disable-next-line stylelint-plugin-mozilla/use-design-tokens */
 -  border-radius: var(--urlbar-inner-border-radius);
 -}
- 
+-
  #urlbar[focused] {
    #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button:not(:hover, [open]),
-@@ -201,16 +194,17 @@
+   #urlbar-label-box {
+@@ -219,16 +207,17 @@
    }
  
    #identity-icon {

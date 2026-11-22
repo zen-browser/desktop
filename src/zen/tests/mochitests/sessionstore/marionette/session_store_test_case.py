@@ -42,6 +42,7 @@ class SessionStoreTestCase(WindowManagerMixin, MarionetteTestCase):
         win_register_restart=False,
         test_windows=DEFAULT_WINDOWS,
         taskbartabs_enable=False,
+        resume_from_crash=False,
     ):
         super().setUp()
         self.marionette.set_context("chrome")
@@ -69,6 +70,10 @@ class SessionStoreTestCase(WindowManagerMixin, MarionetteTestCase):
             # Make the content load right away instead of waiting for
             # the user to click on the background tabs
             "browser.sessionstore.restore_on_demand": restore_on_demand,
+            # Whether to recover the previous session after a crash. Marionette
+            # turns this off by default, so tests that need about:sessionrestore
+            # must enable it.
+            "browser.sessionstore.resume_from_crash": resume_from_crash,
             # Avoid race conditions by having the content process never
             # send us session updates unless the parent has explicitly asked
             # for them via the TabStateFlusher.
@@ -77,6 +82,9 @@ class SessionStoreTestCase(WindowManagerMixin, MarionetteTestCase):
             "toolkit.winRegisterApplicationRestart": win_register_restart,
             # Whether to enable taskbar tabs for this test
             "browser.taskbarTabs.enabled": taskbartabs_enable,
+            # Prevent early "events" pings from clearing recorded Glean
+            # events before tests can read them.
+            "telemetry.fog.test.decelerate_early_events": True,
         })
 
         self.all_windows = self.test_windows.copy()

@@ -1299,10 +1299,7 @@ class nsZenWorkspaces {
     if (!this.workspaceEnabled || !this._isClosingWindow) {
       return;
     }
-    // Inside a setTimeout to avoid reentrancy issues.
-    setTimeout(() => {
-      document.getElementById("cmd_closeWindow").doCommand();
-    }, 100);
+    document.getElementById("cmd_closeWindow").doCommand();
   }
 
   addPopupListeners() {

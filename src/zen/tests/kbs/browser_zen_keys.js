@@ -183,9 +183,13 @@ add_task(async function test_legacy_migration_keeps_customkeys_settings() {
   const legacyPath = ZenKeyboardShortcuts.legacyFilePath;
   const libraryKey = document.getElementById("zen-library-toggle");
   const glanceKey = document.getElementById("zen-glance-expand");
+  const hiddenWindow = isMac ? Services.appShell.hiddenDOMWindow : null;
   try {
     CustomKeys.resetAll();
     CustomKeys.uninitWindow(window);
+    if (hiddenWindow) {
+      CustomKeys.uninitWindow(hiddenWindow);
+    }
     CustomKeys.changeKey("zen-library-toggle", {
       modifiers: UNUSED_MODIFIERS,
       key: UNUSED_KEY,
@@ -228,6 +232,9 @@ add_task(async function test_legacy_migration_keeps_customkeys_settings() {
   } finally {
     await IOUtils.remove(legacyPath, { ignoreAbsent: true });
     CustomKeys.resetAll();
+    if (hiddenWindow) {
+      CustomKeys.initWindow(hiddenWindow);
+    }
   }
 });
 

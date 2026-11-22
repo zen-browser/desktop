@@ -20,9 +20,15 @@
       }
       let [options] = window.arguments;
       if (options?.testCustomFocusHandler) {
-        document.subDialogSetDefaultFocus = () => {
+        document.subDialogSetDefaultFocus = (...args) => {
+          window.focusHandlerArgs = args;
           document.getElementById("custom-focus-el").focus();
         }
+      }
+      if (options?.noTextInputs) {
+        // Text inputs always show a focus ring, so leave the select first.
+        document.getElementById("textbox").remove();
+        document.getElementById("custom-focus-el").remove();
       }
     }, {once: true})
   </script>

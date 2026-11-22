@@ -52,15 +52,16 @@ function assertFailureEvent(extra, expected) {
 
 /**
  * Lists the session files and directories in the profile, including legacy
- * ones and the backups directory.
+ * ones and the backups directory, but not the sessionstore-logs directory.
  *
  * @returns {Promise<string[]>}
  */
 async function getSessionEntries() {
   let children = await IOUtils.getChildren(PathUtils.profileDir);
-  return children.filter(path =>
-    PathUtils.filename(path).startsWith("sessionstore")
-  );
+  return children.filter(path => {
+    let name = PathUtils.filename(path);
+    return name.startsWith("sessionstore") && name != "sessionstore-logs";
+  });
 }
 
 /**

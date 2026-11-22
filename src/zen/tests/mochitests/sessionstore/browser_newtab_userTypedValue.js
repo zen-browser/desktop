@@ -95,3 +95,39 @@ add_task(async function () {
   await BrowserTestUtils.closeWindow(win);
   info("Finished removing window - " + new Date());
 });
+
+/**
+ * Test that a typed search term that was still loading at shutdown does not
+ * break the restore when URI fixup fails before the search service is ready.
+ */
+add_task(async function test_typed_search_restored_before_search_init() {
+  const { SearchService } = ChromeUtils.importESModule(
+    "moz-src:///toolkit/components/search/SearchService.sys.mjs"
+  );
+  const { sinon } = ChromeUtils.importESModule(
+    "resource://testing-common/Sinon.sys.mjs"
+  );
+  let stub = sinon
+    .stub(SearchService, "hasSuccessfullyInitialized")
+    .get(() => false);
+  registerCleanupFunction(() => stub.restore());
+
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "about:blank"
+  );
+  await promiseTabState(tab, {
+    entries: [{ url: "about:mozilla", triggeringPrincipal_base64 }],
+    userTypedValue: "test",
+    userTypedClear: 1,
+  });
+  stub.restore();
+
+  let browser = tab.linkedBrowser;
+  is(browser.currentURI.spec, "about:mozilla", "History entry is restored");
+  is(browser.userTypedValue, "test", "userTypedValue is kept");
+  is(gURLBar.value, "test", "URL bar shows the typed value");
+  ok(!SessionStore.isTabRestoring(tab), "Tab finished restoring");
+
+  BrowserTestUtils.removeTab(tab);
+});

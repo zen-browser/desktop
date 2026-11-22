@@ -1,9 +1,9 @@
 diff --git a/toolkit/mozapps/extensions/content/aboutaddons.css b/toolkit/mozapps/extensions/content/aboutaddons.css
-index d0af33257f01df0deb5469d964a53be687a15f2f..2ef7fc1f0d8b0b67743b7d67df3719be0b46a4b0 100644
+index 1e1eef0ce3b483c933cfd84687f4314d617a8a14..2e6477a96beeb78166c6a4bab1731d57073594ee 100644
 --- a/toolkit/mozapps/extensions/content/aboutaddons.css
 +++ b/toolkit/mozapps/extensions/content/aboutaddons.css
-@@ -713,6 +713,12 @@ section:not(:empty) ~ #empty-addons-message {
-   font-weight: var(--font-weight-bold);
+@@ -879,6 +879,12 @@ recommended-themes-section > moz-card {
+   --card-cover-image-padding: 0;
  }
  
 +@media -moz-pref('zen.theme.disable-lightweight') {

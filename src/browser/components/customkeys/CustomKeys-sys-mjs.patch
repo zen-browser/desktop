@@ -1,5 +1,5 @@
 diff --git a/browser/components/customkeys/CustomKeys.sys.mjs b/browser/components/customkeys/CustomKeys.sys.mjs
-index 76f99381ab7011992b8f28f8d031ed41f73d6293..2d58b98bbb4a43596e1a8139284b714a0ec9a52b 100644
+index cb55f6a7e714dcbaa82f3bfdf05d5c6d7ea7631b..643d16c99fd7b347988b8199bbbba6766758776a 100644
 --- a/browser/components/customkeys/CustomKeys.sys.mjs
 +++ b/browser/components/customkeys/CustomKeys.sys.mjs
 @@ -4,11 +4,19 @@
@@ -21,9 +21,9 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..2d58b98bbb4a43596e1a8139284b714a
 +const ZEN_CONFLICT = "zen-website-conflict";
 +const ATTRS = ["data-l10n-id", "key", "keycode", "modifiers", ZEN_CONFLICT];
  
- // The original keys for any shortcuts that have been customized. This is used
- // to identify whether a shortcut has been customized, as well as to reset a
-@@ -31,6 +39,23 @@ const config = new JSONFile({
+ // On macOS, the user can assign a shortcut to a menu item in System Settings.
+ // The widget code then writes that shortcut over the key element's attributes,
+@@ -65,6 +73,23 @@ const config = new JSONFile({
    path: PathUtils.join(PathUtils.profileDir, "customKeys.json"),
  });
  
@@ -33,7 +33,7 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..2d58b98bbb4a43596e1a8139284b714a
 +    if (keyEl?.tagName == "key") {
 +      const data = {};
 +      for (const attr of ["modifiers", "key", "keycode"]) {
-+        const val = keyEl.getAttribute(attr);
++        const val = getAttr(keyEl, attr);
 +        if (val) {
 +          data[attr] = val;
 +        }
@@ -44,27 +44,27 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..2d58b98bbb4a43596e1a8139284b714a
 +  return null;
 +}
 +
- function applyToKeyEl(window, keyId, keysets) {
+ function applyToKeyEl(window, keyId) {
    const keyEl = window.document.getElementById(keyId);
    if (!keyEl || keyEl.tagName != "key") {
-@@ -50,7 +75,7 @@ function applyToKeyEl(window, keyId, keysets) {
-     keyEl.removeAttribute(attr);
+@@ -84,7 +109,7 @@ function applyToKeyEl(window, keyId) {
+     removeAttr(keyEl, attr);
    }
    const data = config.data[keyId];
 -  for (const attr of ["modifiers", "key", "keycode"]) {
 +  for (const attr of ["modifiers", "key", "keycode", ZEN_CONFLICT]) {
      const val = data[attr];
      if (val) {
-       keyEl.setAttribute(attr, val);
-@@ -83,6 +108,7 @@ async function applyToNewWindow(window) {
+       setAttr(keyEl, attr, val);
+@@ -120,6 +145,7 @@ async function applyToNewWindow(window) {
+   for (const keyset of window.document.getElementsByTagName("keyset")) {
+     observer.observe(keyset, { childList: true });
    }
-   refreshKeysets(window, keysets);
-   observe(window);
 +  await lazy.ZenKeyboardShortcuts.migrateLegacyShortcuts(window);
  }
  
- function refreshKeysets(window, keysets) {
-@@ -150,19 +176,29 @@ export const CustomKeys = {
+ function observe(window) {
+@@ -168,19 +194,29 @@ export const CustomKeys = {
     * @param {string} data.modifiers The modifiers for the key; e.g. "accel,shift".
     * @param {string} data.key The key itself; e.g. "Y". Mutually exclusive with data.keycode.
     * @param {string} data.keycode The key code; e.g. VK_F1. Mutually exclusive with data.key.
@@ -96,7 +96,7 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..2d58b98bbb4a43596e1a8139284b714a
        defaultKey &&
        modifiers == defaultKey.modifiers &&
        key == defaultKey.key &&
-@@ -181,6 +217,9 @@ export const CustomKeys = {
+@@ -199,6 +235,9 @@ export const CustomKeys = {
      if (keycode) {
        data.keycode = keycode;
      }
@@ -104,9 +104,9 @@ index 76f99381ab7011992b8f28f8d031ed41f73d6293..2d58b98bbb4a43596e1a8139284b714a
 +      data[ZEN_CONFLICT] = conflict;
 +    }
      for (const window of windows.keys()) {
-       const keysets = new Set();
-       applyToKeyEl(window, id, keysets);
-@@ -262,6 +301,21 @@ export const CustomKeys = {
+       applyToKeyEl(window, id);
+     }
+@@ -274,6 +313,21 @@ export const CustomKeys = {
      config.saveSoon();
    },
  

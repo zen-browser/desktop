@@ -8,22 +8,7 @@ import sys
 # add this directory to the path
 sys.path.append(os.path.dirname(__file__))
 
-from marionette_driver import Wait
 from session_store_test_case import SessionStoreTestCase
-
-
-def wait_for_fog(marionette):
-    # Glean's blocking test APIs (testGetValue) park the main thread forever if
-    # Glean is still pre-init, and FOG is initialized from a startup idle task,
-    # so it can lag the point where the browser reports itself started up.
-    Wait(marionette, timeout=60).until(
-        lambda _: marionette.execute_script(
-            """
-            return Services.fog.initialized;
-            """
-        ),
-        message="FOG should be initialized before reading Glean metrics.",
-    )
 
 
 def inline(title):
@@ -56,7 +41,7 @@ class SessionAvailabilityTestCase(SessionStoreTestCase):
     def _read_availability_telemetry(self):
         """Read the session_restore.startup_session_availability event that the
         startup we just completed recorded, and return its extra keys."""
-        wait_for_fog(self.marionette)
+        self.wait_for_fog()
         events = self.marionette.execute_script(
             """
             return Glean.sessionRestore.startupSessionAvailability.testGetValue();

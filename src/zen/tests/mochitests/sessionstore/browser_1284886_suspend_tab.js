@@ -66,7 +66,7 @@ add_task(async function test() {
   );
 
   // Test that tab with beforeunload handler which would show a prompt will be suspended if forced.
-  gBrowser.discardBrowser(tab1, true);
+  gBrowser.discardBrowser(tab1, { forceDiscard: true });
   ok(
     !tab1.linkedPanel,
     "force suspending a tab with beforeunload handler which would show a prompt"

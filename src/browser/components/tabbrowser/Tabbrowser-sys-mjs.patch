@@ -948,14 +948,18 @@ index b8dbcfda7392a220d8fd15a25a68f3962b2725d4..544f672e49679fa60156e8cb7e13ee05
      // Do not allow transfering a private tab to a non-private window
      // and vice versa.
      if (
-@@ -7378,6 +7649,7 @@ export class Tabbrowser {
+@@ -7378,9 +7649,10 @@ export class Tabbrowser {
      // fire the beforeunload event in the process.  Close the other
      // window if this was its last tab.
      if (
 +      zenCloseOther &&
        !remoteBrowser.#beginRemoveTab(aOtherTab, {
          adoptedByTab: aOurTab,
-         closeWindowWithLastTab: true,
+-        closeWindowWithLastTab: true,
++        closeWindowWithLastTab: aOtherTab.documentGlobal.gZenWorkspaces.shouldCloseWindow(),
+       })
+     ) {
+       return false;
 @@ -7389,7 +7661,7 @@ export class Tabbrowser {
      // If this is the last tab of the window, hide the window
      // immediately without animation before the docshell swap, to avoid

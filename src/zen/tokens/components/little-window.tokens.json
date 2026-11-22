@@ -24,6 +24,9 @@
       "value": { "light": "#924400", "dark": "#ffead1" }
     }
   },
+  "space": {
+    "--zen-little-window-address-inset": { "value": "20%" }
+  },
   "size": {
     "--zen-little-window-intro-width": { "value": "300px" },
     "--zen-little-window-download-width": { "value": "260px" }

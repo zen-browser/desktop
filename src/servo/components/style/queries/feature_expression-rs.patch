@@ -1,11 +1,11 @@
 diff --git a/servo/components/style/queries/feature_expression.rs b/servo/components/style/queries/feature_expression.rs
-index 3632c4054ac01ec4ed6b8e6903322ef908e25da0..9ce42db40fe72db3c1fef5010f579ffc34734d6e 100644
+index 3d5c8826057f079c7a0b8e2264698f789d13a7ea..8642eb4c3fd67f336629de5dccc97942d487c7a6 100644
 --- a/servo/components/style/queries/feature_expression.rs
 +++ b/servo/components/style/queries/feature_expression.rs
-@@ -21,7 +21,7 @@ use crate::selector_map::PrecomputedHashSet;
- use crate::str::{starts_with_ignore_ascii_case, string_as_ascii_lowercase};
+@@ -21,7 +21,7 @@ use crate::str::{starts_with_ignore_ascii_case, string_as_ascii_lowercase};
  use crate::stylesheets::container_rule::AttrReferenceSet;
  use crate::stylesheets::{CssRuleType, Origin, UrlExtraData};
+ use crate::substitution::{self, SubstitutionFunctionKind};
 -use crate::values::DashedIdent;
 +use crate::values::{AtomString, DashedIdent};
  use crate::values::computed::{self, CSSPixelLength, ToComputedValue};

@@ -86,10 +86,8 @@ add_task(async function test_Reject_Tab_Added_To_Max_Size_Split_View() {
           gZenViewSplitter.MAX_TABS,
           "The split should remain at the maximum number of tabs"
         );
-        sinon.assert.calledOnceWithExactly(
-          showToast,
-          "zen-split-view-limit-toast"
-        );
+        sinon.assert.calledOnce(showToast);
+        sinon.assert.calledWithExactly(showToast, "zen-split-view-limit-toast");
       } finally {
         showToast.restore();
         await BrowserTestUtils.removeTab(extraTab);

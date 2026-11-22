@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabs.mjs b/browser/components/tabbrowser/content/tabs.mjs
-index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a411e2a4fd1 100644
+index beb9947ea7d0b73d63813ee71c10e737a2d109d7..86d59244806d44e03ce7697bb4ab79c5b5ae5261 100644
 --- a/browser/components/tabbrowser/content/tabs.mjs
 +++ b/browser/components/tabbrowser/content/tabs.mjs
-@@ -190,8 +190,12 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -217,8 +217,12 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
      XPCOMUtils.defineLazyPreferenceGetter(
        this,
        "_sidebarPositionStart",
@@ -17,7 +17,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      );
  
      if (gMultiProcessBrowser) {
-@@ -200,7 +204,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -227,7 +231,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
  
      this.tooltip = "tabbrowser-tab-tooltip";
  
@@ -26,7 +26,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      this.tabDragAndDrop.init();
    }
  
-@@ -427,7 +431,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -454,7 +458,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
      // and we're not hitting the scroll buttons.
      if (
        event.button != 0 ||
@@ -35,7 +35,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
        event.composedTarget.localName == "toolbarbutton"
      ) {
        return;
-@@ -512,7 +516,6 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -539,7 +543,6 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
            });
          }
        } else if (isTabGroupLabel(event.target)) {
@@ -43,7 +43,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
        } else if (
          event.originalTarget.closest("scrollbox") &&
          !Services.prefs.getBoolPref(
-@@ -548,6 +551,9 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -575,6 +578,9 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    on_keydown(event) {
@@ -52,8 +52,8 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
 +      }
      let { altKey, shiftKey } = event;
      let [accel, nonAccel] =
-       AppConstants.platform == "macosx"
-@@ -830,7 +836,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+       lazy.AppConstants.platform == "macosx"
+@@ -857,7 +863,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    get newTabButton() {
@@ -62,7 +62,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    get verticalMode() {
-@@ -846,6 +852,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -873,6 +879,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    get overflowing() {
@@ -70,7 +70,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      return this.hasAttribute("overflow");
    }
  
-@@ -859,29 +866,55 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -886,29 +893,55 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
      if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery") {
        pinnedChildren.pop();
      }
@@ -137,7 +137,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    get allSplitViews() {
-@@ -970,28 +1003,35 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -997,28 +1030,35 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
        return this.#focusableItems;
      }
  
@@ -184,7 +184,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
  
      this.#focusableItems = focusableItems;
  
-@@ -1006,6 +1046,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1033,6 +1073,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
     * @returns {DragAndDropElement[]}
     */
    get dragAndDropElements() {
@@ -192,7 +192,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      if (this.#dragAndDropElements) {
        return this.#dragAndDropElements;
      }
-@@ -1079,6 +1120,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1106,6 +1147,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    _invalidateCachedTabs() {
      this.#allTabs = null;
      this._invalidateCachedVisibleTabs();
@@ -200,7 +200,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    _invalidateCachedVisibleTabs() {
-@@ -1098,7 +1140,8 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1125,7 +1167,8 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
  
    isContainerVerticalPinnedGrid(tab) {
      return (
@@ -210,7 +210,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
        this.verticalMode &&
        this.hasAttribute("expanded") &&
        !this.expandOnHover
-@@ -1231,7 +1274,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1258,7 +1301,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
  
      if (node == null) {
        // We have a container for non-tab elements at the end of the scrollbox.
@@ -219,7 +219,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
      }
  
      /** @type {Element} */ (node).before(tab);
-@@ -1276,7 +1319,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1303,7 +1346,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
          // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
          // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
          // Attach the long click popup to all of them.
@@ -228,7 +228,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
          const newTab2 = this.newTabButton;
          const newTabVertical = document.getElementById(
            "vertical-tabs-newtab-button"
-@@ -1391,7 +1434,10 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1418,7 +1461,10 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
        return;
      }
      let selectedTab = /** @type {MozTabbrowserTab} */ (this.selectedItem);
@@ -239,7 +239,7 @@ index 5bdbf026ef0dc8ea687013f68d6c0540f4657169..8bc7d9c7246ca3405e4815ee37189a41
    }
  
    /**
-@@ -1528,7 +1574,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
+@@ -1555,7 +1601,7 @@ export class MozTabbrowserTabs extends MozElements.TabsBase {
    }
  
    _notifyBackgroundTab(aTab) {

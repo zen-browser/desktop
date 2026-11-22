@@ -8,13 +8,6 @@
     "path": "firefox/native_macos_popovers_fix.patch"
   },
   {
-    // Bug 2079476, backported from mozilla-central (Firefox 161) revisions
-    // 8e142a8b9911, 898c1161a502, ae869c1635bd and f79fc2dbdfd6. Drop this
-    // once the engine is on 161 or later.
-    "type": "local",
-    "path": "firefox/backdrop_filter_reads_web_content.patch"
-  },
-  {
     "type": "local",
     "path": "firefox/no_liquid_glass_icon.patch"
   },

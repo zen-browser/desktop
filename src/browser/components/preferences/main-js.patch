@@ -1,17 +1,8 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index 6b20696e52982478b27e0c83a768a434d74124fb..d68f1470b2a211eee8106e1b02a77f77dfb97d67 100644
+index 3bfcc4302479322d551ac4c314009808ee18a675..a46a6c0a382bdee4b52480cbec3a235515ff8fad 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -526,7 +526,7 @@ function createStartupConfig(hidden = false) {
- SettingGroupManager.registerGroups({
-   defaultBrowser: createDefaultBrowserConfig(),
-   startup: createStartupConfig(
--    Services.prefs.getBoolPref("browser.settings-redesign.enabled", false)
-+    false
-   ),
- });
- 
-@@ -586,7 +586,7 @@ function getBundleForLocales(newLocales) {
+@@ -246,7 +246,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(

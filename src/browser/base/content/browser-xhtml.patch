@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index d8ed09dca6c8ae99ed1a84cef22462a0d7b517fe..dcb65c4268913fdf32302c9b4ac723131187922e 100644
+index e5ea873ace1272426d3d31a22489afc3f2ab5d47..26c547892a91e8ee49dbe4f0c9345751e25e1717 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -18,6 +18,7 @@
@@ -10,7 +10,7 @@ index d8ed09dca6c8ae99ed1a84cef22462a0d7b517fe..dcb65c4268913fdf32302c9b4ac72313
          persist="screenX screenY width height sizemode"
          data-l10n-sync="true">
  <head>
-@@ -100,8 +101,10 @@
+@@ -113,8 +114,10 @@
  
    <title data-l10n-id="browser-main-window-default-title"></title>
  
@@ -21,7 +21,7 @@ index d8ed09dca6c8ae99ed1a84cef22462a0d7b517fe..dcb65c4268913fdf32302c9b4ac72313
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -134,9 +137,10 @@
+@@ -147,9 +150,10 @@
      </vbox>
    </html:template>
  
@@ -32,4 +32,4 @@ index d8ed09dca6c8ae99ed1a84cef22462a0d7b517fe..dcb65c4268913fdf32302c9b4ac72313
 +</hbox>
  
    <html:template id="customizationPanel">
-     <box id="customization-container" flex="1" hidden="true"><![CDATA[
+     <box id="customization-container" flex="1" hidden="true">

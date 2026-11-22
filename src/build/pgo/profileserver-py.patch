@@ -1,16 +1,16 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index a23e879dfdc4994ff615fb389fad92f5234ef1fa..16da05a89407665ee8404edcfc9d0d09af9a9c12 100644
+index 93ec87e0f97c3612bafca5a3c4981ccf3afc7a44..2dee490faa7103481252ce0d0ad2d5bdde0fb4ba 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
-@@ -6,6 +6,7 @@
- 
+@@ -7,6 +7,7 @@
  import glob
  import os
+ import re
 +import socket
  import subprocess
  import sys
  
-@@ -17,7 +18,14 @@ from mozprofile import FirefoxProfile, Preferences
+@@ -18,7 +19,14 @@ from mozprofile import FirefoxProfile, Preferences
  from mozprofile.permissions import ServerLocations
  from mozrunner import CLI, FirefoxRunner
  
@@ -26,7 +26,7 @@ index a23e879dfdc4994ff615fb389fad92f5234ef1fa..16da05a89407665ee8404edcfc9d0d09
  
  PATH_MAPPINGS = {
      "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",
-@@ -233,6 +241,10 @@ if __name__ == "__main__":
+@@ -307,6 +315,10 @@ if __name__ == "__main__":
              "http://localhost:%d/index.html?extendedCorpus=%s"
              % (PORT, str(has_extended_corpus).lower())
          ]

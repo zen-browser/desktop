@@ -15,6 +15,16 @@
   --zen-settings-sidebar-width: 208px;
 
   --zen-settings-sidebar-background: light-dark(#e9e9eb, #262627);
+  --zen-settings-sidebar-acrylic-background: light-dark(
+    rgba(233, 233, 235, 0.45),
+    rgba(38, 38, 39, 0.45)
+  );
+  --zen-settings-main-mica-background: color-mix(
+    in srgb,
+    var(--zen-settings-background) 86%,
+    transparent
+  );
+  --zen-settings-main-shadow: 0 0 12px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.35));
   --zen-settings-sticky-background: light-dark(#fcfcfc, #282829);
   --zen-settings-shortcuts-aside-width: 192px;
   --zen-settings-keyword-width: 110px;
@@ -150,8 +160,16 @@
     border-inline-end: none;
   }
 
+  @media not (-moz-platform: macos) {
+    padding: var(--zen-space-8);
+  }
+
   @media (-moz-windows-mica) {
     background: none;
+
+    @media -moz-pref("widget.windows.mica.toplevel-backdrop", 2) {
+      background: var(--zen-settings-sidebar-acrylic-background);
+    }
   }
 }
 
@@ -223,7 +241,7 @@
   @media not (-moz-platform: macos) {
     min-height: var(--zen-size-38);
     padding: 0 var(--zen-space-12);
-    border-radius: var(--zen-border-radius-8);
+    border-radius: var(--zen-border-radius-10);
 
     &[aria-selected="true"] {
       background: var(--zen-settings-button-background-hover);
@@ -245,6 +263,16 @@
   background: var(--zen-settings-background);
   display: flex;
   flex-direction: column;
+
+  @media not (-moz-platform: macos) {
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--zen-settings-main-shadow);
+  }
+
+  @media (-moz-windows-mica) {
+    background: var(--zen-settings-main-mica-background);
+  }
 }
 
 #zen-settings-header {
@@ -976,9 +1004,9 @@
 @media (-moz-platform: windows) {
   #zen-settings-firefox-links,
   #zen-settings-links {
-    margin-inline: calc(-1 * var(--zen-space-12));
+    margin-inline: calc(-1 * var(--zen-space-8));
     padding-block-start: var(--zen-space-12);
-    padding-inline: var(--zen-space-12);
+    padding-inline: var(--zen-space-8);
   }
 
   #zen-settings-main {

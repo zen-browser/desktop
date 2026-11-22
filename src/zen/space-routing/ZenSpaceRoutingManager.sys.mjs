@@ -346,6 +346,26 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * On Windows, the windows of other virtual desktops are not ones a link
+   * from another application gets opened in. A little window only needs one
+   * to open from though, so that no regular window has to be opened here.
+   *
+   * @param {nsIURI} uri - The URI about to be opened
+   * @returns {Window|null} A regular window of another virtual desktop when
+   *   the URI goes to a little window, which opens on the current one.
+   */
+  getOpenerOnAnotherDesktop(uri) {
+    if (!this.shouldOpenExternalUriInLittleWindow(uri)) {
+      return null;
+    }
+    const win = lazy.BrowserWindowTracker.getTopWindow({
+      private: false,
+      allowFromInactiveWorkspace: true,
+    });
+    return win && !lazy.PrivateBrowsingUtils.isWindowPrivate(win) ? win : null;
+  }
+
+  /**
    * Opens an externally opened URI in a little window, when that is where
    * links from other applications are set to go.
    *
@@ -439,7 +459,7 @@ class nsZenSpaceRoutingManager {
    *   only a pending one.
    */
   async #regularWindowReady() {
-    const options = { private: false };
+    const options = { private: false, allowFromInactiveWorkspace: true };
     const win =
       lazy.BrowserWindowTracker.getTopWindow(options) ??
       (await lazy.BrowserWindowTracker.getPendingWindow(options));

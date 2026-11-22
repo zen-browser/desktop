@@ -292,6 +292,9 @@
   --zen-little-window-open-shortcut-color: light-dark(#757576, #8b8c9a);
   --zen-little-window-open-space-color: light-dark(#924400, #ffead1);
 
+  /** components/little-window: space **/
+  --zen-little-window-address-inset: 20%;
+
   /** components/little-window: size **/
   --zen-little-window-intro-width: 300px;
   --zen-little-window-download-width: 260px;

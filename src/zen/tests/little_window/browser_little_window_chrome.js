@@ -94,19 +94,6 @@ add_task(async function test_little_window_intro() {
   await BrowserTestUtils.closeWindow(win);
 });
 
-add_task(async function test_little_window_disabled() {
-  await SpecialPowers.pushPrefEnv({
-    set: [["zen.little-window.enabled", false]],
-  });
-  ok(!ZenLittleWindow.enabled, "Little windows follow the preference");
-  is(
-    ZenLittleWindow.open({ openerWindow: window }),
-    null,
-    "None opens while they are disabled"
-  );
-  await SpecialPowers.popPrefEnv();
-});
-
 add_task(async function test_little_window_shows_its_downloads() {
   const win = await openLittleWindow({ url: TEST_URL });
   const list = await Downloads.getList(Downloads.ALL);

@@ -340,7 +340,6 @@ class nsZenSpaceRoutingManager {
   shouldOpenExternalUriInLittleWindow(uri) {
     return (
       !!uri &&
-      lazy.ZenLittleWindow.enabled &&
       !!this.#file?.dataReady &&
       this.routeUri(uri.spec, { fromExternal: true }) === LITTLE_WINDOW_ROUTE
     );
@@ -388,10 +387,7 @@ class nsZenSpaceRoutingManager {
    * @returns {boolean} Whether the URI was taken
    */
   handleExternalUri(uri, defaultWindow, triggeringPrincipal) {
-    if (
-      !lazy.ZenLittleWindow.enabled ||
-      lazy.PrivateBrowsingUtils.isWindowPrivate(defaultWindow)
-    ) {
+    if (lazy.PrivateBrowsingUtils.isWindowPrivate(defaultWindow)) {
       return false;
     }
     if (this.#file?.dataReady && defaultWindow.gZenStartup?.isReady) {
@@ -408,7 +404,7 @@ class nsZenSpaceRoutingManager {
   }
 
   get takesExternalUrisWithoutWindow() {
-    return lazy.ZenLittleWindow.enabled;
+    return true;
   }
 
   async openExternalUrisAfterStartup(entries) {
@@ -766,13 +762,7 @@ class nsZenSpaceRoutingManager {
    * @returns {string} Returns the default route type for external links
    */
   getDefaultExternalRoute() {
-    const route = this.#file?.data?.defaultRouteExternal;
-    if (!lazy.ZenLittleWindow.enabled) {
-      return !route || route === LITTLE_WINDOW_ROUTE
-        ? MOST_RECENT_SPACE_ROUTE
-        : route;
-    }
-    return route ?? LITTLE_WINDOW_ROUTE;
+    return this.#file?.data?.defaultRouteExternal ?? LITTLE_WINDOW_ROUTE;
   }
 
   /**

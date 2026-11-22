@@ -59,6 +59,7 @@ export class nsZenWorkspace extends MozXULElement {
   #watchedTabWasVisible = false;
   #scrollToTabShown = false;
   #scrollToTabSeq = 0;
+  #scrollToTabButtonElement = null;
   #appliedPalette = null;
 
   static get markup() {
@@ -421,7 +422,9 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   get #scrollToTabButton() {
-    return this.querySelector(".zen-workspace-scroll-to-tab");
+    return (this.#scrollToTabButtonElement ??= this.querySelector(
+      ".zen-workspace-scroll-to-tab"
+    ));
   }
 
   #setupScrollToSelectedTab() {
@@ -445,9 +448,16 @@ export class nsZenWorkspace extends MozXULElement {
     );
 
     const follow = () => this.#watchSelectedTab();
+    const followOwnOverflow = event => {
+      if (event.target === this.scrollbox) {
+        follow();
+      }
+    };
     gBrowser.tabContainer.addEventListener("TabSelect", follow, { signal });
-    this.scrollbox.addEventListener("overflow", follow, { signal });
-    this.scrollbox.addEventListener("underflow", follow, { signal });
+    this.scrollbox.addEventListener("overflow", followOwnOverflow, { signal });
+    this.scrollbox.addEventListener("underflow", followOwnOverflow, {
+      signal,
+    });
 
     follow();
   }
@@ -575,10 +585,10 @@ export class nsZenWorkspace extends MozXULElement {
 
   /** Takes the pill back into the edge it came from. */
   #hideScrollToTab() {
-    const button = this.#scrollToTabButton;
     if (!this.#scrollToTabShown) {
       return;
     }
+    const button = this.#scrollToTabButton;
     this.#scrollToTabShown = false;
     const seq = ++this.#scrollToTabSeq;
 

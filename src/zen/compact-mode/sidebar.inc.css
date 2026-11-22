@@ -164,7 +164,7 @@
   ),
   &[zen-renaming-tab='true'] #navigator-toolbox {
     &:not([animate='true']) {
-      --zen-compact-mode-func: linear(
+      transition: translate 0.25s linear(
         0 0%,
         0.002748 1%,
         0.010544 2%,
@@ -267,8 +267,6 @@
         1.003674 99%,
         1.003423 100%
       );
-      --zen-compact-mode-time: 0.25s;
-      transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
       :root:not([supress-primary-adjustment='true']) & {
         #titlebar {

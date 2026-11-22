@@ -17,7 +17,7 @@
 }
 
 .urlbar {
-  --urlbarview-separator-color: light-dark(rgb(233, 233, 233), rgb(46 46 47));
+  --urlbarview-separator-color: color-mix(in srgb, currentColor, transparent 93%);
   --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   --urlbarview-results-padding: 12px !important;
@@ -250,6 +250,7 @@
 .urlbarView-url {
   margin-top: auto !important;
   margin-bottom: auto !important;
+  font-weight: var(--zen-font-weight-medium);
 }
 
 #urlbar[breakout-extend] {

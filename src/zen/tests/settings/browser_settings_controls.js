@@ -87,13 +87,15 @@ add_task(async function test_toggles_follow_and_set_prefs() {
 });
 
 add_task(async function test_dependent_rows() {
-  await SpecialPowers.pushPrefEnv({ set: [["zen.glance.enabled", true]] });
+  await SpecialPowers.pushPrefEnv({
+    set: [["browser.search.suggest.enabled", true]],
+  });
   const win = await openSettingsWindow();
   const row = win.document.querySelector(
-    '[data-depends-on="zen.glance.enabled"]'
+    '[data-depends-on="browser.search.suggest.enabled"]'
   );
   ok(!row.inert, "A dependent row is usable while its setting is on");
-  Services.prefs.setBoolPref("zen.glance.enabled", false);
+  Services.prefs.setBoolPref("browser.search.suggest.enabled", false);
   ok(row.inert, "A dependent row is inert while its setting is off");
   await BrowserTestUtils.closeWindow(win);
   await SpecialPowers.popPrefEnv();
@@ -103,7 +105,6 @@ add_task(async function test_menulists() {
   await SpecialPowers.pushPrefEnv({
     set: [
       ["zen.view.window.scheme", 2],
-      ["zen.glance.activation-method", "alt"],
       ["zen.view.use-single-toolbar", true],
       ["zen.view.sidebar-expanded", true],
     ],
@@ -111,25 +112,11 @@ add_task(async function test_menulists() {
   const win = await openSettingsWindow();
   const doc = win.document;
 
-  const trigger = doc.querySelector(
-    'menulist[data-pref="zen.glance.activation-method"]'
-  );
-  is(trigger.value, "alt", "A list shows its pref");
-  Services.prefs.setStringPref("zen.glance.activation-method", "shift");
-  is(trigger.value, "shift", "A list follows changes made elsewhere");
-  trigger.value = "ctrl";
-  trigger.dispatchEvent(new win.Event("command", { bubbles: true }));
-  is(
-    Services.prefs.getStringPref("zen.glance.activation-method"),
-    "ctrl",
-    "Choosing an item writes the pref"
-  );
-
   Services.prefs.setIntPref("zen.view.window.scheme", 0);
   is(
     doc.documentElement.style.colorScheme,
-    "dark",
-    "The window follows the browser's forced color scheme"
+    "",
+    "The window keeps the system color scheme when the browser forces one"
   );
 
   const layout = doc.getElementById("zen-settings-layout");

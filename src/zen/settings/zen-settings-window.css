@@ -16,7 +16,7 @@
 
   --zen-settings-sidebar-background: light-dark(#e9e9eb, #262627);
   --zen-settings-sticky-background: light-dark(#fcfcfc, #282829);
-  --zen-settings-shortcuts-aside-width: 236px;
+  --zen-settings-shortcuts-aside-width: 192px;
   --zen-settings-keyword-width: 110px;
   --zen-settings-dialog-width: 480px;
   --zen-settings-dialog-max-width: calc(100vw - 40px);
@@ -467,7 +467,7 @@
 
 #zen-settings-pane-shortcuts {
   flex-direction: row;
-  gap: var(--zen-space-20);
+  gap: var(--zen-space-12);
   height: 100%;
 }
 

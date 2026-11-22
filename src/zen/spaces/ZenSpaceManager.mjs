@@ -1690,7 +1690,14 @@ class nsZenWorkspaces {
   }
 
   #unpinnedTabsInWorkspace(workspaceID) {
-    return Array.from(this.allStoredTabs).filter(
+    const workspaceElement = this.workspaceElement(workspaceID);
+    const tabs = workspaceElement
+      ? this.#tabsInContainers([
+          workspaceElement.pinnedTabsContainer,
+          workspaceElement.tabsContainer,
+        ])
+      : this.allStoredTabs;
+    return tabs.filter(
       tab =>
         tab.getAttribute("zen-workspace-id") === workspaceID &&
         tab.visible &&
@@ -3452,7 +3459,6 @@ class nsZenWorkspaces {
       return this._allStoredTabs;
     }
 
-    const tabs = [];
     // we need to go through each tab in each container
     const essentialsContainer = document.querySelectorAll(
       "#zen-essentials .zen-workspace-tabs-section"
@@ -3481,31 +3487,42 @@ class nsZenWorkspaces {
         }
       }
     }
-    const containers = [
+    return (this._allStoredTabs = this.#tabsInContainers([
       ...essentialsContainer,
       ...pinnedContainers,
       ...normalContainers,
-    ];
+    ]));
+  }
+
+  /**
+   * @param {Element[]} containers - Tab sections whose children are tabs or
+   *   tab groups
+   * @returns {MozTabbrowserTab[]} Their tabs, each followed by its glance
+   */
+  #tabsInContainers(containers) {
+    const tabs = [];
     for (const container of containers) {
       for (const tab of container.children) {
         if (gBrowser.isTab(tab)) {
-          tabs.push(tab);
-          const glance = tab.querySelector(".tabbrowser-tab[glance-id]");
-          if (glance) {
-            tabs.push(glance);
-          }
+          this.#pushTabAndGlance(tabs, tab);
         } else if (gBrowser.isTabGroup(tab)) {
           for (const groupTab of tab.tabs) {
-            tabs.push(groupTab);
-            const glance = groupTab.querySelector(".tabbrowser-tab[glance-id]");
-            if (glance) {
-              tabs.push(glance);
-            }
+            this.#pushTabAndGlance(tabs, groupTab);
           }
         }
       }
     }
-    return (this._allStoredTabs = tabs);
+    return tabs;
+  }
+
+  #pushTabAndGlance(tabs, tab) {
+    tabs.push(tab);
+    if (tab.hasAttribute("glance-id")) {
+      const glance = tab.querySelector(".tabbrowser-tab[glance-id]");
+      if (glance) {
+        tabs.push(glance);
+      }
+    }
   }
 
   get allTabGroups() {

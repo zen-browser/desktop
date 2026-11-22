@@ -24,7 +24,7 @@
   value: 2
 
 - name: widget.non-native-theme.scrollbar.size.override
-  value: 14
+  value: 16
 
 - name: widget.non-native-theme.use-theme-accent
   value: true

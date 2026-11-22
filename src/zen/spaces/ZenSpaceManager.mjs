@@ -1107,7 +1107,8 @@ class nsZenWorkspaces {
       if (
         window.closed ||
         !window.docShell ||
-        document.documentElement.hasAttribute("zen-welcome-stage")
+        document.documentElement.hasAttribute("zen-welcome-stage") ||
+        document.documentElement.hasAttribute("zen-little-window-urlbar-only")
       ) {
         return;
       }
@@ -1533,7 +1534,7 @@ class nsZenWorkspaces {
 
   get shouldShowContainers() {
     return (
-      !this.isPrivateWindow &&
+      this.currentWindowIsSyncing &&
       Services.prefs.getBoolPref("privacy.userContext.ui.enabled")
     );
   }
@@ -1689,7 +1690,14 @@ class nsZenWorkspaces {
   }
 
   #unpinnedTabsInWorkspace(workspaceID) {
-    return Array.from(this.allStoredTabs).filter(
+    const workspaceElement = this.workspaceElement(workspaceID);
+    const tabs = workspaceElement
+      ? this.#tabsInContainers([
+          workspaceElement.pinnedTabsContainer,
+          workspaceElement.tabsContainer,
+        ])
+      : this.allStoredTabs;
+    return tabs.filter(
       tab =>
         tab.getAttribute("zen-workspace-id") === workspaceID &&
         tab.visible &&
@@ -2315,6 +2323,52 @@ class nsZenWorkspaces {
     }
   }
 
+  #crossfadeBackgrounds(duration) {
+    const elements = [
+      lazy.browserBackgroundElement,
+      lazy.toolbarBackgroundElement,
+    ];
+    // Start from what is on screen, a swipe can leave the backgrounds midway.
+    const shown = parseFloat(getComputedStyle(elements[0], "::after").opacity);
+    const from = shown >= 1 || !shown ? 0 : 1 - shown;
+    // Same curve as the springs the tabs slide with.
+    const { ease, duration: ms } = gZenUIManager.motion.spring.applyToOptions({
+      bounce: 0,
+      duration: duration * 1000,
+    });
+    const steps = Array.from({ length: 33 }, (_, i) => ease(i / 32));
+    const options = { duration: ms, easing: `linear(${steps.join(", ")})` };
+    const grainNew =
+      "var(--zen-grainy-background-opacity, 0) * var(--zen-grain-alpha)";
+    const grainOld =
+      "var(--zen-grainy-background-opacity-old, 0) * var(--zen-grain-alpha-old)";
+    const fades = [];
+    const fade = (target, pseudoElement, opacity) => {
+      if (target) {
+        fades.push(target.animate({ opacity }, { ...options, pseudoElement }));
+      }
+    };
+    for (const element of elements) {
+      element.style.setProperty("--zen-background-opacity", 1);
+      fade(element, "::after", [from, 1]);
+      fade(element, "::before", [1 - from, 0]);
+      const grain = element.querySelector(".zen-browser-grain");
+      fade(grain, "::after", [
+        `calc(${grainNew} * ${from})`,
+        `calc(${grainNew})`,
+      ]);
+      fade(grain, "::before", [`calc(${grainOld} * ${1 - from})`, 0]);
+    }
+    return {
+      complete: () => fades.forEach(animation => animation.finish()),
+      then: (resolve, reject) =>
+        Promise.all(fades.map(animation => animation.finished)).then(
+          resolve,
+          reject
+        ),
+    };
+  }
+
   /* eslint-disable complexity */
   async #animateTabs(
     newWorkspace,
@@ -2367,47 +2421,7 @@ class nsZenWorkspaces {
     }
     this.#setAnimatingBackground(true);
     if (shouldAnimate && previousWorkspace) {
-      let previousBackgroundOpacity =
-        lazy.browserBackgroundElement.style.getPropertyValue(
-          "--zen-background-opacity"
-        );
-      try {
-        // Prevent NaN from being set
-        if (previousBackgroundOpacity) {
-          previousBackgroundOpacity = parseFloat(previousBackgroundOpacity);
-        }
-      } catch {
-        previousBackgroundOpacity = 1;
-      }
-      if (previousBackgroundOpacity == 1 || !previousBackgroundOpacity) {
-        previousBackgroundOpacity = 0;
-      } else {
-        previousBackgroundOpacity = 1 - previousBackgroundOpacity;
-      }
-      gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
-      let elements = [
-        lazy.browserBackgroundElement,
-        lazy.toolbarBackgroundElement,
-      ];
-      elements.forEach(element => {
-        element.style.setProperty(
-          "--zen-background-opacity",
-          previousBackgroundOpacity
-        );
-      });
-      animations.push(
-        gZenUIManager.motion.animate(
-          elements,
-          {
-            "--zen-background-opacity": [previousBackgroundOpacity, 1],
-          },
-          {
-            type: "spring",
-            bounce: 0,
-            duration: kGlobalAnimationDuration,
-          }
-        )
-      );
+      animations.push(this.#crossfadeBackgrounds(kGlobalAnimationDuration));
     }
     for (const element of document.querySelectorAll("zen-workspace")) {
       if (element.classList.contains("zen-essentials-container")) {
@@ -3445,7 +3459,6 @@ class nsZenWorkspaces {
       return this._allStoredTabs;
     }
 
-    const tabs = [];
     // we need to go through each tab in each container
     const essentialsContainer = document.querySelectorAll(
       "#zen-essentials .zen-workspace-tabs-section"
@@ -3474,31 +3487,42 @@ class nsZenWorkspaces {
         }
       }
     }
-    const containers = [
+    return (this._allStoredTabs = this.#tabsInContainers([
       ...essentialsContainer,
       ...pinnedContainers,
       ...normalContainers,
-    ];
+    ]));
+  }
+
+  /**
+   * @param {Element[]} containers - Tab sections whose children are tabs or
+   *   tab groups
+   * @returns {MozTabbrowserTab[]} Their tabs, each followed by its glance
+   */
+  #tabsInContainers(containers) {
+    const tabs = [];
     for (const container of containers) {
       for (const tab of container.children) {
         if (gBrowser.isTab(tab)) {
-          tabs.push(tab);
-          const glance = tab.querySelector(".tabbrowser-tab[glance-id]");
-          if (glance) {
-            tabs.push(glance);
-          }
+          this.#pushTabAndGlance(tabs, tab);
         } else if (gBrowser.isTabGroup(tab)) {
           for (const groupTab of tab.tabs) {
-            tabs.push(groupTab);
-            const glance = groupTab.querySelector(".tabbrowser-tab[glance-id]");
-            if (glance) {
-              tabs.push(glance);
-            }
+            this.#pushTabAndGlance(tabs, groupTab);
           }
         }
       }
     }
-    return (this._allStoredTabs = tabs);
+    return tabs;
+  }
+
+  #pushTabAndGlance(tabs, tab) {
+    tabs.push(tab);
+    if (tab.hasAttribute("glance-id")) {
+      const glance = tab.querySelector(".tabbrowser-tab[glance-id]");
+      if (glance) {
+        tabs.push(glance);
+      }
+    }
   }
 
   get allTabGroups() {

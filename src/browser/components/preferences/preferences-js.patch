@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da707d37822 100644
+index df1663c5a74c8486b3342a53a58bf62dc9e3963c..9035ad8ce36f622d427c8323593b88b3fdf9e3bf 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
 @@ -131,6 +131,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
@@ -10,7 +10,7 @@ index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da7
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -470,6 +471,8 @@ const CONFIG_PANES = Object.freeze({
+@@ -498,6 +499,8 @@ const CONFIG_PANES = Object.freeze({
    tabsBrowsing: {
      l10nId: "tabs-browsing-section",
      groupIds: [
@@ -19,7 +19,7 @@ index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da7
        "browserLayout",
        "tabs",
        "pageNavigation",
-@@ -523,7 +526,7 @@ function register_module(categoryName, categoryObject) {
+@@ -551,7 +554,7 @@ function register_module(categoryName, categoryObject) {
        }
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
@@ -28,12 +28,10 @@ index 8b3acf475ad7be98c51eac0ddf65affb3c35846e..eeb0c711fdf4bb7e1bfcbd4a76500da7
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -566,6 +569,9 @@ function init_all() {
+@@ -594,6 +597,7 @@ function init_all() {
    }
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
-+  register_module("paneZenLooks", gZenLooksAndFeel);
-+  register_module("paneZenTabManagement", gZenWorkspacesSettings);
 +  register_module("paneZenMarketplace", gZenMarketplaceManager);
  
    // Restore the cached Firefox Labs nav button visibility so it shows

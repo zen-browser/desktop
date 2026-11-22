@@ -8,15 +8,18 @@
 #include "nsIObserverService.h"
 #include "nsNetUtil.h"
 
+#include "mozilla/Base64.h"
 #include "mozilla/ClearOnShutdown.h"
+#include "mozilla/NullPrincipal.h"
 #include "mozilla/ServoStyleConsts.h"
 #include "mozilla/Services.h"
 #include "mozilla/StaticPtr.h"
-#include "mozilla/css/Loader.h"
 
 #include "mozilla/dom/BrowsingContext.h"
 #include "mozilla/dom/BrowsingContextGroup.h"
 #include "mozilla/dom/Document.h"
+#include "mozilla/dom/ReferrerInfo.h"
+#include "mozilla/dom/SRIMetadata.h"
 
 namespace zen {
 
@@ -68,16 +71,6 @@ void nsZenBoostsContentSheets::AttachTo(Document& aDocument) {
   if (!entry) {
     return;
   }
-  if (!entry->parsed) {
-    RefPtr<mozilla::css::Loader> loader = new mozilla::css::Loader;
-    auto result =
-        loader->LoadSheetSync(entry->uri, mozilla::StyleOrigin::User,
-                              mozilla::css::Loader::UseSystemPrincipal::Yes);
-    if (result.isErr()) {
-      return;
-    }
-    entry->parsed = result.unwrap();
-  }
   aDocument.RemoveAdditionalStyleSheet(Document::eUserSheet, entry->uri);
   RefPtr<mozilla::StyleSheet> sheet = entry->parsed->Clone(nullptr, nullptr);
   (void)aDocument.AddAdditionalStyleSheet(Document::eUserSheet, sheet);
@@ -95,8 +88,23 @@ void nsZenBoostsContentSheets::Update(const nsACString& aDomain,
 
   Entry updated;
   updated.spec = aSpec;
-  if (!aSpec.IsEmpty() &&
+  const int32_t comma = aSpec.FindChar(',');
+  nsAutoCString rules;
+  if (comma != kNotFound &&
+      NS_SUCCEEDED(mozilla::Base64Decode(Substring(aSpec, comma + 1), rules)) &&
       NS_SUCCEEDED(NS_NewURI(getter_AddRefs(updated.uri), aSpec))) {
+    // Boost styles can come from somebody else, so the sheet gets a principal
+    // with no privileges. Without a loader, @import rules are dropped.
+    updated.parsed = mozilla::MakeRefPtr<mozilla::StyleSheet>(
+        mozilla::StyleOrigin::User, mozilla::CORS_NONE,
+        mozilla::dom::SRIMetadata());
+    nsCOMPtr<nsIPrincipal> principal =
+        mozilla::NullPrincipal::CreateWithoutOriginAttributes();
+    nsCOMPtr<nsIReferrerInfo> referrerInfo =
+        new mozilla::dom::ReferrerInfo(nullptr);
+    updated.parsed->SetURIs(updated.uri, updated.uri, referrerInfo, principal);
+    updated.parsed->ParseSheetSync(nullptr, rules, nullptr);
+    updated.parsed->SetComplete();
     mSheets.InsertOrUpdate(aDomain, std::move(updated));
   } else {
     mSheets.Remove(aDomain);

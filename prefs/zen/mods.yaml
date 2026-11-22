@@ -5,13 +5,6 @@
 - name: zen.mods.updated-value-observer
   value: false
 
-- name: zen.mods.auto-update-days
-  value: 20 # In days
-
-- name: zen.mods.auto-update
-  value: "@cond"
-  condition: "defined(MOZILLA_OFFICIAL)"
-
 # === Mark: Site Injection ===
 
 - name: zen.injections.match-urls

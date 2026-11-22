@@ -1,8 +1,16 @@
 diff --git a/browser/modules/BrowserWindowTracker.sys.mjs b/browser/modules/BrowserWindowTracker.sys.mjs
-index 7e2f1d2b9ca10bd48fa1a0cd1f175a99b4169b90..505d6fc5110b99c73a0054abbe098c154227cf50 100644
+index d90f63e373a7cdc7caee4ff5b9d94a5a57febece..5a07fd282ffd0c2bd416d44ff4850ca61b885101 100644
 --- a/browser/modules/BrowserWindowTracker.sys.mjs
 +++ b/browser/modules/BrowserWindowTracker.sys.mjs
-@@ -330,6 +330,7 @@ export const BrowserWindowTracker = {
+@@ -211,6 +211,7 @@ export const BrowserWindowTracker = {
+       if (
+         !win.closed &&
+         !win.document.documentElement.hasAttribute("mini-window") &&
++        !win.document.documentElement.hasAttribute("zen-little-window") &&
+         (options.allowPopups || win.toolbar.visible) &&
+         (options.allowTaskbarTabs ||
+           !win.document.documentElement.hasAttribute("taskbartab")) &&
+@@ -343,6 +344,7 @@ export const BrowserWindowTracker = {
        args = null,
        remote = undefined,
        fission = undefined,
@@ -10,7 +18,7 @@ index 7e2f1d2b9ca10bd48fa1a0cd1f175a99b4169b90..505d6fc5110b99c73a0054abbe098c15
      } = options;
  
      args = lazy.AIWindow.handleAIWindowOptions(options);
-@@ -386,6 +387,12 @@ export const BrowserWindowTracker = {
+@@ -399,6 +401,12 @@ export const BrowserWindowTracker = {
        windowFeatures,
        args
      );

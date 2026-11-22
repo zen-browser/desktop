@@ -239,10 +239,21 @@ add_task(async function test_footer_sets_where_other_apps_land() {
   const picker = footer.querySelector(".zen-library-routing-select");
   const menu = await openPicker(picker);
   const space = [...menu.children].find(
-    item => item.dataset.value !== "most-recent-space"
+    item =>
+      item.dataset.value &&
+      !["most-recent-space", "little-window"].includes(item.dataset.value)
   );
   Assert.ok(space, "the spaces of this window are offered");
-  const recent = menu.firstElementChild;
+  const little = menu.querySelector("[data-value='little-window']");
+  if (little) {
+    Assert.equal(little, menu.firstElementChild, "a little window leads");
+    Assert.equal(
+      little.nextElementSibling.localName,
+      "menuseparator",
+      "and is set apart from the spaces"
+    );
+  }
+  const recent = menu.querySelector("[data-value='most-recent-space']");
   Assert.ok(
     !recent.hasAttribute("image"),
     "landing wherever the user was last is shown without an icon"

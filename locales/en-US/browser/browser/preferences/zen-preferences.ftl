@@ -193,9 +193,6 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder =
     .placeholder = Type something...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update =
-   .label = Automatically update installed mods on startup
-
 zen-settings-workspaces-force-container-tabs-to-workspace =
     .label = Switch to workspace where container is set as default when opening container tabs
 
@@ -219,10 +216,10 @@ category-zen-CKS =
 category-zen-marketplace =
     .tooltiptext = Zen Mods
 
-zenCKSOption-group-zen-compact-mode = Compact Mode
-zenCKSOption-group-zen-workspace = Workspaces
-zenCKSOption-group-zen-other = Other Zen Features
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Split View
+zenCKSOption-group-zen-layout = Layout
 
 zen-text-action-copy-url-shortcut = Copy current URL
 zen-text-action-copy-url-markdown-shortcut = Copy current URL as Markdown

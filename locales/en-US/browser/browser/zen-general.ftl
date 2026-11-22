@@ -51,16 +51,14 @@ pictureinpicture-minimize-btn =
 
 zen-panel-ui-gradient-generator-custom-color = Custom Color
 
-zen-copy-current-url-confirmation = Copied current URL!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
-zen-copy-multi-urls-confirmation =
+zen-copy-urls-confirmation =
     { $count ->
-        [one] Copied { $count } URL!
+        [1] Copied current URL!
        *[other] Copied { $count } URLs!
     }
-zen-copy-multi-urls-as-markdown-confirmation =
+zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [one] Copied { $count } URL as Markdown!
+        [1] Copied current URL as Markdown!
        *[other] Copied { $count } URLs as Markdown!
     }
 
@@ -76,8 +74,11 @@ zen-pinned-tab-edit-url-title = Edit Pinned URL
 zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tab has been successfully renamed!
 zen-background-tab-opened-toast = New background tab opened!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Workspace has been successfully renamed!
 zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
+zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 
 zen-toggle-compact-mode-button =
@@ -176,4 +177,16 @@ zen-window-sync-migration-dialog-accept = Got It
 
 zen-appmenu-new-blank-window =
     .label = New Blank Window
+zen-appmenu-new-little-window =
+    .label = New Little Window
+
+zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Open in { -brand-short-name }
+zen-little-window-choose-space =
+    .tooltiptext = Choose a Space
+zen-little-window-title = Little Zen
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+zen-little-window-download-source =
+    .value = From { $host }
 

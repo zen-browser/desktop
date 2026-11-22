@@ -27,6 +27,17 @@ const kTextures = ["none", "grain", "sand", "denim", "tweed"];
 const kDefaultTexture = "grain";
 const kGrainDefault = 10 / 16;
 
+const kBlankWindowColors = {
+  dark: [
+    [9, 9, 29],
+    [21, 9, 28],
+  ],
+  light: [
+    [224, 224, 238],
+    [248, 233, 228],
+  ],
+};
+
 function toLinear(c) {
   const a = Math.abs(c);
   return (
@@ -185,6 +196,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       !gZenWorkspaces.shouldHaveWorkspaces ||
       gZenWorkspaces.privateWindowOrDisabled
     ) {
+      if (
+        gZenWorkspaces.shouldHaveWorkspaces &&
+        !gZenWorkspaces.isPrivateWindow
+      ) {
+        this.#initBlankWindowTheme();
+      }
       return;
     }
     this.promiseInitialized = new Promise(resolve => {
@@ -265,6 +282,56 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.#nativeAccentColorCache = null;
     this.updateCurrentWorkspace();
     Services.obs.notifyObservers(null, "zen-theme-change");
+  }
+
+  #initBlankWindowTheme() {
+    const apply = () => this.#applyBlankWindowTheme();
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "windowSchemeType",
+      "zen.view.window.scheme",
+      2,
+      apply
+    );
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", apply);
+    apply();
+  }
+
+  #applyBlankWindowTheme() {
+    const palette = kBlankWindowColors[this.isDarkMode ? "dark" : "light"];
+    const colors = palette.map((c, index) => ({
+      c,
+      isCustom: false,
+      algorithm: "",
+      isPrimary: index === 0,
+      lightness: Math.round((Math.max(...palette[0]) / 255) * 100),
+      type: EXPLICIT_LIGHTNESS_TYPE,
+    }));
+    this.currentOpacity = lazy.MAX_OPACITY;
+    const dominantColor = this.getMostDominantColor(colors);
+    const isDarkMode = this.shouldBeDarkMode(dominantColor);
+    lazy.browserBackgroundElement.style.setProperty(
+      "--zen-main-browser-background",
+      this.getGradient(colors)
+    );
+    lazy.toolbarBackgroundElement.style.setProperty(
+      "--zen-main-browser-background-toolbar",
+      this.getGradient(colors, true)
+    );
+    const root = document.documentElement;
+    const styles = {
+      "--zen-primary-color": this.getAccentColorForUI(
+        dominantColor,
+        isDarkMode
+      ),
+      ...this.toolbarTextStyles(dominantColor, isDarkMode),
+      "--toolbar-color-scheme": isDarkMode ? "dark" : "light",
+    };
+    for (const [property, value] of Object.entries(styles)) {
+      root.style.setProperty(property, value, "important");
+    }
   }
 
   get isDarkMode() {
@@ -1981,15 +2048,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         );
         [backgroundElement, toolbarElement].forEach(element => {
           browser.gZenThemePicker.keepGrainAsOld(element);
-          element.style.setProperty(
-            "--zen-background-opacity",
-            browser.gZenThemePicker.previousBackgroundOpacity ?? 1
-          );
+          element.style.setProperty("--zen-background-opacity", 1);
         });
-        if (browser.gZenThemePicker.previousBackgroundResolve) {
-          browser.gZenThemePicker.previousBackgroundResolve();
-        }
-        delete browser.gZenThemePicker.previousBackgroundOpacity;
       }
 
       browser.gZenThemePicker.resetCustomColorList();
@@ -2118,13 +2178,20 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      const gradient = browser.gZenThemePicker.getGradient(
-        workspaceTheme.gradientColors
-      );
-      const gradientToolbar = browser.gZenThemePicker.getGradient(
-        workspaceTheme.gradientColors,
-        true
-      );
+      const cached = theme
+        ? null
+        : browser.gZenThemePicker.getGradientForWorkspace(
+            appliesToWindow ? windowWorkspace : workspace
+          );
+      const gradient =
+        cached?.gradient ??
+        browser.gZenThemePicker.getGradient(workspaceTheme.gradientColors);
+      const gradientToolbar =
+        cached?.toolbarGradient ??
+        browser.gZenThemePicker.getGradient(
+          workspaceTheme.gradientColors,
+          true
+        );
       if (appliesToWindow) {
         browser.gZenThemePicker.updateNoise(
           workspaceTheme.texture,
@@ -2462,10 +2529,24 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
   }
 
+  #gradientSignature(theme) {
+    const colors = theme.gradientColors ?? [];
+    return JSON.stringify([
+      theme,
+      this.isDarkMode,
+      colors.length ? null : this.getNativeAccentColor(),
+    ]);
+  }
+
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {
     const uuid = workspace.uuid;
+    const signature = this.#gradientSignature(workspace.theme ?? {});
     let cachedData = this.#gradientsCache[uuid];
-    if (cachedData && !(getGradient && !cachedData.gradient)) {
+    if (
+      cachedData &&
+      cachedData.signature === signature &&
+      !(getGradient && !cachedData.gradient)
+    ) {
       return cachedData;
     }
     const previousOpacity = this.currentOpacity;
@@ -2499,6 +2580,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       "--zen-primary-color": primaryColor,
     };
     this.#gradientsCache[uuid] = {
+      signature,
       gradient,
       toolbarGradient,
       grain: theme.texture ?? 0,

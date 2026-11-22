@@ -9,11 +9,11 @@
     }
   },
   "border-color": {
-    "--zen-dialog-box-border-light-color": {
-      "value": "var(--color-black-alpha-20)"
-    },
-    "--zen-dialog-box-outline-color": {
-      "value": { "light": "transparent", "dark": "rgba(161, 161, 161, 0.5)" }
+    "--zen-dialog-border-color": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.08)",
+        "dark": "rgba(255, 255, 255, 0.08)"
+      }
     }
   },
   "box-shadow": {

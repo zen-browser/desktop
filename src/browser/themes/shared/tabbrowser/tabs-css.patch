@@ -129,8 +129,10 @@ index 793a763908b4aa133f79c164f9d3cdfbec616273..ee72b9466b8d7c240a221acb9bf3adbf
    margin-block: var(--tab-margin-block);
  }
  
-@@ -2943,7 +2934,6 @@ tab-group {
-     --tab-close-button-border-color-active: var(--button-border-color-active);
+@@ -2943,9 +2934,8 @@ tab-group {
+     .tabbrowser-tab:not([dragtarget]) {
+       overflow-clip-margin: max(var(--tab-margin-overflow-clip), calc(var(--tab-close-button-overhang) - var(--tab-padding-block-start)));
+     }
  
      .tabbrowser-tab[pinned] {
 -      width: var(--tab-collapsed-width);
@@ -141,7 +143,7 @@ index 793a763908b4aa133f79c164f9d3cdfbec616273..ee72b9466b8d7c240a221acb9bf3adbf
        display: block;
        position: absolute;
        inset: auto;
--      top: -3px;
+-      top: calc(var(--border-width) - var(--tab-close-button-overhang));
 -      inset-inline-start: 2px;
 +      top: -2px;
 +      inset-inline-start: -2px;

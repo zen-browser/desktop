@@ -4,6 +4,15 @@
 
 import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.sys.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenLittleWindow:
+    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
+});
+
+const LOGIN_URL = "https://github.com/login";
+
 export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "github";
 
@@ -400,10 +409,10 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
-        const tab = this.manager.window.gBrowser.addTrustedTab(
-          "https://github.com/login"
-        );
-        this.manager.window.gBrowser.selectedTab = tab;
+        const win = this.manager.window;
+        if (!lazy.ZenLittleWindow.open({ openerWindow: win, url: LOGIN_URL })) {
+          win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(LOGIN_URL);
+        }
         break;
       }
       case "zen-live-folder-github-no-filter": {

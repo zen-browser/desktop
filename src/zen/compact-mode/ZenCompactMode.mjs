@@ -160,7 +160,7 @@ window.gZenCompactModeManager = {
   },
 
   get shouldBeCompact() {
-    return !document.documentElement.hasAttribute("popup-window");
+    return !gZenVerticalTabsManager.hidesTabsToolbar;
   },
 
   set preference(value) {

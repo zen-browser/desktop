@@ -15,8 +15,6 @@ let lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   gZenSpaceRoutingManager:
     "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
-  ZenLittleWindow:
-    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
 });
 
 const PANEL_FADE_MS = 300;
@@ -176,9 +174,8 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
    * @param {MouseEvent} event - The click on a picker
    * @param {string} picked - The destination it stands on
    * @param {Function} onPick - Handed what the user picks instead
-   * @param {boolean} [offerLittleWindow] - Whether a little window is a choice
    */
-  #openPicker(event, picked, onPick, offerLittleWindow = false) {
+  #openPicker(event, picked, onPick) {
     const anchor = event.currentTarget;
     const menu = (this.#picker ??= this.#buildPicker());
     const recent = document.createXULElement("menuitem");
@@ -190,19 +187,13 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
     recent.setAttribute("type", "radio");
     recent.setAttribute("name", "zen-library-routing-space");
     recent.toggleAttribute("checked", picked === MOST_RECENT_SPACE);
-    const items = [recent];
-    if (offerLittleWindow) {
-      const little = document.createXULElement("menuitem");
-      little.dataset.value = LITTLE_WINDOW;
-      little.setAttribute(
-        "data-l10n-id",
-        "library-space-routing-little-window"
-      );
-      little.setAttribute("type", "radio");
-      little.setAttribute("name", "zen-library-routing-space");
-      little.toggleAttribute("checked", picked === LITTLE_WINDOW);
-      items.unshift(little, document.createXULElement("menuseparator"));
-    }
+    const little = document.createXULElement("menuitem");
+    little.dataset.value = LITTLE_WINDOW;
+    little.setAttribute("data-l10n-id", "library-space-routing-little-window");
+    little.setAttribute("type", "radio");
+    little.setAttribute("name", "zen-library-routing-space");
+    little.toggleAttribute("checked", picked === LITTLE_WINDOW);
+    const items = [little, document.createXULElement("menuseparator"), recent];
     for (const space of this.#spaces) {
       const item = document.createXULElement("menuitem");
       item.dataset.value = space.uuid;
@@ -451,15 +442,14 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
   /**
    * @param {string} value - The space that is picked
    * @param {Function} onPick - Handed what the user picks instead
-   * @param {boolean} [offerLittleWindow] - Whether a little window is a choice
    * @returns {object} What lit should draw
    */
-  #renderSpacePicker(value, onPick, offerLittleWindow = false) {
+  #renderSpacePicker(value, onPick) {
     const spaces = this.#spaces;
     let picked = MOST_RECENT_SPACE;
     if (spaces.some(space => space.uuid === value)) {
       picked = value;
-    } else if (offerLittleWindow && value === LITTLE_WINDOW) {
+    } else if (value === LITTLE_WINDOW) {
       picked = LITTLE_WINDOW;
     }
     const space = this.#space(picked);
@@ -467,8 +457,7 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
       <button
         class="zen-library-routing-select"
         value=${picked}
-        @click=${event =>
-          this.#openPicker(event, picked, onPick, offerLittleWindow)}
+        @click=${event => this.#openPicker(event, picked, onPick)}
       >
         ${this.#renderDestinationIcon(picked)}
         ${
@@ -559,7 +548,11 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
                   >`
                 : html`<span
                     class="zen-library-routing-value"
-                    data-l10n-id="library-space-routing-most-recent-space"
+                    data-l10n-id=${
+                      route.openIn === LITTLE_WINDOW
+                        ? "library-space-routing-little-window"
+                        : "library-space-routing-most-recent-space"
+                    }
                   ></span>`
             }
           </div>
@@ -590,8 +583,7 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
         <h3 data-l10n-id="library-space-routing-external-links"></h3>
         ${this.#renderSpacePicker(
           lazy.gZenSpaceRoutingManager.getDefaultExternalRoute(),
-          value => this.#setDefaultExternal(value),
-          lazy.ZenLittleWindow.enabled
+          value => this.#setDefaultExternal(value)
         )}
       </div>
     `;

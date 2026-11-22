@@ -7,17 +7,17 @@
             <html:h2 data-l10n-id="zen-settings-window-little-header"/>
             <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-little-description"/>
             <html:div class="zen-settings-card">
-              <html:div class="zen-settings-row zen-settings-toggle-row">
-                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-enabled"/>
-                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.little-window.enabled"/>
-              </html:div>
 #if defined(XP_MACOSX) || defined(XP_WIN)
-              <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="zen.little-window.enabled">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span id="zen-settings-little-shortcut-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-global-shortcut"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="zen.keyboard.global-shortcuts.enabled"/>
               </html:div>
 #endif
-              <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="zen.little-window.enabled">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span id="zen-settings-little-trigger-label" class="zen-settings-row-text"/>
+                <html:moz-toggle id="zen-settings-little-trigger" class="zen-settings-toggle"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-external-links"/>
                 <html:moz-toggle id="zen-settings-little-external-links" class="zen-settings-toggle"/>
               </html:div>
@@ -28,20 +28,11 @@
             <html:h2 data-l10n-id="zen-settings-window-glance-header"/>
             <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-glance-description"/>
             <html:div class="zen-settings-card">
-              <html:div class="zen-settings-row" data-depends-on="zen.glance.enabled">
-                <html:span id="zen-settings-glance-trigger-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-glance-trigger"/>
-                <menulist data-pref="zen.glance.activation-method" aria-labelledby="zen-settings-glance-trigger-label">
-                  <menupopup>
-                    <menuitem value="ctrl" data-l10n-id="zen-settings-window-glance-trigger-ctrl"/>
-                    <menuitem value="alt" data-l10n-id="zen-settings-window-glance-trigger-alt"/>
-                    <menuitem value="shift" data-l10n-id="zen-settings-window-glance-trigger-shift"/>
-#ifdef XP_MACOSX
-                    <menuitem value="meta" data-l10n-id="zen-settings-window-glance-trigger-meta"/>
-#endif
-                  </menupopup>
-                </menulist>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span id="zen-settings-glance-trigger-label" class="zen-settings-row-text"/>
+                <html:moz-toggle id="zen-settings-glance-trigger" class="zen-settings-toggle"/>
               </html:div>
-              <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="zen.glance.enabled">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
                 <html:span class="zen-settings-row-text">
                   <html:span data-l10n-id="zen-settings-window-glance-external-links"/>
                   <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-glance-external-links-note"/>

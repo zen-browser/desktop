@@ -22,3 +22,6 @@
 
 - name: zen.splitView.drag-over-split-threshold
   value: 40
+
+- name: zen.splitView.link-activation-method
+  value: "alt"

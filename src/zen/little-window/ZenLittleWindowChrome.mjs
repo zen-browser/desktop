@@ -391,7 +391,10 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   #onUrlbarBlur(aEvent) {
-    if (!gURLBar.contains(aEvent.relatedTarget)) {
+    if (
+      !gURLBar.contains(aEvent.relatedTarget) &&
+      !Services.prefs.getBoolPref("ui.popup.disable_autohide", false)
+    ) {
       this.#closeUnlessNavigating();
     }
   }

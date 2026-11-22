@@ -112,42 +112,15 @@ zen-settings-window-containers-remove-cancel = Cancel
 
 zen-settings-window-little-header = Little { -brand-short-name }
 zen-settings-window-little-description = Little { -brand-short-name } is a smaller, simpler { -brand-short-name } window, perfect for links from other apps or temporary links you don’t want in the main { -brand-short-name } window.
-zen-settings-window-little-enabled = Enable Little { -brand-short-name }
 zen-settings-window-little-global-shortcut = Open Little { -brand-short-name } with its shortcut from any app
 # Variables:
 #   $shortcut (String): the keyboard shortcut, e.g. ⌥⌘N
 zen-settings-window-little-global-shortcut-key = Open Little { -brand-short-name } when I press { $shortcut } in any app
+zen-settings-window-little-trigger = Open Little { -brand-short-name } when clicking on links with { $shortcut } held
 zen-settings-window-little-external-links = Links from other apps open in Little { -brand-short-name }
 zen-settings-window-glance-header = Glance
 zen-settings-window-glance-description = Glance opens a link in a preview on top of the current tab. It’s perfect for quick lookups.
-zen-settings-window-glance-trigger = Open Glance when clicking on links with
-zen-settings-window-glance-trigger-ctrl =
-    .label = { PLATFORM() ->
-        [macos] ⌃ held
-       *[other] Ctrl held
-    }
-    .aria-label = { PLATFORM() ->
-        [macos] Control held
-       *[other] Ctrl held
-    }
-zen-settings-window-glance-trigger-alt =
-    .label = { PLATFORM() ->
-        [macos] ⌥ held
-       *[other] Alt held
-    }
-    .aria-label = { PLATFORM() ->
-        [macos] Option held
-       *[other] Alt held
-    }
-zen-settings-window-glance-trigger-shift =
-    .label = { PLATFORM() ->
-        [macos] ⇧ held
-       *[other] Shift held
-    }
-    .aria-label = Shift held
-zen-settings-window-glance-trigger-meta =
-    .label = ⌘ held
-    .aria-label = Command held
+zen-settings-window-glance-trigger = Open Glance when clicking on links with { $shortcut } held
 zen-settings-window-glance-external-links = Open Glance when clicking on links to other sites
 zen-settings-window-glance-external-links-note = This only affects Essentials and pinned tabs
 zen-settings-window-space-routing = Choose where links open inside { -brand-short-name }.

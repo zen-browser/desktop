@@ -45,6 +45,7 @@
   &:not([zen-window-buttons-reversed]) #nav-bar {
     width: 100% !important;
     margin-left: 0 !important;
+    padding-inline: 0;
   }
 
   #urlbar-container {

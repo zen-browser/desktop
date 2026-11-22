@@ -3,9 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # The engine this build is based on, not meant to be translated.
--zen-engine-name = Firefox
+-zen-engine-name = فايرفوكس
 zen-about-dialog-title = 
-    .title = About { -brand-full-name }
+    .title = حول { -brand-full-name }
 zen-about-app-name = { -brand-full-name }
 # Variables:
 #   $version (String): Zen version, e.g. 1.24b

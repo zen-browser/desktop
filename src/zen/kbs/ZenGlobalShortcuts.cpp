@@ -308,6 +308,7 @@ void ZenGlobalShortcuts::Fire(uint32_t aHotKeyId) {
     Sync();
     return;
   }
+  PlatformWillRunKey();
   nsContentUtils::DispatchXULCommand(
       target, true, nullptr, nullptr, !!(modifiers & MODIFIER_CONTROL),
       !!(modifiers & MODIFIER_ALT), !!(modifiers & MODIFIER_SHIFT),

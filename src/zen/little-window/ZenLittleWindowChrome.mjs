@@ -7,6 +7,7 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
   ShortcutUtils: "resource://gre/modules/ShortcutUtils.sys.mjs",
   ZenLittleWindow:
     "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
@@ -32,9 +33,13 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   #urlbarOnly = false;
   #urlbarOnlyObserver = null;
   #isWaitingToShow = false;
+  #isActive = false;
+  #sizeToRemember = null;
+  #shownHeight = 0;
   #isWatchingUrlbar = false;
   #isNavigating = false;
   #urlbarOnlyProgressListener = null;
+  #urlbarBlurListener = event => this.#onUrlbarBlur(event);
 
   constructor() {
     super();
@@ -45,6 +50,15 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     if (typeof window._zenStartupUnsyncedUserContextId == "number") {
       this.#userContextId = window._zenStartupUnsyncedUserContextId;
     }
+    window.addEventListener("unload", () => this.#returnToPreviousApp(), {
+      once: true,
+    });
+    window.addEventListener("activate", () => {
+      this.#isActive = true;
+    });
+    window.addEventListener("deactivate", () =>
+      setTimeout(() => this.#onDeactivated(), 0)
+    );
     if (document.documentElement.hasAttribute(URLBAR_ONLY_ATTRIBUTE)) {
       this.#urlbarOnly = true;
       this.#baseWindow.visibility = false;
@@ -65,13 +79,16 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   init() {
-    this.#buildBackButton();
     this.#buildOpenInSpace();
     this.#buildContainerPill();
     this.#buildUrlbarCloseButton();
     if (this.#urlbarOnly) {
       this.#initUrlbarOnly();
     }
+
+    this.#watchDownloads();
+    this.#rememberSize();
+    this.#nameWindow();
 
     // The space the page would go to can change while this window is in the
     // background.
@@ -88,6 +105,153 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
         this.#maybeShowIntro();
       }
     });
+  }
+
+  async #watchDownloads() {
+    const list = await window.Downloads.getList(window.Downloads.ALL);
+    if (window.closed) {
+      return;
+    }
+    const cards = new Map();
+    let isListening = false;
+    const view = {
+      onDownloadAdded: download => {
+        if (isListening && this.#isOwnDownload(download)) {
+          cards.set(download, this.#showDownload(download));
+        }
+      },
+      onDownloadChanged: download => {
+        const card = cards.get(download);
+        if (card) {
+          this.#updateDownload(card, download);
+        }
+      },
+      onDownloadRemoved: download => {
+        cards.get(download)?.remove();
+        cards.delete(download);
+      },
+    };
+    window.addEventListener("unload", () => list.removeView(view), {
+      once: true,
+    });
+    await list.addView(view);
+    isListening = true;
+  }
+
+  #isOwnDownload(download) {
+    const context = BrowsingContext.get(download.source.browsingContextId);
+    return context?.topChromeWindow == window;
+  }
+
+  #showDownload(download) {
+    let container = document.getElementById("zen-little-window-downloads");
+    if (!container) {
+      container = document.createXULElement("hbox");
+      container.id = "zen-little-window-downloads";
+      document.getElementById("tabbrowser-tabbox").append(container);
+    }
+    const fileName = PathUtils.filename(download.target.path);
+    const card = window.MozXULElement.parseXULToFragment(`
+      <hbox class="zen-little-window-download" align="center" role="button" tabindex="0">
+        <hbox class="zen-little-window-download-progress" align="center" pack="center">
+          <image class="zen-little-window-download-icon" />
+        </hbox>
+        <vbox flex="1">
+          <label class="zen-little-window-download-name" crop="center" />
+          <label class="zen-little-window-download-status" crop="end" />
+          <label class="zen-little-window-download-source" crop="end" />
+        </vbox>
+        <toolbarbutton class="zen-little-window-download-close close-icon"
+                       data-l10n-id="urlbar-search-mode-indicator-close" />
+      </hbox>
+    `).firstElementChild;
+    card.querySelector("image").src = `moz-icon://${fileName}?size=32`;
+    card.querySelector(".zen-little-window-download-name").value = fileName;
+    const source = card.querySelector(".zen-little-window-download-source");
+    try {
+      document.l10n.setAttributes(source, "zen-little-window-download-source", {
+        host: Services.io.newURI(download.source.url).displayHost,
+      });
+    } catch {
+      source.hidden = true;
+    }
+    this.#updateDownload(card, download);
+    const closeButton = card.querySelector(".zen-little-window-download-close");
+    closeButton.addEventListener("command", () => {
+      if (!download.stopped) {
+        download
+          .cancel()
+          .then(() => download.removePartialData())
+          .catch(console.error);
+      }
+      card.remove();
+    });
+    this.#onActivate(card, event => {
+      if (!closeButton.contains(event.target) && download.succeeded) {
+        download.showContainingDirectory();
+      }
+    });
+    container.append(card);
+    return card;
+  }
+
+  #updateDownload(card, download) {
+    const isDownloading = !download.stopped;
+    card.toggleAttribute("done", download.succeeded);
+    card.toggleAttribute("downloading", isDownloading);
+    if (!isDownloading) {
+      return;
+    }
+    card.style.setProperty(
+      "--zen-little-window-download-progress",
+      `${download.hasProgress ? download.progress : 0}%`
+    );
+    const [statusText, secondsLeft] = lazy.DownloadUtils.getDownloadStatus(
+      download.currentBytes,
+      download.hasProgress ? download.totalBytes : -1,
+      download.speed,
+      card._secondsLeft
+    );
+    card._secondsLeft = secondsLeft;
+    card.querySelector(".zen-little-window-download-status").value = statusText;
+  }
+
+  async #nameWindow() {
+    const windowName = await document.l10n.formatValue(
+      "zen-little-window-title"
+    );
+    if (window.closed) {
+      return;
+    }
+    const getTitle = gBrowser.getWindowTitleForBrowser.bind(gBrowser);
+    gBrowser.getWindowTitleForBrowser = browser => {
+      const brand = document.getElementById("mainWindowTitle")?.textContent;
+      const parts = getTitle(browser)
+        .split(" — ")
+        .filter(part => part && part != brand);
+      return [...parts, windowName].join(" — ");
+    };
+    gBrowser.updateTitlebar();
+  }
+
+  #rememberSize() {
+    window.addEventListener("resize", () => {
+      if (!this.#urlbarOnly && window.windowState == window.STATE_NORMAL) {
+        this.#sizeToRemember = {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      }
+    });
+    window.addEventListener(
+      "unload",
+      () => {
+        if (this.#sizeToRemember) {
+          lazy.ZenLittleWindow.rememberWindowSize(this.#sizeToRemember);
+        }
+      },
+      { once: true }
+    );
   }
 
   #maybeShowIntro() {
@@ -209,6 +373,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       }
       gBrowser.addTabsProgressListener(this.#urlbarOnlyProgressListener);
       gURLBar.controller.addListener(this);
+      gURLBar.inputField.addEventListener("blur", this.#urlbarBlurListener);
     });
   }
 
@@ -222,9 +387,39 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   onViewClose() {
-    if (!this.#urlbarOnly || this.#isNavigating) {
+    this.#closeUnlessNavigating();
+  }
+
+  #onUrlbarBlur(aEvent) {
+    if (!gURLBar.contains(aEvent.relatedTarget)) {
+      this.#closeUnlessNavigating();
+    }
+  }
+
+  #returnToPreviousApp() {
+    if (
+      window._zenReturnsToPreviousApplication &&
+      (this.#isActive || Services.focus.activeWindow == window)
+    ) {
+      delete window._zenReturnsToPreviousApplication;
+      // eslint-disable-next-line mozilla/valid-services
+      Services.zen.returnToPreviousApplication();
+    }
+  }
+
+  #onDeactivated() {
+    this.#isActive = false;
+    const active = Services.focus.activeWindow;
+    if (active && active != window) {
+      delete window._zenReturnsToPreviousApplication;
+    }
+  }
+
+  #closeUnlessNavigating() {
+    if (!this.#urlbarOnly || this.#isNavigating || this.#isWaitingToShow) {
       return;
     }
+    this.#returnToPreviousApp();
     this.#baseWindow.visibility = false;
     setTimeout(() => {
       if (window.closed) {
@@ -245,6 +440,10 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     this.#isWatchingUrlbar = false;
     Services.obs.removeObserver(this, URLBAR_NAVIGATION_TOPIC);
     window.gURLBar?.controller.removeListener(this);
+    window.gURLBar?.inputField.removeEventListener(
+      "blur",
+      this.#urlbarBlurListener
+    );
   }
 
   async #showWithUrlbarReady() {
@@ -262,6 +461,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       return;
     }
     const height = this.#fitToUrlbar() ?? window.outerHeight;
+    this.#shownHeight = height;
     const { availLeft, availTop, availWidth, availHeight } = window.screen;
     window.moveTo(
       Math.round(availLeft + (availWidth - window.outerWidth) / 2),
@@ -359,7 +559,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
         availLeft + availWidth - width
       );
       const y = clamp(
-        window.screenY,
+        window.screenY - Math.round((height - this.#shownHeight) / 2),
         availTop,
         availTop + availHeight - height
       );
@@ -370,20 +570,6 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
   }
 
   // Mark: open in space
-
-  // Only there while there is a page to go back to: the command it runs is
-  // disabled otherwise, and the stylesheet hides a disabled one.
-  #buildBackButton() {
-    document.getElementById("nav-bar-customization-target").before(
-      window.MozXULElement.parseXULToFragment(`
-        <toolbarbutton id="zen-little-window-back"
-                       class="toolbarbutton-1 chromeclass-toolbar-additional"
-                       data-l10n-id="toolbar-button-back-3"
-                       tooltip="back-button-tooltip"
-                       command="Browser:Back" />
-      `)
-    );
-  }
 
   // Closes the open URL bar, which for a window that is only its URL bar is
   // the window.
@@ -446,9 +632,10 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     // platform puts them on the left.
     const target = document.getElementById("nav-bar-customization-target");
     if (gZenVerticalTabsManager.isWindowsStyledButtons) {
-      (document.getElementById("zen-little-window-back") ?? target).before(
-        fragment
-      );
+      const spaces = fragment.querySelector("#zen-little-window-spaces-button");
+      popup.setAttribute("position", "bottomleft topleft");
+      spaces.parentElement.prepend(spaces);
+      target.before(fragment);
     } else {
       target.after(fragment);
     }
@@ -532,6 +719,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       isContextMenu: true,
       excludeUserContextId: this.#currentUserContextId,
       showDefaultTab: true,
+      showAddContainer: false,
     });
     const defaultItem = aEvent.target.querySelector('[data-usercontextid="0"]');
     if (defaultItem) {

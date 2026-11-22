@@ -545,9 +545,15 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   openGlance(data, existingTab = null, ownerTab = null) {
     if (gZenVerticalTabsManager.hidesTabsToolbar) {
       if (!existingTab && this.#isGlanceLoadAllowed(data)) {
-        window.openLinkIn(data.url, "tab", {
-          triggeringPrincipal: data.triggeringPrincipal,
-        });
+        const params = { triggeringPrincipal: data.triggeringPrincipal };
+        if (window.gZenLittleWindow) {
+          return ChromeUtils.importESModule(
+            "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs"
+          )
+            .ZenLittleWindow.openInRegularWindow(data.url, params)
+            .then(() => null);
+        }
+        window.openLinkIn(data.url, "tab", params);
       }
       return Promise.resolve(null);
     }

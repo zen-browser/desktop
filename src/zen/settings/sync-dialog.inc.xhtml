@@ -1,0 +1,74 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+    <html:dialog id="zen-settings-sync-dialog" class="zen-settings-dialog" aria-labelledby="zen-settings-sync-dialog-title">
+      <html:h1 id="zen-settings-sync-dialog-title" data-l10n-id="zen-settings-window-sync-header"/>
+      <html:div id="zen-settings-sync-setup" class="zen-settings-group">
+        <html:div class="zen-settings-card">
+          <html:div class="zen-settings-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-off"/>
+            <html:button class="zen-settings-button zen-settings-button-primary" data-action="sync-turn-on" data-l10n-id="zen-settings-window-sync-turn-on"/>
+          </html:div>
+        </html:div>
+      </html:div>
+
+      <html:div id="zen-settings-sync-engines" class="zen-settings-group">
+        <html:div class="zen-settings-card">
+          <html:div class="zen-settings-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-status"/>
+            <html:span id="zen-settings-sync-status" class="zen-settings-status" data-state="success" aria-live="polite">
+              <html:span class="zen-settings-status-dot no-squircles"/>
+              <html:span id="zen-settings-sync-status-text"/>
+            </html:span>
+            <html:button id="zen-settings-sync-now" class="zen-settings-button" data-action="sync-now" data-l10n-id="zen-settings-window-sync-now"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-engine-spaces"/>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="services.sync.engine.spaces"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row zen-settings-sub-row" data-depends-on="services.sync.engine.spaces">
+            <html:span class="zen-settings-row-text">
+              <html:span data-l10n-id="zen-settings-window-sync-spaces-unpinned"/>
+              <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-sync-spaces-unpinned-description"/>
+            </html:span>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="zen.spaces-sync.normal-tabs"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-engine-bookmarks"/>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="services.sync.engine.bookmarks"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-engine-history"/>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="services.sync.engine.history"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-engine-tabs"/>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="services.sync.engine.tabs"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-engine-passwords"/>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="services.sync.engine.passwords"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-engine-addons"/>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="services.sync.engine.addons"/>
+          </html:div>
+          <html:div class="zen-settings-row zen-settings-toggle-row">
+            <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-sync-engine-prefs"/>
+            <html:moz-toggle class="zen-settings-toggle" data-pref="services.sync.engine.prefs"/>
+          </html:div>
+        </html:div>
+        <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-sync-note"/>
+      </html:div>
+
+      <html:div id="zen-settings-sync-actions" class="zen-settings-actions">
+        <html:button class="zen-settings-button" data-action="sync-connect-device" data-l10n-id="zen-settings-window-sync-connect-device"/>
+        <html:button class="zen-settings-button" data-action="sync-sign-out" data-l10n-id="zen-settings-window-sync-sign-out"/>
+        <html:button class="zen-settings-button" data-action="open-sync-settings" data-l10n-id="zen-settings-window-sync-more"/>
+      </html:div>
+
+      <html:div class="zen-settings-actions">
+        <html:button class="zen-settings-button zen-settings-button-primary" data-action="sync-close-dialog" data-l10n-id="zen-settings-window-dialog-done"/>
+      </html:div>
+    </html:dialog>

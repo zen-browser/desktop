@@ -7,12 +7,18 @@ EXTRA_JS_MODULES.zen.kbs += [
 ]
 
 EXPORTS.mozilla += [
+    "ZenBlockedShortcuts.h",
     "ZenGlobalShortcuts.h",
 ]
 
 SOURCES += [
-    "ZenGlobalShortcuts.cpp",
+    "ZenBlockedShortcuts.cpp",
 ]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] in ("windows", "cocoa"):
+    SOURCES += [
+        "ZenGlobalShortcuts.cpp",
+    ]
 
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
     DIRS += ["windows"]

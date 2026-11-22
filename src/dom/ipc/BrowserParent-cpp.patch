@@ -1,0 +1,22 @@
+diff --git a/dom/ipc/BrowserParent.cpp b/dom/ipc/BrowserParent.cpp
+index 4538bc60edb59109c03c204730cf9e610694352d..0ea7f46ebac03314794e43cfd5e1fce5c49f1207 100644
+--- a/dom/ipc/BrowserParent.cpp
++++ b/dom/ipc/BrowserParent.cpp
+@@ -117,6 +117,7 @@
+ #include "mozilla/NullPrincipal.h"
+ #include "mozilla/ProfilerLabels.h"
+ #include "mozilla/WebBrowserPersistDocumentParent.h"
++#include "mozilla/ZenBlockedShortcuts.h"
+ #include "mozilla/dom/CanonicalBrowsingContext.h"
+ #include "mozilla/dom/CrashReport.h"
+ #include "mozilla/dom/WindowGlobalParent.h"
+@@ -2809,6 +2810,9 @@ mozilla::ipc::IPCResult BrowserParent::RecvReplyKeyEvent(
+   // was ignored in the child.  In the case, we should ignore it too because the
+   // focused web app didn't have a chance to prevent its default.
+   if (aEvent.PropagationStopped()) {
++    RefPtr<Element> frameElement = mFrameElement;
++    zen::ZenBlockedShortcuts::OnKeyPressSuppressedByContent(frameElement,
++                                                           aEvent);
+     return IPC_OK();
+   }
+ 

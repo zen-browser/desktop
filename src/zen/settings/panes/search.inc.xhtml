@@ -1,0 +1,34 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-search" class="zen-settings-pane" role="tabpanel" data-pane="search" hidden="hidden">
+          <html:div class="zen-settings-group">
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row">
+                <html:span id="zen-settings-search-engine-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-search-engine"/>
+                <menulist id="zen-settings-search-engine" aria-labelledby="zen-settings-search-engine-label">
+                  <menupopup/>
+                </menulist>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-search-suggestions"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.search.suggest.enabled"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row" data-depends-on="browser.search.suggest.enabled">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-search-suggestions-private"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.search.suggest.enabled.private"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-search-engines-header"/>
+            <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-search-engines-description"/>
+            <html:div id="zen-settings-search-engines" class="zen-settings-card"/>
+            <html:div class="zen-settings-actions">
+              <html:button id="zen-settings-search-add" class="zen-settings-button" data-action="search-add-engine" data-l10n-id="zen-settings-window-search-add"/>
+              <html:button class="zen-settings-button" data-action="search-restore-defaults" data-l10n-id="zen-settings-window-search-restore"/>
+            </html:div>
+          </html:div>
+        </html:section>

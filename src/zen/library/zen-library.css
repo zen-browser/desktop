@@ -373,6 +373,11 @@ zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]:
   &:hover:active {
     scale: 1;
   }
+
+  &[is-clipboard] {
+    outline: 2px dashed var(--zen-primary-color, var(--color-accent-primary));
+    outline-offset: -2px;
+  }
 }
 
 .zen-library-media-frame {

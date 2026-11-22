@@ -32,6 +32,8 @@
 .reusable-relay-masks > button,
 .radio-check,
 #zen-loading-progress-bar,
+#zen-site-data-volume-slider,
+.zen-site-data-volume-fill,
 #statuspanel-label {
   corner-shape: round;
 }

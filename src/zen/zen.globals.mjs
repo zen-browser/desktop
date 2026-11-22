@@ -31,6 +31,7 @@ export default [
   "gZenSessionStore",
   "gZenFolders",
   "gZenMediaController",
+  "gZenTabVolume",
   "gZenGlanceManager",
   "gZenLiveFoldersUI",
 

@@ -4,4 +4,13 @@
 
 EXTRA_JS_MODULES.zen.media += [
     "ZenMediaController.sys.mjs",
+    "ZenTabVolume.sys.mjs",
 ]
+
+SOURCES += [
+    "nsZenMediaBCOverrides.cpp",
+]
+
+include("/ipc/chromium/chromium-config.mozbuild")
+
+FINAL_LIBRARY = "xul"

@@ -94,6 +94,22 @@
           <!-- settings will be inserted here -->
         </vbox>
       </vbox>
+      <hbox id="zen-site-data-volume" role="group" hidden="true">
+        <hbox id="zen-site-data-volume-slider"
+              role="slider"
+              tabindex="0"
+              data-navigable-with-tab-only="true"
+              flex="1"
+              align="center"
+              aria-valuemin="0"
+              data-l10n-id="zen-site-data-volume-slider">
+          <box class="zen-site-data-volume-fill" />
+          <toolbarbutton id="zen-site-data-volume-mute" closemenu="none">
+            <box class="zen-site-data-volume-icon"><box class="zen-site-data-volume-icon-strip" /></box>
+          </toolbarbutton>
+          <label id="zen-site-data-volume-value" />
+        </hbox>
+      </hbox>
       <hbox id="zen-site-data-footer">
         <toolbarbutton id="zen-site-data-security-info"
                        class="subviewbutton zen-interactive-button" />

@@ -1,0 +1,16 @@
+diff --git a/dom/base/nsGlobalWindowOuter.cpp b/dom/base/nsGlobalWindowOuter.cpp
+index c5156a4c93ab687e24694d275df88dbfd00e6052..d0877cba52033ea4c826afd3d84ed092e1dbff87 100644
+--- a/dom/base/nsGlobalWindowOuter.cpp
++++ b/dom/base/nsGlobalWindowOuter.cpp
+@@ -3104,8 +3104,10 @@ bool nsPIDOMWindowOuter::GetAudioMuted() const {
+ void nsPIDOMWindowOuter::RefreshMediaElementsVolume() {
+   RefPtr<AudioChannelService> service = AudioChannelService::GetOrCreate();
+   if (service) {
++    BrowsingContext* bc = GetBrowsingContext();
++    float volume = bc ? bc->Top()->ZenMediaVolume() : 1.0f;
+     // TODO: RefreshAgentsVolume can probably be simplified further.
+-    service->RefreshAgentsVolume(this, 1.0f, GetAudioMuted());
++    service->RefreshAgentsVolume(this, volume, GetAudioMuted());
+   }
+ }
+ 

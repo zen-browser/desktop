@@ -1,0 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "head.js",
+]
+prefs = [
+  "media.useAudioChannelService.testing=true",
+]
+
+["browser_tab_volume_iframes.js"]
+
+["browser_tab_volume_isolation.js"]
+
+["browser_tab_volume_navigation.js"]
+
+["browser_tab_volume_panel.js"]
+
+["browser_tab_volume_tab_close.js"]

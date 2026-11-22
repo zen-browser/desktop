@@ -1,0 +1,31 @@
+diff --git a/dom/audiochannel/AudioChannelService.cpp b/dom/audiochannel/AudioChannelService.cpp
+index 09355c5ec0b0e578be0281e7cef55e72a2d4a030..986ad39697b6ee90ae78f9e487c9a9b90fc4c9d3 100644
+--- a/dom/audiochannel/AudioChannelService.cpp
++++ b/dom/audiochannel/AudioChannelService.cpp
+@@ -8,6 +8,7 @@
+ #include "mozilla/Preferences.h"
+ #include "mozilla/Services.h"
+ #include "mozilla/StaticPtr.h"
++#include "mozilla/dom/BrowsingContext.h"
+ #include "mozilla/dom/Document.h"
+ #include "nsComponentManagerUtils.h"
+ #include "nsContentUtils.h"
+@@ -15,6 +16,7 @@
+ #include "nsIObserverService.h"
+ #include "nsISupportsPrimitives.h"
+ #include "nsPIDOMWindow.h"
++#include "nsPIDOMWindowInlines.h"
+ #include "nsServiceManagerUtils.h"
+ #include "nsThreadUtils.h"
+ 
+@@ -236,6 +238,10 @@ AudioPlaybackConfig AudioChannelService::GetMediaConfig(
+     // If there is no parent, or we are the toplevel we don't continue.
+   } while (window && window != aWindow);
+ 
++  if (BrowsingContext* bc = aWindow->GetBrowsingContext()) {
++    config.mVolume *= bc->Top()->ZenMediaVolume();
++  }
++
+   return config;
+ }
+ 

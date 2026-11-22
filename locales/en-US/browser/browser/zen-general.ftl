@@ -147,6 +147,17 @@ zen-urlbar-copy-url-button =
 
 zen-site-data-setting-site-protection = Tracking Protection
 
+# Variables:
+#   $volume (Number) - The tab volume, where 1 is the volume the site plays at by itself.
+zen-site-data-volume-value = { NUMBER($volume, style: "percent") }
+zen-site-data-volume-muted = Muted
+zen-site-data-volume-slider =
+    .aria-label = Tab volume
+zen-site-data-volume-mute =
+    .tooltiptext = Mute Tab
+zen-site-data-volume-unmute =
+    .tooltiptext = Unmute Tab
+
 # Section: Feature callouts
 
 zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more

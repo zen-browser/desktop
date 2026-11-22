@@ -4,3 +4,9 @@
 
 - name: media.eme.enabled
   value: true
+
+- name: zen.media.tab-volume.enabled
+  value: true
+
+- name: zen.media.tab-volume.max
+  value: 300 # Percent, between 100 (no boost) and 400

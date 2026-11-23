@@ -2083,13 +2083,20 @@ class nsZenWorkspaces {
     }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
+      let changed =
+        emptyTab.getAttribute("zen-workspace-id") !== this.activeWorkspace;
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
-      if (emptyTab.linkedBrowser) {
-        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
-      }
       const container = this.activeWorkspaceStrip;
       if (container && container.firstChild !== emptyTab) {
         container.insertBefore(emptyTab, container.firstChild);
+        changed = true;
+      }
+      // Session store reads the attribute itself when it collects, so the
+      // flush only gets a save scheduled. Skip it when nothing changed: this
+      // runs on every tab open, close and move, and each flush is a round
+      // trip to the tab's content process.
+      if (changed && emptyTab.linkedBrowser) {
+        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
       }
     }
     this.#fixTabPositions();

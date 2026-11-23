@@ -13,6 +13,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
     "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenShareClient: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
   ZenShareError: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
+  ZenLittleWindow:
+    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
 });
 
 const SHARE_DOCUMENT_VERSION = "1";
@@ -34,9 +36,11 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       ]) {
         document.getElementById(id)?.setAttribute("hidden", "true");
       }
-      return;
     }
     delayedStartupPromise.then(() => {
+      if (!this.enabled && !window.gZenLittleWindow) {
+        return;
+      }
       gBrowser.addTabsProgressListener({
         onLocationChange: (browser, webProgress, request, aLocation) => {
           this.#onLocationChange(browser, webProgress, aLocation);
@@ -457,6 +461,24 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       failure();
       return;
     }
+    const target = await this.#importWindow();
+    target.gZenShareManager.openSplitView(item);
+    if (target !== window) {
+      target.focus();
+    }
+    gBrowser.removeTab(shareTab, {
+      closeWindowWithLastTab: false,
+      skipSessionStore: true,
+    });
+  }
+
+  async #importWindow() {
+    return window.gZenLittleWindow
+      ? lazy.ZenLittleWindow.promiseRegularWindow()
+      : window;
+  }
+
+  openSplitView(item) {
     const workspaceId = gZenWorkspaces.activeWorkspace;
     const pinned = item.tabs.every(child => child.isPinned);
     const tabs = item.tabs.map(child => {
@@ -472,10 +494,6 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       return tab;
     });
     gZenViewSplitter.splitTabs(tabs.filter(Boolean), "grid", 0);
-    gBrowser.removeTab(shareTab, {
-      closeWindowWithLastTab: false,
-      skipSessionStore: true,
-    });
     // Shake the new split group in the sidebar.
     const group = tabs[0]?.group;
     if (group?.hasAttribute("split-view-group")) {
@@ -590,7 +608,8 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     button.addEventListener("click", async () => {
       button.disabled = true;
       try {
-        await this.#importDocument(doc);
+        const target = await this.#importWindow();
+        await target.gZenShareManager.importDocument(doc);
         gZenUIManager.showToast("zen-share-imported-toast");
         const tab = gBrowser.getTabForBrowser(browser);
         if (tab) {
@@ -705,7 +724,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     return svg;
   }
 
-  async #importDocument(doc) {
+  async importDocument(doc) {
     const item = doc.shared;
     switch (item.type) {
       case "space":

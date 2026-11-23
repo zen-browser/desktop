@@ -2083,13 +2083,16 @@ class nsZenWorkspaces {
     }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
+      let changed =
+        emptyTab.getAttribute("zen-workspace-id") !== this.activeWorkspace;
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
-      if (emptyTab.linkedBrowser) {
-        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
-      }
       const container = this.activeWorkspaceStrip;
       if (container && container.firstChild !== emptyTab) {
         container.insertBefore(emptyTab, container.firstChild);
+        changed = true;
+      }
+      if (changed && emptyTab.linkedBrowser) {
+        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
       }
     }
     this.#fixTabPositions();

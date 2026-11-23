@@ -235,9 +235,14 @@ class nsZenLittleWindowService {
    * @param {object} aParams What openLinkIn() takes.
    */
   async openInRegularWindow(aUrl, aParams) {
-    const target =
-      lazy.ZenWindowSync.firstSyncedWindow ?? (await this.#openSpacesWindow());
+    const target = await this.promiseRegularWindow();
     target.openLinkIn(aUrl, "tab", { ...aParams, inBackground: false });
+  }
+
+  async promiseRegularWindow() {
+    return (
+      lazy.ZenWindowSync.firstSyncedWindow ?? (await this.#openSpacesWindow())
+    );
   }
 
   /**

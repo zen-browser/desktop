@@ -42,6 +42,16 @@ class ZenGlobalShortcuts final {
 #else
   static void DetachKeyset(mozilla::dom::Element* aKeyset) {}
 #endif
+  /**
+   * @param aKeyset A <keyset> whose keys may have changed, so that what the
+   *   system has registered follows a shortcut being customized rather than
+   *   staying on the combination the key was first read with.
+   */
+#if defined(XP_MACOSX) || defined(XP_WIN)
+  static void RefreshKeyset(mozilla::dom::Element* aKeyset);
+#else
+  static void RefreshKeyset(mozilla::dom::Element* aKeyset) {}
+#endif
 
   /**
    * @brief Called by the platform code, on the main thread, when a registered
@@ -54,6 +64,12 @@ class ZenGlobalShortcuts final {
  private:
   ZenGlobalShortcuts() = delete;
 
+  /**
+   * @brief Takes a keyset to have its global keys read once the DOM has
+   *   settled, which coalesces the several attribute changes one
+   *   customization makes into a single read.
+   */
+  static void QueueKeyset(mozilla::dom::Element* aKeyset);
   /**
    * @brief Reads the global keys of the keysets reported since the last
    *   time, which by now have their keys.

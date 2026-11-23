@@ -94,4 +94,27 @@
               </html:div>
             </html:div>
           </html:div>
+
+          <html:div id="zen-settings-updates" class="zen-settings-group" hidden="hidden">
+            <html:h2 data-l10n-id="zen-settings-window-updates-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row">
+                <html:span id="zen-settings-update-version" class="zen-settings-row-text"/>
+                <html:button class="zen-settings-button" data-action="open-about" data-l10n-id="zen-settings-window-update-check"/>
+              </html:div>
+              <html:div class="zen-settings-row">
+                <html:span id="zen-settings-update-install-label" class="zen-settings-row-text" data-label-from="update-application-installation"/>
+                <menulist id="zen-settings-update-install" aria-labelledby="zen-settings-update-install-label">
+                  <menupopup>
+                    <menuitem value="auto" data-l10n-id="update-application-auto-2"/>
+                    <menuitem value="manual" data-l10n-id="update-application-check-choose-2"/>
+                  </menupopup>
+                </menulist>
+              </html:div>
+              <html:div class="zen-settings-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-update-history"/>
+                <html:button class="zen-settings-button" data-action="show-update-history" data-l10n-id="zen-settings-window-update-history-button"/>
+              </html:div>
+            </html:div>
+          </html:div>
         </html:section>

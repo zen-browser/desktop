@@ -1049,22 +1049,35 @@ class nsZenWindowSync {
    */
   async #captureBrowserToURL(aTab) {
     const win = aTab.documentGlobal;
+    // The placeholder is shown dimmed, so capturing more than one pixel per
+    // CSS pixel only costs memory (4x as much on a 2x HiDPI screen).
     const bitmap = await aTab.linkedBrowser.drawSnapshot(
       0,
       0,
       0,
       0,
-      win.devicePixelRatio || 1,
+      Math.min(win.devicePixelRatio || 1, 1),
       "transparent",
       /* fullViewport */ true
     );
     if (!bitmap) {
       return "";
     }
-    const canvas = new win.OffscreenCanvas(bitmap.width, bitmap.height);
-    canvas.getContext("2d").drawImage(bitmap, 0, 0);
-    const blob = await canvas.convertToBlob({ type: "image/png" });
-    bitmap.close();
+    let canvas;
+    try {
+      canvas = new win.OffscreenCanvas(bitmap.width, bitmap.height);
+      canvas.getContext("2d").drawImage(bitmap, 0, 0);
+    } finally {
+      // The canvas has its own copy of the pixels by now.
+      bitmap.close();
+    }
+    // The placeholder keeps this encoded copy for as long as it exists, even
+    // while hidden, so use a lossy format, several times smaller than PNG.
+    // Unlike JPEG, WebP keeps the transparency of pages without a background.
+    const blob = await canvas.convertToBlob({
+      type: "image/webp",
+      quality: 0.8,
+    });
     return win.URL.createObjectURL(blob);
   }
 

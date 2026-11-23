@@ -233,6 +233,10 @@
     opacity: 0;
     visibility: hidden;
     --zen-media-notes-animation: zen-note-sprite;
+    /* Hidden notes would otherwise tick the sprite every frame. Pausing
+       (rather than dropping the animation) keeps the current frame while
+       they fade out instead of snapping back to the first one. */
+    --zen-media-notes-play-state: paused;
     transition:
       opacity 0.8s ease,
       visibility 0s 0.8s;
@@ -243,6 +247,7 @@
   &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-notes {
     opacity: 1;
     visibility: visible;
+    --zen-media-notes-play-state: running;
     transition: opacity 0.8s ease;
   }
 
@@ -419,6 +424,12 @@
   -moz-context-properties: fill;
   fill: currentColor;
   animation: var(--zen-media-notes-animation, none) 3s steps(90, jump-none) infinite;
+  animation-play-state: var(--zen-media-notes-play-state, running);
+}
+
+/* No need to keep the sprite ticking while the window isn't focused */
+:root:-moz-window-inactive .zen-media-notes::before {
+  animation-play-state: paused;
 }
 
 @keyframes zen-note-sprite {

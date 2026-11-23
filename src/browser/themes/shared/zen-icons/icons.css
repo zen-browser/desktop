@@ -571,6 +571,11 @@
     @media (prefers-reduced-motion: reduce) {
       animation: none;
     }
+
+    /* No need to keep the sprite ticking while the window isn't focused */
+    :root:-moz-window-inactive & {
+      animation-play-state: paused;
+    }
   }
 }
 

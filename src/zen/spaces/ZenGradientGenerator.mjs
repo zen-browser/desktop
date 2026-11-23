@@ -2303,6 +2303,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       () => {
         Services.obs.removeObserver(invalidate, "look-and-feel-changed");
         Services.prefs.removeObserver("zen.theme.accent-color", invalidate);
+        this.#gradientsCache.clear();
       },
       { once: true }
     );
@@ -2525,7 +2526,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   invalidateGradientCache(uuid) {
-    delete this.#gradientsCache[uuid];
+    this.#gradientsCache.delete(uuid);
     gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
   }
 
@@ -2541,7 +2542,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {
     const uuid = workspace.uuid;
     const signature = this.#gradientSignature(workspace.theme ?? {});
-    let cachedData = this.#gradientsCache[uuid];
+    let cachedData = this.#gradientsCache.get(uuid);
     if (
       cachedData &&
       cachedData.signature === signature &&
@@ -2579,7 +2580,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       ...this.toolbarTextStyles(dominantColor, isDarkMode),
       "--zen-primary-color": primaryColor,
     };
-    this.#gradientsCache[uuid] = {
+    const entry = {
       signature,
       gradient,
       toolbarGradient,
@@ -2590,9 +2591,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       primaryColor,
       paletteStyles,
     };
+    this.#gradientsCache.set(uuid, entry);
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;
     this.useAlgo = previousAlgo;
-    return this.#gradientsCache[uuid];
+    return entry;
   }
 }

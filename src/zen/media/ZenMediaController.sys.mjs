@@ -171,6 +171,7 @@ class ZenMediaCard {
       this.element.removeAttribute("zen-hiding");
       if (this.element.hidden) {
         this.element.hidden = false;
+        this.refreshPosition();
         this.manager.onCardVisibilityChanged();
       }
       return;
@@ -266,9 +267,8 @@ class ZenMediaCard {
       return;
     }
 
-    this.currentTimeEl.textContent = this.formatSecondsToTime(this.position);
     this.durationEl.textContent = this.formatSecondsToTime(this.duration);
-    this.progressBar.value = (this.position / this.duration) * 100;
+    this.#renderPosition();
 
     this.#updateInterval = this.window.setInterval(() => {
       if (this.controller?.isPlaying) {
@@ -276,15 +276,40 @@ class ZenMediaCard {
         if (this.position > this.duration) {
           this.position = this.duration;
         }
-        this.currentTimeEl.textContent = this.formatSecondsToTime(
-          this.position
-        );
-        this.progressBar.value = (this.position / this.duration) * 100;
+        // Skip the DOM work while nobody can see it; refreshPosition()
+        // catches up once it shows again.
+        if (this.#isPositionVisible) {
+          this.#renderPosition();
+        }
       } else {
         this.window.clearInterval(this.#updateInterval);
         this.#updateInterval = null;
       }
     }, 1000);
+  }
+
+  // The time and progress bar only show while the controls are hovered.
+  get #isPositionVisible() {
+    return (
+      !this.window.document.hidden &&
+      !this.element.hidden &&
+      this.manager.mediaControlBar.matches(":hover")
+    );
+  }
+
+  #renderPosition() {
+    this.currentTimeEl.textContent = this.formatSecondsToTime(this.position);
+    this.progressBar.value = (this.position / this.duration) * 100;
+  }
+
+  /**
+   * Brings the time and progress bar up to date when they may have become
+   * visible, since the running timer leaves them stale while hidden.
+   */
+  refreshPosition() {
+    if (this.#updateInterval) {
+      this.#renderPosition();
+    }
   }
 
   formatSecondsToTime(seconds) {
@@ -496,6 +521,20 @@ export class ZenMediaController extends ZenUIComponent {
     this.window.addEventListener("TabSelect", () => {
       for (const card of this.#cards.values()) {
         card.onTabSelect();
+      }
+    });
+
+    // Cards don't update their time and progress bar while those can't be
+    // seen, so catch up whenever they might show again.
+    const refreshPositions = () => {
+      for (const card of this.#cards.values()) {
+        card.refreshPosition();
+      }
+    };
+    this.mediaControlBar.addEventListener("mouseenter", refreshPositions);
+    this.document.addEventListener("visibilitychange", () => {
+      if (!this.document.hidden) {
+        refreshPositions();
       }
     });
 

@@ -155,7 +155,9 @@
     )
     scale(calc(1 - 0.04 * var(--zen-media-card-peek-level, 0)));
   opacity: calc(1 - 0.3 * var(--zen-media-card-peek-level, 0));
-  filter: blur(0);
+  /* none rather than blur(0) so resting cards don't need a filter pass;
+     it still transitions to and from the blur() values below */
+  filter: none;
   transition:
     transform 0.35s var(--zen-media-stack-easing),
     opacity 0.3s var(--zen-media-stack-easing),

@@ -159,7 +159,18 @@ class nsZenWorkspaces {
       document.documentElement.setAttribute("zen-private-window", "true");
     }
 
-    window.addEventListener("resize", this.onWindowResize.bind(this));
+    const onWindowResize = this.onWindowResize.bind(this);
+    window.addEventListener("resize", onWindowResize);
+    window.addEventListener(
+      "unload",
+      () => {
+        this._pinnedTabsResizeObserver?.disconnect();
+        this._pinnedTabsResizeObserver = null;
+        window.removeEventListener("resize", onWindowResize);
+        this.ownerWindow = null;
+      },
+      { once: true }
+    );
     this.addPopupListeners();
 
     if (this.privateWindowOrDisabled) {
@@ -188,16 +199,20 @@ class nsZenWorkspaces {
         onContainerDeleted,
         "contextual-identity-deleted"
       );
-      window.addEventListener("unload", () => {
-        Services.obs.removeObserver(
-          observerFunction,
-          "workspace-bookmarks-updated"
-        );
-        Services.obs.removeObserver(
-          onContainerDeleted,
-          "contextual-identity-deleted"
-        );
-      });
+      window.addEventListener(
+        "unload",
+        () => {
+          Services.obs.removeObserver(
+            observerFunction,
+            "workspace-bookmarks-updated"
+          );
+          Services.obs.removeObserver(
+            onContainerDeleted,
+            "contextual-identity-deleted"
+          );
+        },
+        { once: true }
+      );
     }
   }
 
@@ -2068,13 +2083,16 @@ class nsZenWorkspaces {
     }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
+      let changed =
+        emptyTab.getAttribute("zen-workspace-id") !== this.activeWorkspace;
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
-      if (emptyTab.linkedBrowser) {
-        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
-      }
       const container = this.activeWorkspaceStrip;
       if (container && container.firstChild !== emptyTab) {
         container.insertBefore(emptyTab, container.firstChild);
+        changed = true;
+      }
+      if (changed && emptyTab.linkedBrowser) {
+        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
       }
     }
     this.#fixTabPositions();

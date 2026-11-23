@@ -27,7 +27,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gShouldLog",
   "zen.session-store.log",
-  true
+  false
 );
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,

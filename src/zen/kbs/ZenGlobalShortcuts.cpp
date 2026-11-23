@@ -144,13 +144,31 @@ void ZenGlobalShortcuts::AttachKeyset(Element* aKeyset) {
       sPendingKeysets = nullptr;
     });
   }
+  QueueKeyset(aKeyset);
+}
+
+/* static */
+void ZenGlobalShortcuts::QueueKeyset(Element* aKeyset) {
+  nsWeakPtr keyset = do_GetWeakReference(aKeyset);
+  if (sPendingKeysets->Contains(keyset)) {
+    return;
+  }
   bool isScheduled = !sPendingKeysets->IsEmpty();
-  sPendingKeysets->AppendElement(do_GetWeakReference(aKeyset));
+  sPendingKeysets->AppendElement(keyset);
   if (!isScheduled) {
     NS_DispatchToMainThread(
         NS_NewRunnableFunction("ZenGlobalShortcuts::ReadPendingKeysets",
                                [] { ReadPendingKeysets(); }));
   }
+}
+
+/* static */
+void ZenGlobalShortcuts::RefreshKeyset(Element* aKeyset) {
+  MOZ_ASSERT(NS_IsMainThread());
+  if (!sKeys || !nsContentUtils::IsChromeDoc(aKeyset->OwnerDoc())) {
+    return;
+  }
+  QueueKeyset(aKeyset);
 }
 
 /* static */

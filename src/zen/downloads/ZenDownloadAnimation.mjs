@@ -45,6 +45,7 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
   #handleNewDownload() {
     if (
       !Services.prefs.getBoolPref("zen.downloads.download-animation") ||
+      window.gZenLittleWindow ||
       !nsZenMultiWindowFeature.isActiveWindow
     ) {
       return;

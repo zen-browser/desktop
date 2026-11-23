@@ -343,7 +343,7 @@
   --zen-preferences-layout-preview-width: 250px;
 
   /** components/settings: background-color **/
-  --zen-settings-background: light-dark(#f3f3f4, #1e1e1f);
+  --zen-settings-background: light-dark(#f3f3f4, #1e1e1e);
 
   /** components/share: size **/
   --zen-share-card-width: 325px;

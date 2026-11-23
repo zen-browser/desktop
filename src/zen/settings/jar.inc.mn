@@ -7,6 +7,7 @@
         content/browser/zen-components/windows/settings/sections/ZenSettingsAdvanced.mjs        (../../zen/settings/sections/ZenSettingsAdvanced.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsAppearance.mjs      (../../zen/settings/sections/ZenSettingsAppearance.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsContainers.mjs      (../../zen/settings/sections/ZenSettingsContainers.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsFilter.mjs          (../../zen/settings/sections/ZenSettingsFilter.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsGeneral.mjs         (../../zen/settings/sections/ZenSettingsGeneral.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsLanguage.mjs        (../../zen/settings/sections/ZenSettingsLanguage.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsLinks.mjs           (../../zen/settings/sections/ZenSettingsLinks.mjs)

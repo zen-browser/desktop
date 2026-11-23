@@ -12,7 +12,10 @@
   }
 
   & #sidebar-box {
-    border-radius: var(--zen-native-inner-radius);
+    /* Same as the web content container: round corners keep the clip over
+       the sidebar browser on WebRender's fast path, superellipse ones don't */
+    corner-shape: round;
+    border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
     box-shadow: var(--zen-big-shadow);
     overflow: hidden;
   }

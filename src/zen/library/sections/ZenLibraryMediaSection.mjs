@@ -83,6 +83,7 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
   #scanned = [];
   #scanHandle = null;
   #thumbObserver = null;
+  #lastShown = null;
   #cardItems = new WeakMap();
 
   constructor() {
@@ -388,7 +389,8 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     if (!grid || !this.#enabled) {
       return;
     }
-    const shown = this.#shown;
+    const shown = this.#lastShown ?? this.#shown;
+    this.#lastShown = null;
     const signature = shown.map(item => item.path).join("\n");
     if (grid.dataset.signature === signature) {
       return;
@@ -422,18 +424,23 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
 
   /** @returns {object[]} What the grid shows, once the search has its say */
   get #shown() {
-    const folders = this.#scanned.filter(path =>
-      this.isFilterActive("folder", path)
-    );
+    const folders = new Set();
+    for (const path of this.#scanned) {
+      if (this.isFilterActive("folder", path)) {
+        folders.add(path);
+      }
+    }
     const query = this.searchQuery.trim().toLowerCase();
+    const filterByFolder = folders.size > 0;
     return this.items.filter(
       item =>
-        (!folders.length || folders.includes(item.folder)) &&
+        (!filterByFolder || folders.has(item.folder)) &&
         (!query || item.name.toLowerCase().includes(query))
     );
   }
 
   renderItems() {
+    this.#lastShown = null;
     if (!this.#enabled) {
       return this.#renderOptIn();
     }
@@ -446,6 +453,7 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
       `;
     }
     const shown = this.#shown;
+    this.#lastShown = shown;
     if (!shown.length) {
       return html`
         <div class="zen-library-empty" data-l10n-id="library-media-empty"></div>

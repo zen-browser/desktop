@@ -52,3 +52,10 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+# Unload tabs that have not been used for this many minutes, like Chrome's
+# Memory Saver. It follows the rules of Firefox's low-memory tab unloader, so
+# tabs playing media, sharing the camera or in Picture-in-Picture stay
+# loaded. 0 disables it.
+- name: zen.tabs.unload-inactive-after-minutes
+  value: 0

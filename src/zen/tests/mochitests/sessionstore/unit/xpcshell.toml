@@ -65,8 +65,15 @@ skip-if = [
   "condprof", # Bug 1769154
 ]
 
+["test_startup_pinned_tabs_no_savedgroups.js"]
+
 ["test_startup_session_async.js"]
 
 ["test_tab_group_state.js"]
+
+["test_write_json_length_hint.js"]
+support-files = [
+  "data/sessionstore_complete.json",
+]
 
 ["test_write_outcome.js"]

@@ -3,16 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
-import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
-
-XPCOMUtils.defineLazyPreferenceGetter(
-  lazy,
-  "enabled",
-  "zen.little-window.enabled",
-  false
-);
 
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
@@ -31,11 +23,6 @@ const LITTLE_WINDOW_MIN_HEIGHT = 300;
 const LITTLE_WINDOW_STORE_ID = "zen-little-window";
 
 class nsZenLittleWindowService {
-  /** Whether little windows can be opened at all. */
-  get enabled() {
-    return lazy.enabled;
-  }
-
   /**
    * The size of a little window that is showing a page: the one the user
    * last left one at, if any.
@@ -114,9 +101,6 @@ class nsZenLittleWindowService {
     triggeringPrincipal,
     fromAnotherApplication = false,
   } = {}) {
-    if (!this.enabled) {
-      return null;
-    }
     if (typeof userContextId != "number") {
       userContextId = this.isLittleWindow(openerWindow)
         ? openerWindow.gZenLittleWindow?.userContextId

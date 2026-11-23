@@ -7,13 +7,6 @@ import { nsZenToastManager } from "resource:///modules/zen/ZenToasts.mjs";
 import { nsZenUrlbarController } from "resource:///modules/zen/urlbar/ZenUrlbarController.mjs";
 import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  ZenKeyboardShortcuts:
-    "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
-});
-
 const SPRING_SETTLE_DISTANCE = 0.01;
 
 // Minimum height the floating URL bar is vertically centered against.
@@ -67,7 +60,6 @@ class nsZenUIManager {
     document.addEventListener("popuphidden", this);
     document.addEventListener("mousedown", this, true);
     window.addEventListener("TabClose", this);
-    window.addEventListener("ZenShortcutBlocked", this);
     for (const id of [
       "cmd_fullZoomEnlarge",
       "cmd_fullZoomReduce",
@@ -112,9 +104,6 @@ class nsZenUIManager {
         break;
       case "TabClose":
         this.onTabClose(event);
-        break;
-      case "ZenShortcutBlocked":
-        lazy.ZenKeyboardShortcuts.onShortcutBlocked(window, event);
         break;
     }
   }

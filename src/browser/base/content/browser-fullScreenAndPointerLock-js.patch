@@ -1,13 +1,17 @@
 diff --git a/browser/base/content/browser-fullScreenAndPointerLock.js b/browser/base/content/browser-fullScreenAndPointerLock.js
-index 58b32cc90a3a0eaef01d83837ca7825d8624b90a..4f980e770913f6c3cef58d8d2b7b79c02c487c12 100644
+index ca4833a5e946005eaa2586d62f7cf7886b558bcb..ef6ce036201285db0fa28db03fd44afa5e4872bc 100644
 --- a/browser/base/content/browser-fullScreenAndPointerLock.js
 +++ b/browser/base/content/browser-fullScreenAndPointerLock.js
-@@ -523,15 +523,7 @@ var FullScreen = {
+@@ -523,19 +523,11 @@ var FullScreen = {
      // _menubarShift originates from Cocoa widget code as a very precise
      // double. We don't need that kind of precision in our CSS.
      shiftSize = shiftSize.toFixed(2);
 -    let translate = shiftSize > 0 ? `0 ${shiftSize}px` : "";
      gNavToolbox.classList.toggle("fullscreen-floating-toolbox", shiftSize > 0);
+     gNavToolbox.style.setProperty(
+       "--fullscreen-menubar-shift",
+       shiftSize > 0 ? `${shiftSize}px` : ""
+     );
 -    let elementsToTranslate = [
 -      gNavToolbox,
 -      document.getElementById("vertical-tabs"),

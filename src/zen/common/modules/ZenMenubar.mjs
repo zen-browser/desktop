@@ -128,12 +128,6 @@ export class nsZenMenuBar {
   }
 
   #initLittleWindowMenus(aAppMenuAnchor) {
-    if (!Services.prefs.getBoolPref("zen.little-window.enabled", false)) {
-      document
-        .getElementById("cmd_zenNewLittleWindow")
-        .setAttribute("disabled", "true");
-      return;
-    }
     aAppMenuAnchor.after(
       window.MozXULElement.parseXULToFragment(
         `<toolbarbutton id="appMenu-new-zen-little-window-button"

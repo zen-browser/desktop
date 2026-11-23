@@ -7,9 +7,6 @@ add_task(async function test_links_pane() {
   const { gZenSpaceRoutingManager } = ChromeUtils.importESModule(
     "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs"
   );
-  await SpecialPowers.pushPrefEnv({
-    set: [["zen.little-window.enabled", true]],
-  });
   const originalRoute = gZenSpaceRoutingManager.getDefaultExternalRoute();
   gZenSpaceRoutingManager.setDefaultExternalRoute("most-recent-space");
 
@@ -42,18 +39,7 @@ add_task(async function test_links_pane() {
       "The global shortcut row names the shortcut"
     );
   }
-  ok(
-    !external.closest(".zen-settings-row").inert,
-    "Little window rows are usable while the feature is on"
-  );
-  Services.prefs.setBoolPref("zen.little-window.enabled", false);
-  ok(
-    external.closest(".zen-settings-row").inert,
-    "Little window rows are inert while the feature is off"
-  );
-
   gZenSpaceRoutingManager.setDefaultExternalRoute(originalRoute);
   gZenSpaceRoutingManager.saveRoutes();
   await BrowserTestUtils.closeWindow(win);
-  await SpecialPowers.popPrefEnv();
 });

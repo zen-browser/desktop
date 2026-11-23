@@ -340,10 +340,29 @@ class nsZenSpaceRoutingManager {
   shouldOpenExternalUriInLittleWindow(uri) {
     return (
       !!uri &&
-      lazy.ZenLittleWindow.enabled &&
       !!this.#file?.dataReady &&
       this.routeUri(uri.spec, { fromExternal: true }) === LITTLE_WINDOW_ROUTE
     );
+  }
+
+  /**
+   * On Windows, the windows of other virtual desktops are not ones a link
+   * from another application gets opened in. A little window only needs one
+   * to open from though, so that no regular window has to be opened here.
+   *
+   * @param {nsIURI} uri - The URI about to be opened
+   * @returns {Window|null} A regular window of another virtual desktop when
+   *   the URI goes to a little window, which opens on the current one.
+   */
+  getOpenerOnAnotherDesktop(uri) {
+    if (!this.shouldOpenExternalUriInLittleWindow(uri)) {
+      return null;
+    }
+    const win = lazy.BrowserWindowTracker.getTopWindow({
+      private: false,
+      allowFromInactiveWorkspace: true,
+    });
+    return win && !lazy.PrivateBrowsingUtils.isWindowPrivate(win) ? win : null;
   }
 
   /**
@@ -388,10 +407,7 @@ class nsZenSpaceRoutingManager {
    * @returns {boolean} Whether the URI was taken
    */
   handleExternalUri(uri, defaultWindow, triggeringPrincipal) {
-    if (
-      !lazy.ZenLittleWindow.enabled ||
-      lazy.PrivateBrowsingUtils.isWindowPrivate(defaultWindow)
-    ) {
+    if (lazy.PrivateBrowsingUtils.isWindowPrivate(defaultWindow)) {
       return false;
     }
     if (this.#file?.dataReady && defaultWindow.gZenStartup?.isReady) {
@@ -408,7 +424,7 @@ class nsZenSpaceRoutingManager {
   }
 
   get takesExternalUrisWithoutWindow() {
-    return lazy.ZenLittleWindow.enabled;
+    return true;
   }
 
   async openExternalUrisAfterStartup(entries) {
@@ -443,7 +459,7 @@ class nsZenSpaceRoutingManager {
    *   only a pending one.
    */
   async #regularWindowReady() {
-    const options = { private: false };
+    const options = { private: false, allowFromInactiveWorkspace: true };
     const win =
       lazy.BrowserWindowTracker.getTopWindow(options) ??
       (await lazy.BrowserWindowTracker.getPendingWindow(options));
@@ -766,13 +782,7 @@ class nsZenSpaceRoutingManager {
    * @returns {string} Returns the default route type for external links
    */
   getDefaultExternalRoute() {
-    const route = this.#file?.data?.defaultRouteExternal;
-    if (!lazy.ZenLittleWindow.enabled) {
-      return !route || route === LITTLE_WINDOW_ROUTE
-        ? MOST_RECENT_SPACE_ROUTE
-        : route;
-    }
-    return route ?? LITTLE_WINDOW_ROUTE;
+    return this.#file?.data?.defaultRouteExternal ?? LITTLE_WINDOW_ROUTE;
   }
 
   /**

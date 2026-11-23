@@ -45,6 +45,59 @@ export const CONFLICT_WEBSITE = "website";
 export const CONFLICT_ASK = "ask";
 const CONFLICT_VALUES = [CONFLICT_ZEN, CONFLICT_WEBSITE, CONFLICT_ASK];
 
+const CONFLICT_DEFAULT_BY_ID = new Map(
+  Object.entries({
+    [CONFLICT_ZEN]: [
+      "zen-copy-url",
+      "zen-copy-url-markdown",
+      "key_newNavigator",
+      "key_newNavigatorTab",
+      "key_privatebrowsing",
+      "key_close",
+      "key_closeWindow",
+      "key_restoreLastClosedTabOrWindowOrSession",
+      "goBackKb",
+      "goForwardKb",
+      "goBackKb2",
+      "goForwardKb2",
+      "focusURLBar",
+      "focusURLBar2",
+      "key_minimizeWindow",
+      "key_hideThisAppCmdMac",
+      "key_quitApplication",
+    ],
+    [CONFLICT_WEBSITE]: [
+      "key_find",
+      "key_findAgain",
+      "key_findPrevious",
+      "key_findAgain2",
+      "key_findPrevious2",
+      "key_findSelection",
+      "key_selectAll",
+      "key_reload",
+      "key_reload_skip_cache",
+      "key_reload2",
+      "key_reload_skip_cache2",
+      "key_stop",
+      "key_stop_mac",
+      "key_fullZoomReduce",
+      "key_fullZoomEnlarge",
+      "key_fullZoomReset",
+      "key_savePage",
+      "key_openDownloads",
+      "showAllHistoryKb",
+      "key_gotoHistory",
+      "key_toggleReaderMode",
+      "key_preferencesCmdMac",
+      "key_hideOtherAppsCmdMac",
+      "zen-workspace-forward",
+      "zen-workspace-backward",
+      "zen-close-all-unpinned-tabs",
+      "zen-library-toggle",
+    ],
+  }).flatMap(([value, ids]) => ids.map(id => [id, value]))
+);
+
 /**
  * Zen's own shortcuts, grouped the way about:keyboard shows them.
  */
@@ -236,7 +289,14 @@ class nsZenKeyboardShortcuts {
     return lazy.ShortcutUtils.prettifyShortcut(keyEl);
   }
 
-  onShortcutBlocked(window, event) {
+  initWindow(window) {
+    window.addEventListener("ZenShortcutBlocked", event =>
+      this.#onShortcutBlocked(window, event)
+    );
+    this.#applyDefaultConflicts(window);
+  }
+
+  #onShortcutBlocked(window, event) {
     const keyEl = event.target;
     const now = ChromeUtils.now();
     const last = this.#lastBlocked.get(window);
@@ -289,14 +349,40 @@ class nsZenKeyboardShortcuts {
    */
   getConflict(id) {
     const value = lazy.CustomKeys.getZenConflict(id);
-    return CONFLICT_VALUES.includes(value) ? value : CONFLICT_ASK;
+    return CONFLICT_VALUES.includes(value)
+      ? value
+      : this.getDefaultConflict(id);
+  }
+
+  /**
+   * @param {string} id The id of a <key> element.
+   * @returns {string} CONFLICT_ZEN, CONFLICT_WEBSITE or CONFLICT_ASK.
+   */
+  getDefaultConflict(id) {
+    return CONFLICT_DEFAULT_BY_ID.get(id) ?? CONFLICT_ASK;
   }
 
   setConflict(id, value) {
     if (!CONFLICT_VALUES.includes(value)) {
       throw new Error(`Unknown shortcut conflict choice: ${value}`);
     }
-    lazy.CustomKeys.setZenConflict(id, value == CONFLICT_ASK ? null : value);
+    lazy.CustomKeys.setZenConflict(
+      id,
+      value == this.getDefaultConflict(id) ? null : value
+    );
+  }
+
+  /**
+   * Marks the keys of a browser window that don't default to CONFLICT_ASK.
+   *
+   * @param {Window} window
+   */
+  #applyDefaultConflicts(window) {
+    for (const [id, value] of CONFLICT_DEFAULT_BY_ID) {
+      window.document
+        .getElementById(id)
+        ?.setAttribute("zen-website-conflict-default", value);
+    }
   }
 
   /**

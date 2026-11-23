@@ -4,6 +4,7 @@
 
 *       content/browser/zen-components/windows/zen-settings-window.xhtml        (../../zen/settings/zen-settings-window.inc.xhtml)
         content/browser/zen-components/windows/settings/ZenSettingsWindow.mjs                   (../../zen/settings/ZenSettingsWindow.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsAdvanced.mjs        (../../zen/settings/sections/ZenSettingsAdvanced.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsAppearance.mjs      (../../zen/settings/sections/ZenSettingsAppearance.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsContainers.mjs      (../../zen/settings/sections/ZenSettingsContainers.mjs)
         content/browser/zen-components/windows/settings/sections/ZenSettingsGeneral.mjs         (../../zen/settings/sections/ZenSettingsGeneral.mjs)

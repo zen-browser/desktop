@@ -8,7 +8,9 @@ ChromeUtils.defineESModuleGetters(lazy, {
   blockedText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   canRetry: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   confirmUnblock: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  downloadString: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   isBlocked: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  joinDownloadStatus: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   retryDownload: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   DownloadsCommon:
@@ -574,9 +576,7 @@ class ZenLibraryDownloadStack {
   }
 
   #joinStatus(...parts) {
-    return parts
-      .filter(Boolean)
-      .reduce((a, b) => lazy.DownloadsCommon.strings.statusSeparator(a, b));
+    return lazy.joinDownloadStatus(...parts);
   }
 
   #iconUrl(download) {
@@ -589,16 +589,15 @@ class ZenLibraryDownloadStack {
   }
 
   #statusText(download) {
-    const strings = lazy.DownloadsCommon.strings;
     if (!download.stopped) {
       return lazy.transferText(download, { speed: true });
     }
     if (download.deleted) {
-      return strings.fileDeleted;
+      return lazy.downloadString("downloads-file-deleted");
     }
     if (download.succeeded) {
       if (!download.target.exists) {
-        return strings.fileMovedOrMissing;
+        return lazy.downloadString("downloads-file-moved-or-missing");
       }
       const parsed = URL.parse(download.source.url);
       const uri = parsed && Services.io.newURI(parsed.href);
@@ -615,15 +614,20 @@ class ZenLibraryDownloadStack {
       );
     }
     if (download.canceled && download.hasPartialData) {
-      return this.#joinStatus(strings.statePaused, lazy.transferText(download));
+      return this.#joinStatus(
+        lazy.downloadString("downloads-state-paused"),
+        lazy.transferText(download)
+      );
     }
     if (download.error?.becauseBlockedByParentalControls) {
-      return strings.stateBlockedParentalControls;
+      return lazy.downloadString("downloads-state-blocked-parental-controls");
     }
     if (download.error?.becauseBlockedByReputationCheck) {
       return lazy.blockedText(download);
     }
-    return download.canceled ? strings.stateCanceled : strings.stateFailed;
+    return lazy.downloadString(
+      download.canceled ? "downloads-state-canceled" : "downloads-state-failed"
+    );
   }
 
   #contextMenuItems(download) {

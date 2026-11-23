@@ -87,13 +87,15 @@ add_task(async function test_toggles_follow_and_set_prefs() {
 });
 
 add_task(async function test_dependent_rows() {
-  await SpecialPowers.pushPrefEnv({ set: [["zen.glance.enabled", true]] });
+  await SpecialPowers.pushPrefEnv({
+    set: [["browser.search.suggest.enabled", true]],
+  });
   const win = await openSettingsWindow();
   const row = win.document.querySelector(
-    '[data-depends-on="zen.glance.enabled"]'
+    '[data-depends-on="browser.search.suggest.enabled"]'
   );
   ok(!row.inert, "A dependent row is usable while its setting is on");
-  Services.prefs.setBoolPref("zen.glance.enabled", false);
+  Services.prefs.setBoolPref("browser.search.suggest.enabled", false);
   ok(row.inert, "A dependent row is inert while its setting is off");
   await BrowserTestUtils.closeWindow(win);
   await SpecialPowers.popPrefEnv();
@@ -103,7 +105,6 @@ add_task(async function test_menulists() {
   await SpecialPowers.pushPrefEnv({
     set: [
       ["zen.view.window.scheme", 2],
-      ["zen.glance.activation-method", "alt"],
       ["zen.view.use-single-toolbar", true],
       ["zen.view.sidebar-expanded", true],
     ],
@@ -111,25 +112,11 @@ add_task(async function test_menulists() {
   const win = await openSettingsWindow();
   const doc = win.document;
 
-  const trigger = doc.querySelector(
-    'menulist[data-pref="zen.glance.activation-method"]'
-  );
-  is(trigger.value, "alt", "A list shows its pref");
-  Services.prefs.setStringPref("zen.glance.activation-method", "shift");
-  is(trigger.value, "shift", "A list follows changes made elsewhere");
-  trigger.value = "ctrl";
-  trigger.dispatchEvent(new win.Event("command", { bubbles: true }));
-  is(
-    Services.prefs.getStringPref("zen.glance.activation-method"),
-    "ctrl",
-    "Choosing an item writes the pref"
-  );
-
   Services.prefs.setIntPref("zen.view.window.scheme", 0);
   is(
     doc.documentElement.style.colorScheme,
-    "dark",
-    "The window follows the browser's forced color scheme"
+    "",
+    "The window keeps the system color scheme when the browser forces one"
   );
 
   const layout = doc.getElementById("zen-settings-layout");
@@ -171,4 +158,85 @@ add_task(async function test_menulists() {
 
   await BrowserTestUtils.closeWindow(win);
   await SpecialPowers.popPrefEnv();
+});
+
+add_task(async function test_performance_settings() {
+  const recommendedPref =
+    "browser.preferences.defaultPerformanceSettings.enabled";
+  const accelerationPref = "layers.acceleration.disabled";
+  const win = await openSettingsWindow(() => ZenSettings.open("advanced"));
+  const row = win.document.getElementById("zen-settings-hardware-acceleration");
+  ok(row.hidden, "Hardware acceleration is part of the recommended settings");
+  await TestUtils.waitForCondition(
+    () => row.querySelector(".zen-settings-row-text").textContent,
+    "The settings are named with the strings Firefox has for them"
+  );
+
+  await clickToggle(toggleFor(win, recommendedPref));
+  ok(!Services.prefs.getBoolPref(recommendedPref), "Which can be turned off");
+  ok(!row.hidden, "Hardware acceleration then has its own setting");
+  const acceleration = toggleFor(win, accelerationPref);
+  ok(acceleration.pressed, "It is on while the pref does not disable it");
+
+  await clickToggle(acceleration);
+  ok(
+    Services.prefs.getBoolPref(accelerationPref),
+    "Turning it off disables it"
+  );
+
+  await clickToggle(toggleFor(win, recommendedPref));
+  ok(
+    !Services.prefs.prefHasUserValue(accelerationPref),
+    "Going back to the recommended settings resets it"
+  );
+  ok(row.hidden, "And hides the setting again");
+
+  Services.prefs.clearUserPref(recommendedPref);
+  await BrowserTestUtils.closeWindow(win);
+});
+
+add_task(async function test_update_settings() {
+  if (!AppConstants.MOZ_UPDATER) {
+    return;
+  }
+  const { UpdateUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/UpdateUtils.sys.mjs"
+  );
+  const wasAutomatic = await UpdateUtils.getAppUpdateAutoEnabled();
+  const win = await openSettingsWindow();
+  const doc = win.document;
+  ok(!doc.getElementById("zen-settings-updates").hidden, "Updates are shown");
+  const version = doc.getElementById("zen-settings-update-version");
+  await doc.l10n.translateElements([version]);
+  ok(
+    version.textContent.includes(AppConstants.MOZ_APP_VERSION_DISPLAY),
+    "With the version that is installed"
+  );
+
+  const list = doc.getElementById("zen-settings-update-install");
+  const current = wasAutomatic ? "auto" : "manual";
+  const other = wasAutomatic ? "manual" : "auto";
+  await TestUtils.waitForCondition(
+    () => !list.disabled,
+    "The automatic update setting is read"
+  );
+  is(list.value, current, "And shown");
+  list.value = other;
+  list.doCommand();
+  await TestUtils.waitForCondition(
+    () => !list.disabled && list.value == other,
+    "Choosing the other option changes it"
+  );
+  is(
+    await UpdateUtils.getAppUpdateAutoEnabled(),
+    !wasAutomatic,
+    "And stores the new value"
+  );
+
+  await UpdateUtils.setAppUpdateAutoEnabled(wasAutomatic);
+  await TestUtils.waitForCondition(
+    () => list.value == current,
+    "A change made elsewhere shows up"
+  );
+  await BrowserTestUtils.closeWindow(win);
 });

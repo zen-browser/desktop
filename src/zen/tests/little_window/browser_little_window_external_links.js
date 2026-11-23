@@ -47,18 +47,7 @@ add_task(async function test_external_links_follow_the_setting() {
     !openExternalLink(TEST_URL),
     "A link is left to a regular window when a space is what was picked"
   );
-
   gZenSpaceRoutingManager.setDefaultExternalRoute(LITTLE_WINDOW_ROUTE);
-  await SpecialPowers.pushPrefEnv({
-    set: [["zen.little-window.enabled", false]],
-  });
-  is(
-    gZenSpaceRoutingManager.getDefaultExternalRoute(),
-    MOST_RECENT_SPACE_ROUTE,
-    "And so it is with little windows disabled"
-  );
-  ok(!openExternalLink(TEST_URL), "No little window opens then");
-  await SpecialPowers.popPrefEnv();
 });
 
 add_task(async function test_external_links_without_a_window() {

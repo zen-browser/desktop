@@ -17,7 +17,7 @@
 }
 
 .urlbar {
-  --urlbarview-separator-color: light-dark(rgb(233, 233, 233), rgb(46 46 47));
+  --urlbarview-separator-color: color-mix(in srgb, currentColor, transparent 93%);
   --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   --urlbarview-results-padding: 12px !important;
@@ -250,6 +250,7 @@
 .urlbarView-url {
   margin-top: auto !important;
   margin-bottom: auto !important;
+  font-weight: var(--zen-font-weight-medium);
 }
 
 #urlbar[breakout-extend] {
@@ -272,12 +273,12 @@
   }
 
   .urlbar-background {
-    --zen-urlbar-background-base: light-dark(rgb(255, 255, 255), rgb(24 24 24));
+    --zen-urlbar-background-base: light-dark(rgb(255, 255, 255), rgb(26 26 26));
     @media -moz-pref("zen.theme.acrylic-urlbar") and (not (prefers-reduced-transparency: reduce)) {
       &:not(:-moz-window-inactive) {
         --zen-urlbar-background-transparent: light-dark(
-          rgba(255, 255, 255, .88),
-          rgba(20, 20, 20, .87)
+          rgba(255, 255, 255, .94),
+          rgba(26, 26, 26, .85)
         );
       }
     }

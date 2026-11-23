@@ -23,6 +23,13 @@ using namespace mozilla::dom;
 
 namespace zen {
 
+static void GetConflict(Element* aKey, nsAString& aConflict) {
+  aKey->GetAttribute(u"zen-website-conflict"_ns, aConflict);
+  if (aConflict.IsEmpty()) {
+    aKey->GetAttribute(u"zen-website-conflict-default"_ns, aConflict);
+  }
+}
+
 bool ZenBlockedShortcuts::IsOverridable(const WidgetKeyboardEvent& aEvent) {
   if (!StaticPrefs::zen_keyboard_shortcuts_override_page_shortcuts()) {
     return false;
@@ -52,7 +59,7 @@ void ZenBlockedShortcuts::OnKeyEventPreventedByContent(
     return;
   }
   nsAutoString conflict;
-  key->GetAttribute(u"zen-website-conflict"_ns, conflict);
+  GetConflict(key, conflict);
   if (conflict.EqualsLiteral("website")) {
     return;
   }
@@ -109,7 +116,7 @@ bool ZenBlockedShortcuts::IsPreferredByZen(KeyEventHandler* aHandler) {
     return false;
   }
   nsAutoString conflict;
-  key->GetAttribute(u"zen-website-conflict"_ns, conflict);
+  GetConflict(key, conflict);
   return conflict.EqualsLiteral("zen");
 }
 

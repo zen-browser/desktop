@@ -9,8 +9,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
   CustomKeys: "moz-src:///browser/components/customkeys/CustomKeys.sys.mjs",
   ZenKeyboardShortcuts:
     "resource:///modules/zen/kbs/ZenKeyboardShortcuts.sys.mjs",
-  ZenLittleWindow:
-    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
   gZenSpaceRoutingManager:
     "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
 });
@@ -20,7 +18,6 @@ const kSitePermissionPref = "permissions.default.shortcuts";
 const kOverridePref = "zen.keyboard.shortcuts.override-page-shortcuts";
 const kDeny = Ci.nsIPermissionManager.DENY_ACTION;
 const kLittleWindowKey = "zen-new-little-window";
-const kLittleWindowPref = "zen.little-window.enabled";
 const kGlobalShortcutsPref = "zen.keyboard.global-shortcuts.enabled";
 const kLittleWindowRoute = "little-window";
 const kMostRecentSpaceRoute = "most-recent-space";
@@ -58,7 +55,7 @@ export class ZenSettingsShortcuts {
       );
       manager.saveRoutes();
     });
-    this.settings.watchPrefs([kLittleWindowPref, kGlobalShortcutsPref], () =>
+    this.settings.watchPrefs([kGlobalShortcutsPref], () =>
       this.#updateLittleWindow()
     );
   }
@@ -70,15 +67,12 @@ export class ZenSettingsShortcuts {
     if (box.hidden) {
       return;
     }
-    const enabled = lazy.ZenLittleWindow.enabled;
     const links = document.getElementById(
       "zen-settings-shortcuts-little-links"
     );
-    links.disabled = !enabled;
     links.checked =
-      enabled &&
       lazy.gZenSpaceRoutingManager.getDefaultExternalRoute() ==
-        kLittleWindowRoute;
+      kLittleWindowRoute;
 
     const global = document.getElementById(
       "zen-settings-shortcuts-little-global"
@@ -88,9 +82,7 @@ export class ZenSettingsShortcuts {
     }
     const { shortcut } = row.dataset;
     global.disabled =
-      !enabled ||
-      !shortcut ||
-      Services.prefs.prefIsLocked(kGlobalShortcutsPref);
+      !shortcut || Services.prefs.prefIsLocked(kGlobalShortcutsPref);
     global.checked =
       !!shortcut && Services.prefs.getBoolPref(kGlobalShortcutsPref, false);
     const label = document.getElementById(
@@ -212,6 +204,10 @@ export class ZenSettingsShortcuts {
       .getElementById("zen-settings-shortcuts-search")
       .addEventListener("input", () => this.#filterShortcuts());
     document.addEventListener("mousemove", event => this.#followPointer(event));
+    document.documentElement.addEventListener("mouseleave", () => {
+      document.getElementById("zen-settings-shortcuts-face").style.translate =
+        "";
+    });
 
     document
       .getElementById("zen-settings-shortcuts-reset")

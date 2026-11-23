@@ -185,7 +185,6 @@ class TrainingTour {
       {
         name: "glance",
         count: REPEATS.glance,
-        enabled: () => Services.prefs.getBoolPref("zen.glance.enabled", false),
         step: () => this.#glance(),
       },
       {

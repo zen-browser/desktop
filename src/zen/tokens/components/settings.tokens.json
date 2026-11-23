@@ -4,6 +4,8 @@
       "value": { "light": "#f3f3f4", "dark": "#1e1e1f" }
     },
     "--zen-settings-sidebar-background": { "external": true },
+    "--zen-settings-sidebar-acrylic-background": { "external": true },
+    "--zen-settings-main-mica-background": { "external": true },
     "--zen-settings-sticky-background": { "external": true },
     "--zen-settings-dialog-backdrop": { "external": true },
     "--zen-settings-art-key-face": { "external": true },

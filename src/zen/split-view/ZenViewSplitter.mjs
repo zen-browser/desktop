@@ -1254,21 +1254,35 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Splits a link in a new tab.
    */
   splitLinkInNewTab() {
+    this.splitLink({
+      url:
+        window.gContextMenu.linkURL ||
+        window.gContextMenu.mediaURL ||
+        window.gContextMenu.contentData.docLocation ||
+        window.gContextMenu.target.ownerDocument.location.href,
+      triggeringPrincipal: window.gContextMenu.principal,
+    });
+  }
+
+  /**
+   * Opens a link in a new tab split next to the tab it came from.
+   *
+   * @param {object} options
+   * @param {string} options.url The link to open.
+   * @param {nsIPrincipal} options.triggeringPrincipal The principal of the
+   *   page the link is in.
+   * @param {MozTabbrowserTab} [options.tab] The tab the link is in, the
+   *   selected one by default.
+   */
+  splitLink({ url, triggeringPrincipal, tab = window.gBrowser.selectedTab }) {
     if (!this.canSplit) {
       return;
     }
-    const url =
-      window.gContextMenu.linkURL ||
-      window.gContextMenu.mediaURL ||
-      window.gContextMenu.contentData.docLocation ||
-      window.gContextMenu.target.ownerDocument.location.href;
-    const currentTab = gZenGlanceManager.getTabOrGlanceParent(
-      window.gBrowser.selectedTab
-    );
+    const currentTab = gZenGlanceManager.getTabOrGlanceParent(tab);
     const newTab = this.openAndSwitchToTab(url, {
       skipRoute: true,
       inBackground: false,
-      triggeringPrincipal: window.gContextMenu.principal,
+      triggeringPrincipal,
     });
     if (!newTab) {
       return;
@@ -2565,14 +2579,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return true;
   }
 
+  /** Recomputes styles, without the layout a rect read would also cost. */
+  #flushStyle() {
+    return window.getComputedStyle(this.tabBrowserPanel).transitionProperty;
+  }
+
   #withoutSplitViewTransition(callback) {
     this.tabBrowserPanel.classList.add("zen-split-view-no-transition");
     try {
       return callback();
     } finally {
-      requestAnimationFrame(() => {
-        this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
-      }, 0);
+      this.#flushStyle();
+      this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
     }
   }
 

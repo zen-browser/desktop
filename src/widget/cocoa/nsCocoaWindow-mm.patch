@@ -1,8 +1,8 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index cd1cbea4e..478bcb670 100644
+index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215a5a8fd5f 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -90,9 +90,11 @@
+@@ -89,9 +89,11 @@
  #include "mozilla/StaticPrefs_mozilla.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
@@ -14,7 +14,7 @@ index cd1cbea4e..478bcb670 100644
  #include "mozilla/widget/Screen.h"
  
  #ifdef ACCESSIBILITY
-@@ -1420,6 +1422,115 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1441,6 +1443,115 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
  }
  @end
  
@@ -130,7 +130,7 @@ index cd1cbea4e..478bcb670 100644
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -3990,7 +4101,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+@@ -4018,7 +4129,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -141,7 +141,7 @@ index cd1cbea4e..478bcb670 100644
  }
  
  // NSDraggingDestination
-@@ -4006,6 +4119,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+@@ -4034,6 +4147,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -151,7 +151,7 @@ index cd1cbea4e..478bcb670 100644
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -5060,6 +5176,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -5090,6 +5206,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
@@ -162,7 +162,7 @@ index cd1cbea4e..478bcb670 100644
    RemoveAllChildren();
    if (mWindow && mWindowMadeHere) {
      CancelAllTransitions();
-@@ -5752,7 +5872,9 @@ static void SyncPopoverBounds(NSPopover* aPopover,
+@@ -5782,7 +5902,9 @@ static void SyncPopoverBounds(NSPopover* aPopover,
      } else {
        NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
        EnsureFrameIsOnScreen();
@@ -173,7 +173,7 @@ index cd1cbea4e..478bcb670 100644
            [mWindow respondsToSelector:@selector(setAnimationBehavior:)]) {
          NSWindowAnimationBehavior behavior;
          if (mIsAnimationSuppressed) {
-@@ -8316,6 +8438,17 @@ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
+@@ -8373,6 +8495,17 @@ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
    return [super _validateStyleMask:(aStyleMask & ~keep)] | keep;
  }
  
@@ -188,6 +188,6 @@ index cd1cbea4e..478bcb670 100644
 +  return [super canBecomeMainWindow];
 +}
 +
- // The frame of a window is implemented using undocumented NSView subclasses.
- // We offset the window buttons by overriding the method _closeButtonOrigin on
- // these frame view classes. The class which is
+ // The Picture-in-Picture player is non-activating so that it can float over
+ // another application's fullscreen Space (bug 1688932). A click into it should
+ // still activate the application like a click into any other window, so that

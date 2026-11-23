@@ -6,14 +6,35 @@
 const PREF = "zen.keyboard.shortcuts.override-page-shortcuts";
 const TOAST_ID = "zen-shortcut-blocked-toast";
 const KEY_ID = "zen-test-blocked-key";
+const KEYPRESS_KEY_ID = "zen-test-blocked-keypress-key";
+
+const KEYDOWN = {
+  id: KEY_ID,
+  eventType: "keydown",
+  attrs: { key: UNUSED_KEY, modifiers: UNUSED_MODIFIERS },
+  synthesize: [UNUSED_KEY, UNUSED_OPTIONS],
+  pageMatch: `event.key.toUpperCase() == "${UNUSED_KEY}" && event.shiftKey`,
+};
+
+// Ctrl+Enter is the only shortcut that Zen can override, which wants one of
+// Ctrl/Alt/Meta, and that Gecko still delivers to content as a keypress.
+// ShouldKeyPressEventBeFiredOnContent refuses every Ctrl or Meta combination
+// that produces a character, so accel+shift+<letter> never reaches a page.
+const KEYPRESS = {
+  id: KEYPRESS_KEY_ID,
+  eventType: "keypress",
+  attrs: { keycode: "VK_RETURN", modifiers: "control" },
+  synthesize: ["KEY_Enter", { ctrlKey: true }],
+  pageMatch: `event.key == "Enter" && event.ctrlKey`,
+};
 
 let commandCount = 0;
 
-function pageThatBlocks(eventType) {
+function pageThatBlocks(binding) {
   const script = `
     let blocked = 0;
-    addEventListener("${eventType}", event => {
-      if (event.key.toUpperCase() == "${UNUSED_KEY}" && event.shiftKey) {
+    addEventListener("${binding.eventType}", event => {
+      if (${binding.pageMatch}) {
         event.preventDefault();
         document.title = "blocked " + ++blocked;
       }
@@ -39,9 +60,9 @@ function removeToasts() {
   }
 }
 
-async function pressInPage(browser, expectedBlocked) {
+async function pressInPage(browser, expectedBlocked, binding = KEYDOWN) {
   await SimpleTest.promiseFocus(browser);
-  EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS);
+  EventUtils.synthesizeKey(...binding.synthesize);
   await TestUtils.waitForCondition(
     () => browser.contentTitle == `blocked ${expectedBlocked}`,
     "The page blocked the press"
@@ -51,18 +72,23 @@ async function pressInPage(browser, expectedBlocked) {
 add_setup(async function () {
   const keyset = document.createXULElement("keyset");
   keyset.id = "zen-test-blocked-keyset";
-  const key = document.createXULElement("key");
-  key.id = KEY_ID;
-  key.setAttribute("key", UNUSED_KEY);
-  key.setAttribute("modifiers", UNUSED_MODIFIERS);
-  key.addEventListener("command", () => commandCount++);
-  keyset.appendChild(key);
+  for (const binding of [KEYDOWN, KEYPRESS]) {
+    const key = document.createXULElement("key");
+    key.id = binding.id;
+    for (const [attr, value] of Object.entries(binding.attrs)) {
+      key.setAttribute(attr, value);
+    }
+    key.addEventListener("command", () => commandCount++);
+    keyset.appendChild(key);
+  }
   document.body.append(keyset);
   registerCleanupFunction(() => {
     keyset.remove();
     removeToasts();
     Services.prefs.clearUserPref(PREF);
-    ZenKeyboardShortcuts.setConflict(KEY_ID, "ask");
+    for (const binding of [KEYDOWN, KEYPRESS]) {
+      ZenKeyboardShortcuts.setConflict(binding.id, "ask");
+    }
   });
 });
 
@@ -79,47 +105,41 @@ async function setConflict(value) {
   );
 }
 
-async function testRepeatRunsCommand(eventType) {
+async function testRepeatRunsCommand(binding) {
   commandCount = 0;
   removeToasts();
-  await BrowserTestUtils.withNewTab(
-    pageThatBlocks(eventType),
-    async browser => {
-      let notified = BrowserTestUtils.waitForEvent(
-        window,
-        "ZenShortcutBlocked"
-      );
-      await pressInPage(browser, 1);
-      const event = await notified;
-      is(event.target.id, KEY_ID, "The blocked key is told");
-      await TestUtils.waitForCondition(blockedToast, "A toast says so");
-      is(commandCount, 0, "The first press leaves the shortcut to the page");
+  await BrowserTestUtils.withNewTab(pageThatBlocks(binding), async browser => {
+    let notified = BrowserTestUtils.waitForEvent(window, "ZenShortcutBlocked");
+    await pressInPage(browser, 1, binding);
+    const event = await notified;
+    is(event.target.id, binding.id, "The blocked key is told");
+    await TestUtils.waitForCondition(blockedToast, "A toast says so");
+    is(commandCount, 0, "The first press leaves the shortcut to the page");
 
-      notified = BrowserTestUtils.waitForEvent(window, "ZenShortcutBlocked");
-      await pressInPage(browser, 2);
-      await notified;
-      is(commandCount, 1, "The second press runs the shortcut");
-      await TestUtils.waitForCondition(
-        () => !blockedToast(),
-        "The toast stops asking once the shortcut has run",
-        100,
-        10
-      );
+    notified = BrowserTestUtils.waitForEvent(window, "ZenShortcutBlocked");
+    await pressInPage(browser, 2, binding);
+    await notified;
+    is(commandCount, 1, "The second press runs the shortcut");
+    await TestUtils.waitForCondition(
+      () => !blockedToast(),
+      "The toast stops asking once the shortcut has run",
+      100,
+      10
+    );
 
-      notified = BrowserTestUtils.waitForEvent(window, "ZenShortcutBlocked");
-      await pressInPage(browser, 3);
-      await notified;
-      is(commandCount, 1, "A third press starts over");
-    }
-  );
+    notified = BrowserTestUtils.waitForEvent(window, "ZenShortcutBlocked");
+    await pressInPage(browser, 3, binding);
+    await notified;
+    is(commandCount, 1, "A third press starts over");
+  });
 }
 
 add_task(async function test_page_blocking_keydown() {
-  await testRepeatRunsCommand("keydown");
+  await testRepeatRunsCommand(KEYDOWN);
 });
 
 add_task(async function test_page_blocking_keypress() {
-  await testRepeatRunsCommand("keypress");
+  await testRepeatRunsCommand(KEYPRESS);
 });
 
 add_task(async function test_pref_off() {
@@ -129,13 +149,10 @@ add_task(async function test_pref_off() {
   let notifiedCount = 0;
   const onBlocked = () => notifiedCount++;
   window.addEventListener("ZenShortcutBlocked", onBlocked);
-  await BrowserTestUtils.withNewTab(
-    pageThatBlocks("keydown"),
-    async browser => {
-      await pressInPage(browser, 1);
-      await pressInPage(browser, 2);
-    }
-  );
+  await BrowserTestUtils.withNewTab(pageThatBlocks(KEYDOWN), async browser => {
+    await pressInPage(browser, 1);
+    await pressInPage(browser, 2);
+  });
   window.removeEventListener("ZenShortcutBlocked", onBlocked);
   Services.prefs.clearUserPref(PREF);
   is(notifiedCount, 0, "Nothing is told with the pref off");
@@ -150,13 +167,10 @@ add_task(async function test_prefer_website() {
   let notifiedCount = 0;
   const onBlocked = () => notifiedCount++;
   window.addEventListener("ZenShortcutBlocked", onBlocked);
-  await BrowserTestUtils.withNewTab(
-    pageThatBlocks("keydown"),
-    async browser => {
-      await pressInPage(browser, 1);
-      await pressInPage(browser, 2);
-    }
-  );
+  await BrowserTestUtils.withNewTab(pageThatBlocks(KEYDOWN), async browser => {
+    await pressInPage(browser, 1);
+    await pressInPage(browser, 2);
+  });
   window.removeEventListener("ZenShortcutBlocked", onBlocked);
   await setConflict("ask");
   is(notifiedCount, 0, "Nothing is told when the website is preferred");
@@ -171,22 +185,19 @@ add_task(async function test_prefer_zen() {
   let notifiedCount = 0;
   const onBlocked = () => notifiedCount++;
   window.addEventListener("ZenShortcutBlocked", onBlocked);
-  await BrowserTestUtils.withNewTab(
-    pageThatBlocks("keydown"),
-    async browser => {
-      await SimpleTest.promiseFocus(browser);
-      EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS);
-      await TestUtils.waitForCondition(
-        () => commandCount == 1,
-        "The first press runs the shortcut"
-      );
-      const pageSaw = await SpecialPowers.spawn(browser, [], async () => {
-        await new Promise(resolve => content.setTimeout(resolve, 100));
-        return content.document.title;
-      });
-      is(pageSaw, "blocked 0", "The page never gets the key");
-    }
-  );
+  await BrowserTestUtils.withNewTab(pageThatBlocks(KEYDOWN), async browser => {
+    await SimpleTest.promiseFocus(browser);
+    EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS);
+    await TestUtils.waitForCondition(
+      () => commandCount == 1,
+      "The first press runs the shortcut"
+    );
+    const pageSaw = await SpecialPowers.spawn(browser, [], async () => {
+      await new Promise(resolve => content.setTimeout(resolve, 100));
+      return content.document.title;
+    });
+    is(pageSaw, "blocked 0", "The page never gets the key");
+  });
   window.removeEventListener("ZenShortcutBlocked", onBlocked);
   await setConflict("ask");
   is(notifiedCount, 0, "Nothing is asked when Zen is preferred");

@@ -106,6 +106,7 @@ class nsZenSettingsWindow {
   #prefObservers = new Map();
   #topicObservers = new Map();
   #subDialogs = null;
+  #toggleRowsObserver = null;
   #observer = {
     QueryInterface: ChromeUtils.generateQI([
       "nsIObserver",
@@ -141,6 +142,8 @@ class nsZenSettingsWindow {
   }
 
   destroy() {
+    this.#toggleRowsObserver?.disconnect();
+    this.#toggleRowsObserver = null;
     for (const pref of this.#prefObservers.keys()) {
       Services.prefs.removeObserver(pref, this.#observer);
     }
@@ -281,19 +284,55 @@ class nsZenSettingsWindow {
 
   #initToggleRows() {
     const root = document.getElementById("zen-settings-root");
-    const nameToggles = () => {
-      for (const row of root.querySelectorAll(".zen-settings-toggle-row")) {
-        const text = row.querySelector(".zen-settings-row-text");
-        const label = text.firstElementChild ?? text;
-        row.querySelector("moz-toggle").ariaLabel = label.textContent.trim();
+    const nameRow = row => {
+      const text = row.querySelector(".zen-settings-row-text");
+      const toggle = row.querySelector("moz-toggle");
+      if (!text || !toggle) {
+        return;
+      }
+      const label = (text.firstElementChild ?? text).textContent.trim();
+      if (toggle.ariaLabel !== label) {
+        toggle.ariaLabel = label;
       }
     };
-    new MutationObserver(nameToggles).observe(root, {
+    this.#toggleRowsObserver = new MutationObserver(records => {
+      const rows = new Set();
+      for (const record of records) {
+        const target =
+          record.target.nodeType === Node.ELEMENT_NODE
+            ? record.target
+            : record.target.parentElement;
+        const row = target?.closest?.(".zen-settings-toggle-row");
+        if (row) {
+          rows.add(row);
+        }
+        for (const node of record.addedNodes) {
+          if (node.nodeType !== Node.ELEMENT_NODE) {
+            continue;
+          }
+          if (node.matches?.(".zen-settings-toggle-row")) {
+            rows.add(node);
+          } else if (node.querySelectorAll) {
+            for (const nested of node.querySelectorAll(
+              ".zen-settings-toggle-row"
+            )) {
+              rows.add(nested);
+            }
+          }
+        }
+      }
+      for (const row of rows) {
+        nameRow(row);
+      }
+    });
+    this.#toggleRowsObserver.observe(root, {
       childList: true,
       characterData: true,
       subtree: true,
     });
-    nameToggles();
+    for (const row of root.querySelectorAll(".zen-settings-toggle-row")) {
+      nameRow(row);
+    }
 
     root.addEventListener("click", event => {
       const text = event.target.closest(

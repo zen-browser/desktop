@@ -1062,9 +1062,15 @@ class nsZenWindowSync {
       return "";
     }
     const canvas = new win.OffscreenCanvas(bitmap.width, bitmap.height);
-    canvas.getContext("2d").drawImage(bitmap, 0, 0);
-    const blob = await canvas.convertToBlob({ type: "image/png" });
-    bitmap.close();
+    let blob;
+    try {
+      canvas.getContext("2d").drawImage(bitmap, 0, 0);
+      blob = await canvas.convertToBlob({ type: "image/png" });
+    } finally {
+      bitmap.close();
+      canvas.width = 0;
+      canvas.height = 0;
+    }
     return win.URL.createObjectURL(blob);
   }
 
@@ -1079,17 +1085,20 @@ class nsZenWindowSync {
       return;
     }
     const doc = aBrowser.ownerDocument;
-    const img = doc.createElement("img");
-    img.className = "zen-pseudo-browser-image";
-    img.src = aSrc;
-    await img.decode().catch(console.error);
-    if (aBrowser.isConnected) {
-      aBrowser.after(img);
+    try {
+      const img = doc.createElement("img");
+      img.className = "zen-pseudo-browser-image";
+      img.src = aSrc;
+      await img.decode().catch(console.error);
+      if (aBrowser.isConnected) {
+        aBrowser.after(img);
+      }
+    } finally {
+      // The image keeps its own copy of the data once loaded. Without this the
+      // URL would also keep the blob alive until the window closes, even after
+      // the image is gone (e.g. when its tab is closed).
+      doc.defaultView?.URL.revokeObjectURL(aSrc);
     }
-    // The image keeps its own copy of the data once loaded. Without this the
-    // URL would also keep the blob alive until the window closes, even after
-    // the image is gone (e.g. when its tab is closed).
-    doc.defaultView?.URL.revokeObjectURL(aSrc);
   }
 
   /**

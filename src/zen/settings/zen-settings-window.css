@@ -699,6 +699,10 @@
   }
 }
 
+.zen-settings-row > #zen-settings-update-install {
+  max-width: 75%;
+}
+
 .zen-settings-spacer {
   flex: 1;
 }

@@ -5,11 +5,13 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  AppConstants: "resource://gre/modules/AppConstants.sys.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   Downloads: "resource://gre/modules/Downloads.sys.mjs",
   LaunchOnLogin: "resource://gre/modules/LaunchOnLogin.sys.mjs",
   ShellService: "moz-src:///browser/components/shell/ShellService.sys.mjs",
   UIState: "resource://services-sync/UIState.sys.mjs",
+  UpdateUtils: "resource://gre/modules/UpdateUtils.sys.mjs",
   Weave: "resource://services-sync/main.sys.mjs",
 });
 
@@ -24,6 +26,9 @@ const kDefaultAvatar = "chrome://browser/skin/fxa/avatar.svg";
 const kJustNowMs = 60 * 1000;
 const kLaunchOnLoginPref = "browser.startup.windowsLaunchOnLogin.enabled";
 
+const kAutoUpdateTopic = "auto-update-config-change";
+const kUpdateHistoryURL = "chrome://mozapps/content/update/history.xhtml";
+
 export class ZenSettingsGeneral {
   constructor(settings) {
     this.settings = settings;
@@ -31,6 +36,7 @@ export class ZenSettingsGeneral {
     this.#initLaunchOnLogin();
     this.#initDownloads();
     this.#initSync();
+    this.#initUpdates();
   }
 
   get actions() {
@@ -55,6 +61,7 @@ export class ZenSettingsGeneral {
           sync.openConnectAnotherDevice(entryPoint)
         ),
       "sync-sign-out": () => this.#withBrowserSync(sync => sync.disconnect()),
+      "show-update-history": () => this.settings.openDialog(kUpdateHistoryURL),
     };
   }
 
@@ -310,5 +317,56 @@ export class ZenSettingsGeneral {
       return;
     }
     Services.tm.dispatchToMainThread(() => lazy.Weave.Service.sync());
+  }
+
+  /* Updates */
+
+  #initUpdates() {
+    if (
+      !lazy.AppConstants.MOZ_UPDATER ||
+      Services.sysinfo.getProperty("isPackagedApp") ||
+      !Services.policies.isAllowed("appUpdate")
+    ) {
+      return;
+    }
+    document.getElementById("zen-settings-updates").hidden = false;
+    document.l10n.setAttributes(
+      document.getElementById("zen-settings-update-version"),
+      "zen-settings-window-update-version",
+      { version: lazy.AppConstants.MOZ_APP_VERSION_DISPLAY }
+    );
+
+    const list = document.getElementById("zen-settings-update-install");
+    const updateService = Cc[
+      "@mozilla.org/updates/update-service;1"
+    ].getService(Ci.nsIApplicationUpdateService);
+    const isLocked =
+      lazy.UpdateUtils.appUpdateAutoSettingIsLocked() ||
+      updateService.manualUpdateOnly;
+    const setDisabled = disabled => {
+      list.disabled = disabled;
+    };
+    setDisabled(true);
+    const render = async () => {
+      try {
+        const isAutomatic = await lazy.UpdateUtils.getAppUpdateAutoEnabled();
+        list.value = isAutomatic ? "auto" : "manual";
+      } catch (ex) {
+        console.error("Failed to read the automatic update setting", ex);
+      }
+      setDisabled(isLocked);
+    };
+    list.addEventListener("command", async () => {
+      const isAutomatic = list.value == "auto";
+      setDisabled(true);
+      try {
+        await lazy.UpdateUtils.setAppUpdateAutoEnabled(isAutomatic);
+      } catch (ex) {
+        console.error("Failed to store the automatic update setting", ex);
+      }
+      render();
+    });
+    this.settings.watchTopics([kAutoUpdateTopic], render);
+    render();
   }
 }

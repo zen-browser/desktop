@@ -42,6 +42,12 @@ zen-settings-window-download-location-ask =
     .label = Ask every time
 zen-settings-window-download-location-picker = Choose Download Folder
 
+zen-settings-window-updates-header = Updates
+zen-settings-window-update-version = Version { $version }
+zen-settings-window-update-check = Check for Updates…
+zen-settings-window-update-history = Update history
+zen-settings-window-update-history-button = Show…
+
 ## Appearance
 
 zen-settings-window-layout-header = Layout
@@ -247,4 +253,5 @@ zen-settings-window-window-header = Window
 zen-settings-window-haptic-feedback = Haptic feedback when reordering tabs
 zen-settings-window-drag-from-content = Drag the window from the top of the page
 zen-settings-window-compact-flash-popup = Briefly show the toolbar when switching tabs in compact mode
+zen-settings-window-performance-header = Performance
 zen-settings-window-more-settings = More Settings…

@@ -159,3 +159,84 @@ add_task(async function test_menulists() {
   await BrowserTestUtils.closeWindow(win);
   await SpecialPowers.popPrefEnv();
 });
+
+add_task(async function test_performance_settings() {
+  const recommendedPref =
+    "browser.preferences.defaultPerformanceSettings.enabled";
+  const accelerationPref = "layers.acceleration.disabled";
+  const win = await openSettingsWindow(() => ZenSettings.open("advanced"));
+  const row = win.document.getElementById("zen-settings-hardware-acceleration");
+  ok(row.hidden, "Hardware acceleration is part of the recommended settings");
+  await TestUtils.waitForCondition(
+    () => row.querySelector(".zen-settings-row-text").textContent,
+    "The settings are named with the strings Firefox has for them"
+  );
+
+  await clickToggle(toggleFor(win, recommendedPref));
+  ok(!Services.prefs.getBoolPref(recommendedPref), "Which can be turned off");
+  ok(!row.hidden, "Hardware acceleration then has its own setting");
+  const acceleration = toggleFor(win, accelerationPref);
+  ok(acceleration.pressed, "It is on while the pref does not disable it");
+
+  await clickToggle(acceleration);
+  ok(
+    Services.prefs.getBoolPref(accelerationPref),
+    "Turning it off disables it"
+  );
+
+  await clickToggle(toggleFor(win, recommendedPref));
+  ok(
+    !Services.prefs.prefHasUserValue(accelerationPref),
+    "Going back to the recommended settings resets it"
+  );
+  ok(row.hidden, "And hides the setting again");
+
+  Services.prefs.clearUserPref(recommendedPref);
+  await BrowserTestUtils.closeWindow(win);
+});
+
+add_task(async function test_update_settings() {
+  if (!AppConstants.MOZ_UPDATER) {
+    return;
+  }
+  const { UpdateUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/UpdateUtils.sys.mjs"
+  );
+  const wasAutomatic = await UpdateUtils.getAppUpdateAutoEnabled();
+  const win = await openSettingsWindow();
+  const doc = win.document;
+  ok(!doc.getElementById("zen-settings-updates").hidden, "Updates are shown");
+  const version = doc.getElementById("zen-settings-update-version");
+  await doc.l10n.translateElements([version]);
+  ok(
+    version.textContent.includes(AppConstants.MOZ_APP_VERSION_DISPLAY),
+    "With the version that is installed"
+  );
+
+  const list = doc.getElementById("zen-settings-update-install");
+  const current = wasAutomatic ? "auto" : "manual";
+  const other = wasAutomatic ? "manual" : "auto";
+  await TestUtils.waitForCondition(
+    () => !list.disabled,
+    "The automatic update setting is read"
+  );
+  is(list.value, current, "And shown");
+  list.value = other;
+  list.doCommand();
+  await TestUtils.waitForCondition(
+    () => !list.disabled && list.value == other,
+    "Choosing the other option changes it"
+  );
+  is(
+    await UpdateUtils.getAppUpdateAutoEnabled(),
+    !wasAutomatic,
+    "And stores the new value"
+  );
+
+  await UpdateUtils.setAppUpdateAutoEnabled(wasAutomatic);
+  await TestUtils.waitForCondition(
+    () => list.value == current,
+    "A change made elsewhere shows up"
+  );
+  await BrowserTestUtils.closeWindow(win);
+});

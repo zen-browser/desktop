@@ -63,6 +63,20 @@
             </html:div>
           </html:div>
 
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-performance-header"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-label-from="performance-use-recommended-settings-checkbox-2"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="browser.preferences.defaultPerformanceSettings.enabled"/>
+              </html:div>
+              <html:div id="zen-settings-hardware-acceleration" class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-label-from="performance-allow-hw-accel"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="layers.acceleration.disabled" data-pref-on="false" data-pref-off="true"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
           <html:div class="zen-settings-actions">
             <html:button class="zen-settings-button" data-action="open-more-settings" data-l10n-id="zen-settings-window-more-settings"/>
           </html:div>

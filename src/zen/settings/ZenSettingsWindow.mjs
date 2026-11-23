@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { ZenSettingsAdvanced } from "./sections/ZenSettingsAdvanced.mjs";
 import { ZenSettingsAppearance } from "./sections/ZenSettingsAppearance.mjs";
 import { ZenSettingsContainers } from "./sections/ZenSettingsContainers.mjs";
 import { ZenSettingsGeneral } from "./sections/ZenSettingsGeneral.mjs";
@@ -118,6 +119,7 @@ class nsZenSettingsWindow {
     this.#initNavigation();
     this.#initPrefs();
     this.#initToggleRows();
+    this.#initSharedLabels();
     this.#initDependencies();
 
     this.sections = {
@@ -128,6 +130,7 @@ class nsZenSettingsWindow {
       search: new ZenSettingsSearch(this),
       language: new ZenSettingsLanguage(this),
       shortcuts: new ZenSettingsShortcuts(this),
+      advanced: new ZenSettingsAdvanced(this),
     };
     this.#initActions();
 
@@ -309,6 +312,18 @@ class nsZenSettingsWindow {
         );
         row.inert = !enabled;
       });
+    }
+  }
+
+  async #initSharedLabels() {
+    const elements = [...document.querySelectorAll("[data-label-from]")];
+    const messages = await document.l10n.formatMessages(
+      elements.map(element => ({ id: element.dataset.labelFrom }))
+    );
+    for (const [index, element] of elements.entries()) {
+      element.textContent =
+        messages[index]?.attributes?.find(attr => attr.name == "label")
+          ?.value ?? "";
     }
   }
 

@@ -103,8 +103,8 @@ export class nsZenSiteDataPanel {
     const progressListener = {
       onLocationChange: (aWebProgress, _aRequest, aLocation) => {
         if (aWebProgress.isTopLevel) {
-          this.checkIfTabIsBoosted();
           this.#updateCopyUrlButton(aLocation);
+          this.checkIfTabIsBoosted();
         }
       },
     };
@@ -175,9 +175,6 @@ export class nsZenSiteDataPanel {
 
   #updateCopyUrlButton(aLocation) {
     const aElement = this.document.getElementById("zen-copy-url-button");
-    if (!aElement) {
-      return;
-    }
     if (!this.#canCopyUrl(aLocation)) {
       aElement.setAttribute("disabled", true);
     } else {

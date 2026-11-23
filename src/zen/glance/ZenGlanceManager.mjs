@@ -323,6 +323,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       // The window is really going now, so stop listening. A quit request can
       // still be canceled, so that path leaves the observer in place.
       Services.obs.removeObserver(this, "quit-application-requested");
+      for (const entry of this.#glances.values()) {
+        this.#revokeGlanceUrls(entry);
+      }
       this.#glances.clear();
     } else {
       // A vetoed close leaves the Glance live, and successful closes remove
@@ -1227,11 +1230,29 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // Callers must release the URL via #deleteGlance when the glance entry
     // is removed so the blob can be freed.
     const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(imageBitmap, 0, 0);
-    const blob = await canvas.convertToBlob({ type: "image/png" });
-    imageBitmap.close();
+    let blob;
+    try {
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(imageBitmap, 0, 0);
+      blob = await canvas.convertToBlob({ type: "image/png" });
+    } finally {
+      imageBitmap.close();
+      canvas.width = 0;
+      canvas.height = 0;
+    }
     return URL.createObjectURL(blob);
+  }
+
+  #revokeGlanceUrls(entry) {
+    if (typeof entry.elementData === "string") {
+      URL.revokeObjectURL(entry.elementData);
+    }
+    if (
+      typeof entry.elementImageData === "string" &&
+      entry.elementImageData !== entry.elementData
+    ) {
+      URL.revokeObjectURL(entry.elementImageData);
+    }
   }
 
   #deleteGlance(glanceID) {
@@ -1240,10 +1261,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
     this.#glances.delete(glanceID);
-    const url = entry.elementData ?? entry.elementImageData;
-    if (typeof url === "string") {
-      URL.revokeObjectURL(url);
-    }
+    this.#revokeGlanceUrls(entry);
   }
 
   /**

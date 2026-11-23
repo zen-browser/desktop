@@ -404,6 +404,11 @@ class nsZenUIManager {
 
   onTabClose(event = undefined) {
     if (!event?.target?._closedInMultiselection) {
+      if (event) {
+        // _endRemoveTab already refreshes the tab containers once the tab is
+        // gone, so don't queue another refresh for every closed tab.
+        this._preventToolbarRebuild = true;
+      }
       this.updateTabsToolbar();
     }
   }

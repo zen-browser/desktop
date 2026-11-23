@@ -702,8 +702,11 @@
     background-clip: text;
     /* Still works on firefox */
     -webkit-text-fill-color: transparent;
-    animation: zen-text-gradient 5s linear infinite;
     font-size: initial;
+
+    @media not (prefers-reduced-motion: reduce) {
+      animation: zen-text-gradient 5s linear infinite;
+    }
   }
 
   #mainContentSubheader {

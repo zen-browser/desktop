@@ -119,7 +119,10 @@
       background-clip: text;
       /* Still works on firefox */
       -webkit-text-fill-color: transparent;
-      animation: zen-text-gradient 2s linear infinite;
+
+      @media not (prefers-reduced-motion: reduce) {
+        animation: zen-text-gradient 2s linear infinite;
+      }
     }
 
     &:hover {

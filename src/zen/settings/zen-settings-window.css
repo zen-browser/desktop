@@ -200,7 +200,7 @@
   }
 
   & .zen-settings-category[data-filter-miss] {
-    opacity: 0.4;
+    opacity: var(--zen-opacity-40);
   }
 
   & .zen-settings-category[aria-selected="true"] {

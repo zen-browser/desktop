@@ -86,6 +86,7 @@ export class ZenSettingsFilter {
     for (const category of document.querySelectorAll(
       ".zen-settings-category[data-pane]"
     )) {
+      // eslint-disable-next-line no-shadow
       const name = category.dataset.pane;
       const pane = document.getElementById(`zen-settings-pane-${name}`);
       const label = category.textContent.trim();

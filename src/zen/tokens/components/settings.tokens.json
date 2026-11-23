@@ -1,10 +1,10 @@
 {
   "background-color": {
     "--zen-settings-background": {
-      "value": { "light": "#f3f3f4", "dark": "#1e1e1f" }
+      "value": { "light": "#f3f3f4", "dark": "#1e1e1e" }
     },
     "--zen-settings-sidebar-background": { "external": true },
-    "--zen-settings-sidebar-acrylic-background": { "external": true },
+    "--zen-settings-sidebar-translucent-background": { "external": true },
     "--zen-settings-main-mica-background": { "external": true },
     "--zen-settings-sticky-background": { "external": true },
     "--zen-settings-dialog-backdrop": { "external": true },
@@ -20,8 +20,7 @@
     "--zen-settings-win-tile-selected-background": { "external": true }
   },
   "border-color": {
-    "--zen-settings-sidebar-border-color": { "external": true },
-    "--zen-settings-win-layer-border": { "external": true }
+    "--zen-settings-sidebar-border-color": { "external": true }
   },
   "versatile-color": {
     "--zen-settings-separator-color": { "external": true },
@@ -32,7 +31,8 @@
   },
   "box-shadow": {
     "--zen-settings-drop-before-shadow": { "external": true },
-    "--zen-settings-drop-after-shadow": { "external": true }
+    "--zen-settings-drop-after-shadow": { "external": true },
+    "--zen-settings-sidebar-tint-shadow": { "external": true }
   },
   "icon-color": {
     "--zen-settings-heart-color": { "external": true }
@@ -46,6 +46,7 @@
     "--zen-settings-min-width": { "external": true },
     "--zen-settings-min-height": { "external": true },
     "--zen-settings-sidebar-width": { "external": true },
+    "--zen-settings-icon-size": { "external": true },
     "--zen-settings-shortcuts-aside-width": { "external": true },
     "--zen-settings-keyword-width": { "external": true },
     "--zen-settings-dialog-width": { "external": true },
@@ -63,6 +64,7 @@
   "font-size": {
     "--zen-settings-font-size-title": { "external": true },
     "--zen-settings-font-size-heading": { "external": true },
+    "--zen-settings-font-size-body": { "external": true },
     "--zen-settings-font-size-small": { "external": true },
     "--zen-settings-font-size-tiny": { "external": true },
     "--zen-settings-win-font-size-title": { "external": true },

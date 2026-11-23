@@ -118,28 +118,49 @@ export class ZenUrlbarProviderSidebar extends UrlbarProvider {
   }
 
   #addFolders(sidebar, score, queryContext, addCallback) {
-    const folders = new Map(
-      (sidebar.folders || []).map(folder => [folder.id, folder])
-    );
-    const matched = [...folders.values()]
-      .filter(folder => !folder.splitViewGroup && folder.name)
-      .map(folder => ({ folder, score: score(folder.name) }))
-      .filter(match => match.score)
-      .sort((a, b) => b.score - a.score);
+    const folderList = sidebar.folders;
+    if (!folderList?.length) {
+      return;
+    }
+    const matched = [];
+    for (const folder of folderList) {
+      if (folder.splitViewGroup || !folder.name) {
+        continue;
+      }
+      const matchScore = score(folder.name);
+      if (matchScore) {
+        matched.push({ folder, score: matchScore });
+      }
+    }
+    if (!matched.length) {
+      return;
+    }
+    matched.sort((a, b) => b.score - a.score);
+    const folders = new Map();
+    for (const folder of folderList) {
+      folders.set(folder.id, folder);
+    }
+    const spaces = new Map();
+    if (sidebar.spaces) {
+      for (const space of sidebar.spaces) {
+        spaces.set(space.uuid, space);
+      }
+    }
     for (const match of matched) {
       const { folder } = match;
-      const space = sidebar.spaces?.find(s => s.uuid == folder.workspaceId);
+      const space = spaces.get(folder.workspaceId);
       const path = [folder.name];
       for (
         let parent = folders.get(folder.parentId);
         parent;
         parent = folders.get(parent.parentId)
       ) {
-        path.unshift(parent.name);
+        path.push(parent.name);
       }
       if (space?.name) {
-        path.unshift(space.name);
+        path.push(space.name);
       }
+      path.reverse();
       addCallback(
         this,
         new lazy.UrlbarResult({

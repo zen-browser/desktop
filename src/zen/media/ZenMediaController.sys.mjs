@@ -546,7 +546,13 @@ export class ZenMediaController extends ZenUIComponent {
   }
 
   get frontCard() {
-    return this.#orderedCards.find(card => !card.element.hidden) ?? null;
+    let front = null;
+    for (const card of this.#cards.values()) {
+      if (!card.element.hidden) {
+        front = card;
+      }
+    }
+    return front;
   }
 
   get #orderedCards() {
@@ -555,23 +561,32 @@ export class ZenMediaController extends ZenUIComponent {
   }
 
   get #hasVisibleCards() {
-    return Array.from(this.#cards.values()).some(card => !card.element.hidden);
+    for (const card of this.#cards.values()) {
+      if (!card.element.hidden) {
+        return true;
+      }
+    }
+    return false;
   }
 
   #sharingCardForBrowser(browser) {
-    return (
-      Array.from(this.#cards.values()).find(
-        card => card.isSharing && card.browser.browserId === browser.browserId
-      ) ?? null
-    );
+    const browserId = browser.browserId;
+    for (const card of this.#cards.values()) {
+      if (card.isSharing && card.browser.browserId === browserId) {
+        return card;
+      }
+    }
+    return null;
   }
 
   #cardForBrowser(browser) {
-    return (
-      Array.from(this.#cards.values()).find(
-        card => card.browser.browserId === browser.browserId
-      ) ?? null
-    );
+    const browserId = browser.browserId;
+    for (const card of this.#cards.values()) {
+      if (card.browser.browserId === browserId) {
+        return card;
+      }
+    }
+    return null;
   }
 
   activateMediaControls(mediaController, browser) {

@@ -135,9 +135,9 @@ class nsZenWindowSync {
    * retrieve the correct tab entries from the cache in order to avoid losing
    * tab history.
    *
-   * @type {WeakMap<object, MozTabbrowserTab>}
+   * @type {Map<object, MozTabbrowserTab>}
    */
-  #swapedTabsEntriesForWC = new WeakMap();
+  #swapedTabsEntriesForWC = new Map();
 
   /**
    * Iterator that yields all currently opened browser windows.
@@ -1631,7 +1631,7 @@ class nsZenWindowSync {
     const window = aEvent.target.documentGlobal ?? aEvent.target;
     window._zenClosingWindow = true;
     for (let eventName of EVENTS) {
-      window.removeEventListener(eventName, this);
+      window.removeEventListener(eventName, this, true);
     }
     delete window.gZenWindowSync;
     try {
@@ -1674,8 +1674,7 @@ class nsZenWindowSync {
       }
     }
     // We don't need to keep these references anymore.
-    // and weak maps don't have a clear method, they get cleared automatically.
-    this.#swapedTabsEntriesForWC = new WeakMap();
+    this.#swapedTabsEntriesForWC.clear();
   }
 
   on_TabGroupCreate(aEvent) {

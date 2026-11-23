@@ -31,7 +31,6 @@
     "--zen-settings-win-card-border": { "external": true }
   },
   "box-shadow": {
-    "--zen-settings-main-shadow": { "external": true },
     "--zen-settings-drop-before-shadow": { "external": true },
     "--zen-settings-drop-after-shadow": { "external": true }
   },

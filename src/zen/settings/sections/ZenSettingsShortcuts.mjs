@@ -204,6 +204,10 @@ export class ZenSettingsShortcuts {
       .getElementById("zen-settings-shortcuts-search")
       .addEventListener("input", () => this.#filterShortcuts());
     document.addEventListener("mousemove", event => this.#followPointer(event));
+    document.documentElement.addEventListener("mouseleave", () => {
+      document.getElementById("zen-settings-shortcuts-face").style.translate =
+        "";
+    });
 
     document
       .getElementById("zen-settings-shortcuts-reset")

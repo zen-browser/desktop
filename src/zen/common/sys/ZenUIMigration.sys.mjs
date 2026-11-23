@@ -220,7 +220,6 @@ class nsZenUIMigration {
   _migrateV9() {
     const kept = {
       "zen.glance.activation-method": "alt",
-      "zen.splitView.link-activation-method": "none",
     };
     for (const [pref, value] of Object.entries(kept)) {
       if (!Services.prefs.prefHasUserValue(pref)) {

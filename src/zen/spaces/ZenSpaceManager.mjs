@@ -2343,8 +2343,9 @@ class nsZenWorkspaces {
       lazy.browserBackgroundElement,
       lazy.toolbarBackgroundElement,
     ];
-    // Start from what is on screen, a swipe can leave the backgrounds midway.
-    const shown = parseFloat(getComputedStyle(elements[0], "::after").opacity);
+    const shown = parseFloat(
+      elements[0].style.getPropertyValue("--zen-background-opacity")
+    );
     const from = shown >= 1 || !shown ? 0 : 1 - shown;
     // Same curve as the springs the tabs slide with.
     const { ease, duration: ms } = gZenUIManager.motion.spring.applyToOptions({

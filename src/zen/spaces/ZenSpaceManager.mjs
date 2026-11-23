@@ -2340,10 +2340,6 @@ class nsZenWorkspaces {
       lazy.browserBackgroundElement,
       lazy.toolbarBackgroundElement,
     ];
-    // Start from what is on screen, a swipe can leave the backgrounds midway.
-    // Read the inline value the swipe sets instead of the computed opacity:
-    // fades from an earlier switch are already finished here, and
-    // getComputedStyle would force a style flush as the switch starts.
     const shown = parseFloat(
       elements[0].style.getPropertyValue("--zen-background-opacity")
     );

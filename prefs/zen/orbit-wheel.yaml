@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Orbit Wheel: radial tab switcher, opened with Ctrl+Alt+O
+# (Control+Option+O on macOS).
+- name: zen.orbit-wheel.enabled
+  value: true
+
+# Also take over Ctrl+Tab. Off by default because Zen already owns Ctrl+Tab
+# (recently-used order, ignore pending/essential tabs).
+- name: zen.orbit-wheel.intercept-ctrl-tab
+  value: false
+
+# Show low-resolution live thumbnails of tabs. Kept in memory only.
+- name: zen.orbit-wheel.thumbnails
+  value: true

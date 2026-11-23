@@ -28,6 +28,11 @@ export class ZenProgressBar extends ZenUIComponent {
   on_TabSelect() {
     const gBrowser = this.window.gBrowser;
     const selectedTab = gBrowser.selectedTab;
+    // Events from the previously selected tab are ignored from now on, so its
+    // bar has to be taken down here.
+    if (this.#loadingTab && this.#loadingTab !== selectedTab) {
+      this.#hideProgressBar();
+    }
     this.onLocationChange(gBrowser.getBrowserForTab(selectedTab));
   }
 
@@ -66,9 +71,12 @@ export class ZenProgressBar extends ZenUIComponent {
     const window = this.window;
     const gBrowser = window.gBrowser;
     const tab = gBrowser.getTabForBrowser(webProgress);
-    const isLoading =
-      tab?.selected &&
-      (tab.hasAttribute("busy") || tab.hasAttribute("progress"));
+    // Only the selected tab's load is shown, and selecting a tab checks it
+    // again, so loads in other tabs must not hide or recreate its bar.
+    if (!tab?.selected) {
+      return;
+    }
+    const isLoading = tab.hasAttribute("busy") || tab.hasAttribute("progress");
     if (isLoading) {
       this.#showProgressBar(tab);
     } else {

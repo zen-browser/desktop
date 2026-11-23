@@ -24,7 +24,6 @@
     var(--zen-settings-background) 86%,
     transparent
   );
-  --zen-settings-main-shadow: 0 0 12px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.35));
   --zen-settings-sticky-background: light-dark(#fcfcfc, #282829);
   --zen-settings-shortcuts-aside-width: 192px;
   --zen-settings-keyword-width: 110px;
@@ -263,12 +262,6 @@
   background: var(--zen-settings-background);
   display: flex;
   flex-direction: column;
-
-  @media not (-moz-platform: macos) {
-    position: relative;
-    z-index: 1;
-    box-shadow: var(--zen-settings-main-shadow);
-  }
 
   @media (-moz-windows-mica) {
     background: var(--zen-settings-main-mica-background);

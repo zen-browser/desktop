@@ -19,6 +19,8 @@ ChromeUtils.defineLazyGetter(
   () => new Localization(["browser/zen-workspaces.ftl"], true)
 );
 
+ChromeUtils.defineLazyGetter(lazy, "graphemes", () => new Intl.Segmenter());
+
 const DEFAULT_CONTAINER_L10N_ID = "zen-workspace-default-profile";
 const INTRO_DISMISSED_PREF = "zen.little-window.intro-dismissed";
 const URLBAR_ONLY_ATTRIBUTE = "zen-little-window-urlbar-only";
@@ -679,13 +681,40 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     }
   }
 
+  /**
+   * Shortens a space's name to fit the button, dropping its middle so both
+   * ends stay readable. Segmented by grapheme so an emoji is never cut apart.
+   *
+   * @param {string} aName The space's full name.
+   * @returns {string} The name, at most 16 long.
+   */
+  #shortenSpaceName(aName) {
+    let units;
+    try {
+      units = [...lazy.graphemes.segment(aName)].map(part => part.segment);
+    } catch {
+      units = Array.from(aName);
+    }
+    if (units.length <= 16) {
+      return aName;
+    }
+    const kept = 16 - 1;
+    const head = Math.ceil(kept / 2);
+    return (
+      units.slice(0, head).join("") +
+      "\u2026" +
+      units.slice(units.length - (kept - head)).join("")
+    );
+  }
+
   #updateOpenLabel() {
     const { active } = lazy.ZenLittleWindow.getSpaces();
+    this.#openLabel.title = active?.name ?? "";
     if (active) {
       document.l10n.setAttributes(
         this.#openLabel,
         "zen-little-window-open-in-space",
-        { space: active.name }
+        { space: this.#shortenSpaceName(active.name) }
       );
     } else {
       document.l10n.setAttributes(

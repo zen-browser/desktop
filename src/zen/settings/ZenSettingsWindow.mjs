@@ -14,6 +14,7 @@ import { ZenSettingsShortcuts } from "./sections/ZenSettingsShortcuts.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  AppConstants: "resource://gre/modules/AppConstants.sys.mjs",
   SubDialogManager: "resource://gre/modules/SubDialog.sys.mjs",
 });
 
@@ -370,6 +371,28 @@ class nsZenSettingsWindow {
     );
   }
 
+  #openAboutAsChild() {
+    for (const about of Services.wm.getEnumerator("Browser:About")) {
+      if (about.closed) {
+        continue;
+      }
+      if (about.opener == window) {
+        about.focus();
+        return;
+      }
+      about.close();
+    }
+    const features =
+      lazy.AppConstants.platform == "macosx"
+        ? "chrome,centerscreen,resizable=no,minimizable=no"
+        : "chrome,centerscreen,dependent";
+    window.openDialog(
+      "chrome://browser/content/zen-components/windows/zen-about.xhtml",
+      "",
+      features
+    );
+  }
+
   /* Actions */
 
   #initActions() {
@@ -380,7 +403,7 @@ class nsZenSettingsWindow {
     const actions = {
       "open-mods": () => leaveFor("paneZenMarketplace"),
       "open-more-settings": () => leaveFor("paneGeneral"),
-      "open-about": () => window.openAboutDialog(),
+      "open-about": () => this.#openAboutAsChild(),
       "open-donate": () => window.openTrustedLinkIn(kDonateURL, "tab"),
       "open-privacy-settings": () => leaveFor("panePrivacy"),
       "open-accessibility-settings": () => leaveFor("paneAccessibility"),

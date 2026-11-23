@@ -37,11 +37,20 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       return;
     }
     delayedStartupPromise.then(() => {
-      gBrowser.addTabsProgressListener({
+      if (window.closed) {
+        return;
+      }
+      const listener = {
         onLocationChange: (browser, webProgress, request, aLocation) => {
           this.#onLocationChange(browser, webProgress, aLocation);
         },
-      });
+      };
+      gBrowser.addTabsProgressListener(listener);
+      window.addEventListener(
+        "unload",
+        () => gBrowser.removeTabsProgressListener(listener),
+        { once: true }
+      );
     });
   }
 

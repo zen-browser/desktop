@@ -18,8 +18,8 @@
 
   --zen-settings-sidebar-background: light-dark(#e9e9eb, #262626);
   --zen-settings-sidebar-translucent-background: light-dark(
-    rgba(233, 233, 235, 0.8),
-    rgba(38, 38, 38, 0.8)
+    rgba(233, 233, 235, 0.4),
+    rgba(38, 38, 38, 0.4)
   );
   --zen-settings-sidebar-tint-shadow: inset 0 0 0 100vmax
     var(--zen-settings-sidebar-translucent-background);
@@ -118,6 +118,13 @@
 
   @media (-moz-windows-mica) or (-moz-platform: macos) {
     background: transparent;
+  }
+
+  @media (-moz-platform: linux) {
+    --zen-settings-font-size-title: 1.154rem;
+    --zen-settings-font-size-heading: 1.077rem;
+    --zen-settings-font-size-body: 1rem;
+    --zen-settings-font-size-small: 0.923rem;
   }
 }
 
@@ -305,7 +312,7 @@
     border-radius: var(--zen-border-radius-10);
 
     &[aria-selected="true"] {
-      background: var(--zen-settings-button-background-hover);
+      background: var(--zen-settings-win-tile-selected-background);
       color: inherit;
     }
   }

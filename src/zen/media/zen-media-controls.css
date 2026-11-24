@@ -420,6 +420,9 @@
   background-size: 100% 100%;
   -moz-context-properties: fill;
   fill: currentColor;
+}
+
+.zen-media-notes:not(:-moz-window-inactive)::before {
   animation: var(--zen-media-notes-animation, none) 3s steps(90, jump-none) infinite;
   animation-play-state: var(--zen-media-notes-play-state, running);
 }

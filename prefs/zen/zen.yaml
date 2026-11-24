@@ -23,6 +23,9 @@
 - name: zen.tabs.select-recently-used-on-close
   value: true
 
+- name: zen.tabs.auto-archive.timeout-minutes
+  value: 0 # Minutes an unpinned tab can go unopened before it is archived, 0 never archives
+
 - name: zen.tabs.folder-dragover-threshold-percent
   value: 20 # Percentage of folder height to trigger dragover
 

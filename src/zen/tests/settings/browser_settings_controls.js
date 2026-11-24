@@ -240,3 +240,25 @@ add_task(async function test_update_settings() {
   );
   await BrowserTestUtils.closeWindow(win);
 });
+
+add_task(async function test_auto_archive_setting() {
+  const pref = "zen.tabs.auto-archive.timeout-minutes";
+  await SpecialPowers.pushPrefEnv({ set: [[pref, 0]] });
+  const win = await openSettingsWindow(() => ZenSettings.open("tabs"));
+  const list = win.document.getElementById("zen-settings-auto-archive");
+  is(list.value, "0", "Tabs are never archived to begin with");
+
+  list.value = "720";
+  list.doCommand();
+  is(Services.prefs.getIntPref(pref), 720, "Choosing 12 hours stores it");
+
+  Services.prefs.setIntPref(pref, 43200);
+  is(list.value, "43200", "A change made elsewhere shows up");
+  await TestUtils.waitForCondition(
+    () => list.label == "30 days",
+    "And is named for how long it is"
+  );
+
+  await BrowserTestUtils.closeWindow(win);
+  await SpecialPowers.popPrefEnv();
+});

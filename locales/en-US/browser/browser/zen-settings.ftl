@@ -83,6 +83,26 @@ zen-settings-window-tabs-warn-on-quit =
         [windows] Warn before quitting with Ctrl+Shift+Q
        *[other] Warn before quitting with Ctrl+Q
     }
+zen-settings-window-tabs-auto-archive = Archive inactive tabs after
+zen-settings-window-tabs-auto-archive-description = Unpinned tabs you haven’t opened for this long are closed. You can reopen them from your recently closed tabs.
+zen-settings-window-tabs-auto-archive-never =
+    .label = Never
+# Variables:
+#   $hours (Number): how many hours a tab can go unopened before it is archived
+zen-settings-window-tabs-auto-archive-hours =
+    .label =
+        { $hours ->
+            [one] { $hours } hour
+           *[other] { $hours } hours
+        }
+# Variables:
+#   $days (Number): how many days a tab can go unopened before it is archived
+zen-settings-window-tabs-auto-archive-days =
+    .label =
+        { $days ->
+            [one] { $days } day
+           *[other] { $days } days
+        }
 zen-settings-window-ctrl-tab-header = Ctrl+Tab
 zen-settings-window-tabs-ctrl-tab-recent = Cycle through tabs in recently used order
 zen-settings-window-tabs-ctrl-tab-ignore-pending = Skip tabs that aren’t loaded

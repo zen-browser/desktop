@@ -8,6 +8,8 @@ support-files = [
   "head.js",
 ]
 
+["browser_auto_archive_synced.js"]
+
 ["browser_collect_tab_state.js"]
 
 ["browser_issue_12140.js"]

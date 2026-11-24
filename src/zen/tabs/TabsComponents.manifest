@@ -1,0 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+category browser-idle-startup resource:///modules/zen/ZenTabArchiver.sys.mjs ZenTabArchiver.init
+
+category browser-quit-application-granted resource:///modules/zen/ZenTabArchiver.sys.mjs ZenTabArchiver.uninit

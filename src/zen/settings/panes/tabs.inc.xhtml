@@ -34,6 +34,21 @@
                 <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-tabs-warn-on-quit"/>
                 <html:moz-toggle class="zen-settings-toggle" data-pref="browser.warnOnQuitShortcut"/>
               </html:div>
+              <html:div class="zen-settings-row">
+                <html:div class="zen-settings-row-text">
+                  <html:span id="zen-settings-auto-archive-label" data-l10n-id="zen-settings-window-tabs-auto-archive"/>
+                  <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-tabs-auto-archive-description"/>
+                </html:div>
+                <menulist id="zen-settings-auto-archive" data-pref="zen.tabs.auto-archive.timeout-minutes" aria-labelledby="zen-settings-auto-archive-label">
+                  <menupopup>
+                    <menuitem value="0" data-l10n-id="zen-settings-window-tabs-auto-archive-never"/>
+                    <menuitem value="720" data-l10n-id="zen-settings-window-tabs-auto-archive-hours" data-l10n-args='{"hours": 12}'/>
+                    <menuitem value="1440" data-l10n-id="zen-settings-window-tabs-auto-archive-hours" data-l10n-args='{"hours": 24}'/>
+                    <menuitem value="10080" data-l10n-id="zen-settings-window-tabs-auto-archive-days" data-l10n-args='{"days": 7}'/>
+                    <menuitem value="43200" data-l10n-id="zen-settings-window-tabs-auto-archive-days" data-l10n-args='{"days": 30}'/>
+                  </menupopup>
+                </menulist>
+              </html:div>
             </html:div>
           </html:div>
 

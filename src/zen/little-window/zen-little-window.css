@@ -186,11 +186,11 @@
   }
 
   &:hover {
-    background: color-mix(in srgb, currentColor 8%, transparent);
+    background: color-mix(in srgb, currentColor 4%, transparent);
   }
 
   &:hover:active {
-    background: color-mix(in srgb, currentColor 16%, transparent);
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
 }
 
@@ -225,11 +225,11 @@
 
   &:hover,
   &[open] {
-    background: color-mix(in srgb, currentColor 8%, transparent);
+    background: color-mix(in srgb, currentColor 4%, transparent);
   }
 
   &:hover:active {
-    background: color-mix(in srgb, currentColor 16%, transparent);
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
 
   > .toolbarbutton-text,

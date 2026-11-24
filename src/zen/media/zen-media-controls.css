@@ -233,7 +233,6 @@
     opacity: 0;
     visibility: hidden;
     --zen-media-notes-animation: zen-note-sprite;
-    /* A hidden animation still keeps the refresh driver ticking */
     --zen-media-notes-play-state: paused;
     transition:
       opacity 0.8s ease,

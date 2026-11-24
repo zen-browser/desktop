@@ -712,3 +712,17 @@ var gZenMarketplaceManager = {
     modList.remove();
   },
 };
+
+{
+  const zenSettingsButton = document.getElementById("category-zen-settings");
+  zenSettingsButton.addEventListener(
+    "click",
+    event => {
+      event.stopPropagation();
+      ChromeUtils.importESModule(
+        "resource:///modules/zen/settings/ZenSettings.sys.mjs"
+      ).ZenSettings.open();
+    },
+    true
+  );
+}

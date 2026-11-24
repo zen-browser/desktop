@@ -21,6 +21,14 @@ export class nsZenBoostEditor {
     "zen-theme-change",
   ];
 
+  #codeEditorWidth = 450;
+  #boostEditorWidth = 185;
+  #pickerObserverAdded = false;
+  #onMouseDown = null;
+  #onMouseMove = null;
+  #onMouseUp = null;
+  #onThemePickerClick = null;
+
   /**
    * Creates a new boost editor instance for the specified domain.
    *
@@ -33,11 +41,6 @@ export class nsZenBoostEditor {
     this.doc = doc;
     this.editorWindow = editorWindow;
     this.openerWindow = openerWindow;
-
-    this._codeEditorWidth = 450;
-    this._boostEditorWidth = 185;
-    this._pickerCallback = null;
-    this._pickerObserverAdded = false;
 
     this.isMouseDown = false;
     this.wasDragging = false;
@@ -184,7 +187,7 @@ export class nsZenBoostEditor {
    */
   uninit() {
     this.uninitColorPicker();
-    this._removePickerObserver();
+    this.#removePickerObserver();
 
     nsZenBoostEditor.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this, observe);
@@ -514,7 +517,7 @@ export class nsZenBoostEditor {
    * Handles the code editor button press, resizing and offsetting the window and enabling the code view
    */
   onCodeButtonPressed() {
-    const offset = this._codeEditorWidth - this._boostEditorWidth;
+    const offset = this.#codeEditorWidth - this.#boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -527,7 +530,7 @@ export class nsZenBoostEditor {
 
     this.editorWindow.requestAnimationFrame(() => {
       this.editorWindow.resizeTo(
-        this._codeEditorWidth,
+        this.#codeEditorWidth,
         this.editorWindow.outerHeight
       );
       if (openRightAligned) {
@@ -565,7 +568,7 @@ export class nsZenBoostEditor {
    * Handles the back button in the code view, resizing and offsetting the window and changing back to boost view
    */
   onCodeBackButtonPressed() {
-    const offset = this._codeEditorWidth - this._boostEditorWidth;
+    const offset = this.#codeEditorWidth - this.#boostEditorWidth;
     const openRightAligned =
       this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
       this.editorWindow.screenX;
@@ -582,7 +585,7 @@ export class nsZenBoostEditor {
 
     this.editorWindow.promiseDocumentFlushed(() => {
       this.editorWindow.resizeTo(
-        this._boostEditorWidth,
+        this.#boostEditorWidth,
         this.editorWindow.outerHeight
       );
       if (openRightAligned) {
@@ -624,7 +627,7 @@ ${cssSelector} {
 
 }`);
 
-    this._removePickerObserver();
+    this.#removePickerObserver();
   }
 
   /**
@@ -660,20 +663,20 @@ ${cssSelector} {
     pickerButton.setAttribute("enabled", selectEnabled ? "true" : "false");
   }
 
-  _addPickerObserver() {
-    if (this._pickerObserverAdded) {
+  #addPickerObserver() {
+    if (this.#pickerObserverAdded) {
       return;
     }
     Services.obs.addObserver(this, "selector-picker-picked");
-    this._pickerObserverAdded = true;
+    this.#pickerObserverAdded = true;
   }
 
-  _removePickerObserver() {
-    if (!this._pickerObserverAdded) {
+  #removePickerObserver() {
+    if (!this.#pickerObserverAdded) {
       return;
     }
     Services.obs.removeObserver(this, "selector-picker-picked");
-    this._pickerObserverAdded = false;
+    this.#pickerObserverAdded = false;
   }
 
   onUpdatePickerObserver(data) {
@@ -682,9 +685,9 @@ ${cssSelector} {
     }
 
     if (data == "onenable") {
-      this._addPickerObserver();
+      this.#addPickerObserver();
     } else if (data == "ondisable") {
-      this._removePickerObserver();
+      this.#removePickerObserver();
     }
   }
 
@@ -709,14 +712,14 @@ ${cssSelector} {
     const themePicker = this.doc.querySelector(
       ".zen-boost-color-picker-gradient"
     );
-    this._onMouseMove = this.onMouseMove.bind(this);
-    this._onMouseUp = this.onMouseUp.bind(this);
-    this._onMouseDown = this.onMouseDown.bind(this);
-    this._onThemePickerClick = this.onThemePickerClick.bind(this);
-    this.doc.addEventListener("mousemove", this._onMouseMove);
-    this.doc.addEventListener("mouseup", this._onMouseUp);
-    themePicker.addEventListener("mousedown", this._onMouseDown);
-    themePicker.addEventListener("click", this._onThemePickerClick);
+    this.#onMouseMove = this.onMouseMove.bind(this);
+    this.#onMouseUp = this.onMouseUp.bind(this);
+    this.#onMouseDown = this.onMouseDown.bind(this);
+    this.#onThemePickerClick = this.onThemePickerClick.bind(this);
+    this.doc.addEventListener("mousemove", this.#onMouseMove);
+    this.doc.addEventListener("mouseup", this.#onMouseUp);
+    themePicker.addEventListener("mousedown", this.#onMouseDown);
+    themePicker.addEventListener("click", this.#onThemePickerClick);
   }
 
   /**
@@ -726,14 +729,14 @@ ${cssSelector} {
     const themePicker = this.doc.querySelector(
       ".zen-boost-color-picker-gradient"
     );
-    this.doc.removeEventListener("mousemove", this._onMouseMove);
-    this.doc.removeEventListener("mouseup", this._onMouseUp);
-    themePicker.removeEventListener("mousedown", this._onMouseDown);
-    themePicker.removeEventListener("click", this._onThemePickerClick);
-    this._onThemePickerClick = null;
-    this._onMouseMove = null;
-    this._onMouseUp = null;
-    this._onMouseDown = null;
+    this.doc.removeEventListener("mousemove", this.#onMouseMove);
+    this.doc.removeEventListener("mouseup", this.#onMouseUp);
+    themePicker.removeEventListener("mousedown", this.#onMouseDown);
+    themePicker.removeEventListener("click", this.#onThemePickerClick);
+    this.#onThemePickerClick = null;
+    this.#onMouseMove = null;
+    this.#onMouseUp = null;
+    this.#onMouseDown = null;
   }
 
   /**

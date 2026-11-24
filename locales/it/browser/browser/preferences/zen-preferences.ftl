@@ -47,7 +47,7 @@ zen-glance-trigger-alt-click =
 zen-glance-trigger-shift-click = 
     .label =
         { PLATFORM() ->
-            [macos] ⇧ + Click
+            [macos] ⇧ + Clicca
            *[other] Shift + Click
         }
     .aria-label = Shift + Click
@@ -70,10 +70,10 @@ zen-look-and-feel-compact-view-top-toolbar =
     .label = Nascondi anche la barra degli strumenti superiore in modalità compatta
 zen-look-and-feel-compact-toolbar-flash-popup = 
     .label = Fai comparire brevemente la barra degli strumenti quando si cambiano o si aprono nuove schede in modalità compatta
-zen-look-and-feel-window-drag-header = Window dragging
-zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
+zen-look-and-feel-window-drag-header = Trascinamento finestra
+zen-look-and-feel-window-drag-description = Sposta la finestra trascinando lo spazio vuoto nella parte superiore dei siti web, proprio come la barra del titolo.
 zen-window-drag-enabled = 
-    .label = Allow dragging the window from web pages
+    .label = Consenti il trascinamento della finestra dalle pagine web
 pane-zen-tabs-title = Gestione Schede
 category-zen-workspaces = 
     .tooltiptext = { pane-zen-tabs-title }
@@ -83,11 +83,11 @@ zen-tabs-select-recently-used-on-close =
 zen-tabs-close-on-back-with-no-history = 
     .label = Chiudi scheda e passa alla scheda proprietario (o scheda usata più di recente) quando si torna indietro senza cronologia
 zen-settings-workspaces-sync = 
-    .label = Sync your sidebar across devices
-    .description = Keep your workspaces, pinned tabs and folders in sync on all your devices through your Mozilla account.
+    .label = Sincronizza la barra laterale tra i dispositivi
+    .description = Mantieni i tuoi spazi di lavoro, le schede bloccate e le cartelle in sincronizzazione su tutti i tuoi dispositivi attraverso il tuo account Mozilla.
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = Includi schede non bloccate
+    .description = Sincronizza anche le schede non fissate di ogni spazio, non solo le schede e le cartelle fissate.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Sincronizza solo schede bloccate negli spazi di lavoro
 zen-tabs-cycle-by-attribute = 
@@ -190,7 +190,7 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mod
-zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-workspace = Spazi
 zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Dividi Vista
 zenCKSOption-group-zen-layout = Layout
@@ -212,7 +212,7 @@ zen-workspace-shortcut-switch-9 = Passa allo spazio di lavoro 9
 zen-workspace-shortcut-switch-10 = Passa allo spazio di lavoro 10
 zen-workspace-shortcut-create = Crea nuovo spazio di lavoro
 zen-sidebar-shortcut-toggle = Attiva/Disattiva Larghezza Barra Laterale
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = Attiva/Disattiva Libreria
 zen-pinned-tab-shortcut-reset = Reimposta la scheda bloccata all'URL bloccata
 zen-split-view-shortcut-grid = Attiva/Disattiva Griglia Visualizzazione Dividi
 zen-split-view-shortcut-vertical = Attiva/Disattiva Dividi Vista Verticale

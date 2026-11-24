@@ -81,8 +81,6 @@
 #urlbar[focused="true"]:not([suppress-focus-border]) > .urlbar-background,
 #searchbar:focus-within {
   outline: none !important;
-  outline-offset: none !important;
-  outline-color: none !important;
 }
 
 #urlbar:not([breakout-extend]) {

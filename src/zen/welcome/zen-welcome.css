@@ -87,9 +87,11 @@
     letter-spacing: -0.03em;
     max-width: 50%;
     white-space: nowrap;
-    /* Layered (transformed) glyphs are drawn with grayscale AA on macOS;
-     * use it for the whole title so animating characters don't look bolder. */
-    -moz-osx-font-smoothing: grayscale;
+    @media (-moz-platform: macos) {
+      /* Layered (transformed) glyphs are drawn with grayscale AA on macOS.
+       * Use it for the whole title so animating characters don't look bolder. */
+      -moz-osx-font-smoothing: grayscale;
+    }
     transform: translateY(-5%);
 
     & > span {

@@ -29,7 +29,7 @@
     transparent
   );
   --zen-settings-sticky-background: light-dark(#fcfcfc, #282829);
-  --zen-settings-shortcuts-aside-width: 192px;
+  --zen-settings-shortcuts-aside-width: 182px;
   --zen-settings-keyword-width: 110px;
   --zen-settings-dialog-width: 480px;
   --zen-settings-dialog-max-width: calc(100vw - 40px);

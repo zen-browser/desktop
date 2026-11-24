@@ -420,13 +420,12 @@
   background-size: 100% 100%;
   -moz-context-properties: fill;
   fill: currentColor;
-  animation: var(--zen-media-notes-animation, none) 3s steps(90, jump-none) infinite;
-  animation-play-state: var(--zen-media-notes-play-state, running);
 }
 
 /* No need to keep the sprite ticking while the window isn't focused */
-:root:-moz-window-inactive .zen-media-notes::before {
-  animation-play-state: paused;
+.zen-media-notes:not(:-moz-window-inactive)::before {
+  animation: var(--zen-media-notes-animation, none) 3s steps(90, jump-none) infinite;
+  animation-play-state: var(--zen-media-notes-play-state, running);
 }
 
 @keyframes zen-note-sprite {

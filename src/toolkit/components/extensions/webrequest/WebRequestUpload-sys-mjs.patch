@@ -1,0 +1,21 @@
+diff --git a/toolkit/components/extensions/webrequest/WebRequestUpload.sys.mjs b/toolkit/components/extensions/webrequest/WebRequestUpload.sys.mjs
+index 801cbdda418e82339f9ceff27c468be801ae4ebe..027fc60fa1a995216e5f08b6f3ae88a1bab3bc50 100644
+--- a/toolkit/components/extensions/webrequest/WebRequestUpload.sys.mjs
++++ b/toolkit/components/extensions/webrequest/WebRequestUpload.sys.mjs
+@@ -382,7 +382,15 @@
+     }
+ 
+     channel.QueryInterface(Ci.nsIHttpChannel);
+-    let contentType = channel.getRequestHeader("Content-Type");
++    let contentType;
++    try {
++      contentType = channel.getRequestHeader("Content-Type");
++    } catch (error) {
++      if (error.result != Cr.NS_ERROR_NOT_AVAILABLE) {
++        throw error;
++      }
++      return null;
++    }
+ 
+     switch (Headers.getParam(contentType, "")) {
+       case "multipart/form-data": {

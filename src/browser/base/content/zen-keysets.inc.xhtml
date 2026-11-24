@@ -41,7 +41,13 @@
   <key id="zen-pinned-tab-reset-shortcut" command="cmd_zenPinnedTabReset"/>
   <key id="zen-duplicate-tab" command="Browser:DuplicateTab"/>
   <key id="zen-new-unsynced-window" key="N" modifiers="accel,shift" command="cmd_zenNewNavigatorUnsynced"/>
-  <key id="zen-new-little-window" key="N" modifiers="accel,alt" command="cmd_zenNewLittleWindow" global="true"/>
+  <key id="zen-new-little-window"
+#ifdef XP_MACOSX
+       key="N" modifiers="accel,alt"
+#else
+       key="L" modifiers="alt"
+#endif
+       command="cmd_zenNewLittleWindow" global="true"/>
   <key id="zen-copy-url" key="C" modifiers="accel,shift" command="cmd_zenCopyCurrentURL"/>
   <key id="zen-copy-url-markdown" key="C" modifiers="accel,alt,shift" command="cmd_zenCopyCurrentURLMarkdown"/>
 </keyset>

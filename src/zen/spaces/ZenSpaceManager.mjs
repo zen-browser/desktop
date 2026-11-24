@@ -1112,9 +1112,8 @@ class nsZenWorkspaces {
       "zen.urlbar.open-on-startup",
       true
     );
-    let shownEmptyTab =
-      gBrowser.selectedTab.hasAttribute("zen-empty-tab") && openOnStartup;
     initialTabWasEmpty &&= openOnStartup;
+    const tabAtStartup = gBrowser.selectedTab;
 
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
@@ -1127,6 +1126,9 @@ class nsZenWorkspaces {
       ) {
         return;
       }
+      const shownEmptyTab =
+        gBrowser.selectedTab.hasAttribute("zen-empty-tab") && openOnStartup;
+      initialTabWasEmpty &&= gBrowser.selectedTab === tabAtStartup;
       if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
         BrowserCommands.openTab();
       } else if (shownEmptyTab || initialTabWasEmpty) {

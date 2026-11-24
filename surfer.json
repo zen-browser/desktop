@@ -20,7 +20,7 @@
       "brandShortName": "Zen",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.24.3b",
+        "displayVersion": "1.25b",
         "github": {
           "repo": "zen-browser/desktop"
         },
@@ -40,7 +40,7 @@
       "brandShortName": "Twilight",
       "brandFullName": "Zen Twilight",
       "release": {
-        "displayVersion": "1.25t",
+        "displayVersion": "1.26t",
         "github": {
           "repo": "zen-browser/desktop"
         }

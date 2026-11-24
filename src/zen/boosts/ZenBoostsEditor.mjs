@@ -37,6 +37,7 @@ export class nsZenBoostEditor {
     this._codeEditorWidth = 450;
     this._boostEditorWidth = 185;
     this._pickerCallback = null;
+    this._pickerObserverAdded = false;
 
     this.isMouseDown = false;
     this.wasDragging = false;
@@ -183,6 +184,7 @@ export class nsZenBoostEditor {
    */
   uninit() {
     this.uninitColorPicker();
+    this._removePickerObserver();
 
     nsZenBoostEditor.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this, observe);
@@ -622,7 +624,7 @@ ${cssSelector} {
 
 }`);
 
-    Services.obs.removeObserver(this, "selector-picker-picked");
+    this._removePickerObserver();
   }
 
   /**
@@ -658,15 +660,31 @@ ${cssSelector} {
     pickerButton.setAttribute("enabled", selectEnabled ? "true" : "false");
   }
 
+  _addPickerObserver() {
+    if (this._pickerObserverAdded) {
+      return;
+    }
+    Services.obs.addObserver(this, "selector-picker-picked");
+    this._pickerObserverAdded = true;
+  }
+
+  _removePickerObserver() {
+    if (!this._pickerObserverAdded) {
+      return;
+    }
+    Services.obs.removeObserver(this, "selector-picker-picked");
+    this._pickerObserverAdded = false;
+  }
+
   onUpdatePickerObserver(data) {
     if (!data) {
       return;
     }
 
     if (data == "onenable") {
-      Services.obs.addObserver(this, "selector-picker-picked");
+      this._addPickerObserver();
     } else if (data == "ondisable") {
-      Services.obs.removeObserver(this, "selector-picker-picked");
+      this._removePickerObserver();
     }
   }
 

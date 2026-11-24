@@ -21,6 +21,7 @@
     "chrome://browser/content/zen-components/ZenMods.mjs",
     "chrome://browser/content/zen-components/ZenSessionStore.mjs",
     "chrome://browser/content/zen-components/ZenGlanceManager.mjs",
+    "chrome://browser/content/zen-components/ZenOrbitWheel.mjs",
     "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",
     "resource:///modules/zen/ZenTabRenamer.mjs",
     "chrome://browser/content/zen-components/ZenViewSplitter.mjs",

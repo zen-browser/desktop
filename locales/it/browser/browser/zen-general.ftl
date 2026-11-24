@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Modifica URL Essenziale
+           *[false] Modifica URL Bloccato
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Sostituisci con l'URL corrente
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Modifica…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Cambia Etichetta...
@@ -45,31 +45,31 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Colore personalizzato
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Copiato URL corrente!
+       *[other] { $count } URL copiati!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] URL copiato come Markdown!
+       *[other] { $count } URL copiati come Markdown!
     }
 zen-general-cancel-label = 
     .label = Annulla
 zen-general-confirm = 
     .label = Conferma
 zen-pinned-tab-replaced = L'URL della scheda bloccata è stato sostituito con l'URL attuale.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = L'URL della scheda bloccata è stato aggiornato!
+zen-pinned-tab-url-invalid = Questo non sembra un URL valido.
+zen-pinned-tab-edit-url-title = Modifica URL Bloccato
+zen-pinned-tab-edit-url-label = Inserisci l'URL a cui questa scheda bloccata dovrebbe puntare:
 zen-tabs-renamed = La scheda è stata rinominata con successo!
 zen-background-tab-opened-toast = Nuova scheda aperta in background!
 zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Il Workspace è stato rinominato con successo!
 zen-split-view-limit-toast = Impossibile aggiungere altri pannelli alla vista divisa!
-zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
-zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> ancora a { $action}
+zen-shortcut-blocked-toast-default-action = usalo in { -brand-short-name }
+zen-sidebar-drag-collapsed-toast = Barra laterale nascosta! Usa <span>{ $shortcut }</span> per mostrare la barra laterale.
 zen-toggle-compact-mode-button = 
     .label = Modalità compatta
     .tooltiptext = Attiva/disattiva Modalità compatta
@@ -85,7 +85,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Icone
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Cerca emoji
 urlbar-search-mode-zen_actions = Azioni
 zen-site-data-settings = Impostazioni
 zen-generic-manage = Gestisci
@@ -113,7 +113,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Condividi questa pagina
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Crea nuovo potenziamento
 zen-site-data-header-reader-mode = 
     .tooltiptext = Entra nella Modalità Lettura
 zen-site-data-header-screenshot = 
@@ -138,9 +138,9 @@ zen-sidebar-notification-updated-heading = Aggiornamento completato!
 zen-sidebar-notification-updated-label = Cosa c'è di nuovo in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Vedi Note di Rilascio
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Supporta { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Dona al progetto
 zen-sidebar-notification-restart-safe-mode-label = Si è rotto qualcosa?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Riavvia in Modalità Provvisoria
@@ -151,13 +151,13 @@ zen-window-sync-migration-dialog-accept = Ho capito
 zen-appmenu-new-blank-window = 
     .label = Nuova finestra vuota
 zen-appmenu-new-little-window = 
-    .label = New Little Window
-zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
-zen-little-window-open-in-new-window = Open in { -brand-short-name }
+    .label = Nuova Finestra Piccola
+zen-little-window-open-in-space = Apri in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Apri in { -brand-short-name }
 zen-little-window-choose-space = 
-    .tooltiptext = Choose a Space
+    .tooltiptext = Scegli uno spazio
 zen-little-window-title = Little Zen
-zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
-zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+zen-little-window-intro-title = Aperto in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Fare clic su “Apri in” per spostare questa pagina in una finestra completa, o { $shortcut } per chiudere
 zen-little-window-download-source = 
-    .value = From { $host }
+    .value = Da { $host}

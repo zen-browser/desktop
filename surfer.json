@@ -5,7 +5,7 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "160.0.1",
+    "version": "161.0",
     "candidate": "161.0",
     "candidateBuild": 1
   },

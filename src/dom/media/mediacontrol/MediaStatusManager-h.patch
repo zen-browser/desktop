@@ -1,0 +1,54 @@
+diff --git a/dom/media/mediacontrol/MediaStatusManager.h b/dom/media/mediacontrol/MediaStatusManager.h
+index 2d805b15411e3f5ef6afd3a641a52820843219da..e9baf73b6ffad0f80d3aa06994956541370f83c8 100644
+--- a/dom/media/mediacontrol/MediaStatusManager.h
++++ b/dom/media/mediacontrol/MediaStatusManager.h
+@@ -180,9 +180,9 @@ class MediaStatusManager : public IMediaInfoUpdater {
+       uint64_t aBrowsingContextId, const nsID& aMediaId,
+       const Maybe<PositionState>& aGuessedState) override;
+ 
+-  // Return active media session's metadata if active media session exists and
+-  // it has already set its metadata. Otherwise, return default media metadata
+-  // which is based on website's title and favicon.
++  // A top-level page that has claimed embedded playback may supply metadata.
++  // Otherwise, use the active session or default website metadata, respecting
++  // the private-browsing metadata policy.
+   MediaMetadataBase GetCurrentMediaMetadata() const;
+ 
+   // Return the active media session's position state. If the active media
+@@ -204,8 +204,7 @@ class MediaStatusManager : public IMediaInfoUpdater {
+   // source. Used by MediaController to detect audibility transitions.
+   bool IsBcAudible(uint64_t aBrowsingContextId) const;
+ 
+-  // These events would be notified when the active media session's certain
+-  // property changes.
++  // Metadata changes can come from the active player or the embedding page.
+   MediaEventSource<MediaMetadataBase>& MetadataChangedEvent() {
+     return mMetadataChangedEvent;
+   }
+@@ -228,8 +227,11 @@ class MediaStatusManager : public IMediaInfoUpdater {
+  protected:
+   ~MediaStatusManager() = default;
+ 
+-  // This event would be notified when the active media session changes its
+-  // supported actions.
++  // An embedding page can handle an action without owning the audible media.
++  bool IsTopLevelSessionActionSupported(MediaControlKey aKey) const;
++
++  // Supported actions include handlers from the active player and the
++  // embedding page.
+   MediaEventSource<nsTArray<MediaSessionAction>>&
+   SupportedActionsChangedEvent() {
+     return mSupportedActionsChangedEvent;
+@@ -245,6 +247,12 @@ class MediaStatusManager : public IMediaInfoUpdater {
+   void ClearActiveMediaSessionContextIdIfNeeded();
+ 
+  private:
++  // Claim an active embedded session when the parent declares playing. Keep
++  // that association while paused, until none or a different player is chosen.
++  bool UpdateTopLevelDelegation();
++  bool HasTopLevelDelegation() const;
++  Maybe<uint64_t> mTopLevelDelegateContextId;
++
+   nsString GetDefaultFaviconURL() const;
+   nsString GetDefaultTitle() const;
+   nsCString GetUrl() const;

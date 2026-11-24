@@ -1,8 +1,8 @@
 diff --git a/dom/media/mediacontrol/MediaController.cpp b/dom/media/mediacontrol/MediaController.cpp
-index e7fd71ac228370e4805f86d213e40c13e1520ad3..c82d485f1c30af1b4879c18fd4e33e0017cb6abc 100644
+index 6e18076c59d36930e94d1d7a66f4652bcf6e4b69..01fb3078cac9ce8b5700e1751a730ab2114a8e27 100644
 --- a/dom/media/mediacontrol/MediaController.cpp
 +++ b/dom/media/mediacontrol/MediaController.cpp
-@@ -49,6 +49,25 @@ void MediaController::GetSupportedKeys(
+@@ -51,6 +51,25 @@ void MediaController::GetSupportedKeys(
    }
  }
  
@@ -28,7 +28,49 @@ index e7fd71ac228370e4805f86d213e40c13e1520ad3..c82d485f1c30af1b4879c18fd4e33e00
  void MediaController::GetMetadata(MediaMetadataInit& aMetadata,
                                    ErrorResult& aRv) {
    if (!IsActive() || mShutdown) {
-@@ -457,6 +476,7 @@ void MediaController::SetIsInPictureInPictureMode(
+@@ -292,14 +311,20 @@ void MediaController::UpdateMediaControlActionToContentMediaIfNeeded(
+     return;
+   }
+ 
+-  // For some actions which have default action handler, we want to propagate
+-  // them on all contexts in order to trigger the default handler on each
+-  // context separately. Otherwise, other action should only be propagated to
+-  // the context where active media session exists.
+-  const bool propateToAll = ShouldPropagateActionToAllContexts(aAction);
+-  const uint64_t targetContextId = propateToAll || !mActiveMediaSessionContextId
+-                                       ? Id()
+-                                       : *mActiveMediaSessionContextId;
++  // Dispatch an explicitly handled parent action once. Otherwise, preserve
++  // the existing broadcast for default media actions and route other actions
++  // to the active player.
++  const bool useTopLevelHandler =
++      mIsActive && aAction.mKey &&
++      IsTopLevelSessionActionSupported(*aAction.mKey);
++  const bool propateToAll =
++      !useTopLevelHandler && ShouldPropagateActionToAllContexts(aAction);
++  const uint64_t targetContextId =
++      useTopLevelHandler || propateToAll || !mActiveMediaSessionContextId
++          ? Id()
++          : *mActiveMediaSessionContextId;
++  MediaControlAction action = aAction;
++  action.mUseTopLevelSession = useTopLevelHandler;
+   RefPtr<BrowsingContext> context = BrowsingContext::Get(targetContextId);
+   if (!context || context->IsDiscarded()) {
+     return;
+@@ -307,10 +332,10 @@ void MediaController::UpdateMediaControlActionToContentMediaIfNeeded(
+ 
+   if (propateToAll) {
+     context->PreOrderWalk([&](BrowsingContext* bc) {
+-      bc->Canonical()->UpdateMediaControlAction(aAction);
++      bc->Canonical()->UpdateMediaControlAction(action);
+     });
+   } else {
+-    context->Canonical()->UpdateMediaControlAction(aAction);
++    context->Canonical()->UpdateMediaControlAction(action);
+   }
+ }
+ 
+@@ -531,6 +556,7 @@ void MediaController::SetIsInPictureInPictureMode(
    ForceToBecomeMainControllerIfNeeded();
    UpdateDeactivationTimerIfNeeded();
    mPictureInPictureModeChangedEvent.Notify(mIsInPictureInPictureMode);

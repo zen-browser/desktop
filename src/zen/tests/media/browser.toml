@@ -5,9 +5,12 @@
 [DEFAULT]
 support-files = [
   "head.js",
+  "file_media_parent.html",
 ]
 
 ["browser_media_metadata.js"]
+
+["browser_media_parent_session.js"]
 
 ["browser_media_mute.js"]
 

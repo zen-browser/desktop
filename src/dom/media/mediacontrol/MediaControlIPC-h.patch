@@ -1,0 +1,13 @@
+diff --git a/dom/media/mediacontrol/MediaControlIPC.h b/dom/media/mediacontrol/MediaControlIPC.h
+index 1ce8df3e1129003a9638fb79798ecbf7202622ff..b3d992367d8eb6b74cdb1d5ef0904180f79cccdf 100644
+--- a/dom/media/mediacontrol/MediaControlIPC.h
++++ b/dom/media/mediacontrol/MediaControlIPC.h
+@@ -67,7 +67,7 @@ DEFINE_IPC_SERIALIZER_WITH_FIELDS(mozilla::dom::MediaControlActionParams,
+                                   mAbsolute, mRelativeSeekOffset, mVolume);
+ 
+ DEFINE_IPC_SERIALIZER_WITH_FIELDS(mozilla::dom::MediaControlAction, mKey,
+-                                  mParams);
++                                  mParams, mUseTopLevelSession);
+ 
+ }  // namespace IPC
+ 

@@ -1,0 +1,14 @@
+diff --git a/dom/media/mediacontrol/MediaControlKeySource.h b/dom/media/mediacontrol/MediaControlKeySource.h
+index 5844f5bd0c89ae42f037c167d2b4cbedf47becba..a26ec85b5778b4c2d3820b51e8062305060ae3c1 100644
+--- a/dom/media/mediacontrol/MediaControlKeySource.h
++++ b/dom/media/mediacontrol/MediaControlKeySource.h
+@@ -47,6 +47,9 @@ struct MediaControlAction {
+       : mKey(Some(aKey)), mParams(aParams) {}
+   Maybe<MediaControlKey> mKey;
+   MediaControlActionParams mParams;
++  // Set by the parent process when this command targets an embedding page's
++  // handler instead of the active player's session or default media behavior.
++  bool mUseTopLevelSession = false;
+ };
+ 
+ /**

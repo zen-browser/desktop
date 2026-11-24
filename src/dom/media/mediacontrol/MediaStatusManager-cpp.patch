@@ -1,8 +1,90 @@
 diff --git a/dom/media/mediacontrol/MediaStatusManager.cpp b/dom/media/mediacontrol/MediaStatusManager.cpp
-index 9348a0b69e4d389b92931d46ba6c1849d6883450..920a0b2ebc7ac3c4ecd0245903ccb1d8d4258820 100644
+index ad55222105de595d9f10af478c43e0a19f51cec1..e5cb5fb148d242af7c67c3b91952ad4e1cbd378c 100644
 --- a/dom/media/mediacontrol/MediaStatusManager.cpp
 +++ b/dom/media/mediacontrol/MediaStatusManager.cpp
-@@ -431,7 +431,8 @@ void MediaStatusManager::UpdateGuessedPositionState(
+@@ -89,6 +89,11 @@ void MediaStatusManager::NotifySessionDestroyed(uint64_t aBrowsingContextId) {
+     if (mActiveMediaSessionContextId &&
+         *mActiveMediaSessionContextId == aBrowsingContextId) {
+       ClearActiveMediaSessionContextIdIfNeeded();
++    } else if (mActiveMediaSessionContextId &&
++               aBrowsingContextId == mTopLevelBrowsingContextId) {
++      UpdateTopLevelDelegation();
++      mMetadataChangedEvent.Notify(GetCurrentMediaMetadata());
++      mSupportedActionsChangedEvent.Notify(GetSupportedActions());
+     }
+   }
+ }
+@@ -109,11 +114,13 @@ void MediaStatusManager::UpdateMetadata(
+         NS_ConvertUTF16toUTF8(aMetadata->mAlbum).get());
+     info->mMetadata = aMetadata;
+   }
+-  // Only notify the event if the changed metadata belongs to the active media
+-  // session.
++  // The top-level page can label playback hosted in a child frame without
++  // becoming the active media session. Publish its updates and resets too.
+   if (mActiveMediaSessionContextId &&
+-      *mActiveMediaSessionContextId == aBrowsingContextId) {
+-    LOG("Notify metadata change for active session {}", aBrowsingContextId);
++      (*mActiveMediaSessionContextId == aBrowsingContextId ||
++       (aBrowsingContextId == mTopLevelBrowsingContextId &&
++        HasTopLevelDelegation()))) {
++    LOG("Notify metadata change for session {}", aBrowsingContextId);
+     mMetadataChangedEvent.Notify(GetCurrentMediaMetadata());
+   }
+   if (StaticPrefs::media_mediacontrol_testingevents_enabled()) {
+@@ -153,6 +160,7 @@ void MediaStatusManager::SetActiveMediaSessionContextId(
+     return;
+   }
+   mActiveMediaSessionContextId = Some(aBrowsingContextId);
++  UpdateTopLevelDelegation();
+   StoreMediaSessionContextIdOnWindowContext();
+   LOG("context {} becomes active session context",
+       *mActiveMediaSessionContextId);
+@@ -172,6 +180,7 @@ void MediaStatusManager::ClearActiveMediaSessionContextIdIfNeeded() {
+   }
+   LOG("Clear active session context");
+   mActiveMediaSessionContextId.reset();
++  UpdateTopLevelDelegation();
+   StoreMediaSessionContextIdOnWindowContext();
+   mMetadataChangedEvent.Notify(GetCurrentMediaMetadata());
+   mSupportedActionsChangedEvent.Notify(GetSupportedActions());
+@@ -297,9 +306,35 @@ void MediaStatusManager::SetDeclaredPlaybackState(
+       ToMediaSessionPlaybackStateStr(info->mDeclaredPlaybackState),
+       ToMediaSessionPlaybackStateStr(aState));
+   info->mDeclaredPlaybackState = aState;
++  if (UpdateTopLevelDelegation()) {
++    mMetadataChangedEvent.Notify(GetCurrentMediaMetadata());
++    mSupportedActionsChangedEvent.Notify(GetSupportedActions());
++  }
+   UpdateActualPlaybackState();
+ }
+ 
++bool MediaStatusManager::UpdateTopLevelDelegation() {
++  const auto previous = mTopLevelDelegateContextId;
++  auto info = mMediaSessionInfoMap.Lookup(mTopLevelBrowsingContextId);
++  if (!mActiveMediaSessionContextId ||
++      *mActiveMediaSessionContextId == mTopLevelBrowsingContextId || !info ||
++      info->mDeclaredPlaybackState == MediaSessionPlaybackState::None) {
++    mTopLevelDelegateContextId.reset();
++  } else if (info->mDeclaredPlaybackState ==
++             MediaSessionPlaybackState::Playing) {
++    mTopLevelDelegateContextId = mActiveMediaSessionContextId;
++  } else if (mTopLevelDelegateContextId != mActiveMediaSessionContextId) {
++    // A pre-existing paused session must not capture a newly selected player.
++    mTopLevelDelegateContextId.reset();
++  }
++  return previous != mTopLevelDelegateContextId;
++}
++
++bool MediaStatusManager::HasTopLevelDelegation() const {
++  return mTopLevelDelegateContextId &&
++         mTopLevelDelegateContextId == mActiveMediaSessionContextId;
++}
++
+ MediaSessionPlaybackState MediaStatusManager::GetCurrentDeclaredPlaybackState()
+     const {
+   if (!mActiveMediaSessionContextId) {
+@@ -424,16 +459,17 @@ void MediaStatusManager::UpdateGuessedPositionState(
      return;
    }
  
@@ -12,3 +94,72 @@ index 9348a0b69e4d389b92931d46ba6c1849d6883450..920a0b2ebc7ac3c4ecd0245903ccb1d8
  }
  
  void MediaStatusManager::NotifySupportedKeysChangedIfNeeded(
+     uint64_t aBrowsingContextId) {
+-  // Only the active media session's supported actions would be shown in virtual
+-  // control interface, so we only notify the event when supported actions
+-  // change happens on the active media session.
++  // Both the active player and the embedding page can supply action handlers.
+   if (!mActiveMediaSessionContextId ||
+-      *mActiveMediaSessionContextId != aBrowsingContextId) {
++      (*mActiveMediaSessionContextId != aBrowsingContextId &&
++       (aBrowsingContextId != mTopLevelBrowsingContextId ||
++        !HasTopLevelDelegation()))) {
+     return;
+   }
+   mSupportedActionsChangedEvent.Notify(GetSupportedActions());
+@@ -448,15 +484,36 @@ CopyableTArray<MediaSessionAction> MediaStatusManager::GetSupportedActions()
+ 
+   MediaSessionInfo info =
+       mMediaSessionInfoMap.Get(*mActiveMediaSessionContextId);
++  auto topLevelInfo = mMediaSessionInfoMap.Lookup(mTopLevelBrowsingContextId);
+   for (MediaSessionAction action :
+        MakeWebIDLEnumeratedRange<MediaSessionAction>()) {
+-    if (info.IsActionSupported(action)) {
++    if (info.IsActionSupported(action) ||
++        (HasTopLevelDelegation() && topLevelInfo &&
++         topLevelInfo->IsActionSupported(action))) {
+       supportedActions.AppendElement(action);
+     }
+   }
+   return supportedActions;
+ }
+ 
++bool MediaStatusManager::IsTopLevelSessionActionSupported(
++    MediaControlKey aKey) const {
++  if (!HasTopLevelDelegation()) {
++    return false;
++  }
++  auto info = mMediaSessionInfoMap.Lookup(mTopLevelBrowsingContextId);
++  if (info) {
++    for (MediaSessionAction action :
++         MakeWebIDLEnumeratedRange<MediaSessionAction>()) {
++      if (info->IsActionSupported(action) &&
++          ConvertMediaSessionActionToControlKey(action) == aKey) {
++        return true;
++      }
++    }
++  }
++  return false;
++}
++
+ MediaMetadataBase MediaStatusManager::GetCurrentMediaMetadata() const {
+   // If we don't have active media session, active media session doesn't have
+   // media metadata, or we're in private browsing mode, then we should create a
+@@ -465,6 +522,17 @@ MediaMetadataBase MediaStatusManager::GetCurrentMediaMetadata() const {
+   if (mActiveMediaSessionContextId && !IsInPrivateBrowsing()) {
+     MediaSessionInfo info =
+         mMediaSessionInfoMap.Get(*mActiveMediaSessionContextId);
++    // An embedding page that claims playback may supply its own identity.
++    // Use the whole metadata object so labels from different sessions aren't
++    // mixed. Untitled parent metadata keeps the embedded player's identity.
++    if (HasTopLevelDelegation()) {
++      auto topLevelInfo =
++          mMediaSessionInfoMap.Lookup(mTopLevelBrowsingContextId);
++      if (topLevelInfo && topLevelInfo->mMetadata &&
++          !topLevelInfo->mMetadata->mTitle.IsEmpty()) {
++        info = topLevelInfo.Data();
++      }
++    }
+     if (!info.mMetadata) {
+       return CreateDefaultMetadata();
+     }

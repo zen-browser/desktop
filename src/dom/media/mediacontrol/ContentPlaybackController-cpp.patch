@@ -1,0 +1,63 @@
+diff --git a/dom/media/mediacontrol/ContentPlaybackController.cpp b/dom/media/mediacontrol/ContentPlaybackController.cpp
+index 39e62ebe6f8330f706151f77059f24c55a559b3f..2a03c6b7a3dda3b2a940fd61a9e769933bc3857c 100644
+--- a/dom/media/mediacontrol/ContentPlaybackController.cpp
++++ b/dom/media/mediacontrol/ContentPlaybackController.cpp
+@@ -20,10 +20,10 @@
+ 
+ namespace mozilla::dom {
+ 
+-ContentPlaybackController::ContentPlaybackController(
+-    BrowsingContext* aContext) {
++ContentPlaybackController::ContentPlaybackController(BrowsingContext* aContext,
++                                                     bool aUseTopLevelSession)
++    : mBC(aContext), mUseTopLevelSession(aUseTopLevelSession) {
+   MOZ_ASSERT(aContext);
+-  mBC = aContext;
+ }
+ 
+ MediaSession* ContentPlaybackController::GetMediaSession() const {
+@@ -43,6 +43,11 @@ MediaSession* ContentPlaybackController::GetMediaSession() const {
+ 
+ void ContentPlaybackController::NotifyContentMediaControlKeyReceiver(
+     MediaControlKey aKey, const MediaControlActionParams& aParams) {
++  // If a delegated handler was removed while the command was in flight, do
++  // not reinterpret it as a default action on unrelated parent-page media.
++  if (mUseTopLevelSession) {
++    return;
++  }
+   if (RefPtr<ContentMediaControlKeyReceiver> receiver =
+           ContentMediaControlKeyReceiver::Get(mBC)) {
+     LOG("Handle '{}' in default behavior for BC {}", GetEnumString(aKey).get(),
+@@ -62,7 +67,8 @@ void ContentPlaybackController::NotifyMediaSession(
+   if (RefPtr<MediaSession> session = GetMediaSession()) {
+     LOG("Handle '{}' in media session behavior for BC {}",
+         GetEnumString(aParams.mAction).get(), mBC->Id());
+-    MOZ_ASSERT(session->IsActive(), "Notify inactive media session!");
++    MOZ_ASSERT(IsMediaSessionActionSupported(aParams.mAction),
++               "Notify unsupported media session action!");
+     session->NotifyHandler(aParams);
+   }
+ }
+@@ -77,8 +83,11 @@ void ContentPlaybackController::NotifyMediaSessionWhenActionIsSupported(
+ bool ContentPlaybackController::IsMediaSessionActionSupported(
+     MediaSessionAction aAction) const {
+   RefPtr<MediaSession> session = GetMediaSession();
+-  return session ? session->IsActive() && session->IsSupportedAction(aAction)
+-                 : false;
++  // Only an explicitly delegated command may reach an inactive top-level
++  // handler. A broadcast must not pick up a newly registered parent handler
++  // as well as invoking the embedded player's default behavior.
++  return session && session->IsSupportedAction(aAction) &&
++         (session->IsActive() || (mUseTopLevelSession && mBC->IsTop()));
+ }
+ 
+ Maybe<uint64_t> ContentPlaybackController::GetActiveMediaSessionId() const {
+@@ -222,7 +231,7 @@ void ContentMediaControlKeyHandler::HandleMediaControlAction(
+     MOZ_ASSERT_UNREACHABLE("Invalid media control key.");
+     return;
+   }
+-  ContentPlaybackController controller(aContext);
++  ContentPlaybackController controller(aContext, aAction.mUseTopLevelSession);
+   switch (aAction.mKey.value()) {
+     case MediaControlKey::Focus:
+       controller.Focus();

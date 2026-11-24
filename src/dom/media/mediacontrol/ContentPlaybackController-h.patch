@@ -1,0 +1,22 @@
+diff --git a/dom/media/mediacontrol/ContentPlaybackController.h b/dom/media/mediacontrol/ContentPlaybackController.h
+index cfbcf944bfd7a278a33467958530b31c05d8cfb0..59725c372c4169fe0c1f1dfd518f0407afc80f61 100644
+--- a/dom/media/mediacontrol/ContentPlaybackController.h
++++ b/dom/media/mediacontrol/ContentPlaybackController.h
+@@ -36,7 +36,8 @@ enum class AudioFocusInterruptAction : uint8_t;
+  */
+ class MOZ_STACK_CLASS ContentPlaybackController {
+  public:
+-  explicit ContentPlaybackController(BrowsingContext* aContext);
++  explicit ContentPlaybackController(BrowsingContext* aContext,
++                                     bool aUseTopLevelSession = false);
+   ~ContentPlaybackController() = default;
+ 
+   // TODO: Convert Focus() to MOZ_CAN_RUN_SCRIPT
+@@ -65,6 +66,7 @@ class MOZ_STACK_CLASS ContentPlaybackController {
+   MediaSession* GetMediaSession() const;
+ 
+   RefPtr<BrowsingContext> mBC;
++  const bool mUseTopLevelSession;
+ };
+ 
+ class ContentMediaControlKeyHandler {

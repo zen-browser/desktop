@@ -18,6 +18,8 @@
 export class ZenUIComponent {
   #window = null;
   #eventListeners = new Set();
+  #listeningTabsProgress = false;
+  #listeningProgress = false;
 
   /**
    * Category manager entry point. Creates and initializes the component for
@@ -34,15 +36,27 @@ export class ZenUIComponent {
 
   constructor(aWindow) {
     this.#window = aWindow;
-    this.#window.addEventListener("unload", () => {
-      if (typeof this.uninit === "function") {
-        this.uninit();
-      }
-      for (const { type, options } of this.#eventListeners) {
-        this.#window.removeEventListener(type, this, options);
-      }
-      this.#eventListeners.clear();
-    });
+    this.#window.addEventListener(
+      "unload",
+      () => {
+        if (typeof this.uninit === "function") {
+          this.uninit();
+        }
+        for (const { type, options } of this.#eventListeners) {
+          this.#window.removeEventListener(type, this, options);
+        }
+        this.#eventListeners.clear();
+        if (this.#listeningTabsProgress) {
+          this.#window.gBrowser?.removeTabsProgressListener(this);
+          this.#listeningTabsProgress = false;
+        }
+        if (this.#listeningProgress) {
+          this.#window.gBrowser?.removeProgressListener(this);
+          this.#listeningProgress = false;
+        }
+      },
+      { once: true }
+    );
   }
 
   get window() {
@@ -69,11 +83,19 @@ export class ZenUIComponent {
   }
 
   listenBrowserTabsProgress() {
+    if (this.#listeningTabsProgress) {
+      return;
+    }
     this.#window.gBrowser.addTabsProgressListener(this);
+    this.#listeningTabsProgress = true;
   }
 
   listenBrowserProgress() {
+    if (this.#listeningProgress) {
+      return;
+    }
     this.#window.gBrowser.addProgressListener(this);
+    this.#listeningProgress = true;
   }
 
   handleEvent(event) {

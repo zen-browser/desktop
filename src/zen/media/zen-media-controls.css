@@ -424,6 +424,11 @@
   animation-play-state: var(--zen-media-notes-play-state, running);
 }
 
+/* No need to keep the sprite ticking while the window isn't focused */
+:root:-moz-window-inactive .zen-media-notes::before {
+  animation-play-state: paused;
+}
+
 @keyframes zen-note-sprite {
   from {
     transform: translateX(0);

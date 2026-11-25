@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skrifaðu eitthvað...
 pane-zen-marketplace-title = Viðbrigðasnið Zen
+zen-preferences-open-zen-settings = Stillingar { -brand-short-name }
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Skipta yfir á vinnusvæði þar sem gámur er settur sem sjálfgefinn þegar gámaflipar eru opnaðir
 zen-theme-marketplace-link = Heimsækja hugbúnaðarsafn

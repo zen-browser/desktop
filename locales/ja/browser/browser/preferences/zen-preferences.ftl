@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = ここに入力...
 pane-zen-marketplace-title = Zen Mods
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = コンテナタブを開くときにコンテナがデフォルトとして設定されているワークスペースに切り替える
 zen-theme-marketplace-link = ストアを訪問

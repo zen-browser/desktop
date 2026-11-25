@@ -287,7 +287,7 @@
     height: var(--zen-size-13);
     margin-inline-start: auto;
     background: currentColor;
-    mask: url("chrome://browser/skin/zen-icons/arrow-right.svg") no-repeat
+    mask: url("chrome://browser/skin/zen-icons/arrow-up-right.svg") no-repeat
       center / contain;
     opacity: var(--zen-opacity-50);
   }

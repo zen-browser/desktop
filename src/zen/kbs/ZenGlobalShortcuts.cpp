@@ -27,6 +27,7 @@
 #include "nsTArray.h"
 #include "nsThreadUtils.h"
 #include "nsXULAppAPI.h"
+#include "prenv.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
@@ -61,7 +62,7 @@ StaticAutoPtr<nsTArray<HotKey>> sHotKeys;
 StaticAutoPtr<nsTArray<nsWeakPtr>> sPendingKeysets;
 uint32_t sNextHotKeyId = 1;
 
-bool IsGlobalKey(nsIContent* aContent) {
+static bool IsGlobalKey(nsIContent* aContent) {
   if (!aContent->NodeInfo()->Equals(nsGkAtoms::key, kNameSpaceID_XUL)) {
     return false;
   }
@@ -70,7 +71,7 @@ bool IsGlobalKey(nsIContent* aContent) {
   return global.EqualsLiteral("true");
 }
 
-already_AddRefed<Element> LiveKey(const GlobalKey& aKey) {
+static already_AddRefed<Element> LiveKey(const GlobalKey& aKey) {
   nsCOMPtr<Element> key = do_QueryReferent(aKey.mKey);
   if (!key || !key->IsInComposedDoc()) {
     return nullptr;
@@ -84,7 +85,7 @@ already_AddRefed<Element> LiveKey(const GlobalKey& aKey) {
 }
 
 // Whether pressing the key would do anything in its window right now.
-bool IsExecutable(Element* aKey) {
+static bool IsExecutable(Element* aKey) {
   if (aKey->GetBoolAttr(nsGkAtoms::disabled)) {
     return false;
   }
@@ -95,6 +96,11 @@ bool IsExecutable(Element* aKey) {
   }
   Element* commandElement = aKey->OwnerDoc()->GetElementById(command);
   return commandElement && !commandElement->GetBoolAttr(nsGkAtoms::disabled);
+}
+
+static bool IsBrowserToolboxProcess() {
+  static const bool sIsBrowserToolbox = !!PR_GetEnv("MOZ_BROWSER_TOOLBOX_PORT");
+  return sIsBrowserToolbox;
 }
 
 }  // namespace
@@ -124,7 +130,7 @@ bool ZenGlobalShortcuts::BindingOf(Element* aKey, uint32_t* aKeyCode,
 /* static */
 void ZenGlobalShortcuts::AttachKeyset(Element* aKeyset) {
   MOZ_ASSERT(NS_IsMainThread());
-  if (!XRE_IsParentProcess() ||
+  if (!XRE_IsParentProcess() || IsBrowserToolboxProcess() ||
       !nsContentUtils::IsChromeDoc(aKeyset->OwnerDoc())) {
     return;
   }

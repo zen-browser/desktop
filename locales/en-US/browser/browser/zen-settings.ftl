@@ -126,7 +126,6 @@ zen-settings-window-little-global-shortcut = Open Little { -brand-short-name } w
 # Variables:
 #   $shortcut (String): the keyboard shortcut, e.g. ⌥⌘N
 zen-settings-window-little-global-shortcut-key = Open Little { -brand-short-name } when I press { $shortcut } in any app
-zen-settings-window-little-trigger = Open Little { -brand-short-name } when clicking on links with { $shortcut } held
 zen-settings-window-little-external-links = Links from other apps open in Little { -brand-short-name }
 zen-settings-window-glance-header = Glance
 zen-settings-window-glance-description = Glance opens a link in a preview on top of the current tab. It’s perfect for quick lookups.

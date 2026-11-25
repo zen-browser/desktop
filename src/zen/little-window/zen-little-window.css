@@ -384,6 +384,10 @@
   max-height: var(--zen-little-window-urlbar-height, none) !important;
 }
 
+:root[zen-little-window-expanding] #browser {
+  opacity: 0;
+}
+
 :root[zen-little-window-urlbar-only] {
   #browser {
     opacity: 0;

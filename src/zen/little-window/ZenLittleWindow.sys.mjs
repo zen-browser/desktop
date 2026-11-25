@@ -14,8 +14,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const LITTLE_WINDOW_ATTRIBUTE = "zen-little-window";
 const LITTLE_WINDOW_URLBAR_ONLY_ATTRIBUTE = "zen-little-window-urlbar-only";
-const LITTLE_WINDOW_WIDTH = 960;
-const LITTLE_WINDOW_HEIGHT = 680;
+const LITTLE_WINDOW_WIDTH = 1200;
+const LITTLE_WINDOW_HEIGHT = 800;
 const LITTLE_WINDOW_BAR_WIDTH = 680;
 const LITTLE_WINDOW_BAR_HEIGHT = 66;
 const LITTLE_WINDOW_MIN_WIDTH = 400;
@@ -157,6 +157,10 @@ class nsZenLittleWindowService {
     win._zenStartupUnsyncedUserContextId = userContextId;
     win._zenReturnsToPreviousApplication =
       fromAnotherApplication || !Services.focus.activeWindow;
+    if (fromAnotherApplication) {
+      // eslint-disable-next-line mozilla/valid-services
+      Services.zen.keepWindowsBehindPreviousApplication();
+    }
     return win;
   }
 

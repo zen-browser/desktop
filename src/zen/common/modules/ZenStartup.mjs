@@ -35,7 +35,8 @@ class ZenStartup {
   get #shouldUseWatermark() {
     return (
       Services.prefs.getBoolPref("zen.watermark.enabled", false) &&
-      gZenWorkspaces.shouldHaveWorkspaces
+      gZenWorkspaces.shouldHaveWorkspaces &&
+      !gZenVerticalTabsManager.hidesTabsToolbar
     );
   }
 

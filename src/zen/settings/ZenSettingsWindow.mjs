@@ -141,6 +141,7 @@ class nsZenSettingsWindow {
 
     const pane = window.arguments?.[0];
     this.showPane(typeof pane == "string" ? pane : kDefaultPane);
+    this.filter.focus();
   }
 
   destroy() {
@@ -255,7 +256,6 @@ class nsZenSettingsWindow {
     for (const category of this.#categories) {
       const isSelected = category == selected;
       category.setAttribute("aria-selected", isSelected);
-      category.tabIndex = isSelected ? 0 : -1;
     }
     for (const section of document.querySelectorAll(".zen-settings-pane")) {
       section.hidden = section.dataset.pane != pane;

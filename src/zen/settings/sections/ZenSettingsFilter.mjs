@@ -29,10 +29,14 @@ export class ZenSettingsFilter {
         lazy.AppConstants.platform == "macosx" ? event.metaKey : event.ctrlKey;
       if (accel && !event.altKey && event.key.toLowerCase() == "f") {
         event.preventDefault();
-        this.#input.focus();
-        this.#input.select();
+        this.focus();
       }
     });
+  }
+
+  focus() {
+    this.#input.focus();
+    this.#input.select();
   }
 
   get isActive() {

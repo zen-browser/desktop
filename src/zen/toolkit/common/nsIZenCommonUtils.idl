@@ -37,4 +37,10 @@ interface nsIZenCommonUtils : nsISupports {
    * forward. Only on macOS.
    */
   void returnToPreviousApplication();
+  /*
+   * @brief A window is about to open for a link sent by another application.
+   * Keep the other windows of this application behind that one, although the
+   * link activated this application. Only on macOS.
+   */
+  void keepWindowsBehindPreviousApplication();
 };

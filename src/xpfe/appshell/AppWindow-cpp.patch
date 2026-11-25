@@ -1,8 +1,17 @@
 diff --git a/xpfe/appshell/AppWindow.cpp b/xpfe/appshell/AppWindow.cpp
-index 6b218ca7d704bcaffd16d741acb0e1d1f0a0cebb..ccd8a98827219fc8ba4ad9f226e81bae53b30836 100644
+index f4a03d3955c8fa9bed0b7e48163f9a80b3d81cd0..40ca6a31318e2fff3924ab432e9b293e0d8e7c82 100644
 --- a/xpfe/appshell/AppWindow.cpp
 +++ b/xpfe/appshell/AppWindow.cpp
-@@ -1847,7 +1847,7 @@ nsresult AppWindow::MaybeSaveEarlyWindowPersistentValues(
+@@ -1539,6 +1539,8 @@ void AppWindow::SyncAttributesToWidget() {
+   windowElement->GetAttribute(u"macanimationtype"_ns, attr);
+   if (attr.EqualsLiteral("document")) {
+     mWindow->SetWindowAnimationType(nsIWidget::eDocumentWindowAnimation);
++  } else if (attr.EqualsLiteral("alert")) {
++    mWindow->SetWindowAnimationType(nsIWidget::eAlertWindowAnimation);
+   }
+ 
+   // Check if the client size did change and if we want to restore it.
+@@ -1808,7 +1810,7 @@ nsresult AppWindow::MaybeSaveEarlyWindowPersistentValues(
      }
    }
  

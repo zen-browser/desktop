@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Πληκτρολογήστε κάτι...
 pane-zen-marketplace-title = Επεκτάσεις Zen
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Εναλλαγή στο χώρο εργασίας όπου ο περιέκτης ορίζεται ως προεπιλεγμένος κατά το άνοιγμα των καρτελών περιέκτη
 zen-theme-marketplace-link = Επισκεφθείτε το Κατάστημα

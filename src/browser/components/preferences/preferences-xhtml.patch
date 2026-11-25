@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 8e0c6483d6edd587cc425abe16f4a756f88e492b..5e118c6ec2926d562cf6e2bc859dddd90c26f9d1 100644
+index a91a2b0efd9888a7343ff9e348c333331bfd58d2..d439d77579eebf0ee00775f8105f63bad554198d 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -40,6 +40,8 @@
@@ -11,7 +11,18 @@ index 8e0c6483d6edd587cc425abe16f4a756f88e492b..5e118c6ec2926d562cf6e2bc859dddd9
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -123,6 +125,11 @@
+@@ -115,12 +117,22 @@
+   <hbox flex="1">
+ 
+     <html:moz-page-nav id="categories" data-l10n-id="category-nav-heading" allownoselection="true">
++      <html:moz-page-nav-button id="category-zen-settings"
++        view="zenSettingsWindow"
++        iconsrc="chrome://browser/skin/zen-icons/settings.svg"
++        data-l10n-id="zen-preferences-open-zen-settings">
++      </html:moz-page-nav-button>
+       <html:moz-page-nav-button id="category-general"
+         hidden="true"
+         view="paneGeneral"
          iconsrc="chrome://browser/skin/preferences/category-general.svg"
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
@@ -23,7 +34,7 @@ index 8e0c6483d6edd587cc425abe16f4a756f88e492b..5e118c6ec2926d562cf6e2bc859dddd9
        <html:moz-page-nav-button id="category-sync"
          hidden="true"
          view="paneSync"
-@@ -259,6 +266,7 @@
+@@ -257,6 +269,7 @@
  #include privacy.inc.xhtml
  #include sync.inc.xhtml
  #include moreFromMozilla.inc.xhtml

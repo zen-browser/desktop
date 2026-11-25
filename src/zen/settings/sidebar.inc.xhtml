@@ -6,6 +6,10 @@
 #ifdef XP_MACOSX
 #include ../../browser/base/content/titlebar-items.inc.xhtml
 #endif
+      <html:label id="zen-settings-filter-box">
+        <html:img src="chrome://browser/skin/zen-icons/search-glass.svg" alt=""/>
+        <html:input id="zen-settings-filter" type="search" data-l10n-id="zen-settings-window-filter"/>
+      </html:label>
       <html:div id="zen-settings-categories" role="tablist" aria-orientation="vertical">
         <html:button class="zen-settings-category" role="tab" data-pane="general" aria-controls="zen-settings-pane-general">
           <html:img src="chrome://browser/skin/zen-icons/settings.svg" alt=""/>
@@ -58,7 +62,7 @@
 
       <html:div id="zen-settings-links">
         <html:button class="zen-settings-category" data-action="open-mods">
-          <html:img src="chrome://browser/skin/zen-icons/wand-sparkle.svg" alt=""/>
+          <html:img src="chrome://browser/skin/zen-icons/paintbrush.svg" alt=""/>
           <html:span data-l10n-id="zen-settings-window-link-mods"/>
         </html:button>
         <html:button class="zen-settings-category" data-action="open-more-settings">

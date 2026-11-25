@@ -314,6 +314,7 @@
 }
 
 #toggle_toolbar-menubar,
+#appMenu-tab-groups-button,
 #appMenu_menu_openHelp {
   display: none;
 }

@@ -254,6 +254,15 @@ class nsZenWindowSync {
       for (let eventName of UNSYNCED_WINDOW_EVENTS) {
         aWindow.addEventListener(eventName, this, true);
       }
+      aWindow.addEventListener(
+        "unload",
+        () => {
+          for (let eventName of UNSYNCED_WINDOW_EVENTS) {
+            aWindow.removeEventListener(eventName, this, true);
+          }
+        },
+        { once: true }
+      );
       return;
     }
     aWindow.gZenWindowSync = this;
@@ -1618,7 +1627,7 @@ class nsZenWindowSync {
     const window = aEvent.target.documentGlobal ?? aEvent.target;
     window._zenClosingWindow = true;
     for (let eventName of EVENTS) {
-      window.removeEventListener(eventName, this);
+      window.removeEventListener(eventName, this, true);
     }
     delete window.gZenWindowSync;
     try {

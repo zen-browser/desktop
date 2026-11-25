@@ -233,6 +233,7 @@
     opacity: 0;
     visibility: hidden;
     --zen-media-notes-animation: zen-note-sprite;
+    --zen-media-notes-play-state: paused;
     transition:
       opacity 0.8s ease,
       visibility 0s 0.8s;
@@ -243,6 +244,7 @@
   &.playing:not([muted], [zen-removing], [zen-hiding], [stacked-behind]) .zen-media-notes {
     opacity: 1;
     visibility: visible;
+    --zen-media-notes-play-state: running;
     transition: opacity 0.8s ease;
   }
 
@@ -418,7 +420,11 @@
   background-size: 100% 100%;
   -moz-context-properties: fill;
   fill: currentColor;
+}
+
+.zen-media-notes:not(:-moz-window-inactive)::before {
   animation: var(--zen-media-notes-animation, none) 3s steps(90, jump-none) infinite;
+  animation-play-state: var(--zen-media-notes-play-state, running);
 }
 
 @keyframes zen-note-sprite {

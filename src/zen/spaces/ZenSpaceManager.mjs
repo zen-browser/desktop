@@ -1112,9 +1112,8 @@ class nsZenWorkspaces {
       "zen.urlbar.open-on-startup",
       true
     );
-    let shownEmptyTab =
-      gBrowser.selectedTab.hasAttribute("zen-empty-tab") && openOnStartup;
     initialTabWasEmpty &&= openOnStartup;
+    const tabAtStartup = gBrowser.selectedTab;
 
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
@@ -1127,6 +1126,9 @@ class nsZenWorkspaces {
       ) {
         return;
       }
+      const shownEmptyTab =
+        gBrowser.selectedTab.hasAttribute("zen-empty-tab") && openOnStartup;
+      initialTabWasEmpty &&= gBrowser.selectedTab === tabAtStartup;
       if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
         BrowserCommands.openTab();
       } else if (shownEmptyTab || initialTabWasEmpty) {
@@ -2083,13 +2085,16 @@ class nsZenWorkspaces {
     }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
+      let changed =
+        emptyTab.getAttribute("zen-workspace-id") !== this.activeWorkspace;
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
-      if (emptyTab.linkedBrowser) {
-        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
-      }
       const container = this.activeWorkspaceStrip;
       if (container && container.firstChild !== emptyTab) {
         container.insertBefore(emptyTab, container.firstChild);
+        changed = true;
+      }
+      if (changed && emptyTab.linkedBrowser) {
+        gBrowser.TabStateFlusher.flush(emptyTab.linkedBrowser);
       }
     }
     this.#fixTabPositions();
@@ -2340,8 +2345,9 @@ class nsZenWorkspaces {
       lazy.browserBackgroundElement,
       lazy.toolbarBackgroundElement,
     ];
-    // Start from what is on screen, a swipe can leave the backgrounds midway.
-    const shown = parseFloat(getComputedStyle(elements[0], "::after").opacity);
+    const shown = parseFloat(
+      elements[0].style.getPropertyValue("--zen-background-opacity")
+    );
     const from = shown >= 1 || !shown ? 0 : 1 - shown;
     // Same curve as the springs the tabs slide with.
     const { ease, duration: ms } = gZenUIManager.motion.spring.applyToOptions({

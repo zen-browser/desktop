@@ -268,7 +268,7 @@
     height: var(--icon-size-medium);
     border-radius: var(--zen-border-radius-round);
     background: var(--zen-theme-picker-dot-color);
-    @media (-prefers-color-scheme: dark) {
+    @media (prefers-color-scheme: dark) {
       box-shadow: var(--zen-box-shadow-ring);
     }
     cursor: pointer;

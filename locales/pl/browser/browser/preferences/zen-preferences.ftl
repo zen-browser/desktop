@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Wpisz coś...
 pane-zen-marketplace-title = Modyfikacje Zen
+zen-preferences-open-zen-settings = Ustawienia { -brand-short-name }
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Przełącz na obszar roboczy, w którym kontener jest ustawiony jako domyślny podczas otwierania kart kontenera
 zen-theme-marketplace-link = Odwiedź sklep

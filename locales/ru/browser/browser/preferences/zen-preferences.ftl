@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Напишите что-нибудь…
 pane-zen-marketplace-title = Моды для Zen
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Переключиться на пространство, где контейнер установлен по умолчанию при открытии вкладок контейнера
 zen-theme-marketplace-link = Посетить магазин

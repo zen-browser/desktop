@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Gõ gì đó đi...
 pane-zen-marketplace-title = Zen Mods
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Chuyển sang không gian làm việc mặc định của ngăn chứa khi mở thẻ ngăn chứa
 zen-theme-marketplace-link = Vào cửa hàng

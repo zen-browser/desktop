@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = 输入点什么……
 pane-zen-marketplace-title = Zen 模组
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = 在打开容器标签页时，切换到设置为默认容器的工作空间
 zen-theme-marketplace-link = 访问仓库

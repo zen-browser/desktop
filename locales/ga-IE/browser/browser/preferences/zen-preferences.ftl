@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Clóscríobh rud éigin...
 pane-zen-marketplace-title = Modhanna Zen
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Athraigh go dtí an spás oibre ina bhfuil an coimeádán socraithe mar réamhshocrú agus cluaisíní coimeádáin á n-oscailt
 zen-theme-marketplace-link = Tabhair cuairt ar an Siopa

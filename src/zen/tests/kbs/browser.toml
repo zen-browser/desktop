@@ -9,6 +9,8 @@ support-files = [
 
 ["browser_about_keyboard.js"]
 
+["browser_blocked_shortcuts.js"]
+
 ["browser_legacy_migration.js"]
 
 ["browser_zen_keys.js"]

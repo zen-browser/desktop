@@ -19,6 +19,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 const PANEL_FADE_MS = 300;
 const MOST_RECENT_SPACE = "most-recent-space";
+const LITTLE_WINDOW = "little-window";
 
 const MATCH_TYPES = [
   { id: "contains", l10nId: "library-space-routing-contains" },
@@ -188,7 +189,13 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
     recent.setAttribute("type", "radio");
     recent.setAttribute("name", "zen-library-routing-space");
     recent.toggleAttribute("checked", picked === MOST_RECENT_SPACE);
-    const items = [recent];
+    const little = document.createXULElement("menuitem");
+    little.dataset.value = LITTLE_WINDOW;
+    little.setAttribute("data-l10n-id", "library-space-routing-little-window");
+    little.setAttribute("type", "radio");
+    little.setAttribute("name", "zen-library-routing-space");
+    little.toggleAttribute("checked", picked === LITTLE_WINDOW);
+    const items = [little, document.createXULElement("menuseparator"), recent];
     for (const space of this.#spaces) {
       const item = document.createXULElement("menuitem");
       item.dataset.value = space.uuid;
@@ -441,9 +448,12 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
    */
   #renderSpacePicker(value, onPick) {
     const spaces = this.#spaces;
-    const picked = spaces.some(space => space.uuid === value)
-      ? value
-      : MOST_RECENT_SPACE;
+    let picked = MOST_RECENT_SPACE;
+    if (spaces.some(space => space.uuid === value)) {
+      picked = value;
+    } else if (value === LITTLE_WINDOW) {
+      picked = LITTLE_WINDOW;
+    }
     const space = this.#space(picked);
     return html`
       <button
@@ -459,7 +469,11 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
               >`
             : html`<span
                 class="zen-library-routing-select-name"
-                data-l10n-id="library-space-routing-most-recent-space"
+                data-l10n-id=${
+                  picked === LITTLE_WINDOW
+                    ? "library-space-routing-little-window"
+                    : "library-space-routing-most-recent-space"
+                }
               ></span>`
         }
         <img
@@ -536,7 +550,11 @@ export class ZenLibrarySpaceRoutingSection extends ZenLibrarySearchSection {
                   >`
                 : html`<span
                     class="zen-library-routing-value"
-                    data-l10n-id="library-space-routing-most-recent-space"
+                    data-l10n-id=${
+                      route.openIn === LITTLE_WINDOW
+                        ? "library-space-routing-little-window"
+                        : "library-space-routing-most-recent-space"
+                    }
                   ></span>`
             }
           </div>

@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
-index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb13835eb7b 100644
+index 809e28e2e9020122d970e1fd9a2dda67e27cadf5..d1af28204556563e8df9670758fe6d136c9df17d 100644
 --- a/browser/components/urlbar/content/UrlbarInputBase.mjs
 +++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
-@@ -114,6 +114,7 @@ const lazy = XPCOMUtils?.declareLazy({
+@@ -115,6 +115,7 @@ const lazy = XPCOMUtils?.declareLazy({
      service: "@mozilla.org/url-query-string-stripper;1",
      iid: Ci.nsIURLQueryStringStripper,
    },
@@ -10,7 +10,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  });
  
  const logger = () => UrlbarShared.getLogger({ prefix: "Input" });
-@@ -125,6 +126,23 @@ const UNLIMITED_MAX_RESULTS = 99;
+@@ -126,6 +127,23 @@ const UNLIMITED_MAX_RESULTS = 99;
  const SCHEMELESS_INPUT_SCHEMEFUL = 1;
  const SCHEMELESS_INPUT_SCHEMELESS = 2;
  
@@ -34,7 +34,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  const XHTML_NS = "http://www.w3.org/1999/xhtml";
  
  /**
-@@ -172,7 +190,6 @@ export class UrlbarInputBase extends HTMLElement {
+@@ -173,7 +191,6 @@ export class UrlbarInputBase extends HTMLElement {
      return `
        <div class="urlbar-background"/>
        <div class="urlbar-input-container"
@@ -42,7 +42,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
             pageproxystate="invalid">
          <moz-urlbar-slot name="remote-control-box" />
  
-@@ -226,9 +243,7 @@ ${
+@@ -227,9 +244,7 @@ ${
          <moz-urlbar-slot name="page-actions" />
        </div>
        <div class="urlbarView"
@@ -52,7 +52,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
          <div class="urlbarView-results"
               role="listbox"/>
          <panel-list class="urlbarView-result-menu" accesskey-conflicts-bug="2073892"></panel-list>
-@@ -287,6 +302,37 @@ ${
+@@ -288,6 +303,37 @@ ${
     */
    #popoverAllowed = false;
  
@@ -90,7 +90,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
    #gBrowserListenersAdded = false;
    #isAddressbar = false;
    /**
-@@ -589,8 +635,8 @@ ${
+@@ -590,8 +636,8 @@ ${
  
      // Don't attach event listeners if the urlbar is readonly.
      if (this.readOnly) {
@@ -100,7 +100,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
        // Focused won't be updated so remove it to avoid it becoming stale.
        this.removeAttribute("focused");
        return;
-@@ -636,14 +682,17 @@ ${
+@@ -637,14 +683,17 @@ ${
      }
  
      this.#popoverAllowed =
@@ -123,7 +123,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  
      this._addObservers();
  
-@@ -951,7 +1000,16 @@ ${
+@@ -952,7 +1001,16 @@ ${
      // See _on_select().  HTMLInputElement.select() dispatches a "select"
      // event but does not set the primary selection.
      this._suppressPrimaryAdjustment = true;
@@ -140,7 +140,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      this._suppressPrimaryAdjustment = false;
    }
  
-@@ -1032,6 +1090,10 @@ ${
+@@ -1033,6 +1091,10 @@ ${
      hideSearchTerms = false,
      isSameDocument = false,
    } = {}) {
@@ -151,7 +151,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      if (!this.#isAddressbar) {
        throw new Error(
          "Cannot set URI for UrlbarInput that is not an address bar"
-@@ -1336,7 +1398,16 @@ ${
+@@ -1337,7 +1399,16 @@ ${
        this.searchModeSwitcher?.updateSearchIcon();
      }
  
@@ -168,17 +168,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
    }
  
    /**
-@@ -1472,6 +1543,9 @@ ${
-       where,
-       query: searchString,
-     });
-+    if (where != "current" && this.sapName != "searchbar") {
-+      this.handleRevert();
-+    }
-     this.parentController.openSERP(
-       engine.id,
-       searchString,
-@@ -1959,7 +2033,11 @@ ${
+@@ -1969,7 +2040,11 @@ ${
      openParams.avoidBrowserFocus = keepViewOpen;
  
      if (!this.#providesSearchMode(result) && !keepViewOpen) {
@@ -191,7 +181,17 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      }
  
      if (isCanonized) {
-@@ -3211,20 +3289,131 @@ ${
+@@ -2857,6 +2932,9 @@ ${
+           this.browserWindow?.gBrowser?.selectedBrowser
+         );
+       }
++      if (where != "current" && this.sapName != "searchbar") {
++        this.handleRevert();
++      }
+       this.parentController.openSERP(
+         searchEngine.id,
+         trimmedValue,
+@@ -3222,20 +3300,107 @@ ${
      return state;
    }
  
@@ -219,35 +219,13 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
 +  }
 +
 +  get zenUrlbarBehavior() {
-+    if (document.documentElement.hasAttribute("inDOMFullscreen")) {
++    if (
++      document.documentElement.hasAttribute("inDOMFullscreen") ||
++      document.documentElement.hasAttribute("zen-little-window")
++    ) {
 +      return "float";
 +    }
 +    return lazy.ZEN_URLBAR_BEHAVIOR;
-+  }
-+
-+  get zenStrippedURI() {
-+    let strippedURI = null;
-+    let activeBrowser = this.browserWindow.gBrowser?.selectedBrowser;
-+    let uriString = activeBrowser.userTypedValue ||
-+                    (activeBrowser.currentURI ? activeBrowser.currentURI.spec : "");
-+
-+    let uri;
-+    try {
-+      uri = Services.io.newURI(uriString);
-+    } catch (e) {
-+      // Fallback if the provisional string isn't a valid URI yet
-+      uri = activeBrowser.currentURI;
-+    }
-+
-+    // Error check occurs during isClipboardURIValid
-+    try {
-+      strippedURI = lazy.QueryStringStripper.stripForCopyOrShare(uri);
-+    } catch (e) {
-+      console.warn(`stripForCopyOrShare: ${e.message}`);
-+      return [uri, lazy.ClipboardHelper];
-+    }
-+
-+    return [strippedURI ? this.makeURIReadable(strippedURI) : uri, lazy.ClipboardHelper];
 +  }
 +
    #openPopover() {
@@ -285,21 +263,19 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
 +      if (this.hasAttribute("breakout-extend") && this.focused) {
 +        this.startQuery({ allowAutofill: false });
 +      }
++      return;
++    }
++
++    if (this.view.isOpen && this.view.visibleRowCount) {
        return;
      }
  
 -    this.panel.hidePopover();
-+    if (this.view.isOpen && this.view.visibleRowCount) {
-+      return;
-+    }
-+
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
 +    } else if (!this._untrimmedValue || this.searchMode || this.browserWindow.gZenVerticalTabsManager._hasSetSingleToolbar) {
 +      // Restore the current page URL when the urlbar is empty on blur
-+      window.requestAnimationFrame(() => {
-+        this.handleRevert();
-+      });
++      this.browserWindow.gZenUIManager.revertUrlbar();
 +    }
 +
 +    // Arc like URLbar: Blur the input on exit
@@ -327,7 +303,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
    }
  
    /**
-@@ -3233,7 +3422,9 @@ ${
+@@ -3244,7 +3409,9 @@ ${
     * sheet the background paints is bigger than the input.
     */
    updatePopover() {
@@ -338,7 +314,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      if (popoverOpen) {
        this.#openPopover();
      } else {
-@@ -3268,7 +3459,7 @@ ${
+@@ -3279,7 +3446,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -347,7 +323,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3503,6 +3694,91 @@ ${
+@@ -3514,6 +3681,91 @@ ${
      this.view.close();
    }
  
@@ -439,7 +415,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
    /**
     * Sets the input field value.
     *
-@@ -3840,6 +4116,52 @@ ${
+@@ -3851,6 +4103,52 @@ ${
      );
    }
  
@@ -492,7 +468,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
    _updateUrlTooltip() {
      if (this.focused || !this._overflowing) {
        this.inputField.removeAttribute("title");
-@@ -3950,6 +4272,7 @@ ${
+@@ -3961,6 +4259,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -500,7 +476,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -4048,9 +4371,10 @@ ${
+@@ -4050,9 +4349,10 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -514,9 +490,9 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
      return UrlbarContentUtils.isTextDirectionRTL(trimmedValue, window) ||
-@@ -4246,6 +4570,11 @@ ${
-     keepViewOpen = false,
+@@ -4251,6 +4551,11 @@ ${
      browserId = null,
+     searchData = null,
    }) {
 +    where = this.browserWindow.gZenUIManager.getOpenUILinkWhere(
 +      loadRequest.urlLoad?.url ?? "",
@@ -526,7 +502,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      let keyDownEnterDeferred;
      if (
        this._keyDownEnterDeferred &&
-@@ -4573,6 +4902,7 @@ ${
+@@ -4579,6 +4884,7 @@ ${
            this.setResultForCurrentValue(null);
            this.handleCommand();
            this.parentController.clearLastQueryContextCache();
@@ -534,7 +510,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  
            this._suppressStartQuery = false;
          });
-@@ -4584,7 +4914,6 @@ ${
+@@ -4590,7 +4896,6 @@ ${
          // Close the results pane, because paste and go doesn't want a result
          // selection. This has to happen before the menu opens: hiding the
          // popover once it's open keeps it from showing (bug 2037468).
@@ -542,7 +518,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  
          // The edit context menu is shared with other inputs in chrome, and
          // only the items we add here conflict, so mark it for this opening
-@@ -4889,7 +5218,11 @@ ${
+@@ -4895,7 +5200,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -555,7 +531,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5199,6 +5532,7 @@ ${
+@@ -5205,6 +5514,7 @@ ${
  
      document.l10n.setAttributes(
        this.inputField,
@@ -563,7 +539,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5249,6 +5583,12 @@ ${
+@@ -5255,6 +5565,12 @@ ${
      }
  
      logger().debug("Blur Event");
@@ -576,7 +552,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      // We cannot count every blur events after a missed engagement as abandoment
      // because the user may have clicked on some view element that executes
      // a command causing a focus change. For example opening preferences from
-@@ -5303,6 +5643,7 @@ ${
+@@ -5309,6 +5625,7 @@ ${
      if (!UrlbarPrefs.get("ui.popup.disable_autohide")) {
        this.view.close();
      }
@@ -584,7 +560,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  
      // We may have hidden popup notifications, show them again if necessary.
      if (
-@@ -5328,6 +5669,11 @@ ${
+@@ -5334,6 +5651,11 @@ ${
    }
  
    _on_click(event) {
@@ -596,7 +572,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5388,6 +5734,7 @@ ${
+@@ -5394,6 +5716,7 @@ ${
      if (!this._hideFocus) {
        this.toggleAttribute("focused", true);
      }
@@ -604,7 +580,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  
      // If the value was trimmed, check whether we should untrim it.
      // This is necessary when a protocol was typed, but the whole url has
-@@ -5422,10 +5769,11 @@ ${
+@@ -5428,10 +5751,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -617,7 +593,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5469,9 +5817,16 @@ ${
+@@ -5475,9 +5799,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -635,7 +611,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
          if (
            event.target != this.inputField &&
            event.target != this._inputContainer &&
-@@ -5482,6 +5837,10 @@ ${
+@@ -5488,6 +5819,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -646,7 +622,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5517,7 +5876,7 @@ ${
+@@ -5523,7 +5858,7 @@ ${
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -655,7 +631,7 @@ index d8a26721fd0320423484029f9709ae5cee35e13c..e2695a7ce631c1f2446f6ee810c1ecb1
            break;
          }
  
-@@ -5819,7 +6178,7 @@ ${
+@@ -5825,7 +6160,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

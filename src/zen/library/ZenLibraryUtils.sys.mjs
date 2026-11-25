@@ -18,7 +18,8 @@ ChromeUtils.defineLazyGetter(lazy, "mimeService", () =>
 ChromeUtils.defineLazyGetter(
   lazy,
   "l10n",
-  () => new Localization(["browser/zen-library.ftl"], true)
+  () =>
+    new Localization(["browser/zen-library.ftl", "browser/downloads.ftl"], true)
 );
 
 ChromeUtils.defineLazyGetter(
@@ -186,17 +187,41 @@ export function canDrawThumbnail(fileName) {
  * @returns {string} What to say about it
  */
 export function blockedText(download) {
-  const strings = lazy.DownloadsCommon.strings;
   switch (download.error?.reputationCheckVerdict) {
     case lazy.Downloads.Error.BLOCK_VERDICT_UNCOMMON:
-      return strings.blockedUncommon2;
+      return downloadString("downloads-blocked-uncommon");
     case lazy.Downloads.Error.BLOCK_VERDICT_INSECURE:
-      return strings.blockedPotentiallyInsecure;
+      return downloadString("downloads-blocked-potentially-insecure");
     case lazy.Downloads.Error.BLOCK_VERDICT_POTENTIALLY_UNWANTED:
-      return strings.blockedPotentiallyUnwanted;
+      return downloadString("downloads-blocked-potentially-unwanted");
     default:
-      return strings.blockedMalware;
+      return downloadString("downloads-blocked-malware");
   }
+}
+
+/**
+ * Reads one of Firefox's own download strings.
+ *
+ * @param {string} id - A message id from browser/downloads.ftl.
+ * @param {object} [args] - Its arguments, if it takes any.
+ * @returns {string} The translated text.
+ */
+export function downloadString(id, args) {
+  return lazy.l10n.formatValueSync(id, args);
+}
+
+/**
+ * Joins the parts of a download's status the way Firefox writes them.
+ *
+ * @param {...string} parts - The parts, of which empty ones are dropped.
+ * @returns {string} The joined status.
+ */
+export function joinDownloadStatus(...parts) {
+  return parts
+    .filter(Boolean)
+    .reduce((start, end) =>
+      downloadString("downloads-status-separator", { start, end })
+    );
 }
 
 /**

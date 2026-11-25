@@ -36,9 +36,6 @@ support-files = [
   "head.js",
   "headless.html",
 ]
-skip-if = [
-  "ccov",
-]
 tags = "os_integration"
 
 ["browser_headless_screenshot_2.js"]
@@ -46,26 +43,17 @@ support-files = [
   "head.js",
   "headless.html",
 ]
-skip-if = [
-  "ccov",
-]
 
 ["browser_headless_screenshot_3.js"]
 support-files = [
   "head.js",
   "headless.html",
 ]
-skip-if = [
-  "ccov",
-]
 
 ["browser_headless_screenshot_4.js"]
 support-files = [
   "head.js",
   "headless.html",
-]
-skip-if = [
-  "ccov",
 ]
 
 ["browser_headless_screenshot_cross_origin.js"]
@@ -74,9 +62,6 @@ support-files = [
   "headless_cross_origin.html",
   "headless_iframe.html",
 ]
-skip-if = [
-  "ccov",
-]
 
 ["browser_headless_screenshot_redirect.js"]
 support-files = [
@@ -84,9 +69,6 @@ support-files = [
   "headless.html",
   "headless_redirect.html",
   "headless_redirect.html^headers^",
-]
-skip-if = [
-  "ccov",
 ]
 
 ["browser_pinToTaskbarTelemetry.js"]

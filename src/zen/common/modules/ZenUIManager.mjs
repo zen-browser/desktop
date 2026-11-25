@@ -39,6 +39,7 @@ class nsZenUIManager {
 
   #toasts = new nsZenToastManager();
   #urlbar = new nsZenUrlbarController();
+  #zoomChangeListener = null;
 
   // Elements that get `has-popup-menu` while a popup opened from them is up.
   #popupTrackingElements = new Set();
@@ -59,6 +60,15 @@ class nsZenUIManager {
     document.addEventListener("popuphidden", this);
     document.addEventListener("mousedown", this, true);
     window.addEventListener("TabClose", this);
+    for (const id of [
+      "cmd_fullZoomEnlarge",
+      "cmd_fullZoomReduce",
+      "cmd_fullZoomReset",
+    ]) {
+      document.getElementById(id).addEventListener("command", () => {
+        this.#onZoomCommand();
+      });
+    }
 
     gZenWorkspaces.promiseInitialized.finally(() => {
       this._hasLoadedDOM = true;
@@ -304,6 +314,62 @@ class nsZenUIManager {
   }
 
   /**
+   * Takes a toast down before its timeout, for when what it asked the user
+   * to do has been done.
+   *
+   * @param {string} messageId - Fluent id of the toast to hide.
+   */
+  hideToast(messageId) {
+    this.#toasts.hide(messageId);
+  }
+
+  #onZoomCommand() {
+    const browser = gBrowser.selectedBrowser;
+    if (this.#zoomChangeListener) {
+      window.removeEventListener("FullZoomChange", this.#zoomChangeListener);
+    }
+    this.#zoomChangeListener = event => {
+      if (event.originalTarget !== browser) {
+        return;
+      }
+      this.#zoomChangeListener = null;
+      if (browser === gBrowser.selectedBrowser) {
+        this.#onFullZoomChange(browser);
+      }
+    };
+    window.addEventListener("FullZoomChange", this.#zoomChangeListener, {
+      once: true,
+    });
+  }
+
+  #onFullZoomChange(browser) {
+    const isSingleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
+    const zoomButtonHidden =
+      isSingleToolbar &&
+      !Services.prefs.getBoolPref(
+        "zen.urlbar.single-toolbar-show-zoom-button",
+        false
+      );
+    const urlbarHidden =
+      gZenCompactModeManager.preference &&
+      (isSingleToolbar ||
+        Services.prefs.getBoolPref("zen.view.compact.hide-toolbar", false));
+    const showToast = zoomButtonHidden || urlbarHidden;
+    const isBlankPage =
+      browser.currentURI.spec === "about:blank" &&
+      (!browser.contentPrincipal || browser.contentPrincipal.isNullPrincipal);
+    const isPdfViewer =
+      browser.contentPrincipal?.spec === "resource://pdf.js/web/viewer.html";
+    if (!showToast || isBlankPage || isPdfViewer) {
+      return;
+    }
+
+    this.showToast("zen-zoom-changed-toast", {
+      l10nArgs: { percentage: Number(browser.fullZoom.toFixed(2)) },
+    });
+  }
+
+  /**
    * Repositions the floating URL bar and lets the sidebar recompute its
    * sizes. Called after layout-affecting changes such as resizes and tab
    * closes.
@@ -338,6 +404,11 @@ class nsZenUIManager {
 
   onTabClose(event = undefined) {
     if (!event?.target?._closedInMultiselection) {
+      if (event) {
+        // _endRemoveTab already refreshes the tab containers once the tab is
+        // gone, so don't queue another refresh for every closed tab.
+        this._preventToolbarRebuild = true;
+      }
       this.updateTabsToolbar();
     }
   }
@@ -550,6 +621,10 @@ class nsZenUIManager {
 
   _isOwner(closeSeq) {
     return this.#urlbar.isOwner(closeSeq);
+  }
+
+  revertUrlbar() {
+    this.#urlbar.revert();
   }
 
   onUrlbarOpen() {

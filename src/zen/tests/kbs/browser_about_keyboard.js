@@ -5,15 +5,21 @@
 
 add_task(async function test_zen_keys_are_listed() {
   const l10n = new Localization(["browser/preferences/zen-preferences.ftl"]);
-  const [compactModeTitle, toggleLabel, otherTitle] = await l10n.formatValues([
-    { id: "zenCKSOption-group-zen-compact-mode" },
-    { id: "zen-compact-mode-shortcut-toggle" },
-    { id: "zenCKSOption-group-zen-other" },
-  ]);
+  const [layoutTitle, toggleLabel, tabsTitle, copyURLLabel] =
+    await l10n.formatValues([
+      { id: "zenCKSOption-group-zen-layout" },
+      { id: "zen-compact-mode-shortcut-toggle" },
+      { id: "zenCKSOption-group-zen-tabs" },
+      { id: "zen-text-action-copy-url-shortcut" },
+    ]);
   const expected = {
-    compactModeTitle,
+    layoutTitle,
     toggleLabel,
-    otherTitle,
+    tabsTitle,
+    copyURLLabel,
+    copyURLShortcut: ShortcutUtils.prettifyShortcut(
+      document.getElementById("zen-copy-url")
+    ),
     spacesTitle: document.getElementById("zen-spaces-menubar").label,
     toggleShortcut: ShortcutUtils.prettifyShortcut(
       document.getElementById("zen-compact-mode-toggle")
@@ -36,9 +42,14 @@ add_task(async function test_zen_keys_are_listed() {
       const headings = [...doc.querySelectorAll("moz-card.category")].map(
         card => card.wrappedJSObject.heading
       );
-      ok(headings.includes(args.compactModeTitle), "Compact mode is listed");
-      ok(headings.includes(args.otherTitle), "Other Zen features are listed");
+      ok(headings.includes(args.layoutTitle), "Layout shortcuts are listed");
+      ok(headings.includes(args.tabsTitle), "Tab shortcuts are listed");
       ok(headings.includes(args.spacesTitle), "Spaces menu is listed");
+      Assert.deepEqual(
+        headings.slice(0, 2),
+        [args.spacesTitle, args.tabsTitle],
+        "Zen's groups come first"
+      );
 
       const toggle = doc.querySelector(
         '.key[data-id="zen-compact-mode-toggle"]'
@@ -47,8 +58,8 @@ add_task(async function test_zen_keys_are_listed() {
       is(toggle.dataset.label, args.toggleLabel, "Label is localized");
       is(
         toggle.closest("moz-card").wrappedJSObject.heading,
-        args.compactModeTitle,
-        "Toggle sits in the compact mode category"
+        args.layoutTitle,
+        "Toggle sits in the layout category"
       );
       is(
         toggle.querySelector(".currentShortcut").wrappedJSObject.value,
@@ -72,6 +83,24 @@ add_task(async function test_zen_keys_are_listed() {
       ok(
         doc.querySelector('.key[data-id="zen-new-unsynced-window"]'),
         "New blank window is listed from the File menu"
+      );
+
+      const copyURL = doc.querySelector('.key[data-id="zen-copy-url"]');
+      ok(copyURL, "Copy current URL is listed");
+      is(copyURL.dataset.label, args.copyURLLabel, "Label is localized");
+      is(
+        copyURL.closest("moz-card").wrappedJSObject.heading,
+        args.tabsTitle,
+        "Copy current URL sits in the tabs category"
+      );
+      is(
+        copyURL.querySelector(".currentShortcut").wrappedJSObject.value,
+        args.copyURLShortcut,
+        "Its current shortcut is shown"
+      );
+      ok(
+        doc.querySelector('.key[data-id="zen-copy-url-markdown"]'),
+        "Copy current URL as Markdown is listed too"
       );
 
       ok(

@@ -250,7 +250,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#detached
           ? this.closeDetachedGlance()
           : this.closeGlance({ onTabClose: true }),
-      cmd_zenGlanceExpand: () => this.fullyOpenGlance(),
       cmd_zenGlanceSplit: () => this.splitGlance(),
     };
 
@@ -544,6 +543,21 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Tab} ownerTab - The tab that owns this glance
    */
   openGlance(data, existingTab = null, ownerTab = null) {
+    if (gZenVerticalTabsManager.hidesTabsToolbar) {
+      if (!existingTab && this.#isGlanceLoadAllowed(data)) {
+        const params = { triggeringPrincipal: data.triggeringPrincipal };
+        if (window.gZenLittleWindow) {
+          return ChromeUtils.importESModule(
+            "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs"
+          )
+            .ZenLittleWindow.openInRegularWindow(data.url, params)
+            .then(() => null);
+        }
+        window.openLinkIn(data.url, "tab", params);
+      }
+      return Promise.resolve(null);
+    }
+
     if (this.#currentBrowser) {
       return Promise.resolve(this.#currentTab);
     }
@@ -1744,8 +1758,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       !owner.hasAttribute("glance-id") &&
       this._lazyPref.SHOULD_OPEN_EXTERNAL_TABS_IN_GLANCE &&
       owner.linkedBrowser?.browsingContext?.isAppTab &&
-      this.tabDomainsDiffer(owner, uri) &&
-      Services.prefs.getBoolPref("zen.glance.enabled", true)
+      this.tabDomainsDiffer(owner, uri)
     );
   }
 
@@ -1917,7 +1930,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   openGlanceForBookmark(event) {
     const activationMethod = Services.prefs.getStringPref(
       "zen.glance.activation-method",
-      "ctrl"
+      "shift"
     );
 
     if (!this.#isActivationKeyPressed(event, activationMethod)) {
@@ -1939,14 +1952,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if key is pressed
    */
   #isActivationKeyPressed(event, activationMethod) {
-    const keyMap = {
-      ctrl: event.ctrlKey,
-      alt: event.altKey,
-      shift: event.shiftKey,
-      meta: event.metaKey,
-    };
-
-    return keyMap[activationMethod] || false;
+    const accel = AppConstants.platform == "macosx" ? "meta" : "ctrl";
+    const wanted = new Set(
+      activationMethod
+        .split("+")
+        .map(key => key.trim().toLowerCase())
+        .map(key => (key == "accel" ? accel : key))
+    );
+    const modifiers = ["ctrl", "alt", "shift", "meta"];
+    if ([...wanted].some(key => !modifiers.includes(key))) {
+      return false;
+    }
+    return modifiers.every(key => event[`${key}Key`] == wanted.has(key));
   }
 
   /**
@@ -2124,9 +2141,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if enabled
    */
   #isGlanceEnabledForSearch() {
-    return (
-      Services.prefs.getBoolPref("zen.glance.enabled", false) &&
-      Services.prefs.getBoolPref("zen.glance.enable-contextmenu-search", true)
+    return Services.prefs.getBoolPref(
+      "zen.glance.enable-contextmenu-search",
+      true
     );
   }
 

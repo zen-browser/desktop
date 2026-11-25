@@ -14,6 +14,8 @@
   );
 
   ChromeUtils.defineESModuleGetters(lazy, {
+    ZenLittleWindow:
+      "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
     ZenLiveFoldersManager:
       "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   });
@@ -25,6 +27,10 @@
   };
 
   const WORKSPACE_SWITCH_COMMAND_PREFIX = "cmd_zenWorkspaceSwitch";
+
+  const IS_BROWSER_WINDOW =
+    document.documentElement.getAttribute("windowtype") == "navigator:browser";
+  const NON_BROWSER_WINDOW_COMMANDS = new Set(["cmd_zenNewLittleWindow"]);
 
   /**
    * Handlers for the <command> elements of <commandset id="zenCommandSet">
@@ -79,8 +85,6 @@
     cmd_zenPinnedTabReset: () =>
       gZenPinnedTabManager.resetPinnedTab(gBrowser.selectedTab),
     cmd_zenPinnedTabResetNoTab: () => gZenPinnedTabManager.resetPinnedTab(),
-    cmd_zenReplacePinnedUrlWithCurrent: () =>
-      gZenPinnedTabManager.replacePinnedUrlWithCurrent(),
     cmd_zenEditPinnedUrl: () => gZenPinnedTabManager.editPinnedUrl(),
     cmd_contextZenAddToEssentials: () => gZenPinnedTabManager.addToEssentials(),
     cmd_contextZenRemoveFromEssentials: () =>
@@ -116,6 +120,17 @@
     cmd_zenOpenZenThemePicker: event => gZenThemePicker.openThemePicker(event),
     cmd_zenNewNavigatorUnsynced: () =>
       OpenBrowserWindow({ zenSyncedWindow: false }),
+    cmd_zenNewLittleWindow: () =>
+      lazy.ZenLittleWindow.open({
+        openerWindow: IS_BROWSER_WINDOW ? window : undefined,
+      }),
+    cmd_zenExpand: () => {
+      if (window.gZenLittleWindow) {
+        window.gZenLittleWindow.openInSpace();
+      } else {
+        gZenGlanceManager.fullyOpenGlance();
+      }
+    },
     cmd_zenToggleLibrary: () => lazy.ZenLibrary.toggle(),
   };
 
@@ -124,6 +139,9 @@
       return;
     }
     const id = event.target.id;
+    if (!IS_BROWSER_WINDOW && !NON_BROWSER_WINDOW_COMMANDS.has(id)) {
+      return;
+    }
     const handler = ZEN_COMMANDS[id];
     if (handler) {
       handler(event);
@@ -142,7 +160,11 @@
     "command",
     event => {
       const tab = ZEN_LIBRARY_TARGETS[event.target.id];
-      if (!tab || !Services.prefs.getBoolPref("zen.library.enabled")) {
+      if (
+        !tab ||
+        !IS_BROWSER_WINDOW ||
+        !Services.prefs.getBoolPref("zen.library.enabled")
+      ) {
         return;
       }
       event.stopPropagation();

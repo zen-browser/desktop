@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<?csp default-src chrome: resource:; img-src chrome: resource: moz-icon: blob: https: data:; object-src 'none'; ?>
+
+<window xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="zen-settings-window"
+        windowtype="Zen:Settings"
+        data-l10n-id="zen-settings-window-title"
+        customtitlebar="true"
+        windowsmica="true"
+        width="760"
+        height="780"
+        persist="screenX screenY">
+#ifdef XP_MACOSX
+#include ../../browser/base/content/macWindow.inc.xhtml
+#else
+  <script src="chrome://browser/content/utilityOverlay.js"/>
+#endif
+
+  <linkset>
+    <html:link rel="stylesheet" href="chrome://global/skin/global.css"/>
+    <html:link rel="stylesheet" href="chrome://browser/skin/browser.css"/>
+    <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-settings-window.css"/>
+
+    <html:link rel="localization" href="branding/brand.ftl"/>
+    <html:link rel="localization" href="browser/browser.ftl"/>
+    <html:link rel="localization" href="browser/customkeys.ftl"/>
+    <html:link rel="localization" href="browser/preferences/preferences.ftl"/>
+    <html:link rel="localization" href="browser/zen-settings.ftl"/>
+  </linkset>
+
+  <html:div id="zen-settings-root">
+#include sidebar.inc.xhtml
+
+    <html:main id="zen-settings-main">
+      <html:header id="zen-settings-header">
+        <html:h1 id="zen-settings-title"/>
+#ifndef XP_MACOSX
+#include ../../browser/base/content/titlebar-items.inc.xhtml
+#endif
+      </html:header>
+
+      <html:div id="zen-settings-panes">
+#include panes/general.inc.xhtml
+#include panes/appearance.inc.xhtml
+#include panes/tabs.inc.xhtml
+#include panes/containers.inc.xhtml
+#include panes/links.inc.xhtml
+#include panes/search.inc.xhtml
+#include panes/language.inc.xhtml
+#include panes/shortcuts.inc.xhtml
+#include panes/advanced.inc.xhtml
+        <html:p id="zen-settings-filter-empty" class="zen-settings-note" hidden="hidden" data-l10n-id="zen-settings-window-filter-no-results"/>
+      </html:div>
+    </html:main>
+
+#include sync-dialog.inc.xhtml
+
+    <stack id="zen-settings-dialog-stack" hidden="true"/>
+    <vbox id="zen-settings-dialog-template" class="dialogOverlay" align="center" pack="center" topmost="true" hidden="true">
+      <vbox class="dialogBox" pack="end" role="dialog" aria-labelledby="dialogTitle">
+        <hbox class="dialogTitleBar" align="center">
+          <label class="dialogTitle" flex="1"/>
+          <html:moz-button class="dialogClose" type="icon ghost" size="small" iconsrc="chrome://global/skin/icons/close.svg" data-l10n-id="zen-settings-window-dialog-close"/>
+        </hbox>
+        <browser class="dialogFrame" autoscroll="false" disablehistory="true"/>
+      </vbox>
+    </vbox>
+  </html:div>
+
+  <popupset>
+    <menupopup id="zen-settings-shortcuts-menu">
+      <menuitem id="zen-settings-shortcuts-menu-remove" data-command="remove" data-l10n-id="zen-settings-window-shortcuts-menu-remove"/>
+      <menuseparator/>
+      <menuitem data-command="reset-all" data-l10n-id="zen-settings-window-shortcuts-menu-reset-all"/>
+      <menuitem data-command="extensions" data-l10n-id="zen-settings-window-shortcuts-menu-extensions"/>
+    </menupopup>
+  </popupset>
+
+#ifndef XP_MACOSX
+  <commandset id="zen-settings-window-commands">
+    <command id="cmd_closeWindow"/>
+  </commandset>
+  <keyset>
+    <key id="zen-settings-close-key" key="w" modifiers="accel" command="cmd_closeWindow"/>
+  </keyset>
+#endif
+
+  <html:script type="module" src="chrome://browser/content/zen-components/windows/settings/ZenSettingsWindow.mjs"/>
+</window>

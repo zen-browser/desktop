@@ -59,6 +59,8 @@ export class nsZenWorkspace extends MozXULElement {
   #watchedTabWasVisible = false;
   #scrollToTabShown = false;
   #scrollToTabSeq = 0;
+  #scrollToTabButtonElement = null;
+  #appliedPalette = null;
 
   static get markup() {
     return `
@@ -67,7 +69,7 @@ export class nsZenWorkspace extends MozXULElement {
             <image class="zen-current-workspace-indicator-chevron" />
             <hbox class="zen-current-workspace-indicator-icon" />
           </stack>
-          <label class="zen-current-workspace-indicator-name" />
+          <label class="zen-current-workspace-indicator-name no-squircles" />
           <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions" />
         </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
@@ -420,7 +422,9 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   get #scrollToTabButton() {
-    return this.querySelector(".zen-workspace-scroll-to-tab");
+    return (this.#scrollToTabButtonElement ??= this.querySelector(
+      ".zen-workspace-scroll-to-tab"
+    ));
   }
 
   #setupScrollToSelectedTab() {
@@ -444,9 +448,16 @@ export class nsZenWorkspace extends MozXULElement {
     );
 
     const follow = () => this.#watchSelectedTab();
+    const followOwnOverflow = event => {
+      if (event.target === this.scrollbox) {
+        follow();
+      }
+    };
     gBrowser.tabContainer.addEventListener("TabSelect", follow, { signal });
-    this.scrollbox.addEventListener("overflow", follow, { signal });
-    this.scrollbox.addEventListener("underflow", follow, { signal });
+    this.scrollbox.addEventListener("overflow", followOwnOverflow, { signal });
+    this.scrollbox.addEventListener("underflow", followOwnOverflow, {
+      signal,
+    });
 
     follow();
   }
@@ -574,10 +585,10 @@ export class nsZenWorkspace extends MozXULElement {
 
   /** Takes the pill back into the edge it came from. */
   #hideScrollToTab() {
-    const button = this.#scrollToTabButton;
     if (!this.#scrollToTabShown) {
       return;
     }
+    const button = this.#scrollToTabButton;
     this.#scrollToTabShown = false;
     const seq = ++this.#scrollToTabSeq;
 
@@ -682,16 +693,24 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   onGradientCacheChanged() {
-    const { isDarkMode, isExplicitMode, paletteStyles } =
-      gZenThemePicker.getGradientForWorkspace(
-        gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid),
-        { getGradient: false }
-      );
-    if (isExplicitMode) {
-      this.style.colorScheme = isDarkMode ? "dark" : "light";
-    } else {
-      this.style.colorScheme = "";
+    const workspace = gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid);
+    if (!workspace) {
+      return;
     }
+    const { isDarkMode, isExplicitMode, paletteStyles } =
+      gZenThemePicker.getGradientForWorkspace(workspace, {
+        getGradient: false,
+      });
+    let colorScheme = "";
+    if (isExplicitMode) {
+      colorScheme = isDarkMode ? "dark" : "light";
+    }
+    const applied = JSON.stringify([colorScheme, paletteStyles]);
+    if (this.#appliedPalette === applied) {
+      return;
+    }
+    this.#appliedPalette = applied;
+    this.style.colorScheme = colorScheme;
     for (const [property, value] of Object.entries(paletteStyles)) {
       this.style.setProperty(property, value);
     }
@@ -710,6 +729,7 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   clearThemeStyles() {
+    this.#appliedPalette = null;
     this.style.colorScheme = "";
     this.style.removeProperty("--toolbox-textcolor");
     this.style.removeProperty("--zen-primary-color");

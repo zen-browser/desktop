@@ -1,0 +1,30 @@
+{
+  "versatile-color": {
+    "--zen-active-split-outline-color": { "external": true }
+  },
+  "size": {
+    "--zen-split-column-gap": { "external": true, "also": ["space"] },
+    "--zen-split-view-drag-image-width": { "value": "200px" },
+    "--zen-split-view-drag-image-height": { "value": "250px" }
+  },
+  "background-color": {
+    "--zen-split-view-active-tab-bg": { "external": true },
+    "--zen-split-view-fake-browser-background": {
+      "value": "var(--color-white-alpha-10)"
+    },
+    "--zen-split-view-tab-separator-background": {
+      "value": {
+        "light": "var(--color-black-alpha-10)",
+        "dark": "var(--color-white-alpha-20)"
+      }
+    }
+  },
+  "box-shadow": {
+    "--zen-split-view-header-shadow": {
+      "value": "0 0 5px 1px rgba(0, 0, 0, 0.1)"
+    }
+  },
+  "text-color": {
+    "--zen-split-view-header-button-color": { "external": true }
+  }
+}

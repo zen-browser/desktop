@@ -1,15 +1,19 @@
 diff --git a/browser/components/places/content/browserPlacesViews.js b/browser/components/places/content/browserPlacesViews.js
-index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389ea00ce1f 100644
+index 6bdcf60fbae2b8bb40ef1222ee816e455f407503..4f873351ebf3385d7d5c1f7cc95867765c727c56 100644
 --- a/browser/components/places/content/browserPlacesViews.js
 +++ b/browser/components/places/content/browserPlacesViews.js
-@@ -343,12 +343,23 @@ class PlacesViewBase {
+@@ -357,15 +357,23 @@ class PlacesViewBase {
  
      this._cleanPopup(aPopup);
  
-+    let children = [];
-     let cc = resultNode.childCount;
+-    let cc =
+-      maxResults > 0
+-        ? Math.min(resultNode.childCount, maxResults)
+-        : resultNode.childCount;
 -    if (cc > 0) {
-+    for (let i = 0; i < cc; ++i) {
++    let limit = maxResults > 0 ? maxResults : Infinity;
++    let children = [];
++    for (let i = 0; i < resultNode.childCount && children.length < limit; ++i) {
 +      let child = resultNode.getChild(i);
 +      // Skip nodes that don't belong in current workspace
 +      if (PlacesUtils.nodeIsURI(child) || PlacesUtils.containerTypes.includes(child.type)) {
@@ -29,7 +33,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
          this._insertNewItemToPopup(child, fragment);
        }
        aPopup.insertBefore(fragment, aPopup._endMarker);
-@@ -406,6 +417,7 @@ class PlacesViewBase {
+@@ -423,6 +431,7 @@ class PlacesViewBase {
            "scheme",
            PlacesUIUtils.guessUrlSchemeForUI(aPlacesNode.uri)
          );
@@ -37,7 +41,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
        } else if (PlacesUtils.containerTypes.includes(type)) {
          element = document.createXULElement("menu");
          element.setAttribute("container", "true");
-@@ -1076,25 +1088,33 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1094,25 +1103,33 @@ class PlacesToolbar extends PlacesViewBase {
        this._rootElt.firstChild.remove();
      }
  
@@ -82,7 +86,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
            );
            ++startIndex;
            if (elt.localName != "toolbarseparator") {
-@@ -1102,15 +1122,12 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1120,15 +1137,12 @@ class PlacesToolbar extends PlacesViewBase {
            }
          }
          if (!elt) {
@@ -101,7 +105,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
          });
        });
  
-@@ -1120,7 +1137,7 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1138,7 +1152,7 @@ class PlacesToolbar extends PlacesViewBase {
  
        let fragment = document.createDocumentFragment();
        for (let i = startIndex; i < limit; ++i) {
@@ -110,7 +114,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
        }
        await new Promise(resolve => window.requestAnimationFrame(resolve));
        if (!this._isAlive) {
-@@ -1183,6 +1200,8 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1202,6 +1216,8 @@ class PlacesToolbar extends PlacesViewBase {
            "scheme",
            PlacesUIUtils.guessUrlSchemeForUI(aChild.uri)
          );
@@ -119,7 +123,7 @@ index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389
        }
      }
  
-@@ -2395,7 +2414,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
+@@ -2610,7 +2626,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
          PlacesUIUtils.guessUrlSchemeForUI(placesNode.uri)
        );
        element.setAttribute("label", PlacesUIUtils.getBestTitle(placesNode));

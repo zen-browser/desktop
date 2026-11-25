@@ -1,0 +1,111 @@
+{
+  "border-radius": {
+    "--zen-library-radius": { "external": true }
+  },
+  "space": {
+    "--zen-library-routing-gap": { "external": true },
+    "--zen-library-space-gap": { "external": true },
+    "--zen-library-widget-progress-border-width": { "external": true }
+  },
+  "size": {
+    "--zen-library-routing-icon": { "external": true, "also": ["space"] },
+    "--zen-library-space-width": { "external": true },
+    "--zen-library-width": { "external": true },
+    "--zen-library-min-width": { "value": "418px" },
+    "--zen-library-side-min-width": { "value": "110px" },
+    "--zen-library-media-preview-panel-width": { "value": "min(78vw, 1100px)" },
+    "--zen-library-media-preview-stage-height": { "value": "min(64vh, 620px)" },
+    "--zen-library-media-preview-file-icon-size": { "value": "128px" }
+  },
+  "border-color": {
+    "--zen-library-scroll-border": { "external": true },
+    "--zen-library-boost-icon-border-color": {
+      "value": "var(--color-white-alpha-60)"
+    },
+    "--zen-library-media-preview-stage-border-color": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.08)",
+        "dark": "rgba(255, 255, 255, 0.08)"
+      }
+    }
+  },
+  "box-shadow": {
+    "--zen-library-side-shadow": { "value": "9px 0 17px rgba(0, 0, 0, 0.04)" },
+    "--zen-library-side-shadow-right-side": {
+      "value": "-9px 0 17px rgba(0, 0, 0, 0.04)"
+    },
+    "--zen-library-tab-toggle-shadow": {
+      "value": "0 1px 4px rgba(0, 0, 0, 0.25)"
+    },
+    "--zen-library-media-thumb-shadow": {
+      "value": "0 2px 10px rgba(0, 0, 0, 0.25)"
+    },
+    "--zen-library-media-opt-in-shadow": {
+      "value": "0 18px 50px rgba(0, 0, 0, 0.45), 0 0 0 1px light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06))"
+    },
+    "--zen-library-input-invalid-shadow": {
+      "value": "inset 0 0 0 1px color-mix(in srgb, #f04b4b 65%, transparent)"
+    },
+    "--zen-library-space-shadow": { "value": "0 0 10px rgba(0, 0, 0, 0.1)" },
+    "--zen-library-space-shadow-dragging": {
+      "value": "0 8px 16px rgba(0, 0, 0, 0.3)"
+    },
+    "--zen-library-media-preview-panel-shadow": {
+      "value": "0 24px 60px rgba(0, 0, 0, 0.45)"
+    }
+  },
+  "background-color": {
+    "--zen-library-tab-toggle-background": {
+      "value": { "light": "#ffffff", "dark": "#383838" }
+    },
+    "--zen-library-tab-toggle-background-hover": {
+      "value": { "light": "#f1f1f1", "dark": "#4a4a4a" }
+    },
+    "--zen-library-download-badge-mix-color": {
+      "value": { "light": "#ffffff", "dark": "var(--color-black-alpha-50)" }
+    },
+    "--zen-library-media-opt-in-background": {
+      "value": { "light": "#fafafa", "dark": "#1c1c1c" }
+    },
+    "--zen-library-media-play-background": {
+      "value": "var(--color-black-alpha-50)"
+    },
+    "--zen-library-boost-icon-background": {
+      "value": "var(--color-white-alpha-60)"
+    },
+    "--zen-library-boost-icon-strike-background": {
+      "value": {
+        "light": "var(--color-white-alpha-80)",
+        "dark": "var(--color-white-alpha-50)"
+      }
+    },
+    "--zen-library-media-preview-backdrop-background": {
+      "value": {
+        "light": "var(--color-white-alpha-50)",
+        "dark": "var(--color-black-alpha-50)"
+      }
+    },
+    "--zen-library-media-preview-panel-background": {
+      "value": { "light": "#f5f5f5", "dark": "#1c1c1c" }
+    },
+    "--zen-library-media-preview-stage-background": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.05)",
+        "dark": "var(--color-black-alpha-30)"
+      }
+    }
+  },
+  "text-color": {
+    "--zen-library-media-preview-header-color": {
+      "value": { "light": "#1c1c1c", "dark": "#e9e9e9" }
+    }
+  },
+  "icon-color": {
+    "--zen-library-tab-icon-fill": { "external": true },
+    "--zen-library-tab-icon-stroke": { "external": true },
+    "--zen-library-widget-progress-color": {
+      "external": true,
+      "also": ["text-color"]
+    }
+  }
+}

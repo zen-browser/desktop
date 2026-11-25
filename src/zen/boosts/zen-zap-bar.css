@@ -11,35 +11,34 @@
 
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--zen-space-8);
 
   min-width: 0;
-  padding: 10px;
+  padding: var(--zen-space-10);
 
-  color: #d6d6d6;
-  background-color: #1d1b1b;
-  border-top: 1px solid #2f2b2b;
+  color: var(--zen-boosts-zap-bar-color);
+  background-color: var(--zen-boosts-zap-bar-background);
+  border-top: 1px solid var(--zen-boosts-zap-bar-border-color);
 }
 
 button {
   appearance: none;
   flex: 0 0 auto;
 
-  height: 30px;
-  min-width: 30px;
+  height: var(--zen-size-30);
+  min-width: var(--zen-size-30);
   margin: 0;
-  padding: 0 10px;
+  padding: 0 var(--zen-space-10);
 
   border: none;
-  border-radius: 8px;
+  border-radius: var(--zen-border-radius-8);
 
-  /* stylelint-disable-next-line property-no-unknown */
   corner-shape: superellipse(var(--zen-squircle-value));
 
   background: linear-gradient(0deg, #afafaf 0%, #e5e5e5 100%);
-  color: #1d1b1b;
+  color: var(--zen-boosts-zap-bar-button-color);
   font: inherit;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 
   transition:
     0.1s filter ease-in-out,
@@ -55,7 +54,7 @@ button {
   }
 
   &:focus-visible {
-    outline: 2px solid #e5e5e5;
+    outline: 2px solid var(--zen-boosts-zap-bar-focus-outline-color);
     outline-offset: 1px;
   }
 }
@@ -64,7 +63,7 @@ button {
   display: flex;
   flex: 1 1 auto;
   align-items: center;
-  gap: 6px;
+  gap: var(--zen-space-6);
 
   min-width: 0;
   overflow-x: auto;
@@ -73,13 +72,13 @@ button {
 }
 
 .zen-zap-bar-unzap {
-  width: 30px;
+  width: var(--zen-size-30);
   padding: 0;
 }
 
 .zen-zap-bar-helper {
-  padding-inline-start: 6px;
-  opacity: 0.8;
+  padding-inline-start: var(--zen-space-6);
+  opacity: var(--zen-opacity-80);
   user-select: none;
 }
 
@@ -90,5 +89,5 @@ button {
 }
 
 .zen-zap-bar-done {
-  padding: 0 12px;
+  padding: 0 var(--zen-space-12);
 }

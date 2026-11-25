@@ -3,25 +3,20 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 [
   {
-    "type": "phabricator",
-    "id": "D299584",
-    "name": "Native MacOS popovers fix"
-  },
-  {
-    "type": "phabricator",
-    "id": "D323933",
-    "name": "Issue 15123"
-  },
-  {
-    // Bug 2079476, backported from mozilla-central (Firefox 161) revisions
-    // 8e142a8b9911, 898c1161a502, ae869c1635bd and f79fc2dbdfd6. Drop this
-    // once the engine is on 161 or later.
+    // From D299584.
     "type": "local",
-    "path": "firefox/backdrop_filter_reads_web_content.patch"
+    "path": "firefox/native_macos_popovers_fix.patch"
   },
   {
     "type": "local",
     "path": "firefox/no_liquid_glass_icon.patch"
+  },
+  {
+    // The BrowserUtils half of D336362, which adds getExposableURI. The rest of
+    // that revision needs D336260 and Firefox 161's tabgroup-menu.mjs. Drop
+    // this once the engine is on 161 or later.
+    "type": "local",
+    "path": "firefox/get_exposable_uri.patch"
   },
   {
     "type": "patch",

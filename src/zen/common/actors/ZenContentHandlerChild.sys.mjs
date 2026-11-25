@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
@@ -17,24 +18,44 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
-XPCOMUtils.defineLazyPreferenceGetter(
-  lazy,
-  "activationMethod",
-  "zen.glance.activation-method",
-  "ctrl"
-);
+const LINK_ACTIONS = [
+  {
+    message: "ZenContentHandler:OpenGlance",
+    modifiersPref: "zen.glance.activation-method",
+  },
+  {
+    message: "ZenContentHandler:OpenSplit",
+    modifiersPref: "zen.splitView.link-activation-method",
+  },
+  {
+    message: "ZenContentHandler:OpenLittleWindow",
+    modifiersPref: "zen.little-window.link-activation-method",
+  },
+];
+
+const MODIFIERS = ["ctrl", "alt", "shift", "meta"];
+const ACCEL = AppConstants.platform == "macosx" ? "meta" : "ctrl";
 
 // A small threshold to allow for minor mouse jitter during a normal click.
 // Anything beyond this is likely an intentional drag (like selecting text).
 const CLICK_DRAG_THRESHOLD_PX = 4;
 
-export class ZenGlanceChild extends JSWindowActorChild {
+function modifiersMatch(event, pref) {
+  const wanted = new Set(
+    pref
+      .split("+")
+      .map(name => name.trim().toLowerCase())
+      .map(name => (name == "accel" ? ACCEL : name))
+  );
+  if (!wanted.size || [...wanted].some(name => !MODIFIERS.includes(name))) {
+    return false;
+  }
+  return MODIFIERS.every(name => event[`${name}Key`] == wanted.has(name));
+}
+
+export class ZenContentHandlerChild extends JSWindowActorChild {
   #mouseDownX = null;
   #mouseDownY = null;
-
-  constructor() {
-    super();
-  }
 
   async handleEvent(event) {
     const handler = this[`on_${event.type}`];
@@ -43,15 +64,13 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
-  #ensureOnlyKeyModifiers(event) {
-    return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
-  }
-
-  #openGlance(href, principal) {
-    this.sendAsyncMessage("ZenGlance:OpenGlance", {
-      url: href,
-      triggeringPrincipal: principal,
-    });
+  #actionForEvent(event) {
+    return LINK_ACTIONS.find(action =>
+      modifiersMatch(
+        event,
+        Services.prefs.getStringPref(action.modifiersPref, "")
+      )
+    );
   }
 
   #sendClickDataToParent(node, originalTarget) {
@@ -74,7 +93,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
     // Change the rect to make sure we take into account zoom.
     const zoom = this.browsingContext.fullZoom;
-    this.sendAsyncMessage("ZenGlance:RecordLinkClickData", {
+    this.sendAsyncMessage("ZenContentHandler:RecordLinkClickData", {
       clientX: rect.left * zoom,
       clientY: rect.top * zoom,
       width: rect.width * zoom,
@@ -133,7 +152,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_click(event) {
-    // If the user drags to select text inside a link, we shouldn't open glance.
+    // If the user drags to select text inside a link, we shouldn't open it.
     if (this.#mouseDownX !== null && this.#mouseDownY !== null) {
       const deltaX = Math.abs(event.clientX - this.#mouseDownX);
       const deltaY = Math.abs(event.clientY - this.#mouseDownY);
@@ -147,38 +166,30 @@ export class ZenGlanceChild extends JSWindowActorChild {
       }
     }
 
+    if (event.button !== 0 || event.defaultPrevented) {
+      return;
+    }
     const { node, href, principal } = this.#getTargetFromEvent(event);
-    if (
-      event.button !== 0 ||
-      !node ||
-      event.defaultPrevented ||
-      this.#ensureOnlyKeyModifiers(event)
-    ) {
+    if (!node) {
       return;
     }
-    const activationMethod = lazy.activationMethod;
-    if (activationMethod === "ctrl" && !event.ctrlKey) {
-      return;
-    } else if (activationMethod === "alt" && !event.altKey) {
-      return;
-    } else if (activationMethod === "shift" && !event.shiftKey) {
-      return;
-    } else if (activationMethod === "meta" && !event.metaKey) {
-      return;
-    }
-    if (this.#checkSecurity(href, principal)) {
+    const action = this.#actionForEvent(event);
+    if (!action || this.#checkSecurity(href, principal)) {
       return;
     }
     event.preventDefault();
     event.stopPropagation();
-    this.#openGlance(href, principal);
+    this.sendAsyncMessage(action.message, {
+      url: href,
+      triggeringPrincipal: principal,
+    });
   }
 
   on_keydown(event) {
     if (event.defaultPrevented || event.key !== "Escape") {
       return;
     }
-    this.sendAsyncMessage("ZenGlance:CloseGlance", {
+    this.sendAsyncMessage("ZenContentHandler:CloseGlance", {
       hasFocused:
         this.contentWindow.document.activeElement !==
         this.contentWindow.document.body,

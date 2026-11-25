@@ -1,0 +1,53 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        <html:section id="zen-settings-pane-links" class="zen-settings-pane" role="tabpanel" data-pane="links" hidden="hidden">
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-little-header"/>
+            <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-little-description"/>
+            <html:div class="zen-settings-card">
+#if defined(XP_MACOSX) || defined(XP_WIN)
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span id="zen-settings-little-shortcut-label" class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-global-shortcut"/>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.keyboard.global-shortcuts.enabled"/>
+              </html:div>
+#endif
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span id="zen-settings-little-trigger-label" class="zen-settings-row-text"/>
+                <html:moz-toggle id="zen-settings-little-trigger" class="zen-settings-toggle"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-little-external-links"/>
+                <html:moz-toggle id="zen-settings-little-external-links" class="zen-settings-toggle"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:h2 data-l10n-id="zen-settings-window-glance-header"/>
+            <html:p class="zen-settings-note" data-l10n-id="zen-settings-window-glance-description"/>
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span id="zen-settings-glance-trigger-label" class="zen-settings-row-text"/>
+                <html:moz-toggle id="zen-settings-glance-trigger" class="zen-settings-toggle"/>
+              </html:div>
+              <html:div class="zen-settings-row zen-settings-toggle-row">
+                <html:span class="zen-settings-row-text">
+                  <html:span data-l10n-id="zen-settings-window-glance-external-links"/>
+                  <html:span class="zen-settings-row-description" data-l10n-id="zen-settings-window-glance-external-links-note"/>
+                </html:span>
+                <html:moz-toggle class="zen-settings-toggle" data-pref="zen.glance.open-essential-external-links"/>
+              </html:div>
+            </html:div>
+          </html:div>
+
+          <html:div class="zen-settings-group">
+            <html:div class="zen-settings-card">
+              <html:div class="zen-settings-row">
+                <html:span class="zen-settings-row-text" data-l10n-id="zen-settings-window-space-routing"/>
+                <html:button class="zen-settings-button" data-action="open-space-routing" data-l10n-id="zen-settings-window-space-routing-button"/>
+              </html:div>
+            </html:div>
+          </html:div>
+        </html:section>

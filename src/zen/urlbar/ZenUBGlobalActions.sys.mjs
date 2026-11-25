@@ -121,6 +121,11 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/window.svg",
   },
   {
+    l10nId: "zen-action-new-little-window",
+    command: "cmd_zenNewLittleWindow",
+    icon: "chrome://browser/skin/zen-icons/window.svg",
+  },
+  {
     l10nId: "zen-action-pin-tab",
     command: "cmd_zenTogglePinTab",
     icon: "chrome://browser/skin/zen-icons/pin.svg",

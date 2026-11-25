@@ -155,6 +155,98 @@ add_task(async function test_tabdialogbox_multiple_focus() {
 });
 
 /**
+ * Tests that a dialog's initial focus shows a focus ring only if the dialog
+ * was opened with the keyboard, and that custom focus handlers are told.
+ */
+add_task(async function test_tabdialogbox_focus_ring_keyboard_only() {
+  await BrowserTestUtils.withNewTab(gBrowser, async browser => {
+    let dialogBox = gBrowser.getTabDialogBox(browser);
+
+    async function openWith(triggeringEvent, args) {
+      let result = dialogBox.open(TEST_DIALOG_PATH, { triggeringEvent }, args);
+      let dialog = dialogBox.getTabDialogManager()._topDialog;
+      await dialog._dialogReady;
+      return { ...result, dialog };
+    }
+
+    async function check(event, expectRing, description) {
+      let { dialog, closedPromise } = await openWith(event, {
+        noTextInputs: true,
+      });
+      let doc = dialog._frame.contentDocument;
+      is(
+        Services.focus.focusedElement,
+        doc.getElementById("select"),
+        `${description}: the first element is focused`
+      );
+      is(
+        doc.activeElement.matches(":focus-visible"),
+        expectRing,
+        `${description}: the focus ring is ${expectRing ? "shown" : "hidden"}`
+      );
+      dialog.close();
+      await closedPromise;
+
+      ({ dialog, closedPromise } = await openWith(event, {
+        testCustomFocusHandler: true,
+      }));
+      Assert.deepEqual(
+        dialog._frame.contentWindow.focusHandlerArgs,
+        [true, { focusVisible: expectRing }],
+        `${description}: the custom focus handler gets focusVisible`
+      );
+      dialog.close();
+      await closedPromise;
+    }
+
+    await check(new KeyboardEvent("keydown"), true, "Keyboard event");
+
+    let clickPromise = BrowserTestUtils.waitForEvent(
+      gBrowser.selectedTab,
+      "click"
+    );
+    EventUtils.synthesizeMouseAtCenter(gBrowser.selectedTab, {});
+    let mouseClick = await clickPromise;
+    is(
+      mouseClick.inputSource,
+      MouseEvent.MOZ_SOURCE_MOUSE,
+      "The click comes from the mouse"
+    );
+    await check(mouseClick, false, "Mouse click");
+
+    let keyboardCommand = document.createEvent("XULCommandEvent");
+    keyboardCommand.initCommandEvent(
+      "command",
+      true,
+      true,
+      window,
+      0,
+      false,
+      false,
+      false,
+      false,
+      0,
+      new KeyboardEvent("keypress"),
+      0
+    );
+    await check(keyboardCommand, true, "Command from a key press");
+
+    let keyCommand = document.createEvent("XULCommandEvent");
+    keyCommand.initCommandEvent("command", true, true, window, 0);
+    document.createXULElement("key").dispatchEvent(keyCommand);
+    await check(keyCommand, true, "Command of a <key> element");
+
+    let unknownCommand = document.createEvent("XULCommandEvent");
+    unknownCommand.initCommandEvent("command", true, true, window, 0);
+    await check(unknownCommand, false, "Command from an unknown source");
+
+    // Without an event, even right after keyboard navigation.
+    EventUtils.synthesizeKey("KEY_Tab");
+    await check(undefined, false, "No event");
+  });
+});
+
+/**
  * Tests that other dialogs are still visible if one dialog is hidden.
  */
 add_task(async function test_tabdialogbox_tab_switch_hidden() {

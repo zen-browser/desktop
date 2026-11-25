@@ -1,0 +1,12 @@
+diff --git a/browser/base/content/macWindow.inc.xhtml b/browser/base/content/macWindow.inc.xhtml
+index bf9c45905a8cf21d53326e996b181412e6801aa2..e3ec0045df4d94314d33f1fcc4d4edf61d1d7e19 100644
+--- a/browser/base/content/macWindow.inc.xhtml
++++ b/browser/base/content/macWindow.inc.xhtml
+@@ -26,6 +26,7 @@
+ <script src="chrome://browser/content/global-scripts.js"></script>
+ 
+ <script src="chrome://browser/content/nonbrowser-mac.js"></script>
++<script src="chrome://browser/content/zen-sets.js"></script>
+ 
+ # All sets except for popupsets (commands, keys, and stringbundles)
+ # *must* go into the browser-sets.inc.xhtml file so that they can be shared with

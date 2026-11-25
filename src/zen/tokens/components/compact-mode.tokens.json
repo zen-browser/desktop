@@ -1,0 +1,25 @@
+{
+  "size": {
+    "--zen-compact-float": { "external": true, "also": ["space"] },
+    "--zen-compact-top-toolbar-hidden-fix": { "external": true }
+  },
+  "border-radius": {
+    "--zen-compact-mode-no-padding-radius-fix": { "external": true }
+  },
+  "background-color": {
+    "--zen-compact-mode-toolbar-background": {
+      "value": { "light": "#e9e9e9", "dark": "#101010" }
+    },
+    "--zen-compact-mode-toolbar-acrylic-background": {
+      "value": {
+        "light": "rgb(233 233 233 / 80%)",
+        "dark": "rgb(16 16 16 / 80%)"
+      }
+    }
+  },
+  "border-color": {
+    "--zen-compact-mode-toolbar-outline-color": {
+      "value": "rgba(255, 255, 255, 0.15)"
+    }
+  }
+}

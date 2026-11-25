@@ -254,6 +254,15 @@ class nsZenWindowSync {
       for (let eventName of UNSYNCED_WINDOW_EVENTS) {
         aWindow.addEventListener(eventName, this, true);
       }
+      aWindow.addEventListener(
+        "unload",
+        () => {
+          for (let eventName of UNSYNCED_WINDOW_EVENTS) {
+            aWindow.removeEventListener(eventName, this, true);
+          }
+        },
+        { once: true }
+      );
       return;
     }
     aWindow.gZenWindowSync = this;
@@ -1075,6 +1084,9 @@ class nsZenWindowSync {
    * @param {string} aSrc - The source URL of the image.
    */
   async #createPseudoImageForBrowser(aBrowser, aSrc) {
+    if (!aSrc) {
+      return;
+    }
     const doc = aBrowser.ownerDocument;
     const img = doc.createElement("img");
     img.className = "zen-pseudo-browser-image";
@@ -1083,6 +1095,10 @@ class nsZenWindowSync {
     if (aBrowser.isConnected) {
       aBrowser.after(img);
     }
+    // The image keeps its own copy of the data once loaded. Without this the
+    // URL would also keep the blob alive until the window closes, even after
+    // the image is gone (e.g. when its tab is closed).
+    doc.defaultView?.URL.revokeObjectURL(aSrc);
   }
 
   /**
@@ -1095,12 +1111,7 @@ class nsZenWindowSync {
       ".zen-pseudo-browser-image"
     );
     if (elements) {
-      elements.forEach(element => {
-        if (element.src?.startsWith("blob:")) {
-          aBrowser.documentGlobal?.URL.revokeObjectURL(element.src);
-        }
-        element.remove();
-      });
+      elements.forEach(element => element.remove());
     }
   }
 
@@ -1616,7 +1627,7 @@ class nsZenWindowSync {
     const window = aEvent.target.documentGlobal ?? aEvent.target;
     window._zenClosingWindow = true;
     for (let eventName of EVENTS) {
-      window.removeEventListener(eventName, this);
+      window.removeEventListener(eventName, this, true);
     }
     delete window.gZenWindowSync;
     try {

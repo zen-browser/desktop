@@ -37,6 +37,8 @@ if (AppConstants.MOZ_APP_NAME != "thunderbird") {
   );
 }
 
+const mozSrcModules = ["stages/syncids.sys.mjs"];
+
 const testingModules = [
   "fakeservices.sys.mjs",
   "rotaryengine.sys.mjs",
@@ -47,6 +49,12 @@ const testingModules = [
 function run_test() {
   for (let m of modules) {
     let res = "resource://services-sync/" + m;
+    _("Attempting to load " + res);
+    ChromeUtils.importESModule(res);
+  }
+
+  for (let m of mozSrcModules) {
+    let res = "moz-src:///services/sync/modules/" + m;
     _("Attempting to load " + res);
     ChromeUtils.importESModule(res);
   }

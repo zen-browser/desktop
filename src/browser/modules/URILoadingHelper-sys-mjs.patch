@@ -1,8 +1,8 @@
 diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
-index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a33ec092b 100644
+index 6f88bf621d9c423954d59deb2798fb37303dd04e..8363aebbc50d12c89594144e44ca9d9d785446de 100644
 --- a/browser/modules/URILoadingHelper.sys.mjs
 +++ b/browser/modules/URILoadingHelper.sys.mjs
-@@ -231,6 +231,7 @@ function openInWindow(url, params, sourceWindow) {
+@@ -252,6 +252,7 @@ function openInWindow(url, params, sourceWindow) {
      features,
      sa
    );
@@ -10,7 +10,7 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
  }
  
  function openInCurrentTab(targetBrowser, url, uriObj, params) {
-@@ -548,7 +549,7 @@ export const URILoadingHelper = {
+@@ -572,7 +573,7 @@ export const URILoadingHelper = {
        // page. If a load request bounces off for the currently selected tab,
        // we'll open a new tab instead.
        let tab = w.gBrowser.getTabForBrowser(targetBrowser);
@@ -19,7 +19,7 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
          where = "tab";
          targetBrowser = null;
        } else if (
-@@ -981,7 +982,7 @@ export const URILoadingHelper = {
+@@ -1029,7 +1030,7 @@ export const URILoadingHelper = {
          ignoreQueryString || replaceQueryString,
          ignoreFragmentWhenComparing
        );
@@ -28,7 +28,7 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
          let browserCompare = cleanURL(
-@@ -1037,7 +1038,7 @@ export const URILoadingHelper = {
+@@ -1085,7 +1086,7 @@ export const URILoadingHelper = {
                }
                aSplitView.documentGlobal.focus();
              } else {

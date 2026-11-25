@@ -48,21 +48,6 @@ def get_version_from_file(filename, is_rc):
   except (FileNotFoundError, json.JSONDecodeError) as e:
     raise RuntimeError(f"Error reading version from {filename}: {e}")
 
-
-def update_readme(last_version, new_version, is_rc=False):
-  """Updates the README.md file to reflect the new version."""
-  prefix = "RC " if is_rc else "`"
-  try:
-    with open("README.md", "r") as f:
-      data = f.read()
-      updated_data = data.replace(prefix + last_version, prefix + new_version)
-
-    with open("README.md", "w") as f:
-      f.write(updated_data)
-  except FileNotFoundError as e:
-    raise RuntimeError(f"README.md file not found: {e}")
-
-
 def update_l10n_last_commit_hash():
   L10N_REPO = "https://github.com/mozilla-l10n/firefox-l10n"
   try:
@@ -96,9 +81,8 @@ def main():
       last_version, last_build = get_version_from_file("surfer.json", args.rc)
       update_ff(args.rc, last_version, last_build)
       new_version, new_build = get_version_from_file("surfer.json", args.rc)
-      update_readme(last_version, new_version, args.rc)
       print(
-          f"Updated version from {last_version} to {new_version} in README.md.")
+          f"Updated version from {last_version} to {new_version}.")
     print("Updating l10n last commit hash.")
     update_l10n_last_commit_hash()
   except Exception as e:

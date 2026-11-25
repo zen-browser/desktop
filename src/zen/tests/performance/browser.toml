@@ -47,7 +47,6 @@ run-if = [
   "debug",
 ]
 skip-if = [
-  "socketprocess_networking",
   "os == 'win' && standalone", # Bug 2029498
 ]
 

@@ -15,7 +15,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 8;
+  MIGRATION_VERSION = 9;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -215,6 +215,22 @@ class nsZenUIMigration {
       Services.prefs.clearUserPref("gfx.blacklist.video-overlay.failureid");
       this.shouldRestart = true;
     }
+  }
+
+  _migrateV9() {
+    const kept = {
+      "zen.glance.activation-method": "alt",
+    };
+    for (const [pref, value] of Object.entries(kept)) {
+      if (!Services.prefs.prefHasUserValue(pref)) {
+        Services.prefs.setStringPref(pref, value);
+      }
+    }
+    if (!Services.prefs.getBoolPref("zen.glance.enabled", true)) {
+      Services.prefs.setStringPref("zen.glance.activation-method", "none");
+    }
+    Services.prefs.clearUserPref("zen.glance.enabled");
+    Services.prefs.clearUserPref("zen.little-window.enabled");
   }
 }
 

@@ -1,0 +1,24 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "head.js",
+]
+
+["browser_little_window_chrome.js"]
+
+["browser_little_window_container.js"]
+
+["browser_little_window_external_links.js"]
+
+["browser_little_window_new_tabs.js"]
+
+["browser_little_window_open_in_space.js"]
+
+["browser_little_window_session.js"]
+
+["browser_little_window_toolbar.js"]
+
+["browser_little_window_urlbar_only.js"]

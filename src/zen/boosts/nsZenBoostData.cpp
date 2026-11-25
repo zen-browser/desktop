@@ -37,10 +37,14 @@ static bool ReadFloat(JSContext* aCx, JS::Handle<JSObject*> aObject,
   if (!JS_GetProperty(aCx, aObject, aName, &value)) {
     return false;
   }
-  if (!value.isNumber()) {
+  // The editor stores slider values as strings.
+  if (!value.isNumber() && !value.isString()) {
     return true;
   }
-  const double number = value.toNumber();
+  double number = 0.0;
+  if (!JS::ToNumber(aCx, value, &number)) {
+    return false;
+  }
   if (std::abs(number) <= double(std::numeric_limits<float>::max())) {
     *aResult = static_cast<float>(number);
   }

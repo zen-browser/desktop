@@ -70,6 +70,12 @@ ZenCommonUtils::PlayHapticFeedback() {
 }
 
 NS_IMETHODIMP
+ZenCommonUtils::ReturnToPreviousApplication() {
+  ReturnToPreviousApplicationInternal();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 ZenCommonUtils::CanShare(bool* canShare) {
   auto aWindow = GetMostRecentWindow();
   if (!aWindow) {

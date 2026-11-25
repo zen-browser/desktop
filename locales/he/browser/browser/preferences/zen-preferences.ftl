@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = אפשר להקליד כאן...
 pane-zen-marketplace-title = שפצורים של Zen
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = העברה למרחב עבודה שבו מוגדרת מגירת ברירת מחדל לפתיחת לשוניות במגירה
 zen-theme-marketplace-link = כניסה לחנות

@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Type something...
 pane-zen-marketplace-title = افزودنی‌های ذن
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Switch to workspace where container is set as default when opening container tabs
 zen-theme-marketplace-link = Visit Store

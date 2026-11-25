@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Teipiwch rywbeth...
 pane-zen-marketplace-title = Addasiadau Zen
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Newid i'r gofod gwith lle mae'r cynhwysydd wedi'i osod fel y rhagosodyn wrth agor tabiau cynhwysydd
 zen-theme-marketplace-link = Ymweld â'r Storfa

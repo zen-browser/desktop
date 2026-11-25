@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Escreva alguma coisa...
 pane-zen-marketplace-title = Modificações do Zen
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Mudar para espaço de trabalho onde o contentor é definido como padrão ao abrir separadores de contentor
 zen-theme-marketplace-link = Visitar Loja

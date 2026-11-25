@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Scrie ceva...
 pane-zen-marketplace-title = Mod-uri Zen
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Schimbă pe Spațiul de Lucru unde containerul este setat implicit când deschizi o filă container
 zen-theme-marketplace-link = Vizitează Magazinul

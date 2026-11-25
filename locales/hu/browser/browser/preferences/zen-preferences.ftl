@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Írj valamit...
 pane-zen-marketplace-title = Zen modok
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Válts a munkakörnyezetre, ahol a konténer alapértelmezettnek van beállítva konténerlapok megnyitásakor
 zen-theme-marketplace-link = Áruház megnyitása

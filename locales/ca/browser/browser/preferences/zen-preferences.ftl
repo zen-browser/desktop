@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Escriviu alguna cosa...
 pane-zen-marketplace-title = Zen Mods
+zen-preferences-open-zen-settings = Configuració del { -brand-short-name }
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Canvia a l'espai de treball on el contenidor està configurat per defecte en obrir les pestanyes del contenidor
 zen-theme-marketplace-link = Visita la botiga

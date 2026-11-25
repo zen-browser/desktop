@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Kirjoita jotain...
 pane-zen-marketplace-title = Zen modit
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Vaihda työtilaan, jossa säiliö on asetettu oletusarvoiseksi avattaessa säiliön välilehtiä
 zen-theme-marketplace-link = Vieraile Kaupassa

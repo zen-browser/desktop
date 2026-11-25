@@ -174,6 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skriv noget...
 pane-zen-marketplace-title = Zen Mods
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Skift til et arbejdsområde, hvor beholderen er indstillet som standard, når du åbner beholderfaner
 zen-theme-marketplace-link = Besøg Butik

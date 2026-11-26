@@ -34,12 +34,12 @@
   }
 
   #nav-bar {
-    gap: var(--zen-space-8);
-    padding-inline: var(--zen-space-8);
+    gap: var(--zen-space-6);
+    padding-inline: var(--zen-space-6);
   }
 
   &:not([zen-little-window-urlbar-only]) {
-    --zen-toolbar-height: 50px;
+    --zen-toolbar-height: calc(34px + 2 * var(--zen-space-6));
   }
 
   &:not([zen-window-buttons-reversed]) #nav-bar {

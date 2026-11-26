@@ -521,7 +521,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       return level;
     };
     // Deepest first, so a parent measures its children already collapsed.
-    const folders = gBrowser.tabGroups
+    const folders = gZenWorkspaces.allTabGroups
       .filter(group => group.isZenFolder && group.collapsed)
       .sort((a, b) => depth(b) - depth(a));
     for (const group of folders) {

@@ -57,12 +57,16 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
   static void KeepWindowsBehindPreviousApplicationInternal() {}
   static void PrepareFloatingWindowInternal(mozIDOMWindowProxy*) {}
   static void PresentFloatingWindowInternal(mozIDOMWindowProxy*) {}
+  static nsresult GetPointerPositionInternal(int32_t*, int32_t*) {
+    return NS_ERROR_NOT_IMPLEMENTED;
+  }
 #else
   static auto PlayHapticFeedbackInternal() -> nsresult;
   static void ReturnToPreviousApplicationInternal();
   static void KeepWindowsBehindPreviousApplicationInternal();
   static void PrepareFloatingWindowInternal(mozIDOMWindowProxy* aWindow);
   static void PresentFloatingWindowInternal(mozIDOMWindowProxy* aWindow);
+  static nsresult GetPointerPositionInternal(int32_t* aX, int32_t* aY);
 #endif
 };
 

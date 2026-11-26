@@ -57,4 +57,9 @@ interface nsIZenCommonUtils : nsISupports {
    * shown, and keep it on the Space it was shown on. Only on macOS.
    */
   void presentFloatingWindow(in mozIDOMWindowProxy window);
+  /*
+   * @brief Where the mouse pointer is, in desktop pixels. Only on macOS,
+   * throws NS_ERROR_NOT_IMPLEMENTED elsewhere.
+   */
+  void getPointerPosition(out long x, out long y);
 };

@@ -94,6 +94,11 @@ ZenCommonUtils::PresentFloatingWindow(mozIDOMWindowProxy* aWindow) {
 }
 
 NS_IMETHODIMP
+ZenCommonUtils::GetPointerPosition(int32_t* aX, int32_t* aY) {
+  return GetPointerPositionInternal(aX, aY);
+}
+
+NS_IMETHODIMP
 ZenCommonUtils::CanShare(bool* canShare) {
   auto aWindow = GetMostRecentWindow();
   if (!aWindow) {

@@ -3,9 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = 动态文件夹选项
+    .label = 实时文件夹选项
 zen-live-folder-last-fetched = 
-    .label = 上次更新：{ $time }
+    .label = 上次抓取：{ $time }
 zen-live-folder-refresh = 
     .label = 刷新
 zen-live-folder-github-option-author-self = 
@@ -64,7 +64,7 @@ zen-live-folder-github-no-auth =
 zen-live-folder-github-no-filter = 
     .label = 未设置筛选条件
     .tooltiptext = 未设置筛选条件，将不会获取任何内容。
-zen-live-folder-rss-invalid-url-title = 创建动态文件夹失败
+zen-live-folder-rss-invalid-url-title = 创建实时文件夹失败
 zen-live-folder-rss-invalid-url-description = 订阅源 URL 无效。请检查地址后重试
 zen-live-folder-github-option-repo-filter = 
     .label = 代码仓库
@@ -76,5 +76,5 @@ zen-live-folder-github-issues =
     .label = Issues
 zen-live-folder-github-option-repo-list-note = 
     .label = 此列表根据您当前活跃的 Pull Request 自动生成。
-zen-live-folders-promotion-title = 动态文件夹已创建！
+zen-live-folders-promotion-title = 实时文件夹已创建！
 zen-live-folders-promotion-description = 来自 RSS 订阅源或 GitHub Pull Request 的最新内容将自动显示在此处。

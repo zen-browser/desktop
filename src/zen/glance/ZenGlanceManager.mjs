@@ -955,10 +955,61 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {{progress: number[], duration: number}}
    */
   #openingSpring() {
-    return gZenUIManager.springProgress(
+    const spring = gZenUIManager.springProgress(
       this.#openingVisualDuration,
       GLANCE_OPEN_BOUNCE
     );
+    return {
+      progress: this.#softenSettle(spring.progress),
+      duration: spring.duration,
+    };
+  }
+
+  /**
+   * Replays a spring so it rises as fast as before but takes
+   * several times longer over a smaller overshoot once it
+   * reaches the target, without changing how long the whole motion lasts.
+   *
+   * @param {number[]} progress Evenly spaced samples of the spring.
+   * @returns {number[]} The same number of samples.
+   */
+  #softenSettle(progress) {
+    const settleStretch = 2.2;
+    const settleOvershoot = 0.5;
+    const settleBlend = 0.35;
+    const last = progress.length - 1;
+    const arrival = progress.findIndex(value => value >= 1);
+    if (arrival <= 0 || arrival >= last) {
+      return progress;
+    }
+    const blend = Math.max(1, arrival * settleBlend);
+    const settling = position => {
+      const t = Math.min(
+        1,
+        Math.max(0, (position - (arrival - blend)) / (2 * blend))
+      );
+      return t * t * (3 - 2 * t);
+    };
+    const positions = [0];
+    while (positions.at(-1) < last) {
+      const position = positions.at(-1);
+      const rate = 1 + (1 / settleStretch - 1) * settling(position);
+      positions.push(Math.min(last, position + rate));
+    }
+    const sampleAt = (values, index) => {
+      const low = Math.floor(index);
+      const high = Math.min(values.length - 1, low + 1);
+      return values[low] + (values[high] - values[low]) * (index - low);
+    };
+    const softened = [];
+    for (let i = 0; i <= last; i++) {
+      const position = sampleAt(positions, (i / last) * (positions.length - 1));
+      const value = sampleAt(progress, position);
+      const overshoot = 1 + (settleOvershoot - 1) * settling(position);
+      softened.push(value > 1 ? 1 + (value - 1) * overshoot : value);
+    }
+    softened[last] = 1;
+    return softened;
   }
 
   /**

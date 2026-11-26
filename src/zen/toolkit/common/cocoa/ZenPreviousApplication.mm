@@ -44,11 +44,10 @@ static void RaiseInsteadOfStandIn() {
     return;
   }
   NSWindow* window = [NSApp windowWithWindowNumber:sWindowToRaise];
-  bool standInIsKey = sStandIn.isKeyWindow;
-  RemoveStandIn();
-  if (standInIsKey && window && NSApp.isActive) {
+  if (sStandIn.isKeyWindow && window && NSApp.isActive) {
     [window makeKeyAndOrderFront:nil];
   }
+  RemoveStandIn();
 }
 
 static void InstallStandIn() {
@@ -88,8 +87,8 @@ static void OnApplicationActivated() {
     }
     if (window.isVisible && window.canBecomeKeyWindow &&
         window.level == NSNormalWindowLevel) {
-      RemoveStandIn();
       [window makeKeyAndOrderFront:nil];
+      RemoveStandIn();
       return;
     }
   }

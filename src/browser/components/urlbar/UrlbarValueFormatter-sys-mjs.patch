@@ -1,17 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
-index 7ccffa60be42ba5e554b0e91bc831c56c24dfb42..ca5d6f983490f6cfc392c92f3570a5fb1bb3c43d 100644
+index c43395720b7381c25c2ab6450e2e9374c499162f..0441b9c4d9d86798da813613bfe1ae897edacb5d 100644
 --- a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 +++ b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
-@@ -77,7 +77,7 @@ export class UrlbarValueFormatter {
-       if (this.#updateInstance != instance) {
-         return;
-       }
--      this.#formattingApplied = this.#formatURL() || this.#formatSearchAlias();
-+      this.#formattingApplied = this._formatURL() || this.#formatSearchAlias();
-     });
-   }
- 
-@@ -126,6 +126,18 @@ export class UrlbarValueFormatter {
+@@ -133,6 +133,18 @@ export class UrlbarValueFormatter {
    }
  
    #ensureFormattedHostVisible(urlMetaData) {
@@ -30,24 +21,3 @@ index 7ccffa60be42ba5e554b0e91bc831c56c24dfb42..ca5d6f983490f6cfc392c92f3570a5fb
      // Make sure the host is always visible. Since it is aligned on
      // the first strong directional character, we set scrollLeft
      // appropriately to ensure the domain stays visible in case of an
-@@ -403,7 +415,7 @@ export class UrlbarValueFormatter {
-    * @returns {boolean}
-    *   True if formatting was applied and false if not.
-    */
--  #formatURL() {
-+  _formatURL() {
-     let urlMetaData = this.#getUrlMetaData();
-     if (!urlMetaData) {
-       return false;
-@@ -688,9 +700,10 @@ export class UrlbarValueFormatter {
-           ) {
-             // The host range is no longer valid.
-             this.#removeURLFormat();
--            this.#formatURL();
-+            this._formatURL();
-           } else {
-             this.#ensureFormattedHostVisible();
-+            this._formatURL();
-           }
-         }
-       });

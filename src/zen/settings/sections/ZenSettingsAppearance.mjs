@@ -18,6 +18,8 @@ export class ZenSettingsAppearance {
     if (!list) {
       return;
     }
+    document.getElementById("zen-settings-backdrop-group").hidden =
+      !window.matchMedia("(-moz-windows-mica)").matches;
     this.settings.watchPrefs([kBackdropPref], () => {
       const backdrop = Services.prefs.getIntPref(kBackdropPref, 0);
       list.value = backdrop == 1 || backdrop == 2 ? String(backdrop) : "3";

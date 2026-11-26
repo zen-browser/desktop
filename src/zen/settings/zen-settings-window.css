@@ -312,7 +312,7 @@
     border-radius: var(--zen-border-radius-10);
 
     &[aria-selected="true"] {
-      background: var(--zen-settings-win-tile-selected-background);
+      background: var(--zen-settings-button-background);
       color: inherit;
     }
   }

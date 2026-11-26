@@ -1,8 +1,7 @@
 diff --git a/browser/components/migration/MigrationUtils.sys.mjs b/browser/components/migration/MigrationUtils.sys.mjs
-index 1289865805d2d6cbb7813da5fabf000284d7ac4c..af374fd0f194c3ba270a1dfa4e52eef4aac519a6 100644
 --- a/browser/components/migration/MigrationUtils.sys.mjs
 +++ b/browser/components/migration/MigrationUtils.sys.mjs
-@@ -16,6 +16,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+@@ -17,6 +17,7 @@
    setTimeout: "resource://gre/modules/Timer.sys.mjs",
    MigrationWizardConstants:
      "chrome://browser/content/migration/migration-wizard-constants.mjs",
@@ -10,19 +9,19 @@ index 1289865805d2d6cbb7813da5fabf000284d7ac4c..af374fd0f194c3ba270a1dfa4e52eef4
  });
  
  ChromeUtils.defineLazyGetter(
-@@ -133,6 +134,11 @@ const MIGRATOR_MODULES = Object.freeze({
+@@ -136,6 +137,11 @@
+   OperaGXProfileMigrator: {
+     moduleURI:
+       "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs",
++    platforms: ["macosx", "win"],
++  },
++
++  DiaProfileMigrator: {
++    moduleURI: "resource:///modules/zen/ZenProfileMigrators.sys.mjs",
      platforms: ["macosx", "win"],
    },
  
-+  DiaProfileMigrator: {
-+    moduleURI: "resource:///modules/zen/ZenProfileMigrators.sys.mjs",
-+    platforms: ["macosx"],
-+  },
-+
-   InternalTestingProfileMigrator: {
-     moduleURI:
-       "moz-src:///browser/components/migration/InternalTestingProfileMigrator.sys.mjs",
-@@ -226,6 +232,7 @@ class MigrationUtils {
+@@ -232,6 +238,7 @@
      SESSION: 0x0080,
      PAYMENT_METHODS: 0x0100,
      EXTENSIONS: 0x0200,
@@ -30,7 +29,7 @@ index 1289865805d2d6cbb7813da5fabf000284d7ac4c..af374fd0f194c3ba270a1dfa4e52eef4
    });
  
    /**
-@@ -538,6 +545,8 @@ class MigrationUtils {
+@@ -544,6 +551,8 @@
        "Google Chrome": "chrome", // Windows, Linux
        Chrome: "chrome", // OS X
        Chromium: "chromium", // Windows, OS X
@@ -39,7 +38,7 @@ index 1289865805d2d6cbb7813da5fabf000284d7ac4c..af374fd0f194c3ba270a1dfa4e52eef4
        "Chromium Web Browser": "chromium", // Linux
        "360\u5b89\u5168\u6d4f\u89c8\u5668": "chromium-360se",
      };
-@@ -850,6 +859,7 @@ class MigrationUtils {
+@@ -901,6 +910,7 @@
              true /* aForceVisible */
            ).catch(console.error);
          }

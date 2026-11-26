@@ -148,7 +148,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     wrapper.setAttribute("animate", true);
     await gZenUIManager.elementAnimate(
       wrapper,
-      this.#createGlanceArcSequence(startPoint, "opening", null, hostRect),
+      this.#createGlanceArcSequence(startPoint, "opening", hostRect),
       {
         duration: gZenUIManager.testingEnabled
           ? 0
@@ -189,7 +189,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#createGlanceArcSequence(
           detached.startPoint,
           "closing",
-          null,
           host.getBoundingClientRect()
         ),
         {
@@ -740,11 +739,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     // Create the curved animation sequence. The transform origin is handled
     // separately (for example via CSS on the wrapper).
-    const arcSequence = this.#createGlanceArcSequence(
-      data,
-      "opening",
-      imageDataElement
-    );
+    const arcSequence = this.#createGlanceArcSequence(data, "opening");
 
     // Only animate if there is element data, so we can apply a
     // nice fade-in effect to the content. But if it doesn't exist,
@@ -794,18 +789,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    *
    * @param {object} data - Glance data with position and dimensions
    * @param {string} direction - 'opening' or 'closing'
-   * @param {Element|null} imageDataElement - The image data element for preview (optional)
    * @param {DOMRect|null} referenceRect - Bounds the glance opens within;
    *   defaults to the tab panels
    * @returns {object} Animation sequence object
    */
-  #createGlanceArcSequence(
-    data,
-    direction,
-    imageDataElement = null,
-    referenceRect = null
-  ) {
-    let { clientX, clientY, width, height } = data;
+  #createGlanceArcSequence(data, direction, referenceRect = null) {
+    const { clientX, clientY, width, height } = data;
 
     const tabPanelsRect =
       referenceRect ??
@@ -814,33 +803,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const widthPercent = 0.8;
     const refWidth = tabPanelsRect.width * widthPercent;
     const refHeight = tabPanelsRect.height;
-
-    if (imageDataElement?.parentElement) {
-      // Since we are animating scale transforms on the wrapper, we need to
-      // adjust the width/height to match the scaled size of the element preview,
-      // so the image preview properly matches the size of the animating browser
-      // during the animation.
-      // For example:
-      // +-- wrapper --------------------------+
-      // |                                     |
-      // | +--- element preview -------------+ |
-      // | |                                 | |
-      // | +---------------------------------+ |
-      // |                                     |
-      // +-------------------------------------+
-      // We are scaling the wrapper while having only the element preview size
-      // in mind, so we need to adjust the width/height to match the size of the
-      // element preview. The preview fills the wrapper, so its size is the
-      // reference size; using it avoids a sync reflow right before the
-      // animation starts.
-      const aspectRatio = width / height;
-      const heightRatio = refHeight / (refWidth / aspectRatio);
-      const originalHeight = height;
-      if (heightRatio > 1) {
-        height *= heightRatio;
-        clientY -= (height - originalHeight) / 2;
-      }
-    }
 
     // Calculate start and end positions based on direction
     let startPosition, endPosition;
@@ -955,10 +917,61 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {{progress: number[], duration: number}}
    */
   #openingSpring() {
-    return gZenUIManager.springProgress(
+    const spring = gZenUIManager.springProgress(
       this.#openingVisualDuration,
       GLANCE_OPEN_BOUNCE
     );
+    return {
+      progress: this.#softenSettle(spring.progress),
+      duration: spring.duration,
+    };
+  }
+
+  /**
+   * Replays a spring so it rises as fast as before but takes
+   * several times longer over a smaller overshoot once it
+   * reaches the target, without changing how long the whole motion lasts.
+   *
+   * @param {number[]} progress Evenly spaced samples of the spring.
+   * @returns {number[]} The same number of samples.
+   */
+  #softenSettle(progress) {
+    const settleStretch = 2.2;
+    const settleOvershoot = 0.5;
+    const settleBlend = 0.35;
+    const last = progress.length - 1;
+    const arrival = progress.findIndex(value => value >= 1);
+    if (arrival <= 0 || arrival >= last) {
+      return progress;
+    }
+    const blend = Math.max(1, arrival * settleBlend);
+    const settling = position => {
+      const t = Math.min(
+        1,
+        Math.max(0, (position - (arrival - blend)) / (2 * blend))
+      );
+      return t * t * (3 - 2 * t);
+    };
+    const positions = [0];
+    while (positions.at(-1) < last) {
+      const position = positions.at(-1);
+      const rate = 1 + (1 / settleStretch - 1) * settling(position);
+      positions.push(Math.min(last, position + rate));
+    }
+    const sampleAt = (values, index) => {
+      const low = Math.floor(index);
+      const high = Math.min(values.length - 1, low + 1);
+      return values[low] + (values[high] - values[low]) * (index - low);
+    };
+    const softened = [];
+    for (let i = 0; i <= last; i++) {
+      const position = sampleAt(positions, (i / last) * (positions.length - 1));
+      const value = sampleAt(progress, position);
+      const overshoot = 1 + (settleOvershoot - 1) * settling(position);
+      softened.push(value > 1 ? 1 + (value - 1) * overshoot : value);
+    }
+    softened[last] = 1;
+    return softened;
   }
 
   /**
@@ -1287,16 +1300,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#currentGlanceID
       ).elementImageData;
 
-      const imageDataElement = this.#addElementPreview(elementImageData);
+      this.#addElementPreview(elementImageData);
 
       // Create curved closing animation sequence
       const closingData =
         this.#createClosingDataFromOriginalPosition(originalPosition);
-      const arcSequence = this.#createGlanceArcSequence(
-        closingData,
-        "closing",
-        imageDataElement
-      );
+      const arcSequence = this.#createGlanceArcSequence(closingData, "closing");
 
       // Batch style writes before starting animation to avoid layout thrashing
       this.browserWrapper.style.width = "";

@@ -2087,7 +2087,9 @@ class nsZenWorkspaces {
     if (emptyTab) {
       let changed =
         emptyTab.getAttribute("zen-workspace-id") !== this.activeWorkspace;
-      emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
+      if (changed) {
+        emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
+      }
       const container = this.activeWorkspaceStrip;
       if (container && container.firstChild !== emptyTab) {
         container.insertBefore(emptyTab, container.firstChild);

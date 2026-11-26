@@ -12,7 +12,7 @@
   value: "shift" # none, ctrl, alt, shift, meta, accel, or several joined with "+"
 
 - name: zen.glance.animation-duration
-  value: 350 # in milliseconds
+  value: 400 # in milliseconds
 
 - name: zen.glance.deactivate-docshell-during-animation
   value: false

@@ -23,12 +23,6 @@ const kTriggers = [
     pref: "zen.glance.activation-method",
     fallback: "shift",
   },
-  {
-    id: "zen-settings-little-trigger",
-    l10nId: "zen-settings-window-little-trigger",
-    pref: "zen.little-window.link-activation-method",
-    fallback: "accel+alt",
-  },
 ];
 const kIsMac = Services.appinfo.OS == "Darwin";
 const kAccel = kIsMac ? "meta" : "ctrl";

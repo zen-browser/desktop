@@ -562,6 +562,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
     gBrowser.removeTabsProgressListener(this.#urlbarOnlyProgressListener);
     this.#urlbarOnlyProgressListener = null;
     const root = document.documentElement;
+    root.setAttribute("zen-little-window-expanding", "true");
     root.removeAttribute(URLBAR_ONLY_ATTRIBUTE);
     root.style.removeProperty(URLBAR_ONLY_WIDTH_PROPERTY);
     root.style.removeProperty(URLBAR_ONLY_HEIGHT_PROPERTY);
@@ -582,6 +583,9 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       );
       window.resizeTo(width, height);
       window.moveTo(x, y);
+      this.#limitsApplied().then(() =>
+        root.removeAttribute("zen-little-window-expanding")
+      );
       this.#maybeShowIntro();
     });
   }

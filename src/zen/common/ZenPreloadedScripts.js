@@ -40,6 +40,8 @@
     root.setAttribute("zen-little-window", "true");
     if (extraOptions.hasKey("zen-little-window-urlbar-only")) {
       root.setAttribute("zen-little-window-urlbar-only", "true");
+    } else {
+      root.setAttribute("macanimationtype", "alert");
     }
     root.setAttribute("persist", "none");
     scripts.push(

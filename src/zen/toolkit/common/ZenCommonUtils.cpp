@@ -82,6 +82,18 @@ ZenCommonUtils::KeepWindowsBehindPreviousApplication() {
 }
 
 NS_IMETHODIMP
+ZenCommonUtils::PrepareFloatingWindow(mozIDOMWindowProxy* aWindow) {
+  PrepareFloatingWindowInternal(aWindow);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::PresentFloatingWindow(mozIDOMWindowProxy* aWindow) {
+  PresentFloatingWindowInternal(aWindow);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 ZenCommonUtils::CanShare(bool* canShare) {
   auto aWindow = GetMostRecentWindow();
   if (!aWindow) {

@@ -13,6 +13,11 @@ support-files = [
 
 ["browser_little_window_external_links.js"]
 
+["browser_little_window_fullscreen_spaces.js"]
+run-if = [
+  "os == 'mac'",
+]
+
 ["browser_little_window_new_tabs.js"]
 
 ["browser_little_window_open_in_space.js"]

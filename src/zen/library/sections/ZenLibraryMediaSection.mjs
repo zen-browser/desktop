@@ -143,6 +143,17 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     });
   }
 
+  onShown() {
+    super.onShown();
+    this.onLibraryOpening();
+  }
+
+  onLibraryOpening() {
+    if (this.#enabled && !this.loading) {
+      this.#scan();
+    }
+  }
+
   /** @returns {boolean} Whether looking through the folders was agreed to */
   get #enabled() {
     return Services.prefs.getBoolPref(ENABLED_PREF, false);

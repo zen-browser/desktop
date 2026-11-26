@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-current-profile-text = 当前配置
-unified-extensions-description = 扩展用于为 { -brand-short-name } 带来更多额外功能。
+unified-extensions-description = 扩展为 { -brand-short-name } 提供更多额外功能。
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->

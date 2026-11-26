@@ -22,6 +22,8 @@ const kOverlayMaxAlpha = 0.9;
 const kOverlayStrips = 64;
 const kOverlayAngle = 180;
 const kOverlayReferenceAspect = 16 / 10;
+const kDarkUnderlay = Object.freeze([19, 19, 19]);
+const kLightUnderlay = Object.freeze([255, 255, 255]);
 const kCustomGradientAngle = -30;
 const kTextures = ["none", "grain", "sand", "denim", "tweed"];
 const kDefaultTexture = "grain";
@@ -187,6 +189,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   #colorPage = 0;
   #gradientsCache = new Map();
+  #mediaQueries = new Map();
+  #isPrivateWindow = null;
   #nativeAccentColorCache = null;
 
   constructor() {
@@ -334,8 +338,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
   }
 
+  get isPrivateWindow() {
+    this.#isPrivateWindow ??= PrivateBrowsingUtils.isWindowPrivate(window);
+    return this.#isPrivateWindow;
+  }
+
   get isDarkMode() {
-    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+    if (this.isPrivateWindow) {
       return true;
     }
     switch (this.windowSchemeType) {
@@ -345,7 +354,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return false;
       default:
     }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return this.#mediaQuery("(prefers-color-scheme: dark)").matches;
   }
 
   get colorHarmonies() {
@@ -1476,14 +1485,23 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${baseColor[3]})`;
   }
 
+  #mediaQuery(query) {
+    let list = this.#mediaQueries.get(query);
+    if (!list) {
+      list = window.matchMedia(query);
+      this.#mediaQueries.set(query, list);
+    }
+    return list;
+  }
+
   get isMica() {
-    return window.matchMedia("(-moz-windows-mica)").matches;
+    return this.#mediaQuery("(-moz-windows-mica)").matches;
   }
 
   get canBeTransparent() {
     return (
       this.isMica ||
-      window.matchMedia(
+      this.#mediaQuery(
         '(-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))'
       ).matches
     );
@@ -1525,7 +1543,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   get underlay() {
-    return this.isDarkMode ? [19, 19, 19] : [255, 255, 255];
+    return this.isDarkMode ? kDarkUnderlay : kLightUnderlay;
   }
 
   // Composites an [r, g, b] colour over the underlay at the current layer

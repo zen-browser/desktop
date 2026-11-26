@@ -393,7 +393,7 @@ class nsZenUIManager {
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute(
       "zen-has-hover"
     );
-    gZenVerticalTabsManager.recalculateURLBarHeight(!fromResizeEvent);
+    gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild && !fromResizeEvent) {
       setTimeout(() => {
         gZenWorkspaces.updateTabsContainers();

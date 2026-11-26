@@ -325,11 +325,10 @@ window.gZenVerticalTabsManager = {
     }
   },
 
-  recalculateURLBarHeight(updateFormat = false) {
+  recalculateURLBarHeight() {
     if (gZenWorkspaces._processingResize) {
       return;
     }
-    this._pendingUrlbarFormatUpdate ||= updateFormat;
     if (this._urlbarHeightRecalcScheduled) {
       return;
     }
@@ -337,8 +336,6 @@ window.gZenVerticalTabsManager = {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         delete this._urlbarHeightRecalcScheduled;
-        const shouldUpdateFormat = this._pendingUrlbarFormatUpdate;
-        delete this._pendingUrlbarFormatUpdate;
         gURLBar.removeAttribute("--urlbar-height");
         let height;
         if (!this._hasSetSingleToolbar) {
@@ -353,9 +350,6 @@ window.gZenVerticalTabsManager = {
           "--urlbar-width",
           `${window.windowUtils.getBoundsWithoutFlushing(document.getElementById("urlbar-container")).width}px`
         );
-        if (shouldUpdateFormat) {
-          gURLBar.zenFormatURLValue();
-        }
       });
     });
   },

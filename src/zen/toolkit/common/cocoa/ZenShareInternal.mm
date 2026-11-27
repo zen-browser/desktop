@@ -5,9 +5,7 @@
 #include "ZenShareInternal.h"
 #include "nsCocoaUtils.h"
 
-#include "nsPIDOMWindow.h"
-#include "WidgetUtils.h"
-#include "nsIWidget.h"
+#include "ZenNativeWindow.h"
 
 extern mozilla::LazyLogModule gCocoaUtilsLog;
 #undef LOG
@@ -15,30 +13,6 @@ extern mozilla::LazyLogModule gCocoaUtilsLog;
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-
-namespace zen {
-using ::mozilla::widget::WidgetUtils;
-
-/**
- * Get the native NSWindow pointer from a DOM window.
- *
- * @param a_window The DOM window to get the native window from.
- * @param a_nativeWindow The pointer to the native NSWindow.
- * @return NS_OK on success, or an error code on failure.
- */
-static nsresult GetNativeWindowPointerFromDOMWindow(
-    mozIDOMWindowProxy* a_window, NSWindow** a_nativeWindow) {
-  *a_nativeWindow = nil;
-  if (!a_window) return NS_ERROR_INVALID_ARG;
-  nsPIDOMWindowOuter* win = nsPIDOMWindowOuter::From(a_window);
-  nsCOMPtr<nsIWidget> widget = WidgetUtils::DOMWindowToWidget(win);
-  if (!widget) {
-    return NS_ERROR_FAILURE;
-  }
-  *a_nativeWindow = (NSWindow*)widget->GetNativeData(NS_NATIVE_WINDOW);
-  return NS_OK;
-}
-}  // namespace zen
 
 auto nsZenNativeShareInternal::ShowNativeDialog(
     nsCOMPtr<mozIDOMWindowProxy>& aWindow, nsIURI* aUrl,
@@ -61,8 +35,7 @@ auto nsZenNativeShareInternal::ShowNativeDialog(
   }
   NSSharingServicePicker* sharingPicker =
       [[NSSharingServicePicker alloc] initWithItems:@[ pageUrl ]];
-  NSWindow* cocoaMru = nil;
-  zen::GetNativeWindowPointerFromDOMWindow(aWindow, &cocoaMru);
+  NSWindow* cocoaMru = zen::GetNativeWindow(aWindow);
   if (!cocoaMru) {
     LOG("ERROR: failed to get native window pointer");
     return NS_ERROR_FAILURE;

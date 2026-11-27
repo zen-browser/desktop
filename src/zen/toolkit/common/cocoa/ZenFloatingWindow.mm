@@ -3,31 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ZenCommonUtils.h"
-#include "nsCocoaUtils.h"
 #include "nsObjCExceptions.h"
 
-#include "nsPIDOMWindow.h"
-#include "WidgetUtils.h"
-#include "nsIWidget.h"
-
-#import <AppKit/AppKit.h>
+#include "ZenNativeWindow.h"
 
 namespace zen {
-
-namespace {
-static NSWindow* GetNativeWindow(mozIDOMWindowProxy* aWindow) {
-  if (!aWindow) {
-    return nil;
-  }
-  nsPIDOMWindowOuter* win = nsPIDOMWindowOuter::From(aWindow);
-  nsCOMPtr<nsIWidget> widget =
-      mozilla::widget::WidgetUtils::DOMWindowToWidget(win);
-  if (!widget) {
-    return nil;
-  }
-  return (NSWindow*)widget->GetNativeData(NS_NATIVE_WINDOW);
-}
-}  // namespace
 
 void ZenCommonUtils::ShowOverFullScreenApplicationsInternal(
     mozIDOMWindowProxy* aWindow) {

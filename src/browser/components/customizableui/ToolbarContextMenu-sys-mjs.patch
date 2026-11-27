@@ -1,19 +1,20 @@
 diff --git a/browser/components/customizableui/ToolbarContextMenu.sys.mjs b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
-index c87bd45858c9f10a64551cf5a5572c0ceb5507d0..9788c776740a637b3687643137cba61f23ac41f6 100644
+index c87bd45858c9f10a64551cf5a5572c0ceb5507d0..6a7d19ca010a7b69411631bc87b00f7a3d213e49 100644
 --- a/browser/components/customizableui/ToolbarContextMenu.sys.mjs
 +++ b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
-@@ -184,8 +184,8 @@ export var ToolbarContextMenu = {
+@@ -184,8 +184,9 @@ export var ToolbarContextMenu = {
  
      let showTabStripItems = toolbarItem?.id == "tabbrowser-tabs";
      let isVerticalTabStripMenu =
 -      showTabStripItems && toolbarItem.parentElement.id == "vertical-tabs";
 -
 +      showTabStripItems && toolbarItem.parentElement.id == "TabsToolbar-customization-target";
-+    document.getElementById("zen-toolbar-context-set-profile-separator").hidden = !isVerticalTabStripMenu;
++    document.getElementById("zen-toolbar-context-set-profile-separator").hidden =
++      !isVerticalTabStripMenu || !window.gZenWorkspaces.shouldShowContainers;
      if (aInsertPoint) {
        aInsertPoint.hidden = isVerticalTabStripMenu;
      }
-@@ -244,10 +244,7 @@ export var ToolbarContextMenu = {
+@@ -244,10 +245,7 @@ export var ToolbarContextMenu = {
      // Show/hide sidebar and vertical tabs menu items
      let sidebarRevampEnabled = Services.prefs.getBoolPref("sidebar.revamp");
      let showSidebarActions =
@@ -25,7 +26,7 @@ index c87bd45858c9f10a64551cf5a5572c0ceb5507d0..9788c776740a637b3687643137cba61f
  
      let toggleVerticalTabsItem = document.getElementById(
        "toolbar-context-toggle-vertical-tabs"
-@@ -268,6 +265,7 @@ export var ToolbarContextMenu = {
+@@ -268,6 +266,7 @@ export var ToolbarContextMenu = {
      document.getElementById("sidebarRevampSeparator").hidden =
        !showSidebarActions || isVerticalTabStripMenu;
      document.getElementById("customizationMenuSeparator").hidden =

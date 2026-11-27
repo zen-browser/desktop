@@ -893,6 +893,8 @@
       }
       indicator.setAttribute("orientation", "horizontal");
       const style = indicator.style;
+      // Left over from a vertical indicator; this one uses a transform.
+      style.removeProperty("left");
       const vars = {
         "--indicator-left": `${left}px`,
         "--indicator-width": `${width}px`,
@@ -903,6 +905,58 @@
           style.setProperty(name, value);
         }
       }
+      return indicator;
+    }
+
+    /**
+     * Whether an element's container lays its items out side by side, as a
+     * grid or a wrapping row (e.g. pinned tabs styled as a grid by a mod),
+     * instead of the usual vertical list.
+     *
+     * @param {Element} element
+     * @returns {boolean}
+     */
+    _isLaidOutInRow(element) {
+      const parent = element.parentElement;
+      if (!parent) {
+        return false;
+      }
+      const { display, flexDirection } = window.getComputedStyle(parent);
+      return (
+        display.includes("grid") ||
+        (display.includes("flex") && flexDirection.startsWith("row"))
+      );
+    }
+
+    /**
+     * Same as _dropsBefore, along the horizontal axis. "Before" is the right
+     * half in RTL.
+     *
+     * @param {DragEvent} event
+     * @param {DOMRect} rect - The element's bounds
+     * @returns {boolean}
+     */
+    _dropsBeforeInRow(event, rect) {
+      const ratio = (event.clientX - rect.left) / rect.width;
+      return RTL_UI ? ratio > 0.5 : ratio <= 0.5;
+    }
+
+    /**
+     * Lays the shared drop indicator along the side of an element, vertically.
+     *
+     * @param {object} options
+     * @param {number} options.left - Left offset, in px
+     * @param {number} options.top - Top offset, in px
+     * @param {number} options.height - Indicator height, in px
+     * @returns {Element} The indicator
+     */
+    _placeVerticalDropIndicator({ left, top, height }) {
+      const indicator = gZenPinnedTabManager.dragIndicator;
+      indicator.setAttribute("orientation", "vertical");
+      const style = indicator.style;
+      style.left = `${left}px`;
+      style.setProperty("--indicator-top", `${Math.round(top)}px`);
+      style.setProperty("--indicator-height", `${Math.round(height)}px`);
       return indicator;
     }
 
@@ -964,10 +1018,14 @@
 
       const edgeZoneThreshold = this._dndSplitThreshold / 100;
 
-      const overlapRatioY = (clientY - targetTop) / targetHeight;
+      // The edges reorder, the middle splits. Tabs sharing a row (e.g. a
+      // pinned grid) reorder sideways, so their edges are the left and right.
+      const overlapRatio = this._isLaidOutInRow(dropElement)
+        ? (clientX - targetX) / targetWidth
+        : (clientY - targetTop) / targetHeight;
       if (
-        overlapRatioY < edgeZoneThreshold ||
-        overlapRatioY > 1 - edgeZoneThreshold
+        overlapRatio < edgeZoneThreshold ||
+        overlapRatio > 1 - edgeZoneThreshold
       ) {
         this._clearDragOverSplit();
         return;
@@ -1721,18 +1779,43 @@
             this.#dragShiftableItems.at(-1)
           );
         }
-        dropBefore =
-          !showIndicatorUnderNewTabButton && this._dropsBefore(event, rect);
-        const top = Math.round(dropBefore ? rect.top : rect.top + rect.height);
         const indicatorStyle = gZenPinnedTabManager.dragIndicator.style;
-        if (indicatorStyle.getPropertyValue("--indicator-top") !== `${top}px`) {
-          shouldPlayHapticFeedback = true;
+        if (
+          !showIndicatorUnderNewTabButton &&
+          !dropIntoFolder &&
+          isTab(dropElement) &&
+          this._isLaidOutInRow(dropElement)
+        ) {
+          // Tabs sharing a row (e.g. a pinned grid): drop to the side.
+          dropBefore = this._dropsBeforeInRow(event, rect);
+          const left = Math.round(
+            dropBefore !== RTL_UI ? rect.left : rect.left + rect.width
+          );
+          if (indicatorStyle.left !== `${left}px`) {
+            shouldPlayHapticFeedback = true;
+          }
+          this._placeVerticalDropIndicator({
+            left,
+            top: rect.top + separation / 2,
+            height: rect.height - separation,
+          });
+        } else {
+          dropBefore =
+            !showIndicatorUnderNewTabButton && this._dropsBefore(event, rect);
+          const top = Math.round(
+            dropBefore ? rect.top : rect.top + rect.height
+          );
+          if (
+            indicatorStyle.getPropertyValue("--indicator-top") !== `${top}px`
+          ) {
+            shouldPlayHapticFeedback = true;
+          }
+          this._placeDropIndicator({
+            left: rect.left + separation / 2,
+            width: rect.width - separation,
+            top,
+          });
         }
-        this._placeDropIndicator({
-          left: rect.left + separation / 2,
-          width: rect.width - separation,
-          top,
-        });
         this.#removeDragOverBackground();
         if (!isTab(dropElement) && dropElement?.parentElement?.isZenFolder) {
           dropElement = dropElement.parentElement;

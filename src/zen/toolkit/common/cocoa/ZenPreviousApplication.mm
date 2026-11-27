@@ -12,10 +12,21 @@
 
 static const NSTimeInterval kLinkWaitInterval = 0.08;
 
+@interface NSWindow (ZenValidateStyleMask)
++ (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask;
+@end
+
 @interface ZenActivationStandInWindow : NSWindow
 @end
 
 @implementation ZenActivationStandInWindow
++ (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
+  if (![NSWindow respondsToSelector:@selector(_validateStyleMask:)]) {
+    return aStyleMask;
+  }
+  NSUInteger keep = aStyleMask & NSWindowStyleMaskNonactivatingPanel;
+  return [super _validateStyleMask:(aStyleMask & ~keep)] | keep;
+}
 - (BOOL)canBecomeKeyWindow {
   return YES;
 }
@@ -26,7 +37,6 @@ static const NSTimeInterval kLinkWaitInterval = 0.08;
 
 static ZenActivationStandInWindow* sStandIn = nil;
 static NSInteger sWindowToRaise = 0;
-static NSInteger sKeyBeforeResigning = 0;
 static bool sStandInTookActivation = false;
 static bool sExpectingWindow = false;
 static uint32_t sActivationGeneration = 0;
@@ -51,17 +61,28 @@ static void RaiseInsteadOfStandIn() {
   }
 }
 
+static NSWindow* FrontmostWindow() {
+  for (NSWindow* window in NSApp.orderedWindows) {
+    if (window.isVisible && !window.isMiniaturized &&
+        window.canBecomeMainWindow && window.level == NSNormalWindowLevel) {
+      return window;
+    }
+  }
+  return nil;
+}
+
 static void InstallStandIn() {
-  NSWindow* key = [NSApp windowWithWindowNumber:sKeyBeforeResigning];
   RemoveStandIn();
+  NSWindow* key = FrontmostWindow();
   if (!mozilla::Preferences::GetBool("zen.widget.macos.activation-stand-in",
                                      true) ||
-      NSApp.isHidden || !key || !key.isVisible || key.isMiniaturized) {
+      NSApp.isHidden || !key) {
     return;
   }
   sStandIn = [[ZenActivationStandInWindow alloc]
       initWithContentRect:NSMakeRect(NSMidX(key.frame), NSMidY(key.frame), 1, 1)
-                styleMask:NSWindowStyleMaskBorderless
+                styleMask:NSWindowStyleMaskBorderless |
+                          NSWindowStyleMaskNonactivatingPanel
                   backing:NSBackingStoreBuffered
                     defer:NO];
   sStandIn.releasedWhenClosed = NO;
@@ -70,9 +91,8 @@ static void InstallStandIn() {
   sStandIn.hasShadow = NO;
   sStandIn.ignoresMouseEvents = YES;
   sStandIn.excludedFromWindowsMenu = YES;
-  sStandIn.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces |
+  sStandIn.collectionBehavior = NSWindowCollectionBehaviorMoveToActiveSpace |
                                 NSWindowCollectionBehaviorFullScreenAuxiliary |
-                                NSWindowCollectionBehaviorStationary |
                                 NSWindowCollectionBehaviorIgnoresCycle;
   sWindowToRaise = key.windowNumber;
   [sStandIn makeKeyAndOrderFront:nil];
@@ -117,14 +137,6 @@ static void OnApplicationActivated() {
                   usingBlock:^(NSNotification*) {
                     OnApplicationActivated();
                   }];
-  [center addObserverForName:NSApplicationWillResignActiveNotification
-                      object:nil
-                       queue:nil
-                  usingBlock:^(NSNotification*) {
-                    NSWindow* key = NSApp.keyWindow ?: NSApp.mainWindow;
-                    sKeyBeforeResigning =
-                        key && key != sStandIn ? key.windowNumber : 0;
-                  }];
   [center addObserverForName:NSApplicationDidResignActiveNotification
                       object:nil
                        queue:nil
@@ -132,6 +144,15 @@ static void OnApplicationActivated() {
                     ++sActivationGeneration;
                     InstallStandIn();
                   }];
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      addObserverForName:NSWorkspaceActiveSpaceDidChangeNotification
+                  object:nil
+                   queue:nil
+              usingBlock:^(NSNotification*) {
+                if (!NSApp.isActive) {
+                  InstallStandIn();
+                }
+              }];
   [center addObserverForName:NSApplicationWillTerminateNotification
                       object:nil
                        queue:nil

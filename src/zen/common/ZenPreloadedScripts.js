@@ -44,6 +44,13 @@
       root.setAttribute("macanimationtype", "alert");
     }
     root.setAttribute("persist", "none");
+    if (
+      Services.prefs.getBoolPref("zen.little-window.float-over-fullscreen", false)
+    ) {
+      root.setAttribute("macnativefullscreen", "false");
+      // eslint-disable-next-line mozilla/valid-services
+      Services.zen.showOverFullScreenApplications(window);
+    }
     scripts.push(
       "resource:///modules/zen/littlewindow/ZenLittleWindowChrome.mjs"
     );

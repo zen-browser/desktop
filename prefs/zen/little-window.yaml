@@ -4,3 +4,7 @@
 
 - name: zen.little-window.link-activation-method
   value: "accel+alt"
+
+- name: zen.little-window.float-over-fullscreen
+  value: true
+  condition: "defined(XP_MACOSX)"

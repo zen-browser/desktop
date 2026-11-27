@@ -82,6 +82,13 @@ ZenCommonUtils::KeepWindowsBehindPreviousApplication() {
 }
 
 NS_IMETHODIMP
+ZenCommonUtils::ShowOverFullScreenApplications(mozIDOMWindowProxy* aWindow) {
+  NS_ENSURE_ARG_POINTER(aWindow);
+  ShowOverFullScreenApplicationsInternal(aWindow);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 ZenCommonUtils::CanShare(bool* canShare) {
   auto aWindow = GetMostRecentWindow();
   if (!aWindow) {

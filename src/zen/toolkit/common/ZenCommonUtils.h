@@ -55,10 +55,13 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
   // whichever application it belongs to.
   static void ReturnToPreviousApplicationInternal() {}
   static void KeepWindowsBehindPreviousApplicationInternal() {}
+  static void ShowOverFullScreenApplicationsInternal(mozIDOMWindowProxy*) {}
 #else
   static auto PlayHapticFeedbackInternal() -> nsresult;
   static void ReturnToPreviousApplicationInternal();
   static void KeepWindowsBehindPreviousApplicationInternal();
+  static void ShowOverFullScreenApplicationsInternal(
+      mozIDOMWindowProxy* aWindow);
 #endif
 };
 

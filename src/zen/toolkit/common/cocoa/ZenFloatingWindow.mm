@@ -48,13 +48,4 @@ void ZenCommonUtils::ShowOverFullScreenApplicationsInternal(
   NS_OBJC_END_TRY_IGNORE_BLOCK;
 }
 
-nsresult ZenCommonUtils::GetPointerPositionInternal(int32_t* aX, int32_t* aY) {
-  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
-  NSPoint point = [NSEvent mouseLocation];
-  *aX = NSToIntRound(point.x);
-  *aY = NSToIntRound(nsCocoaUtils::FlippedScreenY(point.y));
-  return NS_OK;
-  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
-}
-
 }  // namespace zen

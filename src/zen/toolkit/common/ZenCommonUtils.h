@@ -56,16 +56,12 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
   static void ReturnToPreviousApplicationInternal() {}
   static void KeepWindowsBehindPreviousApplicationInternal() {}
   static void ShowOverFullScreenApplicationsInternal(mozIDOMWindowProxy*) {}
-  static nsresult GetPointerPositionInternal(int32_t*, int32_t*) {
-    return NS_ERROR_NOT_IMPLEMENTED;
-  }
 #else
   static auto PlayHapticFeedbackInternal() -> nsresult;
   static void ReturnToPreviousApplicationInternal();
   static void KeepWindowsBehindPreviousApplicationInternal();
   static void ShowOverFullScreenApplicationsInternal(
       mozIDOMWindowProxy* aWindow);
-  static nsresult GetPointerPositionInternal(int32_t* aX, int32_t* aY);
 #endif
 };
 

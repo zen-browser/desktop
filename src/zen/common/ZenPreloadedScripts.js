@@ -44,12 +44,9 @@
       root.setAttribute("macanimationtype", "alert");
     }
     root.setAttribute("persist", "none");
-    // The pref only exists on macOS.
     if (
       Services.prefs.getBoolPref("zen.little-window.float-over-fullscreen", false)
     ) {
-      // Read by the widget right before the window is first shown: an
-      // Auxiliary window can go on top of another app's fullscreen Space.
       root.setAttribute("macnativefullscreen", "false");
       // eslint-disable-next-line mozilla/valid-services
       Services.zen.showOverFullScreenApplications(window);

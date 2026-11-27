@@ -138,7 +138,7 @@ class nsZenLittleWindowService {
       ? this.windowSize
       : { width: LITTLE_WINDOW_BAR_WIDTH, height: LITTLE_WINDOW_BAR_HEIGHT };
     let features = `width=${width},height=${height},centerscreen`;
-    const screen = this.#screenUnderPointer() ?? openerWindow?.screen;
+    const screen = openerWindow?.screen;
     if (screen) {
       const left = Math.round(
         screen.availLeft + (screen.availWidth - width) / 2
@@ -162,43 +162,6 @@ class nsZenLittleWindowService {
       Services.zen.keepWindowsBehindPreviousApplication();
     }
     return win;
-  }
-
-  /**
-   * The display the mouse pointer is on, which is where the user clicked
-   * whatever opened the little window, like Little Arc. It may not be the
-   * display of the window the request came from.
-   *
-   * @returns {{availLeft: number, availTop: number, availWidth: number,
-   *   availHeight: number}|null} Null when the pointer position is unknown.
-   */
-  #screenUnderPointer() {
-    const x = {};
-    const y = {};
-    try {
-      // eslint-disable-next-line mozilla/valid-services
-      Services.zen.getPointerPosition(x, y);
-    } catch {
-      // Only known on macOS.
-      return null;
-    }
-    const screen = Cc["@mozilla.org/gfx/screenmanager;1"]
-      .getService(Ci.nsIScreenManager)
-      .screenForRect(x.value, y.value, 1, 1);
-    if (!screen) {
-      return null;
-    }
-    const left = {};
-    const top = {};
-    const width = {};
-    const height = {};
-    screen.GetAvailRectDisplayPix(left, top, width, height);
-    return {
-      availLeft: left.value,
-      availTop: top.value,
-      availWidth: width.value,
-      availHeight: height.value,
-    };
   }
 
   /**

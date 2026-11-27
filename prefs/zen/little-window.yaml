@@ -5,8 +5,6 @@
 - name: zen.little-window.link-activation-method
   value: "accel+alt"
 
-# Lets little windows show up on top of other applications' native fullscreen
-# Spaces, like Little Arc, instead of on a regular Space behind them.
 - name: zen.little-window.float-over-fullscreen
   value: true
   condition: "defined(XP_MACOSX)"

@@ -46,17 +46,10 @@ interface nsIZenCommonUtils : nsISupports {
    */
   void keepWindowsBehindPreviousApplication();
   /*
-   * @brief Let a window that has not been shown yet appear on top of other
-   * applications' fullscreen Spaces, on whichever Space the user is on when
-   * it is shown. Only on macOS. The window must also have
-   * macnativefullscreen="false".
+   * @brief Let a window that is not shown yet appear on the fullscreen Space
+   * of another application. Only on macOS.
    */
-  void prepareFloatingWindow(in mozIDOMWindowProxy window);
-  /*
-   * @brief Make a window prepared with prepareFloatingWindow() key once it is
-   * shown, and keep it on the Space it was shown on. Only on macOS.
-   */
-  void presentFloatingWindow(in mozIDOMWindowProxy window);
+  void showOverFullScreenApplications(in mozIDOMWindowProxy window);
   /*
    * @brief Where the mouse pointer is, in desktop pixels. Only on macOS,
    * throws NS_ERROR_NOT_IMPLEMENTED elsewhere.

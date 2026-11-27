@@ -82,14 +82,9 @@ ZenCommonUtils::KeepWindowsBehindPreviousApplication() {
 }
 
 NS_IMETHODIMP
-ZenCommonUtils::PrepareFloatingWindow(mozIDOMWindowProxy* aWindow) {
-  PrepareFloatingWindowInternal(aWindow);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-ZenCommonUtils::PresentFloatingWindow(mozIDOMWindowProxy* aWindow) {
-  PresentFloatingWindowInternal(aWindow);
+ZenCommonUtils::ShowOverFullScreenApplications(mozIDOMWindowProxy* aWindow) {
+  NS_ENSURE_ARG_POINTER(aWindow);
+  ShowOverFullScreenApplicationsInternal(aWindow);
   return NS_OK;
 }
 

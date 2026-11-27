@@ -29,37 +29,22 @@ static NSWindow* GetNativeWindow(mozIDOMWindowProxy* aWindow) {
 }
 }  // namespace
 
-// Only a non-activating, FullScreenAuxiliary window may be ordered in on
-// another application's fullscreen Space; anything else is sent to a regular
-// Space behind it. This is what Little Arc does with its NSPanel, and what the
-// Picture-in-Picture player does (bug 1688932): BaseWindow keeps
-// NSWindowStyleMaskNonactivatingPanel even though it is not an NSPanel. The
-// Auxiliary bit itself comes from macnativefullscreen="false" on the window.
-void ZenCommonUtils::PrepareFloatingWindowInternal(
+void ZenCommonUtils::ShowOverFullScreenApplicationsInternal(
     mozIDOMWindowProxy* aWindow) {
   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
   NSWindow* window = GetNativeWindow(aWindow);
   if (!window) {
     return;
   }
+  // The window server only puts a window on another application's fullscreen
+  // Space when it is non-activating and FullScreenAuxiliary.
   window.styleMask |= NSWindowStyleMaskNonactivatingPanel;
-  // Join the Space the user is on when first shown, fullscreen or not.
-  window.collectionBehavior |= NSWindowCollectionBehaviorMoveToActiveSpace;
-  NS_OBJC_END_TRY_IGNORE_BLOCK;
-}
-
-void ZenCommonUtils::PresentFloatingWindowInternal(
-    mozIDOMWindowProxy* aWindow) {
-  NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
-  NSWindow* window = GetNativeWindow(aWindow);
-  if (!window || !window.visible) {
-    return;
-  }
-  // Showing a non-activating window does not make it key, so keyboard input
-  // would keep going to the application in front of it.
-  [window makeKeyAndOrderFront:nil];
-  // Stay on that Space from now on rather than following the user around.
-  window.collectionBehavior &= ~NSWindowCollectionBehaviorMoveToActiveSpace;
+  window.collectionBehavior =
+      (window.collectionBehavior &
+       ~(NSWindowCollectionBehaviorFullScreenPrimary |
+         NSWindowCollectionBehaviorFullScreenAllowsTiling)) |
+      NSWindowCollectionBehaviorFullScreenAuxiliary |
+      NSWindowCollectionBehaviorFullScreenDisallowsTiling;
   NS_OBJC_END_TRY_IGNORE_BLOCK;
 }
 

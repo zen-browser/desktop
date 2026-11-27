@@ -52,7 +52,7 @@
       // Auxiliary window can go on top of another app's fullscreen Space.
       root.setAttribute("macnativefullscreen", "false");
       // eslint-disable-next-line mozilla/valid-services
-      Services.zen.prepareFloatingWindow(window);
+      Services.zen.showOverFullScreenApplications(window);
     }
     scripts.push(
       "resource:///modules/zen/littlewindow/ZenLittleWindowChrome.mjs"

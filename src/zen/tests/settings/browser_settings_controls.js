@@ -86,6 +86,80 @@ add_task(async function test_toggles_follow_and_set_prefs() {
   await SpecialPowers.popPrefEnv();
 });
 
+add_task(async function test_developer_mode_toggle_updates_local_tabs() {
+  const { HttpServer } = ChromeUtils.importESModule(
+    "resource://testing-common/httpd.sys.mjs"
+  );
+  const server = new HttpServer();
+  server.registerPathHandler("/", (request, response) => {
+    response.setHeader("Content-Type", "text/html");
+    response.write("<!doctype html><title>Developer Mode</title>");
+  });
+  server.start(-1);
+  registerCleanupFunction(() => new Promise(resolve => server.stop(resolve)));
+
+  const pref = "zen.urlbar.local-developer-mode.enabled";
+  await SpecialPowers.pushPrefEnv({ set: [[pref, true]] });
+  const url = `http://localhost:${server.identity.primaryPort}/`;
+
+  try {
+    await BrowserTestUtils.withNewTab(url, async () => {
+      const localTab = gBrowser.selectedTab;
+      const backgroundURL = url + "?background";
+      const backgroundTab = BrowserTestUtils.addTab(gBrowser, backgroundURL);
+      let win;
+      try {
+        await BrowserTestUtils.browserLoaded(backgroundTab.linkedBrowser, {
+          wantLoad: backgroundURL,
+        });
+        win = await openSettingsWindow(() => ZenSettings.open("advanced"));
+        const toggle = toggleFor(win, pref);
+        ok(
+          isPaneShown(win, "advanced"),
+          "Developer Mode is in Advanced settings"
+        );
+        ok(toggle.pressed, "The settings toggle starts enabled");
+
+        function assertDeveloperMode(enabled) {
+          is(
+            Services.prefs.getBoolPref(pref),
+            enabled,
+            "The toggle saves the preference"
+          );
+          is(
+            !!document.getElementById("zen-developer-mode-toolbar"),
+            enabled,
+            "The foreground toolbar follows the toggle"
+          );
+          is(
+            localTab.hasAttribute("zen-local-development"),
+            enabled,
+            "The foreground indicator follows the toggle"
+          );
+          is(
+            !!backgroundTab.querySelector(".zen-developer-mode-tab-badge"),
+            enabled,
+            "The background indicator follows the toggle"
+          );
+        }
+
+        assertDeveloperMode(true);
+        await clickToggle(toggle);
+        assertDeveloperMode(false);
+        await clickToggle(toggle);
+        assertDeveloperMode(true);
+      } finally {
+        if (win) {
+          await BrowserTestUtils.closeWindow(win);
+        }
+        await BrowserTestUtils.removeTab(backgroundTab);
+      }
+    });
+  } finally {
+    await SpecialPowers.popPrefEnv();
+  }
+});
+
 add_task(async function test_dependent_rows() {
   await SpecialPowers.pushPrefEnv({
     set: [["browser.search.suggest.enabled", true]],

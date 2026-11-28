@@ -261,3 +261,5 @@ zen-settings-window-drag-from-content = Drag the window from the top of the page
 zen-settings-window-compact-flash-popup = Briefly show the toolbar when switching tabs in compact mode
 zen-settings-window-performance-header = Performance
 zen-settings-window-more-settings = More Settings…
+zen-settings-window-local-developer-mode = Local Developer Mode
+zen-settings-window-local-developer-mode-description = Show development tools and tab indicators for local addresses.

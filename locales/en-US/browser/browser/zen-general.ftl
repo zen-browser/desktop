@@ -142,6 +142,42 @@ zen-site-data-header-screenshot =
 zen-site-data-header-bookmark =
     .tooltiptext = Bookmark This Page
 
+# Compact badge on a background tab with a local development address.
+zen-developer-mode-tab-badge =
+    .value = DEV
+    .tooltiptext = Local development tab
+
+zen-developer-mode-toolbar =
+    .aria-label = Local Developer Mode
+
+zen-developer-mode-overflow =
+    .label = Developer actions
+    .tooltiptext = Developer actions
+
+zen-developer-mode-edit-address =
+    .aria-label = Edit address
+    .tooltiptext = Edit address
+
+zen-developer-mode-copy-address =
+    .label = Copy address
+    .tooltiptext = Copy address
+
+zen-developer-mode-shortcut-toolbox =
+    .label = Developer Tools
+    .tooltiptext = Open Developer Tools
+
+zen-developer-mode-shortcut-inspector =
+    .label = Inspector
+    .tooltiptext = Open Inspector
+
+zen-developer-mode-shortcut-console =
+    .label = Web Console
+    .tooltiptext = Open Web Console
+
+zen-developer-mode-shortcut-network =
+    .label = Network Monitor
+    .tooltiptext = Open Network Monitor
+
 zen-urlbar-copy-url-button =
   .tooltiptext = Copy URL
 

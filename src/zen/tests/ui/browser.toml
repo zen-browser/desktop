@@ -11,7 +11,10 @@ prefs = [
 ]
 support-files = [
   "slow_load.sjs",
+  "!/zen/tests/spaces/bookmark_edit_helpers.js",
 ]
+
+["browser_subdialog_zen_max_ratio.js"]
 
 ["browser_tab_loading_indicator.js"]
 

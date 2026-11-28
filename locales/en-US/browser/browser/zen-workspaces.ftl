@@ -51,7 +51,21 @@ zen-workspaces-panel-context-edit =
 
 zen-bookmark-edit-panel-workspace-selector =
     .value = Spaces
-    .accesskey = W
+    .accesskey = S
+
+zen-bookmark-edit-panel-workspace-expander =
+    .tooltiptext = Show all spaces
+
+zen-bookmark-edit-panel-workspace-expander-hide =
+    .tooltiptext = Hide
+
+zen-bookmark-edit-panel-show-more =
+    .label = Show more
+    .accesskey = H
+
+zen-bookmark-edit-panel-show-less =
+    .label = Show less
+    .accesskey = H
 
 zen-panel-ui-gradient-generator-algo-complementary =
     .label = Complementary

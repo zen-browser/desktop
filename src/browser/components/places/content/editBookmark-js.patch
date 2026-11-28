@@ -1,19 +1,27 @@
 diff --git a/browser/components/places/content/editBookmark.js b/browser/components/places/content/editBookmark.js
-index f5df770e7c03446c2d23664b9100e12149ea7a59..398ae5b75a27aec60341f3058310013dcf6138d6 100644
+index d3180c5..79af6b6 100644
 --- a/browser/components/places/content/editBookmark.js
 +++ b/browser/components/places/content/editBookmark.js
-@@ -389,6 +389,10 @@ var gEditItemOverlay = {
+@@ -389,6 +389,18 @@ var gEditItemOverlay = {
          this._keywordField.readOnly = this.readOnly;
        }
  
-+      if (showOrCollapse("workspaceRow", true, "workspace")) {
++      if (isBookmark && this._keywordField.hidden) {
++        await this._initKeywordField().catch(console.error);
++        if (instance != this._instance || this._paneInfo == null) {
++          return;
++        }
++        this._keywordField.readOnly = this.readOnly;
++      }
++
++      if (showOrCollapse("workspaceRow", isBookmark, "workspace")) {
 +        await this._initWorkspaceDropdown(aInfo);
 +      }
 +
        // Collapse the tag selector if the item does not accept tags.
        if (showOrCollapse("tagsRow", isBookmark || bulkTagging, "tags")) {
          this._initTagsField();
-@@ -702,6 +706,7 @@ var gEditItemOverlay = {
+@@ -702,6 +714,7 @@ var gEditItemOverlay = {
        if (this._paneInfo.isBookmark) {
          options.tags = this._element("tagsField").value;
          options.keyword = this._keyword;
@@ -21,7 +29,7 @@ index f5df770e7c03446c2d23664b9100e12149ea7a59..398ae5b75a27aec60341f3058310013d
        }
  
        if (this._paneInfo.bulkTagging) {
-@@ -1190,6 +1195,9 @@ var gEditItemOverlay = {
+@@ -1203,6 +1216,9 @@ var gEditItemOverlay = {
            case "editBMPanel_tagsSelectorExpander":
              this.toggleTagsSelector().catch(console.error);
              break;
@@ -31,79 +39,80 @@ index f5df770e7c03446c2d23664b9100e12149ea7a59..398ae5b75a27aec60341f3058310013d
          }
          break;
      }
-@@ -1268,6 +1276,128 @@ var gEditItemOverlay = {
+@@ -1281,6 +1297,116 @@ var gEditItemOverlay = {
    get bookmarkState() {
      return this._bookmarkState;
    },
 +
 +  async onWorkspaceSelectionChange(event) {
-+    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
-+      return;
-+    }
 +    event.stopPropagation();
 +
 +    // Add new workspaces uuids
-+    const checkboxes = this._workspaceList.querySelectorAll("input[type='checkbox']");
-+    const newWorkspaces = [];
-+    const selectedNames = [];
-+
-+    checkboxes.forEach(checkbox => {
-+      if (checkbox.checked) {
-+        newWorkspaces.push(checkbox.value);
-+
-+        const label = checkbox.parentNode.textContent.trim();
-+        selectedNames.push(label);
-+      }
-+    });
-+
-+    this._selectedWorkspaces = [ ...newWorkspaces];
++    this._selectedWorkspaces = [
++      ...this._workspaceList.querySelectorAll("input:checked"),
++    ].map(checkbox => checkbox.value);
 +
 +    // Update the bookmark state
 +    if (this._bookmarkState) {
 +      await this._bookmarkState._workspacesChanged(this._selectedWorkspaces);
 +    }
 +
-+    // Update summary text
-+    this._workspaceSummary.textContent = selectedNames.length
-+      ? selectedNames.join(", ")
-+      : "-";
++    this._zenSetWorkspaceSummary();
 +  },
 +
 +  onWorkspaceDropdownToggle() {
-+    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
-+      return;
-+    }
-+
 +    // Toggle active class on the container
 +    const dropdown = this._workspaceList;
-+    const button = this._workspaceSummary;
 +
 +    dropdown.hidden = !dropdown.hidden;
 +
-+    var expander = this._element("workspacesSelectorExpander");
++    let expander = this._element("workspacesSelectorExpander");
 +    expander.classList.toggle("expander-up", !dropdown.hidden);
 +    expander.classList.toggle("expander-down", dropdown.hidden);
++    document.l10n.setAttributes(
++      expander,
++      dropdown.hidden
++        ? "zen-bookmark-edit-panel-workspace-expander"
++        : "zen-bookmark-edit-panel-workspace-expander-hide"
++    );
 +
 +    // Only update summary text when closing the dropdown
 +    if (dropdown.hidden) {
-+      const checkboxes = this._workspaceList.querySelectorAll("input[type='checkbox']");
-+      const selectedLabels = [];
-+
-+      checkboxes.forEach(checkbox => {
-+        if (checkbox.checked) {
-+          const label = checkbox.parentNode.textContent.trim();
-+          selectedLabels.push(label);
-+        }
-+      });
-+
-+      button.textContent = selectedLabels.length
-+        ? selectedLabels.join(", ")
-+        : "-";
++      this._zenSetWorkspaceSummary();
 +    }
 +  },
 +
++  _zenSetWorkspaceSummary() {
++    const labels = [...this._workspaceList.querySelectorAll("input:checked")].map(
++      checkbox => checkbox.parentNode.textContent.trim()
++    );
++    this._workspaceSummary.textContent = labels.length
++      ? labels.join(", ")
++      : "-";
++  },
++
++  _zenToggleMoreRows() {
++    let button = this._element("showMoreButton");
++    if (!button) {
++      return;
++    }
++    let reveal = this._element("locationField").hidden;
++    let cells = button
++      .closest("#editBookmarkPanel")
++      .querySelectorAll(".editBMPanel_locationRow, .editBMPanel_keywordRow");
++    for (let cell of cells) {
++      cell.hidden = !reveal;
++    }
++    document.l10n.setAttributes(
++      button,
++      reveal
++        ? "zen-bookmark-edit-panel-show-less"
++        : "zen-bookmark-edit-panel-show-more"
++    );
++  },
++
 +  async _initWorkspaceDropdown(aInfo) {
-+    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
++    if (document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
 +      return;
 +    }
 +    const { ZenSessionStore } = ChromeUtils.importESModule(
@@ -125,7 +134,6 @@ index f5df770e7c03446c2d23664b9100e12149ea7a59..398ae5b75a27aec60341f3058310013d
 +      const input = document.createElementNS("http://www.w3.org/1999/xhtml", "input");
 +
 +      input.setAttribute("type", "checkbox");
-+      input.setAttribute("name", "workspace");
 +      input.setAttribute("value", workspace.uuid);
 +
 +      // Check if this workspace is selected
@@ -139,28 +147,16 @@ index f5df770e7c03446c2d23664b9100e12149ea7a59..398ae5b75a27aec60341f3058310013d
 +      workspaceList.appendChild(li);
 +    }
 +
-+    // Get the names of selected workspaces for initial summary
-+    const selectedNames = this._workspaces
-+      .filter(ws => this._selectedWorkspaces?.includes(ws.uuid))
-+      .map(ws => ws.name);
-+
-+    // Update summary text with comma-separated list
-+    this._workspaceSummary.textContent = selectedNames.length
-+      ? selectedNames.join(", ")
-+      : "-";
++    this._zenSetWorkspaceSummary();
 +
 +    // Handle read-only state
-+    if (this.readOnly) {
-+      this._workspaceDropdown.setAttribute("disabled", "true");
-+    } else {
-+      this._workspaceDropdown.removeAttribute("disabled");
-+    }
++    this._workspaceDropdown.toggleAttribute("disabled", this.readOnly);
 +  },
-+  _selectedWorkspaces : [],
++  _selectedWorkspaces: [],
  };
  
  ChromeUtils.defineLazyGetter(gEditItemOverlay, "_folderTree", () => {
-@@ -1306,6 +1436,9 @@ for (let elt of [
+@@ -1319,6 +1445,9 @@ for (let elt of [
    "locationField",
    "keywordField",
    "tagsField",

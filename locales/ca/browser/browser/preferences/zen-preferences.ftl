@@ -23,13 +23,45 @@ zen-glance-trigger-label = Mètode d'activació
 zen-glance-enabled = 
     .label = Habilita el cop d'ull
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + clic
+           *[other] Ctrl + clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + clic
+           *[other] Ctrl + clic
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + clic
+           *[other] Alt + clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Opció + clic
+           *[other] Alt + clic
+        }
 zen-glance-trigger-shift-click = 
-    .label = Bloc. maj. + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + clic
+           *[other] Majúscules + clic
+        }
+    .aria-label = Majúscules + clic
 zen-glance-trigger-meta-click = 
-    .label = Meta (Comandament) + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + clic
+           *[other] Meta (Comandament) + clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Comandament + clic
+           *[other] Meta (Comandament) + clic
+        }
 zen-look-and-feel-compact-view-header = Mostra en vista compacta
 zen-look-and-feel-compact-view-description = Mostreu només les barres d'eines que feu servir
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Escriviu alguna cosa...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Actualitza automàticament les modificacions instal·lades a l'inici
+zen-preferences-open-zen-settings = Configuració del { -brand-short-name }
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Canvia a l'espai de treball on el contenidor està configurat per defecte en obrir les pestanyes del contenidor
 zen-theme-marketplace-link = Visita la botiga
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = Mode compacte
-zenCKSOption-group-zen-workspace = Other Workspaces
-zenCKSOption-group-zen-other = Altres característiques del Zen
+zenCKSOption-group-zen-workspace = Espais
+zenCKSOption-group-zen-tabs = Pestanyes
 zenCKSOption-group-zen-split-view = Vista dividida
+zenCKSOption-group-zen-layout = Disposició
 zen-text-action-copy-url-shortcut = Copia l'URL actual
 zen-text-action-copy-url-markdown-shortcut = Copia l'URL actual com a Markdown
 zen-toggle-pin-tab-shortcut = Commuta la pestanya fixa

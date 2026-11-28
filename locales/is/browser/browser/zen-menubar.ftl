@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Dökkt
 zen-menubar-new-blank-window = 
     .label = Nýr auður gluggi
+zen-menubar-new-little-window = 
+    .label = Nýr smágluggi

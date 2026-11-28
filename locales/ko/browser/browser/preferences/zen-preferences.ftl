@@ -23,13 +23,45 @@ zen-glance-trigger-label = 트리거 방식
 zen-glance-enabled = 
     .label = 글랜스 활성화
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + 클릭
+           *[other] Ctrl + 클릭
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + 클릭
+           *[other] Ctrl + 클릭
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + 클릭
+           *[other] Alt + 클릭
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + 클릭
+           *[other] Alt + 클릭
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + 클릭
+           *[other] Shift + 클릭
+        }
+    .aria-label = Shift + 클릭
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + 클릭
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + 클릭
+           *[other] Meta (Command) + 클릭
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + 클릭
+           *[other] Meta (Command) + 클릭
+        }
 zen-look-and-feel-compact-view-header = 사이드바 축소 모드로 보기
 zen-look-and-feel-compact-view-description = 사용하는 툴바만 보세요!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = 입력...
 pane-zen-marketplace-title = Zen 모드
-zen-themes-auto-update = 
-    .label = 시작 시 설치된 모드 자동 업데이트
+zen-preferences-open-zen-settings = { -brand-short-name } 설정
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = 컨테이너 탭을 열 때 해당 컨테이너가 기본값으로 설정된 워크스페이스로 전환하기
 zen-theme-marketplace-link = 스토어 방문
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen 모드
-zenCKSOption-group-zen-compact-mode = 사이드바 축소 모드
-zenCKSOption-group-zen-workspace = 워크스페이스
-zenCKSOption-group-zen-other = 다른 Zen 기능들
+zenCKSOption-group-zen-workspace = 스페이스
+zenCKSOption-group-zen-tabs = 탭
 zenCKSOption-group-zen-split-view = 나눠서 보기
+zenCKSOption-group-zen-layout = 레이아웃
 zen-text-action-copy-url-shortcut = 현재 URL 복사
 zen-text-action-copy-url-markdown-shortcut = 마크다운 형식으로 현재 URL 복사하기
 zen-toggle-pin-tab-shortcut = 탭 고정 토글

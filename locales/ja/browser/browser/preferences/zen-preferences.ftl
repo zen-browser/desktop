@@ -23,13 +23,45 @@ zen-glance-trigger-label = 生成方法
 zen-glance-enabled = 
     .label = Glanceを有効にします
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + クリック
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + クリック
+           *[other] Ctrl + クリック
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + クリック
+           *[other] Ctrl + クリック
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + クリック
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + クリック
+           *[other] Alt + クリック
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + クリック
+           *[other] Alt + クリック
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + クリック
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + クリック
+           *[other] Shift + クリック
+        }
+    .aria-label = Shift + クリック
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + クリック
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + クリック
+           *[other] Meta (Command) + クリック
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + クリック
+           *[other] Meta (Command) + クリック
+        }
 zen-look-and-feel-compact-view-header = コンパクト表示で表示します
 zen-look-and-feel-compact-view-description = 使用しているツールバーのみを表示します！
 zen-look-and-feel-compact-view-enabled = 
@@ -49,20 +81,20 @@ pane-settings-workspaces-title = ワークスペース
 zen-tabs-select-recently-used-on-close = 
     .label = タブを閉じるときに、次のタブではなく最後に使用したタブに切り替える
 zen-tabs-close-on-back-with-no-history = 
-    .label = タブを閉じ、履歴がない状態で戻るときに所有者のタブ（または最近使用したタブ）に切り替えます
+    .label = 履歴のない状態で戻る操作を行った場合、タブを閉じて親のタブ (もしくは最近使ったタブ) へ切り替える
 zen-settings-workspaces-sync = 
     .label = サイドバーをデバイス間で同期する
     .description = Mozilla アカウントを介して、すべてのデバイスでワークスペース、ピン留めされたタブ、フォルダを同期させます
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = ピン留めされていないタブを含める
+    .description = ピン留めされたタブやフォルダだけでなく、各スペースの通常のタブも同期します。
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = ワークスペースにはピン留めされているタブのみを同期する
 zen-tabs-cycle-by-attribute = 
-    .label = Ctrl+Tabキーを押してワークスペースタブ内または重要なタブ内のサイクルを切り替えます
+    .label = Ctrl+Tab キーでのサイクル先をワークスペース内または Essential 内のタブに限定する
 zen-tabs-cycle-ignore-pending-tabs = 
     .label = Ctrl+Tabでのサイクリング時に保留中のタブを無視する
-zen-tabs-cycle-by-attribute-warning = Ctrl+Tabが有効になっているため、最近使用された順序でサイクルされます
+zen-tabs-cycle-by-attribute-warning = 「Ctrl+Tab で最近使用した順にタブを切り替える」が有効になっています
 zen-look-and-feel-compact-toolbar-themed = 
     .label = コンパクトツールバーにテーマの背景を使用する
 zen-workspace-continue-where-left-off = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = ここに入力...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = 起動時にインストール済みの Mod を自動的に更新する
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = コンテナタブを開くときにコンテナがデフォルトとして設定されているワークスペースに切り替える
 zen-theme-marketplace-link = ストアを訪問
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = コンパクトモード
-zenCKSOption-group-zen-workspace = ワークスペース
-zenCKSOption-group-zen-other = その他の禅の特徴
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = 分割ビュー
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = 現在のURLをコピー
 zen-text-action-copy-url-markdown-shortcut = 現在のURLをMarkdownとしてコピー
 zen-toggle-pin-tab-shortcut = ピン留めさせるタブの切り替え
@@ -182,7 +213,7 @@ zen-workspace-shortcut-switch-9 = ワークスペース9に切り替える
 zen-workspace-shortcut-switch-10 = ワークスペース10に切り替える
 zen-workspace-shortcut-create = 新しいワークスペースを作成する
 zen-sidebar-shortcut-toggle = サイドバーの幅を切り替える
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = ライブラリの切り替え
 zen-pinned-tab-shortcut-reset = ピン留めされたタブをピン留めしたURLにリセット
 zen-split-view-shortcut-grid = 分割表示グリッドの切り替え
 zen-split-view-shortcut-vertical = 分割ビューを垂直に切り替える

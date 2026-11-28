@@ -16,6 +16,7 @@ zen-action-settings = Настройки
 zen-action-open-private-window = Открыть новое приватное окно
 zen-action-open-new-window = Открыть новое окно
 zen-action-new-blank-window = Новое пустое окно
+zen-action-new-little-window = New Little Window
 zen-action-pin-tab = Закрепить вкладку
 zen-action-unpin-tab = Открепить вкладку
 zen-action-open-space-routing = Открыть маршрутизацию пространств

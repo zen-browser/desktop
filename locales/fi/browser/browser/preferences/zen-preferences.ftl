@@ -23,13 +23,45 @@ zen-glance-trigger-label = Käynnistimen menetelmä
 zen-glance-enabled = 
     .label = Ota käyttöön Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + klikkaus
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Klikkaa
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + klikkaa
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (komento) + klikkaus
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Näytä kompaktissa näkymätilassa
 zen-look-and-feel-compact-view-description = Näytä vain käyttämäsi työkalupalkit!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Kirjoita jotain...
 pane-zen-marketplace-title = Zen modit
-zen-themes-auto-update = 
-    .label = Päivitä asennetut modit automaattisesti käynnistyksessä
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Vaihda työtilaan, jossa säiliö on asetettu oletusarvoiseksi avattaessa säiliön välilehtiä
 zen-theme-marketplace-link = Vieraile Kaupassa
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = Kompakti Tila
-zenCKSOption-group-zen-workspace = Työtilat
-zenCKSOption-group-zen-other = Muut Zen-ominaisuudet
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Jaettu Näkymä
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Kopioi nykyinen URL-osoite
 zen-text-action-copy-url-markdown-shortcut = Kopioi nykyinen URL-osoite Markdownina
 zen-toggle-pin-tab-shortcut = Kiinnitä välilehti

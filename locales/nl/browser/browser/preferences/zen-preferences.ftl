@@ -23,13 +23,45 @@ zen-glance-trigger-label = Activatie methode
 zen-glance-enabled = 
     .label = Snel bekijken inschakelen
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Windows (Command) + klik
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Weergeven in compacte weergave
 zen-look-and-feel-compact-view-description = Alleen de werkbalken weergeven die je gebruikt!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Typ iets…
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Automatisch geïnstalleerde mods updaten bij opstarten
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Schakel over naar de werkruimte waar container als standaard is ingesteld bij het openen van container tabbladen
 zen-theme-marketplace-link = Winkel bezoeken
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = Compacte modus
-zenCKSOption-group-zen-workspace = Werkruimtes
-zenCKSOption-group-zen-other = Andere Zen functies
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Gesplitste weergave
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Huidige URL kopiëren
 zen-text-action-copy-url-markdown-shortcut = Huidige URL kopiëren als Markdown
 zen-toggle-pin-tab-shortcut = Tabblad vastzetten togglen

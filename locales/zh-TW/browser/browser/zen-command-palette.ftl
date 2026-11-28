@@ -16,6 +16,7 @@ zen-action-settings = 設定
 zen-action-open-private-window = 開新隱私視窗
 zen-action-open-new-window = 開新視窗
 zen-action-new-blank-window = 開新簡白視窗
+zen-action-new-little-window = 開新Little Zen視窗
 zen-action-pin-tab = 釘選分頁
 zen-action-unpin-tab = 解除釘選分頁
 zen-action-open-space-routing = 開啟網址導航設定

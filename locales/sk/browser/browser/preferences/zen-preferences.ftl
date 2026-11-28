@@ -23,13 +23,45 @@ zen-glance-trigger-label = Spôsob aktivácie
 zen-glance-enabled = 
     .label = Zapnúť Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Zobraziť v kompaktnom zobrazení
 zen-look-and-feel-compact-view-description = Zobrazujte iba tie panely nástrojov, ktoré používate!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Napíšte niečo...
 pane-zen-marketplace-title = Zen Módy
-zen-themes-auto-update = 
-    .label = Automaticky aktualizovať nainštalované módy pri spustení
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Prepnúť na pracovný priestor, kde je kontajner nastavený ako predvolený pri otváraní kariet kontajnera
 zen-theme-marketplace-link = Navštíviť obchod
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Módy
-zenCKSOption-group-zen-compact-mode = Kompaktný režim
-zenCKSOption-group-zen-workspace = Pracovné priestory
-zenCKSOption-group-zen-other = Ostatné funkcie Zen
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Rozdelené zobrazenie
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Kopírovať aktuálnu URL
 zen-text-action-copy-url-markdown-shortcut = Kopírovať aktuálnu URL ako Markdown
 zen-toggle-pin-tab-shortcut = Prepnúť pripnutie karty

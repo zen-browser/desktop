@@ -32,9 +32,9 @@ tab-context-zen-edit-pinned-url =
     .label = Redigera…
     .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Ändra etikett...
+    .label = Ändra etikett…
 tab-context-zen-edit-icon = 
-    .label = Ändra ikon...
+    .label = Ändra ikon…
 zen-themes-corrupted = Din { -brand-short-name } modds-fil är skadad. De har återställts till standardtemat.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
@@ -45,8 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimera
     .tooltip = Minimera
 zen-panel-ui-gradient-generator-custom-color = Anpassad färg
-zen-copy-current-url-confirmation = Kopierade nuvarande URL!
-zen-copy-current-url-as-markdown-confirmation = Kopierade nuvarande webbadress som Markdown!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Kopierade nuvarande URL!
+       *[other] Kopierade { $count } URL:er!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Kopierade nuvarande URL som Markdown!
+       *[other] Kopierade { $count } URL:er som Markdown!
+    }
 zen-general-cancel-label = 
     .label = Avbryt
 zen-general-confirm = 
@@ -58,8 +66,11 @@ zen-pinned-tab-edit-url-title = Redigera fäst URL
 zen-pinned-tab-edit-url-label = Ange den URL som den fästa fliken ska peka till:
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
 zen-split-view-limit-toast = Kan inte lägga till fler paneler till delad vy!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> igen till { $action}
+zen-shortcut-blocked-toast-default-action = använd det i { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Sidofältet dolt! Använd <span>{$shortcut }</span> för att få tillbaka sidofältet.
 zen-toggle-compact-mode-button = 
     .label = Kompakt läge
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = Läs mer
 zen-window-sync-migration-dialog-accept = Jag förstår
 zen-appmenu-new-blank-window = 
     .label = Nytt blankt fönster
+zen-appmenu-new-little-window = 
+    .label = Nytt litet fönster
+zen-little-window-open-in-space = Öppna i <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Öppna i { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Välj en arbetsyta
+zen-little-window-title = Liten Zen
+zen-little-window-intro-title = Öppnat i <i data-l10n-name="name">Liten Zen</i>
+zen-little-window-intro-description = Klicka på "Öppna i" för att flytta denna sida till ett full stort fönster, eller { $shortcut } för att stänga
+zen-little-window-download-source = 
+    .value = Från { $host}

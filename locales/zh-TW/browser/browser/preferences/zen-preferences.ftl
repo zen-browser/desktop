@@ -23,13 +23,45 @@ zen-glance-trigger-label = 觸發方式
 zen-glance-enabled = 
     .label = 啟用 Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + 左鍵
+           *[other] Ctrl + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + 左鍵
+           *[other] Ctrl + 左鍵
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + 左鍵
+           *[other] Alt + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + 左鍵
+           *[other] Alt + 左鍵
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + 左鍵
+           *[other] Shift + 左鍵
+        }
+    .aria-label = Shift + 左鍵
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + 左鍵
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + 左鍵
+           *[other] Meta (Command) + 左鍵
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + 左鍵
+           *[other] Meta (Command) + 左鍵
+        }
 zen-look-and-feel-compact-view-header = 在緊湊模式下顯示
 zen-look-and-feel-compact-view-description = 只顯示你需要用的工具欄！
 zen-look-and-feel-compact-view-enabled = 
@@ -52,17 +84,17 @@ zen-tabs-close-on-back-with-no-history =
     .label = 若沒有上一頁紀錄，返回時關閉分頁並切換為其來源分頁（或最近造訪的分頁）
 zen-settings-workspaces-sync = 
     .label = 在不同裝置間同步您的側邊欄
-    .description = 透過Mozilla帳號，您可以將工作區、釘選分頁及分頁夾在所有裝置上保持一致。
+    .description = 透過Mozilla帳號，您可以讓工作區、釘選分頁及分頁夾在所有裝置上保持同步。
 zen-settings-normal-tabs-sync = 
     .label = 包括未釘選分頁
-    .description = 除了釘選分頁及分頁夾外，將各工作區的一般分頁也保持同步
+    .description = 除釘選分頁及分頁夾外，各工作區的一般分頁也保持同步
 zen-settings-workspaces-sync-unpinned-tabs = 
-    .label = 僅對工作區中的釘選分頁進行同步
+    .label = 僅對工作區的釘選分頁進行同步
 zen-tabs-cycle-by-attribute = 
     .label = Ctrl+Tab 僅會在 Essential 分頁或是 Workspace 分頁之間切換
 zen-tabs-cycle-ignore-pending-tabs = 
     .label = 使用 Ctrl+Tab 切換分頁時，忽略卸載的分頁
-zen-tabs-cycle-by-attribute-warning = 依當前設定，Ctrl+Tab 將按最近使用順序循環
+zen-tabs-cycle-by-attribute-warning = 依當前設定，Ctrl+Tab 將依最近使用的分頁順序作循環
 zen-look-and-feel-compact-toolbar-themed = 
     .label = 將主題顏色套用至緊湊模式下的工具欄
 zen-workspace-continue-where-left-off = 
@@ -73,7 +105,7 @@ zen-pinned-tab-manager-description = 釘選分頁的額外行為
 zen-pinned-tab-manager-restore-pinned-tabs-to-pinned-url = 
     .label = 啟動時恢復釘選分頁至其初始的網址
 zen-pinned-tab-manager-container-specific-essentials-enabled = 
-    .label = 限制容器化的 Essentials 分頁僅出現於將該容區指定為預設的工作區
+    .label = 限制容器化的 Essentials 分頁僅出現於將該容器指定為預設的工作區
 zen-pinned-tab-manager-close-shortcut-behavior-label = 使用快捷鍵關閉分頁時，
 zen-pinned-tab-manager-reset-unload-switch-close-shortcut-option = 
     .label = 重置網址，卸載並切換到下一個分頁
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = 請輸入...
 pane-zen-marketplace-title = Zen 模組
-zen-themes-auto-update = 
-    .label = 啟動時自動更新已安裝模組
+zen-preferences-open-zen-settings = { -brand-short-name } 設定
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = 開啟容器分頁時，切換到已將該容器設為預設的工作區
 zen-theme-marketplace-link = 造訪商店
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen 模組
-zenCKSOption-group-zen-compact-mode = 緊湊模式
 zenCKSOption-group-zen-workspace = 工作區
-zenCKSOption-group-zen-other = 其它 Zen 功能
+zenCKSOption-group-zen-tabs = 分頁
 zenCKSOption-group-zen-split-view = 分割畫面
+zenCKSOption-group-zen-layout = 版面配置
 zen-text-action-copy-url-shortcut = 複製目前網址
 zen-text-action-copy-url-markdown-shortcut = 將目前網址複製為 Markdown
 zen-toggle-pin-tab-shortcut = 切換釘選分頁

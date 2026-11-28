@@ -23,13 +23,45 @@ zen-glance-trigger-label = طريقة المشغل
 zen-glance-enabled = 
     .label = تمكين اللمحة
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + اضغط
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + انقر
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + اضغط
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + اضغط
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = إظهار في العرض المدمج
 zen-look-and-feel-compact-view-description = فقط إظهار الأشرطة المستعملة!
 zen-look-and-feel-compact-view-enabled = 
@@ -38,7 +70,7 @@ zen-look-and-feel-compact-view-top-toolbar =
     .label = إخفاء شريط الأدوات العلوي أيضا في الوضع المدمج
 zen-look-and-feel-compact-toolbar-flash-popup = 
     .label = اجعل شريط الأدوات منبثقا عند التبديل أو فتح علامات تبويب جديدة في الوضع المدمج
-zen-look-and-feel-window-drag-header = Window dragging
+zen-look-and-feel-window-drag-header = سحب النافذة
 zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
 zen-window-drag-enabled = 
     .label = Allow dragging the window from web pages
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = اكتب شيئاً...
 pane-zen-marketplace-title = مودات Zen
-zen-themes-auto-update = 
-    .label = تحديث المودات المثبتة تلقائياً عند بدء التشغيل
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = التبديل إلى فضاء العمل حيث يتم تعيين الحاوية بشكل افتراضي عند فتح علامات التبويب الحاوية
 zen-theme-marketplace-link = زيارة المتجر
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = مودات Zen
-zenCKSOption-group-zen-compact-mode = الوضع المضغوط
-zenCKSOption-group-zen-workspace = Other Workspaces
-zenCKSOption-group-zen-other = ميزات زين أخرى
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = تقسيم العرض
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = نسخ عنوان URL الحالي
 zen-text-action-copy-url-markdown-shortcut = نسخ الرابط الحالي كـ Markdown
 zen-toggle-pin-tab-shortcut = قلب علامة التبويب المثبتة

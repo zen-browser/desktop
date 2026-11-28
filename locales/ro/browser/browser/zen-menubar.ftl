@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Întunecat
 zen-menubar-new-blank-window = 
     .label = Fereastră Nouă Goală
+zen-menubar-new-little-window = 
+    .label = New Little Window

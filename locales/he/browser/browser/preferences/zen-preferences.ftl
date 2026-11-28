@@ -23,13 +23,45 @@ zen-glance-trigger-label = שיטת הפעלה
 zen-glance-enabled = 
     .label = הפעל במבט קצר
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + לחיצה
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + לחיצה
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + לחיצה
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = מטה (Command) + לחיצה
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = הצגה בתצוגה מכווצת
 zen-look-and-feel-compact-view-description = מראה לך רק את הסרגלים בשימוש
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = אפשר להקליד כאן...
 pane-zen-marketplace-title = שפצורים של Zen
-zen-themes-auto-update = 
-    .label = עדכון אוטומטי של שפצורים מותקנים בעת ההפעלה
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = העברה למרחב עבודה שבו מוגדרת מגירת ברירת מחדל לפתיחת לשוניות במגירה
 zen-theme-marketplace-link = כניסה לחנות
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = שפצורים של Zen
-zenCKSOption-group-zen-compact-mode = מצב חסכוני
-zenCKSOption-group-zen-workspace = מרחבי עבודה
-zenCKSOption-group-zen-other = תכונות אחרות של Zen
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = תצוגה מפוצלת
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = העתק קישור נוכחי
 zen-text-action-copy-url-markdown-shortcut = העתק קישור נוכחי כ-Markdown
 zen-toggle-pin-tab-shortcut = הצמדת לשונית

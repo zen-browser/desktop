@@ -23,13 +23,45 @@ zen-glance-trigger-label = Метод виклику
 zen-glance-enabled = 
     .label = Увімкнути Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Клац
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + клац
+           *[other] Ctrl + клац
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + клац
+           *[other] Ctrl + клац
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Клік
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + клац
+           *[other] Alt + клац
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + клац
+           *[other] Alt + клац
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Клік
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + клац
+           *[other] Shift + клац
+        }
+    .aria-label = Shift + клац
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Клац
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + клац
+           *[other] Meta (Command) + клац
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + клац
+           *[other] Meta (Command) + клац
+        }
 zen-look-and-feel-compact-view-header = Показати в компактному вигляді
 zen-look-and-feel-compact-view-description = Показати лише панелі інструментів, які ви використовуєте!
 zen-look-and-feel-compact-view-enabled = 
@@ -54,8 +86,8 @@ zen-settings-workspaces-sync =
     .label = Синхронізуйте бічну панель на різних пристроях
     .description = Синхронізуйте робочі простори, закріплені вкладки та теки на всіх пристроях за допомогою облікового запису Mozilla.
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = Включити відкріплені вкладки
+    .description = Також синхронізуйте звичайні вкладки кожного простору, а не лише закріплені вкладки та теки.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Синхронізувати тільки закріплені вкладки в робочому просторі
 zen-tabs-cycle-by-attribute = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Введіть щось...
 pane-zen-marketplace-title = Zen Моди
-zen-themes-auto-update = 
-    .label = Автоматично оновлювати встановлені моди під час запуску
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Перемкнутися на робочий простір, де контейнер встановлено як типове значення для відкриття вкладок контейнерів
 zen-theme-marketplace-link = Відвідати магазин
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Моди
-zenCKSOption-group-zen-compact-mode = Компактний режим
-zenCKSOption-group-zen-workspace = Робочі області
-zenCKSOption-group-zen-other = Інші функції Zen
+zenCKSOption-group-zen-workspace = Простори
+zenCKSOption-group-zen-tabs = Вкладки
 zenCKSOption-group-zen-split-view = Розділений вигляд
+zenCKSOption-group-zen-layout = Макет
 zen-text-action-copy-url-shortcut = Копіювати поточну URL-адресу
 zen-text-action-copy-url-markdown-shortcut = Копіювати поточний URL як Markdown
 zen-toggle-pin-tab-shortcut = Закріпити / відкріпити вкладку
@@ -182,7 +213,7 @@ zen-workspace-shortcut-switch-9 = Перейти на робочу област�
 zen-workspace-shortcut-switch-10 = Перейти на робочу область 10
 zen-workspace-shortcut-create = Створити новий робочий простір
 zen-sidebar-shortcut-toggle = Перемкнути ширину бічної панелі
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = Перемкнути бібліотеку
 zen-pinned-tab-shortcut-reset = Скинути прикріплену вкладку до закріпленої URL-адреси
 zen-split-view-shortcut-grid = Перемкнути розділену сітку
 zen-split-view-shortcut-vertical = Перемкнути розділений Перегляд вертикально

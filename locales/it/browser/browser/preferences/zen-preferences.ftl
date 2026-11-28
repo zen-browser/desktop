@@ -23,13 +23,45 @@ zen-glance-trigger-label = Metodo di attivazione
 zen-glance-enabled = 
     .label = Abilita Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Maiusc + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Clicca
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Mostra nella vista compatta
 zen-look-and-feel-compact-view-description = Mostra solo le barre degli strumenti che utilizzi!
 zen-look-and-feel-compact-view-enabled = 
@@ -38,10 +70,10 @@ zen-look-and-feel-compact-view-top-toolbar =
     .label = Nascondi anche la barra degli strumenti superiore in modalità compatta
 zen-look-and-feel-compact-toolbar-flash-popup = 
     .label = Fai comparire brevemente la barra degli strumenti quando si cambiano o si aprono nuove schede in modalità compatta
-zen-look-and-feel-window-drag-header = Window dragging
-zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
+zen-look-and-feel-window-drag-header = Trascinamento finestra
+zen-look-and-feel-window-drag-description = Sposta la finestra trascinando lo spazio vuoto nella parte superiore dei siti web, proprio come la barra del titolo.
 zen-window-drag-enabled = 
-    .label = Allow dragging the window from web pages
+    .label = Consenti il trascinamento della finestra dalle pagine web
 pane-zen-tabs-title = Gestione Schede
 category-zen-workspaces = 
     .tooltiptext = { pane-zen-tabs-title }
@@ -51,11 +83,11 @@ zen-tabs-select-recently-used-on-close =
 zen-tabs-close-on-back-with-no-history = 
     .label = Chiudi scheda e passa alla scheda proprietario (o scheda usata più di recente) quando si torna indietro senza cronologia
 zen-settings-workspaces-sync = 
-    .label = Sync your sidebar across devices
-    .description = Keep your workspaces, pinned tabs and folders in sync on all your devices through your Mozilla account.
+    .label = Sincronizza la barra laterale tra i dispositivi
+    .description = Mantieni i tuoi spazi di lavoro, le schede bloccate e le cartelle in sincronizzazione su tutti i tuoi dispositivi attraverso il tuo account Mozilla.
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = Includi schede non bloccate
+    .description = Sincronizza anche le schede non fissate di ogni spazio, non solo le schede e le cartelle fissate.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Sincronizza solo schede bloccate negli spazi di lavoro
 zen-tabs-cycle-by-attribute = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Digita qualcosa...
 pane-zen-marketplace-title = Zen Mod
-zen-themes-auto-update = 
-    .label = Aggiorna automaticamente le mod installate all'avvio
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Passa allo spazio di lavoro in cui il contenitore è impostato come predefinito quando si aprono le schede contenitore
 zen-theme-marketplace-link = Visita Il Negozio
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mod
-zenCKSOption-group-zen-compact-mode = Modalità Compatta
-zenCKSOption-group-zen-workspace = Altri spazi di lavoro
-zenCKSOption-group-zen-other = Altre Caratteristiche Zen
+zenCKSOption-group-zen-workspace = Spazi
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Dividi Vista
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Copia URL corrente
 zen-text-action-copy-url-markdown-shortcut = Copia l'URL corrente come Markdown
 zen-toggle-pin-tab-shortcut = Attiva/Disattiva Scheda Pin
@@ -182,7 +213,7 @@ zen-workspace-shortcut-switch-9 = Passa allo spazio di lavoro 9
 zen-workspace-shortcut-switch-10 = Passa allo spazio di lavoro 10
 zen-workspace-shortcut-create = Crea nuovo spazio di lavoro
 zen-sidebar-shortcut-toggle = Attiva/Disattiva Larghezza Barra Laterale
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = Attiva/Disattiva Libreria
 zen-pinned-tab-shortcut-reset = Reimposta la scheda bloccata all'URL bloccata
 zen-split-view-shortcut-grid = Attiva/Disattiva Griglia Visualizzazione Dividi
 zen-split-view-shortcut-vertical = Attiva/Disattiva Dividi Vista Verticale

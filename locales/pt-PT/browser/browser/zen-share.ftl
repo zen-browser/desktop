@@ -3,17 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-share-space = 
-    .label = Share Space…
+    .label = Partilhar espaço...
 zen-share-folder = 
-    .label = Share Folder…
+    .label = Partilhar pasta...
 zen-share-split-view = 
-    .label = Share Split View…
-zen-share-link-copied-toast = Share link copied!
-zen-share-link-expires-description = Anyone with the link can open it until { $date }
-zen-share-link-permanent-description = Anyone with the link can open it
-zen-share-error-toast = Couldn't create a share link
-zen-share-error-auth-description = The share server rejected your key
-zen-share-error-too-large-description = This share is too big to upload
+    .label = Partilhar vista dividida...
+zen-share-link-copied-toast = Link de partilha copiado!
+zen-share-link-expires-description = Qualquer pessoa com o link pode abri-lo até { $date }
+zen-share-link-permanent-description = Qualquer pessoa com o link pode abri-lo
+zen-share-error-toast = Não foi possível criar um link de partilha
+zen-share-error-auth-description = O servidor de partilha rejeitou a sua chave
+zen-share-error-too-large-description = Este ficheiro é demasiado grande para fazer upload
 zen-share-error-rate-limited-description = You're sharing too fast, try again in a minute
 zen-share-error-network-description = Couldn't reach the share server
 zen-share-error-empty-description = There's nothing shareable here

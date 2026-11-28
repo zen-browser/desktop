@@ -23,13 +23,45 @@ zen-glance-trigger-label = Virkjunaraðferð
 zen-glance-enabled = 
     .label = Virkja Skyndisýn
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + smella
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Smella
+           *[other] Ctrl + Smella
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Smella
+           *[other] Ctrl + Smella
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + smella
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Smella
+           *[other] Alt + Smella
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Smella
+           *[other] Alt + Smella
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + smella
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Smella
+           *[other] Shift + Smella
+        }
+    .aria-label = Shift + smella
 zen-glance-trigger-meta-click = 
-    .label = Meta (Slaufa) + smella
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Smella
+           *[other] Meta (Command) + Smella
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Smella
+           *[other] Meta (Command) + Smella
+        }
 zen-look-and-feel-compact-view-header = Sýna í þjöppuðu yfirliti
 zen-look-and-feel-compact-view-description = Aðeins birta verkfærastikurnar sem þú notar!
 zen-look-and-feel-compact-view-enabled = 
@@ -55,7 +87,7 @@ zen-settings-workspaces-sync =
     .description = Haltu vinnusvæðunum þínum, festum flipum og möppum samstilltum á öllum tækjunum þínum í gegnum Mozilla-aðganginn þinn.
 zen-settings-normal-tabs-sync = 
     .label = Hafa með ófesta flipa
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .description = Einnig samstilla venjulega flipa í hverju svæði, ekki bara festa flipa og möppur.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Samstilla einungis festa flipa í vinnusvæðum
 zen-tabs-cycle-by-attribute = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skrifaðu eitthvað...
 pane-zen-marketplace-title = Viðbrigðasnið Zen
-zen-themes-auto-update = 
-    .label = Uppfæra uppsett viðbrigðasnið sjálfkrafa við ræsingu
+zen-preferences-open-zen-settings = Stillingar { -brand-short-name }
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Skipta yfir á vinnusvæði þar sem gámur er settur sem sjálfgefinn þegar gámaflipar eru opnaðir
 zen-theme-marketplace-link = Heimsækja hugbúnaðarsafn
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Viðbrigðasnið Zen
-zenCKSOption-group-zen-compact-mode = Þjappað viðmót
-zenCKSOption-group-zen-workspace = Vinnusvæði
-zenCKSOption-group-zen-other = Aðrir eiginleikar Zen
+zenCKSOption-group-zen-workspace = Svæði
+zenCKSOption-group-zen-tabs = Flipar
 zenCKSOption-group-zen-split-view = Klofið yfirlit
+zenCKSOption-group-zen-layout = Framsetning
 zen-text-action-copy-url-shortcut = Afrita fyrirliggjandi slóð
 zen-text-action-copy-url-markdown-shortcut = Afrita fyrirliggjandi slóð sem Markdown
 zen-toggle-pin-tab-shortcut = Víxla festingu flipa af/á

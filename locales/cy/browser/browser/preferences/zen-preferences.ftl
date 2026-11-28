@@ -23,13 +23,45 @@ zen-glance-trigger-label = Dull sbarduno
 zen-glance-enabled = 
     .label = Galluogi Cipolwg
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Clic
+           *[arall] Ctrl + Clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Clic
+           *[arall] Ctrl + Clic
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Clic
+           *[arall] Alt + Clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Clic
+           *[arall] Alt + Clic
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Clic
+           *[arall] Shift + Clic
+        }
+    .aria-label = Shift + Clic
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Clic
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Clic
+           *[arall] Meta (Command) + Clic
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Commad + Clic
+           *[arall] Meta (Command) + Clic
+        }
 zen-look-and-feel-compact-view-header = Dangos mewn golwg gryno
 zen-look-and-feel-compact-view-description = Dim ond dangos y bariau offer rydych chi'n eu defnyddio!
 zen-look-and-feel-compact-view-enabled = 
@@ -54,8 +86,8 @@ zen-settings-workspaces-sync =
     .label = Cydweddu eich bar ochr ar draws dyfeisiau
     .description = Cadwch eich mannau gwaith, eich tabiau wedi'u pinio a'ch ffolderi mewn cydamseriad ar eich holl ddyfeisiau trwy eich cyfrif Mozilla.
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = Cynnwys tabiau heb eu pinio
+    .description = Hefyd cydweddu tabiau rheolaidd pob gofod, nid dim ond eich tabiau a'ch ffolderi wedi'u pinio.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Dim ond cydweddu tabiau wedi'u pinio mewn mannau gwaith
 zen-tabs-cycle-by-attribute = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Teipiwch rywbeth...
 pane-zen-marketplace-title = Addasiadau Zen
-zen-themes-auto-update = 
-    .label = Diweddaru addasiadau wedi'u gosod yn awtomatig wrth gychwyn
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Newid i'r gofod gwith lle mae'r cynhwysydd wedi'i osod fel y rhagosodyn wrth agor tabiau cynhwysydd
 zen-theme-marketplace-link = Ymweld â'r Storfa
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Addasiadau Zen
-zenCKSOption-group-zen-compact-mode = Modd Cryno
-zenCKSOption-group-zen-workspace = Gofodau Gwaith
-zenCKSOption-group-zen-other = Nodweddion Zen Eraill
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Golwg Hollt
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Copïo'r URL cyfredol
 zen-text-action-copy-url-markdown-shortcut = Copïo'r URL cyfredol fel Markdown
 zen-toggle-pin-tab-shortcut = Toglo Pinio Tab
@@ -182,7 +213,7 @@ zen-workspace-shortcut-switch-9 = Symud i Gofod Gwaith 9
 zen-workspace-shortcut-switch-10 = Symud i Gofod Gwaith 10
 zen-workspace-shortcut-create = Creu Gofod Gwaith Newydd
 zen-sidebar-shortcut-toggle = Toglo Lled y Bar Ochr
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = Togglo Llyfrgell
 zen-pinned-tab-shortcut-reset = Ailosod y Tab wedi'i Binio i URL wedi'i Binio
 zen-split-view-shortcut-grid = Toglo Grid Golwg Hollt
 zen-split-view-shortcut-vertical = Toglo Golwg Hollt Fertigol

@@ -45,8 +45,18 @@ pictureinpicture-minimize-btn =
     .aria-label = Згорнути
     .tooltip = Згорнути
 zen-panel-ui-gradient-generator-custom-color = Власний колір
-zen-copy-current-url-confirmation = Скопійовано поточну URL-адресу!
-zen-copy-current-url-as-markdown-confirmation = Скопійовано поточну URL-адресу як Markdown!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Скопійовано поточну URL-адресу!
+        [few] Скопійовано { $count } URL-адреси!
+       *[many] Скопійовано { $count } URL-адрес!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Скопійовано URL-адресу як Markdown!
+        [few] Скопійовано { $count } URL-адреси як Markdown!
+       *[many] Скопійовано { $count } URL-адрес як Markdown!
+    }
 zen-general-cancel-label = 
     .label = Скасувати
 zen-general-confirm = 
@@ -58,9 +68,12 @@ zen-pinned-tab-edit-url-title = Редагувати закріплену URL-а
 zen-pinned-tab-edit-url-label = Введіть URL-адресу, на яку має посилатися ця закріплена вкладка:
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
 zen-split-view-limit-toast = Неможливо додати більше панелей до розділеного перегляду!
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> знову для { $action }
+zen-shortcut-blocked-toast-default-action = використовувати це в { -brand-short-name }
+zen-sidebar-drag-collapsed-toast = Бічна панель прихована! Щоб знову показати бічну панель, скористайтеся посиланням <span>{ $shortcut }</span>.
 zen-toggle-compact-mode-button = 
     .label = Компактний режим
     .tooltiptext = Увімк. / Вимк. компактний режим
@@ -104,7 +117,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Поділитися цією сторінкою
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Створити підсилення
 zen-site-data-header-reader-mode = 
     .tooltiptext = Увійти у режим читання
 zen-site-data-header-screenshot = 
@@ -141,3 +154,14 @@ zen-window-sync-migration-dialog-learn-more = Дізнатися більше
 zen-window-sync-migration-dialog-accept = Зрозуміло
 zen-appmenu-new-blank-window = 
     .label = Нове несинхронізоване вікно
+zen-appmenu-new-little-window = 
+    .label = Нове маленьке вікно
+zen-little-window-open-in-space = Відкрити в <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Відкрити в { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Обрати простір
+zen-little-window-title = Малий Zen
+zen-little-window-intro-title = Відкрито в <i data-l10n-name="name">Малому Zen</i>
+zen-little-window-intro-description = Натисніть «Відкрити в», щоб перемістити цю сторінку в окреме вікно, або натисніть { $shortcut }, щоб закрити її
+zen-little-window-download-source = 
+    .value = З { $host }

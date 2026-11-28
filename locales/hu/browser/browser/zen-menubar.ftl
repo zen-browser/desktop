@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Sötét
 zen-menubar-new-blank-window = 
     .label = Új üres ablak
+zen-menubar-new-little-window = 
+    .label = New Little Window

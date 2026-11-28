@@ -43,8 +43,16 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimizar
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor Personalizada
-zen-copy-current-url-confirmation = URL atual copiada!
-zen-copy-current-url-as-markdown-confirmation = URL atual copiada como Markdown!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Copied current URL!
+       *[other] Copied { $count } URLs!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Copied current URL as Markdown!
+       *[other] Copied { $count } URLs as Markdown!
+    }
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -56,8 +64,11 @@ zen-pinned-tab-edit-url-title = Editar URL Fixada
 zen-pinned-tab-edit-url-label = Digite a URL que esta aba fixada deve apontar para:
 zen-tabs-renamed = A aba foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova aba em segundo plano aberta!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
 zen-split-view-limit-toast = Não é possível adicionar mais painéis à visualização dividida!
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
+zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
 zen-sidebar-drag-collapsed-toast = Barra lateral oculta! Use <span>{ $shortcut }</span> para trazer a barra lateral de volta.
 zen-toggle-compact-mode-button = 
     .label = Modo Compacto
@@ -139,3 +150,14 @@ zen-window-sync-migration-dialog-learn-more = Saiba Mais
 zen-window-sync-migration-dialog-accept = Entendi
 zen-appmenu-new-blank-window = 
     .label = Nova janela em branco
+zen-appmenu-new-little-window = 
+    .label = Nova Mini Janela
+zen-little-window-open-in-space = Abrir em <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = Abrir em { -brand-short-name }
+zen-little-window-choose-space = 
+    .tooltiptext = Escolha um Espaço
+zen-little-window-title = Little Zen
+zen-little-window-intro-title = Aberto em <i data-l10n-name="name">Mini Zen</i>
+zen-little-window-intro-description = Clique em "Abrir em" para mover esta página para uma janela completa, ou { $shortcut } para fechar
+zen-little-window-download-source = 
+    .value = From { $host }

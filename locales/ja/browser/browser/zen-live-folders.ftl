@@ -3,78 +3,78 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-live-folder-options = 
-    .label = Live Folder Options
+    .label = ライブフォルダーの設定
 zen-live-folder-last-fetched = 
-    .label = Last fetch: { $time }
+    .label = 最終更新: { $time }
 zen-live-folder-refresh = 
-    .label = Refresh
+    .label = 再読み込み
 zen-live-folder-github-option-author-self = 
-    .label = Created by Me
+    .label = 自分が作成
 zen-live-folder-github-option-assigned-self = 
-    .label = Assigned to Me
+    .label = 自分が担当
 zen-live-folder-github-option-review-requested = 
-    .label = My Review Requests
+    .label = 自分のレビューリクエスト
 zen-live-folder-github-option-include-drafts = 
-    .label = Include Draft Pull Requests
+    .label = ドラフトの Pull Request も表示する
 zen-live-folder-type-rss = 
-    .label = RSS Feed
+    .label = RSS フィード
 zen-live-folder-option-fetch-interval = 
-    .label = Fetch Interval
+    .label = 更新間隔
 zen-live-folder-fetch-interval-mins = 
     .label =
         { $mins ->
-            [one] 1 minute
-           *[other] { $mins } minutes
+            [one] 1 分
+           *[other] { $mins } 分
         }
 zen-live-folder-fetch-interval-hours = 
     .label =
         { $hours ->
-            [one] 1 hour
-           *[other] { $hours } hours
+            [one] 1 時間
+           *[other] { $hours } 時間
         }
 zen-live-folder-rss-option-time-range = 
-    .label = Time Range
+    .label = 時間の範囲
 zen-live-folder-time-range-hours = 
     .label =
         { $hours ->
-            [one] Last hour
-           *[other] Last { $hours } hours
+            [one] 1 時間前
+           *[other] { $hours } 時間前
         }
 zen-live-folder-time-range-all-time = 
-    .label = All time
+    .label = 全期間
 zen-live-folder-time-range-days = 
     .label =
         { $days ->
-            [one] Last day
-           *[other] Last { $days } days
+            [one] 昨日
+           *[other] { $days } 日前
         }
 zen-live-folder-rss-option-item-limit = 
-    .label = Item Limit
+    .label = アイテムの上限
 zen-live-folder-rss-option-feed-url = 
-    .label = Feed URL
-zen-live-folder-rss-prompt-feed-url = Please enter the feed URL
+    .label = フィード URL
+zen-live-folder-rss-prompt-feed-url = フィードの URL を入力してください
 zen-live-folder-rss-option-item-limit-num = 
-    .label = { $limit } items
+    .label = { $limit } 個のアイテム
 zen-live-folder-failed-fetch = 
-    .label = Failed to update
-    .tooltiptext = Failed to update. Try again.
+    .label = 更新に失敗しました
+    .tooltiptext = 更新に失敗しました。もう一度お試しください。
 zen-live-folder-github-no-auth = 
-    .label = Not signed in to GitHub
-    .tooltiptext = Sign back in to GitHub.
+    .label = GitHub にサインインしていません
+    .tooltiptext = GitHub へサインインしてください。
 zen-live-folder-github-no-filter = 
-    .label = Filter is not set
-    .tooltiptext = No filter set, nothing will be fetched.
-zen-live-folder-rss-invalid-url-title = Failed to create the Live Folder
-zen-live-folder-rss-invalid-url-description = The feed URL is invalid. Check the address and try again
+    .label = フィルターが設定されていません
+    .tooltiptext = フィルターが設定されていないため、何も取得されません。
+zen-live-folder-rss-invalid-url-title = ライブフォルダーの作成に失敗しました
+zen-live-folder-rss-invalid-url-description = このフィード URL は無効です。アドレスを確認してもう一度お試しください。
 zen-live-folder-github-option-repo-filter = 
-    .label = Repositories
+    .label = リポジトリ
 zen-live-folder-github-option-repo = 
     .label = { $repo }
 zen-live-folder-github-pull-requests = 
-    .label = Pull Requests
+    .label = Pull Request
 zen-live-folder-github-issues = 
-    .label = Issues
+    .label = イシュー
 zen-live-folder-github-option-repo-list-note = 
-    .label = This list is generated based on your currently active pull requests.
-zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+    .label = このリストは、現在アクティブな Pull Request に基づいて生成されます。
+zen-live-folders-promotion-title = ライブフォルダーが作成されました！
+zen-live-folders-promotion-description = ここには、設定した RSS フィードや GitHub の Pull Request が自動的に表示されます。

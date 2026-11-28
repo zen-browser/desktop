@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Iluna
 zen-menubar-new-blank-window = 
     .label = Leiho zuri berria
+zen-menubar-new-little-window = 
+    .label = New Little Window

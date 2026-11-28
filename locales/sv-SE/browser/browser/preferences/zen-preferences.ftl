@@ -8,9 +8,9 @@ category-zen-looks =
 zen-warning-language = Att ändra standardspråk kan göra det lättare för webbplatser att spåra dig.
 zen-vertical-tabs-layout-header = Webbläsarlayout
 zen-vertical-tabs-layout-description = Välj vilken layout som passar dig bäst
-zen-layout-single-toolbar = Single toolbar
-zen-layout-multiple-toolbar = Multiple toolbars
-zen-layout-collapsed-toolbar = Collapsed toolbar
+zen-layout-single-toolbar = Endast sidofältet
+zen-layout-multiple-toolbar = Sidofält och övre verktygsfält
+zen-layout-collapsed-toolbar = Hopfällt sidofält
 sync-currently-syncing-workspaces = Arbetsytor
 sync-engine-workspaces = 
     .label = Arbetsytor
@@ -23,13 +23,45 @@ zen-glance-trigger-label = Utlösare metod
 zen-glance-enabled = 
     .label = Aktivera Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + klick
+           *[other] Ctrl + klick
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + klick
+           *[other] Ctrl + klick
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + klick
+           *[other] Alt + klick
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + klick
+           *[other] Alt + klick
+        }
 zen-glance-trigger-shift-click = 
-    .label = Skift + Klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + klick
+           *[other] Shift + klick
+        }
+    .aria-label = Shift + klick
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + klicka
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + klick
+           *[other] Meta (Command) + klick
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + klick
+           *[other] Meta (Command) + klick
+        }
 zen-look-and-feel-compact-view-header = Visa i kompakt vy
 zen-look-and-feel-compact-view-description = Visa bara verktygsfälten du använder!
 zen-look-and-feel-compact-view-enabled = 
@@ -37,7 +69,7 @@ zen-look-and-feel-compact-view-enabled =
 zen-look-and-feel-compact-view-top-toolbar = 
     .label = Dölj det övre verktygsfältet samt i kompakt läge
 zen-look-and-feel-compact-toolbar-flash-popup = 
-    .label = Gör kort popup i verktygsfältet när du växlar eller öppnar nya flikar i kompakt läge
+    .label = Visa verktygsfältet kortvarigt när du växlar eller öppnar ny flikar i kompakt läge
 zen-look-and-feel-window-drag-header = Fönsterdragning
 zen-look-and-feel-window-drag-description = Flytta fönstret genom att dra tomt utrymme högst upp på webbplatser, precis som titelfältet.
 zen-window-drag-enabled = 
@@ -91,7 +123,7 @@ pane-zen-workspaces-header = Arbetsytor
 zen-settings-workspaces-header = Allmänna inställningar för arbetsytor
 zen-settings-workspaces-description = Med arbetsytor kan du ha flera sessioner på en gång!
 zen-settings-workspaces-enabled = 
-    .label = Aktivera arbetsytor (experimentellt)
+    .label = Aktivera arbetsytor
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Dölj standardindikatorn för behållare i flikfältet
 pane-zen-theme-title = Inställningar för tema
@@ -111,28 +143,28 @@ zen-vertical-tabs-expand-tabs-header = Hur man expanderar flikar
 zen-vertical-tabs-expand-tabs-description = Välj hur du vill utöka flikarna i sidofältet
 zen-theme-marketplace-header = Zen Mods
 zen-theme-disable-all-enabled = 
-    .title = Inaktivera alla teman
+    .title = Inaktivera alla moddar
 zen-theme-disable-all-disabled = 
-    .title = Aktivera alla teman
-zen-theme-marketplace-description = Hitta och installera teman från butiken.
+    .title = Aktivera alla moddar
+zen-theme-marketplace-description = Hitta och installera moddar från butiken.
 zen-theme-marketplace-remove-button = 
-    .label = Ta bort tema
+    .label = Ta bort modd
 zen-theme-marketplace-check-for-updates-button = 
     .label = Sök efter uppdateringar
 zen-theme-marketplace-import-button = 
     .label = Importera moddar
 zen-theme-marketplace-export-button = 
     .label = Exportera moddar
-zen-theme-marketplace-import-success = Mods importerade framgångsrikt
+zen-theme-marketplace-import-success = Moddar importerade framgångsrikt
 zen-theme-marketplace-import-failure = Det uppstod ett fel vid import av moddarna
 zen-theme-marketplace-export-success = Moddar exporterade framgångsrikt
 zen-theme-marketplace-export-failure = Det uppstod ett fel vid export av moddarna
-zen-theme-marketplace-updates-success = Temat har uppdaterats
+zen-theme-marketplace-updates-success = Moddet har uppdaterats
 zen-theme-marketplace-updates-failure = Kunde inte hitta några uppdateringar!
 zen-theme-marketplace-toggle-enabled-button = 
-    .title = Inaktivera tema
+    .title = Inaktivera modd
 zen-theme-marketplace-toggle-disabled-button = 
-    .title = Aktivera tema
+    .title = Aktivera modd
 zen-theme-marketplace-remove-confirmation = Är du säker du vill ta bort denna mod?
 zen-theme-marketplace-close-modal = Stäng
 zen-theme-marketplace-theme-header-title = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Skriv något...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Uppdatera installerade moddar automatiskt vid uppstart
+zen-preferences-open-zen-settings = { -brand-short-name } inställningar
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Växla till arbetsyta där behållaren är inställd som standard vid öppnandet av behållarflikar
 zen-theme-marketplace-link = Besök butik
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = Kompakt läge
 zenCKSOption-group-zen-workspace = Arbetsytor
-zenCKSOption-group-zen-other = Andra Zen funktioner
+zenCKSOption-group-zen-tabs = Flikar
 zenCKSOption-group-zen-split-view = Delad vy
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Kopiera nuvarande URL
 zen-text-action-copy-url-markdown-shortcut = Kopiera aktiv URL som Markdown
 zen-toggle-pin-tab-shortcut = Växla fäst flik

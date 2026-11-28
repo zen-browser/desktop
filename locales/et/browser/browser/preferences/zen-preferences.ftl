@@ -23,25 +23,57 @@ zen-glance-trigger-label = Aktiveerimise viis
 zen-glance-enabled = 
     .label = Luba Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Klõps
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Klõps
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Klõps
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Klõps
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Command) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Click
+           *[other] Meta (Command) + Click
+        }
 zen-look-and-feel-compact-view-header = Näita kompaktses vaates
 zen-look-and-feel-compact-view-description = Näita ainult tööriistaribasid, mida aktiivselt kasutad!
 zen-look-and-feel-compact-view-enabled = 
-    .label = Luba { -brand-short-name }i kompaktne vaade
+    .label = Kasuta { -brand-short-name }i kompaktset vaadet
 zen-look-and-feel-compact-view-top-toolbar = 
-    .label = Peida ka ülemine tööriistariba kompaktses vaates
+    .label = Peida kompaktses vaates ka ülemine tööriistariba
 zen-look-and-feel-compact-toolbar-flash-popup = 
-    .label = Lühidalt kuva tööriistariba hüpikut kui lülitutakse kaartide vahel või avatakse uus kaart kompaktses režiimis
-zen-look-and-feel-window-drag-header = Window dragging
-zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
+    .label = Lühidalt kuva tööriistariba hüpikut kui lülitutakse kaartide vahel või avatakse uus kaart kompaktses vaates
+zen-look-and-feel-window-drag-header = Akende lohistamine
+zen-look-and-feel-window-drag-description = Liiguta akent, lohistades veebilehe ülaosas asuvat tühja ala, täpselt nagu pealkirjariba puhul.
 zen-window-drag-enabled = 
-    .label = Allow dragging the window from web pages
+    .label = Luba akende lohistamine veebilehtedelt
 pane-zen-tabs-title = Kaartide haldamine
 category-zen-workspaces = 
     .tooltiptext = { pane-zen-tabs-title }
@@ -51,8 +83,8 @@ zen-tabs-select-recently-used-on-close =
 zen-tabs-close-on-back-with-no-history = 
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 zen-settings-workspaces-sync = 
-    .label = Sync your sidebar across devices
-    .description = Keep your workspaces, pinned tabs and folders in sync on all your devices through your Mozilla account.
+    .label = Sünkrooni oma külgriba üle seadmete
+    .description = Hoia oma tööruumid, esiletõstetud vahekaardid ja kaustad sünkroonis kõikides seadmetes oma Mozilla kasutajakonto abil.
 zen-settings-normal-tabs-sync = 
     .label = Include unpinned tabs
     .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
@@ -106,7 +138,7 @@ zen-vertical-tabs-newtab-top-button-up =
     .label = Liiguta uue kaardi nupp algusesse
 zen-vertical-tabs-expand-tabs-by-default = Kaardid on vaikimisi laiendatud
 zen-vertical-tabs-dont-expand-tabs-by-default = Ära laienda kaarte vaikimisi
-zen-vertical-tabs-expand-tabs-on-hover = Laienda kaardid kursorit peal hoides (ei tööta kompaktses režiimis)
+zen-vertical-tabs-expand-tabs-on-hover = Laienda kaardid kursorit peal hoides (ei tööta kompaktses vaates)
 zen-vertical-tabs-expand-tabs-header = Kuidas kaarte laiendatakse
 zen-vertical-tabs-expand-tabs-description = Vali kuidas laiendatakse kaarte külgribal
 zen-theme-marketplace-header = Zen Mods
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Sisesta midagi...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Uuenda paigaldatud mods-e brauseri avamisel automaatselt
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Konteineri kaartide avamisel lülitu tööruumi kuhu konteiner on vaikimisi määratud
 zen-theme-marketplace-link = Külasta veebipoodi
@@ -160,15 +191,15 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen Mods
-zenCKSOption-group-zen-compact-mode = Kompaktne režiim
 zenCKSOption-group-zen-workspace = Tööruumid
-zenCKSOption-group-zen-other = Muud Zeni funktsioonid
+zenCKSOption-group-zen-tabs = Vahekaardid
 zenCKSOption-group-zen-split-view = Jaotatud vaade
+zenCKSOption-group-zen-layout = Paigutus
 zen-text-action-copy-url-shortcut = Kopeeri praegune URL
 zen-text-action-copy-url-markdown-shortcut = Kopeeri praegune URL Markdown-i märgendina
 zen-toggle-pin-tab-shortcut = Lülita püsikaardiks märkimine sisse/välja
 zen-compact-mode-shortcut-show-sidebar = Lülita hõljuv külgriba sisse/välja
-zen-compact-mode-shortcut-toggle = Lülita kompaktne režiim sisse/välja
+zen-compact-mode-shortcut-toggle = Lülita kompaktne vaade sisse/välja
 zen-glance-expand = Laienda Glance
 zen-workspace-shortcut-switch-1 = Lülitu tööruumi 1
 zen-workspace-shortcut-switch-2 = Lülitu tööruumi 2
@@ -180,7 +211,7 @@ zen-workspace-shortcut-switch-7 = Lülitu tööruumi 7
 zen-workspace-shortcut-switch-8 = Lülitu tööruumi 8
 zen-workspace-shortcut-switch-9 = Lülitu tööruumi 9
 zen-workspace-shortcut-switch-10 = Lülitu tööruumi 10
-zen-workspace-shortcut-create = Create New Workspace
+zen-workspace-shortcut-create = Lisa uus tööruum
 zen-sidebar-shortcut-toggle = Laienda/ahenda külgriba
 zen-library-shortcut-toggle = Toggle Library
 zen-pinned-tab-shortcut-reset = Lähtesta püsikaart algsele URL-ile
@@ -189,5 +220,5 @@ zen-split-view-shortcut-vertical = Lülita vertikaalne jaotatud vaade sisse/väl
 zen-split-view-shortcut-horizontal = Lülita horisontaalne jaotatud vaade sisse/välja
 zen-split-view-shortcut-unsplit = Sulge jaotatud vaade
 zen-new-empty-split-view-shortcut = Uus tühi jaotatud vaade
-zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
-zen-duplicate-tab-shortcut = Duplicate Tab
+zen-close-all-unpinned-tabs-shortcut = Sulge kõik vahekaardid, mis pole esile tõstetud
+zen-duplicate-tab-shortcut = Tee vahekaardist koopia

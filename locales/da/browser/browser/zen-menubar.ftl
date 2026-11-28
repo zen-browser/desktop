@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Mørk
 zen-menubar-new-blank-window = 
     .label = Nyt Tomt Vindue
+zen-menubar-new-little-window = 
+    .label = New Little Window

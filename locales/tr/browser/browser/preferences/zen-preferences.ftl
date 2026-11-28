@@ -23,13 +23,45 @@ zen-glance-trigger-label = Tetikleme yöntemi
 zen-glance-enabled = 
     .label = Gözden geçirmeyi aktifleştir
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + tıklama
+           *[other] Ctrl + tıklama
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Kontrol + tıklama
+           *[other] Ctrl + tıklama
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + tıklama
+           *[other] Alt + tıklama
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + tıklama
+           *[other] Alt + tıklama
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + tıklama
+           *[other] Shift + tıklama
+        }
+    .aria-label = Shift + tıklama
 zen-glance-trigger-meta-click = 
-    .label = Meta (komut) + tıklama
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + tıklama
+           *[other] Meta (Command) + tıklama
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + tıklama
+           *[other] Meta (Command) + tıklama
+        }
 zen-look-and-feel-compact-view-header = Kompakt görünümde göster
 zen-look-and-feel-compact-view-description = Sadece kullandığın araç çubuklarını göster!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Bir şey yazın...
 pane-zen-marketplace-title = Zen Modları
-zen-themes-auto-update = 
-    .label = Yüklü modları başlangıçta otomatik olarak güncelle
+zen-preferences-open-zen-settings = { -brand-short-name } ayarları
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Kapsayıcı sekmelerini açarken kapsayıcının varsayılan olarak ayarlandığı çalışma alanına geç
 zen-theme-marketplace-link = Mağazayı ziyaret et
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Zen modları
-zenCKSOption-group-zen-compact-mode = Kompakt Mod
-zenCKSOption-group-zen-workspace = Çalışma Alanları
-zenCKSOption-group-zen-other = Diğer Zen Özellikleri
+zenCKSOption-group-zen-workspace = Alanlar
+zenCKSOption-group-zen-tabs = Sekmeler
 zenCKSOption-group-zen-split-view = Bölünmüş Görünüm
+zenCKSOption-group-zen-layout = Düzen
 zen-text-action-copy-url-shortcut = Mevcut URL'yi kopyala
 zen-text-action-copy-url-markdown-shortcut = Mevcut URL'yi işaret olarak kopyala
 zen-toggle-pin-tab-shortcut = Sekme sabitlemeyi aç/kapat

@@ -23,13 +23,45 @@ zen-glance-trigger-label = Metoda declanșării
 zen-glance-enabled = 
     .label = Activează Glance
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Click
+           *[other] Ctrl + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Click
+           *[other] Ctrl + Click
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Click
+           *[other] Alt + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Click
+           *[other] Shift + Click
+        }
+    .aria-label = Shift + Click
 zen-glance-trigger-meta-click = 
-    .label = Meta (Command) + Click
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Click
+           *[other] Meta (Comandă) + Click
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Comandă + Click
+           *[other] Meta (Comandă) + Click
+        }
 zen-look-and-feel-compact-view-header = Afișează în Vizualizarea Compactă
 zen-look-and-feel-compact-view-description = Afișează doar Bara de Unelte pe care o folosești!
 zen-look-and-feel-compact-view-enabled = 
@@ -54,8 +86,8 @@ zen-settings-workspaces-sync =
     .label = Sincronizează-ți bara laterală pe toate dispozitivele
     .description = Păstrează-ți spațiile de lucru, filele și folderele fixate sincronizate pe toate dispozitivele prin contul tău Mozilla.
 zen-settings-normal-tabs-sync = 
-    .label = Include unpinned tabs
-    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+    .label = Include filele nefixate
+    .description = Sincronizează filele obișnuite ale fiecărui spațiu, nu doar filele și folderele fixate.
 zen-settings-workspaces-sync-unpinned-tabs = 
     .label = Sincronizează doar Filele Fixate din Spațiile de Lucru
 zen-tabs-cycle-by-attribute = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Scrie ceva...
 pane-zen-marketplace-title = Mod-uri Zen
-zen-themes-auto-update = 
-    .label = Actualizează automat Mod-urile instalate la pornire
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Schimbă pe Spațiul de Lucru unde containerul este setat implicit când deschizi o filă container
 zen-theme-marketplace-link = Vizitează Magazinul
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Mod-uri Zen
-zenCKSOption-group-zen-compact-mode = Modul Compact
-zenCKSOption-group-zen-workspace = Spații de Lucru
-zenCKSOption-group-zen-other = Alte Funcții Zen
+zenCKSOption-group-zen-workspace = Spaces
+zenCKSOption-group-zen-tabs = Tabs
 zenCKSOption-group-zen-split-view = Vizualizare Împărțită
+zenCKSOption-group-zen-layout = Layout
 zen-text-action-copy-url-shortcut = Copiază URL-ul curent
 zen-text-action-copy-url-markdown-shortcut = Copiază URL-ul curent ca Markdown
 zen-toggle-pin-tab-shortcut = Comută Fila Fixată
@@ -182,7 +213,7 @@ zen-workspace-shortcut-switch-9 = Mergi la Spațiul de Lucru 9
 zen-workspace-shortcut-switch-10 = Mergi la Spațiul de Lucru 10
 zen-workspace-shortcut-create = Creează un Spațiu de Lucru Nou
 zen-sidebar-shortcut-toggle = Comută Lățimea Barei Laterale
-zen-library-shortcut-toggle = Toggle Library
+zen-library-shortcut-toggle = Comutare bibliotecă
 zen-pinned-tab-shortcut-reset = Resetează Fila Fixată la URL-ul Fixat
 zen-split-view-shortcut-grid = Comută Vizualizarea Împărțită tip Grilă
 zen-split-view-shortcut-vertical = Comută Vizualizarea Împărțită Verticală

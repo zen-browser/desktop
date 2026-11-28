@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-current-profile-text = 当前配置
-unified-extensions-description = 扩展用于为 { -brand-short-name } 带来更多额外功能。
+unified-extensions-description = 扩展为 { -brand-short-name } 提供更多额外功能。
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
@@ -29,12 +29,12 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = 替换为当前 URL
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = 编辑…
+    .label = 编辑……
     .accesskey = E
 tab-context-zen-edit-title = 
-    .label = 更改标签…
+    .label = 更改标签……
 tab-context-zen-edit-icon = 
-    .label = 更改图标…
+    .label = 更改图标……
 zen-themes-corrupted = 您的 { -brand-short-name } 模组文件已损坏。它们已重置为默认主题。
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = 新的地址栏已启用，不再需要新标签页。<br/><br/>打开一个新标签页来试试看新地址栏！
@@ -43,8 +43,16 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
-zen-copy-current-url-confirmation = 网址已复制到剪贴板！
-zen-copy-current-url-as-markdown-confirmation = 已将当前网址复制为 Markdown 格式！
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] 已复制当前网址！
+       *[other] 已复制 { $count } 个网址！
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] 已将当前网址复制为 Markdown！
+       *[other] 已将 { $count } 个网址复制为 Markdown！
+    }
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 
@@ -56,9 +64,12 @@ zen-pinned-tab-edit-url-title = 编辑固定 URL
 zen-pinned-tab-edit-url-label = 请输入此固定标签页应指向的 URL：
 zen-tabs-renamed = 标签页重命名成功！
 zen-background-tab-opened-toast = 新的后台标签页已打开 ！
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = 工作区重命名成功！
 zen-split-view-limit-toast = 无法在分屏视图中添加更多面板！
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
+zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
+zen-sidebar-drag-collapsed-toast = 侧边栏已隐藏！按 <span>{ $shortcut }</span> 即可重新显示侧边栏。
 zen-toggle-compact-mode-button = 
     .label = 简洁模式
     .tooltiptext = 切换简洁模式
@@ -68,7 +79,7 @@ zen-toggle-compact-mode-button =
 zen-learn-more-text = 了解更多
 zen-close-label = 关闭
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = 搜索…
+    .placeholder = 搜索……
 zen-icons-picker-emoji = 
     .label = 表情符号
 zen-icons-picker-svg = 
@@ -102,7 +113,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = 分享此页面
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = 创建 Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = 进入阅读模式
 zen-site-data-header-screenshot = 
@@ -139,3 +150,14 @@ zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 知道了
 zen-appmenu-new-blank-window = 
     .label = 新建空白窗口
+zen-appmenu-new-little-window = 
+    .label = 新建小窗
+zen-little-window-open-in-space = 在 <b data-l10n-name="space">{ $space }</b> 中打开
+zen-little-window-open-in-new-window = 在 { -brand-short-name } 中打开
+zen-little-window-choose-space = 
+    .tooltiptext = 选择工作区
+zen-little-window-title = Zen 小窗
+zen-little-window-intro-title = 已在 <i data-l10n-name="name">Zen 小窗</i> 中打开
+zen-little-window-intro-description = 点击“在……中打开”可将此页面移至完整窗口，或按 { $shortcut } 关闭
+zen-little-window-download-source = 
+    .value = 来自 { $host }

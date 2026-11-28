@@ -14,7 +14,7 @@ tab-context-zen-reset-pinned-tab =
 tab-context-zen-add-essential = 
     .label = Essentialsに追加
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max }スロットがいっぱいです
+tab-context-zen-add-essential-badge = { $num } / { $max } スロットを使用中
 tab-context-zen-remove-essential = 
     .label = Essentialsから削除
     .accesskey = R
@@ -26,7 +26,7 @@ tab-context-zen-edit-pinned-page =
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 現在のURLに置き換えられます
+    .label = 現在のURLに置き換える
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
     .label = 編集…
@@ -45,22 +45,33 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = カスタムカラー
-zen-copy-current-url-confirmation = URLをクリップボードにコピーしました！
-zen-copy-current-url-as-markdown-confirmation = URLをMarkdownとしてコピーしました！
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] 現在のURLをコピーしました！
+       *[other] { $count }個のURLをコピーしました！
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] 現在のURLをMarkdownとしてコピーしました！
+       *[other] { $count }個のURLをMarkdownとしてコピーしました！
+    }
 zen-general-cancel-label = 
     .label = キャンセル
 zen-general-confirm = 
     .label = 確定
 zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換えられました！
 zen-pinned-tab-url-edited = ピン留めされたタブのURLを更新しました！
-zen-pinned-tab-url-invalid = このURLは有効が見えません。
-zen-pinned-tab-edit-url-title = ピン留めされたURLを編集
+zen-pinned-tab-url-invalid = 無効なURLです。
+zen-pinned-tab-edit-url-title = ピン留めされたタブのURLを編集
 zen-pinned-tab-edit-url-label = このピン留めされたタブのURLを入力してください：
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
 zen-split-view-limit-toast = 分割ビューにこれ以上パネルを追加できません！
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-shortcut-blocked-toast = <span>再度 { $shortcut }</span> で { $action }
+zen-shortcut-blocked-toast-default-action = { -brand-short-name } で使う
+zen-sidebar-drag-collapsed-toast = サイドバーを非表示にしました！ <span>{ $shortcut }</span> で元に戻せます。
 zen-toggle-compact-mode-button = 
     .label = コンパクトモード
     .tooltiptext = コンパクトモードの切り替え
@@ -104,7 +115,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = このページをシェアする
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Boostを作成
 zen-site-data-header-reader-mode = 
     .tooltiptext = リーダーモードにする
 zen-site-data-header-screenshot = 
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = もっと詳しく
 zen-window-sync-migration-dialog-accept = わかりました
 zen-appmenu-new-blank-window = 
     .label = 新しい空のウィンドウ
+zen-appmenu-new-little-window = 
+    .label = 新しい小さなウィンドウ
+zen-little-window-open-in-space = <b data-l10n-name="space">{ $space }</b> で開く
+zen-little-window-open-in-new-window = { -brand-short-name } で開く
+zen-little-window-choose-space = 
+    .tooltiptext = スペースを選択
+zen-little-window-title = Little Zen
+zen-little-window-intro-title = <i data-l10n-name="name">小さな Zen</i> で開きました
+zen-little-window-intro-description = 開くボタンからこのページをフルウィンドウへ移動するか、{ $shortcut } で閉じることができます
+zen-little-window-download-source = 
+    .value = From { $host }

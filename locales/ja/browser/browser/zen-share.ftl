@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-share-space = 
-    .label = Share Space…
+    .label = スペースを共有…
 zen-share-folder = 
-    .label = Share Folder…
+    .label = フォルダを共有…
 zen-share-split-view = 
-    .label = Share Split View…
-zen-share-link-copied-toast = Share link copied!
-zen-share-link-expires-description = Anyone with the link can open it until { $date }
-zen-share-link-permanent-description = Anyone with the link can open it
-zen-share-error-toast = Couldn't create a share link
-zen-share-error-auth-description = The share server rejected your key
-zen-share-error-too-large-description = This share is too big to upload
-zen-share-error-rate-limited-description = You're sharing too fast, try again in a minute
-zen-share-error-network-description = Couldn't reach the share server
-zen-share-error-empty-description = There's nothing shareable here
-zen-share-error-server-description = The share server returned an error
+    .label = 分割ビューを共有…
+zen-share-link-copied-toast = 共有リンクをコピーしました！
+zen-share-link-expires-description = リンクを持っている人なら誰でも、{ $date } まで開くことができます
+zen-share-link-permanent-description = リンクを持っている人は誰でも開くことができます
+zen-share-error-toast = 共有リンクを作成できませんでした
+zen-share-error-auth-description = 共有サーバーがあなたのキーを拒否しました
+zen-share-error-too-large-description = この共有はサイズが大きすぎるためアップロードできません
+zen-share-error-rate-limited-description = まだ準備ができていません。しばらくしてからもう一度お試しください
+zen-share-error-network-description = 共有サーバーにアクセスできませんでした
+zen-share-error-empty-description = 共有できるものはありません
+zen-share-error-server-description = 共有サーバーがエラーを返しました
 zen-share-overlay-loading = Loading shared tabs…
 zen-share-overlay-from-space = A Space from { $name }
 zen-share-overlay-from-folder = A Folder from { $name }

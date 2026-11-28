@@ -5,18 +5,20 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Laienda esiletõstetud vahekaardid
+           *[false] Ahenda esiletõstetud vahekaarte
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Välimus
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Veebisaitides on kasutusel:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automaatne välimus
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Hele välimus
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Tume välimus
 zen-menubar-new-blank-window = 
-    .label = New Blank Window
+    .label = Uus tühi aken
+zen-menubar-new-little-window = 
+    .label = Uus väike aken

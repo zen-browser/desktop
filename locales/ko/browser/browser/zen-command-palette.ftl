@@ -16,6 +16,7 @@ zen-action-settings = 설정
 zen-action-open-private-window = 사생활 보호 창 열기
 zen-action-open-new-window = 새 창 열기
 zen-action-new-blank-window = 새 빈 창
+zen-action-new-little-window = 새 작은 창
 zen-action-pin-tab = 탭 고정
 zen-action-unpin-tab = 탭 고정 해제
 zen-action-open-space-routing = 스페이스 경로 설정 열기

@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Fosca
 zen-menubar-new-blank-window = 
     .label = Nova finestra en blanc
+zen-menubar-new-little-window = 
+    .label = Mini finestra nova

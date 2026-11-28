@@ -20,3 +20,5 @@ zen-menubar-appearance-dark =
     .label = Gelap
 zen-menubar-new-blank-window = 
     .label = Jendela Kosong Baru
+zen-menubar-new-little-window = 
+    .label = New Little Window

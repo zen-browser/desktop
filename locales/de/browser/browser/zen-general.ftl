@@ -29,12 +29,12 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Mit aktueller URL ersetzen
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Bearbeiten...
+    .label = Bearbeiten…
     .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Titel ändern...
+    .label = Titel ändern…
 tab-context-zen-edit-icon = 
-    .label = Symbol ändern...
+    .label = Symbol ändern…
 zen-themes-corrupted = Deine { -brand-short-name }-Mods-Datei ist beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
@@ -45,8 +45,16 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimieren
     .tooltip = Minimieren
 zen-panel-ui-gradient-generator-custom-color = Eigene Farbe
-zen-copy-current-url-confirmation = URL kopiert!
-zen-copy-current-url-as-markdown-confirmation = URL als Markdown kopiert!
+zen-copy-urls-confirmation =
+    { $count ->
+        [1] Aktuelle URL kopiert!
+       *[other] { $count } URLs kopiert!
+    }
+zen-copy-urls-as-markdown-confirmation =
+    { $count ->
+        [1] Aktuelle URL als Markdown kopiert!
+       *[other] { $count } URLs als Markdown kopiert!
+    }
 zen-general-cancel-label = 
     .label = Abbrechen
 zen-general-confirm = 
@@ -58,9 +66,12 @@ zen-pinned-tab-edit-url-title = Angeheftete URL bearbeiten
 zen-pinned-tab-edit-url-label = Gib die URL an, auf die der angeheftete Tab verweisen soll:
 zen-tabs-renamed = Tab umbenannt!
 zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
+zen-zoom-changed-toast = { NUMBER($percentage, style: "percent") }
 zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
 zen-split-view-limit-toast = Diese Split View kann keine weiteren Panels aufnehmen!
-zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
+zen-shortcut-blocked-toast = <span>{ $shortcut }</span> again to { $action }
+zen-shortcut-blocked-toast-default-action = use it in { -brand-short-name }
+zen-sidebar-drag-collapsed-toast = Seitenleiste ausgeblendet! Mit <span>{ $shortcut }</span> holst du sie zurück.
 zen-toggle-compact-mode-button = 
     .label = Kompakter Modus
     .tooltiptext = Kompakten Modus umschalten
@@ -104,7 +115,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Diese Seite teilen
 zen-site-data-header-boost = 
-    .tooltiptext = Create a Boost
+    .tooltiptext = Boost erstellen
 zen-site-data-header-reader-mode = 
     .tooltiptext = Lesemodus aktivieren
 zen-site-data-header-screenshot = 
@@ -141,3 +152,14 @@ zen-window-sync-migration-dialog-learn-more = Mehr erfahren
 zen-window-sync-migration-dialog-accept = Verstanden
 zen-appmenu-new-blank-window = 
     .label = Neues leeres Fenster
+zen-appmenu-new-little-window = 
+    .label = New Little Window
+zen-little-window-open-in-space = Open in <b data-l10n-name="space">{ $space }</b>
+zen-little-window-open-in-new-window = In { -brand-short-name } öffnen
+zen-little-window-choose-space = 
+    .tooltiptext = Wähle einen Space
+zen-little-window-title = Little Zen
+zen-little-window-intro-title = Opened in <i data-l10n-name="name">Little Zen</i>
+zen-little-window-intro-description = Click “Open in” to move this page to a full window, or { $shortcut } to close
+zen-little-window-download-source = 
+    .value = From { $host }

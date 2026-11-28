@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Space Routing Settings
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
+zen-space-routing-tab-routed-toast = Uus vahekaart on avatud tööruumis { $targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->

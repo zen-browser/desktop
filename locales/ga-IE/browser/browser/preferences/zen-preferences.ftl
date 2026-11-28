@@ -23,13 +23,45 @@ zen-glance-trigger-label = Modh spreagtha
 zen-glance-enabled = 
     .label = Cumasaigh sracfhéachaint
 zen-glance-trigger-ctrl-click = 
-    .label = Ctrl + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⌃ + Cliceáil
+           *[eile] Ctrl + Cliceáil
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Control + Cliceáil
+           *[eile] Ctrl + Cliceáil
+        }
 zen-glance-trigger-alt-click = 
-    .label = Alt + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⌥ + Cliceáil
+           *[eile] Alt + Cliceáil
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Option + Cliceáil
+           *[eile] Alt + Cliceáil
+        }
 zen-glance-trigger-shift-click = 
-    .label = Shift + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⇧ + Cliceáil
+           *[eile] Shift + Cliceáil
+        }
+    .aria-label = Shift + Cliceáil
 zen-glance-trigger-meta-click = 
-    .label = Meta (Ordú) + Cliceáil
+    .label =
+        { PLATFORM() ->
+            [macos] ⌘ + Cliceáil
+           *[eile] Meta (Command) + Cliceáil
+        }
+    .aria-label =
+        { PLATFORM() ->
+            [macos] Command + Cliceáil
+           *[eile] Meta (Command) + Cliceáil
+        }
 zen-look-and-feel-compact-view-header = Taispeáin i ndlúth d’amharc
 zen-look-and-feel-compact-view-description = Ná taispeáin ach na barraí uirlisí a úsáideann tú!
 zen-look-and-feel-compact-view-enabled = 
@@ -142,8 +174,7 @@ zen-theme-marketplace-dropdown-default-label =
 zen-theme-marketplace-input-default-placeholder = 
     .placeholder = Clóscríobh rud éigin...
 pane-zen-marketplace-title = Modhanna Zen
-zen-themes-auto-update = 
-    .label = Nuashonraigh mods suiteáilte go huathoibríoch ag am tosaithe
+zen-preferences-open-zen-settings = { -brand-short-name } Settings
 zen-settings-workspaces-force-container-tabs-to-workspace = 
     .label = Athraigh go dtí an spás oibre ina bhfuil an coimeádán socraithe mar réamhshocrú agus cluaisíní coimeádáin á n-oscailt
 zen-theme-marketplace-link = Tabhair cuairt ar an Siopa
@@ -160,10 +191,10 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 category-zen-marketplace = 
     .tooltiptext = Modanna Zen
-zenCKSOption-group-zen-compact-mode = Mód Dlúth
-zenCKSOption-group-zen-workspace = Spásanna Oibre Eile
-zenCKSOption-group-zen-other = Gnéithe Zen Eile
+zenCKSOption-group-zen-workspace = Spásanna
+zenCKSOption-group-zen-tabs = Cluaisíní
 zenCKSOption-group-zen-split-view = Radharc Scoilte
+zenCKSOption-group-zen-layout = Leagan amach
 zen-text-action-copy-url-shortcut = Cóipeáil an URL reatha
 zen-text-action-copy-url-markdown-shortcut = Cóipeáil an URL reatha mar Markdown
 zen-toggle-pin-tab-shortcut = Cluaisín bioráin a scoránaigh

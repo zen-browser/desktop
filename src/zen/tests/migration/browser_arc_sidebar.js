@@ -288,6 +288,59 @@ add_task(async function test_apply_arc_sidebar_keeps_used_space() {
   await cleanupImportedState(original);
 });
 
+add_task(async function test_arc_renamed_tabs() {
+  const sidebar = buildArcSidebar();
+  const { items } = sidebar.sidebar.containers[1];
+  const itemOf = id => items[items.indexOf(id) + 1];
+  itemOf("tab-1").title = "Example";
+  itemOf("tab-2").title = "Renamed Two";
+  itemOf("fav-1").title = "My Calendar";
+
+  const plan = ZenMigrationUtils.parseArcSidebar(sidebar);
+  const [first] = plan.spaces;
+  Assert.deepEqual(
+    first.items[0],
+    { type: "tab", url: "https://example.com/", title: "Example" },
+    "A name equal to the page title is not a rename"
+  );
+  Assert.deepEqual(
+    first.items[1].items[0],
+    {
+      type: "tab",
+      url: "https://example.com/2",
+      title: "Renamed Two",
+      renamed: true,
+    },
+    "A tab renamed in Arc keeps its Arc name instead of the page title"
+  );
+  Assert.equal(plan.favorites[0].title, "My Calendar");
+  ok(plan.favorites[0].renamed, "Renamed favorites are flagged too");
+
+  const original = snapshotActiveWorkspace();
+  await ZenMigrationUtils.applyArcSidebar(plan, window);
+  const [tab, folder] = pinnedItemsOf(original.uuid);
+  Assert.strictEqual(
+    tab.zenStaticLabel,
+    undefined,
+    "Tabs that were not renamed keep following the page title"
+  );
+  const renamed = folderItemsOf(folder)[0];
+  Assert.equal(renamed.label, "Renamed Two", "The renamed tab shows its name");
+  Assert.equal(
+    renamed.zenStaticLabel,
+    "Renamed Two",
+    "and keeps it once the page loads"
+  );
+  const essential = gBrowser.tabs.find(t => t.hasAttribute("zen-essential"));
+  Assert.equal(
+    essential.zenStaticLabel,
+    "My Calendar",
+    "Renamed favorites keep their name as essentials"
+  );
+
+  await cleanupImportedState(original);
+});
+
 add_task(async function test_arc_migrator_resource() {
   const original = snapshotActiveWorkspace();
   const dir = await IOUtils.createUniqueDirectory(

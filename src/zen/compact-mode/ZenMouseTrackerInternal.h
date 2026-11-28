@@ -7,6 +7,8 @@
 
 #include "nscore.h"
 
+class nsIWidget;
+
 // On Linux there's no reliable way to observe the global pointer (Wayland
 // doesn't expose it at all), so we don't track there and callers fall back
 // to their timeout based behavior
@@ -38,6 +40,21 @@ class ZenNativeMouseMonitor final {
 #else
   static nsresult Start() { return NS_ERROR_NOT_AVAILABLE; }
   static void Stop() {}
+#endif
+
+#ifdef XP_WIN
+  /**
+   * @brief Whether the screen point (device pixels) belongs to another window
+   *   that draws nothing there, i.e. lies on its invisible border.
+   */
+  static bool IsCoveredByForeignBorder(nsIWidget* aWidget, int32_t aX,
+                                       int32_t aY);
+  // In device pixels; false when the cursor position can't be read
+  static bool GetCursorPosition(int32_t* aX, int32_t* aY);
+#else
+  static bool IsCoveredByForeignBorder(nsIWidget*, int32_t, int32_t) {
+    return false;
+  }
 #endif
 
   ZenNativeMouseMonitor() = delete;

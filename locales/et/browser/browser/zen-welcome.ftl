@@ -23,6 +23,6 @@ zen-welcome-block-ads-yes = <strong>YES</strong>, block ads for me.
 zen-welcome-block-ads-no = <strong>NO</strong>, show me everything.
 zen-welcome-workspace-colors-title = Sinu tööruumid, sinu värvid.
 zen-welcome-workspace-colors-description = Isikupärasta oma brauser, andes igale tööruumile omapärase värvitooni.
-zen-welcome-start-browsing-title = All set? Let’s get rolling!
+zen-welcome-start-browsing-title = Kõik on valmis? Alustame siis!
 zen-welcome-start-browsing-description-1 = Kõik on valmis. { -brand-short-name }iga sirvimise alustamiseks klõpsake alloleval nupul.
 zen-welcome-start-browsing = Hakkame pihta!

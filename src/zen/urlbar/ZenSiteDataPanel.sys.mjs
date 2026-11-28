@@ -9,6 +9,24 @@ const ADDONS_BUTTONS_HIDDEN = Services.prefs.getBoolPref(
   true
 );
 
+const VOLUME_SNAP_PERCENT = 3;
+const VOLUME_STEP_PERCENT = 5;
+const VOLUME_SAVE_DELAY_MS = 250;
+const VOLUME_VALUE_INSIDE_POSITION = 0.35;
+
+// Frame of media-volume-sprite.svg for each level, 12 frames apart. Frames
+// play at roughly the pace of the library sprites but a change never takes
+// longer than VOLUME_ICON_MAX_DURATION, so the icon keeps up with fast drags.
+const VOLUME_ICON_FRAMES = {
+  muted: 0,
+  low: 12,
+  medium: 24,
+  high: 36,
+  boosted: 48,
+};
+const VOLUME_ICON_FPS = 100;
+const VOLUME_ICON_MAX_DURATION = 0.25;
+
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -75,6 +93,7 @@ export class nsZenSiteDataPanel {
 
   #initEventListeners() {
     this.unifiedPanel.addEventListener("popupshowing", this);
+    this.unifiedPanel.addEventListener("popuphidden", this);
     this.document
       .getElementById("zen-site-data-manage-addons")
       .addEventListener("click", this);
@@ -89,11 +108,28 @@ export class nsZenSiteDataPanel {
       "zen-site-data-security-info",
       "zen-site-data-actions",
       "zen-site-data-new-addon-button",
+      "zen-site-data-volume-mute",
     ];
 
     for (let id of kCommandIDs) {
       this.document.getElementById(id).addEventListener("command", this);
     }
+
+    const volumeSlider = this.document.getElementById(
+      "zen-site-data-volume-slider"
+    );
+    for (const type of [
+      "pointerdown",
+      "pointermove",
+      "pointerup",
+      "lostpointercapture",
+      "mousedown",
+      "keydown",
+      "dblclick",
+    ]) {
+      volumeSlider.addEventListener(type, this);
+    }
+    volumeSlider.addEventListener("wheel", this, { passive: false });
 
     this.#initContextMenuEventListener();
   }
@@ -232,6 +268,7 @@ export class nsZenSiteDataPanel {
   #preparePanel() {
     this.#resetSiteOptionsList();
     this.#setSiteBoost();
+    this.#setSiteVolume();
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
@@ -618,6 +655,279 @@ export class nsZenSiteDataPanel {
     section.hidden = !list.childElementCount;
   }
 
+  #setSiteVolume() {
+    const { gBrowser, gIdentityHandler, gZenTabVolume } = this.window;
+    const item = this.document.getElementById("zen-site-data-volume");
+    item.hidden =
+      !gZenTabVolume?.canControl(gBrowser.selectedTab) ||
+      gIdentityHandler._isSecureInternalUI;
+    if (item.hidden) {
+      return;
+    }
+
+    const max = Math.round(gZenTabVolume.maxVolume * 100);
+    const slider = this.document.getElementById("zen-site-data-volume-slider");
+    slider.setAttribute("aria-valuemax", max);
+
+    const tab = gBrowser.selectedTab;
+    this.#setVolumeIcon(
+      tab.muted ? "muted" : this.#getVolumeLevel(gZenTabVolume.getVolume(tab)),
+      { animate: false }
+    );
+    this.#updateVolumeItem();
+  }
+
+  get #volumeMax() {
+    return Number(
+      this.document
+        .getElementById("zen-site-data-volume-slider")
+        .getAttribute("aria-valuemax")
+    );
+  }
+
+  #updateVolumeItem() {
+    const item = this.document.getElementById("zen-site-data-volume");
+    if (item.hidden) {
+      return;
+    }
+
+    const tab = this.window.gBrowser.selectedTab;
+    const volume = this.window.gZenTabVolume.getVolume(tab);
+    const percent = Math.round(volume * 100);
+    const { muted } = tab;
+
+    item.toggleAttribute("muted", muted);
+    this.#setVolumeIcon(muted ? "muted" : this.#getVolumeLevel(volume));
+
+    const slider = this.document.getElementById("zen-site-data-volume-slider");
+    const position = Math.min(percent / this.#volumeMax, 1);
+    slider.setAttribute("aria-valuenow", percent);
+    slider.style.setProperty("--zen-volume-position", position);
+    slider.toggleAttribute(
+      "value-inside",
+      position >= VOLUME_VALUE_INSIDE_POSITION
+    );
+
+    const valueLabel = this.document.getElementById(
+      "zen-site-data-volume-value"
+    );
+    if (muted) {
+      this.document.l10n.setAttributes(
+        valueLabel,
+        "zen-site-data-volume-muted"
+      );
+    } else {
+      this.document.l10n.setAttributes(
+        valueLabel,
+        "zen-site-data-volume-value",
+        { volume }
+      );
+    }
+
+    this.document.l10n.setAttributes(
+      this.document.getElementById("zen-site-data-volume-mute"),
+      muted ? "zen-site-data-volume-unmute" : "zen-site-data-volume-mute"
+    );
+  }
+
+  #getVolumeLevel(volume) {
+    if (volume === 0) {
+      return "muted";
+    }
+    if (volume > 1) {
+      return "boosted";
+    }
+    if (volume < 0.34) {
+      return "low";
+    }
+    return volume < 0.67 ? "medium" : "high";
+  }
+
+  #setVolumeIcon(level, { animate = true } = {}) {
+    const icon = this.document.querySelector(
+      ".zen-site-data-volume-icon-strip"
+    );
+    if (icon.getAttribute("level") === level) {
+      return;
+    }
+    const frame = VOLUME_ICON_FRAMES[level];
+    // Start from the frame on screen, which may be in the middle of a
+    // previous transition.
+    const current = Number(
+      this.window
+        .getComputedStyle(icon)
+        .getPropertyValue("--zen-volume-icon-frame")
+    );
+    const frames = animate ? Math.abs(frame - current) : 0;
+    icon.style.setProperty(
+      "--zen-volume-icon-duration",
+      `${Math.min(frames / VOLUME_ICON_FPS, VOLUME_ICON_MAX_DURATION)}s`
+    );
+    icon.style.setProperty("--zen-volume-icon-frame", frame);
+    icon.setAttribute("level", level);
+  }
+
+  #onVolumePointer(event) {
+    const slider = this.document.getElementById("zen-site-data-volume-slider");
+    switch (event.type) {
+      case "pointerdown":
+        if (
+          event.button !== 0 ||
+          event.target.closest("#zen-site-data-volume-mute")
+        ) {
+          return;
+        }
+        slider.setPointerCapture(event.pointerId);
+        slider.setAttribute("dragging", "true");
+        break;
+      case "pointermove":
+        if (!slider.hasPointerCapture(event.pointerId)) {
+          return;
+        }
+        break;
+      case "pointerup":
+        if (slider.hasPointerCapture(event.pointerId)) {
+          slider.releasePointerCapture(event.pointerId);
+        }
+        return;
+      case "lostpointercapture":
+        // Also fired for pointercancel and when the panel closes mid drag.
+        if (slider.hasAttribute("dragging")) {
+          slider.removeAttribute("dragging");
+          this.#saveVolume();
+        }
+        return;
+    }
+
+    // The fill is never narrower than the round end with the mute button.
+    // The pointer position maps to the center of that end.
+    const rect = slider.getBoundingClientRect();
+    let position =
+      (event.clientX - rect.left - rect.height / 2) /
+      (rect.width - rect.height);
+    if (this.window.RTL_UI) {
+      position = 1 - position;
+    }
+    position = Math.min(Math.max(position, 0), 1);
+    this.#setVolumePercent(Math.round(position * this.#volumeMax));
+  }
+
+  #onVolumeWheel(event) {
+    if (!event.deltaY) {
+      return;
+    }
+    event.preventDefault();
+    const step = event.deltaY < 0 ? VOLUME_STEP_PERCENT : -VOLUME_STEP_PERCENT;
+    this.#nudgeVolume(this.#currentVolumePercent + step);
+  }
+
+  #onVolumeKeyDown(event) {
+    if (event.target.closest("#zen-site-data-volume-mute")) {
+      return;
+    }
+    const { RTL_UI } = this.window;
+    const percent = this.#currentVolumePercent;
+    let target;
+    switch (event.key) {
+      case "ArrowUp":
+      case RTL_UI ? "ArrowLeft" : "ArrowRight":
+        target = percent + VOLUME_STEP_PERCENT;
+        break;
+      case "ArrowDown":
+      case RTL_UI ? "ArrowRight" : "ArrowLeft":
+        target = percent - VOLUME_STEP_PERCENT;
+        break;
+      case "PageUp":
+        target = percent + VOLUME_STEP_PERCENT * 4;
+        break;
+      case "PageDown":
+        target = percent - VOLUME_STEP_PERCENT * 4;
+        break;
+      case "Home":
+        target = 0;
+        break;
+      case "End":
+        target = this.#volumeMax;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    this.#nudgeVolume(target);
+  }
+
+  get #currentVolumePercent() {
+    const tab = this.window.gBrowser.selectedTab;
+    return Math.round(this.window.gZenTabVolume.getVolume(tab) * 100);
+  }
+
+  #nudgeVolume(percent) {
+    this.#setVolumePercent(Math.min(Math.max(percent, 0), this.#volumeMax));
+    this.#scheduleVolumeSave();
+  }
+
+  #pendingVolumeSave = null;
+
+  #scheduleVolumeSave() {
+    const tab = this.window.gBrowser.selectedTab;
+    if (this.#pendingVolumeSave?.tab !== tab) {
+      this.#flushVolumeSave();
+    }
+    this.window.clearTimeout(this.#pendingVolumeSave?.timer);
+    this.#pendingVolumeSave = {
+      tab,
+      timer: this.window.setTimeout(
+        () => this.#flushVolumeSave(),
+        VOLUME_SAVE_DELAY_MS
+      ),
+    };
+  }
+
+  #saveVolume() {
+    const tab = this.window.gBrowser.selectedTab;
+    if (this.#pendingVolumeSave?.tab === tab) {
+      this.window.clearTimeout(this.#pendingVolumeSave.timer);
+      this.#pendingVolumeSave = null;
+    }
+    this.window.gZenTabVolume.saveSiteVolume(tab);
+  }
+
+  #flushVolumeSave() {
+    if (!this.#pendingVolumeSave) {
+      return;
+    }
+    const { tab, timer } = this.#pendingVolumeSave;
+    this.#pendingVolumeSave = null;
+    this.window.clearTimeout(timer);
+    if (!tab.closing) {
+      this.window.gZenTabVolume.saveSiteVolume(tab);
+    }
+  }
+
+  #setVolumePercent(percent) {
+    if (Math.abs(percent - 100) <= VOLUME_SNAP_PERCENT) {
+      percent = 100;
+    }
+
+    const tab = this.window.gBrowser.selectedTab;
+    if (tab.muted && percent > 0) {
+      // Moving the slider of a muted tab means the user wants to hear it.
+      tab.toggleMuteAudio();
+    }
+    this.window.gZenTabVolume.setVolume(tab, percent / 100);
+  }
+
+  #setPanelOpenListeners(open) {
+    const kEvents = ["TabSelect", "TabAttrModified", "ZenTabVolumeChanged"];
+    for (const type of kEvents) {
+      if (open) {
+        this.window.addEventListener(type, this);
+      } else {
+        this.window.removeEventListener(type, this);
+      }
+    }
+  }
+
   #getPermissionStateLabelId(permission) {
     const { SitePermissions } = this.window;
     switch (permission.state) {
@@ -746,6 +1056,10 @@ export class nsZenSiteDataPanel {
       }
       case "zen-site-data-header-bookmark": {
         this.window.BookmarkingUI.onStarCommand(event);
+        break;
+      }
+      case "zen-site-data-volume-mute": {
+        this.window.gBrowser.selectedTab.toggleMuteAudio();
         break;
       }
       case "zen-site-data-header-share": {
@@ -902,7 +1216,53 @@ export class nsZenSiteDataPanel {
         this.#onCommandEvent(event);
         break;
       case "popupshowing":
+        if (event.target !== this.unifiedPanel) {
+          break;
+        }
         this.#preparePanel();
+        this.#setPanelOpenListeners(true);
+        break;
+      case "popuphidden":
+        if (event.target === this.unifiedPanel) {
+          this.#setPanelOpenListeners(false);
+          this.#flushVolumeSave();
+        }
+        break;
+      case "pointerdown":
+      case "pointermove":
+      case "pointerup":
+      case "lostpointercapture":
+        this.#onVolumePointer(event);
+        break;
+      case "mousedown":
+        // Clicking the slider must not take focus from the page. Many sites,
+        // games especially, go silent when they lose focus.
+        event.preventDefault();
+        break;
+      case "keydown":
+        this.#onVolumeKeyDown(event);
+        break;
+      case "wheel":
+        this.#onVolumeWheel(event);
+        break;
+      case "dblclick":
+        if (!event.target.closest("#zen-site-data-volume-mute")) {
+          this.#setVolumePercent(100);
+          this.#saveVolume();
+        }
+        break;
+      case "TabSelect":
+        this.#preparePanel();
+        break;
+      case "TabAttrModified":
+        if (event.target.selected && event.detail.changed.includes("muted")) {
+          this.#updateVolumeItem();
+        }
+        break;
+      case "ZenTabVolumeChanged":
+        if (event.target.selected) {
+          this.#updateVolumeItem();
+        }
         break;
     }
   }

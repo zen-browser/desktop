@@ -1,0 +1,24 @@
+diff --git a/dom/media/AudioStream.h b/dom/media/AudioStream.h
+index 7199da9e0552861cbbc6307abaa96d2960e7fe3f..edbc18b92c19369d6a4f57c711a4068fd3907f2a 100644
+--- a/dom/media/AudioStream.h
++++ b/dom/media/AudioStream.h
+@@ -354,7 +354,8 @@ class AudioStream final {
+   RefPtr<MediaSink::EndedPromise> ReinitEndedPromise();
+ 
+   // Set the current volume of the audio playback. This is a value from
+-  // 0 (meaning muted) to 1 (meaning full volume).  Thread-safe.
++  // 0 (meaning muted) to 1 (meaning full volume). Cubeb can only attenuate,
++  // so anything above 1 is applied as software gain.  Thread-safe.
+   void SetVolume(double aVolume);
+ 
+   void SetStreamName(const nsAString& aStreamName);
+@@ -481,6 +482,9 @@ class AudioStream final {
+   // Both written on the MDSM thread, read on the audio thread.
+   std::atomic<float> mPlaybackRate;
+   std::atomic<bool> mPreservesPitch;
++  // Gain for the part of the volume above 1. Written on the MDSM thread, read
++  // on the audio thread.
++  std::atomic<float> mSoftwareGain{1.0f};
+   // Audio thread only
+   bool mAudioThreadChanged = false;
+   Atomic<bool> mCallbacksStarted;

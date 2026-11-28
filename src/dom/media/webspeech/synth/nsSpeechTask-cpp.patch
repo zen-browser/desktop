@@ -1,0 +1,23 @@
+diff --git a/dom/media/webspeech/synth/nsSpeechTask.cpp b/dom/media/webspeech/synth/nsSpeechTask.cpp
+index 6b9c5cb9132deb6f86e41213b949997afaea3563..31c9222d1d23ae7534ff4a3d9e2153fc6e8f7503 100644
+--- a/dom/media/webspeech/synth/nsSpeechTask.cpp
++++ b/dom/media/webspeech/synth/nsSpeechTask.cpp
+@@ -4,6 +4,8 @@
+ 
+ #include "nsSpeechTask.h"
+ 
++#include <algorithm>
++
+ #include "AudioChannelService.h"
+ #include "AudioSegment.h"
+ #include "SharedBuffer.h"
+@@ -369,7 +371,8 @@ void nsSpeechTask::DestroyAudioChannelAgent() {
+ 
+ NS_IMETHODIMP
+ nsSpeechTask::WindowVolumeChanged(float aVolume, bool aMuted) {
+-  SetAudioOutputVolume(aMuted ? 0.0 : mVolume * aVolume);
++  // Speech services can't amplify, so tab volumes above 1 are capped.
++  SetAudioOutputVolume(aMuted ? 0.0 : std::min(mVolume * aVolume, 1.0f));
+   return NS_OK;
+ }
+ 

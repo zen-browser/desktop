@@ -1,0 +1,43 @@
+diff --git a/dom/media/AudioStream.cpp b/dom/media/AudioStream.cpp
+index feacf296f62162d52df89afce8d3f3075f46e69d..beac9a93e13db6abeafa174c03cec0e462a613fb 100644
+--- a/dom/media/AudioStream.cpp
++++ b/dom/media/AudioStream.cpp
+@@ -346,16 +346,19 @@ nsresult AudioStream::OpenCubeb(cubeb* aContext, cubeb_stream_params& aParams,
+ 
+ void AudioStream::SetVolume(double aVolume) {
+   TRACE_COMMENT("AudioStream::SetVolume", "%f", aVolume);
+-  MOZ_ASSERT(aVolume >= 0.0 && aVolume <= 1.0, "Invalid volume");
++  MOZ_ASSERT(aVolume >= 0.0, "Invalid volume");
+ 
+   MOZ_ASSERT(mState != SHUTDOWN, "Don't set volume after shutdown.");
+   if (mState == ERRORED) {
+     return;
+   }
+ 
++  mSoftwareGain = static_cast<float>(std::max(aVolume, 1.0));
++
+   MonitorAutoLock mon(mMonitor);
+   if (InvokeCubeb(cubeb_stream_set_volume,
+-                  aVolume * CubebUtils::GetVolumeScale()) != CUBEB_OK) {
++                  std::min(aVolume, 1.0) * CubebUtils::GetVolumeScale()) !=
++      CUBEB_OK) {
+     LOGE("Could not change volume on cubeb stream.");
+   }
+ }
+@@ -799,6 +802,16 @@ long AudioStream::DataCallback(void* aBuffer, long aFrames) {
+                                    mAudioThreadChanged);
+   }
+ 
++  if (float gain = mSoftwareGain; gain != 1.0f) {
++    uint32_t frames = static_cast<uint32_t>(aFrames) - writer.Available();
++    Span<AudioDataValue> samples(static_cast<AudioDataValue*>(aBuffer),
++                                 frames * mOutChannels);
++    for (AudioDataValue& sample : samples) {
++      sample = FloatToAudioSample<AudioDataValue>(
++          Clip(ConvertAudioSample<float>(sample) * gain));
++    }
++  }
++
+   mDumpFile.Write(static_cast<const AudioDataValue*>(aBuffer),
+                   aFrames * mOutChannels);
+ 

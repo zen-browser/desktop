@@ -1,0 +1,23 @@
+diff --git a/dom/media/webspeech/synth/nsSynthVoiceRegistry.cpp b/dom/media/webspeech/synth/nsSynthVoiceRegistry.cpp
+index e0462552428acab0564c0cc19da69e97bc7a15e0..9adcc6c25b7ce77f14c20130c31ac0f8515ea356 100644
+--- a/dom/media/webspeech/synth/nsSynthVoiceRegistry.cpp
++++ b/dom/media/webspeech/synth/nsSynthVoiceRegistry.cpp
+@@ -4,6 +4,8 @@
+ 
+ #include "nsSynthVoiceRegistry.h"
+ 
++#include <algorithm>
++
+ #include "AudioChannelService.h"
+ #include "SpeechSynthesisChild.h"
+ #include "SpeechSynthesisParent.h"
+@@ -641,7 +643,8 @@ already_AddRefed<nsSpeechTask> nsSynthVoiceRegistry::SpeakUtterance(
+       // TODO : use audio channel agent, open new bug to fix it.
+       AudioPlaybackConfig config =
+           service->GetMediaConfig(topWindow->GetOuterWindow());
+-      volume = config.mMuted ? 0.0f : config.mVolume * volume;
++      // Same cap as in nsSpeechTask::WindowVolumeChanged.
++      volume = config.mMuted ? 0.0f : std::min(config.mVolume * volume, 1.0f);
+     }
+   }
+ 

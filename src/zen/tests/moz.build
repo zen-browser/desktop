@@ -26,6 +26,7 @@ BROWSER_CHROME_MANIFESTS += [
     "space_routing/browser.toml",
     "spaces/browser.toml",
     "split_view/browser.toml",
+    "tab_volume/browser.toml",
     "tabs/browser.toml",
     "ub-actions/browser.toml",
     "ui/browser.toml",

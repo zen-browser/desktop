@@ -1,0 +1,22 @@
+diff --git a/dom/media/ExternalEngineStateMachine.cpp b/dom/media/ExternalEngineStateMachine.cpp
+index 791591c10620ff110b28b76b3388ccf76e0a29b9..6a6bd747d2f8c22af6b95103ff7e4287b0b015ed 100644
+--- a/dom/media/ExternalEngineStateMachine.cpp
++++ b/dom/media/ExternalEngineStateMachine.cpp
+@@ -4,6 +4,7 @@
+ 
+ #include "ExternalEngineStateMachine.h"
+ 
++#include <algorithm>
+ #include <memory>
+ 
+ #include "PerformanceRecorder.h"
+@@ -792,7 +793,8 @@ void ExternalEngineStateMachine::VolumeChanged() {
+   PERFORM_WHEN_ALLOW(VolumeChanged);
+   MOZ_ASSERT(mState.IsReadingMetadata() || mState.IsRunningEngine() ||
+              mState.IsSeekingData());
+-  mEngine->SetVolume(mVolume);
++  // The media engine cannot amplify, so tab volumes above 1 are capped here.
++  mEngine->SetVolume(std::min<double>(mVolume, 1.0));
+ }
+ 
+ void ExternalEngineStateMachine::PreservesPitchChanged() {

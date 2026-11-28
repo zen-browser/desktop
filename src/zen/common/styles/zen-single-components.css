@@ -528,6 +528,154 @@
   margin: 0;
 }
 
+@property --zen-volume-position {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: true;
+}
+
+#zen-site-data-volume {
+  /* Same spacing as between the sections above and around the footer line. */
+  padding: var(--zen-space-9) var(--zen-space-9) var(--zen-space-6);
+}
+
+#zen-site-data-volume-slider {
+  /* Matches the footer buttons right below. */
+  --zen-volume-height: var(--zen-size-30);
+  --zen-volume-fill-color: color-mix(in srgb, currentColor 88%, transparent);
+  --zen-volume-on-fill-color: light-dark(white, rgb(0, 0, 0, 0.8));
+  /* The fill never gets narrower than the round end holding the mute button. */
+  --zen-volume-fill-width: calc(var(--zen-volume-height) + var(--zen-volume-position) * (100% - var(--zen-volume-height)));
+
+  position: relative;
+  min-width: 0;
+  height: var(--zen-volume-height);
+  border-radius: var(--border-radius-circle);
+  background-color: color-mix(in srgb, currentColor 7%, transparent);
+  cursor: pointer;
+  touch-action: none;
+  transition:
+    --zen-volume-position 0.15s ease-out,
+    background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  &[dragging] {
+    transition: background-color 0.15s ease-in-out;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+.zen-site-data-volume-fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: var(--zen-volume-fill-width);
+  border-radius: inherit;
+  background-color: var(--zen-volume-fill-color);
+  transition: opacity 0.15s ease-in-out;
+
+  #zen-site-data-volume[muted] & {
+    opacity: 0.3;
+  }
+}
+
+#zen-site-data-volume-mute {
+  appearance: none;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  width: var(--zen-volume-height);
+  height: var(--zen-volume-height);
+  justify-content: center;
+  align-items: center;
+  -moz-context-properties: fill;
+  fill: currentColor;
+  color: var(--zen-volume-on-fill-color);
+
+  & :is(.toolbarbutton-icon, .toolbarbutton-text) {
+    display: none;
+  }
+
+  #zen-site-data-volume[muted] & {
+    color: currentColor;
+  }
+}
+
+/* Works like the library sprites: a strip of frames moved one whole frame at
+ * a time. Because the frame is an <integer>, a transition between two levels
+ * plays every frame in between. */
+@property --zen-volume-icon-frame {
+  syntax: "<integer>";
+  initial-value: 36;
+  inherits: false;
+}
+
+.zen-site-data-volume-icon {
+  --zen-volume-icon-frames: 49;
+
+  width: var(--zen-size-18);
+  height: var(--zen-size-18);
+  overflow: clip;
+  transition:
+    opacity 0.15s ease-in-out,
+    scale 0.1s ease-in-out;
+
+  #zen-site-data-volume-mute:hover > & {
+    opacity: 0.7;
+  }
+
+  #zen-site-data-volume-mute:hover:active > & {
+    scale: 0.88;
+  }
+}
+
+.zen-site-data-volume-icon-strip {
+  flex: none;
+  width: calc(var(--zen-volume-icon-frames) * 100%);
+  height: 100%;
+  background-image: url("chrome://browser/skin/zen-icons/media-volume-sprite.svg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  transform: translateX(calc(var(--zen-volume-icon-frame) / var(--zen-volume-icon-frames) * -100%));
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* The easing is already drawn into the frames. */
+    transition: --zen-volume-icon-frame var(--zen-volume-icon-duration, 0s) linear;
+  }
+}
+#zen-site-data-volume-value {
+  position: absolute;
+  inset-inline-start: var(--zen-volume-fill-width);
+  margin: 0 var(--zen-space-8);
+  font-size: var(--zen-font-size-11);
+  font-weight: var(--zen-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  opacity: var(--zen-opacity-60);
+  pointer-events: none;
+
+  #zen-site-data-volume-slider[value-inside] > & {
+    translate: calc(-100% - var(--zen-space-8) * 2);
+    color: var(--zen-volume-on-fill-color);
+    opacity: 1;
+  }
+
+  #zen-site-data-volume-slider[value-inside] > &:-moz-locale-dir(rtl) {
+    translate: calc(100% + var(--zen-space-8) * 2);
+  }
+
+  #zen-site-data-volume[muted] & {
+    color: currentColor;
+    opacity: var(--zen-opacity-60);
+  }
+}
+
 #identity-box,
 #page-action-buttons {
   fill-opacity: 0.7;

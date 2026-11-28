@@ -94,6 +94,7 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       document.getElementById(id)?.setAttribute("disabled", "true");
     }
     this.#buildOpenInSpace();
+    this.#openInSpaceInsteadOfFullscreen();
     this.#buildContainerPill();
     this.#buildUrlbarCloseButton();
     if (this.#urlbarOnly) {
@@ -616,6 +617,19 @@ class nsZenLittleWindow extends nsZenDOMOperatedFeature {
       }
     );
     document.querySelector("#urlbar .urlbar-input-container").append(fragment);
+  }
+
+  #openInSpaceInsteadOfFullscreen() {
+    if (AppConstants.platform != "macosx") {
+      return;
+    }
+    window.addEventListener("ZenWindowWillZoom", event => {
+      // eslint-disable-next-line mozilla/valid-services
+      if (!window.fullScreen && Services.zen.isActiveSpaceFullScreen()) {
+        event.preventDefault();
+        this.openInSpace();
+      }
+    });
   }
 
   #buildOpenInSpace() {

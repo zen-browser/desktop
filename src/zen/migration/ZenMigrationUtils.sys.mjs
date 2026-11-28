@@ -291,7 +291,8 @@ class ZenMigrationUtilsClass {
    * @param {object} sidebar The parsed JSON file.
    * @returns {{favorites: object[], spaces: object[]}}
    *   `favorites` holds Arc's top apps (Zen essentials) and each space its
-   *   title, optional emoji icon, theme colors and pinned items tree.
+   *   title, optional emoji icon, theme colors and pinned items tree. Tabs
+   *   renamed in Arc are flagged with `renamed`.
    */
   parseArcSidebar(sidebar) {
     const plan = { favorites: [], spaces: [] };
@@ -336,11 +337,15 @@ class ZenMigrationUtilsClass {
           if (data.tab) {
             const url = normalizeUrl(data.tab.savedURL);
             if (url) {
-              result.push({
+              const entry = {
                 type: "tab",
                 url,
-                title: data.tab.savedTitle || item.title || "",
-              });
+                title: item.title || data.tab.savedTitle || "",
+              };
+              if (item.title && item.title !== data.tab.savedTitle) {
+                entry.renamed = true;
+              }
+              result.push(entry);
             }
           } else if (data.list) {
             const folderItems = convert(item.id, depth + 1);
@@ -705,6 +710,9 @@ class ZenMigrationUtilsClass {
     tab._zenPinnedInitialState = {
       entry: { url: item.url, title: item.title || "" },
     };
+    if (item.renamed) {
+      tab.zenStaticLabel = item.title;
+    }
     return tab;
   }
 

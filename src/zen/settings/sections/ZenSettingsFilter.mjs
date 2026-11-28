@@ -6,6 +6,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   AppConstants: "resource://gre/modules/AppConstants.sys.mjs",
+  ZenSettings: "resource:///modules/zen/settings/ZenSettings.sys.mjs",
 });
 
 const kUnfilteredPanes = new Set(["shortcuts"]);
@@ -13,6 +14,7 @@ const kMissAttribute = "data-filter-miss";
 
 export class ZenSettingsFilter {
   #input = document.getElementById("zen-settings-filter");
+  #moreButton = document.getElementById("zen-settings-filter-more");
 
   constructor(settings) {
     this.settings = settings;
@@ -23,6 +25,10 @@ export class ZenSettingsFilter {
         this.#input.value = "";
         this.#onInput();
       }
+    });
+    this.#moreButton.addEventListener("click", () => {
+      lazy.ZenSettings.searchFirefoxSettings(this.#input.value.trim());
+      window.close();
     });
     window.addEventListener("keydown", event => {
       const accel =
@@ -54,6 +60,7 @@ export class ZenSettingsFilter {
       element.removeAttribute(kMissAttribute);
     }
     document.getElementById("zen-settings-filter-empty").hidden = true;
+    this.#moreButton.hidden = true;
   }
 
   #onInput() {
@@ -66,6 +73,7 @@ export class ZenSettingsFilter {
     }
     if (!this.isActive) {
       document.documentElement.setAttribute("data-filtering", "");
+      this.#moreButton.hidden = false;
       for (const section of Object.values(this.settings.sections)) {
         for (const pane of this.#panes) {
           section.onPaneShown?.(pane.dataset.pane);

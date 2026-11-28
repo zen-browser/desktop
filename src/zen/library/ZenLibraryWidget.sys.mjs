@@ -40,6 +40,20 @@ const BADGE_MARKUP = `
   </span>
 `;
 
+const littleWindowDownloads = new WeakSet();
+
+function isFromLittleWindow(download) {
+  if (littleWindowDownloads.has(download)) {
+    return true;
+  }
+  const context = BrowsingContext.get(download.source?.browsingContextId ?? 0);
+  if (!context?.topChromeWindow?.gZenLittleWindow) {
+    return false;
+  }
+  littleWindowDownloads.add(download);
+  return true;
+}
+
 class ZenLibraryDownloadStack {
   #button;
   #badge;
@@ -478,6 +492,9 @@ class ZenLibraryDownloadStack {
   }
 
   onDownloadAdded(download, { insertBefore } = {}) {
+    if (isFromLittleWindow(download)) {
+      return;
+    }
     const index = insertBefore ? this.#downloads.indexOf(insertBefore) : -1;
     if (index === -1) {
       this.#downloads.push(download);

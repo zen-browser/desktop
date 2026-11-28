@@ -1,0 +1,231 @@
+diff --git a/toolkit/components/pictureinpicture/content/player.xhtml b/toolkit/components/pictureinpicture/content/player.xhtml
+--- a/toolkit/components/pictureinpicture/content/player.xhtml
++++ b/toolkit/components/pictureinpicture/content/player.xhtml
+@@ -5,10 +5,11 @@
+    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+ <html xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+       windowtype="Toolkit:PictureInPicture"
+       macnativefullscreen="false"
++      macfloatsoverfullscreen="true"
+       customtitlebar="true"
+       scrolling="false"
+       >
+   <head>
+     <meta charset="utf-8"/>
+diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
+--- a/widget/cocoa/nsCocoaWindow.h
++++ b/widget/cocoa/nsCocoaWindow.h
+@@ -472,9 +472,10 @@
+   void SetWindowTransform(const mozilla::gfx::Matrix& aTransform) override;
+   void SetInputRegion(const InputRegion&) override;
+   void SetColorScheme(const mozilla::Maybe<mozilla::ColorScheme>&) override;
+   bool GetSupportsNativeFullscreen();
+   void SetSupportsNativeFullscreen(bool aShow) override;
++  void SetFloatsOverFullscreenApplications(bool aFloats) override;
+   void SetWindowAnimationType(WindowAnimationType aType) override;
+   void SetHideTitlebarSeparator(bool) override;
+   bool IsMacTitlebarDirectionRTL() override;
+   void SetCustomTitlebar(bool) override;
+@@ -494,10 +495,14 @@
+   bool IsModal() const { return mModal; }
+   bool IsMediaPiPWindow() const {
+     return mPiPType == mozilla::widget::PiPType::MediaPiP;
+   }
+ 
++  bool FloatsOverFullscreenApplications() const {
++    return mFloatsOverFullscreenApplications;
++  }
++
+   NSWindow* GetCocoaWindow() { return [[mWindow retain] autorelease]; }
+ 
+   void SetMenuBar(RefPtr<nsMenuBarX>&& aMenuBar);
+   already_AddRefed<nsMenuBarX> GetMenuBar();
+ 
+@@ -700,10 +705,11 @@
+   bool mIsAlert = false;  // True if this is an non-native alert window.
+   // True if this window should not auto-enter native fullscreen on its initial
+   // show (e.g. a window created by detaching a tab from a fullscreen window).
+   bool mIsInitialFullscreenSuppressed = false;
+   bool mWasShown = false;
++  bool mFloatsOverFullscreenApplications = false;
+ 
+   int32_t mNumModalDescendants = 0;
+ 
+   // The workspaceID to move to once the window becomes visible. A value of 0
+   // is a no-op.
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -5429,23 +5429,24 @@
+     mWindow.level = NSFloatingWindowLevel;
+     mWindow.collectionBehavior =
+         mWindow.collectionBehavior | NSWindowCollectionBehaviorCanJoinAllSpaces;
+   }
+ 
+-  // Let the Picture-in-Picture player float above other applications'
++  // Let a window that opted in with SetFloatsOverFullscreenApplications(), such
++  // as the Picture-in-Picture player, float above other applications'
+   // native-fullscreen Spaces (bug 1688932). Two things are load-bearing: the
+   // window must carry NSWindowStyleMaskNonactivatingPanel, which BaseWindow
+   // keeps by overriding +_validateStyleMask:, and it must not carry
+   // FullScreenPrimary (handled below). The window level is irrelevant; the
+   // NSFloatingWindowLevel set above is sufficient.
+-  if (mPiPType == PiPType::MediaPiP) {
++  if (FloatsOverFullscreenApplications()) {
+     mWindow.styleMask |= NSWindowStyleMaskNonactivatingPanel;
+     // A window is assigned to a Space when it is first ordered in, and only a
+     // FullScreenAuxiliary window may be placed on another application's
+-    // fullscreen Space. The titled-window block below sets this too, but the
+-    // player is recreated without a titlebar for emulated fullscreen
+-    // (HideWindowChrome) and would otherwise land on a regular Space.
++    // fullscreen Space. The titled-window block below sets this too, but a
++    // floating window recreated without a titlebar for emulated fullscreen
++    // (HideWindowChrome) would otherwise land on a regular Space.
+     mWindow.collectionBehavior |=
+         NSWindowCollectionBehaviorFullScreenAuxiliary |
+         NSWindowCollectionBehaviorFullScreenDisallowsTiling;
+   }
+ 
+@@ -5467,15 +5468,16 @@
+   // SetSupportsNativeFullscreen() can later override based on the XUL
+   // `macnativefullscreen` attribute.
+   if ((mWindowType == WindowType::TopLevel ||
+        mWindowType == WindowType::Dialog) &&
+       (features & NSWindowStyleMaskTitled)) {
+-    // A non-activating player must stay Auxiliary: FullScreenPrimary would
+-    // stop it from being shown on another application's fullscreen Space.
+-    const bool pipOverFullScreen = mPiPType == PiPType::MediaPiP;
++    // A non-activating floating window must stay Auxiliary: FullScreenPrimary
++    // would stop it from being shown on another application's fullscreen
++    // Space.
+     NSWindowCollectionBehavior fsBehavior =
+-        ((features & NSWindowStyleMaskResizable) && !pipOverFullScreen)
++        ((features & NSWindowStyleMaskResizable) &&
++         !FloatsOverFullscreenApplications())
+             ? (NSWindowCollectionBehaviorFullScreenPrimary |
+                NSWindowCollectionBehaviorFullScreenAllowsTiling)
+             : (NSWindowCollectionBehaviorFullScreenAuxiliary |
+                NSWindowCollectionBehaviorFullScreenDisallowsTiling);
+     mWindow.collectionBehavior |= fsBehavior;
+@@ -6544,16 +6546,17 @@
+   mIsWaitingForFullscreenVisibility =
+       !([mWindow occlusionState] & NSWindowOcclusionStateVisible);
+   DispatchOcclusionEvent();
+ 
+   bool restoreKeyToPlayer = false;
+-  // The player only borrows FullScreenPrimary while it is in its own
++  // A window that floats over other applications' fullscreen Spaces, such as
++  // the player, only borrows FullScreenPrimary while it is in its own
+   // fullscreen (see DoMakeFullScreen). Now that it is windowed again, give
+   // Auxiliary back, so it is composited onto another application's fullscreen
+   // Space rather than being hidden behind it. This is also the path taken when
+   // AppKit refused the transition, so the borrow cannot outlive a failure.
+-  if (!aFullscreen && mPiPType == PiPType::MediaPiP &&
++  if (!aFullscreen && FloatsOverFullscreenApplications() &&
+       GetSupportsNativeFullscreen()) {
+     SetSupportsNativeFullscreen(false);
+     restoreKeyToPlayer = true;
+   }
+ 
+@@ -6673,12 +6676,12 @@
+   // NSFloatingWindowLevel, as soon as another application is activated. Lend
+   // the player FullScreenPrimary for the duration of its own fullscreen so it
+   // keeps taking the native path and getting a Space of its own.
+   // CocoaWindowDidEnterFullscreen() gives Auxiliary back when it returns to
+   // windowed, including when AppKit refuses the transition.
+-  if (aFullScreen && aUseSystemTransition && mPiPType == PiPType::MediaPiP &&
+-      !GetSupportsNativeFullscreen()) {
++  if (aFullScreen && aUseSystemTransition &&
++      FloatsOverFullscreenApplications() && !GetSupportsNativeFullscreen()) {
+     SetSupportsNativeFullscreen(true);
+   }
+ 
+   // Figure out what type of transition is being requested.
+   TransitionType transition = TransitionType::Windowed;
+@@ -7733,9 +7736,30 @@
+ 
+   NS_OBJC_END_TRY_IGNORE_BLOCK;
+ }
+ 
++void nsCocoaWindow::SetFloatsOverFullscreenApplications(bool aFloats) {
++  NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
++
++  if (!mWindow) {
++    return;
++  }
++
++  mFloatsOverFullscreenApplications = aFloats;
++  if (!aFloats) {
++    mWindow.styleMask &= ~NSWindowStyleMaskNonactivatingPanel;
++    return;
++  }
++
++  mWindow.styleMask |= NSWindowStyleMaskNonactivatingPanel;
++  if (!mInFullScreenMode) {
++    SetSupportsNativeFullscreen(false);
++  }
++
++  NS_OBJC_END_TRY_IGNORE_BLOCK;
++}
++
+ void nsCocoaWindow::SetWindowAnimationType(
+     nsIWidget::WindowAnimationType aType) {
+   mAnimationType = aType;
+ }
+ 
+@@ -8430,11 +8454,13 @@
+ // is not an NSPanel, in +[NSWindow _validateStyleMask:]. The Picture-in-Picture
+ // player needs that bit on a plain window so it can float over another
+ // application's fullscreen Space without activating Firefox: the window server
+ // gates that on the bit and on FullScreenAuxiliary, never on the class
+ // (bug 1688932). Keep the bit and let AppKit validate the rest of the mask.
+-// Only the player ever asks for it, so this is safe for every BaseWindow.
++// Only the player and windows that opted in with
++// SetFloatsOverFullscreenApplications() ever ask for it, so this is safe for
++// every BaseWindow.
+ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
+   if (![NSWindow respondsToSelector:@selector(_validateStyleMask:)]) {
+     // A future macOS without this method: AppKit strips the bit again and the
+     // player stops floating over other applications' fullscreen Spaces.
+     return aStyleMask;
+diff --git a/widget/nsIWidget.h b/widget/nsIWidget.h
+--- a/widget/nsIWidget.h
++++ b/widget/nsIWidget.h
+@@ -1129,7 +1129,15 @@
+    *
+    * Ignored on child widgets and on non-Mac platforms.
+    */
+   virtual void SetSupportsNativeFullscreen(bool aSupportsNativeFullscreen) {}
+ 
++  /**
++   * Whether this window may be shown on top of another application's native
++   * fullscreen Space.
++   *
++   * Ignored on child widgets and on non-Mac platforms.
++   */
++  virtual void SetFloatsOverFullscreenApplications(bool aFloats) {}
++
+   enum WindowAnimationType {
+     eGenericWindowAnimation,
+diff --git a/xpfe/appshell/AppWindow.cpp b/xpfe/appshell/AppWindow.cpp
+--- a/xpfe/appshell/AppWindow.cpp
++++ b/xpfe/appshell/AppWindow.cpp
+@@ -1448,9 +1448,16 @@
+     windowElement->GetAttribute(u"macnativefullscreen"_ns, value);
+     mWindow->SetSupportsNativeFullscreen(!value.EqualsLiteral("false"));
+     NS_ENSURE_TRUE_VOID(mWindow);
+   }
+ 
++  if (windowElement->HasAttribute(u"macfloatsoverfullscreen"_ns)) {
++    nsAutoString value;
++    windowElement->GetAttribute(u"macfloatsoverfullscreen"_ns, value);
++    mWindow->SetFloatsOverFullscreenApplications(!value.EqualsLiteral("false"));
++    NS_ENSURE_TRUE_VOID(mWindow);
++  }
++
+   // "macanimationtype" attribute
+   windowElement->GetAttribute(u"macanimationtype"_ns, attr);
+   if (attr.EqualsLiteral("document")) {
+     mWindow->SetWindowAnimationType(nsIWidget::eDocumentWindowAnimation);
+

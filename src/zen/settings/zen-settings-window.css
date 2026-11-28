@@ -465,6 +465,10 @@
   padding: 0 var(--zen-space-2);
 }
 
+#zen-settings-filter-more {
+  margin-top: var(--zen-space-16);
+}
+
 .zen-settings-actions {
   display: flex;
   flex-wrap: wrap;

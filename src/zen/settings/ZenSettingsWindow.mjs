@@ -403,6 +403,8 @@ class nsZenSettingsWindow {
       "open-mods": "paneZenMarketplace",
       "open-more-settings": "paneGeneral",
       "open-privacy-settings": "panePrivacy",
+      "open-passwords-settings": "panePasswordsAutofill",
+      "open-permissions-settings": "panePermissionsData",
       "open-accessibility-settings": "paneAccessibility",
     };
     const actions = {

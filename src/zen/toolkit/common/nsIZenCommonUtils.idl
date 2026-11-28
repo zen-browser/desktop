@@ -46,8 +46,8 @@ interface nsIZenCommonUtils : nsISupports {
    */
   void keepWindowsBehindPreviousApplication();
   /*
-   * @brief Let a window that is not shown yet appear on the fullscreen Space
-   * of another application. Only on macOS.
+   * @brief Whether the Space on screen belongs to a fullscreen window. Only
+   * on macOS.
    */
-  void showOverFullScreenApplications(in mozIDOMWindowProxy window);
+  boolean isActiveSpaceFullScreen();
 };

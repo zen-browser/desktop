@@ -33,6 +33,22 @@ static const NSTimeInterval kLinkWaitInterval = 0.08;
 - (BOOL)canBecomeMainWindow {
   return YES;
 }
+- (BOOL)isAccessibilityElement {
+  return NO;
+}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+- (BOOL)accessibilityIsIgnored {
+  return YES;
+}
+- (id)accessibilityAttributeValue:(NSAccessibilityAttributeName)aAttribute {
+  if ([aAttribute isEqualToString:NSAccessibilitySubroleAttribute]) {
+    return NSAccessibilityUnknownSubrole;
+  }
+  return [super accessibilityAttributeValue:aAttribute];
+}
+#pragma clang diagnostic pop
 @end
 
 static ZenActivationStandInWindow* sStandIn = nil;
@@ -70,6 +86,10 @@ static NSWindow* FrontmostWindow() {
   return nil;
 }
 
+static void AllowOnFullscreenSpacesOfOtherApplications(NSWindow* aWindow) {
+  aWindow.styleMask |= NSWindowStyleMaskNonactivatingPanel;
+}
+
 static void InstallStandIn() {
   RemoveStandIn();
   NSWindow* key = FrontmostWindow();
@@ -80,8 +100,7 @@ static void InstallStandIn() {
   }
   sStandIn = [[ZenActivationStandInWindow alloc]
       initWithContentRect:NSMakeRect(NSMidX(key.frame), NSMidY(key.frame), 1, 1)
-                styleMask:NSWindowStyleMaskBorderless |
-                          NSWindowStyleMaskNonactivatingPanel
+                styleMask:NSWindowStyleMaskBorderless
                   backing:NSBackingStoreBuffered
                     defer:NO];
   sStandIn.releasedWhenClosed = NO;
@@ -90,11 +109,12 @@ static void InstallStandIn() {
   sStandIn.hasShadow = NO;
   sStandIn.ignoresMouseEvents = YES;
   sStandIn.excludedFromWindowsMenu = YES;
-  sStandIn.collectionBehavior = NSWindowCollectionBehaviorMoveToActiveSpace |
+  sStandIn.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces |
                                 NSWindowCollectionBehaviorFullScreenAuxiliary |
                                 NSWindowCollectionBehaviorIgnoresCycle;
   sWindowToRaise = key.windowNumber;
   [sStandIn makeKeyAndOrderFront:nil];
+  AllowOnFullscreenSpacesOfOtherApplications(sStandIn);
 }
 
 static void OnApplicationActivated() {
@@ -143,15 +163,6 @@ static void OnApplicationActivated() {
                     ++sActivationGeneration;
                     InstallStandIn();
                   }];
-  [NSWorkspace.sharedWorkspace.notificationCenter
-      addObserverForName:NSWorkspaceActiveSpaceDidChangeNotification
-                  object:nil
-                   queue:nil
-              usingBlock:^(NSNotification*) {
-                if (!NSApp.isActive) {
-                  InstallStandIn();
-                }
-              }];
   [center addObserverForName:NSApplicationWillTerminateNotification
                       object:nil
                        queue:nil

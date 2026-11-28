@@ -79,6 +79,37 @@ class nsZenSettings {
       args
     );
   }
+
+  /**
+   * Opens the Firefox settings page with a search already running in it.
+   *
+   * @param {string} query What to search for.
+   */
+  async searchFirefoxSettings(query) {
+    const win = lazy.BrowserWindowTracker.getTopWindow();
+    if (!win) {
+      return;
+    }
+    await win.openPreferences("paneGeneral");
+    win.focus();
+    const browser = win.gBrowser.selectedBrowser;
+    if (
+      browser.contentDocument?.readyState != "complete" ||
+      !browser.contentWindow.gSearchResultsPane?.inited
+    ) {
+      await new Promise(resolve => {
+        browser.addEventListener("Initialized", resolve, {
+          capture: true,
+          once: true,
+        });
+      });
+    }
+    const { gSearchResultsPane } = browser.contentWindow;
+    gSearchResultsPane.searchInput.value = query;
+    await gSearchResultsPane.searchFunction({
+      target: gSearchResultsPane.searchInput,
+    });
+  }
 }
 
 export const ZenSettings = new nsZenSettings();

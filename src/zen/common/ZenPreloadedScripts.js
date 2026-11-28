@@ -45,11 +45,11 @@
     }
     root.setAttribute("persist", "none");
     if (
-      Services.prefs.getBoolPref("zen.little-window.float-over-fullscreen", false)
-    ) {
-      root.setAttribute("macnativefullscreen", "false");
+      Services.prefs.getBoolPref("zen.little-window.float-over-fullscreen", false) &&
       // eslint-disable-next-line mozilla/valid-services
-      Services.zen.showOverFullScreenApplications(window);
+      Services.zen.isActiveSpaceFullScreen()
+    ) {
+      root.setAttribute("macfloatsoverfullscreen", "true");
     }
     scripts.push(
       "resource:///modules/zen/littlewindow/ZenLittleWindowChrome.mjs"

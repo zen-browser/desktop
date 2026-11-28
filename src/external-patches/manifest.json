@@ -60,5 +60,22 @@
     // resource:///modules/zen/ZenProfileMigrators.sys.mjs.
     "type": "local",
     "path": "firefox/arc_browser_migrator.patch"
+  },
+  {
+    "type": "phabricator",
+    "id": "D347127",
+    "name": "Floats over fullscreen",
+    "replaces": {
+      "@@ -472,10 +472,11 @@": "@@ -472,9 +472,10 @@",
+      "   void SetPreventAppSwitching(bool aShouldPreventAppSwitching) override;\n": "",
+      "@@ -7733,10 +7736,31 @@": "@@ -7733,9 +7736,30 @@",
+      " void nsCocoaWindow::SetPreventAppSwitching(bool aShouldPreventAppSwitching) {\n   mShouldPreventAppSwitching = aShouldPreventAppSwitching;\n": "   NS_OBJC_END_TRY_IGNORE_BLOCK;\n",
+      "@@ -1129,10 +1129,18 @@": "@@ -1129,7 +1129,15 @@",
+      "   virtual void SetPreventAppSwitching(bool aShouldPreventAppSwitching) {}\n": "   virtual void SetSupportsNativeFullscreen(bool aSupportsNativeFullscreen) {}\n",
+      "     eGenericWindowAnimation,\n     eDocumentWindowAnimation\n   };\n \n": "     eGenericWindowAnimation,\n",
+      "@@ -1448,10 +1448,17 @@": "@@ -1448,9 +1448,16 @@",
+      "   // \"macpreventappswitching\" attribute\n   windowElement->GetAttribute(u\"macpreventappswitching\"_ns, attr);\n   mWindow->SetPreventAppSwitching(attr.EqualsLiteral(\"true\"));\n   NS_ENSURE_TRUE_VOID(mWindow);\n": "     windowElement->GetAttribute(u\"macnativefullscreen\"_ns, value);\n     mWindow->SetSupportsNativeFullscreen(!value.EqualsLiteral(\"false\"));\n     NS_ENSURE_TRUE_VOID(mWindow);\n   }\n",
+      "     mWindow->SetWindowAnimationType(nsIWidget::eDocumentWindowAnimation);\n   }\n": "     mWindow->SetWindowAnimationType(nsIWidget::eDocumentWindowAnimation);\n"
+    }
   }
 ]

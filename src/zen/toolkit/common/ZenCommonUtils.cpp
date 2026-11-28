@@ -82,9 +82,8 @@ ZenCommonUtils::KeepWindowsBehindPreviousApplication() {
 }
 
 NS_IMETHODIMP
-ZenCommonUtils::ShowOverFullScreenApplications(mozIDOMWindowProxy* aWindow) {
-  NS_ENSURE_ARG_POINTER(aWindow);
-  ShowOverFullScreenApplicationsInternal(aWindow);
+ZenCommonUtils::IsActiveSpaceFullScreen(bool* aResult) {
+  *aResult = IsActiveSpaceFullScreenInternal();
   return NS_OK;
 }
 

@@ -1,8 +1,8 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215a5a8fd5f 100644
+index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..72a9ed5b649cd130a41d0cf41b99e83228a50a5a 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -89,9 +89,11 @@
+@@ -89,9 +89,13 @@
  #include "mozilla/StaticPrefs_mozilla.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
@@ -10,11 +10,13 @@ index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
++#include "mozilla/ZenCommonUtils.h"
 +#include "mozilla/nsZenDragAndDrop.h"
++#include "nsContentUtils.h"
  #include "mozilla/widget/Screen.h"
  
  #ifdef ACCESSIBILITY
-@@ -1441,6 +1443,115 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1441,6 +1445,131 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
  }
  @end
  
@@ -101,6 +103,22 @@ index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215
 +  UpdateWindowMaterial();
 +}
 +
++bool nsCocoaWindow::ZenShouldZoom() {
++  if (!mFloatsOverFullscreenApplications || !mWidgetListener) {
++    return true;
++  }
++  RefPtr<PresShell> presShell = mWidgetListener->GetPresShell();
++  RefPtr<Document> doc = presShell ? presShell->GetDocument() : nullptr;
++  if (!doc) {
++    return true;
++  }
++  bool shouldZoom = true;
++  nsContentUtils::DispatchTrustedEvent(doc, doc, u"ZenWindowWillZoom"_ns,
++                                       CanBubble::eYes, Cancelable::eYes,
++                                       &shouldZoom);
++  return shouldZoom;
++}
++
 +void nsCocoaWindow::UpdateWindowMaterial() {
 +  NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
 +
@@ -130,7 +148,7 @@ index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -4018,7 +4129,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+@@ -4018,7 +4147,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
  // NSDraggingDestination
  - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
    MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
@@ -141,7 +159,7 @@ index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215
  }
  
  // NSDraggingDestination
-@@ -4034,6 +4147,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+@@ -4034,6 +4165,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
  - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
    nsAutoRetainCocoaObject kungFuDeathGrip(self);
    BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
@@ -151,7 +169,7 @@ index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215
    NS_IF_RELEASE(mDragService);
    return handled;
  }
-@@ -5090,6 +5206,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -5090,6 +5224,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
@@ -162,7 +180,7 @@ index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215
    RemoveAllChildren();
    if (mWindow && mWindowMadeHere) {
      CancelAllTransitions();
-@@ -5782,7 +5902,9 @@ static void SyncPopoverBounds(NSPopover* aPopover,
+@@ -5782,7 +5920,9 @@ static void SyncPopoverBounds(NSPopover* aPopover,
      } else {
        NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
        EnsureFrameIsOnScreen();
@@ -173,7 +191,37 @@ index a12d7ac38124cc6f1df06e30434ef9bfe1848e06..5d6e4325d947d02459e1450603f21215
            [mWindow respondsToSelector:@selector(setAnimationBehavior:)]) {
          NSWindowAnimationBehavior behavior;
          if (mIsAnimationSuppressed) {
-@@ -8373,6 +8495,17 @@ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
+@@ -6139,6 +6279,19 @@ static CGSRemoveWindowsFromSpacesFunc GetCGSRemoveWindowsFromSpacesFunc() {
+   return func;
+ }
+ 
++bool zen::ZenCommonUtils::IsActiveSpaceFullScreenInternal() {
++  using CGSSpaceGetTypeFunc = int (*)(CGSConnection, CGSSpaceID);
++  static const int kCGSSpaceTypeFullScreen = 4;
++  static auto GetSpaceType =
++      (CGSSpaceGetTypeFunc)dlsym(RTLD_DEFAULT, "CGSSpaceGetType");
++  CGSGetActiveSpaceFunc GetActiveSpace = GetCGSGetActiveSpaceFunc();
++  if (!GetSpaceType || !GetActiveSpace) {
++    return false;
++  }
++  CGSConnection cid = _CGSDefaultConnection();
++  return GetSpaceType(cid, GetActiveSpace(cid)) == kCGSSpaceTypeFullScreen;
++}
++
+ void nsCocoaWindow::GetWorkspaceID(nsAString& workspaceID) {
+   workspaceID.Truncate();
+   int32_t sid = GetWorkspaceID();
+@@ -8233,6 +8386,9 @@ - (void)windowDidDeminiaturize:(NSNotification*)aNotification {
+ }
+ 
+ - (BOOL)windowShouldZoom:(NSWindow*)window toFrame:(NSRect)proposedFrame {
++  if (mGeckoWindow && !mGeckoWindow->ZenShouldZoom()) {
++    return NO;
++  }
+   if (!mHasEverBeenZoomed && window.isZoomed) {
+     return NO;  // See bug 429954.
+   }
+@@ -8373,6 +8529,17 @@ + (NSUInteger)_validateStyleMask:(NSUInteger)aStyleMask {
    return [super _validateStyleMask:(aStyleMask & ~keep)] | keep;
  }
  

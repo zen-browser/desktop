@@ -37,6 +37,25 @@ const FOLDERS = {
   videos: { home: AppConstants.platform === "macosx" ? "Movies" : "Videos" },
 };
 
+// Image formats read from the clipboard, and the extension each one is saved
+// with. The bytes are written as they come, so the extension must match.
+const CLIPBOARD_IMAGE_TYPES = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+};
+
+/**
+ * @param {Uint8Array} bytes - The data to hash
+ * @returns {Promise<string>} Its SHA-256, in hexadecimal
+ */
+async function sha256Hex(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), b =>
+    b.toString(16).padStart(2, "0")
+  ).join("");
+}
+
 /**
  * @param {string} fileName - A file found while looking through a folder
  * @returns {string|null} How the grid shows it
@@ -84,6 +103,14 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
   #scanHandle = null;
   #thumbObserver = null;
   #cardItems = new WeakMap();
+
+  #clipboardItem = null;
+  #clipboardCheckId = 0;
+  // Every temporary file this section wrote and has not deleted yet.
+  #clipboardFiles = new Set();
+  // Keeps the files of two windows, or of two checks, from ever sharing a path.
+  #instanceId = crypto.randomUUID().slice(0, 8);
+  #onClipboardTrigger = () => this.#checkClipboard();
 
   constructor() {
     super();
@@ -134,6 +161,8 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
   connectedCallback() {
     super.connectedCallback();
     Services.prefs.addObserver(ENABLED_PREF, this.#enabledObserver);
+    window.addEventListener("focus", this.#onClipboardTrigger);
+    this.addEventListener("mouseenter", this.#onClipboardTrigger);
     if (!this.#enabled) {
       this.loading = false;
       return;
@@ -141,6 +170,17 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     this.#scanHandle = window.requestIdleCallback(() => this.#scan(), {
       timeout: 600,
     });
+  }
+
+  onShown() {
+    super.onShown?.();
+    this.#checkClipboard();
+  }
+
+  /** Called when the library opens on this tab, which is already showing. */
+  onLibraryOpened() {
+    this.#checkClipboard();
+    return super.onLibraryOpened?.();
   }
 
   /** @returns {boolean} Whether looking through the folders was agreed to */
@@ -162,10 +202,13 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
       this.loading = true;
       this.requestUpdate();
       this.#scan();
+      this.#checkClipboard();
       return;
     }
     this.#preview?.destroy();
     this.#preview = null;
+    // With the preview gone, this deletes every temporary file.
+    this.#checkClipboard();
     this.items = [];
     this.#scanned = [];
     this.loading = false;
@@ -189,6 +232,13 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     this.#thumbObserver = null;
     this.#preview?.destroy();
     this.#preview = null;
+    window.removeEventListener("focus", this.#onClipboardTrigger);
+    this.removeEventListener("mouseenter", this.#onClipboardTrigger);
+    // Drops any check under way, then deletes every temporary file. A check
+    // that is still writing deletes its own file when it finds it is stale.
+    this.#clipboardCheckId++;
+    this.#clipboardItem = null;
+    this.#deleteClipboardFiles(true);
   }
 
   /**
@@ -285,6 +335,164 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
     });
   }
 
+  /**
+   * @returns {object|null} The image on the clipboard, with its bytes, its
+   *   MIME type and the extension that goes with it, or null when there is
+   *   no image in a supported format
+   */
+  #readClipboardImage() {
+    const flavors = Object.keys(CLIPBOARD_IMAGE_TYPES);
+    if (
+      !Services.clipboard.hasDataMatchingFlavors(
+        flavors,
+        Services.clipboard.kGlobalClipboard
+      )
+    ) {
+      return null;
+    }
+    const trans = Cc["@mozilla.org/widget/transferable;1"].createInstance(
+      Ci.nsITransferable
+    );
+    trans.init(window.docShell.QueryInterface(Ci.nsILoadContext));
+    for (const flavor of flavors) {
+      trans.addDataFlavor(flavor);
+    }
+    Services.clipboard.getData(trans, Services.clipboard.kGlobalClipboard);
+    const flavor = {};
+    const data = {};
+    trans.getAnyTransferData(flavor, data);
+    const extension = CLIPBOARD_IMAGE_TYPES[flavor.value];
+    if (!extension || !data.value) {
+      return null;
+    }
+    const rawStream = data.value.QueryInterface(Ci.nsIInputStream);
+    const binaryStream = Cc[
+      "@mozilla.org/binaryinputstream;1"
+    ].createInstance(Ci.nsIBinaryInputStream);
+    binaryStream.setInputStream(rawStream);
+    const size = rawStream.available();
+    if (size <= 0) {
+      return null;
+    }
+    const bytes = new Uint8Array(size);
+    binaryStream.readArrayBuffer(size, bytes.buffer);
+    return { bytes, extension, mimeType: flavor.value };
+  }
+
+  /**
+   * Forgets the clipboard image. Its file is kept: the preview's menu can put
+   * that very file on the clipboard, which makes the image vanish from here
+   * while the clipboard still points at the file. It goes with the next image,
+   * or when the section goes.
+   */
+  #clearClipboardItem() {
+    if (!this.#clipboardItem) {
+      return;
+    }
+    this.#clipboardItem = null;
+    this.requestUpdate();
+  }
+
+  /**
+   * @param {string} path - A temporary file this section wrote
+   */
+  #deleteClipboardFile(path) {
+    this.#clipboardFiles.delete(path);
+    IOUtils.remove(path, { ignoreAbsent: true }).catch(() => {});
+  }
+
+  /**
+   * Deletes the temporary files that are no longer on show. While the preview
+   * is open it may still be showing one of them, so they wait.
+   *
+   * @param {boolean} [all] - Delete the one on show too, and do not wait
+   */
+  #deleteClipboardFiles(all = false) {
+    if (!all && this.#preview?.isOpen) {
+      return;
+    }
+    for (const path of [...this.#clipboardFiles]) {
+      if (all || path !== this.#clipboardItem?.path) {
+        this.#deleteClipboardFile(path);
+      }
+    }
+  }
+
+  /** @returns {boolean} Whether the library is open on this tab */
+  get #viewed() {
+    return (
+      this.hasAttribute("showing") && !!this.library?.constructor.isLibraryOpen
+    );
+  }
+
+  /**
+   * Looks at the clipboard and keeps the grid's clipboard card in step with
+   * it, only while the library is open on this tab. Several checks can
+   * overlap, so each one drops its result when a newer one has started in
+   * the meantime.
+   */
+  async #checkClipboard() {
+    if (!this.#enabled) {
+      this.#clipboardCheckId++;
+      this.#clearClipboardItem();
+      this.#deleteClipboardFiles(true);
+      return;
+    }
+    if (!this.#viewed) {
+      return;
+    }
+    const checkId = ++this.#clipboardCheckId;
+    const isStale = () => checkId !== this.#clipboardCheckId;
+    let path = null;
+    try {
+      const image = this.#readClipboardImage();
+      if (!image) {
+        this.#clearClipboardItem();
+        return;
+      }
+      const hash = await sha256Hex(image.bytes);
+      if (isStale() || this.#clipboardItem?.hash === hash) {
+        return;
+      }
+      // The path is this check's alone, so nothing else can delete or
+      // overwrite it, and a file the preview is showing is never rewritten.
+      path = PathUtils.join(
+        PathUtils.tempDir,
+        `zen-clipboard-${this.#instanceId}-${checkId}.${image.extension}`
+      );
+      this.#clipboardFiles.add(path);
+      await IOUtils.write(path, image.bytes);
+      if (isStale()) {
+        this.#deleteClipboardFile(path);
+        return;
+      }
+      this.#clipboardItem = {
+        isClipboard: true,
+        folder: "clipboard",
+        path,
+        name: `zen-clipboard-media.${image.extension}`,
+        extension: image.extension,
+        mimeType: image.mimeType,
+        kind: "image",
+        modified: Date.now(),
+        size: image.bytes.length,
+        cloudPlaceholder: false,
+        url: PathUtils.toFileURI(path),
+        hash,
+      };
+      this.requestUpdate();
+      this.#deleteClipboardFiles();
+    } catch (e) {
+      console.error("[ZenLibraryMediaSection] Error reading clipboard:", e);
+      if (path && path !== this.#clipboardItem?.path) {
+        this.#deleteClipboardFile(path);
+      }
+      if (!isStale()) {
+        this.#clearClipboardItem();
+      }
+    }
+  }
+
   // Interaction
 
   #onDragStart(event, item) {
@@ -327,6 +535,9 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
   #buildCard(item) {
     const card = document.createElementNS(HTML_NS, "div");
     card.className = "zen-library-media-item";
+    if (item.isClipboard) {
+      card.setAttribute("is-clipboard", "true");
+    }
     card.draggable = true;
     card.title = item.name;
     card.addEventListener("dragstart", event => this.#onDragStart(event, item));
@@ -426,11 +637,21 @@ export class ZenLibraryMediaSection extends ZenLibrarySearchSection {
       this.isFilterActive("folder", path)
     );
     const query = this.searchQuery.trim().toLowerCase();
-    return this.items.filter(
+    const items = this.items.filter(
       item =>
         (!folders.length || folders.includes(item.folder)) &&
         (!query || item.name.toLowerCase().includes(query))
     );
+    // The clipboard image belongs to no scanned folder, so a folder filter
+    // hides it; the search still applies to its name.
+    if (
+      this.#clipboardItem &&
+      !folders.length &&
+      (!query || this.#clipboardItem.name.toLowerCase().includes(query))
+    ) {
+      items.unshift(this.#clipboardItem);
+    }
+    return items;
   }
 
   renderItems() {

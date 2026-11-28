@@ -342,8 +342,6 @@ class ZenMigrationUtilsClass {
                 url,
                 title: item.title || data.tab.savedTitle || "",
               };
-              // Arc keeps the name a tab was renamed to in `title` and the
-              // page's own title in `savedTitle`.
               if (item.title && item.title !== data.tab.savedTitle) {
                 entry.renamed = true;
               }
@@ -713,7 +711,6 @@ class ZenMigrationUtilsClass {
       entry: { url: item.url, title: item.title || "" },
     };
     if (item.renamed) {
-      // Keep the name once the page loads, as a tab renamed in Zen does.
       tab.zenStaticLabel = item.title;
     }
     return tab;

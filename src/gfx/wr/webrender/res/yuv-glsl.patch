@@ -1,5 +1,5 @@
 diff --git a/gfx/wr/webrender/res/yuv.glsl b/gfx/wr/webrender/res/yuv.glsl
-index 2d4bbe3..10592fe 100644
+index 2d4bbe3..ce751ae 100644
 --- a/gfx/wr/webrender/res/yuv.glsl
 +++ b/gfx/wr/webrender/res/yuv.glsl
 @@ -19,14 +19,14 @@ bool yuv_format_is_biplanar(int format) {
@@ -19,57 +19,60 @@ index 2d4bbe3..10592fe 100644
  // `YuvRangedColorSpace`
  #define YUV_COLOR_SPACE_REC601_NARROW  0
  #define YUV_COLOR_SPACE_REC601_FULL    1
-@@ -184,6 +184,70 @@ void write_uv_rect(
+@@ -184,6 +184,119 @@ void write_uv_rect(
  
  #ifdef WR_FRAGMENT_SHADER
  
-+#if !defined(SWGL) && !defined(WR_FEATURE_TEXTURE_EXTERNAL_ESSL1) && !defined(WR_FEATURE_TEXTURE_EXTERNAL_BT709) && __VERSION__ != 100
++#if !defined(SWGL) && !defined(WR_FEATURE_TEXTURE_EXTERNAL_ESSL1) && !defined(WR_FEATURE_TEXTURE_EXTERNAL_BT709) && __VERSION__ != 100 && (defined(WR_FEATURE_TEXTURE_2D) || defined(WR_FEATURE_TEXTURE_RECT) || defined(WR_FEATURE_TEXTURE_EXTERNAL))
 +#define WR_YUV_MULTITAP_DOWNSCALE
 +
 +#ifdef WR_FEATURE_TEXTURE_2D
 +    #define YUV_SAMPLER_TYPE sampler2D
++    #define TEX_SAMPLE_YUV_LOD0(sampler, tex_coord) textureLod(sampler, (tex_coord).xy, 0.0)
 +#elif defined(WR_FEATURE_TEXTURE_RECT)
 +    #define YUV_SAMPLER_TYPE sampler2DRect
++    #define TEX_SAMPLE_YUV_LOD0(sampler, tex_coord) TEX_SAMPLE(sampler, tex_coord)
 +#elif defined(WR_FEATURE_TEXTURE_EXTERNAL)
 +    #define YUV_SAMPLER_TYPE samplerExternalOES
++    #define TEX_SAMPLE_YUV_LOD0(sampler, tex_coord) TEX_SAMPLE(sampler, tex_coord)
 +#endif
 +
 +// Multi-tap bilinear supersampling for YUV video downscaling beyond 2x
 +// (e.g. 1440p/4K video rendered in a small Picture-in-Picture window).
 +// Each bilinear tap covers a 2x2 texel footprint, so 2x2 / 3x3 / 4x4 taps
-+// prevent severe aliasing up to 4x / 6x / 8x+ downscaling without requiring
-+// mipmaps on dynamic or external DMABUF/VA-API video surfaces.
++// cover up to ~4x / ~6x / ~8x downscaling without requiring mipmaps on
++// dynamic or external DMABUF/VA-API video surfaces.
 +vec4 sample_yuv_plane_downscale(
 +    YUV_SAMPLER_TYPE s,
 +    vec2 uv,
 +    vec2 dx,
 +    vec2 dy,
 +    vec4 bounds,
-+    float scale
++    float scale_sq
 +) {
-+    if (scale <= 2.0) {
-+        return TEX_SAMPLE(s, clamp(uv, bounds.xy, bounds.zw));
++    if (scale_sq <= 4.0) {
++        return TEX_SAMPLE_YUV_LOD0(s, clamp(uv, bounds.xy, bounds.zw));
 +    }
 +
-+    if (scale <= 4.0) {
++    if (scale_sq <= 16.0) {
 +        vec2 hx = 0.25 * dx;
 +        vec2 hy = 0.25 * dy;
-+        vec4 sum = TEX_SAMPLE(s, clamp(uv - hx - hy, bounds.xy, bounds.zw))
-+                 + TEX_SAMPLE(s, clamp(uv + hx - hy, bounds.xy, bounds.zw))
-+                 + TEX_SAMPLE(s, clamp(uv - hx + hy, bounds.xy, bounds.zw))
-+                 + TEX_SAMPLE(s, clamp(uv + hx + hy, bounds.xy, bounds.zw));
++        vec4 sum = TEX_SAMPLE_YUV_LOD0(s, clamp(uv - hx - hy, bounds.xy, bounds.zw))
++                 + TEX_SAMPLE_YUV_LOD0(s, clamp(uv + hx - hy, bounds.xy, bounds.zw))
++                 + TEX_SAMPLE_YUV_LOD0(s, clamp(uv - hx + hy, bounds.xy, bounds.zw))
++                 + TEX_SAMPLE_YUV_LOD0(s, clamp(uv + hx + hy, bounds.xy, bounds.zw));
 +        return 0.25 * sum;
 +    }
 +
-+    if (scale <= 6.0) {
++    if (scale_sq <= 36.0) {
 +        vec2 sx = (1.0 / 3.0) * dx;
 +        vec2 sy = (1.0 / 3.0) * dy;
 +        vec4 sum = vec4(0.0);
 +        for (int iy = -1; iy <= 1; iy++) {
 +            vec2 row_uv = uv + float(iy) * sy;
-+            sum += TEX_SAMPLE(s, clamp(row_uv - sx, bounds.xy, bounds.zw));
-+            sum += TEX_SAMPLE(s, clamp(row_uv,      bounds.xy, bounds.zw));
-+            sum += TEX_SAMPLE(s, clamp(row_uv + sx, bounds.xy, bounds.zw));
++            sum += TEX_SAMPLE_YUV_LOD0(s, clamp(row_uv - sx, bounds.xy, bounds.zw));
++            sum += TEX_SAMPLE_YUV_LOD0(s, clamp(row_uv,      bounds.xy, bounds.zw));
++            sum += TEX_SAMPLE_YUV_LOD0(s, clamp(row_uv + sx, bounds.xy, bounds.zw));
 +        }
 +        return (1.0 / 9.0) * sum;
 +    }
@@ -78,54 +81,99 @@ index 2d4bbe3..10592fe 100644
 +    for (int iy = 0; iy < 4; iy++) {
 +        float oy = (float(iy) - 1.5) * 0.25;
 +        vec2 row_uv = uv + oy * dy;
-+        sum += TEX_SAMPLE(s, clamp(row_uv - 0.375 * dx, bounds.xy, bounds.zw));
-+        sum += TEX_SAMPLE(s, clamp(row_uv - 0.125 * dx, bounds.xy, bounds.zw));
-+        sum += TEX_SAMPLE(s, clamp(row_uv + 0.125 * dx, bounds.xy, bounds.zw));
-+        sum += TEX_SAMPLE(s, clamp(row_uv + 0.375 * dx, bounds.xy, bounds.zw));
++        sum += TEX_SAMPLE_YUV_LOD0(s, clamp(row_uv - 0.375 * dx, bounds.xy, bounds.zw));
++        sum += TEX_SAMPLE_YUV_LOD0(s, clamp(row_uv - 0.125 * dx, bounds.xy, bounds.zw));
++        sum += TEX_SAMPLE_YUV_LOD0(s, clamp(row_uv + 0.125 * dx, bounds.xy, bounds.zw));
++        sum += TEX_SAMPLE_YUV_LOD0(s, clamp(row_uv + 0.375 * dx, bounds.xy, bounds.zw));
 +    }
 +    return 0.0625 * sum;
++}
++
++YUV_PRECISION vec3 sample_yuv_multitap(
++    int format,
++    vec2 in_uv_y,
++    vec2 in_uv_u,
++    vec2 in_uv_v,
++    vec4 uv_bounds_y,
++    vec4 uv_bounds_u,
++    vec4 uv_bounds_v,
++    vec2 dx_y,
++    vec2 dy_y,
++    float scale_y_sq
++) {
++    YUV_PRECISION vec3 ycbcr_sample;
++    if (format == YUV_FORMAT_PLANAR) {
++        vec2 dx_u = dFdx(in_uv_u);
++        vec2 dy_u = dFdy(in_uv_u);
++        vec2 dx_v = dFdx(in_uv_v);
++        vec2 dy_v = dFdy(in_uv_v);
++        vec2 tex_size_u = TEX_SIZE_YUV(sColor1);
++        vec2 tex_size_v = TEX_SIZE_YUV(sColor2);
++        vec2 su_x = dx_u * tex_size_u;
++        vec2 su_y = dy_u * tex_size_u;
++        vec2 sv_x = dx_v * tex_size_v;
++        vec2 sv_y = dy_v * tex_size_v;
++        float scale_u_sq = max(dot(su_x, su_x), dot(su_y, su_y));
++        float scale_v_sq = max(dot(sv_x, sv_x), dot(sv_y, sv_y));
++        ycbcr_sample.x = sample_yuv_plane_downscale(sColor0, in_uv_y, dx_y, dy_y, uv_bounds_y, scale_y_sq).r;
++        ycbcr_sample.y = sample_yuv_plane_downscale(sColor1, in_uv_u, dx_u, dy_u, uv_bounds_u, scale_u_sq).r;
++        ycbcr_sample.z = sample_yuv_plane_downscale(sColor2, in_uv_v, dx_v, dy_v, uv_bounds_v, scale_v_sq).r;
++    } else if (yuv_format_is_biplanar(format)) {
++        vec2 dx_u = dFdx(in_uv_u);
++        vec2 dy_u = dFdy(in_uv_u);
++        vec2 tex_size_u = TEX_SIZE_YUV(sColor1);
++        vec2 su_x = dx_u * tex_size_u;
++        vec2 su_y = dy_u * tex_size_u;
++        float scale_u_sq = max(dot(su_x, su_x), dot(su_y, su_y));
++        ycbcr_sample.x = sample_yuv_plane_downscale(sColor0, in_uv_y, dx_y, dy_y, uv_bounds_y, scale_y_sq).r;
++        ycbcr_sample.yz = sample_yuv_plane_downscale(sColor1, in_uv_u, dx_u, dy_u, uv_bounds_u, scale_u_sq).rg;
++    } else if (format == YUV_FORMAT_INTERLEAVED) {
++        ycbcr_sample = sample_yuv_plane_downscale(sColor0, in_uv_y, dx_y, dy_y, uv_bounds_y, scale_y_sq).gbr;
++    } else {
++        ycbcr_sample = vec3(0.0);
++    }
++    return ycbcr_sample;
 +}
 +#endif
 +
  vec4 sample_yuv(
      int format,
      YUV_PRECISION vec3 ycbcr_bias,
-@@ -197,6 +261,38 @@ vec4 sample_yuv(
+@@ -196,8 +309,36 @@ vec4 sample_yuv(
+     vec4 uv_bounds_v
  ) {
      YUV_PRECISION vec3 ycbcr_sample;
- 
++    bool sampled_multitap = false;
++
 +#ifdef WR_YUV_MULTITAP_DOWNSCALE
 +    vec2 dx_y = dFdx(in_uv_y);
 +    vec2 dy_y = dFdy(in_uv_y);
-+    vec2 dx_u = dFdx(in_uv_u);
-+    vec2 dy_u = dFdy(in_uv_u);
-+    vec2 dx_v = dFdx(in_uv_v);
-+    vec2 dy_v = dFdy(in_uv_v);
-+
 +    vec2 tex_size_y = TEX_SIZE_YUV(sColor0);
-+    float scale_y = max(length(dx_y * tex_size_y), length(dy_y * tex_size_y));
++    vec2 sy_x = dx_y * tex_size_y;
++    vec2 sy_y = dy_y * tex_size_y;
++    float scale_y_sq = max(dot(sy_x, sy_x), dot(sy_y, sy_y));
 +
-+    if (scale_y > 2.0) {
-+        if (format == YUV_FORMAT_PLANAR) {
-+            vec2 tex_size_u = TEX_SIZE_YUV(sColor1);
-+            vec2 tex_size_v = TEX_SIZE_YUV(sColor2);
-+            float scale_u = max(length(dx_u * tex_size_u), length(dy_u * tex_size_u));
-+            float scale_v = max(length(dx_v * tex_size_v), length(dy_v * tex_size_v));
-+            ycbcr_sample.x = sample_yuv_plane_downscale(sColor0, in_uv_y, dx_y, dy_y, uv_bounds_y, scale_y).r;
-+            ycbcr_sample.y = sample_yuv_plane_downscale(sColor1, in_uv_u, dx_u, dy_u, uv_bounds_u, scale_u).r;
-+            ycbcr_sample.z = sample_yuv_plane_downscale(sColor2, in_uv_v, dx_v, dy_v, uv_bounds_v, scale_v).r;
-+        } else if (yuv_format_is_biplanar(format)) {
-+            vec2 tex_size_u = TEX_SIZE_YUV(sColor1);
-+            float scale_u = max(length(dx_u * tex_size_u), length(dy_u * tex_size_u));
-+            ycbcr_sample.x = sample_yuv_plane_downscale(sColor0, in_uv_y, dx_y, dy_y, uv_bounds_y, scale_y).r;
-+            ycbcr_sample.yz = sample_yuv_plane_downscale(sColor1, in_uv_u, dx_u, dy_u, uv_bounds_u, scale_u).rg;
-+        } else if (format == YUV_FORMAT_INTERLEAVED) {
-+            ycbcr_sample = sample_yuv_plane_downscale(sColor0, in_uv_y, dx_y, dy_y, uv_bounds_y, scale_y).gbr;
-+        } else {
-+            ycbcr_sample = vec3(0.0);
-+        }
-+    } else
++    if (scale_y_sq > 4.0) {
++        ycbcr_sample = sample_yuv_multitap(
++            format,
++            in_uv_y,
++            in_uv_u,
++            in_uv_v,
++            uv_bounds_y,
++            uv_bounds_u,
++            uv_bounds_v,
++            dx_y,
++            dy_y,
++            scale_y_sq
++        );
++        sampled_multitap = true;
++    }
 +#endif
-     if (format == YUV_FORMAT_PLANAR) {
+ 
+-    if (format == YUV_FORMAT_PLANAR) {
++    if (sampled_multitap) {
++        // Already sampled via multi-tap downscaling above.
++    } else if (format == YUV_FORMAT_PLANAR) {
          // The yuv_planar format should have this third texture coordinate.
          vec2 uv_y = clamp(in_uv_y, uv_bounds_y.xy, uv_bounds_y.zw);
+         vec2 uv_u = clamp(in_uv_u, uv_bounds_u.xy, uv_bounds_u.zw);

@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
-index e1dd88342ed104792adf44c8a6ab03cf881178e1..eece106ebf5fad2804fd557e9b103862ca7da42d 100644
+index e1dd88342ed104792adf44c8a6ab03cf881178e1..583bc2fbe9eaf9b5ae224da890f3961a8b480341 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
 @@ -846,7 +846,7 @@ export class UrlbarView {
@@ -11,18 +11,20 @@ index e1dd88342ed104792adf44c8a6ab03cf881178e1..eece106ebf5fad2804fd557e9b103862
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -1006,10 +1006,6 @@ export class UrlbarView {
+@@ -1005,9 +1005,9 @@ export class UrlbarView {
+       return;
      }
  
-     // If search mode isn't active, close the view.
+-    // If search mode isn't active, close the view.
 -    if (!this.input.searchMode) {
 -      this.close();
--      return;
--    }
++    // The new-tab input still needs to open when there are no shortcuts.
++    if (this.input.hasAttribute("zen-newtab") && this.input.focused) {
++      this.#openPanel();
+       return;
+     }
  
-     // Search mode is active. Without results the view has nothing to show but
-     // the one-offs, so open it only when they will show.
-@@ -3429,6 +3425,8 @@ export class UrlbarView {
+@@ -3429,6 +3429,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -31,7 +33,7 @@ index e1dd88342ed104792adf44c8a6ab03cf881178e1..eece106ebf5fad2804fd557e9b103862
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -4104,7 +4102,7 @@ export class UrlbarView {
+@@ -4104,7 +4106,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {
@@ -40,7 +42,7 @@ index e1dd88342ed104792adf44c8a6ab03cf881178e1..eece106ebf5fad2804fd557e9b103862
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
-@@ -4722,6 +4720,13 @@ export class UrlbarView {
+@@ -4722,6 +4724,13 @@ export class UrlbarView {
    }
  
    on_blur() {

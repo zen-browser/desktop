@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001dbfb76a468 100644
+index df1663c5a74c8486b3342a53a58bf62dc9e3963c..9035ad8ce36f622d427c8323593b88b3fdf9e3bf 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -132,6 +132,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
+@@ -131,6 +131,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -10,7 +10,7 @@ index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001db
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -471,6 +472,8 @@ const CONFIG_PANES = Object.freeze({
+@@ -498,6 +499,8 @@ const CONFIG_PANES = Object.freeze({
    tabsBrowsing: {
      l10nId: "tabs-browsing-section",
      groupIds: [
@@ -19,7 +19,7 @@ index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001db
        "browserLayout",
        "tabs",
        "pageNavigation",
-@@ -518,7 +521,7 @@ function register_module(categoryName, categoryObject) {
+@@ -551,7 +554,7 @@ function register_module(categoryName, categoryObject) {
        }
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
@@ -28,13 +28,10 @@ index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001db
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -562,6 +565,10 @@ function init_all() {
-   register_module("paneHome", gHomePane);
+@@ -594,6 +597,7 @@ function init_all() {
+   }
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
-+  register_module("paneZenLooks", gZenLooksAndFeel);
-+  register_module("paneZenTabManagement", gZenWorkspacesSettings);
-+  register_module("paneZenCKS", gZenCKSSettings);
 +  register_module("paneZenMarketplace", gZenMarketplaceManager);
  
    // Restore the cached Firefox Labs nav button visibility so it shows

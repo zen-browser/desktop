@@ -32,6 +32,13 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
 
       const doc = new DOMParser().parseFromString(text, "text/xml");
 
+      // An error page (or anything else that isn't a feed) is a failed fetch,
+      // not an empty feed. Otherwise every tab in the folder gets closed.
+      const root = doc.documentElement?.localName;
+      if (root !== "rss" && root !== "feed" && root !== "RDF") {
+        return "zen-live-folder-failed-fetch";
+      }
+
       const cutoffTime = Date.now() - this.state.timeRange;
 
       const isAtom = doc.querySelector("feed > entry") !== null;

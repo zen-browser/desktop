@@ -46,12 +46,12 @@ add_setup(async function testSetup() {
 add_task(async function closeAndForgetTabs() {
   // sanity check recently-closed tab data
   Assert.equal(
-    SessionStore.getClosedTabCount(window1),
+    SessionStore.getClosedTabCount({ sourceWindow: window1 }),
     1,
     "Only one tab closed in non-private windows"
   );
   Assert.equal(
-    SessionStore.getClosedTabCount(privateWin),
+    SessionStore.getClosedTabCount({ sourceWindow: privateWin }),
     1,
     "Only one tab closed in non-private windows"
   );
@@ -64,7 +64,7 @@ add_task(async function closeAndForgetTabs() {
     "Expected number of tabs open"
   );
 
-  let closedTabs = SessionStore.getClosedTabData(window1); // only non-private closed tabs
+  let closedTabs = SessionStore.getClosedTabData({ sourceWindow: window1 }); // only non-private closed tabs
   Assert.equal(typeof closedTabs[0].closedId, "number", "closedId is a number");
   let sessionStoreUpdated = TestUtils.topicObserved(
     "sessionstore-closed-objects-changed"
@@ -72,12 +72,12 @@ add_task(async function closeAndForgetTabs() {
   SessionStore.forgetClosedTabById(closedTabs[0].closedId);
   await sessionStoreUpdated;
   Assert.equal(
-    SessionStore.getClosedTabCount(window1),
+    SessionStore.getClosedTabCount({ sourceWindow: window1 }),
     0,
     "There's no more records of closed tabs"
   );
 
-  closedTabs = SessionStore.getClosedTabData(privateWin); // only private closed tabs
+  closedTabs = SessionStore.getClosedTabData({ sourceWindow: privateWin }); // only private closed tabs
   Assert.equal(typeof closedTabs[0].closedId, "number", "closedId is a number");
 
   Assert.throws(
@@ -91,7 +91,7 @@ add_task(async function closeAndForgetTabs() {
   );
 
   Assert.equal(
-    SessionStore.getClosedTabCount(privateWin),
+    SessionStore.getClosedTabCount({ sourceWindow: privateWin }),
     1,
     "Still one tab closed in non-private windows"
   );
@@ -102,7 +102,7 @@ add_task(async function closeAndForgetTabs() {
   SessionStore.forgetClosedTabById(closedTabs[0].closedId);
   await sessionStoreUpdated;
   Assert.equal(
-    SessionStore.getClosedTabCount(privateWin),
+    SessionStore.getClosedTabCount({ sourceWindow: privateWin }),
     0,
     "There's no more records of private closed tabs"
   );
@@ -112,7 +112,11 @@ add_task(async function closeAndForgetTabsFromTabGroups() {
   const newWin = await BrowserTestUtils.openNewBrowserWindow();
 
   // sanity check recently-closed tab data
-  Assert.equal(SessionStore.getClosedTabCount(newWin), 0, "No tabs closed");
+  Assert.equal(
+    SessionStore.getClosedTabCount({ sourceWindow: newWin }),
+    0,
+    "No tabs closed"
+  );
 
   let groupedTab = await openTab(newWin, TEST_URLS[1]);
   let group = newWin.gBrowser.addTabGroup([groupedTab]);
@@ -122,10 +126,10 @@ add_task(async function closeAndForgetTabsFromTabGroups() {
   await TabStateFlusher.flushWindow(newWin);
 
   await TestUtils.waitForCondition(() => {
-    return SessionStore.getClosedTabCount(newWin) == 1;
+    return SessionStore.getClosedTabCount({ sourceWindow: newWin }) == 1;
   }, "Grouped tab is closed");
 
-  let closedTabs = SessionStore.getClosedTabData(newWin);
+  let closedTabs = SessionStore.getClosedTabData({ sourceWindow: newWin });
   let sessionStoreUpdated = TestUtils.topicObserved(
     "sessionstore-closed-objects-changed"
   );
@@ -133,7 +137,7 @@ add_task(async function closeAndForgetTabsFromTabGroups() {
   await sessionStoreUpdated;
 
   Assert.equal(
-    SessionStore.getClosedTabCount(newWin),
+    SessionStore.getClosedTabCount({ sourceWindow: newWin }),
     0,
     "Grouped tab was forgotten"
   );

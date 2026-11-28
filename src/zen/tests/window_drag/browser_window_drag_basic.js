@@ -6,6 +6,9 @@
 let gDragStartCount = 0;
 
 add_setup(async function () {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.view.drag-window-from-content.height-percentage", 30]],
+  });
   const observer = () => gDragStartCount++;
   Services.obs.addObserver(observer, WINDOW_DRAG_TOPIC);
   registerCleanupFunction(() => {

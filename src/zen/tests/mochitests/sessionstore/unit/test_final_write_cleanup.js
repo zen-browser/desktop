@@ -50,7 +50,7 @@ async function writeAndParse(state, path, options = {}) {
   // We clone here because `write` can change the data passed.
   let data = structuredClone(state);
   await SessionWriter.write(data, options);
-  return IOUtils.readJSON(path, { decompress: true });
+  return IOUtils.readJSON(path, sessionStoreReadOptions());
 }
 
 add_task(async function test_shistory_cap_none() {

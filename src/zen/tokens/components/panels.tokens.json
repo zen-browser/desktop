@@ -1,0 +1,22 @@
+{
+  "size": {
+    "--zen-bookmark-panel-favicon-container-size": { "value": "100px" },
+    "--zen-print-settings-min-width": { "value": "350px" }
+  },
+  "background-color": {
+    "--zen-bookmark-panel-favicon-container-background": {
+      "value": { "light": "#ffffff", "dark": "var(--color-white-alpha-10)" }
+    }
+  },
+  "border-color": {
+    "--zen-dialog-border-color": {
+      "value": {
+        "light": "rgba(0, 0, 0, 0.08)",
+        "dark": "rgba(255, 255, 255, 0.08)"
+      }
+    }
+  },
+  "box-shadow": {
+    "--zen-dialog-box-shadow": { "value": "0 7px 8px rgba(0, 0, 0, 0.1)" }
+  }
+}

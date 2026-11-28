@@ -5,10 +5,19 @@
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  blockedText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  canRetry: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  confirmUnblock: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  downloadString: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  isBlocked: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  joinDownloadStatus: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  retryDownload: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   DownloadsCommon:
     "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
   DownloadsViewUI:
     "moz-src:///browser/components/downloads/DownloadsViewUI.sys.mjs",
@@ -66,12 +75,32 @@ class ZenLibraryDownloadStack {
     button.addEventListener("mouseleave", this);
     this.#list.addEventListener("mouseenter", this);
     this.#list.addEventListener("mouseleave", this);
+    this.#window.addEventListener("unload", this, { once: true });
 
-    this.#data = lazy.DownloadsCommon.getData(this.#window, true);
+    // This session's downloads, the way the downloads panel takes them.
+    this.#data = lazy.DownloadsCommon.getData(this.#window);
     this.#data.addView(this);
   }
 
+  get #isPrivate() {
+    return lazy.PrivateBrowsingUtils.isWindowPrivate(this.#window);
+  }
+
+  #markDownloadsSeen() {
+    for (const win of lazy.BrowserWindowTracker.orderedWindows) {
+      if (lazy.PrivateBrowsingUtils.isWindowPrivate(win) !== this.#isPrivate) {
+        continue;
+      }
+      const stack = stacks.get(win.document);
+      if (stack) {
+        stack.#recentNewDownload = false;
+        stack.#updateBadgeShowing();
+      }
+    }
+  }
+
   destroy() {
+    this.#window.removeEventListener("unload", this);
     this.#data.removeView(this);
     this.#window.clearTimeout(this.#closeTimer);
     this.#list.remove();
@@ -106,6 +135,9 @@ class ZenLibraryDownloadStack {
       case "mouseleave":
         this.#scheduleClose();
         break;
+      case "unload":
+        this.destroy();
+        break;
     }
   }
 
@@ -119,10 +151,14 @@ class ZenLibraryDownloadStack {
   }
 
   #open() {
-    if (this.#footButtons.hasAttribute("zen-library-stack-open")) {
+    if (
+      !this.#downloads.length ||
+      this.#footButtons.hasAttribute("zen-library-stack-open")
+    ) {
       return;
     }
     this.#aimBadge();
+    this.#markDownloadsSeen();
     this.#downloadsListWrapper.removeAttribute("zen-library-stack-closing");
     for (const host of [this.#footButtons, this.#downloadsListWrapper]) {
       host.setAttribute("zen-library-stack-open", "true");
@@ -133,8 +169,7 @@ class ZenLibraryDownloadStack {
     if (!this.#footButtons.hasAttribute("zen-library-stack-open")) {
       return;
     }
-    this.#recentNewDownload = false;
-    this.#updateBadgeShowing();
+    this.#markDownloadsSeen();
     for (const host of [this.#footButtons, this.#downloadsListWrapper]) {
       host.removeAttribute("zen-library-stack-open");
     }
@@ -153,12 +188,16 @@ class ZenLibraryDownloadStack {
   }
 
   /**
-   * Points the button's badge at the newest entry's badge, where it flies
+   * Points the button's badge at its matching entry's badge, where it flies
    * to as the list opens, from wherever it is right now.
    */
   #aimBadge() {
-    const entry = this.#entries.at(-1);
-    if (entry.hidden) {
+    const entry = this.#entries.find(
+      candidate => candidate.download === this.#badgeDownload
+    );
+    if (!entry || entry.hidden) {
+      this.#badge.style.removeProperty("--zen-library-badge-to-x");
+      this.#badge.style.removeProperty("--zen-library-badge-to-y");
       return;
     }
     const target = entry.querySelector(".zen-library-download-badge");
@@ -225,11 +264,39 @@ class ZenLibraryDownloadStack {
       );
       const action = entry.querySelector(".zen-library-download-action");
       action.addEventListener("click", event => event.stopPropagation());
-      action.addEventListener("command", () =>
-        this.#cancelDownload(entry.download)
-      );
+      action.addEventListener("command", () => this.#rowAction(entry.download));
     }
     return list;
+  }
+
+  /**
+   * @param {object} download - Any download
+   * @returns {boolean} Whether its file is there to be shown
+   */
+  #hasFile(download) {
+    return (
+      !!download?.succeeded && !download.deleted && !!download.target?.exists
+    );
+  }
+
+  /**
+   * What the button of an entry does.
+   *
+   * @param {object} download - The entry's download
+   */
+  #rowAction(download) {
+    if (!download) {
+      return;
+    }
+    if (!download.stopped) {
+      this.#cancelDownload(download);
+      return;
+    }
+    if (this.#hasFile(download)) {
+      lazy.DownloadsCommon.showDownloadedFile(
+        new lazy.FileUtils.File(download.target.path)
+      );
+    }
   }
 
   /**
@@ -273,15 +340,29 @@ class ZenLibraryDownloadStack {
       this.#toggleOpenWhenDone(download);
       return;
     }
+    if (lazy.isBlocked(download)) {
+      lazy.confirmUnblock(
+        download,
+        this.#window,
+        this.#openDownload.bind(this)
+      );
+      return;
+    }
     if (download.succeeded) {
       lazy.DownloadsCommon.openDownload(download).catch(console.error);
-    } else if (download.source?.url) {
+      return;
+    }
+    if (lazy.canRetry(download)) {
+      lazy.retryDownload(download, this.#window);
+      return;
+    }
+    if (download.source?.url) {
       this.#window.openTrustedLinkIn(download.source.url, "tab");
     }
   }
 
   #onDragStart(event, download) {
-    if (!download?.succeeded || download.deleted || !download.target?.exists) {
+    if (!this.#hasFile(download)) {
       event.preventDefault();
       return;
     }
@@ -298,10 +379,12 @@ class ZenLibraryDownloadStack {
   #updateList() {
     const shown = this.#downloads.slice(-ENTRIES);
     const unused = ENTRIES - shown.length;
+    const badgeDownload = this.#badgeDownload;
     this.#entries.forEach((entry, i) => {
       const download = shown[i - unused];
       entry.hidden = !download;
       entry.download = download ?? null;
+      entry.toggleAttribute("badge-target", entry.download === badgeDownload);
       if (!download) {
         return;
       }
@@ -326,6 +409,15 @@ class ZenLibraryDownloadStack {
       }
       entry.toggleAttribute("downloading", !download.stopped);
       entry.toggleAttribute("open-when-done", this.#opensWhenDone(download));
+      // The one button an entry has calls off a download on its way in, and
+      // shows the file once it is here.
+      entry.toggleAttribute("show-in-folder", this.#hasFile(download));
+      this.#window.document.l10n.setAttributes(
+        entry.querySelector(".zen-library-download-action"),
+        download.stopped
+          ? "library-downloads-show-tooltip"
+          : "library-downloads-cancel-tooltip"
+      );
     });
     this.#window
       .promiseDocumentFlushed(() => this.#list.getBoundingClientRect().height)
@@ -349,6 +441,8 @@ class ZenLibraryDownloadStack {
         "--download-image",
         `${preview ? `url('${preview}'), ` : ""}url('${this.#iconUrl(download)}')`
       );
+    } else {
+      badge.style.removeProperty("--download-image");
     }
     badge.querySelector(
       ".zen-library-download-progress-arc"
@@ -357,10 +451,17 @@ class ZenLibraryDownloadStack {
     } 100`;
   }
 
+  get #badgeDownload() {
+    return (
+      this.#downloads.findLast(download => this.#isPending(download)) ??
+      this.#downloads.at(-1)
+    );
+  }
+
   #updateBadgeShowing() {
     this.#footButtons.toggleAttribute(
       "zen-library-badge",
-      this.#isPending(this.#downloads.at(-1)) || this.#recentNewDownload
+      this.#isPending(this.#badgeDownload) || this.#recentNewDownload
     );
   }
 
@@ -398,6 +499,9 @@ class ZenLibraryDownloadStack {
     if (index !== -1) {
       this.#downloads.splice(index, 1);
     }
+    if (!this.#downloads.length) {
+      this.#recentNewDownload = false;
+    }
     this.#update();
   }
 
@@ -405,15 +509,15 @@ class ZenLibraryDownloadStack {
     if (this.#inBatch) {
       return;
     }
-    const newest = this.#downloads.at(-1);
+    const download = this.#badgeDownload;
     this.#updateList();
-    this.#updateBadge(this.#badge, newest);
+    this.#updateBadge(this.#badge, download);
     this.#updateBadgeShowing();
     this.#applyDownloadState();
   }
 
   /**
-   * Keeps the newest download's state on the library while it is open, for
+   * Keeps the badge download's state on the library while it is open, for
    * its downloads tab to show.
    *
    * @param {Element} library
@@ -433,14 +537,14 @@ class ZenLibraryDownloadStack {
     if (!this.#library) {
       return;
     }
-    const newest = this.#downloads.at(-1);
+    const download = this.#badgeDownload;
     this.#library.toggleAttribute(
       "zen-library-downloading",
-      this.#isPending(newest)
+      this.#isPending(download)
     );
     this.#library.style.setProperty(
       "--zen-library-download-progress",
-      `${newest?.hasProgress ? Math.round(newest.progress) : 0}%`
+      `${download?.hasProgress ? Math.round(download.progress) : 0}%`
     );
   }
 
@@ -472,9 +576,7 @@ class ZenLibraryDownloadStack {
   }
 
   #joinStatus(...parts) {
-    return parts
-      .filter(Boolean)
-      .reduce((a, b) => lazy.DownloadsCommon.strings.statusSeparator(a, b));
+    return lazy.joinDownloadStatus(...parts);
   }
 
   #iconUrl(download) {
@@ -487,16 +589,15 @@ class ZenLibraryDownloadStack {
   }
 
   #statusText(download) {
-    const strings = lazy.DownloadsCommon.strings;
     if (!download.stopped) {
-      return lazy.transferText(download);
+      return lazy.transferText(download, { speed: true });
     }
     if (download.deleted) {
-      return strings.fileDeleted;
+      return lazy.downloadString("downloads-file-deleted");
     }
     if (download.succeeded) {
       if (!download.target.exists) {
-        return strings.fileMovedOrMissing;
+        return lazy.downloadString("downloads-file-moved-or-missing");
       }
       const parsed = URL.parse(download.source.url);
       const uri = parsed && Services.io.newURI(parsed.href);
@@ -513,15 +614,20 @@ class ZenLibraryDownloadStack {
       );
     }
     if (download.canceled && download.hasPartialData) {
-      return this.#joinStatus(strings.statePaused, lazy.transferText(download));
+      return this.#joinStatus(
+        lazy.downloadString("downloads-state-paused"),
+        lazy.transferText(download)
+      );
     }
     if (download.error?.becauseBlockedByParentalControls) {
-      return strings.stateBlockedParentalControls;
+      return lazy.downloadString("downloads-state-blocked-parental-controls");
     }
     if (download.error?.becauseBlockedByReputationCheck) {
-      return strings.blockedMalware;
+      return lazy.blockedText(download);
     }
-    return download.canceled ? strings.stateCanceled : strings.stateFailed;
+    return lazy.downloadString(
+      download.canceled ? "downloads-state-canceled" : "downloads-state-failed"
+    );
   }
 
   #contextMenuItems(download) {
@@ -544,6 +650,11 @@ class ZenLibraryDownloadStack {
       items.push({
         l10nId: "downloads-cmd-resume",
         onClick: () => download.start?.().catch(() => {}),
+      });
+    } else if (lazy.canRetry(download)) {
+      items.push({
+        l10nId: "library-downloads-menu-retry",
+        onClick: () => lazy.retryDownload(download, this.#window),
       });
     }
     if (fileExists) {
@@ -581,6 +692,12 @@ class ZenLibraryDownloadStack {
       items.push({
         l10nId: "downloads-cmd-remove-from-history",
         onClick: () => C.deleteDownload(download).catch(console.error),
+      });
+    }
+    if (this.#data.canRemoveFinished) {
+      items.push({
+        l10nId: "library-downloads-menu-clear-preview",
+        onClick: () => this.#data.removeFinished(),
       });
     }
     return items;

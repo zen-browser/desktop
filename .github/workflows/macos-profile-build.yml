@@ -14,6 +14,11 @@ on:
         description: "The branch to build"
         required: true
         type: string
+      pgo-cache-key-prefix:
+        description: "Cache key prefix for the generated profile data"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   macos-profile-build:
@@ -27,12 +32,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -44,7 +50,7 @@ jobs:
 
       - name: Setup Rust
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
 
       - name: Install dependencies
         run: npm ci
@@ -99,6 +105,20 @@ jobs:
         run: |
           mv engine/merged.profdata merged.profdata
           mv engine/en-US.log en-US.log
+
+      - name: Stage profile data where a build expects it
+        if: ${{ inputs.pgo-cache-key-prefix != '' }}
+        shell: bash
+        run: |
+          mkdir -p ~/artifact
+          cp merged.profdata en-US.log ~/artifact/
+
+      - name: Cache profile data
+        if: ${{ inputs.pgo-cache-key-prefix != '' }}
+        uses: actions/cache/save@v5
+        with:
+          key: ${{ inputs.pgo-cache-key-prefix }}-${{ matrix.arch }}
+          path: ~/artifact
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

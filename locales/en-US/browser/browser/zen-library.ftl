@@ -10,6 +10,12 @@ library-footer-close-button =
     .tooltiptext = Close library
 library-footer-donate-button =
     .tooltiptext = Donate to Zen
+library-footer-customize-button =
+    .tooltiptext = Choose tabs
+library-tab-remove-button =
+    .title = Take this tab out
+library-tab-restore-button =
+    .title = Put this tab back
 
 library-history-section-title = History
 library-downloads-section-title = Downloads
@@ -59,6 +65,8 @@ library-history-empty = No history found
 library-history-closed-empty = No closed tabs
 library-archive-section-title = Archive
 library-media-empty = No media found
+library-media-turn-off =
+    .label = Turn off Media
 library-media-search-placeholder =
     .placeholder = Search Media…
 library-media-loading = Looking for media…
@@ -86,6 +94,45 @@ library-history-forget-button =
     .title = Remove from history
 library-history-reopen-button =
     .title = Reopen page
+library-history-menu-open =
+    .label = Reopen Page
+library-history-menu-forget =
+    .label = Forget This Page
+
+-library-cancel-download = Cancel download
+-library-show-in-folder = { PLATFORM() ->
+    [macos] Show in Finder
+    [windows] Show in File Explorer
+   *[other] Show in folder
+}
+
+library-space-routing-section-title = Routing
+library-space-routing-search-placeholder =
+    .placeholder = Search routes
+library-space-routing-new-button = New
+library-space-routing-new-title = New route
+library-space-routing-edit-title = Edit route
+library-space-routing-when-the-link = When the link
+library-space-routing-contains = Contains
+library-space-routing-equal-to = Is Exactly
+library-space-routing-regex = RegEx
+library-space-routing-open-it-in = Open it in
+# Shown as text in a route's row and as the label of an item in the menu
+# that picks where a route lands, which XUL draws from an attribute.
+-library-space-routing-most-recent = Most recent space
+library-space-routing-most-recent-space = { -library-space-routing-most-recent }
+    .label = { -library-space-routing-most-recent }
+-library-space-routing-little-window-name = Little Zen
+library-space-routing-little-window = { -library-space-routing-little-window-name }
+    .label = { -library-space-routing-little-window-name }
+library-space-routing-cancel = Cancel
+library-space-routing-add-route = Add route
+library-space-routing-save-route = Save route
+library-space-routing-remove-button =
+    .title = Remove route
+library-space-routing-external-links = Default route for external links
+library-space-routing-empty = Routes send links to the space you keep them in. Add one for a site you always open in the same place.
+library-space-routing-no-results = No routes found
 
 library-downloads-empty = No downloads found
 library-downloads-clear-all =
@@ -100,14 +147,23 @@ library-downloads-menu-hide =
     .label = Hide from Zen
 library-downloads-menu-delete =
     .label = Delete File
-library-downloads-opening-in = { PLATFORM() ->
-    [macos] Opening in Finder…
-    [windows] Opening in File Explorer…
-   *[other] Opening in file manager…
-}
+library-downloads-menu-clear-preview =
+    .label = Clear Download Preview
+library-downloads-menu-retry =
+    .label = Retry Download
 library-downloads-open-when-done = Opens when finished
+# Variables:
+#   $rate (string) - How much comes in per second, like 3.2
+#   $unit (string) - The unit of $rate, like MB
+library-downloads-speed = { $rate } { $unit }/s
 library-downloads-cancel-button =
-    .title = Cancel download
+    .title = { -library-cancel-download }
+library-downloads-cancel-tooltip =
+    .tooltiptext = { -library-cancel-download }
+library-downloads-show-button =
+    .title = { -library-show-in-folder }
+library-downloads-show-tooltip =
+    .tooltiptext = { -library-show-in-folder }
 library-downloads-filter-title = Filter Downloads…
 library-downloads-filter-type = File type
 library-downloads-filter-when = When was it downloaded?
@@ -136,5 +192,7 @@ library-boosts-search-placeholder =
 library-boosts-empty = No boosts yet
 library-boosts-toggle =
     .aria-label = Enable boost
+library-boosts-delete-button =
+    .title = Delete boost
 library-boosts-menu-edit =
     .label = Edit Boost

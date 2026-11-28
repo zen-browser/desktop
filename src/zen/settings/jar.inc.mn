@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+*       content/browser/zen-components/windows/zen-settings-window.xhtml        (../../zen/settings/zen-settings-window.inc.xhtml)
+        content/browser/zen-components/windows/settings/ZenSettingsWindow.mjs                   (../../zen/settings/ZenSettingsWindow.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsAdvanced.mjs        (../../zen/settings/sections/ZenSettingsAdvanced.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsAppearance.mjs      (../../zen/settings/sections/ZenSettingsAppearance.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsContainers.mjs      (../../zen/settings/sections/ZenSettingsContainers.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsFilter.mjs          (../../zen/settings/sections/ZenSettingsFilter.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsGeneral.mjs         (../../zen/settings/sections/ZenSettingsGeneral.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsLanguage.mjs        (../../zen/settings/sections/ZenSettingsLanguage.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsLinks.mjs           (../../zen/settings/sections/ZenSettingsLinks.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsSearch.mjs          (../../zen/settings/sections/ZenSettingsSearch.mjs)
+        content/browser/zen-components/windows/settings/sections/ZenSettingsShortcuts.mjs       (../../zen/settings/sections/ZenSettingsShortcuts.mjs)
+        content/browser/zen-styles/zen-settings-window.css                      (../../zen/settings/zen-settings-window.css)
+        content/browser/zen-styles/zen-settings-subdialog.css                   (../../zen/settings/zen-settings-subdialog.css)

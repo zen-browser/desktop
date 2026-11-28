@@ -13,6 +13,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
   2
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "libraryEnabled",
+  "zen.library.enabled",
+  true
+);
+
 ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
   return new Localization(["browser/zen-command-palette.ftl"], true);
 });
@@ -29,13 +36,21 @@ function isNotEmptyTab(window) {
 const globalActionsTemplate = [
   {
     l10nId: "zen-action-toggle-compact-mode",
-    command: "cmd_zenCompactModeToggle",
+    command: "cmd_toggleCompactModeIgnoreHover",
     icon: "chrome://browser/skin/zen-icons/sidebar.svg",
   },
   {
     l10nId: "zen-action-open-theme-picker",
     command: "cmd_zenOpenZenThemePicker",
     icon: "chrome://browser/skin/zen-icons/paintbrush-fill.svg",
+  },
+  {
+    l10nId: "zen-action-open-library",
+    command: "cmd_zenToggleLibrary",
+    icon: "chrome://browser/skin/zen-icons/library.svg",
+    isAvailable: () => {
+      return lazy.libraryEnabled;
+    },
   },
   {
     l10nId: "zen-action-new-split-view",
@@ -103,6 +118,11 @@ const globalActionsTemplate = [
   {
     l10nId: "zen-action-new-blank-window",
     command: "cmd_zenNewNavigatorUnsynced",
+    icon: "chrome://browser/skin/zen-icons/window.svg",
+  },
+  {
+    l10nId: "zen-action-new-little-window",
+    command: "cmd_zenNewLittleWindow",
     icon: "chrome://browser/skin/zen-icons/window.svg",
   },
   {
@@ -201,12 +221,14 @@ const globalActionsTemplate = [
     command: "History:RestoreLastClosedTabOrWindowOrSession",
     icon: "chrome://browser/skin/zen-icons/history.svg",
     isAvailable: window => {
-      return lazy.SessionStore.getClosedTabCount(window) > 0;
+      return !!lazy.SessionStore.getClosedTabCount({
+        sourceWindow: window,
+      }).length;
     },
   },
   {
     l10nId: "zen-action-duplicate-tab",
-    command: "cmd_zenDuplicateTab",
+    command: "Browser:DuplicateTab",
     icon: "chrome://browser/skin/zen-icons/duplicate-tab.svg",
     isAvailable: window => {
       return isNotEmptyTab(window);
@@ -326,6 +348,25 @@ export function formatValueSync(l10nId) {
   return lazy.l10n.formatValueSync(l10nId);
 }
 
+const labels = new Map();
+
+Services.obs.addObserver(() => labels.clear(), "intl:app-locales-changed");
+
+/**
+ * @param {string} l10nId - The message holding an action's text
+ * @returns {string} What it says, in the language in use
+ */
+export function labelFor(l10nId) {
+  let label = labels.get(l10nId);
+  if (label === undefined) {
+    label = formatValueSync(l10nId);
+    if (label) {
+      labels.set(l10nId, label);
+    }
+  }
+  return label;
+}
+
 export const globalActions = globalActionsTemplate.map(action => ({
   isAvailable: window => {
     return (
@@ -341,6 +382,6 @@ export const globalActions = globalActionsTemplate.map(action => ({
   extraPayload: {},
   ...action,
   get label() {
-    return formatValueSync(action.l10nId);
+    return labelFor(action.l10nId);
   },
 }));

@@ -988,6 +988,63 @@ add_task(
 );
 add_task(clear_state);
 
+add_task(async function test_age_of_pulled_data_is_reported_in_uptake_status() {
+  const serverDate = "Mon, 02 Nov 2026 10:00:00 GMT";
+  const timestamp = Date.parse(serverDate) - 3600 * 1000;
+  server.registerPathHandler(
+    "/v1/buckets/main/collections/age-reported/changeset",
+    (request, response) => {
+      response.setStatusLine(null, 200, "OK");
+      response.setHeader("Content-Type", "application/json; charset=UTF-8");
+      response.setHeader("Date", serverDate);
+      response.setHeader("Age", "60");
+      response.write(
+        JSON.stringify({
+          timestamp,
+          metadata: {},
+          changes: [{ id: "a", last_modified: timestamp }],
+        })
+      );
+    }
+  );
+  const c = RemoteSettings("age-reported");
+  c.verifySignature = false;
+
+  await c.maybeSync(timestamp);
+
+  assertTelemetryEvents([
+    {
+      value: UptakeTelemetry.STATUS.SYNC_START,
+      source: c.identifier,
+      age: a => a === undefined,
+    },
+    {
+      value: UptakeTelemetry.STATUS.SUCCESS,
+      source: c.identifier,
+      age: "3660",
+    },
+  ]);
+
+  Services.fog.testResetFOG();
+  enableUptakeMetric();
+
+  await c.maybeSync(timestamp);
+
+  assertTelemetryEvents([
+    {
+      value: UptakeTelemetry.STATUS.SYNC_START,
+    },
+    {
+      value: UptakeTelemetry.STATUS.UP_TO_DATE,
+      source: c.identifier,
+      age: a => a === undefined,
+    },
+  ]);
+
+  await c.db.clear();
+});
+add_task(clear_state);
+
 add_task(async function test_telemetry_reports_if_application_fails() {
   client.on("sync", () => {
     throw new Error("boom");

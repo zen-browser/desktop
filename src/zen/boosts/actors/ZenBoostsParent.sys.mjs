@@ -9,9 +9,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
+  #zapBar = null;
+
   static OBSERVERS = [
     "zen-boosts-update",
-    "zen-space-gradient-update",
     "zen-boosts-disable-zap",
     "zen-boosts-disable-picker",
   ];
@@ -46,6 +47,35 @@ export class ZenBoostsParent extends JSWindowActorParent {
     ZenBoostsParent.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this._observe, observe);
     });
+    this.#setZapBarVisible(false);
+  }
+
+  /**
+   * Shows or removes the zap bar in the chrome of the zapped browser.
+   *
+   * @param {boolean} visible - Whether the bar should be shown.
+   */
+  #setZapBarVisible(visible) {
+    if (!visible) {
+      this.#zapBar?.remove();
+      this.#zapBar = null;
+      return;
+    }
+    if (this.#zapBar) {
+      return;
+    }
+
+    const browsingContext = this.browsingContext;
+    const browser = browsingContext?.top.embedderElement;
+    // Zap mode only runs on top-level documents.
+    if (!browser || browsingContext.parent) {
+      return;
+    }
+    const bar = browser.ownerDocument.createElement("zen-zap-bar");
+    bar.browser = browser;
+    bar.actor = this;
+    browser.parentNode.insertAdjacentElement("afterend", bar);
+    this.#zapBar = bar;
   }
 
   /**
@@ -58,10 +88,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
   observe(subject, topic) {
     switch (topic) {
       case "zen-boosts-update":
-      case "zen-space-gradient-update":
-        this.sendAsyncMessage("ZenBoost:BoostDataUpdated", {
-          unloadStyles: true,
-        });
+        this.sendAsyncMessage("ZenBoost:BoostDataUpdated");
         break;
       case "zen-boosts-disable-zap":
         this.sendAsyncMessage("ZenBoost:DisableZapMode");
@@ -73,28 +100,10 @@ export class ZenBoostsParent extends JSWindowActorParent {
   }
 
   /**
-   * Updates the boost size override on webpage
-   *
-   * @param {number} sizeOverride - The size to apply on the webpage as a override
-   * @param {boolean} disable - Whether to disable the override (sets override to the default 1)
-   */
-  updateBoostSizeOverride(sizeOverride, disable = false) {
-    if (
-      sizeOverride &&
-      isFinite(sizeOverride) &&
-      (sizeOverride !== 1 || disable)
-    ) {
-      const fullZoom = this.browsingContext.topChromeWindow.FullZoom;
-      fullZoom.setZoom(sizeOverride, this.browsingContext.top.embedderElement);
-    }
-  }
-
-  /**
    * Handles messages received from child actors.
-   * Retrieves boost data for a domain when requested.
    *
    * @param {object} message - The message object containing name and data.
-   * @returns {Promise<object | null>} A promise that resolves to the boost data or null.
+   * @returns {Promise<object | null>} A promise that resolves to the reply or null.
    */
   async receiveMessage(message) {
     switch (message.name) {
@@ -141,59 +150,60 @@ export class ZenBoostsParent extends JSWindowActorParent {
           break;
         }
 
+        const mode = data.mode === "focus" ? "focus" : "zap";
         if (data.action == "add") {
           lazy.gZenBoostsManager.addZapSelectorToActive(
             data.selector,
-            data.domain
+            data.domain,
+            mode
           );
         } else if (data.action == "remove") {
           lazy.gZenBoostsManager.removeZapSelectorToActive(
             data.selector,
-            data.domain
+            data.domain,
+            mode
           );
         } else if (data.action == "clear") {
-          lazy.gZenBoostsManager.clearZapSelectorsForActive(data.domain);
+          const selectors = Array.isArray(data.selectors)
+            ? data.selectors.filter(entry => typeof entry === "string")
+            : null;
+          lazy.gZenBoostsManager.clearZapSelectorsForActive(
+            data.domain,
+            data.mode ? mode : null,
+            selectors
+          );
         }
         break;
       }
-      case "ZenBoost:GetBoostForDomain": {
+      case "ZenBoost:GetZapSelectors": {
         const domain = message.data;
-        const embedder = this.browsingContext.top.embedderElement;
-
-        if (!embedder || !domain) {
+        if (
+          !domain ||
+          !lazy.gZenBoostsManager.registeredBoostForDomain(domain)
+        ) {
           break;
         }
-
-        const exists = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
-        if (!exists) {
-          break;
-        }
-
-        const boost = lazy.gZenBoostsManager.loadActiveBoostFromStore(domain);
-        let workspaceGradient = [];
-        if (boost.boostEntry.boostData.autoTheme) {
-          const currentWorkspace =
-            await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
-          workspaceGradient = currentWorkspace.theme.gradientColors;
-        }
-
-        const styleData =
-          await lazy.gZenBoostsManager.getStyleSheetForBoost(domain);
-
+        const { boostData } =
+          lazy.gZenBoostsManager.loadActiveBoostFromStore(domain).boostEntry;
         return {
-          ...boost,
-          workspaceGradient,
-          styleSheet: styleData
-            ? {
-                uuid: styleData.uuid,
-                uri: styleData.uri.spec,
-              }
-            : null,
+          zapSelectors: boostData.zapSelectors ?? [],
+          focusSelectors: boostData.focusSelectors ?? [],
         };
       }
-      case "ZenBoost:UpdateBoostSize": {
-        const { sizeOverride } = message.data;
-        this.updateBoostSizeOverride(sizeOverride);
+      case "ZenBoost:ZapBarState": {
+        this.#setZapBarVisible(!!message.data?.visible);
+        break;
+      }
+      case "ZenBoost:ZapBarUpdate": {
+        const entries = (message.data?.entries ?? [])
+          .filter(entry => typeof entry?.selector === "string")
+          .map(({ selector, count }) => ({
+            selector,
+            count: Number.isFinite(count) ? count : 0,
+          }));
+        if (this.#zapBar) {
+          this.#zapBar.entries = entries;
+        }
         break;
       }
       default: {

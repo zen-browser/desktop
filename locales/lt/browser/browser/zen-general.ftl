@@ -21,22 +21,21 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Redaguoti būtiniausią URL
+           *[false] Redaguoti prisegtą URL
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Pakeisti su dabartiniu URL
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Redaguoti…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Keisti žymę...
 tab-context-zen-edit-icon = 
     .label = Keisti piktogramą...
 zen-themes-corrupted = Jūsų „{ -brand-short-name }“ modifikacijos failas sugadintas. Jie buvo atkurti į numatytąją temą.
-zen-shortcuts-corrupted = Jūsų „{ -brand-short-name }“ sparčiųjų klavišų failas sugadintas. Jie buvo atkurti į numatytuosius sparčiuosius klavišus.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Įjungta naujoji URL juosta, todėl nebereikia naujų kortelių puslapių.<br/><br/>
@@ -53,14 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Patvirtinti
 zen-pinned-tab-replaced = Prisegtos kortelės URL pakeistas dabartiniu URL.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Prisegtos kortelės URL atnaujinta.
+zen-pinned-tab-url-invalid = Tai neatrodo kaip tinkamas URL.
+zen-pinned-tab-edit-url-title = Redaguoti prisegtą URL
+zen-pinned-tab-edit-url-label = Įveskite URL, į kurį turėtų nukreipti ši prisegta kortelė:
 zen-tabs-renamed = Kortelė sėkmingai pervadinta.
 zen-background-tab-opened-toast = Nauja fonos kortelė atverta.
 zen-workspace-renamed-toast = Darbo sritis sėkmingai pervadintas.
 zen-split-view-limit-toast = Negalima įtraukti daugiau skydelių į suskaidytą rodinį.
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Kompaktinis režimas
     .tooltiptext = Perjungti kompaktinį režimą
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Piktogramos
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Ieškokite jaustukų
 urlbar-search-mode-zen_actions = Veiksmai
 zen-site-data-settings = Nustatymai
 zen-generic-manage = Tvarkyti
@@ -89,7 +89,6 @@ zen-site-data-setting-allow = Leidžiama
 zen-site-data-setting-block = Užblokuota
 zen-site-data-protections-enabled = Įjungta
 zen-site-data-protections-disabled = Išjungta
-zen-site-data-setting-cross-site = Tarpusavio svetainės slapukas
 zen-site-data-security-info-extension = 
     .label = Plėtinys
 zen-site-data-security-info-secure = 
@@ -104,6 +103,8 @@ zen-site-data-site-settings =
     .label = Visi svetainės nustatymai
 zen-site-data-header-share = 
     .tooltiptext = Bendrinti šį puslapį
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Įeiti į skaitytojo režimą
 zen-site-data-header-screenshot = 
@@ -128,9 +129,9 @@ zen-sidebar-notification-updated-heading = Naujinimas baigtas.
 zen-sidebar-notification-updated-label = Kas naujo naršyklėje „{ -brand-short-name }“
 zen-sidebar-notification-updated-tooltip = 
     .title = Peržiūrėti leidimo pastabas
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Paremkite „{ -brand-short-name }“
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Paaukokite projektui
 zen-sidebar-notification-restart-safe-mode-label = Kažkas neveikia?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Paleisti iš naujo saugioje režime

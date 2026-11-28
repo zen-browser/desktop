@@ -9,8 +9,7 @@ zen-welcome-back = Back
 zen-welcome-skip = Skip for now
 
 zen-welcome-import-title = Bring your stuff along.
-zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
-zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-description = Pick a browser to import your bookmarks, history and passwords from and pick up right where you left off.
 zen-welcome-import-no = <strong>NO</strong>, start fresh.
 
 zen-welcome-default-browser-title = Make { -brand-short-name } your default?

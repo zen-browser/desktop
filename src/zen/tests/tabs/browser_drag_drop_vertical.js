@@ -28,6 +28,18 @@ const threshold = Math.min(
  * @param {Window} win
  */
 async function drop(source, target, clientX, clientY, win) {
+  await TestUtils.waitForCondition(() => {
+    const rect = bounds(source);
+    if (!rect.width || !rect.height) {
+      return false;
+    }
+    const hit = win.document.elementFromPoint(
+      rect.left + rect.width / 2,
+      rect.top + rect.height / 2
+    );
+    return hit?.closest?.(".tabbrowser-tab") === source;
+  }, "the tab to drag is hit-testable at its own position");
+
   const tabMove = BrowserTestUtils.waitForEvent(source, "TabMove");
   EventUtils.synthesizeDrop(source, target, null, "move", win, win, {
     clientX,

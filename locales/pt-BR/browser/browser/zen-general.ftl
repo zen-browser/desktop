@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Perfil atual
+zen-panel-ui-current-profile-text = perfil atual
 unified-extensions-description = As extensões são usadas para trazer mais recursos adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
@@ -36,7 +36,6 @@ tab-context-zen-edit-title =
 tab-context-zen-edit-icon = 
     .label = Alterar Ícone...
 zen-themes-corrupted = Seu arquivo de modificações { -brand-short-name } está corrompido. Eles foram redefinidos para o tema padrão.
-zen-shortcuts-corrupted = Seu arquivo de atalhos { -brand-short-name } está corrompido. Eles foram redefinidos para os atalhos padrão.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = A nova barra de URL foi ativada, removendo a necessidade de novas páginas de guia.<br/><br/>Tente abrir uma nova guia para ver a nova barra de URL em ação!
 zen-disable = Desativar
@@ -59,6 +58,7 @@ zen-tabs-renamed = A aba foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova aba em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
 zen-split-view-limit-toast = Não é possível adicionar mais painéis à visualização dividida!
+zen-sidebar-drag-collapsed-toast = Barra lateral oculta! Use <span>{ $shortcut }</span> para trazer a barra lateral de volta.
 zen-toggle-compact-mode-button = 
     .label = Modo Compacto
     .tooltiptext = Alternar Modo Compacto
@@ -87,7 +87,6 @@ zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
 zen-site-data-protections-enabled = Habilitado
 zen-site-data-protections-disabled = Desabilitado
-zen-site-data-setting-cross-site = Cookie entre Sites
 zen-site-data-security-info-extension = 
     .label = Extensão
 zen-site-data-security-info-secure = 
@@ -102,6 +101,8 @@ zen-site-data-site-settings =
     .label = Todas as Configurações do Site
 zen-site-data-header-share = 
     .tooltiptext = Compartilhar Esta Página
+zen-site-data-header-boost = 
+    .tooltiptext = Criar um Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Entrar no Modo Leitura
 zen-site-data-header-screenshot = 

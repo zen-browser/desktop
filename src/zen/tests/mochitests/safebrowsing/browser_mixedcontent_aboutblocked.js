@@ -2,7 +2,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
 const SECURE_CONTAINER_URL =
-  "https://example.com/browser/browser/components/safebrowsing/content/test/empty_file.html";
+  "https://example.com/browser/browser/base/content/test/browser-safebrowsing/empty_file.html";
 
 add_task(async function testNormalBrowsing() {
   await SpecialPowers.pushPrefEnv({

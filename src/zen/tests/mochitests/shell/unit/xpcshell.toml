@@ -39,6 +39,9 @@ run-if = [
 run-if = [
   "os == 'linux'",
 ]
+prefs = [
+  "browser.shell.desktop-entry-api=filesystem",
+]
 
 ["test_macOS_showSecurityPreferences.js"]
 run-if = [
@@ -62,5 +65,5 @@ run-if = [
 ]
 support-files = [
   "../../../places/tests/browser/favicon-normal16.png",
-  "../../../../base/content/test/favicons/icon.svg",
+  "../../../../base/content/test/browser-favicons/icon.svg",
 ]

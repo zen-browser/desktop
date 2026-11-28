@@ -4,23 +4,6 @@
 
 zen-space-routing-settings = 
     .label = Einstellungen für Arbeitsbereich-Routing
-zen-space-routing-rulepanel-placeholder = Mit Routen legst du fest, wo bestimmte Websites in Zen geöffnet werden. Du kannst zum Beispiel YouTube-Links immer in deinem privaten Arbeitsbereich öffnen lassen.
-zen-space-routing-dialog-title = Einstellungen für Arbeitsbereich-Routing
-zen-space-routing-external-default = Standardroute für externe Links
-zen-space-routing-new-route = Neue Route
-zen-space-routing-open-in-space = Im Arbeitsbereich öffnen
-zen-space-routing-most-recent-space = Zuletzt genutzter Arbeitsbereich
-zen-space-routing-close-button = 
-    .aria-label = Schließen
-    .tooltiptext = Schließen
-zen-space-routing-contains = 
-    .label = Enthält
-zen-space-routing-equal-to = 
-    .label = Ist gleich
-zen-space-routing-regex = 
-    .label = RegEx
-zen-space-routing-open-in = Öffnen in
-zen-space-routing-url = URL
 zen-space-routing-tab-routed-toast = Neuer Tab in { $targetWorkspace } geöffnet
 tab-context-zen-add-domain-to-sr = 
     .label =

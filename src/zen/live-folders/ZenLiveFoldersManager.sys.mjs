@@ -49,7 +49,8 @@ class nsZenLiveFoldersManager {
   }
 
   async init() {
-    if (this.#isInitialized) {
+    // Live folders live in the first synced window.
+    if (this.#isInitialized || !this.window) {
       return;
     }
 
@@ -609,8 +610,7 @@ class nsZenLiveFoldersManager {
   // Persistence
   // -----------
   get #storePath() {
-    const profilePath = this.window.PathUtils.profileDir;
-    return this.window.PathUtils.join(profilePath, this.#saveFilename);
+    return PathUtils.join(PathUtils.profileDir, this.#saveFilename);
   }
 
   async #readStateFromDisk() {

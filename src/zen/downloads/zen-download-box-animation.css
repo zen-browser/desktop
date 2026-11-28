@@ -8,18 +8,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: var(--zen-size-42);
+  height: var(--zen-size-42);
   background-color: var(--zen-accent-button-background);
-  border-radius: 12px;
-  box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.1);
+  border-radius: var(--zen-border-radius-12);
+  box-shadow: var(--zen-box-shadow-glow-small);
   pointer-events: none;
   z-index: 1100;
 }
 
 .zen-download-box-animation-icon {
-  width: 24px;
-  height: 24px;
+  width: var(--size-item-medium);
+  height: var(--size-item-medium);
   background: url("chrome://browser/skin/zen-icons/library/library.svg") no-repeat right;
   fill: var(--toolbar-color);
   -moz-context-properties: fill;

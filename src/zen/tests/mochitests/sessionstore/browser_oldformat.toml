@@ -48,9 +48,7 @@ support-files = [
   "coop_coep.html",
   "coop_coep.html^headers^",
 ]
-# remove this after bug 1628486 is landed
 prefs = [
-  "network.cookie.cookieBehavior=5",
   "gfx.font_rendering.fallback.async=false",
   "browser.sessionstore.closedTabsFromAllWindows=true",
   "browser.sessionstore.closedTabsFromClosedWindows=true",
@@ -89,16 +87,10 @@ skip-if = [
 ["browser_350525.js"]
 
 ["browser_354894_perwindowpb.js"]
-skip-if = [
-  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
-]
 
 ["browser_367052.js"]
 
 ["browser_393716.js"]
-skip-if = [
-  "debug", # Bug 1507747
-]
 
 ["browser_394759_basic.js"]
 # Disabled for intermittent failures, bug 944372.
@@ -169,8 +161,6 @@ skip-if = [
 
 ["browser_491577.js"]
 
-["browser_495495.js"]
-
 ["browser_500328.js"]
 
 ["browser_514751.js"]
@@ -221,13 +211,8 @@ https_first_disabled = true
 ["browser_590268.js"]
 
 ["browser_590563.js"]
-skip-if = [
-  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'",
-]
 
 ["browser_595601-restore_hidden.js"]
-
-["browser_597071.js"]
 
 ["browser_600545.js"]
 

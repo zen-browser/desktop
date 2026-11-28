@@ -15,11 +15,11 @@
 }
 
 .zen-branding-title {
-  font-size: 6rem;
+  font-size: var(--zen-branding-title-font-size);
   line-height: 0.9;
-  margin-bottom: 0.4rem;
+  margin-bottom: calc(0.4 * var(--space-large));
   font-family: "Zen-Junicode", serif;
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   font-feature-settings: "swsh" 1;
 

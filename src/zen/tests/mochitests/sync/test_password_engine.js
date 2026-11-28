@@ -46,6 +46,18 @@ add_task(async function setup() {
   await Service.engineManager.unregister("extension-storage");
 });
 
+add_task(async function test_sync_id() {
+  _("The sync ID is read from the logins store it's written to");
+  let engine = Service.engineManager.get("passwords");
+  try {
+    let syncID = await engine.resetLocalSyncID();
+    Assert.ok(syncID);
+    Assert.equal(await engine.getSyncID(), syncID);
+  } finally {
+    await cleanup(engine);
+  }
+});
+
 add_task(async function test_ignored_fields() {
   _("Only changes to syncable fields should be tracked");
 

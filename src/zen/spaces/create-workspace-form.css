@@ -9,41 +9,41 @@ zen-workspace-creation {
   flex-direction: column;
   min-height: 0;
   width: 100%;
-  padding: 3px var(--zen-toolbox-padding);
+  padding: var(--zen-space-3) var(--zen-toolbox-padding);
 
   & .zen-workspace-creation {
     justify-content: center;
 
     & .zen-workspace-creation-title {
       font-size: large;
-      margin-bottom: 5px;
+      margin-bottom: var(--zen-space-5);
       text-align: center;
     }
 
     & .zen-workspace-creation-label {
       margin: 0;
-      opacity: 0.4;
+      opacity: var(--zen-opacity-40);
       text-align: center;
     }
 
     & form {
-      --input-text-background-color: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+      --input-background-color: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
 
       display: flex;
       flex-direction: column;
-      width: calc(100% - 10px);
+      width: calc(100% - var(--zen-size-10));
       margin: auto;
-      gap: 3.2rem;
-      margin-top: 0.6rem;
+      gap: calc(3.2 * var(--space-large));
+      margin-top: calc(0.6 * var(--space-large));
       height: 100%;
 
       & .zen-workspace-creation-form {
-        gap: 0.6rem;
+        gap: calc(0.6 * var(--space-large));
       }
 
       & xul|button {
         margin: 0;
-        font-weight: 400 !important;
+        font-weight: normal !important;
 
         &:not(.footer-button.primary) {
           border: none;
@@ -51,13 +51,14 @@ zen-workspace-creation {
       }
 
       & .zen-workspace-creation-name-wrapper {
-        padding: 9px 6px;
-        border-radius: calc(8px * var(--zen-squircle-value)) !important;
+        padding: var(--zen-space-9) var(--zen-space-6);
+        border-radius: var(--border-radius-medium) !important;
         margin: 0;
-        background-color: var(--input-text-background-color);
-        gap: 8px;
+        background-color: var(--input-background-color);
+        color: var(--input-text-color);
+        gap: var(--zen-space-8);
         align-items: center;
-        padding-left: 8px;
+        padding-left: var(--zen-space-8);
 
         & .zen-workspace-creation-icon-label {
           position: relative;
@@ -86,7 +87,7 @@ zen-workspace-creation {
 
           & label {
             display: flex;
-            font-size: 12px;
+            font-size: var(--zen-font-size-12);
             justify-content: center;
           }
 
@@ -95,21 +96,21 @@ zen-workspace-creation {
           }
 
           &::before {
-            border: 1px dashed light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
-            border-radius: 6px;
-            width: calc(100% + 2px);
-            height: calc(100% + 2px);
+            border: 1px dashed var(--zen-color-contrast-50);
+            border-radius: var(--zen-border-radius-6);
+            width: calc(100% + var(--zen-size-2));
+            height: calc(100% + var(--zen-size-2));
             content: "";
             position: absolute;
-            top: -2px;
-            left: -2px;
+            top: calc(-1 * var(--zen-space-2));
+            left: calc(-1 * var(--zen-space-2));
             pointer-events: none;
           }
         }
 
         & .zen-workspace-creation-name {
           --input-border-color: transparent;
-          --input-text-background-color: transparent;
+          --input-background-color: transparent;
           padding: 0 !important;
           width: 100%;
           outline: none;
@@ -118,11 +119,12 @@ zen-workspace-creation {
       }
 
       & .zen-workspace-creation-profile-wrapper {
-        padding: 4px;
-        border-radius: calc(8px * var(--zen-squircle-value)) !important;
+        padding: var(--zen-space-4);
+        border-radius: var(--border-radius-medium) !important;
         margin: 0;
-        background-color: var(--input-text-background-color);
-        gap: 4px;
+        background-color: var(--input-background-color);
+        color: var(--input-text-color);
+        gap: var(--zen-space-4);
         align-items: center;
         flex-wrap: wrap;
 
@@ -132,13 +134,13 @@ zen-workspace-creation {
 
         & .zen-workspace-creation-profile {
           margin: 0;
-          padding: 6px !important;
+          padding: var(--zen-space-6) !important;
           padding-inline-end: 0;
           appearance: none;
-          background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+          background: var(--zen-color-contrast-10);
           margin-left: auto;
           min-width: unset !important;
-          border-radius: 6px;
+          border-radius: var(--zen-border-radius-6);
 
           &:focus-visible {
             outline: 2px solid var(--zen-colors-border-contrast);
@@ -148,16 +150,17 @@ zen-workspace-creation {
       }
 
       & .zen-workspace-creation-edit-theme-button {
-        border-radius: calc(8px * var(--zen-squircle-value)) !important;
+        border-radius: var(--border-radius-medium) !important;
         margin: 0;
-        background-color: var(--input-text-background-color);
+        background-color: var(--input-background-color);
+        color: var(--input-text-color);
         justify-content: center;
         align-items: center;
         appearance: none;
-        padding: 10px !important;
+        padding: var(--zen-space-10) !important;
 
         &:hover {
-          background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+          background-color: var(--zen-color-contrast-10);
         }
 
         &:focus-visible {
@@ -167,7 +170,7 @@ zen-workspace-creation {
       }
 
       & .zen-workspace-creation-buttons {
-        gap: 0.5rem;
+        gap: var(--space-small);
         margin-top: auto;
 
         & .zen-workspace-creation-create-button {

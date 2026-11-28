@@ -8,6 +8,7 @@ add_task(async function test_Private_Mode() {
     set: [
       ["privacy.userContext.enabled", true],
       ["zen.testing.enabled", false],
+      ["zen.urlbar.open-on-startup", false],
     ],
   });
 
@@ -19,6 +20,26 @@ add_task(async function test_Private_Mode() {
   Assert.ok(
     privateWindow.gBrowser.selectedTab.hasAttribute("zen-empty-tab"),
     "Private window should start with a zen empty tab"
+  );
+
+  Assert.ok(
+    !privateWindow.gZenWorkspaces.shouldShowContainers,
+    "Containers/profiles should not be shown in private windows"
+  );
+
+  const popup = privateWindow.document.getElementById(
+    "zenWorkspaceMoreActions"
+  );
+  privateWindow.gZenWorkspaces.updateWorkspaceActionsMenu({
+    target: popup,
+  });
+
+  const openInContainerMenuItem = privateWindow.document.getElementById(
+    "context_zenWorkspacesOpenInContainerTab"
+  );
+  Assert.ok(
+    openInContainerMenuItem.hidden,
+    "Set Profile menu should be hidden in private window"
   );
 
   await BrowserTestUtils.closeWindow(privateWindow);

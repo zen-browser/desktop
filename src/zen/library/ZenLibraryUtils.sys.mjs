@@ -5,11 +5,21 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  Downloads: "resource://gre/modules/Downloads.sys.mjs",
+  DownloadsCommon:
+    "moz-src:///browser/components/downloads/DownloadsCommon.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "mimeService", () =>
   Cc["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService)
+);
+
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "l10n",
+  () =>
+    new Localization(["browser/zen-library.ftl", "browser/downloads.ftl"], true)
 );
 
 ChromeUtils.defineLazyGetter(
@@ -48,6 +58,23 @@ for (const [group, extensions] of Object.entries(GROUP_EXTENSIONS)) {
   }
 }
 
+// The library shows a space by building copies of its real tabs and folders,
+// which fire the same events the real ones do.
+export const LIBRARY_COPY_ATTRIBUTE = "zen-library-copy";
+
+/**
+ * Every copy is marked as it is made, tabs and folders alike, and what has to
+ * be held back are the events a tab or a folder raises about itself, so the
+ * element in hand is the whole answer.
+ *
+ * @param {EventTarget} target - What an event happened to
+ * @returns {boolean} Whether it is one of the library's copies, connected or
+ *   already thrown away
+ */
+export function isLibraryCopy(target) {
+  return !!target?.hasAttribute?.(LIBRARY_COPY_ATTRIBUTE);
+}
+
 /** The groups a file can be filtered by, in the order they are offered. */
 export const FILE_GROUPS = [
   "images",
@@ -57,10 +84,31 @@ export const FILE_GROUPS = [
 ];
 
 /**
- * A picture the platform renders as a document rather than a bitmap. It is
- * left out of thumbnails, which are drawn inside the browser's own chrome.
+ * The extensions the Media scan bothers to carry back out of a folder. What
+ * a file holds is still decided by its content type (see {@link mediaKindOf})
  */
-const NOT_DRAWN = "image/svg+xml";
+export const MEDIA_EXTENSIONS = [
+  // Pictures
+  ...`jpg jpeg jpe png gif webp avif bmp ico icns svg
+      heic heif jxl tif tiff cr2 cr3 nef arw dng raf orf rw2`.split(/\s+/),
+  // Video
+  ...`mp4 m4v mov webm mkv avi wmv flv mpg mpeg mpe
+      3gp 3g2 ogv mts m2ts`.split(/\s+/),
+];
+
+const NOT_DRAWN = new Set([
+  "image/svg+xml",
+  "image/heic",
+  "image/heic-sequence",
+  "image/heif",
+  "image/heif-sequence",
+  "image/jxl",
+  "image/tiff",
+  "image/x-canon-cr2",
+  "image/x-nikon-nef",
+  "image/x-sony-arw",
+  "image/x-adobe-dng",
+]);
 
 /**
  * @param {string} fileName - A file's name, with or without its path
@@ -129,7 +177,123 @@ export function fileGroupOf(fileName) {
  */
 export function canDrawThumbnail(fileName) {
   const type = contentTypeOf(fileName);
-  return type.startsWith("image/") && type !== NOT_DRAWN;
+  return type.startsWith("image/") && !NOT_DRAWN.has(type);
+}
+
+/**
+ * Why a download was stopped before it landed.
+ *
+ * @param {object} download - A download blocked by the reputation check
+ * @returns {string} What to say about it
+ */
+export function blockedText(download) {
+  switch (download.error?.reputationCheckVerdict) {
+    case lazy.Downloads.Error.BLOCK_VERDICT_UNCOMMON:
+      return downloadString("downloads-blocked-uncommon");
+    case lazy.Downloads.Error.BLOCK_VERDICT_INSECURE:
+      return downloadString("downloads-blocked-potentially-insecure");
+    case lazy.Downloads.Error.BLOCK_VERDICT_POTENTIALLY_UNWANTED:
+      return downloadString("downloads-blocked-potentially-unwanted");
+    default:
+      return downloadString("downloads-blocked-malware");
+  }
+}
+
+/**
+ * Reads one of Firefox's own download strings.
+ *
+ * @param {string} id - A message id from browser/downloads.ftl.
+ * @param {object} [args] - Its arguments, if it takes any.
+ * @returns {string} The translated text.
+ */
+export function downloadString(id, args) {
+  return lazy.l10n.formatValueSync(id, args);
+}
+
+/**
+ * Joins the parts of a download's status the way Firefox writes them.
+ *
+ * @param {...string} parts - The parts, of which empty ones are dropped.
+ * @returns {string} The joined status.
+ */
+export function joinDownloadStatus(...parts) {
+  return parts
+    .filter(Boolean)
+    .reduce((start, end) =>
+      downloadString("downloads-status-separator", { start, end })
+    );
+}
+
+/**
+ * @param {object} download - Any download
+ * @returns {boolean} Whether the reputation check stopped it
+ */
+export function isBlocked(download) {
+  return !!download.error?.becauseBlockedByReputationCheck;
+}
+
+/**
+ * @param {object} download - Any download
+ * @returns {boolean} Whether there is anything to try again
+ */
+export function canRetry(download) {
+  return (
+    download.stopped &&
+    !download.succeeded &&
+    !isBlocked(download) &&
+    (download.canceled || !!download.error)
+  );
+}
+
+/**
+ * Picks a download back up (see gh-15928).
+ *
+ * @param {object} download - A download that stopped before it was done
+ * @param {Window} window - The window to download into, for the rare entry
+ *   that has no download left to pick up
+ */
+export function retryDownload(download, window) {
+  if (download.start) {
+    // Errors when retrying are already reported as download failures.
+    download.start().catch(() => {});
+    return;
+  }
+  const targetName = download.target.path
+    ? PathUtils.filename(download.target.path)
+    : null;
+  window.DownloadURL(download.source.url, targetName, window.document);
+}
+
+/**
+ * Asks whether a download the reputation check stopped should be kept after
+ * all, the way the downloads panel does, and does what the answer says.
+ *
+ * @param {object} download - A download blocked by the reputation check
+ * @param {Window} window - The window to ask in
+ * @param {Function} [openDownload] - Called with the download once it is
+ *   unblocked, when the answer is to open it
+ * @returns {Promise<void>}
+ */
+export function confirmUnblock(download, window, openDownload) {
+  return lazy.DownloadsCommon.confirmUnblockDownload({
+    verdict: download.error.reputationCheckVerdict,
+    becauseBlockedByReputationCheck: true,
+    window,
+    dialogType: "chooseUnblock",
+  })
+    .then(answer => {
+      switch (answer) {
+        case "open":
+          return download.unblock().then(() => openDownload?.(download));
+        case "unblock":
+          return download.unblock();
+        case "confirmBlock":
+          return download.confirmBlock();
+        default:
+          return undefined;
+      }
+    })
+    .catch(console.error);
 }
 
 // What a download has to say for itself
@@ -170,15 +334,31 @@ function timeLeftText(download) {
 
 /**
  * @param {object} download - A download that is still coming in
- * @returns {string} How much of it is here and how long is left of it, as
- *   "156 MB/1.07 GB · 1m 14s"
+ * @returns {string} How fast it is coming in, as "3.2 MB/s", or nothing at
+ *   all while it has no speed to go by
  */
-export function transferText(download) {
+function speedText(download) {
+  if (download.stopped || !(download.speed > 0)) {
+    return "";
+  }
+  const [rate, unit] = lazy.DownloadUtils.convertByteUnits(download.speed);
+  return lazy.l10n.formatValueSync("library-downloads-speed", { rate, unit });
+}
+
+/**
+ * @param {object} download - A download that is still coming in
+ * @param {object} [options]
+ * @param {boolean} [options.speed] - Whether to say how fast it is coming in
+ * @returns {string} How much of it is here, how fast it comes in and how long
+ *   is left of it, as "156 MB/1.07 GB · 3.2 MB/s · 1m 14s"
+ */
+export function transferText(download, { speed = false } = {}) {
   const [current, currentUnit] = lazy.DownloadUtils.convertByteUnits(
     download.currentBytes
   );
+  const rate = speed ? speedText(download) : "";
   if (!download.hasProgress) {
-    return `${current} ${currentUnit}`;
+    return [`${current} ${currentUnit}`, rate].filter(Boolean).join(" · ");
   }
   const [total, totalUnit] = lazy.DownloadUtils.convertByteUnits(
     download.totalBytes
@@ -188,5 +368,5 @@ export function transferText(download) {
       ? `${current}/${total} ${totalUnit}`
       : `${current} ${currentUnit}/${total} ${totalUnit}`;
   const left = timeLeftText(download);
-  return left ? `${transfer} · ${left}` : transfer;
+  return [transfer, rate, left].filter(Boolean).join(" · ");
 }

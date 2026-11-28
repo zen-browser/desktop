@@ -1,0 +1,34 @@
+{
+  "background-color": {
+    "--zen-little-window-container-background": {
+      "value": { "light": "#ffffff", "dark": "rgba(255, 255, 255, 0.12)" }
+    },
+    "--zen-little-window-open-background": {
+      "value": { "light": "#fdfdff", "dark": "#050627" }
+    },
+    "--zen-little-window-open-shortcut-background": {
+      "value": { "light": "#eaeaec", "dark": "#171834" }
+    }
+  },
+  "text-color": {
+    "--zen-little-window-open-color": {
+      "value": { "light": "#000000", "dark": "#ffffff" }
+    },
+    "--zen-little-window-open-muted-color": {
+      "value": { "light": "#7e7e7f", "dark": "#828393" }
+    },
+    "--zen-little-window-open-shortcut-color": {
+      "value": { "light": "#757576", "dark": "#8b8c9a" }
+    },
+    "--zen-little-window-open-space-color": {
+      "value": { "light": "#924400", "dark": "#ffead1" }
+    }
+  },
+  "space": {
+    "--zen-little-window-address-inset": { "value": "20%" }
+  },
+  "size": {
+    "--zen-little-window-intro-width": { "value": "300px" },
+    "--zen-little-window-download-width": { "value": "260px" }
+  }
+}

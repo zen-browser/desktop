@@ -1,0 +1,124 @@
+diff --git a/toolkit/modules/BrowserUtils.sys.mjs b/toolkit/modules/BrowserUtils.sys.mjs
+--- a/toolkit/modules/BrowserUtils.sys.mjs
++++ b/toolkit/modules/BrowserUtils.sys.mjs
+@@ -11,10 +11,14 @@
+   Region: "resource://gre/modules/Region.sys.mjs",
+   IDNService: {
+     service: "@mozilla.org/network/idn-service;1",
+     iid: Ci.nsIIDNService,
+   },
++  QueryStringStripper: {
++    service: "@mozilla.org/url-query-string-stripper;1",
++    iid: Ci.nsIURLQueryStringStripper,
++  },
+   mathMLNonAnchorLinksDisabled: {
+     pref: "mathml.href_link_on_non_anchor_element.disabled",
+     default: false,
+   },
+ });
+@@ -260,10 +264,35 @@
+     throw new Error(
+       "Can't change the originAttributes of an expanded principal!"
+     );
+   },
+ 
++  /**
++   * Unwraps Reader Mode URLs and removes credentials, optionally stripping
++   * known tracking parameters.
++   *
++   * @param {nsIURI} uri
++   *   The URI to prepare.
++   * @param {object} [options]
++   * @param {boolean} [options.stripTracking=false]
++   *   Whether to strip tracking parameters when strip-on-share is enabled.
++   * @returns {nsIURI}
++   *   The exposable URI.
++   */
++  getExposableURI(uri, { stripTracking = false } = {}) {
++    uri =
++      lazy.ReaderMode.getOriginalUrlObjectForDisplay(uri.displaySpec) ?? uri;
++    if (stripTracking) {
++      try {
++        uri = lazy.QueryStringStripper.stripForCopyOrShare(uri) ?? uri;
++      } catch (e) {
++        console.warn("stripForCopyOrShare:", e);
++      }
++    }
++    return Services.io.createExposableURI(uri);
++  },
++
+   /**
+    * Copy a link with a text label to the clipboard.
+    *
+    * @param {string} url
+    *   The URL we're wanting to copy to the clipboard.
+diff --git a/toolkit/modules/tests/browser/browser_BrowserUtils.js b/toolkit/modules/tests/browser/browser_BrowserUtils.js
+--- a/toolkit/modules/tests/browser/browser_BrowserUtils.js
++++ b/toolkit/modules/tests/browser/browser_BrowserUtils.js
+@@ -101,5 +101,66 @@
+       `Q&amp;A &lt;&quot;Quotes&quot; and &#39;apostrophes&#39;&gt;</A><BR>\n` +
+       `<A HREF="https://example.org/"></A>`,
+     "Should contain the expected HTML anchors"
+   );
+ });
++
++add_task(async function test_getExposableURI() {
++  await SpecialPowers.pushPrefEnv({
++    set: [["privacy.query_stripping.strip_on_share.enabled", true]],
++  });
++  await Cc["@mozilla.org/query-stripping-list-service;1"]
++    .getService(Ci.nsIURLQueryStrippingListService)
++    .testWaitForInit();
++
++  const trackedURL =
++    "https://example.com/?utm_source=copy&keep=value&utm_medium=share#fragment";
++  const cleanURL = "https://example.com/?keep=value#fragment";
++  for (const url of [
++    trackedURL,
++    trackedURL.replace("https://", "https://user:password@"),
++    `about:reader?url=${encodeURIComponent(trackedURL)}`,
++  ]) {
++    Assert.equal(
++      BrowserUtils.getExposableURI(Services.io.newURI(url)).displaySpec,
++      trackedURL,
++      "Keep tracking parameters but remove credentials and Reader Mode wrapping by default"
++    );
++  }
++
++  for (const [url, expected] of [
++    [trackedURL, cleanURL],
++    [
++      "https://user:password@example.com/?utm_source=copy&keep=value#fragment",
++      cleanURL,
++    ],
++    [`about:reader?url=${encodeURIComponent(trackedURL)}`, cleanURL],
++    [cleanURL, cleanURL],
++    ["about:robots", "about:robots"],
++    ["about:robots?utm_source=copy", "about:robots?utm_source=copy"],
++  ]) {
++    Assert.equal(
++      BrowserUtils.getExposableURI(Services.io.newURI(url), {
++        stripTracking: true,
++      }).displaySpec,
++      expected,
++      `Prepare ${url} for copying`
++    );
++  }
++
++  await SpecialPowers.pushPrefEnv({
++    set: [["privacy.query_stripping.strip_on_share.enabled", false]],
++  });
++  for (const url of [
++    trackedURL,
++    trackedURL.replace("https://", "https://user:password@"),
++    `about:reader?url=${encodeURIComponent(trackedURL)}`,
++  ]) {
++    Assert.equal(
++      BrowserUtils.getExposableURI(Services.io.newURI(url), {
++        stripTracking: true,
++      }).displaySpec,
++      trackedURL,
++      "Keep tracking parameters but remove credentials and Reader Mode wrapping when stripping is disabled"
++    );
++  }
++});

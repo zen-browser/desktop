@@ -3,23 +3,20 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 [
   {
-    "type": "phabricator",
-    "id": "D299584",
-    "name": "Native MacOS popovers fix"
-  },
-  {
-    "type": "phabricator",
-    "id": "D323933",
-    "name": "Issue 15123"
-  },
-  {
-    "type": "phabricator",
-    "id": "D327914",
-    "name": "Backdrop filter reads web content"
+    // From D299584.
+    "type": "local",
+    "path": "firefox/native_macos_popovers_fix.patch"
   },
   {
     "type": "local",
     "path": "firefox/no_liquid_glass_icon.patch"
+  },
+  {
+    // The BrowserUtils half of D336362, which adds getExposableURI. The rest of
+    // that revision needs D336260 and Firefox 161's tabgroup-menu.mjs. Drop
+    // this once the engine is on 161 or later.
+    "type": "local",
+    "path": "firefox/get_exposable_uri.patch"
   },
   {
     "type": "patch",
@@ -37,13 +34,10 @@
     "name": "Expose tiled attribute to all platforms"
   },
   {
-    "type": "phabricator",
-    "id": "D298708",
-    "name": "Issue 14990",
-    "replaces": {
-      "this._lastJsonLength = uncompressedBytes;": "this._lastJsonLength = uncompressedBytes.jsonLength;",
-      "          jsonLengthHint,": "          lengthHint: jsonLengthHint,"
-    }
+    // The IOUtils half of D298708 landed upstream in Firefox 160, so only the
+    // SessionWriter change is still ours.
+    "type": "local",
+    "path": "firefox/issue_14990.patch"
   },
   {
     "type": "phabricator",
@@ -58,5 +52,13 @@
     "type": "phabricator",
     "id": "D323514",
     "name": "Fix HEVC video stutters and dropped frames"
+  },
+  {
+    // D337289, rebased onto Firefox 160 and pointed at Zen's own profile
+    // migrator. Re-pull it from Phabricator by hand when the revision changes,
+    // and keep the ArcProfileMigrator moduleURI on
+    // resource:///modules/zen/ZenProfileMigrators.sys.mjs.
+    "type": "local",
+    "path": "firefox/arc_browser_migrator.patch"
   }
 ]

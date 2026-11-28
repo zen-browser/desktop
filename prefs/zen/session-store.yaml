@@ -6,7 +6,7 @@
   value: true
 
 - name: zen.session-store.log
-  value: true
+  value: false
 
 - name: zen.session-store.restore-unsynced-windows
   value: true

@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   check_candidates:
@@ -42,6 +43,7 @@ jobs:
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         with:
           node-version-file: ".nvmrc"
+          cache: npm
 
       - name: Install dependencies
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
@@ -103,6 +105,25 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Create tracking issue
+        id: sync-issue
+        if: steps.git-check.outputs.files_changed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
+          TITLE: "Sync upstream Firefox to version `${{ steps.build-data.outputs.version }}`"
+        run: |
+          NUMBER=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --limit 100 \
+            --search 'Sync upstream Firefox to version in:title' --json number,title \
+            | jq -r --arg title "$TITLE" 'map(select(.title == $title)) | first | .number // empty')
+          if [ -z "$NUMBER" ]; then
+            NUMBER=$(gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "" \
+              | grep -oE '[0-9]+$')
+          else
+            echo "Reusing existing issue #$NUMBER"
+          fi
+          echo "number=$NUMBER" >> $GITHUB_OUTPUT
+
       - name: Import external patches
         if: steps.git-check.outputs.files_changed == 'true'
         run: python3 scripts/update_external_patches.py || true
@@ -129,11 +150,13 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
           commit-message: "chore: Sync upstream to `Firefox ${{ steps.build-data.outputs.version }}`"
           branch: "chore/upstream-sync"
-          title: "no-bug: Sync upstream Firefox to version `${{ steps.build-data.outputs.version }}`"
+          title: "${{ steps.sync-issue.outputs.number && format('gh-{0}', steps.sync-issue.outputs.number) || 'no-bug' }}: Sync upstream Firefox to version `${{ steps.build-data.outputs.version }}`"
           body: |
             This PR syncs the upstream Firefox to version ${{ steps.build-data.outputs.version }}.
 
             * ${{ steps.check-patches.outcome == 'failure' && '⚠️ Some patches did not apply cleanly. Please review them carefully.' || '✅ All patches applied cleanly.' }}
+
+            ${{ steps.sync-issue.outputs.number && format('Fixes https://github.com/{0}/issues/{1}', github.repository, steps.sync-issue.outputs.number) || '' }}
 
             @${{ github.actor }} please review and merge this PR.
           base: dev

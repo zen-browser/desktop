@@ -17,8 +17,11 @@
 - name: zen.theme.essentials-favicon-bg
   value: true
 
-- name: zen.theme.acrylic-urlbar
+- name: zen.theme.essentials-unread-dot
   value: "@IS_TWILIGHT@"
+
+- name: zen.theme.acrylic-urlbar
+  value: true
   cpptype: bool
   mirror: once
   type: static

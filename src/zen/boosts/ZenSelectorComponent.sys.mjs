@@ -27,6 +27,7 @@ export class SelectorComponent {
 
   #zenContentIDs = [];
   #onSelect = null;
+  #immediate = false;
   #localizationArray = [
     { id: "zen-select-this" },
     { id: "zen-select-related" },
@@ -41,18 +42,22 @@ export class SelectorComponent {
    * @param {string[]} additionalZenContentIDs Additional IDs that will be considered as non website content
    * @param {Function<string>} onSelect Callback for when a selection was made. The parameter is the css selector
    * @param {object[]} localizationArray An array of 3 { id: 'l10n-id' } fluent IDs for localization going from the inputs left to right
+   * @param {object} [options]
+   * @param {boolean} [options.immediate] Select the clicked element right away instead of offering related elements
    */
   constructor(
     document,
     zenBoostsChild,
     additionalZenContentIDs,
     onSelect,
-    localizationArray = null
+    localizationArray = null,
+    { immediate = false } = {}
   ) {
     this.document = document;
     this.window = document.documentGlobal;
     this.zenBoostsChild = zenBoostsChild;
     this.#onSelect = onSelect;
+    this.#immediate = immediate;
 
     if (localizationArray != null) {
       this.#localizationArray = localizationArray;
@@ -366,7 +371,6 @@ export class SelectorComponent {
    */
   #hideSelectorComponent() {
     this.selectorComponent.style.visibility = "hidden";
-    this.selectorComponent.setAttribute("is-appearing", "false");
   }
 
   /**
@@ -393,9 +397,9 @@ export class SelectorComponent {
     const windowHeight = this.window.innerHeight;
     const windowPadding = 10;
 
-    this.selectorComponent.setAttribute("is-appearing", "false");
-
-    // This clamps the position so the zap component never goes out of the client bounds and adds a small padding
+    // The component follows the selected element vertically and is centered
+    // on the screen horizontally. Both are clamped so it never leaves the
+    // client bounds, with a small padding.
     const top = this.clamp(
       bounds.top + bounds.height + distance,
       windowPadding + this.safeAreaPadding.top,
@@ -405,7 +409,7 @@ export class SelectorComponent {
         this.safeAreaPadding.bottom
     );
     const left = this.clamp(
-      bounds.left + bounds.width / 2 - zapComponentWidth / 2,
+      (windowWidth - zapComponentWidth) / 2,
       windowPadding + this.safeAreaPadding.left,
       windowWidth -
         zapComponentWidth -
@@ -425,10 +429,6 @@ export class SelectorComponent {
     let originY = this.clamp(targetBottomY - top, 0, zapComponentHeight);
 
     this.selectorComponent.style.transformOrigin = `${originX}px ${originY}px`;
-
-    this.window.requestAnimationFrame(() => {
-      this.selectorComponent.setAttribute("is-appearing", "true");
-    });
   }
 
   /**
@@ -542,11 +542,19 @@ export class SelectorComponent {
     }
 
     if (
-      this.#currentState === SelectorComponent.STATES.SELECTING &&
-      !isZenContent
+      this.#currentState !== SelectorComponent.STATES.SELECTING ||
+      isZenContent
     ) {
-      this.setState(SelectorComponent.STATES.SELECTED, event.target);
+      return;
     }
+
+    if (this.#immediate) {
+      this.#selectedElement = event.target;
+      this.#relatedValueIndex = 0;
+      this.#handleSelect();
+      return;
+    }
+    this.setState(SelectorComponent.STATES.SELECTED, event.target);
   }
 
   /**

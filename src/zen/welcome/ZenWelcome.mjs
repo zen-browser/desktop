@@ -104,6 +104,8 @@
     const video = document.getElementById("zen-welcome-video");
     video.play().catch(() => {});
     window.MozXULElement.insertFTLIfNeeded("browser/zen-welcome.ftl");
+    window.MozXULElement.insertFTLIfNeeded("browser/migrationWizard.ftl");
+    window.MozXULElement.insertFTLIfNeeded("browser/zen-migration.ftl");
   }
 
   var _iconToData = {};
@@ -128,6 +130,22 @@
       reader.readAsDataURL(blob);
     });
     return data;
+  }
+
+  function createIconWrapper(url) {
+    const iconWrapper = document.createElement("div");
+    iconWrapper.className = "engine-icon-wrapper";
+    const iconBackdrop = document.createElement("img");
+    iconBackdrop.className = "engine-icon-backdrop";
+    const icon = document.createElement("img");
+    icon.className = "engine-icon";
+    icon.width = icon.height = 40;
+    if (url) {
+      icon.src = url;
+      iconBackdrop.src = url;
+    }
+    iconWrapper.append(iconBackdrop, icon);
+    return iconWrapper;
   }
 
   function createOption({ id, group, checked, l10n, text, extra }) {
@@ -387,7 +405,10 @@
         element.style.opacity = 0;
         element.style.removeProperty("display");
       }
-      gZenUIManager.updateTabsToolbar();
+      window.requestAnimationFrame(() => {
+        window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+      });
+      gZenFolders.relayoutCollapsedFolders();
       let elementsToIgnore = kZenElementsToIgnore
         .map(id => `#${id}`)
         .join(", ");
@@ -508,6 +529,120 @@
 
   const kNextButton = { l10n: "zen-generic-next", primary: true };
 
+  const kDefaultBrandImage = "chrome://global/skin/icons/defaultFavicon.svg";
+
+  /**
+   * Browsers with data to import, most recently used first.
+   *
+   * @returns {Promise<object[]>} Sources with `key`, `name`, `image` and
+   *   `profiles`, the browser's profiles (`{ id, name }`) or `[null]` for a
+   *   browser without any.
+   */
+  async function getImportableBrowsers() {
+    const l10n = new Localization([
+      "branding/brand.ftl",
+      "browser/migrationWizard.ftl",
+      "browser/zen-migration.ftl",
+    ]);
+    const sources = [];
+    await Promise.all(
+      MigrationUtils.availableMigratorKeys.map(async key => {
+        try {
+          const migrator = await MigrationUtils.getMigrator(key);
+          if (!migrator?.enabled) {
+            return;
+          }
+          const hasPermissions = await migrator.hasPermissions();
+          if (!hasPermissions && !(await migrator.canGetPermissions())) {
+            return;
+          }
+          let profiles = hasPermissions
+            ? await migrator.getSourceProfiles()
+            : [null];
+          if (Array.isArray(profiles) && !profiles.length) {
+            return;
+          }
+          if (!Array.isArray(profiles)) {
+            // Single profile browsers report no profile list.
+            profiles = [null];
+          }
+          const nameId = migrator.constructor.displayNameL10nID;
+          let displayName = nameId;
+          try {
+            displayName = (await l10n.formatValue(nameId)) || nameId;
+          } catch {}
+          const lastUsed = (await migrator.getLastUsedDate()).getTime();
+          sources.push({
+            key,
+            name: displayName,
+            image: migrator.constructor.brandImage || kDefaultBrandImage,
+            lastUsed,
+            profiles,
+          });
+        } catch (ex) {
+          console.error(`Could not check the ${key} migrator`, ex);
+        }
+      })
+    );
+    return sources.sort((a, b) => b.lastUsed - a.lastUsed);
+  }
+
+  /**
+   * A browser's card on the import page, followed by its profiles to pick
+   * from when it has more than one.
+   *
+   * @param {object} source One of getImportableBrowsers' entries
+   * @param {number} index Its position in the list
+   */
+  function createImportSource(source, index) {
+    const container = document.createElement("div");
+    container.className = "zen-welcome-import-source";
+    const option = createOption({
+      id: "zen-welcome-import-" + index,
+      group: "zen-welcome-import",
+      text: source.name,
+      extra: createIconWrapper(source.image),
+    });
+    option.querySelector("input").dataset.sourceIndex = index;
+    container.appendChild(option);
+    if (source.profiles.length > 1) {
+      const profiles = document.createElement("div");
+      profiles.className = "zen-welcome-import-profiles";
+      const list = document.createElement("div");
+      list.className = "zen-welcome-import-profiles-list";
+      source.profiles.forEach((profile, profileIndex) => {
+        const row = document.createElement("label");
+        row.className = "zen-welcome-import-profile";
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = `zen-welcome-import-profile-${index}`;
+        input.value = profileIndex;
+        input.checked = profileIndex === 0;
+        const check = document.createElement("span");
+        check.className = "zen-welcome-import-profile-check no-squircles";
+        const text = document.createElement("span");
+        text.className = "zen-welcome-import-profile-name";
+        text.textContent = profile?.name || profile?.id || source.name;
+        row.append(input, check, text);
+        list.appendChild(row);
+      });
+      profiles.appendChild(list);
+      container.appendChild(profiles);
+    }
+    return container;
+  }
+
+  function updateExpandedImportSource(content) {
+    for (const source of content.querySelectorAll(
+      ".zen-welcome-import-source"
+    )) {
+      source.toggleAttribute(
+        "expanded",
+        source.querySelector("input[name='zen-welcome-import']").checked
+      );
+    }
+  }
+
   async function setDefaultBrowser() {
     const shellSvc =
       AppConstants.HAVE_SHELL_SERVICE && window.getShellService();
@@ -528,13 +663,7 @@
         title: "zen-welcome-import-title",
         descriptions: ["zen-welcome-import-description"],
         buttons: [kNextButton],
-        render(content) {
-          const yes = createOption({
-            id: "zen-welcome-import-yes",
-            group: "zen-welcome-import",
-            l10n: "zen-welcome-import-yes",
-          });
-          content.appendChild(yes);
+        async render(content) {
           content.appendChild(
             createOption({
               id: "zen-welcome-import-no",
@@ -543,13 +672,40 @@
               checked: true,
             })
           );
+          const sources = await getImportableBrowsers();
+          if (!content.isConnected) {
+            return;
+          }
+          content.importSources = sources;
+          sources.forEach((source, index) => {
+            content.appendChild(createImportSource(source, index));
+          });
+          content.addEventListener("change", event => {
+            if (event.target.name === "zen-welcome-import") {
+              updateExpandedImportSource(content);
+            }
+          });
+          updateExpandedImportSource(content);
         },
         commit(content) {
-          if (content.querySelector("#zen-welcome-import-yes").checked) {
-            MigrationUtils.showMigrationWizard(window, {
-              isStartupMigration: true,
-            });
+          const checked = content.querySelector(
+            "input[name='zen-welcome-import']:checked"
+          );
+          const source = content.importSources?.[checked?.dataset.sourceIndex];
+          if (!source) {
+            return;
           }
+          const profileIndex =
+            checked
+              .closest(".zen-welcome-import-source")
+              .querySelector("input[type='radio'][value]:checked")?.value ?? 0;
+          const profile = source.profiles[profileIndex];
+          MigrationUtils.showMigrationWizard(window, {
+            entrypoint: MigrationUtils.MIGRATION_ENTRYPOINTS.FIRSTRUN,
+            isStartupMigration: true,
+            migratorKey: source.key,
+            profileId: profile?.id,
+          });
         },
       },
       {
@@ -602,17 +758,11 @@
           await engineStore.init();
           const defaultEngine = await lazy.SearchService.getDefault();
           for (const engine of engineStore.getEngines()) {
-            const iconWrapper = document.createElement("div");
-            iconWrapper.className = "engine-icon-wrapper";
-            const iconBackdrop = document.createElement("img");
-            iconBackdrop.className = "engine-icon-backdrop";
-            const icon = document.createElement("img");
-            icon.className = "engine-icon";
-            icon.width = icon.height = 40;
-            iconWrapper.append(iconBackdrop, icon);
+            const iconWrapper = createIconWrapper();
             engine.originalEngine.getIconURL(96).then(url => {
-              icon.src = url;
-              iconBackdrop.src = url;
+              for (const img of iconWrapper.children) {
+                img.src = url;
+              }
             });
             const option = createOption({
               id: "zen-welcome-engine-" + engine.name.replace(/\s+/g, "-"),

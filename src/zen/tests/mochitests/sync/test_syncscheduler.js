@@ -529,7 +529,7 @@ add_task(async function test_handleSyncError() {
 
   _("Arrange for a successful sync to reset the scheduler error count");
   let promiseObserved = promiseOneObserver("weave:service:sync:finish");
-  Svc.PrefBranch.setStringPref("firstSync", "wipeRemote");
+  Svc.PrefBranch.clearUserPref("firstSync");
   scheduler.scheduleNextSync(-1);
   await promiseObserved;
   await cleanUpAndGo(server);

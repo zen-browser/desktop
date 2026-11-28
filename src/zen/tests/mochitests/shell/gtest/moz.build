@@ -13,4 +13,8 @@ if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
         "WindowsUIOverlayImageTests.cpp",
     ]
 
+    SOURCE_HEADERS += [
+        "WindowsDefaultBrowserTests.h",
+    ]
+
 FINAL_LIBRARY = "xul-gtest"

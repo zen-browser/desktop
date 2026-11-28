@@ -1,8 +1,25 @@
 diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
-index 22a2a7ef3a5e9257c8bb00ba6a55e8d39d2abbd9..6d8353fd11921585f7101f5717bdb3dd8f2a5eae 100644
+index 41efab893..5b27b2c08 100644
 --- a/widget/cocoa/nsCocoaWindow.h
 +++ b/widget/cocoa/nsCocoaWindow.h
-@@ -461,6 +461,10 @@ class nsCocoaWindow final : public nsIWidget {
+@@ -55,6 +55,7 @@ class TextInputHandler;
+   NSRect mDirtyRect;
+ 
+   BOOL mIsAnimationSuppressed;
++  BOOL mZenNeverMain;
+ 
+   nsTouchBar* mTouchBar;
+ }
+@@ -89,6 +90,8 @@ class TextInputHandler;
+ - (void)setIsAnimationSuppressed:(BOOL)aValue;
+ - (BOOL)isAnimationSuppressed;
+ 
++- (void)setZenNeverMain:(BOOL)aValue;
++
+ // Returns an autoreleased NSArray containing the NSViews that we consider the
+ // "contents" of this window. All views in the returned array are subviews of
+ // this window's content view. However, the array may not include all of the
+@@ -471,6 +474,10 @@ class nsCocoaWindow final : public nsIWidget {
    void SetHideTitlebarSeparator(bool) override;
    bool IsMacTitlebarDirectionRTL() override;
    void SetCustomTitlebar(bool) override;
@@ -13,7 +30,7 @@ index 22a2a7ef3a5e9257c8bb00ba6a55e8d39d2abbd9..6d8353fd11921585f7101f5717bdb3dd
    void UpdateThemeGeometries(
        const nsTArray<ThemeGeometry>& aThemeGeometries) override;
    void LockAspectRatio(bool aShouldLock) override;
-@@ -674,6 +678,7 @@ class nsCocoaWindow final : public nsIWidget {
+@@ -685,6 +692,7 @@ class nsCocoaWindow final : public nsIWidget {
    // show (e.g. a window created by detaching a tab from a fullscreen window).
    bool mIsInitialFullscreenSuppressed = false;
    bool mWasShown = false;

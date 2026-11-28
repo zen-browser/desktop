@@ -1,0 +1,5 @@
+{
+  "background-color": {
+    "--zen-sidebar-notification-progress-bar-background": { "external": true }
+  }
+}

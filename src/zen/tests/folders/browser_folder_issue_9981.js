@@ -43,7 +43,7 @@ add_task(async function test_Issue_9981() {
   );
 
   const tab2ResetButton = tab2.querySelector(".tab-reset-button");
-  tab2ResetButton.style.display = "flex";
+  tab2ResetButton.style.visibility = "visible";
   await clickWhenReady(tab2ResetButton);
 
   await TestUtils.waitForCondition(

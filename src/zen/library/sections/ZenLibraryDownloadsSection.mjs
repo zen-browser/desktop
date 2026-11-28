@@ -16,6 +16,13 @@ ChromeUtils.defineESModuleGetters(lazy, {
   FILE_GROUPS: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   canDrawThumbnail: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   fileGroupOf: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  blockedText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  canRetry: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  confirmUnblock: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  downloadString: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  isBlocked: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  joinDownloadStatus: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
+  retryDownload: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   transferText: "moz-src:///zen/library/ZenLibraryUtils.sys.mjs",
   BrowserUtils: "resource://gre/modules/BrowserUtils.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
@@ -36,8 +43,12 @@ function clearDownloads() {
     .catch(console.error);
 }
 
+const SHOW_IN_FOLDER_ICON =
+  AppConstants.platform === "macosx"
+    ? "chrome://browser/skin/zen-icons/search-glass.svg"
+    : "chrome://browser/skin/zen-icons/folder.svg";
+
 const FILE_MIME = "application/x-moz-file";
-const OPENING_FEEDBACK_MS = 1500;
 
 export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   static id = "downloads";
@@ -66,14 +77,11 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   #menu = null;
   #menuDownload = null;
   #menuRow = null;
-  #openingDownload = null;
-  #openingTimer = null;
 
   connectedCallback() {
     super.connectedCallback();
     this.#data = lazy.DownloadsCommon.getData(window, true);
     this.#data.addView(this);
-    this.#menu = this.#buildMenu();
   }
 
   /** The view of the old library window this section stands in for. */
@@ -91,9 +99,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     this.#menu?.hidePopup();
     this.#menu?.remove();
     this.#menu = null;
-    clearTimeout(this.#openingTimer);
-    this.#openingTimer = null;
-    this.#openingDownload = null;
   }
 
   get searchPlaceholderL10nId() {
@@ -191,6 +196,12 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     }
   }
 
+  onShown() {
+    super.onShown();
+    this.#refreshed = new WeakSet();
+    this.requestUpdate();
+  }
+
   // Helpers
 
   #fileName(download) {
@@ -207,8 +218,21 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     return new lazy.FileUtils.File(download.target.path);
   }
 
+  /**
+   * @param {string} url - A download's source URL
+   * @returns {string} Its source, safe to show as the origin
+   */
   #formatUrl(url) {
-    return url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+    const parsed = URL.parse(url);
+    const uri = parsed && Services.io.newURI(parsed.href);
+    if (!uri) {
+      return "";
+    }
+    const host = lazy.BrowserUtils.formatURIForDisplay(uri);
+    if (uri.scheme !== "http" && uri.scheme !== "https") {
+      return host;
+    }
+    return (host + uri.pathQueryRef).replace(/\/$/, "");
   }
 
   #matchesQuery(download) {
@@ -290,9 +314,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   }
 
   #joinStatus(...parts) {
-    return parts
-      .filter(Boolean)
-      .reduce((a, b) => lazy.DownloadsCommon.strings.statusSeparator(a, b));
+    return lazy.joinDownloadStatus(...parts);
   }
 
   /**
@@ -339,29 +361,33 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   }
 
   #statusText(download) {
-    const strings = lazy.DownloadsCommon.strings;
     if (!download.stopped) {
-      return lazy.transferText(download);
+      return lazy.transferText(download, { speed: true });
     }
     if (download.deleted) {
-      return strings.fileDeleted;
+      return lazy.downloadString("downloads-file-deleted");
     }
     if (download.succeeded) {
       if (!download.target.exists) {
-        return strings.fileMovedOrMissing;
+        return lazy.downloadString("downloads-file-moved-or-missing");
       }
       return this.#finishedStatus(download);
     }
     if (download.canceled && download.hasPartialData) {
-      return this.#joinStatus(strings.statePaused, lazy.transferText(download));
+      return this.#joinStatus(
+        lazy.downloadString("downloads-state-paused"),
+        lazy.transferText(download)
+      );
     }
     if (download.error?.becauseBlockedByParentalControls) {
-      return strings.stateBlockedParentalControls;
+      return lazy.downloadString("downloads-state-blocked-parental-controls");
     }
     if (download.error?.becauseBlockedByReputationCheck) {
-      return strings.blockedMalware;
+      return lazy.blockedText(download);
     }
-    return download.canceled ? strings.stateCanceled : strings.stateFailed;
+    return lazy.downloadString(
+      download.canceled ? "downloads-state-canceled" : "downloads-state-failed"
+    );
   }
 
   // Actions
@@ -401,39 +427,11 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       this.#toggleOpenWhenDone(download);
       return;
     }
-    if (!this.#hasFile(download)) {
+    if (lazy.isBlocked(download)) {
+      lazy.confirmUnblock(download, window, this.#openDownload.bind(this));
       return;
     }
-    this.#showInFolder(download);
-    clearTimeout(this.#openingTimer);
-    this.#openingDownload = download;
-    this.#openingTimer = setTimeout(() => {
-      this.#openingTimer = null;
-      this.#openingDownload = null;
-      this.requestUpdate();
-    }, OPENING_FEEDBACK_MS);
-    this.requestUpdate();
-  }
-
-  #canRetry(download) {
-    return (
-      download.stopped &&
-      !download.succeeded &&
-      (download.canceled || !!download.error)
-    );
-  }
-
-  #retryDownload(download) {
-    if (download.start) {
-      // Errors when retrying are already reported as download failures.
-      download.start().catch(() => {});
-      return;
-    }
-    // History-only entries have no session object, so download the URL again.
-    const targetName = download.target.path
-      ? PathUtils.filename(download.target.path)
-      : null;
-    window.DownloadURL(download.source.url, targetName, document);
+    this.#openDownload(download);
   }
 
   #cancelDownload(download) {
@@ -479,14 +477,41 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     ).catch(console.error);
   }
 
+  /**
+   * Whether an action belongs in the menu at all, as against being offered
+   * and refused.
+   *
+   * @param {string} action - What the menu item does
+   * @param {object} download - The download it would do it to
+   * @returns {boolean} Whether to show it
+   */
+  #isActionShown(action, download) {
+    switch (action) {
+      case "pause":
+        return !download.stopped;
+      case "resume":
+        return download.canceled && download.hasPartialData;
+      case "unblock":
+        return lazy.isBlocked(download);
+      default:
+        return true;
+    }
+  }
+
   #isActionEnabled(action, download) {
     switch (action) {
+      case "pause":
+        return download.hasPartialData && !download.error;
+      case "resume":
+        return !download.error;
       case "open":
       case "copy":
       case "show":
         return this.#hasFile(download);
       case "copy-link":
         return !download.source.isDataURICleared;
+      case "unblock":
+        return lazy.isBlocked(download);
       case "delete":
         return (
           this.#hasFile(download) ||
@@ -511,6 +536,15 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         break;
       case "show":
         this.#showInFolder(download);
+        break;
+      case "pause":
+        download.cancel().catch(console.error);
+        break;
+      case "resume":
+        download.start().catch(console.error);
+        break;
+      case "unblock":
+        lazy.confirmUnblock(download, window, this.#openDownload.bind(this));
         break;
       case "hide":
         this.#hideDownload(download);
@@ -541,12 +575,15 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
   #buildMenu() {
     const menu = window.MozXULElement.parseXULToFragment(`
       <menupopup class="zen-library-downloads-menu">
+        <menuitem data-action="pause" data-l10n-id="downloads-cmd-pause"/>
+        <menuitem data-action="resume" data-l10n-id="downloads-cmd-resume"/>
         <menuitem data-action="open" data-l10n-id="library-downloads-menu-open"/>
         <menuitem data-action="show" data-l10n-id="downloads-cmd-show-menuitem-2"/>
         <menuseparator/>
         <menuitem data-action="copy" data-l10n-id="library-downloads-menu-copy"/>
         <menuitem data-action="copy-link" data-l10n-id="downloads-cmd-copy-download-link"/>
         <menuseparator/>
+        <menuitem data-action="unblock" data-l10n-id="downloads-cmd-unblock"/>
         <menuitem data-action="hide" data-l10n-id="library-downloads-menu-hide"/>
         <menuitem data-action="delete" data-l10n-id="library-downloads-menu-delete"/>
       </menupopup>
@@ -557,15 +594,18 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       }
     });
     menu.addEventListener("popuphidden", () => {
+      menu.hidden = true;
       this.#menuRow?.removeAttribute("menu-open");
       this.#menuRow = null;
       this.#menuDownload = null;
     });
+    menu.hidden = true;
     document.getElementById("mainPopupSet").appendChild(menu);
     return menu;
   }
 
   #openMenu(download, row, anchor, event) {
+    this.#menu ??= this.#buildMenu();
     const fileName = this.#fileName(download);
     for (const item of this.#menu.querySelectorAll("menuitem")) {
       const { action } = item.dataset;
@@ -574,8 +614,10 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
           name: fileName,
         });
       }
+      item.hidden = !this.#isActionShown(action, download);
       item.disabled = !this.#isActionEnabled(action, download);
     }
+    this.#menu.hidden = false;
     this.#menuRow?.removeAttribute("menu-open");
     this.#menuRow = row;
     this.#menuDownload = download;
@@ -591,12 +633,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
 
   #renderSubtitle(download) {
     let statusNode;
-    if (download === this.#openingDownload) {
-      statusNode = html`<span
-        class="zen-library-download-status"
-        data-l10n-id="library-downloads-opening-in"
-      ></span>`;
-    } else if (this.#opensWhenDone(download)) {
+    if (this.#opensWhenDone(download)) {
       statusNode = html`<span
         class="zen-library-download-status"
         data-l10n-id="library-downloads-open-when-done"
@@ -658,6 +695,21 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
     `;
   }
 
+  #renderShowButton(download) {
+    return html`
+      <toolbarbutton
+        class="toolbarbutton-1"
+        data-l10n-id="library-downloads-show-button"
+        @click=${event => {
+          event.stopPropagation();
+          this.#showInFolder(download);
+        }}
+      >
+        <img class="toolbarbutton-icon" src=${SHOW_IN_FOLDER_ICON} alt="" />
+      </toolbarbutton>
+    `;
+  }
+
   #renderRetryButton(download) {
     return html`
       <toolbarbutton
@@ -665,7 +717,7 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         data-l10n-id="library-downloads-retry-button"
         @click=${event => {
           event.stopPropagation();
-          this.#retryDownload(download);
+          lazy.retryDownload(download, window);
         }}
       >
         <img
@@ -688,7 +740,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         ?indeterminate=${pending && !download.hasProgress}
         ?paused=${pending && download.stopped}
         ?open-when-done=${this.#opensWhenDone(download)}
-        ?opening=${download === this.#openingDownload}
         @click=${() => this.#onRowClick(download)}
         @contextmenu=${event => {
           event.preventDefault();
@@ -723,8 +774,11 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
         </div>
         <div class="zen-library-row-actions">
           ${when(!download.stopped, () => this.#renderCancelButton(download))}
-          ${when(this.#canRetry(download), () =>
+          ${when(lazy.canRetry(download), () =>
             this.#renderRetryButton(download)
+          )}
+          ${when(this.#hasFile(download), () =>
+            this.#renderShowButton(download)
           )}
           <toolbarbutton
             class="toolbarbutton-1"

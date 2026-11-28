@@ -26,7 +26,7 @@ add_task(async function test_removeAllTabsBut_default_save_tab_groups() {
     "should not be any saved tab groups to start"
   );
   Assert.equal(
-    SessionStore.getClosedTabGroups(win).length,
+    SessionStore.getClosedTabGroups({ sourceWindow: win }).length,
     0,
     "should not be any closed tab groups to start"
   );
@@ -55,7 +55,7 @@ add_task(async function test_removeAllTabsBut_default_save_tab_groups() {
     "should have saved the tab group that was closed"
   );
   Assert.equal(
-    SessionStore.getClosedTabGroups(win).length,
+    SessionStore.getClosedTabGroups({ sourceWindow: win }).length,
     0,
     "should only have saved the tab group, not deleted it"
   );
@@ -86,7 +86,7 @@ add_task(async function test_removeAllTabsBut_suppress_saving_tab_groups() {
     "should not be any saved tab groups to start"
   );
   Assert.equal(
-    SessionStore.getClosedTabGroups(win).length,
+    SessionStore.getClosedTabGroups({ sourceWindow: win }).length,
     0,
     "should not be any closed tab groups to start"
   );
@@ -111,7 +111,7 @@ add_task(async function test_removeAllTabsBut_suppress_saving_tab_groups() {
     "should not have saved the tab group"
   );
   Assert.equal(
-    SessionStore.getClosedTabGroups(win),
+    SessionStore.getClosedTabGroups({ sourceWindow: win }),
     0,
     "should still not have any deleted tab groups"
   );

@@ -1,0 +1,20 @@
+diff --git a/dom/xul/nsXULElement.cpp b/dom/xul/nsXULElement.cpp
+index 667641d5c5f1d224fa8db9f501ec7f59abd50e02..1b05edb1addda850b5b446a09af7724755dc3acf 100644
+--- a/dom/xul/nsXULElement.cpp
++++ b/dom/xul/nsXULElement.cpp
+@@ -54,6 +54,7 @@
+ #include "mozilla/TaskController.h"
+ #include "mozilla/URLExtraData.h"
+ #include "mozilla/UniquePtr.h"
++#include "mozilla/ZenGlobalShortcuts.h"
+ #include "mozilla/dom/BindContext.h"
+ #include "mozilla/dom/BorrowedAttrInfo.h"
+ #include "mozilla/dom/CSSRuleBinding.h"
+@@ -537,6 +538,7 @@ static void InvalidateKeysetHandlers(nsINode* aKeyset) {
+   Element* keyset = Element::FromNodeOrNull(aKeyset);
+   if (keyset && keyset->IsXULElement(nsGkAtoms::keyset)) {
+     XULKeySetGlobalKeyListener::InvalidateHandlers(keyset);
++    zen::ZenGlobalShortcuts::RefreshKeyset(keyset);
+   }
+ }
+ 

@@ -9,11 +9,6 @@
     width: calc(100% - var(--zen-toolbox-padding) * 2 - 4px);
     left: unset;
     right: calc(var(--zen-toolbox-padding) + 2px);
-    transform: translateY(-4px);
-
-    :root:not([zen-single-toolbar="true"]) & {
-      transform: translateY(calc(-100% - 2px));
-    }
   }
 
   #zen-tabbox-wrapper {
@@ -47,7 +42,7 @@
   }
 
   #navigator-toolbox {
-    --zen-toolbox-max-width: 74px !important;
+    --zen-toolbox-max-width: 62px !important;
     --zen-compact-float: var(--zen-element-separation);
     max-width: unset !important;
 
@@ -169,7 +164,7 @@
   ),
   &[zen-renaming-tab='true'] #navigator-toolbox {
     &:not([animate='true']) {
-      --zen-compact-mode-func: linear(
+      transition: translate 0.25s linear(
         0 0%,
         0.002748 1%,
         0.010544 2%,
@@ -272,15 +267,6 @@
         1.003674 99%,
         1.003423 100%
       );
-      --zen-compact-mode-time: 0.25s;
-      transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
-
-      @media -moz-pref('zen.theme.acrylic-sidebar') and (not (prefers-reduced-transparency: reduce))  {
-        :root:not([zen-no-acrylic='true']) & .zen-toolbar-background:not(:-moz-window-inactive) {
-          background: transparent;
-          backdrop-filter: blur(42px) saturate(110%) brightness(0.5) contrast(100%) !important;
-        }
-      }
 
       :root:not([supress-primary-adjustment='true']) & {
         #titlebar {

@@ -51,8 +51,17 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
     // No-op on non-macOS platforms
     return NS_OK;
   }
+  // Elsewhere, closing a window already hands focus to the one under it,
+  // whichever application it belongs to.
+  static void ReturnToPreviousApplicationInternal() {}
+  static void KeepWindowsBehindPreviousApplicationInternal() {}
+  static void ShowOverFullScreenApplicationsInternal(mozIDOMWindowProxy*) {}
 #else
   static auto PlayHapticFeedbackInternal() -> nsresult;
+  static void ReturnToPreviousApplicationInternal();
+  static void KeepWindowsBehindPreviousApplicationInternal();
+  static void ShowOverFullScreenApplicationsInternal(
+      mozIDOMWindowProxy* aWindow);
 #endif
 };
 

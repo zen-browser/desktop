@@ -69,7 +69,7 @@ async function closeAndRestoreTab(tab) {
     "SessionStore recorded the closed tab"
   );
   is(
-    !!SessionStore.getClosedTabData(window)[0].state.muted,
+    !!SessionStore.getClosedTabData({ sourceWindow: window })[0].state.muted,
     mutedWhenClosed,
     "Closed tab data records the mute state the tab was closed with"
   );

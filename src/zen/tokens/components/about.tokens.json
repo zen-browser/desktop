@@ -1,0 +1,20 @@
+{
+  "background-color": {
+    "--zen-about-button-background": { "external": true },
+    "--zen-about-button-background-hover": { "external": true },
+    "--zen-about-primary-background": { "external": true }
+  },
+  "text-color": {
+    "--zen-about-muted-color": { "external": true },
+    "--zen-about-primary-color": { "external": true },
+    "--zen-about-text-color": { "external": true },
+    "--zen-about-link-color": { "value": "-moz-nativehyperlinktext" }
+  },
+  "icon-color": {
+    "--zen-about-success-color": { "external": true },
+    "--zen-about-warning-color": { "external": true }
+  },
+  "size": {
+    "--zen-about-width": { "external": true }
+  }
+}

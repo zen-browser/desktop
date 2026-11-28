@@ -48,6 +48,12 @@ if test "$ZEN_CROSS_COMPILING"; then
 
       export MOZ_LTO=cross,full
       ac_add_options --enable-lto=cross,full
+
+      if test "$ZEN_GA_CS_GENERATE_PROFILE"; then
+        ac_add_options --enable-cs-profile-generate
+      elif test "$ZEN_GA_CS_USE_PROFILE"; then
+        ac_add_options --enable-cs-profile-use
+      fi
     fi
   fi
 fi

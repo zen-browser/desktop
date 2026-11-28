@@ -677,6 +677,33 @@ add_task(async function test_process_incoming_commands() {
   await cleanup();
 });
 
+add_task(async function test_perDevice_wipeEngine_skips_disabled_engine() {
+  _("Per-device clients only wipe engines they sync");
+  Services.prefs.setBoolPref("services.sync.perDeviceEngineChoices", true);
+  let wipeClient = sinon.stub(Service, "wipeClient");
+  let enabled = false;
+  let get = sinon.stub(Service.engineManager, "get").returns({
+    get enabled() {
+      return enabled;
+    },
+  });
+  try {
+    engine.localCommands = [{ command: "wipeEngine", args: ["bookmarks"] }];
+    ok(await engine.processIncomingCommands());
+    ok(!wipeClient.called, "A disabled engine keeps its local data");
+
+    enabled = true;
+    engine.localCommands = [{ command: "wipeEngine", args: ["bookmarks"] }];
+    ok(await engine.processIncomingCommands());
+    ok(wipeClient.calledOnceWith(["bookmarks"]), "An enabled one is wiped");
+  } finally {
+    get.restore();
+    wipeClient.restore();
+    Services.prefs.clearUserPref("services.sync.perDeviceEngineChoices");
+    await cleanup();
+  }
+});
+
 add_task(async function test_filter_duplicate_names() {
   _(
     "Ensure that we exclude clients with identical names that haven't synced in a week."

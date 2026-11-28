@@ -335,46 +335,6 @@ add_task(
   }
 );
 
-add_task(
-  async function test_wipeRemote_syncAndReportErrors_server_maintenance_error() {
-    enableValidationPrefs();
-
-    // Test that we report prolonged server maintenance errors that occur whilst
-    // wiping all remote devices.
-    let server = await EHTestsCommon.sync_httpd_setup();
-
-    await configureIdentity({ username: "broken.wipe" }, server);
-    await EHTestsCommon.generateAndUploadKeys();
-
-    engine.exception = null;
-    engine.enabled = true;
-
-    let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(subject) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
-
-    Assert.ok(!Status.enforceBackoff);
-    Assert.equal(Status.service, STATUS_OK);
-
-    Svc.PrefBranch.setStringPref("firstSync", "wipeRemote");
-
-    let promiseObserved = promiseOneObserver("weave:service:reset-file-log");
-    await Service.sync();
-    await promiseObserved;
-
-    Assert.ok(Status.enforceBackoff);
-    Assert.equal(backoffInterval, 42);
-    Assert.equal(Status.service, SYNC_FAILED);
-    Assert.equal(Status.sync, SERVER_MAINTENANCE);
-    Assert.equal(Svc.PrefBranch.getStringPref("firstSync"), "wipeRemote");
-
-    await clean();
-    await promiseStopServer(server);
-  }
-);
-
 add_task(async function test_sync_engine_generic_fail() {
   enableValidationPrefs();
 

@@ -1,0 +1,16 @@
+[DEFAULT]
+support-files = ["subdialog.xhtml"]
+
+["browser_multiple_dialog_navigation.js"]
+
+["browser_subdialog_esc.js"]
+support-files = ["loadDelayedReply.sjs"]
+
+["browser_tabdialogbox_content_prompts.js"]
+support-files = ["test_page.html"]
+
+["browser_tabdialogbox_focus.js"]
+https_first_disabled = true
+
+["browser_tabdialogbox_navigation.js"]
+https_first_disabled = true

@@ -7,6 +7,7 @@
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 const GLANCE_BACKGROUND_SCALE = 0.97;
+const GLANCE_OPEN_BOUNCE = 0.2;
 
 /**
  * Manages the Zen Glance feature - a preview overlay system for tabs
@@ -34,9 +35,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
-    ARC_STEPS: 80, // Browser interpolates between keyframes natively
-    MAX_ARC_HEIGHT: 20,
-    ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
+    ARC_STEPS: 90, // Browser interpolates between keyframes natively
+    MAX_ARC_HEIGHT: 30,
+    ARC_HEIGHT_RATIO: 0.4, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
 
   #GLANCE_ANIMATION_DURATION = Services.prefs.getIntPref(
@@ -111,13 +112,15 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       browser.setAttribute("usercontextid", data.userContextId);
     }
     host.querySelector(".browserStack").appendChild(browser);
-    wrapper.appendChild(this.#createNewOverlayButtons());
+    const buttons = this.#createNewOverlayButtons();
+    wrapper.appendChild(buttons);
     for (const selector of [
       ".zen-glance-sidebar-open",
       ".zen-glance-sidebar-split",
     ]) {
-      wrapper.querySelector(selector)?.remove();
+      buttons.querySelector(selector)?.remove();
     }
+    this.#animateOverlayButtons(buttons);
 
     const hostRect = host.getBoundingClientRect();
     const startPoint = {
@@ -145,11 +148,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     wrapper.setAttribute("animate", true);
     await gZenUIManager.elementAnimate(
       wrapper,
-      this.#createGlanceArcSequence(startPoint, "opening", null, hostRect),
+      this.#createGlanceArcSequence(startPoint, "opening", hostRect),
       {
         duration: gZenUIManager.testingEnabled
           ? 0
-          : this.#GLANCE_ANIMATION_DURATION,
+          : this.#openingSpring().duration,
         easing: "ease-in-out",
       }
     );
@@ -186,7 +189,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#createGlanceArcSequence(
           detached.startPoint,
           "closing",
-          null,
           host.getBoundingClientRect()
         ),
         {
@@ -214,6 +216,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   #setupObservers() {
     Services.obs.addObserver(this, "quit-application-requested");
+    window.addEventListener("unload", this.onUnload.bind(this), { once: true });
   }
 
   #insertIntoContextMenu() {
@@ -246,7 +249,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#detached
           ? this.closeDetachedGlance()
           : this.closeGlance({ onTabClose: true }),
-      cmd_zenGlanceExpand: () => this.fullyOpenGlance(),
       cmd_zenGlanceSplit: () => this.splitGlance(),
     };
 
@@ -310,13 +312,24 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Clean up all glances when the application is unloading
+   * Closes any open glances, either when the window unloads or when a quit is
+   * requested.
+   *
+   * @param {Event} [event] - The unload event, or nothing for a quit request.
    */
-  onUnload() {
-    for (const [, glance] of this.#glances) {
-      gBrowser.removeTab(glance.tab, { animate: false });
+  onUnload(event) {
+    if (event?.type === "unload") {
+      // The window is really going now, so stop listening. A quit request can
+      // still be canceled, so that path leaves the observer in place.
+      Services.obs.removeObserver(this, "quit-application-requested");
+      this.#glances.clear();
+    } else {
+      // A vetoed close leaves the Glance live, and successful closes remove
+      // their own entries when they finish.
+      for (const [, glance] of this.#glances) {
+        gBrowser.removeTab(glance.tab, { animate: false });
+      }
     }
-    this.#glances.clear();
   }
 
   /**
@@ -410,42 +423,45 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Create new overlay buttons with animation
+   * Create new overlay buttons, hidden until animated in with
+   * #animateOverlayButtons once they are in the document.
    *
-   * @returns {DocumentFragment} The cloned button template
+   * @returns {Element} The cloned button container
    */
   #createNewOverlayButtons() {
     const template = document.getElementById("zen-glance-sidebar-template");
-    const newButtons = template.content.cloneNode(true);
-    const container = newButtons.querySelector(".zen-glance-sidebar-container");
-
-    this.#animateOverlayButtons(container);
-    return newButtons;
+    const container = document.importNode(
+      template.content.querySelector(".zen-glance-sidebar-container"),
+      true
+    );
+    container.style.opacity = 0;
+    return container;
   }
 
   /**
-   * Animate the overlay buttons entrance
+   * Animate the overlay buttons entrance. The container must be in the
+   * document so the animation runs on the window's timeline.
    *
    * @param {Element} container - The button container
    */
   #animateOverlayButtons(container) {
-    container.style.opacity = 0;
-
     const xOffset = gZenVerticalTabsManager._prefsRightSide ? 20 : -20;
 
-    gZenUIManager.motion.animate(
-      container,
-      {
-        opacity: [0, 1],
-        x: [xOffset, 0],
-      },
-      {
-        duration: 0.2,
-        type: "spring",
-        delay: this.#GLANCE_ANIMATION_DURATION / 1000 - 0.2,
-        bounce: 0,
-      }
-    );
+    gZenUIManager
+      .animateSpring(
+        container,
+        {
+          opacity: [0, 1],
+          x: [xOffset, 0],
+        },
+        {
+          duration: 200,
+          delay: this.#GLANCE_ANIMATION_DURATION - 200,
+        }
+      )
+      .then(() => {
+        container.style.opacity = "";
+      });
   }
 
   /**
@@ -526,6 +542,21 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Tab} ownerTab - The tab that owns this glance
    */
   openGlance(data, existingTab = null, ownerTab = null) {
+    if (gZenVerticalTabsManager.hidesTabsToolbar) {
+      if (!existingTab && this.#isGlanceLoadAllowed(data)) {
+        const params = { triggeringPrincipal: data.triggeringPrincipal };
+        if (window.gZenLittleWindow) {
+          return ChromeUtils.importESModule(
+            "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs"
+          )
+            .ZenLittleWindow.openInRegularWindow(data.url, params)
+            .then(() => null);
+        }
+        window.openLinkIn(data.url, "tab", params);
+      }
+      return Promise.resolve(null);
+    }
+
     if (this.#currentBrowser) {
       return Promise.resolve(this.#currentTab);
     }
@@ -610,6 +641,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.quickOpenGlance();
     const newButtons = this.#createNewOverlayButtons();
     this.browserWrapper.appendChild(newButtons);
+    this.#animateOverlayButtons(newButtons);
 
     this.#setupGlancePositioning(data);
   }
@@ -622,16 +654,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       ".browserSidebarContainer"
     );
 
-    gZenUIManager.motion.animate(
+    parentSidebarContainer.style.transform = `scale(${GLANCE_BACKGROUND_SCALE})`;
+    parentSidebarContainer.style.opacity = 0.3;
+    gZenUIManager.animateSpring(
       parentSidebarContainer,
       {
-        scale: [1, GLANCE_BACKGROUND_SCALE],
+        scaleX: [1, GLANCE_BACKGROUND_SCALE],
+        scaleY: [1, GLANCE_BACKGROUND_SCALE],
         opacity: [1, 0.3],
       },
       {
-        duration: this.#GLANCE_ANIMATION_DURATION / 1000,
-        type: "spring",
-        bounce: 0.2,
+        duration: this.#openingVisualDuration,
+        bounce: GLANCE_OPEN_BOUNCE,
       }
     );
   }
@@ -705,11 +739,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     // Create the curved animation sequence. The transform origin is handled
     // separately (for example via CSS on the wrapper).
-    const arcSequence = this.#createGlanceArcSequence(
-      data,
-      "opening",
-      imageDataElement
-    );
+    const arcSequence = this.#createGlanceArcSequence(data, "opening");
 
     // Only animate if there is element data, so we can apply a
     // nice fade-in effect to the content. But if it doesn't exist,
@@ -742,7 +772,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       .elementAnimate(this.browserWrapper, arcSequence, {
         duration: gZenUIManager.testingEnabled
           ? 0
-          : this.#GLANCE_ANIMATION_DURATION,
+          : this.#openingSpring().duration,
         easing: "ease-in-out",
       })
       .then(() => {
@@ -759,51 +789,23 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    *
    * @param {object} data - Glance data with position and dimensions
    * @param {string} direction - 'opening' or 'closing'
-   * @param {Element|null} imageDataElement - The image data element for preview (optional)
    * @param {DOMRect|null} referenceRect - Bounds the glance opens within;
    *   defaults to the tab panels
    * @returns {object} Animation sequence object
    */
-  #createGlanceArcSequence(
-    data,
-    direction,
-    imageDataElement = null,
-    referenceRect = null
-  ) {
-    let { clientX, clientY, width, height } = data;
-    if (imageDataElement?.parentElement) {
-      // Since we are animating scale transforms on the wrapper, we need to
-      // adjust the width/height to match the scaled size of the element preview,
-      // so the image preview properly matches the size of the animating browser
-      // during the animation.
-      // For example:
-      // +-- wrapper --------------------------+
-      // |                                     |
-      // | +--- element preview -------------+ |
-      // | |                                 | |
-      // | +---------------------------------+ |
-      // |                                     |
-      // +-------------------------------------+
-      // We are scaling the wrapper while having only the element preview size
-      // in mind, so we need to adjust the width/height to match the size of the element preview
-      const rect = imageDataElement.getBoundingClientRect();
-      const aspectRatio = width / height;
-      const heightRatio = rect.height / (rect.width / aspectRatio);
-      const originalHeight = height;
-      if (heightRatio > 1) {
-        height *= heightRatio;
-        clientY -= (height - originalHeight) / 2;
-      }
-    }
-
-    // Calculate start and end positions based on direction
-    let startPosition, endPosition;
+  #createGlanceArcSequence(data, direction, referenceRect = null) {
+    const { clientX, clientY, width, height } = data;
 
     const tabPanelsRect =
       referenceRect ??
       window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabpanels);
 
     const widthPercent = 0.8;
+    const refWidth = tabPanelsRect.width * widthPercent;
+    const refHeight = tabPanelsRect.height;
+
+    // Calculate start and end positions based on direction
+    let startPosition, endPosition;
     if (direction === "opening") {
       startPosition = {
         x: clientX + width / 2,
@@ -833,12 +835,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       };
     }
 
-    // Reference size used as the scale(1, 1) baseline — this matches the
-    // wrapper's natural CSS size (80% x 100% of the tab panels) so the
-    // animation can run entirely on the compositor via transform.
-    const refWidth = tabPanelsRect.width * widthPercent;
-    const refHeight = tabPanelsRect.height;
-
     // Calculate distance and arc parameters
     const distance = this.#calculateDistance(startPosition, endPosition);
     const { arcHeight, shouldArcDownward } = this.#calculateOptimalArc(
@@ -857,23 +853,20 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const steps = this.#ARC_CONFIG.ARC_STEPS;
     const arcDirection = shouldArcDownward ? 1 : -1;
 
-    function easeOutBack(x) {
-      const c1 = 0.4;
-      const c3 = c1 + 1;
-      return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2;
-    }
-
     function easeOutCubic(t) {
       return 1 - Math.pow(1 - t, 6);
+    }
+
+    const openingSpring = this.#openingSpring().progress;
+    function springEase(x) {
+      return openingSpring[Math.round(x * (openingSpring.length - 1))];
     }
 
     // First, create the main animation steps
     for (let i = 0; i <= steps; i++) {
       const progress = i / steps;
       const eased =
-        direction === "opening"
-          ? easeOutBack(progress)
-          : easeOutCubic(progress);
+        direction === "opening" ? springEase(progress) : easeOutCubic(progress);
 
       // Calculate size interpolation
       const currentWidth =
@@ -903,6 +896,82 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
 
     return sequence;
+  }
+
+  /**
+   * Visual duration of the spring behind the opening arc and the parent
+   * background, chosen so both are still by the glance animation duration.
+   *
+   * @returns {number} Milliseconds
+   */
+  get #openingVisualDuration() {
+    return gZenUIManager.springVisualDuration(
+      this.#GLANCE_ANIMATION_DURATION,
+      GLANCE_OPEN_BOUNCE
+    );
+  }
+
+  /**
+   * The spring the opening arc follows.
+   *
+   * @returns {{progress: number[], duration: number}}
+   */
+  #openingSpring() {
+    const spring = gZenUIManager.springProgress(
+      this.#openingVisualDuration,
+      GLANCE_OPEN_BOUNCE
+    );
+    return {
+      progress: this.#softenSettle(spring.progress),
+      duration: spring.duration,
+    };
+  }
+
+  /**
+   * Replays a spring so it rises as fast as before but takes
+   * several times longer over a smaller overshoot once it
+   * reaches the target, without changing how long the whole motion lasts.
+   *
+   * @param {number[]} progress Evenly spaced samples of the spring.
+   * @returns {number[]} The same number of samples.
+   */
+  #softenSettle(progress) {
+    const settleStretch = 2.2;
+    const settleOvershoot = 0.5;
+    const settleBlend = 0.35;
+    const last = progress.length - 1;
+    const arrival = progress.findIndex(value => value >= 1);
+    if (arrival <= 0 || arrival >= last) {
+      return progress;
+    }
+    const blend = Math.max(1, arrival * settleBlend);
+    const settling = position => {
+      const t = Math.min(
+        1,
+        Math.max(0, (position - (arrival - blend)) / (2 * blend))
+      );
+      return t * t * (3 - 2 * t);
+    };
+    const positions = [0];
+    while (positions.at(-1) < last) {
+      const position = positions.at(-1);
+      const rate = 1 + (1 / settleStretch - 1) * settling(position);
+      positions.push(Math.min(last, position + rate));
+    }
+    const sampleAt = (values, index) => {
+      const low = Math.floor(index);
+      const high = Math.min(values.length - 1, low + 1);
+      return values[low] + (values[high] - values[low]) * (index - low);
+    };
+    const softened = [];
+    for (let i = 0; i <= last; i++) {
+      const position = sampleAt(positions, (i / last) * (positions.length - 1));
+      const value = sampleAt(progress, position);
+      const overshoot = 1 + (settleOvershoot - 1) * settling(position);
+      softened.push(value > 1 ? 1 + (value - 1) * overshoot : value);
+    }
+    softened[last] = 1;
+    return softened;
   }
 
   /**
@@ -1036,6 +1105,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
 
+    this.browserWrapper.setAttribute("animate", true);
     return this.#animateGlanceClosing(
       onTabClose,
       browserSidebarContainer,
@@ -1138,6 +1208,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   #prepareGlanceForClosing() {
     // Critical: This line must not be touched - it works for unknown reasons
     this.#currentTab.style.display = "none";
+    this.#currentTab.setAttribute("glance-closing", true);
     this.overlay.setAttribute("fade-out", true);
     this.overlay.style.pointerEvents = "none";
     this.quickCloseGlance({ justAnimateParent: true, clearID: false });
@@ -1150,15 +1221,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #animateSidebarButtons(sidebarButtons) {
     if (sidebarButtons) {
-      gZenUIManager.motion
-        .animate(
+      sidebarButtons.style.pointerEvents = "none";
+      gZenUIManager
+        .animateSpring(
           sidebarButtons,
           { opacity: [1, 0] },
-          {
-            duration: 0.2,
-            type: "spring",
-            bounce: this.#GLANCE_ANIMATION_DURATION / 1000 - 0.1,
-          }
+          { duration: 120, bounce: 0.25, fill: "forwards" }
         )
         .then(() => {
           sidebarButtons.remove();
@@ -1197,17 +1265,16 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Element} browserSidebarContainer - The sidebar container
    */
   #animateParentBackgroundClose(browserSidebarContainer) {
-    gZenUIManager.motion
-      .animate(
+    gZenUIManager
+      .animateSpring(
         browserSidebarContainer,
         {
-          scale: [GLANCE_BACKGROUND_SCALE, 1],
+          scaleX: [GLANCE_BACKGROUND_SCALE, 1],
+          scaleY: [GLANCE_BACKGROUND_SCALE, 1],
           opacity: [0.3, 1],
         },
         {
-          duration: this.#GLANCE_ANIMATION_DURATION / 1000 / 1.5,
-          type: "spring",
-          bounce: 0,
+          duration: this.#GLANCE_ANIMATION_DURATION / 1.5,
         }
       )
       .then(() => {
@@ -1233,16 +1300,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#currentGlanceID
       ).elementImageData;
 
-      const imageDataElement = this.#addElementPreview(elementImageData);
+      this.#addElementPreview(elementImageData);
 
       // Create curved closing animation sequence
       const closingData =
         this.#createClosingDataFromOriginalPosition(originalPosition);
-      const arcSequence = this.#createGlanceArcSequence(
-        closingData,
-        "closing",
-        imageDataElement
-      );
+      const arcSequence = this.#createGlanceArcSequence(closingData, "closing");
 
       // Batch style writes before starting animation to avoid layout thrashing
       this.browserWrapper.style.width = "";
@@ -1704,8 +1767,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       !owner.hasAttribute("glance-id") &&
       this._lazyPref.SHOULD_OPEN_EXTERNAL_TABS_IN_GLANCE &&
       owner.linkedBrowser?.browsingContext?.isAppTab &&
-      this.tabDomainsDiffer(owner, uri) &&
-      Services.prefs.getBoolPref("zen.glance.enabled", true)
+      this.tabDomainsDiffer(owner, uri)
     );
   }
 
@@ -1776,6 +1838,16 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     this.#handleZenFolderPinning();
     gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
+
+    if (this.#currentTab.hasAttribute("zen-workspace-id")) {
+      // the glance may have been opened in another space (e.g. from an essential,
+      // which is shared between spaces). the tab now lives in the current space,
+      // keep its id in sync
+      this.#currentTab.setAttribute(
+        "zen-workspace-id",
+        gZenWorkspaces.activeWorkspace
+      );
+    }
 
     this.#prepareTabForFullOpen();
 
@@ -1867,7 +1939,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   openGlanceForBookmark(event) {
     const activationMethod = Services.prefs.getStringPref(
       "zen.glance.activation-method",
-      "ctrl"
+      "shift"
     );
 
     if (!this.#isActivationKeyPressed(event, activationMethod)) {
@@ -1889,14 +1961,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if key is pressed
    */
   #isActivationKeyPressed(event, activationMethod) {
-    const keyMap = {
-      ctrl: event.ctrlKey,
-      alt: event.altKey,
-      shift: event.shiftKey,
-      meta: event.metaKey,
-    };
-
-    return keyMap[activationMethod] || false;
+    const accel = AppConstants.platform == "macosx" ? "meta" : "ctrl";
+    const wanted = new Set(
+      activationMethod
+        .split("+")
+        .map(key => key.trim().toLowerCase())
+        .map(key => (key == "accel" ? accel : key))
+    );
+    const modifiers = ["ctrl", "alt", "shift", "meta"];
+    if ([...wanted].some(key => !modifiers.includes(key))) {
+      return false;
+    }
+    return modifiers.every(key => event[`${key}Key`] == wanted.has(key));
   }
 
   /**
@@ -2074,9 +2150,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if enabled
    */
   #isGlanceEnabledForSearch() {
-    return (
-      Services.prefs.getBoolPref("zen.glance.enabled", false) &&
-      Services.prefs.getBoolPref("zen.glance.enable-contextmenu-search", true)
+    return Services.prefs.getBoolPref(
+      "zen.glance.enable-contextmenu-search",
+      true
     );
   }
 

@@ -48,9 +48,7 @@ class nsZenSpacesSyncApplier {
   }
 
   /**
-   * Maps a record's container guid to the local userContextId. A guid with
-   * no local mapping (its container record hasn't applied here yet) throws,
-   * failing the record so it redelivers once the container exists .
+   * Maps a record's container guid to the local userContextId.
    *
    * @param {?string} containerGuid
    * @returns {number}
@@ -59,7 +57,7 @@ class nsZenSpacesSyncApplier {
     if (!containerGuid) {
       return 0;
     }
-    const mapped = ZenSpacesSyncModel.contextIdForGuid(containerGuid);
+    const mapped = ZenSpacesSyncModel.ensureBuiltinContainer(containerGuid);
     if (mapped === null) {
       throw new Error(`unknown container guid ${containerGuid}`);
     }
@@ -406,9 +404,8 @@ class nsZenSpacesSyncApplier {
       { id: "zen-workspaces-remote-delete-title" },
       { id: "zen-workspaces-remote-delete-body", args: { name } },
     ]);
-    const result = await Services.prompt.asyncConfirmEx(
-      win.browsingContext,
-      Services.prompt.MODAL_TYPE_WINDOW,
+    const result = Services.prompt.confirmEx(
+      win,
       title,
       body,
       Services.prompt.STD_YES_NO_BUTTONS,
@@ -416,9 +413,9 @@ class nsZenSpacesSyncApplier {
       null,
       null,
       null,
-      false
+      {}
     );
-    return result.get("buttonNumClicked") === 0;
+    return result === 0;
   }
 
   /* Mark: folders */
@@ -682,16 +679,23 @@ class nsZenSpacesSyncApplier {
       const state = JSON.parse(win.SessionStore.getTabState(tab));
       const entries = state.entries || [];
       let currentUrl = null;
+      let currentTitle = "";
       if (entries.length) {
         const index = Math.min(
           Math.max((state.index || entries.length) - 1, 0),
           entries.length - 1
         );
         currentUrl = entries[index]?.url || null;
+        currentTitle = entries[index]?.title || "";
       }
       if (
-        currentUrl === data.url ||
-        (currentUrl && previousPinUrl && currentUrl !== previousPinUrl)
+        // A remote record can retitle a tab without moving it, so only skip
+        // the retarget when the title matches as well as the url.
+        (currentUrl === data.url && currentTitle === (data.title || "")) ||
+        (currentUrl &&
+          currentUrl !== data.url &&
+          previousPinUrl &&
+          currentUrl !== previousPinUrl)
       ) {
         return;
       }

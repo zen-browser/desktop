@@ -1,0 +1,13 @@
+diff --git a/dom/ipc/PContent.ipdl b/dom/ipc/PContent.ipdl
+index 3843ba4176a17d09234ea4d7efa6559a1124c03d..1ffb1e9ec03c20db4d02d013e31ee59358ea8ac2 100644
+--- a/dom/ipc/PContent.ipdl
++++ b/dom/ipc/PContent.ipdl
+@@ -892,6 +892,8 @@ child:
+     async LoadAndRegisterSheet(nullable nsIURI uri, uint32_t type);
+     async UnregisterSheet(nullable nsIURI uri, uint32_t type);
+ 
++    async ZenUpdateBoostStyleSheet(nsCString aDomain, nsCString aStyleSheet);
++
+     /**
+      * Notify idle observers in the child
+      */

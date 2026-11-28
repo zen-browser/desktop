@@ -10,6 +10,12 @@ support-files = [
 
 ["browser_basic_workspaces.js"]
 
+["browser_bookmark_workspace_storage.js"]
+
+["browser_close_all_unpinned_tabs_warning.js"]
+
+["browser_default_containers.js"]
+
 ["browser_double_click_newtab.js"]
 
 ["browser_issue_10455.js"]
@@ -20,9 +26,15 @@ support-files = [
 
 ["browser_issue_14948_startup_tab.js"]
 
+["browser_issue_15725.js"]
+
+["browser_issue_16573.js"]
+
 ["browser_issue_8699.js"]
 
 ["browser_issue_9900.js"]
+
+["browser_newtab_paste_and_search.js"]
 
 ["browser_overflow_scrollbox.js"]
 
@@ -37,3 +49,5 @@ support-files = [
 ["browser_unload_all_other_spaces.js"]
 
 ["browser_workspace_bookmarks.js"]
+
+["browser_zen_workspace_cmdline.js"]

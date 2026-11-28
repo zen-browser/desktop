@@ -9,11 +9,22 @@
 function run_test() {
   // Initialize the profile (the session startup uses it)
   do_get_profile();
+  Services.fog.initializeFOG();
 
   do_test_pending();
 
   afterSessionStartupInitialization(function cb() {
     Assert.equal(SessionStartup.sessionType, SessionStartup.NO_SESSION);
+    Assert.deepEqual(
+      shutdownSuccessEvents(),
+      [],
+      "No shutdown outcome is recorded when there is no session."
+    );
+    Assert.deepEqual(
+      shutdownOkCounts(),
+      { clean: null, unclean: null },
+      "shutdown_ok is not recorded when there is no session."
+    );
     do_test_finished();
   });
 }

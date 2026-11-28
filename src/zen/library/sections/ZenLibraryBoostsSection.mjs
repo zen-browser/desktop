@@ -41,7 +41,6 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
     for (const topic of BOOST_TOPICS) {
       Services.obs.addObserver(this.#observer, topic);
     }
-    this.#menu = this.#buildMenu();
   }
 
   disconnectedCallback() {
@@ -209,15 +208,19 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
       }
     });
     menu.addEventListener("popuphidden", () => {
+      menu.hidden = true;
       this.#menuRow?.removeAttribute("menu-open");
       this.#menuRow = null;
       this.#menuBoost = null;
     });
+    menu.hidden = true;
     document.getElementById("mainPopupSet").appendChild(menu);
     return menu;
   }
 
   #openMenu(boost, row, event) {
+    this.#menu ??= this.#buildMenu();
+    this.#menu.hidden = false;
     this.#menuRow?.removeAttribute("menu-open");
     this.#menuBoost = boost;
     this.#menuRow = row;
@@ -250,6 +253,20 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
           <span class="zen-library-row-subtitle">${boost.domain}</span>
         </div>
         <div class="zen-library-row-actions">
+          <toolbarbutton
+            class="toolbarbutton-1"
+            data-l10n-id="library-boosts-delete-button"
+            @click=${event => {
+              event.stopPropagation();
+              this.#delete(boost);
+            }}
+          >
+            <img
+              class="toolbarbutton-icon"
+              src="chrome://browser/skin/zen-icons/trash.svg"
+              alt=""
+            />
+          </toolbarbutton>
           <moz-toggle
             ?pressed=${boost.enabled}
             data-l10n-id="library-boosts-toggle"

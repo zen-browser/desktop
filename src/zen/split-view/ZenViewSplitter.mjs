@@ -138,6 +138,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   insertIntoContextMenu() {
+    if (!this.canSplit) {
+      return;
+    }
     const sibling = document.getElementById("context-sep-open");
     const menuitem = document.createXULElement("menuitem");
     menuitem.setAttribute("id", "context-zenSplitLink");
@@ -324,7 +327,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   // eslint-disable-next-line complexity
   onBrowserDragOverToSplit(event) {
     gBrowser.tabContainer.tabDragAndDrop.clearSpaceSwitchTimer();
-    if (this.fakeBrowser) {
+    if (this.fakeBrowser || !this.canSplit) {
       return;
     }
     var dt = event.dataTransfer;
@@ -1238,21 +1241,48 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Windows that do not show their tabs, like popups and little windows,
+   * cannot split them.
+   *
+   * @returns {boolean}
+   */
+  get canSplit() {
+    return !gZenVerticalTabsManager.hidesTabsToolbar;
+  }
+
+  /**
    * Splits a link in a new tab.
    */
   splitLinkInNewTab() {
-    const url =
-      window.gContextMenu.linkURL ||
-      window.gContextMenu.mediaURL ||
-      window.gContextMenu.contentData.docLocation ||
-      window.gContextMenu.target.ownerDocument.location.href;
-    const currentTab = gZenGlanceManager.getTabOrGlanceParent(
-      window.gBrowser.selectedTab
-    );
+    this.splitLink({
+      url:
+        window.gContextMenu.linkURL ||
+        window.gContextMenu.mediaURL ||
+        window.gContextMenu.contentData.docLocation ||
+        window.gContextMenu.target.ownerDocument.location.href,
+      triggeringPrincipal: window.gContextMenu.principal,
+    });
+  }
+
+  /**
+   * Opens a link in a new tab split next to the tab it came from.
+   *
+   * @param {object} options
+   * @param {string} options.url The link to open.
+   * @param {nsIPrincipal} options.triggeringPrincipal The principal of the
+   *   page the link is in.
+   * @param {MozTabbrowserTab} [options.tab] The tab the link is in, the
+   *   selected one by default.
+   */
+  splitLink({ url, triggeringPrincipal, tab = window.gBrowser.selectedTab }) {
+    if (!this.canSplit) {
+      return;
+    }
+    const currentTab = gZenGlanceManager.getTabOrGlanceParent(tab);
     const newTab = this.openAndSwitchToTab(url, {
       skipRoute: true,
       inBackground: false,
-      triggeringPrincipal: window.gContextMenu.principal,
+      triggeringPrincipal,
     });
     if (!newTab) {
       return;
@@ -1318,7 +1348,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if the tabs can be split, false otherwise.
    */
   contextCanSplitTabs() {
-    if (window.gBrowser.selectedTabs.length > this.MAX_TABS) {
+    if (!this.canSplit || window.gBrowser.selectedTabs.length > this.MAX_TABS) {
       return false;
     }
     for (const tab of window.gBrowser.selectedTabs) {
@@ -1434,6 +1464,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     initialIndex = 0,
     { groupFetchId = null, activate = true } = {}
   ) {
+    if (!this.canSplit) {
+      return;
+    }
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
@@ -1458,7 +1491,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           group.tabs.includes(existingSplitTab)
         );
         const group = this._data[groupIndex];
-        if (group.tabs.length >= this.MAX_TABS) {
+        if (new Set(group.tabs.concat(tabs)).size > this.MAX_TABS) {
           gZenUIManager.showToast("zen-split-view-limit-toast");
           return;
         }
@@ -2532,6 +2565,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   canOpenLinkInSplitView() {
+    if (!this.canSplit) {
+      return false;
+    }
     const currentView = this.currentView;
     if (currentView < 0) {
       return true;
@@ -2543,14 +2579,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return true;
   }
 
+  /** Recomputes styles, without the layout a rect read would also cost. */
+  #flushStyle() {
+    return window.getComputedStyle(this.tabBrowserPanel).transitionProperty;
+  }
+
   #withoutSplitViewTransition(callback) {
     this.tabBrowserPanel.classList.add("zen-split-view-no-transition");
     try {
       return callback();
     } finally {
-      requestAnimationFrame(() => {
-        this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
-      }, 0);
+      this.#flushStyle();
+      this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
     }
   }
 
@@ -2565,6 +2605,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   createEmptySplit(side = "right") {
+    if (!this.canSplit) {
+      return;
+    }
     const selectedTab = gBrowser.selectedTab;
     const emptyTab = gZenWorkspaces._emptyTab;
     const gridType = side === "top" || side === "bottom" ? "hsep" : "vsep";

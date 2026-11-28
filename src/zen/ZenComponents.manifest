@@ -17,3 +17,5 @@ category app-startup nsBrowserGlue @mozilla.org/browser/browserglue;1 applicatio
 #include sessionstore/SessionComponents.manifest
 #include live-folders/LiveFoldersComponents.manifest
 #include space-routing/SpaceRoutingComponents.manifest
+#include media/MediaComponents.manifest
+#include kbs/KbsComponents.manifest

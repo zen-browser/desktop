@@ -17,7 +17,7 @@ async function loadTestExtension(id, name) {
 
 function addonItemsInPanel() {
   return siteDataPanel().querySelectorAll(
-    ".unified-extensions-item[data-extensionid]"
+    ".unified-extensions-item[extension-id]"
   );
 }
 
@@ -34,15 +34,20 @@ add_task(async function test_panel_lists_installed_addons() {
   try {
     await openSiteDataPanel();
 
-    await TestUtils.waitForCondition(() => {
-      const ids = Array.from(addonItemsInPanel()).map(el =>
-        el.getAttribute("data-extensionid")
-      );
-      return ids.includes(extA.id) && ids.includes(extB.id);
-    }, "both installed addons appear in the panel");
+    await TestUtils.waitForCondition(
+      () => {
+        const ids = Array.from(addonItemsInPanel()).map(el =>
+          el.getAttribute("extension-id")
+        );
+        return ids.includes(extA.id) && ids.includes(extB.id);
+      },
+      "both installed addons appear in the panel",
+      100,
+      100
+    );
 
     const renderedIds = Array.from(addonItemsInPanel()).map(el =>
-      el.getAttribute("data-extensionid")
+      el.getAttribute("extension-id")
     );
     Assert.ok(
       renderedIds.includes(extA.id),
@@ -54,7 +59,7 @@ add_task(async function test_panel_lists_installed_addons() {
     );
 
     const itemA = siteDataPanel().querySelector(
-      `.unified-extensions-item[data-extensionid="${extA.id}"]`
+      `.unified-extensions-item[extension-id="${extA.id}"]`
     );
     Assert.equal(
       itemA.querySelector(".unified-extensions-item-name").textContent,
@@ -88,9 +93,11 @@ add_task(async function test_panel_drops_uninstalled_addon() {
     await TestUtils.waitForCondition(
       () =>
         siteDataPanel().querySelector(
-          `.unified-extensions-item[data-extensionid="${ext.id}"]`
+          `.unified-extensions-item[extension-id="${ext.id}"]`
         ),
-      "addon initially present in the panel"
+      "addon initially present in the panel",
+      100,
+      100
     );
     await closeSiteDataPanel();
 
@@ -99,7 +106,7 @@ add_task(async function test_panel_drops_uninstalled_addon() {
     await openSiteDataPanel();
     Assert.equal(
       siteDataPanel().querySelector(
-        `.unified-extensions-item[data-extensionid="${ext.id}"]`
+        `.unified-extensions-item[extension-id="${ext.id}"]`
       ),
       null,
       "uninstalled addon no longer appears in the panel"

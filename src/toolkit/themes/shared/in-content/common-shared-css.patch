@@ -1,17 +1,21 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 087d356b80886b22692f948a97f229ccf75737fd..9c2d370e94d1f901ded4a7a786a475fdf867de07 100644
+index b10fde49e0d416cb7b7d6eaefed268d7a45c54b1..1c89e6a54efa504eedf592c2ac9bcb4efa0def5f 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
-@@ -40,7 +40,7 @@
-    * this in forced colors mode, as we should be using system colours then.
-    */
-   :root[dialogroot] {
--    --background-color-canvas: var(--color-gray-80);
-+    --background-color-canvas: var(--zen-dialog-background);
+@@ -30,6 +30,12 @@
    }
  }
  
-@@ -141,7 +141,7 @@ xul|menulist {
++@media (prefers-color-scheme: dark) and (not (forced-colors)) {
++  :root[dialogroot] {
++    --background-color-canvas: var(--zen-dialog-background);
++  }
++}
++
+ @media (forced-colors) {
+   :host(.anonymous-content-host),
+   :root {
+@@ -137,7 +143,7 @@ xul|menulist {
    border-radius: var(--button-border-radius);
    background-color: var(--button-background-color);
    font-weight: normal;

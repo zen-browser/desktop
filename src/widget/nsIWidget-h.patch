@@ -1,0 +1,14 @@
+diff --git a/widget/nsIWidget.h b/widget/nsIWidget.h
+index 5b806f2a371271f785e9145496da6f01df1c217a..c411aeeceb875f1b2630c04ed5aaa4a58d5db349 100644
+--- a/widget/nsIWidget.h
++++ b/widget/nsIWidget.h
+@@ -1104,7 +1104,8 @@ class nsIWidget : public nsSupportsWeakReference {
+ 
+   enum WindowAnimationType {
+     eGenericWindowAnimation,
+-    eDocumentWindowAnimation
++    eDocumentWindowAnimation,
++    eAlertWindowAnimation
+   };
+ 
+   /**

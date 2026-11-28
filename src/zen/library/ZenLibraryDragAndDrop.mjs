@@ -173,7 +173,10 @@ export class ZenLibraryDragAndDrop extends window.ZenDragAndDrop {
             gBrowser.unpinTab(tab);
           }
         }
-        if (dropBefore) {
+        if (pinned !== !!element.pinned) {
+          // An anchor across the pin boundary can redirect the move to another Space.
+          gZenWorkspaces.moveTabsToWorkspace([...tabs], uuid);
+        } else if (dropBefore) {
           gBrowser.moveTabsBefore(moving, element);
         } else {
           gBrowser.moveTabsAfter(moving, element);

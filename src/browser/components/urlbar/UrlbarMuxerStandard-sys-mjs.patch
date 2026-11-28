@@ -1,10 +1,10 @@
 diff --git a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-index 65bd41b2ea14c26d490632d4a5348d6cf33ee9dd..80fbd685156949b6c7e93ed9d0ef56350dd1a0fe 100644
+index c584ece50d19bbbf0922a84e94227e0402b210eb..bf0d32e3c678d3bb897d7462db47ccb1da6e5d21 100644
 --- a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
 +++ b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-@@ -925,11 +925,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
-       result.providerName == "UrlbarProviderHeuristicFallback" &&
-       state.context.heuristicResult?.providerName !=
+@@ -928,11 +928,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+       state.context.heuristicResult &&
+       state.context.heuristicResult.providerName !=
          "UrlbarProviderHeuristicFallback"
 +      && !(
 +        result.type == lazy.UrlbarShared.RESULT_TYPE.SEARCH &&
@@ -19,7 +19,7 @@ index 65bd41b2ea14c26d490632d4a5348d6cf33ee9dd..80fbd685156949b6c7e93ed9d0ef5635
        // Discard the result if a tab-to-search result was added already.
        if (!state.canAddTabToSearch) {
          return false;
-@@ -1593,7 +1598,9 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -1614,7 +1619,9 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
        usedLimits.maxResultCount++;
      }
  

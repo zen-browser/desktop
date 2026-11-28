@@ -1,35 +1,31 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 1b8c38159314b6edee9e6f455beb2b63db1ad3f0..1308345db640dba6b2848b49ef7c11819f9f5727 100644
+index a91a2b0efd9888a7343ff9e348c333331bfd58d2..d439d77579eebf0ee00775f8105f63bad554198d 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
-@@ -39,6 +39,8 @@
-   <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-pane.css" />
+@@ -40,6 +40,8 @@
    <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-control.css" />
+   <link rel="stylesheet" href="chrome://browser/content/ipprotection/vpn-site-rules-list.css" />
  
 +#include zen-preferences-links.xhtml
 +
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -118,6 +120,26 @@
+@@ -115,12 +117,22 @@
+   <hbox flex="1">
+ 
+     <html:moz-page-nav id="categories" data-l10n-id="category-nav-heading" allownoselection="true">
++      <html:moz-page-nav-button id="category-zen-settings"
++        view="zenSettingsWindow"
++        iconsrc="chrome://browser/skin/zen-icons/settings.svg"
++        data-l10n-id="zen-preferences-open-zen-settings">
++      </html:moz-page-nav-button>
+       <html:moz-page-nav-button id="category-general"
+         hidden="true"
+         view="paneGeneral"
          iconsrc="chrome://browser/skin/preferences/category-general.svg"
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
-+      <html:moz-page-nav-button id="category-zen-looks"
-+        view="paneZenLooks"
-+        iconsrc="chrome://browser/skin/customize.svg"
-+        data-l10n-id="pane-zen-looks-title">
-+      </html:moz-page-nav-button>
-+      <html:moz-page-nav-button id="category-zen-tabs-management"
-+        view="paneZenTabManagement"
-+        iconsrc="chrome://browser/skin/window.svg"
-+        data-l10n-id="pane-zen-tabs-title">
-+      </html:moz-page-nav-button>
-+      <html:moz-page-nav-button id="category-zen-CKS"
-+        view="paneZenCKS"
-+        iconsrc="chrome://browser/skin/preferences/category-accessibility.svg"
-+        data-l10n-id="pane-zen-CKS-title">
-+      </html:moz-page-nav-button>
 +      <html:moz-page-nav-button id="category-zen-marketplace"
 +        view="paneZenMarketplace"
 +        iconsrc="chrome://mozapps/skin/extensions/category-themes.svg"
@@ -38,13 +34,10 @@ index 1b8c38159314b6edee9e6f455beb2b63db1ad3f0..1308345db640dba6b2848b49ef7c1181
        <html:moz-page-nav-button id="category-sync"
          hidden="true"
          view="paneSync"
-@@ -248,6 +270,10 @@
+@@ -257,6 +269,7 @@
  #include privacy.inc.xhtml
  #include sync.inc.xhtml
  #include moreFromMozilla.inc.xhtml
-+#include zenLooksAndFeel.inc.xhtml
-+#include zenKeyboardShortcuts.inc.xhtml
-+#include zenTabsManagement.inc.xhtml
 +#include zenMarketplace.inc.xhtml
          </vbox>
        </vbox>

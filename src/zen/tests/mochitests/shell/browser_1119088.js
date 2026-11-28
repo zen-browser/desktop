@@ -1,9 +1,6 @@
-// Where we save the desktop background to (~/Pictures).
-const NS_OSX_PICTURE_DOCUMENTS_DIR = "Pct";
-
 // Paths used to run the CLI command (python script) that is used to
 // 1) check the desktop background image matches what we set it to via
-//    nsIShellService::setDesktopBackground() and
+//    ShellService::setDesktopBackground() and
 // 2) revert the desktop background image to the OS default
 
 let kPythonPath = "/usr/bin/python";
@@ -18,6 +15,9 @@ const kDefaultBackgroundImage =
 
 ChromeUtils.defineESModuleGetters(this, {
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
+  FileTestUtils: "resource://testing-common/FileTestUtils.sys.mjs",
+  ShellService: "moz-src:///browser/components/shell/ShellService.sys.mjs",
+  sinon: "resource://testing-common/Sinon.sys.mjs",
 });
 
 function getPythonExecutableFile() {
@@ -95,38 +95,27 @@ function restoreDefaultBackground() {
  * that the current desktop background is in fact set to the downloaded image.
  */
 add_task(async function () {
+  let sandbox = sinon.createSandbox();
+  sandbox
+    .stub(ShellService, "_getDesktopBackgroundFile")
+    .resolves(FileTestUtils.getTempFile("wallpaper.png"));
+
   await BrowserTestUtils.withNewTab(
     {
       gBrowser,
       url: getRootDirectory(gTestPath) + "large.png",
     },
     async () => {
-      let dirSvc = Cc["@mozilla.org/file/directory_service;1"].getService(
-        Ci.nsIDirectoryServiceProvider
-      );
-      let uuidGenerator = Services.uuid;
-      let shellSvc = Cc["@mozilla.org/browser/shell-service;1"].getService(
-        Ci.nsIShellService
-      );
-
       // Ensure we are starting with the default background. Log a
       // failure if we can not set the background to the default, but
       // ignore the case where the background is not already set as that
       // that may be due to a previous test failure.
       restoreDefaultBackground();
 
-      // Generate a UUID (with non-alphanumberic characters removed) to build
-      // up a filename for the desktop background. Use a UUID to distinguish
-      // between runs so we won't be confused by images that were not properly
-      // cleaned up after previous runs.
-      let uuid = uuidGenerator.generateUUID().toString().replace(/\W/g, "");
-
-      // Set the background image path to be $HOME/Pictures/<UUID>.png.
       // nsIShellService.setDesktopBackground() downloads the image to this
       // path and then sets it as the desktop background image, leaving the
       // image in place.
-      let backgroundImage = dirSvc.getFile(NS_OSX_PICTURE_DOCUMENTS_DIR, {});
-      backgroundImage.append(uuid + ".png");
+      let backgroundImage = await ShellService._getDesktopBackgroundFile();
       if (backgroundImage.exists()) {
         backgroundImage.remove(false);
       }
@@ -141,16 +130,15 @@ add_task(async function () {
       let image = gBrowser.selectedBrowser.contentDocument.images[0];
 
       info(`Setting/saving desktop background to ${backgroundImage.path}`);
-
-      // Saves the file in ~/Pictures
-      shellSvc.setDesktopBackground(image, 0, backgroundImage.leafName);
-
-      await TestUtils.waitForCondition(() => backgroundImage.exists());
-      info(`${backgroundImage.path} downloaded`);
-      Assert.ok(
-        FileUtils.File(backgroundImage.path).exists(),
-        `${backgroundImage.path} exists`
+      await ShellService.setDesktopBackground(
+        image,
+        image.naturalWidth,
+        image.naturalHeight,
+        0
       );
+
+      info(`${backgroundImage.path} downloaded`);
+      Assert.ok(backgroundImage.exists(), `${backgroundImage.path} exists`);
 
       // Check that the desktop background image is the image we set above.
       let exitCode = checkDesktopBackgroundCLI(backgroundImage.path);
@@ -158,9 +146,8 @@ add_task(async function () {
 
       // Restore the background image to the Mac default.
       restoreDefaultBackground();
-
-      // We no longer need the downloaded image.
-      backgroundImage.remove(false);
     }
   );
+
+  sandbox.restore();
 });

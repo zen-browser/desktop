@@ -21,12 +21,12 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Edit URL Esensial
+           *[false] Edit URL Tab Sematan
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Ganti dengan URL Saat Ini
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
     .label = Edit…
@@ -36,7 +36,6 @@ tab-context-zen-edit-title =
 tab-context-zen-edit-icon = 
     .label = Ubah Ikon...
 zen-themes-corrupted = Tidak dapat memuat file tema { -brand-short-name } Anda karena rusak. File tersebut telah diatur ulang ke tema default.
-zen-shortcuts-corrupted = File pintasan { -brand-short-name } Anda rusak. Mereka telah diatur ulang ke pintasan default.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Bilah URL baru telah diaktifkan, menghapus kebutuhan untuk halaman tab baru.<br/><br/>
@@ -53,14 +52,15 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Konfirmasi
 zen-pinned-tab-replaced = URL awal dari tab yang disematkan telah diganti dengan URL saat ini.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-edited = URL tab sematan telah diperbarui!
 zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-title = Edit URL Tab Sematan
 zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tab telah berhasil diubah namanya!
 zen-background-tab-opened-toast = Tab baru telah terbuka di latar belakang!
 zen-workspace-renamed-toast = Ruang Kerja telah berhasil diubah namanya!
-zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-split-view-limit-toast = Tidak dapat menambah panel lagi ke tampilan belah!
+zen-sidebar-drag-collapsed-toast = Sidebar hidden! Use <span>{ $shortcut }</span> to bring the sidebar back.
 zen-toggle-compact-mode-button = 
     .label = Mode Ringkas
     .tooltiptext = Aktifkan/Sembunyikan Mode Ringkas
@@ -89,7 +89,6 @@ zen-site-data-setting-allow = Diizinkan
 zen-site-data-setting-block = Diblokir
 zen-site-data-protections-enabled = Diaktifkan
 zen-site-data-protections-disabled = Dinonaktifkan
-zen-site-data-setting-cross-site = Kuki Lintas Situs
 zen-site-data-security-info-extension = 
     .label = Ekstensi
 zen-site-data-security-info-secure = 
@@ -104,6 +103,8 @@ zen-site-data-site-settings =
     .label = Semua Pengaturan Situs
 zen-site-data-header-share = 
     .tooltiptext = Bagikan Halaman Ini
+zen-site-data-header-boost = 
+    .tooltiptext = Create a Boost
 zen-site-data-header-reader-mode = 
     .tooltiptext = Masuki Mode Membaca
 zen-site-data-header-screenshot = 

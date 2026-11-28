@@ -4,6 +4,15 @@
 
 import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.sys.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenLittleWindow:
+    "resource:///modules/zen/littlewindow/ZenLittleWindow.sys.mjs",
+});
+
+const LOGIN_URL = "https://github.com/login";
+
 export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "github";
 
@@ -26,8 +35,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const hasAnyFilterEnabled =
         (this.state.options.authorMe ?? false) ||
         (this.state.options.assignedMe ?? true) ||
-        (this.state.options.reviewRequested ?? false) ||
-        (this.state.options.includeDrafts ?? true);
+        (this.state.options.reviewRequested ?? false);
 
       if (!hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";
@@ -48,6 +56,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         });
         if (status === 404) {
           return "zen-live-folder-github-no-auth";
+        }
+        // Don't decide the page format from an error response, try again on
+        // the next fetch instead.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
         }
         try {
           JSON.parse(text);
@@ -78,6 +91,13 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         // Assume no auth
         if (status === 404) {
           return "zen-live-folder-github-no-auth";
+        }
+
+        // Any other error (rate limit, server error) is a failed fetch, not an
+        // empty result. Otherwise every tab in the folder gets closed and the
+        // known repositories are cleared.
+        if (status !== 200) {
+          return "zen-live-folder-failed-fetch";
         }
 
         if (items) {
@@ -263,7 +283,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         enabled: this.state.options.assignedMe ?? true,
       },
       {
-        value: "review-requested:@me",
+        value: "user-review-requested:@me",
         enabled: this.state.options.reviewRequested ?? false,
       },
     ];
@@ -389,10 +409,10 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
-        const tab = this.manager.window.gBrowser.addTrustedTab(
-          "https://github.com/login"
-        );
-        this.manager.window.gBrowser.selectedTab = tab;
+        const win = this.manager.window;
+        if (!lazy.ZenLittleWindow.open({ openerWindow: win, url: LOGIN_URL })) {
+          win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(LOGIN_URL);
+        }
         break;
       }
       case "zen-live-folder-github-no-filter": {

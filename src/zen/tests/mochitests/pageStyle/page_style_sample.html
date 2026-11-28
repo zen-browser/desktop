@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title>Test for page style menu</title>
+    <!-- data-state values:
+      0:      should not appear in the page style menu
+      1:      should appear in the page style menu
+      2:      should appear in the page style menu as the selected stylesheet -->
+    <style data-state="0">
+      /* Some default styles to ensure that disabling styles works */
+      :root { color: lime }
+    </style>
+    <link data-state="1" href="style.css" title="1" rel="alternate stylesheet">
+    <link data-state="0"                title="2" rel="alternate stylesheet">
+    <link data-state="0" href="style.css"           rel="alternate stylesheet">
+    <link data-state="0" href="style.css" title=""  rel="alternate stylesheet">
+    <link data-state="1" href="style.css" title="3" rel="stylesheet alternate">
+    <link data-state="1" href="style.css" title="4" rel=" alternate stylesheet ">
+    <link data-state="1" href="style.css" title="5" rel="alternate stylesheet">
+    <link data-state="2" href="style.css" title="6" rel="stylesheet">
+    <link data-state="1" href="style.css" title="7" rel="foo stylesheet">
+    <link data-state="0" href="style.css" title="8" rel="alternate">
+    <link data-state="1" href="style.css" title="9" rel="alternate STYLEsheet">
+    <link data-state="1" href="style.css" title="10" rel="alternate stylesheet" media="">
+    <link data-state="1" href="style.css" title="11" rel="alternate stylesheet" media="all">
+    <link data-state="1" href="style.css" title="12" rel="alternate stylesheet" media="ALL ">
+    <link data-state="1" href="style.css" title="13" rel="alternate stylesheet" media="screen">
+    <link data-state="1" href="style.css" title="14" rel="alternate stylesheet" media=" Screen">
+    <link data-state="0" href="style.css" title="15" rel="alternate stylesheet" media="screen foo">
+    <link data-state="0" href="style.css" title="16" rel="alternate stylesheet" media="all screen">
+    <link data-state="0" href="style.css" title="17" rel="alternate stylesheet" media="foo bar">
+    <link data-state="1" href="style.css" title="18" rel="alternate stylesheet" media="all,screen">
+    <link data-state="1" href="style.css" title="19" rel="alternate stylesheet" media="all, screen">
+    <link data-state="0" href="style.css" title="20" rel="alternate stylesheet" media="all  screen">
+    <link data-state="0" href="style.css" title="21" rel="alternate stylesheet" media="foo">
+    <link data-state="0" href="style.css" title="22" rel="alternate stylesheet" media="allscreen">
+    <link data-state="0" href="style.css" title="23" rel="alternate stylesheet" media="_all">
+    <link data-state="0" href="style.css" title="24" rel="alternate stylesheet" media="not screen">
+    <link data-state="1" href="style.css" title="25" rel="alternate stylesheet" media="only screen">
+    <link data-state="1" href="style.css" title="26" rel="alternate stylesheet" media="screen and (min-device-width: 1px)">
+    <link data-state="0" href="style.css" title="27" rel="alternate stylesheet" media="screen and (max-device-width: 1px)">
+    <style data-state="1" title="28">:root { color: blue }</style>
+    <link data-state="1" href="style.css" title="29" rel="alternate stylesheet" disabled>
+  </head>
+  <body></body>
+</html>

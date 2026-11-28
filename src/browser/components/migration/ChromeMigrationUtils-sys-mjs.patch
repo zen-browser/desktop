@@ -1,0 +1,29 @@
+diff --git a/browser/components/migration/ChromeMigrationUtils.sys.mjs b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+--- a/browser/components/migration/ChromeMigrationUtils.sys.mjs
++++ b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+@@ -299,6 +299,17 @@
+         "360 SE": [["AppData", "360se6", "User Data"]],
+         Opera: [["AppData", "Opera Software", "Opera Stable"]],
+         "Opera GX": [["AppData", "Opera Software", "Opera GX Stable"]],
++        Dia: [
++          [
++            "LocalAppData",
++            "Packages",
++            { prefix: "TheBrowserCompany.Dia_" },
++            "LocalCache",
++            "Local",
++            "Dia",
++            "User Data",
++          ],
++        ],
+         Vivaldi: [["LocalAppData", "Vivaldi", "User Data"]],
+       },
+       macosx: {
+@@ -318,6 +329,7 @@
+         ],
+         Opera: [["ULibDir", "Application Support", "com.operasoftware.Opera"]],
+         Vivaldi: [["ULibDir", "Application Support", "Vivaldi"]],
++        Dia: [["ULibDir", "Application Support", "Dia", "User Data"]],
+       },
+       linux: {
+         Brave: [["Home", ".config", "BraveSoftware", "Brave-Browser"]],

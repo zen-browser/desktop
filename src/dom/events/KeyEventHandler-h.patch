@@ -1,0 +1,24 @@
+diff --git a/dom/events/KeyEventHandler.h b/dom/events/KeyEventHandler.h
+index d3c370e70355696a02fdd9806e18974bc22abbc2..d380d057fa88d2f32d923d9cf8bb3ca5c5829781 100644
+--- a/dom/events/KeyEventHandler.h
++++ b/dom/events/KeyEventHandler.h
+@@ -17,6 +17,10 @@
+ #include "nsIWeakReference.h"
+ #include "nsString.h"
+ 
++namespace zen {
++class ZenGlobalShortcuts;
++}  // namespace zen
++
+ namespace mozilla {
+ 
+ namespace layers {
+@@ -43,6 +47,8 @@ enum ReservedKey : uint8_t {
+ };
+ 
+ class KeyEventHandler final {
++  friend class zen::ZenGlobalShortcuts;
++
+  public:
+   NS_INLINE_DECL_REFCOUNTING(KeyEventHandler)
+ 

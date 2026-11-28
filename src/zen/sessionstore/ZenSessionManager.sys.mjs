@@ -11,6 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenLiveFoldersManager:
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  SessionFile: "moz-src:///browser/components/sessionstore/SessionFile.sys.mjs",
   SessionStore:
     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
   SessionStartup:
@@ -26,7 +27,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gShouldLog",
   "zen.session-store.log",
-  true
+  false
 );
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
@@ -135,8 +136,10 @@ export class nsZenSessionManager {
   }
 
   async #getBackupRecoveryOrder() {
-    // Also add the most recent backup file to the recovery order
-    let backupFiles = [PathUtils.join(this.#backupFolderPath, "clean.jsonlz4")];
+    let backupFiles = [
+      PathUtils.join(this.#backupFolderPath, "clean.jsonlz4"),
+      PathUtils.join(this.#backupFolderPath, "recovery.baklz4"),
+    ];
     let prefix = PathUtils.join(this.#backupFolderPath, "zen-sessions-");
     try {
       let files = await IOUtils.getChildren(this.#backupFolderPath);
@@ -144,7 +147,7 @@ export class nsZenSessionManager {
         .filter(file => file.startsWith(prefix))
         .sort()
         .reverse();
-      backupFiles.push(files[0]);
+      backupFiles.push(...files);
     } catch {
       /* ignore errors reading backup folder */
     }
@@ -216,32 +219,26 @@ export class nsZenSessionManager {
           e
         );
       }
-      try {
-        data.recoveryData = await IOUtils.readJSON(
-          PathUtils.join(
-            Services.dirsvc.get("ProfD", Ci.nsIFile).path,
-            "sessionstore-backups",
-            "recovery.jsonlz4"
-          ),
-          { decompress: true }
-        );
-        this.log("Recovered recovery data from sessionstore-backups");
-      } catch {
-        /* ignore errors reading recovery data */
+      const options = { decompress: true };
+      if (
+        Services.prefs.getBoolPref(
+          "browser.sessionstore.encryption.available",
+          false
+        )
+      ) {
+        options.decrypt = "sessionstore";
       }
-      if (!data.recoveryData) {
+      for (const key of lazy.SessionFile.Paths.loadOrder) {
+        const path = lazy.SessionFile.Paths[key];
+        if (!path) {
+          continue;
+        }
         try {
-          data.recoveryData = await IOUtils.readJSON(
-            PathUtils.join(
-              Services.dirsvc.get("ProfD", Ci.nsIFile).path,
-              "sessionstore-backups",
-              "recovery.jsonlz4"
-            ),
-            { decompress: true }
-          );
-          this.log("Recovered recovery data from sessionstore-backups");
+          data.recoveryData = await IOUtils.readJSON(path, options);
+          this.log(`Recovered session data for migration from ${key}`);
+          break;
         } catch {
-          /* ignore errors reading recovery data */
+          /* ignore this candidate and try the next one */
         }
       }
       this._migrationData = data;
@@ -265,15 +262,15 @@ export class nsZenSessionManager {
       for (const backupFile of await this.#getBackupRecoveryOrder()) {
         try {
           let data = await IOUtils.readJSON(backupFile, { decompress: true });
-          this.log(`Recovered data from backup file ${backupFile}`);
           if (!data?.spaces?.length) {
+            this.log(`Backup file ${backupFile} has no spaces, skipping`);
             continue;
           }
+          this.log(`Recovered data from backup file ${backupFile}`);
           this._dataFromFile = data;
           break;
         } catch (e) {
-          /* ignore errors reading backup files */
-          console.error(`Failed to read backup file ${backupFile}`, e);
+          this.log(`Failed to read backup file ${backupFile}`, e);
         }
       }
     }
@@ -407,6 +404,8 @@ export class nsZenSessionManager {
       this.log("No windows found in initial state, creating an empty one");
       initialState ||= {};
       initialState.windows ||= [];
+      // SessionStartup reads savedGroups off whatever we hand back.
+      initialState.savedGroups ||= [];
       initialState.windows.push({
         tabs: [],
       });
@@ -585,7 +584,11 @@ export class nsZenSessionManager {
    */
   #isWindowSaveable(aWinData) {
     return (
-      !aWinData.isPopup && !aWinData.isTaskbarTab && !aWinData.isZenUnsynced
+      !aWinData.isPopup &&
+      !aWinData.isTaskbarTab &&
+      !aWinData.isZenUnsynced &&
+      // Still starting up or already tearing down.
+      !!aWinData.spaces?.length
     );
   }
 
@@ -605,13 +608,15 @@ export class nsZenSessionManager {
       // browsing mode. We also don't want to save if there are no windows.
       return;
     }
-    const cleanPath = PathUtils.join(this.#backupFolderPath, "clean.jsonlz4");
-    IOUtils.copy(this.#storeFilePath, cleanPath, { recursive: true }).catch(
-      () => {
-        /* ignore errors creating clean backup, as it is not critical and
-         * we want to save the session even if we fail to create it */
-      }
-    );
+    if (this.#sidebarWithoutCloning?.spaces?.length) {
+      const cleanPath = PathUtils.join(this.#backupFolderPath, "clean.jsonlz4");
+      IOUtils.copy(this.#storeFilePath, cleanPath, { recursive: true }).catch(
+        () => {
+          /* ignore errors creating clean backup, as it is not critical and
+           * we want to save the session even if we fail to create it */
+        }
+      );
+    }
     this.#collectWindowData(windows);
     // Let interested consumers (e.g. Firefox Sync) know fresh sidebar data
     // is available, without this module knowing anything about them.
@@ -662,6 +667,10 @@ export class nsZenSessionManager {
     if (!SHOULD_BACKUP_FILE) {
       return;
     }
+    if (!this.#sidebarWithoutCloning?.spaces?.length) {
+      this.log("Session file has no spaces, skipping backup");
+      return;
+    }
     try {
       const today = new Date();
       const backupFolder = this.#backupFolderPath;
@@ -675,7 +684,12 @@ export class nsZenSessionManager {
       // every few hours (configurable via gBackupHourSpan), so that we
       // can have multiple backups per day for recent days, but only
       // one backup per day for older days.
-      let dateToUse = today.toISOString().slice(0, 10); // YYYY-MM-DD
+      // Use the local date, since the hour below is local too. Otherwise the
+      // file names don't sort in the order the backups were made.
+      const pad = n => String(n).padStart(2, "0");
+      const year = today.getFullYear();
+      const month = pad(today.getMonth() + 1);
+      let dateToUse = `${year}-${month}-${pad(today.getDate())}`; // YYYY-MM-DD
       const hourSpan = Math.min(Math.max(1, lazy.gBackupHourSpan), 24);
       const backupHour = Math.floor(today.getHours() / hourSpan) * hourSpan;
       dateToUse += `-${String(backupHour).padStart(2, "0")}`;
@@ -750,7 +764,51 @@ export class nsZenSessionManager {
    * @returns {boolean} True if the tab should be collected, false otherwise.
    */
   #shouldCollectTab(tabData) {
-    return tabData && !(tabData.zenIsEmpty && !tabData.groupId);
+    if (!tabData || (tabData.zenIsEmpty && !tabData.groupId)) {
+      return false;
+    }
+    // See gh-12152.
+    return !!tabData.zenSyncId || !this.#isBlankTabData(tabData);
+  }
+
+  /**
+   * Whether a tab's data holds nothing.
+   *
+   * @param {object} aTabData - A tab's collected data
+   * @returns {boolean} Whether it is one of those stand-ins
+   */
+  #isBlankTabData(aTabData) {
+    const entries = aTabData.entries || [];
+    return (
+      !entries.length ||
+      (entries.length === 1 &&
+        (() => {
+          const entryUrl = entries[0].url;
+          const aTabState = aTabData;
+          return (
+            entryUrl == "about:blank" ||
+            (entryUrl == "about:home" && !aTabState.splitViewId) ||
+            (entryUrl == "about:newtab" && !aTabState.splitViewId) ||
+            entryUrl == "about:privatebrowsing"
+          );
+        })())
+    );
+  }
+
+  /**
+   * Decides which of a tab's two copies to keep for the session.
+   *
+   * @param {object} aCandidate - The copy just come across
+   * @param {object} aKept - The copy held so far
+   * @returns {boolean} Whether the candidate should take its place
+   */
+  #isBetterTabData(aCandidate, aKept) {
+    // See gh-14004.
+    const candidateIsBlank = this.#isBlankTabData(aCandidate);
+    if (candidateIsBlank !== this.#isBlankTabData(aKept)) {
+      return !candidateIsBlank;
+    }
+    return !!aCandidate._zenIsActiveTab;
   }
 
   #collectUsedTabsFromWindows(aStateWindows) {
@@ -764,10 +822,8 @@ export class nsZenSessionManager {
         if (!this.#shouldCollectTab(tabData)) {
           continue;
         }
-        if (
-          !tabIdRelationMap.has(tabData.zenSyncId) ||
-          tabData._zenIsActiveTab
-        ) {
+        const kept = tabIdRelationMap.get(tabData.zenSyncId);
+        if (!kept || this.#isBetterTabData(tabData, kept)) {
           tabIdRelationMap.set(tabData.zenSyncId, tabData);
         }
       }
@@ -834,7 +890,9 @@ export class nsZenSessionManager {
 
     // Folders are always pinned, so we dont need to check for the pinned state here.
     aWindowData.folders = sidebar.folders;
-    aWindowData.spaces = sidebar.spaces;
+    if (sidebar.spaces?.length) {
+      aWindowData.spaces = sidebar.spaces;
+    }
     this.log("Restored sidebar data into window", {
       tabs: aWindowData.tabs?.length || 0,
       groups: aWindowData.groups?.length || 0,
@@ -860,16 +918,17 @@ export class nsZenSessionManager {
     }
     this.log("Restoring new window with Zen session data");
     void lazy.SessionStore.getCurrentState(true);
-    // We want to iterate all windows except from aWindow.__SSi (string).
+    // We want to iterate all windows except from aWindow's own ID (string).
     // SessionStoreInternal._windows is an object, with the ID as key and the
     // window data as value, so we need to filter out the values that have the
-    // same ID as aWindow.__SSi. but lets filter it into an array to make it easier to work with.
+    // same ID as aWindow's. but lets filter it into an array to make it easier to work with.
     let windows = [];
+    const currentWindowId = SessionStoreInternal.getWindowId(aWindow);
     for (const winKey of Object.keys(SessionStoreInternal._windows)) {
       const winData = SessionStoreInternal._windows[winKey];
       if (
         winData &&
-        winKey !== aWindow.__SSi &&
+        winKey !== currentWindowId &&
         !winData.isPrivate &&
         !winData.isPopup &&
         !winData.isTaskbarTab &&
@@ -916,7 +975,6 @@ export class nsZenSessionManager {
     const newState = { windows: [newWindow] };
     this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
 
-    aWindow.__isNewZenWindow = true;
     SessionStoreInternal._deferredInitialState = newState;
     SessionStoreInternal.initializeWindow(aWindow, newState);
     this.#refreshRestoredTabsState(aWindow, SessionStoreInternal).catch(e =>

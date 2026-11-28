@@ -26,7 +26,7 @@ tab-context-zen-edit-pinned-page =
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Asenda praeguse võrguaadressiga
     .accesskey = p
 tab-context-zen-edit-pinned-url = 
     .label = Muuda…
@@ -47,13 +47,13 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Kohandatud värv
 zen-copy-urls-confirmation =
     { $count ->
-        [1] Copied current URL!
-       *[other] Copied { $count } URLs!
+        [1] Praegune võrguaadress on kopeeritud!
+       *[other] { $count } võrguaadressi on kopeeritud!
     }
 zen-copy-urls-as-markdown-confirmation =
     { $count ->
-        [1] Copied current URL as Markdown!
-       *[other] Copied { $count } URLs as Markdown!
+        [1] Praegune võrguaadress on kopeeritud Markdown-vormingus!
+       *[other] { $count } võrguaadressi on kopeeritud Markdown-vormingus!
     }
 zen-general-cancel-label = 
     .label = Katkesta
@@ -133,7 +133,7 @@ zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site set
 zen-open-link-in-glance = 
     .label = Open Link in Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Uuendamine on lõppenud!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
@@ -142,11 +142,11 @@ zen-sidebar-notification-updated-tooltip =
     .title = View Release Notes
 zen-sidebar-notification-donate-label = Support { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Toeta seda projekti
 zen-sidebar-notification-restart-safe-mode-label = Midagi läks katki?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+    .title = Taaskäivita turvarežiimis
+zen-window-sync-migration-dialog-title = Hoia oma aknad sünkroonis
 zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Loe lisaks
 zen-window-sync-migration-dialog-accept = Selge

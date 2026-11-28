@@ -250,3 +250,4 @@ zen-split-view-shortcut-unsplit = Close Split View
 zen-new-empty-split-view-shortcut = New Empty Split View
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-duplicate-tab-shortcut = Duplicate Tab
+zen-unload-tab-shortcut = Unload Tab

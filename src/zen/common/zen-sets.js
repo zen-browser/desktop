@@ -104,6 +104,24 @@
     },
 
     // Tabs
+    cmd_zenUnloadTab: () => {
+      const tabs = [
+        ...new Set(
+          gBrowser.selectedTabs
+            .map(tab => gZenGlanceManager.getTabOrGlanceParent(tab))
+            .filter(
+              tab =>
+                tab &&
+                !tab.hasAttribute("zen-empty-tab") &&
+                !tab.hasAttribute("pending")
+            )
+        ),
+      ];
+      if (!tabs.length) {
+        return;
+      }
+      gBrowser.explicitUnloadTabs(tabs);
+    },
     cmd_zenCopyCurrentURL: () => gZenCommonActions.copyCurrentURLToClipboard(),
     cmd_zenCopyCurrentURLMarkdown: () =>
       gZenCommonActions.copyCurrentURLAsMarkdownToClipboard(),

@@ -119,6 +119,7 @@ const ZEN_KEY_CATEGORIES = [
       ["zen-toggle-pin-tab", "zen-toggle-pin-tab-shortcut"],
       ["zen-pinned-tab-reset-shortcut", "zen-pinned-tab-shortcut-reset"],
       ["zen-duplicate-tab", "zen-duplicate-tab-shortcut"],
+      ["zen-unload-tab", "zen-unload-tab-shortcut"],
       ["zen-close-all-unpinned-tabs", "zen-close-all-unpinned-tabs-shortcut"],
       ["zen-glance-expand", "zen-glance-expand"],
       ["zen-copy-url", "zen-text-action-copy-url-shortcut"],

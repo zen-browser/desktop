@@ -323,3 +323,25 @@ add_task(async function test_customized_copy_url_keys_copy() {
 
   await SpecialPowers.popPrefEnv();
 });
+
+add_task(async function test_customized_unload_tab_key() {
+  const tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "https://example.com/"
+  );
+  try {
+    CustomKeys.changeKey("zen-unload-tab", {
+      modifiers: UNUSED_MODIFIERS,
+      key: UNUSED_KEY,
+    });
+    EventUtils.synthesizeKey(UNUSED_KEY, UNUSED_OPTIONS, window);
+    await TestUtils.waitForCondition(
+      () => !tab.linkedPanel,
+      "The customized key unloads the current tab"
+    );
+    ok(!tab.linkedPanel, "The current tab is unloaded");
+  } finally {
+    CustomKeys.resetKey("zen-unload-tab");
+    BrowserTestUtils.removeTab(tab);
+  }
+});

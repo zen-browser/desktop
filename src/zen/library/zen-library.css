@@ -18,7 +18,7 @@ zen-library {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
+  inset-inline-start: 0;
   --zen-library-width: clamp(var(--zen-library-min-width), var(--zen-library-content-width, 0px), 95vw);
   width: var(--zen-library-width);
   display: flex;
@@ -47,8 +47,8 @@ zen-library {
 
 :root[zen-right-side="true"] zen-library {
   transform: translateX(calc(100% * (1 - var(--library-progress, 0))));
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
 
   & #zen-library-panel {
     flex-direction: row-reverse;
@@ -65,6 +65,30 @@ zen-library {
     & toolbarbutton:first-child {
       rotate:180deg;
     }
+  }
+}
+
+/* Right-to-left locales mirror the window, so the library opens on the
+   other side and the side column's gradient, shadow and back arrow swap. */
+:root:-moz-locale-dir(rtl):not([zen-right-side="true"]) zen-library {
+  & #zen-library-side {
+    background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.08));
+    box-shadow: var(--zen-library-side-shadow-right-side);
+  }
+
+  & #zen-library-footer toolbarbutton:first-child {
+    rotate: 180deg;
+  }
+}
+
+:root:-moz-locale-dir(rtl)[zen-right-side="true"] zen-library {
+  & #zen-library-side {
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08));
+    box-shadow: var(--zen-library-side-shadow);
+  }
+
+  & #zen-library-footer toolbarbutton:first-child {
+    rotate: none;
   }
 }
 

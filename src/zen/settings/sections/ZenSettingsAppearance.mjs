@@ -41,7 +41,18 @@ export class ZenSettingsAppearance {
         ? "single"
         : "multiple";
     };
+    const isBrowserLayoutUpdating = () => {
+      for (const win of Services.wm.getEnumerator("navigator:browser")) {
+        if (win.gZenVerticalTabsManager?._isUpdating) {
+          return true;
+        }
+      }
+      return false;
+    };
     const select = layout => {
+      if (layout == currentLayout() || isBrowserLayoutUpdating()) {
+        return;
+      }
       Services.prefs.setBoolPref(kExpandedSidebarPref, layout != "collapsed");
       Services.prefs.setBoolPref(kSingleToolbarPref, layout == "single");
     };

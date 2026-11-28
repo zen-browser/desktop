@@ -1149,15 +1149,16 @@ class nsZenWorkspaces {
     ) {
       // Go through each tab and see if there's another tab with the same startup URL.
       // If we do find one, remove it.
-      const newTabUrl = Services.prefs.getStringPref(
-        "browser.startup.homepage"
-      );
+      const startupUrls = this.#getStartupPageUrls();
       const tabs = gBrowser.tabs.filter(
         tab =>
           !tab.collapsed && !tab.hasAttribute("zen-empty-tab") && !tab.pinned
       );
       for (const tab of tabs) {
-        if (tab._originalUrl === newTabUrl && tab !== gBrowser.selectedTab) {
+        if (
+          tab !== gBrowser.selectedTab &&
+          this.#getRestoredTabUrls(tab).some(url => startupUrls.has(url))
+        ) {
           gBrowser.removeTab(tab, {
             skipSessionStore: true,
           });
@@ -1168,6 +1169,56 @@ class nsZenWorkspaces {
     window.dispatchEvent(
       new CustomEvent("AfterWorkspacesSessionRestore", { bubbles: true })
     );
+  }
+
+  /**
+   * The URLs a startup homepage tab can be restored with. Firefox only loads
+   * the first homepage when it restores a session, and the restored tab keeps
+   * the fixed up URL (e.g. "example.com" is saved as "http://example.com/").
+   *
+   * @returns {Set<string>}
+   */
+  #getStartupPageUrls() {
+    const homepage = Services.prefs
+      .getStringPref("browser.startup.homepage")
+      .split("|")[0];
+    const urls = new Set([homepage]);
+    try {
+      const { preferredURI } = Services.uriFixup.getFixupURIInfo(
+        homepage,
+        Ci.nsIURIFixup.FIXUP_FLAG_NONE
+      );
+      if (preferredURI) {
+        urls.add(preferredURI.spec);
+      }
+    } catch (e) {
+      // Not a URL we can fix up, compare it as is.
+    }
+    return urls;
+  }
+
+  /**
+   * The URL a restored tab was opened with, and the URL it ended up on.
+   * The latter can differ after a redirect or an HTTPS upgrade.
+   *
+   * @param {MozTabbrowserTab} tab The restored tab.
+   * @returns {string[]}
+   */
+  #getRestoredTabUrls(tab) {
+    const urls = [];
+    if (tab._originalUrl) {
+      urls.push(tab._originalUrl);
+    }
+    try {
+      const { entries, index } = JSON.parse(SessionStore.getTabState(tab));
+      const entry = entries?.[(index || entries.length) - 1];
+      if (entry?.originalURI) {
+        urls.push(entry.originalURI);
+      }
+    } catch (e) {
+      // The tab has no session state yet.
+    }
+    return urls;
   }
 
   #hasSelectedStartPage = false;
